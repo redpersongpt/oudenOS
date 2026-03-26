@@ -1,24 +1,18 @@
-# ─── Render Blueprint ─────────────────────────────────────────────────────────
-# Defines deployment services for the redcoreECO monorepo.
-# Branch: main (only branch)
-# Docs: https://docs.render.com/infrastructure-as-code
-
 services:
-  # ── redcore · Web — Next.js website ──────────────────────────────────────
   - type: web
     name: redcore-web
     runtime: node
     region: oregon
     plan: starter
     branch: main
-    rootDir: apps/redcore-web
+    rootDir: apps/web
     buildCommand: pnpm install && pnpm build
     startCommand: pnpm start
     envVars:
       - key: NODE_ENV
         value: production
       - key: DATABASE_URL
-        sync: false  # Set manually in Render dashboard
+        sync: false
       - key: AUTH_SECRET
         generateValue: true
       - key: STRIPE_SECRET_KEY

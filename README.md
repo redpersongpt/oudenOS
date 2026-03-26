@@ -2,50 +2,49 @@
 
 Premium Windows optimization ecosystem.
 
-## Products
-
-| Product | Path | Description |
-|---------|------|-------------|
-| **redcore · Web** | `apps/redcore-web` | Next.js website — deployed on Render |
-| **redcore · Tuning** | `apps/redcore-tuning` | Electron desktop optimizer (React + Rust service) |
-| **redcore · OS** | `apps/redcore-os` | Installer-style Windows transformation wizard (Electron + Rust + playbooks) |
-
-## Deployment
-
-**Website (Render):**
-- Repo: `redcoreECO`
-- Branch: `main`
-- Root directory: `apps/redcore-web`
-- Build: `pnpm install && pnpm build`
-- Start: `pnpm start`
-
-Or use the `render.yaml` blueprint for automated setup.
-
-## Development
-
-```bash
-pnpm install              # Install all workspace deps
-pnpm dev:web              # Start website dev server
-pnpm dev:tuning           # Start Tuning desktop dev
-pnpm dev:os               # Start OS desktop dev
-pnpm typecheck            # Typecheck all packages
-```
-
 ## Structure
 
 ```
-redcoreECO/
-├── apps/
-│   ├── redcore-web/        # Next.js website (Render deployment)
-│   ├── redcore-tuning/     # Electron + React + Rust optimizer
-│   │   ├── apps/desktop/   # Electron app
-│   │   ├── apps/cloud-api/ # Fastify API
-│   │   └── packages/       # Shared schema, design system
-│   └── redcore-os/         # Installer-style transformation wizard
-│       ├── apps/desktop/   # Electron app (820x580 installer)
-│       ├── apps/service-core/ # Rust service
-│       └── playbooks/      # YAML playbook modules
-├── render.yaml             # Render deployment blueprint
-├── pnpm-workspace.yaml     # Workspace config
-└── package.json            # Root scripts
+apps/
+  web/               Next.js website (Render)
+  tuning-desktop/    Electron optimizer
+  tuning-api/        Cloud API (Fastify)
+  tuning-website/    Marketing site
+  os-desktop/        Installer wizard (Electron 820x580)
+  os-api/            Cloud API
+  os-website/        Marketing site
+
+packages/
+  tuning-shared-schema/    IPC contracts
+  tuning-design-system/    Design tokens
+  tuning-license-client/   License validation
+  tuning-benchmark/        Benchmark harness
+  tuning-rollback/         Rollback utilities
+  tuning-modules/          Module definitions
+  tuning-download/         App hub downloads
+  os-shared-schema/        OS IPC contracts
+  os-design-system/        OS design tokens
+
+services/
+  tuning-service/    Rust privileged daemon
+  os-service/        Rust transformation engine + playbook loader
+
+playbooks/           YAML transformation modules (37 files)
+docs/                Product docs (CLAUDE.md, BUGHUNTER, etc.)
+proof/               Visual proof screenshots
+scripts/             Consumer Windows proof, utilities
+```
+
+## Deploy (Render)
+
+Branch: `main` | Root: `apps/web` | Build: `pnpm install && pnpm build`
+
+## Dev
+
+```bash
+pnpm install
+pnpm dev:web        # Website
+pnpm dev:tuning     # Tuning desktop
+pnpm dev:os         # OS desktop
+pnpm typecheck      # All packages
 ```

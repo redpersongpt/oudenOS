@@ -2,7 +2,7 @@
   "name": "redcore-eco",
   "version": "1.0.0",
   "private": true,
-  "description": "redcore ecosystem monorepo — Web + Tuning + OS",
+  "description": "redcore ecosystem — Web + Tuning + OS",
   "packageManager": "pnpm@9.15.4",
   "engines": {
     "node": ">=20"
