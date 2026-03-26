@@ -1,0 +1,49 @@
+# ─── Networking: Latency Optimization ─────────────────────────────────────────
+# Disables Nagle's algorithm and configures RSS queues.
+
+module: networking.latency
+name: "Network Latency Optimization"
+description: "Optimize network latency by disabling Nagle's algorithm and configuring RSS queues"
+category: networking
+
+actions:
+  - id: network.disable-nagle
+    name: "Disable Nagle's Algorithm (TCPNoDelay)"
+    description: "Disable Nagle's algorithm and set TCP acknowledgement frequency to 1, sending small packets immediately instead of buffering them"
+    rationale: "Nagle's algorithm buffers small TCP packets to reduce overhead, but introduces up to 200ms of delay for small game packets."
+    risk: low
+    tier: premium
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 3
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKLM
+        path: "SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters\\Interfaces\\<Interface GUID>"
+        valueName: TcpAckFrequency
+        value: 1
+        valueType: DWord
+      - hive: HKLM
+        path: "SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters\\Interfaces\\<Interface GUID>"
+        valueName: TCPNoDelay
+        value: 1
+        valueType: DWord
+
+  - id: network.rss-queues-2
+    name: "Set RSS Queues to 2"
+    description: "Configure Receive Side Scaling to use 2 RSS queues, distributing NIC interrupt processing across 2 CPU cores without over-allocating"
+    rationale: "For typical online gaming (~300 KB/s), 1-2 queues is sufficient. Over-allocating RSS queues wastes CPU resources."
+    risk: low
+    tier: premium
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 3
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKLM
+        path: "SYSTEM\\CurrentControlSet\\Control\\Class\\{4d36e972-e325-11ce-bfc1-08002be10318}\\<Adapter Index>"
+        valueName: "*NumRssQueues"
+        value: 2
+        valueType: DWord

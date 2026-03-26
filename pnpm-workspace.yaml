@@ -1,0 +1,8 @@
+packages:
+  - "apps/redcore-web"
+  - "apps/redcore-tuning"
+  - "apps/redcore-tuning/apps/*"
+  - "apps/redcore-tuning/packages/*"
+  - "apps/redcore-os"
+  - "apps/redcore-os/apps/*"
+  - "apps/redcore-os/packages/*"

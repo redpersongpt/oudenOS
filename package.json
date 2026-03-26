@@ -1,0 +1,15 @@
+{
+  "name": "redcore-eco",
+  "private": true,
+  "scripts": {
+    "dev:web": "pnpm --filter redcore-web dev",
+    "build:web": "pnpm --filter redcore-web build",
+    "dev:tuning": "pnpm --filter @redcore/desktop dev",
+    "dev:os": "pnpm --filter @redcore-os/desktop dev",
+    "typecheck": "pnpm -r typecheck",
+    "lint": "pnpm -r lint"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

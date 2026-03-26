@@ -1,0 +1,54 @@
+/* Wizard-specific utilities */
+@layer utilities {
+  .wizard-content {
+    @apply max-w-3xl mx-auto px-8 py-8;
+  }
+
+  .wizard-heading {
+    @apply text-3xl font-semibold tracking-tight text-neutral-100 leading-tight;
+  }
+
+  .wizard-subtext {
+    @apply mt-3 text-base leading-relaxed text-neutral-400 max-w-xl;
+  }
+
+  .wizard-section-heading {
+    @apply text-lg font-semibold text-neutral-200 tracking-tight;
+  }
+
+  .wizard-card {
+    @apply rounded-xl border border-white/[0.06] bg-white/[0.04] p-5 transition-colors hover:bg-white/[0.06];
+  }
+
+  .wizard-card-compact {
+    @apply rounded-lg border border-white/[0.06] bg-white/[0.03] px-4 py-3;
+  }
+
+  .wizard-action-row {
+    @apply flex items-center justify-between gap-4 rounded-lg border border-white/[0.06] bg-white/[0.03] px-4 py-3 transition-colors hover:bg-white/[0.05];
+  }
+
+  .wizard-divider {
+    @apply my-6 h-px bg-white/[0.06];
+  }
+
+  .wizard-badge-safe {
+    @apply inline-flex items-center rounded-full bg-green-500/10 px-2 py-0.5 text-[10px] font-semibold text-green-400 border border-green-500/20;
+  }
+
+  .wizard-badge-low {
+    @apply inline-flex items-center rounded-full bg-blue-500/10 px-2 py-0.5 text-[10px] font-semibold text-blue-400 border border-blue-500/20;
+  }
+
+  .wizard-badge-medium {
+    @apply inline-flex items-center rounded-full bg-amber-500/10 px-2 py-0.5 text-[10px] font-semibold text-amber-400 border border-amber-500/20;
+  }
+
+  .wizard-badge-premium {
+    @apply inline-flex items-center rounded-full bg-brand-500/10 px-2 py-0.5 text-[10px] font-semibold text-brand-400 border border-brand-500/20;
+  }
+
+  .wizard-badge-reboot {
+    @apply inline-flex items-center rounded-full bg-orange-500/10 px-2 py-0.5 text-[10px] font-semibold text-orange-400 border border-orange-500/20;
+  }
+}

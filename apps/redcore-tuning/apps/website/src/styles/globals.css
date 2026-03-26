@@ -1,0 +1,36 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-surface-950 text-white antialiased;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  ::selection {
+    @apply bg-brand-500/30 text-white;
+  }
+}
+
+@layer utilities {
+  .text-gradient-brand {
+    @apply bg-gradient-to-r from-brand-400 to-brand-600 bg-clip-text text-transparent;
+  }
+
+  .glow-brand {
+    box-shadow: 0 0 40px 0 rgba(232, 69, 60, 0.25);
+  }
+
+  .border-gradient {
+    border-image: linear-gradient(135deg, rgba(232, 69, 60, 0.4), rgba(232, 69, 60, 0.1)) 1;
+  }
+}

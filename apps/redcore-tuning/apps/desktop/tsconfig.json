@@ -1,0 +1,17 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "moduleResolution": "bundler",
+    "paths": {
+      "@/*": ["./src/renderer/*"],
+      "@redcore/design-system": ["../../packages/design-system/src"],
+      "@redcore/design-system/*": ["../../packages/design-system/src/*"],
+      "@redcore/shared-schema": ["../../packages/shared-schema/src"],
+      "@redcore/shared-schema/*": ["../../packages/shared-schema/src/*"]
+    }
+  },
+  "include": ["src/renderer", "src/preload", "src/main"]
+}

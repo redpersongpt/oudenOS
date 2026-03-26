@@ -1,0 +1,99 @@
+{
+  "permissions": {
+    "defaultMode": "bypassPermissions : true" 
+  },
+  "model": "opus[1m]",
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/memory-persistence/session-start.sh"
+          },
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/auto-dead-code-reminder.sh"
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/memory-persistence/pre-compact.sh"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/memory-persistence/session-end.sh"
+          },
+          {
+            "type": "command",
+            "command": "~/.claude/skills/continuous-learning/evaluate-session.sh"
+          },
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/auto-codemap.sh"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write|Bash|NotebookEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/strategic-compact.sh"
+          },
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/checkpoint-eval.sh"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/auto-track-files.sh",
+            "async": true
+          },
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/auto-test.sh",
+            "timeout": 60,
+            "async": true
+          },
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/auto-lint.sh",
+            "timeout": 30,
+            "async": true
+          },
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/post-tool-audit.sh",
+            "async": true
+          }
+        ]
+      }
+    ]
+  },
+  "effortLevel": "medium",
+  "skipDangerousModePermissionPrompt": true
+}
