@@ -2,6 +2,9 @@
 node_modules/
 .pnpm-store/
 
+# Claude worktrees (temporary agent artifacts)
+.claude/worktrees/
+
 # Build outputs
 dist/
 .next/

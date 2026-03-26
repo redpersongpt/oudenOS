@@ -1,8 +1,26 @@
 packages:
+  # ── Web ──
   - "apps/redcore-web"
-  - "apps/redcore-tuning"
-  - "apps/redcore-tuning/apps/*"
-  - "apps/redcore-tuning/packages/*"
-  - "apps/redcore-os"
-  - "apps/redcore-os/apps/*"
-  - "apps/redcore-os/packages/*"
+
+  # ── Tuning apps ──
+  - "apps/redcore-tuning/apps/desktop"
+  - "apps/redcore-tuning/apps/cloud-api"
+  - "apps/redcore-tuning/apps/website"
+
+  # ── Tuning packages ──
+  - "apps/redcore-tuning/packages/shared-schema"
+  - "apps/redcore-tuning/packages/design-system"
+  - "apps/redcore-tuning/packages/license-client"
+  - "apps/redcore-tuning/packages/benchmark-runners"
+  - "apps/redcore-tuning/packages/rollback"
+  - "apps/redcore-tuning/packages/tuning-modules"
+  - "apps/redcore-tuning/packages/download-center"
+
+  # ── OS apps ──
+  - "apps/redcore-os/apps/desktop"
+  - "apps/redcore-os/apps/cloud-api"
+  - "apps/redcore-os/apps/website"
+
+  # ── OS packages ──
+  - "apps/redcore-os/packages/shared-schema"
+  - "apps/redcore-os/packages/design-system"
