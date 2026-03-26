@@ -1,0 +1,34 @@
+{
+  "skipDangerousModePermissionPrompt": true,
+  "permissions": {
+    "defaultMode": "bypassPermissions",
+    "allow": ["Bash(*)", "Read(*)", "Write(*)", "Edit(*)", "Glob(*)", "Grep(*)", "Agent(*)", "NotebookEdit(*)", "TodoWrite(*)", "WebFetch(*)", "WebSearch(*)", "mcp__*"]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cat /Users/redperson/redcore-Tuning/BUGHUNTERCLAUDE.md 2>/dev/null || echo 'BUGHUNTERCLAUDE.md not found'",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cd /Users/redperson/redcore-Tuning && pnpm typecheck --filter @redcore/shared-schema 2>&1 | tail -20",
+            "timeout": 15,
+            "async": true
+          }
+        ]
+      }
+    ]
+  }
+}
