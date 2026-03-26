@@ -12,17 +12,17 @@ jobs:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
       - name: Cargo build
-        working-directory: apps/service-core
+        working-directory: services/os-service
         run: cargo build 2>&1
       - name: Cargo test
-        working-directory: apps/service-core
+        working-directory: services/os-service
         run: cargo test -- --nocapture 2>&1
 
       - name: IPC proof - full pipeline
         shell: pwsh
         run: |
           $psi = New-Object System.Diagnostics.ProcessStartInfo
-          $psi.FileName = (Resolve-Path "apps\service-core\target\debug\redcore-os-service.exe").Path
+          $psi.FileName = (Resolve-Path "services\os-service\target\debug\redcore-os-service.exe").Path
           $psi.RedirectStandardInput = $true
           $psi.RedirectStandardOutput = $true
           $psi.RedirectStandardError = $true
@@ -662,6 +662,58 @@ jobs:
                   } else {
                       Write-Output "    MISS [$($check.label)]: $($check.valueName)"
                   }
+              }
+          }
+
+          # ═══════════════════════════════════════════════════════════════════
+          # STEP 11: PLAYBOOK RESOLVE (playbook-native path proof)
+          # ═══════════════════════════════════════════════════════════════════
+          if (-not $script:streamCorrupted) {
+              Write-Output "`n=== STEP 11: PLAYBOOK RESOLVE ==="
+              Start-Sleep -Seconds 1
+              $r = Send-Rpc "playbook.resolve" @{ profile = "gaming_desktop"; preset = "aggressive" }
+              if ($r -and $r.result) {
+                  Write-Output "  Playbook: $($r.result.playbookName) v$($r.result.playbookVersion)"
+                  Write-Output "  Included: $($r.result.totalIncluded) | Blocked: $($r.result.totalBlocked) | Optional: $($r.result.totalOptional)"
+                  Write-Output "  Phases: $(($r.result.phases | Measure-Object).Count)"
+                  Write-Output "  PASS: playbook.resolve (gaming_desktop/aggressive)"
+              } else {
+                  $errMsg = if ($r -and $r.error) { $r.error.message } else { "timeout/corrupted" }
+                  Write-Output "  INFO: playbook.resolve — $errMsg (non-blocking if playbooks dir not found)"
+              }
+
+              Start-Sleep -Seconds 1
+
+              # Work PC playbook resolve
+              $r = Send-Rpc "playbook.resolve" @{ profile = "work_pc"; preset = "conservative" }
+              if ($r -and $r.result) {
+                  Write-Output "  Work PC: included=$($r.result.totalIncluded) blocked=$($r.result.totalBlocked)"
+                  Write-Output "  PASS: playbook.resolve (work_pc/conservative)"
+              }
+          }
+
+          # ═══════════════════════════════════════════════════════════════════
+          # STEP 12: APP BUNDLE (profile-aware recommendations)
+          # ═══════════════════════════════════════════════════════════════════
+          if (-not $script:streamCorrupted) {
+              Write-Output "`n=== STEP 12: APP BUNDLE ==="
+              Start-Sleep -Seconds 1
+              $r = Send-Rpc "appbundle.getRecommended" @{ profile = "gaming_desktop" }
+              if ($r -and $r.result) {
+                  $appCount = if ($r.result.apps) { ($r.result.apps | Measure-Object).Count } else { 0 }
+                  Write-Output "  Gaming bundle: $appCount apps recommended"
+                  Write-Output "  PASS: appbundle.getRecommended (gaming_desktop)"
+              } else {
+                  $errMsg = if ($r -and $r.error) { $r.error.message } else { "timeout" }
+                  Write-Output "  INFO: appbundle.getRecommended — $errMsg (non-blocking)"
+              }
+
+              Start-Sleep -Seconds 1
+              $r = Send-Rpc "appbundle.getRecommended" @{ profile = "work_pc" }
+              if ($r -and $r.result) {
+                  $appCount = if ($r.result.apps) { ($r.result.apps | Measure-Object).Count } else { 0 }
+                  Write-Output "  Work PC bundle: $appCount apps recommended"
+                  Write-Output "  PASS: appbundle.getRecommended (work_pc)"
               }
           }
 
