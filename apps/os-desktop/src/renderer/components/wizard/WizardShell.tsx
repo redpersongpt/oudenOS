@@ -32,22 +32,23 @@ import { LogoMark } from "@/components/brand/Logo";
 // ─── Step metadata ──────────────────────────────────────────────────────────
 
 const STEP_LABELS: Record<WizardStepId, string> = {
-  welcome:         "Welcome",
-  assessment:      "Assessment",
-  profile:         "Profile",
-  preservation:    "Preservation",
-  plan:            "Plan",
-  personalization: "Personalization",
-  apply:           "Review",
-  execution:       "Apply",
-  report:          "Complete",
+  welcome:          "Welcome",
+  assessment:       "Assessment",
+  profile:          "Profile",
+  preservation:     "Preservation",
+  "playbook-review": "Playbook",
+  personalization:  "Personalization",
+  "app-setup":      "App Setup",
+  "final-review":   "Review",
+  execution:        "Apply",
+  report:           "Complete",
 };
 
 const NEXT_LABELS: Partial<Record<WizardStepId, string>> = {
-  welcome:  "Begin",
-  plan:     "Review",
-  apply:    "Apply Changes",
-  report:   "Finish",
+  welcome:         "Begin",
+  "playbook-review": "Personalize",
+  "final-review":  "Apply Changes",
+  report:          "Finish",
 };
 
 // ─── Step Rail ──────────────────────────────────────────────────────────────

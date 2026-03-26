@@ -21,6 +21,10 @@ const ALLOWED_METHODS = new Set([
   "personalize.revert",
   "pipeline.assessClassifyPlan",
   "verify.registryValue",
+  // Playbook-native methods
+  "playbook.resolve",
+  "appbundle.getRecommended",
+  "appbundle.resolve",
 ]);
 
 // ─── Exposed API ─────────────────────────────────────────────────────────────
