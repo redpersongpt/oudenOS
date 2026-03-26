@@ -1,0 +1,68 @@
+# ─── Shell: Ads & Tips Removal ────────────────────────────────────────────────
+
+module: shell.ads
+name: "Ads & Tips Removal"
+description: "Remove lock screen tips, Start menu suggestions, and Windows ads"
+category: shell
+
+actions:
+  - id: shell.disable-web-search
+    name: "Disable Web Search in Start"
+    description: "Remove Bing web results from Windows Search"
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKCU
+        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\Explorer"
+        valueName: DisableSearchBoxSuggestions
+        value: 1
+        valueType: DWord
+
+  - id: shell.disable-lock-screen-tips
+    name: "Disable Lock Screen Tips"
+    description: "Remove tips and ads from the Windows lock screen"
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKCU
+        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager"
+        valueName: SubscribedContent-338387Enabled
+        value: 0
+        valueType: DWord
+      - hive: HKCU
+        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager"
+        valueName: RotatingLockScreenOverlayEnabled
+        value: 0
+        valueType: DWord
+
+  - id: shell.disable-start-menu-suggestions
+    name: "Disable Start Menu Suggestions"
+    description: "Remove app suggestions from the Start menu"
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKCU
+        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager"
+        valueName: SystemPaneSuggestionsEnabled
+        value: 0
+        valueType: DWord
+      - hive: HKCU
+        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager"
+        valueName: SubscribedContent-338388Enabled
+        value: 0
+        valueType: DWord

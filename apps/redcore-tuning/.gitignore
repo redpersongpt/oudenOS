@@ -1,0 +1,22 @@
+node_modules/
+dist/
+build/
+out/
+.turbo/
+*.tsbuildinfo
+.env
+.env.local
+.env.*.local
+*.log
+target/
+*.exe
+*.dll
+*.pdb
+*.db
+*.sqlite
+.DS_Store
+Thumbs.db
+
+# Claude Code — track rules/commands/codemap
+# .claude/settings.local.json is now tracked (private repo)
+.claude/worktrees/

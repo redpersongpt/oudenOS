@@ -1,0 +1,105 @@
+# ─── Startup-Shutdown: Boot & Input/Audio Optimization ────────────────────────
+# Disables Game Bar, pointer acceleration, audio enhancements, and configures exclusive mode.
+
+module: startup-shutdown.boot
+name: "Boot & Input/Audio Optimization"
+description: "Optimize boot-time settings: disable Game Bar, pointer acceleration, audio enhancements, and configure WASAPI exclusive mode"
+category: startup
+
+actions:
+  - id: display.disable-game-bar
+    name: "Disable Game Bar and Game DVR"
+    description: "Disable the Xbox Game Bar overlay and Game DVR background recording, removing the capture pipeline from the display path"
+    rationale: "Game Bar injects a capture hook into every DirectX application, and Game DVR maintains a background recording buffer consuming GPU encode resources."
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 3
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKCU
+        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\GameDVR"
+        valueName: AppCaptureEnabled
+        value: 0
+        valueType: DWord
+      - hive: HKLM
+        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\GameDVR"
+        valueName: AllowGameDVR
+        value: 0
+        valueType: DWord
+      - hive: HKCU
+        path: "System\\GameConfigStore"
+        valueName: GameDVR_Enabled
+        value: 0
+        valueType: DWord
+
+  - id: display.disable-pointer-acceleration
+    name: "Disable Mouse Pointer Acceleration"
+    description: "Disable Windows pointer acceleration (Enhance Pointer Precision) by setting MouseSpeed, MouseThreshold1, and MouseThreshold2 to 0"
+    rationale: "Pointer acceleration applies a non-linear multiplier to mouse movement based on speed, making precise aiming inconsistent in games."
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKCU
+        path: "Control Panel\\Mouse"
+        valueName: MouseSpeed
+        value: "0"
+        valueType: String
+      - hive: HKCU
+        path: "Control Panel\\Mouse"
+        valueName: MouseThreshold1
+        value: "0"
+        valueType: String
+      - hive: HKCU
+        path: "Control Panel\\Mouse"
+        valueName: MouseThreshold2
+        value: "0"
+        valueType: String
+
+  - id: audio.disable-enhancements
+    name: "Disable Audio Enhancements"
+    description: "Disable Windows audio enhancements (spatial audio, equalizer, virtual surround, loudness equalization) to reduce audio processing overhead and DPC latency"
+    rationale: "Audio enhancements add DSP processing stages in the audio pipeline, increasing DPC latency from audio drivers."
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKLM
+        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\MMDevices\\Audio\\Render"
+        valueName: "{1da5d803-d492-4edd-8c23-e0c0ffee7f0e},5"
+        value: 0
+        valueType: DWord
+
+  - id: audio.exclusive-mode
+    name: "Configure WASAPI Exclusive Mode Priority"
+    description: "Ensure WASAPI exclusive mode is enabled for audio endpoints, allowing games and applications to bypass the Windows audio mixer for direct hardware access with lowest latency"
+    rationale: "WASAPI exclusive mode gives an application direct access to the audio hardware, bypassing the Windows Audio Session mixer, eliminating resampling and mixing latency."
+    risk: low
+    tier: premium
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKLM
+        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\MMDevices\\Audio\\Render"
+        valueName: "{b3f8fa53-0004-438e-9003-51a46e139bfc},3"
+        value: 1
+        valueType: DWord
+      - hive: HKLM
+        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\MMDevices\\Audio\\Render"
+        valueName: "{b3f8fa53-0004-438e-9003-51a46e139bfc},4"
+        value: 1
+        valueType: DWord

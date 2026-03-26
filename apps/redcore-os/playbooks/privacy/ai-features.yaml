@@ -1,0 +1,44 @@
+# ─── Privacy: AI Features ────────────────────────────────────────────────────
+
+module: privacy.ai
+name: "AI Feature Control"
+description: "Disable Windows AI features including Copilot and Recall"
+category: privacy
+
+actions:
+  - id: privacy.disable-recall
+    name: "Disable Windows Recall"
+    description: "Disable the Windows Recall AI feature that captures screen activity"
+    rationale: "Recall continuously screenshots your activity; disabling protects privacy"
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    minWindowsBuild: 26100
+    registryChanges:
+      - hive: HKCU
+        path: "Software\\Policies\\Microsoft\\Windows\\WindowsAI"
+        valueName: DisableAIDataAnalysis
+        value: 1
+        valueType: DWord
+
+  - id: privacy.disable-smart-app-control
+    name: "Disable Smart App Control"
+    description: "Disable cloud-based app reputation checking"
+    rationale: "Smart App Control sends app execution data to Microsoft cloud"
+    risk: low
+    tier: free
+    default: true
+    requiresReboot: true
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKLM
+        path: "SYSTEM\\CurrentControlSet\\Control\\CI\\Policy"
+        valueName: VerifiedAndReputablePolicyState
+        value: 0
+        valueType: DWord

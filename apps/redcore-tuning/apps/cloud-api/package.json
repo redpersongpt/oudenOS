@@ -1,0 +1,32 @@
+{
+  "name": "@redcore/cloud-api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@fastify/cors": "^10.0.0",
+    "@redcore/shared-schema": "workspace:*",
+    "bcryptjs": "^2.4.3",
+    "crypto-js": "^4.2.0",
+    "drizzle-orm": "^0.36.0",
+    "fastify": "^5.1.0",
+    "fastify-raw-body": "^4.3.0",
+    "jose": "^6.2.2",
+    "jsonwebtoken": "^9.0.0",
+    "postgres": "^3.4.0",
+    "stripe": "^17.0.0",
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.0",
+    "@types/jsonwebtoken": "^9.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0"
+  }
+}

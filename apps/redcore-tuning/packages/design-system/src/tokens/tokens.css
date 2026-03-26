@@ -1,0 +1,94 @@
+/* ─── redcore-Tuning Design Tokens (CSS Custom Properties) ─────────────────── */
+/* Dark-first. Use these in one-off styles outside Tailwind utility classes.     */
+
+:root {
+  /* ── Brand Red ──────────────────────────────────────────────────────────── */
+  --color-brand-500: #E8453C;
+  --color-brand-600: #D03030;
+  --color-brand-700: #B52424;
+  --color-brand-hover: #F05048;
+  --color-brand-active: #C83830;
+  --color-brand-disabled: #5C1A18;
+
+  /* ── Dark surfaces ──────────────────────────────────────────────────────── */
+  --color-dark-950: #0D0D10;
+  --color-dark-900: #131316;
+  --color-dark-850: #1B1B1F;
+  --color-dark-800: #232328;
+  --color-dark-750: #2A2A30;
+  --color-dark-border: #26262C;
+  --color-dark-border-subtle: #1C1C21;
+  --color-dark-border-strong: #3A3A44;
+
+  /* ── Ink (text on dark) ─────────────────────────────────────────────────── */
+  --color-ink-primary: #EDEDEF;
+  --color-ink-secondary: #8A8A9E;
+  --color-ink-tertiary: #52526A;
+  --color-ink-inverse: #0D0D10;
+
+  /* ── Semantic — single source of truth for components ───────────────────── */
+  --color-bg:               var(--color-dark-950);
+  --color-surface:          var(--color-dark-900);
+  --color-surface-raised:   var(--color-dark-850);
+  --color-surface-overlay:  var(--color-dark-800);
+  --color-surface-muted:    var(--color-dark-750);
+
+  --color-border:           var(--color-dark-border);
+  --color-border-subtle:    var(--color-dark-border-subtle);
+  --color-border-strong:    var(--color-dark-border-strong);
+  --color-border-focus:     var(--color-brand-500);
+
+  --color-text-primary:     var(--color-ink-primary);
+  --color-text-secondary:   var(--color-ink-secondary);
+  --color-text-tertiary:    var(--color-ink-tertiary);
+  --color-text-brand:       var(--color-brand-500);
+
+  /* ── Status ─────────────────────────────────────────────────────────────── */
+  --color-success:    #22C55E;
+  --color-warning:    #F59E0B;
+  --color-error:      #E8453C;
+  --color-info:       #3B82F6;
+
+  /* ── Risk ────────────────────────────────────────────────────────────────── */
+  --color-risk-safe:    #22C55E;
+  --color-risk-low:     #4ADE80;
+  --color-risk-medium:  #F59E0B;
+  --color-risk-high:    #E8453C;
+  --color-risk-extreme: #FF4040;
+
+  /* ── Typography ─────────────────────────────────────────────────────────── */
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "Cascadia Code", "Fira Code", "Consolas", monospace;
+  --font-size-base: 0.875rem;
+
+  /* ── Spacing ────────────────────────────────────────────────────────────── */
+  --space-unit: 4px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+
+  /* ── Radius ─────────────────────────────────────────────────────────────── */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 20px;
+
+  /* ── Shadow (dark-optimized) ─────────────────────────────────────────────── */
+  --shadow-card:       0 1px 3px rgba(0,0,0,0.45), 0 6px 16px rgba(0,0,0,0.3);
+  --shadow-card-hover: 0 2px 8px rgba(0,0,0,0.55), 0 12px 28px rgba(0,0,0,0.4);
+  --shadow-modal:      0 24px 48px -8px rgba(0,0,0,0.7), 0 8px 16px rgba(0,0,0,0.4);
+  --shadow-brand-glow: 0 0 0 3px rgba(232,69,60,0.25);
+  --shadow-amber-glow: 0 0 0 3px rgba(245,158,11,0.2);
+
+  /* ── Layout ─────────────────────────────────────────────────────────────── */
+  --sidebar-width: 260px;
+  --sidebar-collapsed-width: 68px;
+  --header-height: 56px;
+}

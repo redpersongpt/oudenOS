@@ -1,0 +1,38 @@
+# ─── Profile: Gaming Desktop ──────────────────────────────────────────────────
+# Aggressive tuning for dedicated gaming desktops with no restrictions.
+
+profile: gaming-desktop
+name: "Gaming Desktop"
+description: "Maximum performance profile for dedicated gaming desktops. Applies all available optimizations including CPU, GPU, power, and network latency tweaks."
+preset: aggressive
+
+blockedActions: []
+
+modules:
+  - privacy.telemetry
+  - privacy.activity-tracking
+  - privacy.input-collection
+  - appx.consumer-bloat
+  - appx.microsoft-apps
+  - appx.gaming-apps
+  - services.telemetry-services
+  - services.consumer-services
+  - tasks.telemetry-tasks
+  - performance.gpu
+  - performance.memory
+  - performance.power
+  - performance.latency
+  - performance.storage
+  - shell.context-menu
+  - shell.explorer
+  - startup-shutdown.startup
+  - startup-shutdown.boot
+  - networking.protocols
+  - networking.latency
+  - networking.security
+  - security.update-control
+
+notes:
+  - "No actions are blocked for this profile"
+  - "Expert-only actions (SSBD, HVCI) still require manual opt-in"
+  - "Extreme-risk actions (disable Windows Update) require explicit confirmation"

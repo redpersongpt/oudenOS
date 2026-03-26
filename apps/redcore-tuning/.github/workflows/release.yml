@@ -1,0 +1,86 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version tag (e.g., v0.1.0)'
+        required: true
+
+jobs:
+  release:
+    runs-on: windows-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Cargo build (release)
+        working-directory: apps/service-core
+        run: cargo build --release
+
+      - name: Cargo test
+        working-directory: apps/service-core
+        run: cargo test
+
+      - name: pnpm install
+        run: pnpm install
+
+      - name: Vite build
+        working-directory: apps/desktop
+        run: pnpm exec vite build
+
+      - name: Determine version
+        id: version
+        shell: pwsh
+        run: |
+          if ("${{ github.event.inputs.version }}") {
+            $ver = "${{ github.event.inputs.version }}"
+          } else {
+            $ver = "${{ github.ref_name }}"
+          }
+          Write-Output "VERSION=$ver" >> $env:GITHUB_OUTPUT
+          Write-Output "Version: $ver"
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.VERSION }}
+          name: redcore-Tuning ${{ steps.version.outputs.VERSION }}
+          body: |
+            ## redcore-Tuning ${{ steps.version.outputs.VERSION }}
+
+            ### What's Included
+            - Rust service binary (Windows x64)
+            - Vite-built desktop renderer
+            - 66 tuning actions across 15 categories
+            - Real benchmark engine (system latency, storage, memory)
+            - App Hub with 5 core apps
+            - Full rollback + audit system
+
+            ### Project Activity
+
+            ![Repobeats](https://repobeats.axiom.co/api/embed/d3501dcf0fd81b97796a54adfb2658582ad6b97e.svg "Repobeats analytics image")
+          files: |
+            apps/service-core/target/release/redcore-service.exe
+          draft: false
+          prerelease: ${{ contains(steps.version.outputs.VERSION, 'alpha') || contains(steps.version.outputs.VERSION, 'beta') || contains(steps.version.outputs.VERSION, 'rc') }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

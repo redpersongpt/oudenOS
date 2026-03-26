@@ -1,0 +1,26 @@
+# ─── Shell: Explorer Settings ─────────────────────────────────────────────────
+# Shows file extensions in File Explorer.
+
+module: shell.explorer
+name: "Explorer Settings"
+description: "Improve File Explorer usability by showing file extensions"
+category: shell
+
+actions:
+  - id: shell.show-file-extensions
+    name: "Show File Extensions"
+    description: "Show file extensions in File Explorer for all file types"
+    rationale: "Improves file identification and security awareness (hidden extensions can mask malware)"
+    risk: low
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKCU
+        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced"
+        valueName: HideFileExt
+        value: 0
+        valueType: DWord

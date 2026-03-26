@@ -1,0 +1,27 @@
+# ─── Networking: Security Hardening ───────────────────────────────────────────
+# Disables LLMNR to prevent poisoning attacks.
+
+module: networking.security
+name: "Network Security Hardening"
+description: "Disable insecure network protocols: LLMNR"
+category: networking
+
+actions:
+  - id: network.disable-llmnr
+    name: "Disable Link-Local Multicast Name Resolution"
+    description: "Disable LLMNR by setting EnableMulticast to 0, preventing the system from responding to or sending LLMNR queries"
+    rationale: "LLMNR is vulnerable to poisoning attacks where an attacker responds to name resolution queries to capture credentials (NTLMv2 hashes). Disabling it forces DNS-only resolution."
+    risk: low
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles:
+      - work_pc
+    registryChanges:
+      - hive: HKLM
+        path: "SOFTWARE\\Policies\\Microsoft\\Windows NT\\DNSClient"
+        valueName: EnableMulticast
+        value: 0
+        valueType: DWord
