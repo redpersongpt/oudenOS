@@ -1,131 +1,116 @@
 "use client";
 
-import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
-import { Activity, Layers, ChevronRight, Download } from "lucide-react";
-import { staggerContainer, staggerChild, duration, easing } from "@/lib/motion";
+import { useRef } from "react";
+
+const ease = [0.16, 1, 0.3, 1] as const;
 
 export function EcosystemSection() {
-  const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true, margin: "-15% 0px" });
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section id="ecosystem" className="relative">
-      <div className="section-divide" aria-hidden="true" />
-
-      <div ref={ref} className="mx-auto max-w-7xl px-6 py-16 md:py-20 lg:px-8 lg:py-24">
-        {/* Header */}
+    <section id="products" ref={ref} className="relative py-32 lg:py-44">
+      <div className="mx-auto max-w-[1100px] px-6 lg:px-12">
+        {/* Section lead */}
         <motion.div
-          variants={staggerContainer(0.1, 0)}
-          initial="hidden"
-          animate={inView ? "visible" : "hidden"}
-          className="mb-14"
+          initial={{ opacity: 0, y: 30 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.7, ease }}
+          className="mb-24 max-w-[520px]"
         >
-          <motion.h2
-            variants={staggerChild}
-            className="text-4xl md:text-5xl font-bold tracking-tight text-ink-primary"
-          >
-            Two precision instruments.
-          </motion.h2>
-          <motion.p
-            variants={staggerChild}
-            className="text-4xl md:text-5xl font-light tracking-tight text-ink-secondary mt-1"
-          >
-            One coherent system.
-          </motion.p>
+          <h2 className="text-[clamp(1.6rem,3vw,2.4rem)] font-bold tracking-[-0.03em] leading-[1.12] text-ink-primary">
+            Two products, one ecosystem.
+          </h2>
+          <p className="mt-5 text-[0.95rem] leading-[1.75] text-ink-secondary">
+            OS cleans and transforms your Windows installation. Tuning goes
+            deeper into hardware-specific optimization. Both analyze your
+            machine first.
+          </p>
         </motion.div>
 
-        {/* Two product cards */}
-        <motion.div
-          variants={staggerContainer(0.15, 0.1)}
-          initial="hidden"
-          animate={inView ? "visible" : "hidden"}
-          className="grid grid-cols-1 lg:grid-cols-2 gap-6"
-        >
-          {/* ─── redcore · Tuning ─── */}
-          <motion.div variants={staggerChild} className="premium-card rounded-lg p-8">
-            <div className="flex items-center gap-3 mb-2">
-              <Activity size={18} className="text-brand-500" />
-              <h3 className="text-xl font-semibold text-ink-primary">redcore · Tuning</h3>
+        {/* Product comparison — editorial layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-px rounded-xl overflow-hidden bg-border">
+          {/* OS */}
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            animate={inView ? { opacity: 1, y: 0 } : {}}
+            transition={{ delay: 0.1, duration: 0.7, ease }}
+            className="bg-surface p-10 lg:p-12"
+          >
+            <div className="flex items-baseline justify-between mb-8">
+              <h3 className="text-[1.15rem] font-bold text-ink-primary">
+                redcore · OS
+              </h3>
+              <span className="font-mono text-[0.7rem] font-medium text-success tracking-wide">
+                Free
+              </span>
             </div>
-            <p className="text-[14px] text-ink-secondary mb-5">
-              Wizard-led tuning that profiles your hardware, builds a confidence-rated plan,
-              and validates every change with before/after benchmarks.
+
+            <p className="text-[0.88rem] leading-[1.7] text-ink-secondary mb-8">
+              An installer-style wizard that transforms your current Windows
+              installation. Removes bloatware, hardens privacy, suppresses
+              telemetry, and configures the system based on your detected
+              machine profile. Work PCs keep what they need.
             </p>
 
-            <ul className="flex flex-col gap-2 mb-6">
-              {["Wizard-guided optimization", "Benchmark-validated results", "Rollback-safe execution"].map((item) => (
-                <li key={item} className="flex items-center gap-2">
-                  <ChevronRight size={13} className="text-brand-500 shrink-0" />
-                  <span className="text-[13px] text-ink-primary">{item}</span>
+            <ul className="space-y-3 text-[0.8rem] text-ink-tertiary">
+              {[
+                "Playbook-driven transformation flow",
+                "8 machine profiles with confidence scoring",
+                "Work PC preservation (printing, RDP, domain)",
+                "Bloatware, telemetry, and Edge cleanup",
+                "Per-action rollback snapshots",
+                "Hands into Tuning when ready",
+              ].map((f) => (
+                <li key={f} className="flex items-start gap-3">
+                  <span className="mt-1.5 h-1 w-1 rounded-full bg-ink-muted shrink-0" />
+                  {f}
                 </li>
               ))}
             </ul>
-
-            {/* Pricing + CTA */}
-            <div className="border-t border-border-default pt-5 mt-auto">
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <span className="text-[12px] text-ink-tertiary uppercase tracking-wider">Free version available</span>
-                  <div className="flex items-baseline gap-2 mt-1">
-                    <span className="text-[13px] text-ink-secondary">Premium:</span>
-                    <span className="text-lg font-bold text-ink-primary" style={{ fontVariantNumeric: "tabular-nums" }}>$12.99</span>
-                    <span className="text-[13px] text-ink-tertiary">one-time</span>
-                  </div>
-                </div>
-              </div>
-              <div className="flex gap-3">
-                <button className="flex-1 inline-flex items-center justify-center gap-2 h-10 px-4 text-[13px] font-medium rounded-lg text-ink-primary cursor-pointer border border-border-default hover:border-border-strong transition-colors">
-                  <Download size={14} />
-                  Free Download
-                </button>
-                <button className="flex-1 inline-flex items-center justify-center h-10 px-4 text-[13px] font-medium rounded-lg text-white cursor-pointer bg-brand-500 hover:bg-brand-600 transition-colors">
-                  Buy License
-                </button>
-              </div>
-            </div>
           </motion.div>
 
-          {/* ─── redcore · OS ─── */}
-          <motion.div variants={staggerChild} className="premium-card rounded-lg p-8 relative">
-            {/* Free badge */}
-            <span className="absolute top-4 right-4 inline-flex items-center px-2.5 py-1 rounded-md bg-brand-500/10 text-brand-500 text-[11px] font-medium uppercase tracking-wider">
-              Free
-            </span>
-
-            <div className="flex items-center gap-3 mb-2">
-              <Layers size={18} className="text-ink-secondary" />
-              <h3 className="text-xl font-semibold text-ink-primary">redcore · OS</h3>
+          {/* Tuning */}
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            animate={inView ? { opacity: 1, y: 0 } : {}}
+            transition={{ delay: 0.2, duration: 0.7, ease }}
+            className="bg-surface p-10 lg:p-12"
+          >
+            <div className="flex items-baseline justify-between mb-8">
+              <h3 className="text-[1.15rem] font-bold text-ink-primary">
+                redcore · Tuning
+              </h3>
+              <span className="font-mono text-[0.7rem] font-medium text-accent tracking-wide">
+                $12.99 · once
+              </span>
             </div>
-            <p className="text-[14px] text-ink-secondary mb-5">
-              Profile-aware system reduction, staged cleanup, and Work PC preservation.
-              Transform your existing installation without reinstalling.
+
+            <p className="text-[0.88rem] leading-[1.7] text-ink-secondary mb-8">
+              A guided optimization consultant. Analyzes your hardware in
+              depth, asks what matters to you, builds a custom tuning plan,
+              and applies it with live validation. CPU scheduling, GPU
+              settings, timer resolution, latency paths — machine-specific.
             </p>
 
-            <ul className="flex flex-col gap-2 mb-6">
-              {["In-place transformation", "Work PC preservation", "150+ reversible actions"].map((item) => (
-                <li key={item} className="flex items-center gap-2">
-                  <ChevronRight size={13} className="text-ink-tertiary shrink-0" />
-                  <span className="text-[13px] text-ink-primary">{item}</span>
+            <ul className="space-y-3 text-[0.8rem] text-ink-tertiary">
+              {[
+                "Deep hardware analysis engine",
+                "Question-driven tuning consultant",
+                "CPU, GPU, and latency optimization",
+                "Timer resolution and scheduler tuning",
+                "Benchmark lab with before/after comparison",
+                "Advanced service and process control",
+              ].map((f) => (
+                <li key={f} className="flex items-start gap-3">
+                  <span className="mt-1.5 h-1 w-1 rounded-full bg-accent/40 shrink-0" />
+                  {f}
                 </li>
               ))}
             </ul>
-
-            {/* CTA */}
-            <div className="border-t border-border-default pt-5 mt-auto">
-              <div className="mb-4">
-                <span className="text-[12px] text-brand-500 uppercase tracking-wider font-medium">
-                  Completely free &amp; open source
-                </span>
-                <p className="text-[13px] text-ink-tertiary mt-0.5">Forever, for everyone</p>
-              </div>
-              <button className="w-full inline-flex items-center justify-center gap-2 h-10 px-4 text-[13px] font-medium rounded-lg text-white cursor-pointer bg-brand-500 hover:bg-brand-600 transition-colors">
-                <Download size={14} />
-                Download redcore · OS
-              </button>
-            </div>
           </motion.div>
-        </motion.div>
+        </div>
       </div>
     </section>
   );
