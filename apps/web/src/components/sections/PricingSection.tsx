@@ -84,10 +84,15 @@ export function PricingSection() {
                 ))}
               </ul>
 
-              <span className="inline-flex items-center gap-2.5 rounded-xl border border-success/20 bg-success/5 px-6 py-4 text-[0.88rem] font-medium text-ink-tertiary w-full justify-center">
-                <Download className="h-4 w-4 text-success/50" />
-                Windows installer — coming soon
-              </span>
+              <motion.a
+                href="/downloads/os/redcore-os-setup.exe"
+                className="inline-flex items-center gap-2.5 rounded-xl bg-success/10 border border-success/25 px-6 py-4 text-[0.88rem] font-semibold text-success w-full justify-center hover:bg-success/15 transition-colors"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <Download className="h-4 w-4" />
+                Download Free
+              </motion.a>
             </div>
 
             {/* Donate nudge */}
