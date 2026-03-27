@@ -49,7 +49,7 @@ const categoryColors: Record<
   BenchmarkCategory,
   { bg: string; icon: string; accent: string }
 > = {
-  cpu:     { bg: "bg-red-500/10",    icon: "text-red-400",    accent: "#E8453C" },
+  cpu:     { bg: "bg-red-500/10",    icon: "text-red-400",    accent: "#E8254B" },
   gpu:     { bg: "bg-blue-500/10",   icon: "text-blue-400",   accent: "#3B82F6" },
   memory:  { bg: "bg-green-500/10",  icon: "text-green-400",  accent: "#22C55E" },
   storage: { bg: "bg-amber-500/10",  icon: "text-amber-400",  accent: "#F59E0B" },
@@ -243,7 +243,7 @@ export function BenchmarkLabPage() {
         data: comparisons.map((c) => ({
           value: c.pct,
           itemStyle: {
-            color: c.improved ? "#22C55E" : "#E8453C",
+            color: c.improved ? "#22C55E" : "#E8254B",
             borderRadius: c.pct >= 0 ? [0, 6, 6, 0] : [6, 0, 0, 6],
           },
           label: {
@@ -295,8 +295,8 @@ export function BenchmarkLabPage() {
         type: "line" as const,
         smooth: true,
         data: [2050, 2090, 2110, 2145, 2198],
-        lineStyle: { color: "#E8453C", width: 2 },
-        itemStyle: { color: "#E8453C" },
+        lineStyle: { color: "#E8254B", width: 2 },
+        itemStyle: { color: "#E8254B" },
         symbol: "circle",
         symbolSize: 5,
         areaStyle: {

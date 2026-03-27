@@ -3,9 +3,7 @@
 // Compact — fits 900×600 without scrolling.
 
 import { motion } from "framer-motion";
-import { ArrowRight } from "lucide-react";
 import { useWizardStore } from "@/stores/wizard-store";
-import { Button } from "@/components/ui/Button";
 import type { PersonalizationPreferences } from "@/stores/wizard-store";
 
 // ─── Toggle card ──────────────────────────────────────────────────────────────
@@ -35,17 +33,17 @@ function ToggleCard({ label, description, checked, disabled = false, onChange }:
       ].join(" ")}
     >
       <div className="flex items-center justify-between gap-3">
-        <span className="text-xs font-medium text-neutral-200">{label}</span>
+        <span className="text-xs font-medium text-ink">{label}</span>
         {/* Toggle pill */}
         <span
           aria-hidden="true"
           className={[
             "relative inline-flex h-4 w-7 shrink-0 items-center rounded-full transition-colors",
             disabled
-              ? "bg-neutral-700"
+              ? "bg-ink-muted"
               : checked
               ? "bg-brand-500"
-              : "bg-neutral-700",
+              : "bg-ink-muted",
           ].join(" ")}
         >
           <span
@@ -56,7 +54,7 @@ function ToggleCard({ label, description, checked, disabled = false, onChange }:
           />
         </span>
       </div>
-      <p className="text-[10px] leading-snug text-neutral-600">{description}</p>
+      <p className="text-[10px] leading-snug text-ink-tertiary">{description}</p>
     </button>
   );
 }
@@ -72,7 +70,7 @@ function DesktopPreview({ prefs }: PreviewProps) {
     ? "linear-gradient(135deg, #0d0d14 0%, #111120 40%, #0a0a10 100%)"
     : "linear-gradient(135deg, #1e1e2e 0%, #252538 40%, #1a1a2a 100%)";
 
-  const accentColor = prefs.brandAccent ? "#E8453C" : "#4b4b5a";
+  const accentColor = prefs.brandAccent ? "#E8254B" : "#4b4b5a";
   const taskbarDotCount = prefs.taskbarCleanup ? 3 : 7;
 
   return (
@@ -150,8 +148,8 @@ function DesktopPreview({ prefs }: PreviewProps) {
             }}
           >
             <div className="h-2 w-2 rounded-full" style={{ background: accentColor, opacity: 0.9 }} />
-            <div className="h-2 w-2 rounded-full bg-neutral-700" />
-            <div className="h-2 w-2 rounded-full bg-neutral-700" />
+            <div className="h-2 w-2 rounded-full bg-ink-muted" />
+            <div className="h-2 w-2 rounded-full bg-ink-muted" />
             <div
               className="ml-2 rounded"
               style={{
@@ -238,17 +236,17 @@ function DesktopPreview({ prefs }: PreviewProps) {
 
 // ─── Profile note ─────────────────────────────────────────────────────────────
 
-function ProfileNote({ profileId }: { profileId: string | undefined }) {
-  if (profileId === "work_pc") {
+function ProfileNote({ isWorkPc, isLowSpec }: { isWorkPc: boolean; isLowSpec: boolean }) {
+  if (isWorkPc) {
     return (
-      <p className="text-center text-[11px] leading-snug text-neutral-600">
+      <p className="text-center text-[11px] leading-snug text-ink-tertiary">
         Work PC mode: taskbar and explorer changes are disabled to preserve your familiar workspace.
       </p>
     );
   }
-  if (profileId === "low_spec") {
+  if (isLowSpec) {
     return (
-      <p className="text-center text-[11px] leading-snug text-neutral-600">
+      <p className="text-center text-[11px] leading-snug text-ink-tertiary">
         Low-spec mode: transparency disabled to reduce GPU load.
       </p>
     );
@@ -262,8 +260,8 @@ export function PersonalizationStep() {
   const { personalization, setPersonalization, detectedProfile, goNext } = useWizardStore();
   const profileId = detectedProfile?.id;
 
-  const isWorkPc   = profileId === "work_pc";
-  const isLowSpec  = profileId === "low_spec";
+  const isWorkPc   = detectedProfile?.isWorkPc ?? false;
+  const isLowSpec  = profileId === "low_spec_system" || profileId === "low_spec";
 
   const toggle = (key: keyof typeof personalization) =>
     setPersonalization({ [key]: !personalization[key] });
@@ -283,10 +281,10 @@ export function PersonalizationStep() {
         transition={{ duration: 0.22, ease: [0.0, 0.0, 0.2, 1.0], delay: 0.04 }}
         className="flex flex-col items-center gap-1 text-center"
       >
-        <h2 className="text-lg font-semibold tracking-tight text-neutral-100">
+        <h2 className="text-lg font-semibold tracking-tight text-ink">
           Visual Personalization
         </h2>
-        <p className="text-xs text-neutral-500">Make Windows feel like yours</p>
+        <p className="text-xs text-ink-secondary">Make Windows feel like yours</p>
       </motion.div>
 
       {/* Preview card */}
@@ -298,66 +296,60 @@ export function PersonalizationStep() {
         <DesktopPreview prefs={personalization} />
       </motion.div>
 
-      {/* Toggle row */}
+      {/* Toggles — row of 3 then row of 2 */}
       <motion.div
         initial={{ opacity: 0, y: 6 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.22, ease: [0.0, 0.0, 0.2, 1.0], delay: 0.15 }}
-        className="grid w-full max-w-[500px] grid-cols-5 gap-2"
+        className="w-full max-w-[500px] space-y-2"
       >
-        <ToggleCard
-          label="Dark Mode"
-          description="Dark theme for apps and system"
-          checked={personalization.darkMode}
-          onChange={() => toggle("darkMode")}
-        />
-        <ToggleCard
-          label="Brand Accent"
-          description="Apply redcore red accent color"
-          checked={personalization.brandAccent}
-          onChange={() => toggle("brandAccent")}
-        />
-        <ToggleCard
-          label="Taskbar"
-          description="Hide Task View, Widgets, Chat"
-          checked={personalization.taskbarCleanup}
-          disabled={isWorkPc}
-          onChange={() => toggle("taskbarCleanup")}
-        />
-        <ToggleCard
-          label="Explorer"
-          description="Show extensions, hide recents"
-          checked={personalization.explorerCleanup}
-          disabled={isWorkPc}
-          onChange={() => toggle("explorerCleanup")}
-        />
-        <ToggleCard
-          label="Transparency"
-          description="Window transparency effects"
-          checked={personalization.transparency}
-          disabled={isLowSpec}
-          onChange={() => toggle("transparency")}
-        />
+        <div className="grid grid-cols-3 gap-2">
+          <ToggleCard
+            label="Dark Mode"
+            description="Dark theme for apps and system"
+            checked={personalization.darkMode}
+            onChange={() => toggle("darkMode")}
+          />
+          <ToggleCard
+            label="Brand Accent"
+            description="redcore red accent color"
+            checked={personalization.brandAccent}
+            onChange={() => toggle("brandAccent")}
+          />
+          <ToggleCard
+            label="Transparency"
+            description="Window transparency effects"
+            checked={personalization.transparency}
+            disabled={isLowSpec}
+            onChange={() => toggle("transparency")}
+          />
+        </div>
+        <div className="grid grid-cols-2 gap-2">
+          <ToggleCard
+            label="Taskbar Cleanup"
+            description="Hide Task View, Widgets, Chat"
+            checked={personalization.taskbarCleanup}
+            disabled={isWorkPc}
+            onChange={() => toggle("taskbarCleanup")}
+          />
+          <ToggleCard
+            label="Explorer Cleanup"
+            description="Show extensions, hide recents"
+            checked={personalization.explorerCleanup}
+            disabled={isWorkPc}
+            onChange={() => toggle("explorerCleanup")}
+          />
+        </div>
       </motion.div>
 
-      {/* Profile note + CTA row */}
+      {/* Profile note */}
       <motion.div
-        initial={{ opacity: 0, y: 4 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.2, ease: [0.0, 0.0, 0.2, 1.0], delay: 0.2 }}
-        className="flex w-full max-w-[500px] flex-col items-center gap-3"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.2 }}
+        className="w-full max-w-[500px]"
       >
-        <ProfileNote profileId={profileId} />
-
-        <Button
-          variant="primary"
-          size="md"
-          onClick={goNext}
-          icon={<ArrowRight className="h-4 w-4" />}
-          iconPosition="right"
-        >
-          Continue
-        </Button>
+        <ProfileNote isWorkPc={isWorkPc} isLowSpec={isLowSpec} />
       </motion.div>
     </motion.div>
   );
