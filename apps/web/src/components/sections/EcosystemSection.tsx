@@ -5,113 +5,162 @@ import { useRef } from "react";
 
 const ease = [0.16, 1, 0.3, 1] as const;
 
-export function EcosystemSection() {
+/* ── Tuning Product ─────────────────────────────────────────────────────── */
+
+function TuningSection() {
   const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: "-100px" });
+  const inView = useInView(ref, { once: true, margin: "-80px" });
 
   return (
-    <section id="products" ref={ref} className="relative py-32 lg:py-44">
+    <section id="tuning" ref={ref} className="relative py-32 lg:py-40">
       <div className="mx-auto max-w-[1100px] px-6 lg:px-12">
-        {/* Section lead */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.7, ease }}
-          className="mb-24 max-w-[520px]"
+          className="mb-6"
         >
-          <h2 className="text-[clamp(1.6rem,3vw,2.4rem)] font-bold tracking-[-0.03em] leading-[1.12] text-ink-primary">
-            Two products, one ecosystem.
+          <p className="font-mono text-[0.6rem] font-medium uppercase tracking-[0.14em] text-accent mb-4">
+            redcore · Tuning
+          </p>
+          <h2 className="text-[clamp(1.6rem,3vw,2.4rem)] font-bold tracking-[-0.03em] leading-[1.12] text-ink-primary max-w-[600px]">
+            Guided machine optimization with benchmark-driven validation.
           </h2>
-          <p className="mt-5 text-[0.95rem] leading-[1.75] text-ink-secondary">
-            OS cleans and transforms your Windows installation. Tuning goes
-            deeper into hardware-specific optimization. Both analyze your
-            machine first.
+          <p className="mt-4 text-[0.95rem] leading-[1.75] text-ink-secondary max-w-[540px]">
+            Every step wizard-led, every change reversible.
           </p>
         </motion.div>
 
-        {/* Product comparison — editorial layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-px rounded-xl overflow-hidden bg-border">
-          {/* OS */}
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            animate={inView ? { opacity: 1, y: 0 } : {}}
-            transition={{ delay: 0.1, duration: 0.7, ease }}
-            className="bg-surface p-10 lg:p-12"
-          >
-            <div className="flex items-baseline justify-between mb-8">
-              <h3 className="text-[1.15rem] font-bold text-ink-primary">
-                redcore · OS
+        <div className="mt-16 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-border rounded-xl overflow-hidden">
+          {[
+            {
+              title: "Machine-aware scanning",
+              body: "Deep hardware and software analysis before any changes.",
+            },
+            {
+              title: "15+ tuning modules",
+              body: "CPU, GPU, memory, storage, network, display, audio, and more.",
+            },
+            {
+              title: "Benchmark validation",
+              body: "Before/after performance comparison for every session.",
+            },
+            {
+              title: "Rollback safety",
+              body: "Complete snapshots before every change, one-click restore.",
+            },
+            {
+              title: "Wizard-guided flow",
+              body: "Step-by-step optimization — scan, profile, plan, execute, verify.",
+            },
+            {
+              title: "BIOS guidance",
+              body: "Profile-aware firmware recommendations for advanced users.",
+            },
+          ].map((item, i) => (
+            <motion.div
+              key={item.title}
+              initial={{ opacity: 0, y: 16 }}
+              animate={inView ? { opacity: 1, y: 0 } : {}}
+              transition={{ delay: 0.05 * i, duration: 0.5, ease }}
+              className="bg-surface p-8"
+            >
+              <h3 className="text-[0.85rem] font-semibold text-ink-primary mb-2">
+                {item.title}
               </h3>
-              <span className="font-mono text-[0.7rem] font-medium text-success tracking-wide">
-                Free
-              </span>
-            </div>
-
-            <p className="text-[0.88rem] leading-[1.7] text-ink-secondary mb-8">
-              An installer-style wizard that transforms your current Windows
-              installation. Removes bloatware, hardens privacy, suppresses
-              telemetry, and configures the system based on your detected
-              machine profile. Work PCs keep what they need.
-            </p>
-
-            <ul className="space-y-3 text-[0.8rem] text-ink-tertiary">
-              {[
-                "Playbook-driven transformation flow",
-                "8 machine profiles with confidence scoring",
-                "Work PC preservation (printing, RDP, domain)",
-                "Bloatware, telemetry, and Edge cleanup",
-                "Per-action rollback snapshots",
-                "Hands into Tuning when ready",
-              ].map((f) => (
-                <li key={f} className="flex items-start gap-3">
-                  <span className="mt-1.5 h-1 w-1 rounded-full bg-ink-muted shrink-0" />
-                  {f}
-                </li>
-              ))}
-            </ul>
-          </motion.div>
-
-          {/* Tuning */}
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            animate={inView ? { opacity: 1, y: 0 } : {}}
-            transition={{ delay: 0.2, duration: 0.7, ease }}
-            className="bg-surface p-10 lg:p-12"
-          >
-            <div className="flex items-baseline justify-between mb-8">
-              <h3 className="text-[1.15rem] font-bold text-ink-primary">
-                redcore · Tuning
-              </h3>
-              <span className="font-mono text-[0.7rem] font-medium text-accent tracking-wide">
-                $12.99 · once
-              </span>
-            </div>
-
-            <p className="text-[0.88rem] leading-[1.7] text-ink-secondary mb-8">
-              A guided optimization consultant. Analyzes your hardware in
-              depth, asks what matters to you, builds a custom tuning plan,
-              and applies it with live validation. CPU scheduling, GPU
-              settings, timer resolution, latency paths — machine-specific.
-            </p>
-
-            <ul className="space-y-3 text-[0.8rem] text-ink-tertiary">
-              {[
-                "Deep hardware analysis engine",
-                "Question-driven tuning consultant",
-                "CPU, GPU, and latency optimization",
-                "Timer resolution and scheduler tuning",
-                "Benchmark lab with before/after comparison",
-                "Advanced service and process control",
-              ].map((f) => (
-                <li key={f} className="flex items-start gap-3">
-                  <span className="mt-1.5 h-1 w-1 rounded-full bg-accent/40 shrink-0" />
-                  {f}
-                </li>
-              ))}
-            </ul>
-          </motion.div>
+              <p className="text-[0.8rem] leading-[1.65] text-ink-tertiary">
+                {item.body}
+              </p>
+            </motion.div>
+          ))}
         </div>
       </div>
     </section>
+  );
+}
+
+/* ── OS Product ─────────────────────────────────────────────────────────── */
+
+function OSSection() {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, margin: "-80px" });
+
+  return (
+    <section id="os" ref={ref} className="relative py-32 lg:py-40">
+      <div className="mx-auto max-w-[1100px] px-6 lg:px-12">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.7, ease }}
+          className="mb-6"
+        >
+          <p className="font-mono text-[0.6rem] font-medium uppercase tracking-[0.14em] text-success mb-4">
+            redcore · OS
+          </p>
+          <h2 className="text-[clamp(1.6rem,3vw,2.4rem)] font-bold tracking-[-0.03em] leading-[1.12] text-ink-primary max-w-[620px]">
+            In-place Windows transformation.
+          </h2>
+          <p className="mt-4 text-[0.95rem] leading-[1.75] text-ink-secondary max-w-[560px]">
+            Reshape your current installation without reinstalling — guided
+            by machine intelligence, protected by rollback safety.
+          </p>
+        </motion.div>
+
+        <div className="mt-16 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-border rounded-xl overflow-hidden">
+          {[
+            {
+              title: "In-place transformation",
+              body: "Reshape your current Windows — no ISO, no reinstall, no data loss.",
+            },
+            {
+              title: "150+ reversible actions",
+              body: "Staged cleanup across services, tasks, privacy, startup, and more.",
+            },
+            {
+              title: "Work PC preservation",
+              body: "Print Spooler, RDP, SMB, Group Policy, VPN — automatically protected.",
+            },
+            {
+              title: "8 machine profiles",
+              body: "Gaming, workstation, office, laptop, low-spec — each gets a different path.",
+            },
+            {
+              title: "Full rollback",
+              body: "Every change creates a snapshot, every action is reversible.",
+            },
+            {
+              title: "Visual personalization",
+              body: "Optional dark mode, accent system, taskbar, and Explorer cleanup.",
+            },
+          ].map((item, i) => (
+            <motion.div
+              key={item.title}
+              initial={{ opacity: 0, y: 16 }}
+              animate={inView ? { opacity: 1, y: 0 } : {}}
+              transition={{ delay: 0.05 * i, duration: 0.5, ease }}
+              className="bg-surface p-8"
+            >
+              <h3 className="text-[0.85rem] font-semibold text-ink-primary mb-2">
+                {item.title}
+              </h3>
+              <p className="text-[0.8rem] leading-[1.65] text-ink-tertiary">
+                {item.body}
+              </p>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ── Combined Export ─────────────────────────────────────────────────────── */
+
+export function EcosystemSection() {
+  return (
+    <div id="products">
+      <TuningSection />
+      <OSSection />
+    </div>
   );
 }
