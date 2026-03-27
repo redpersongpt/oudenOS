@@ -45,8 +45,8 @@ const stats: StatItem[] = [
 function LiveDot() {
   return (
     <span className="relative flex h-2 w-2" aria-hidden="true">
-      <span className="absolute inline-flex h-full w-full rounded-full bg-success animate-breathe" />
-      <span className="relative inline-flex h-2 w-2 rounded-full bg-success" />
+      <span className="absolute inline-flex h-full w-full rounded-full bg-accent animate-breathe" />
+      <span className="relative inline-flex h-2 w-2 rounded-full bg-accent" />
     </span>
   );
 }

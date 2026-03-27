@@ -50,9 +50,9 @@ export function ComparisonBlock({ title, left, right }: ComparisonBlockProps) {
 
           {/* Right column -- success/green tone */}
           <div className="bg-surface p-6">
-            <h3 className="flex items-center gap-2 text-[0.85rem] font-semibold text-success">
+            <h3 className="flex items-center gap-2 text-[0.85rem] font-semibold text-accent">
               <span
-                className="inline-block h-2 w-2 rounded-full bg-success"
+                className="inline-block h-2 w-2 rounded-full bg-accent"
                 aria-hidden="true"
               />
               {right.heading}
@@ -65,7 +65,7 @@ export function ComparisonBlock({ title, left, right }: ComparisonBlockProps) {
                   className="flex items-start gap-2.5 text-[0.875rem] leading-[1.6] text-ink-secondary"
                 >
                   <span
-                    className="mt-[0.55rem] inline-block h-1 w-1 shrink-0 rounded-full bg-success/50"
+                    className="mt-[0.55rem] inline-block h-1 w-1 shrink-0 rounded-full bg-accent/50"
                     aria-hidden="true"
                   />
                   {item}
