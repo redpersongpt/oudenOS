@@ -123,27 +123,50 @@ export default function DownloadsPage() {
             </div>
           </div>
 
-          {/* Integrity note */}
-          <div className="mt-10 pt-6 border-t border-border">
-            <h2 className="text-lg font-semibold text-ink-primary mb-3">
-              Integrity and safety
-            </h2>
-            <p className="text-ink-secondary text-[14px] leading-relaxed mb-3">
-              All redcore installers are standard signed Windows
-              executables. The tool runs with administrator privileges
-              because it modifies system settings, services, and registry
-              keys — this is inherent to what it does. A system restore
-              point is created before any changes are applied.
+          {/* Browser warning */}
+          <div className="mt-8 rounded-lg border border-border bg-surface-raised p-5">
+            <p className="text-[0.82rem] font-semibold text-ink-primary mb-2">
+              Browser warning when downloading?
             </p>
-            <p className="text-ink-secondary text-[14px] leading-relaxed">
-              If you are cautious about running system tools, you can review
-              the{" "}
+            <p className="text-ink-secondary text-[13px] leading-relaxed mb-3">
+              Chrome, Edge, and Windows SmartScreen may show a warning because
+              the installer is not yet code-signed with an EV certificate.
+              This is normal for new independent software. To proceed:
+            </p>
+            <ul className="text-ink-secondary text-[13px] leading-relaxed space-y-1 mb-3 pl-4">
+              <li>Chrome: click &ldquo;Keep&rdquo; or &ldquo;Keep anyway&rdquo;</li>
+              <li>Edge: click &ldquo;...&rdquo; → &ldquo;Keep&rdquo;</li>
+              <li>SmartScreen: click &ldquo;More info&rdquo; → &ldquo;Run anyway&rdquo;</li>
+            </ul>
+            <p className="text-ink-tertiary text-[12px]">
+              You can verify the file integrity with the SHA-256 checksum below.
+            </p>
+          </div>
+
+          {/* Integrity */}
+          <div className="mt-8 pt-6 border-t border-border">
+            <h2 className="text-lg font-semibold text-ink-primary mb-3">
+              Verify your download
+            </h2>
+            <p className="text-ink-secondary text-[14px] leading-relaxed mb-4">
+              The tool requires administrator privileges because it modifies
+              system settings, services, and registry keys. A restore point
+              is created before any changes. You can review the{" "}
               <Link href="/redcore-os" className="text-accent hover:text-accent-bright transition-colors">
                 full description of what redcore OS does
               </Link>{" "}
-              before downloading. The tool also shows you every planned
-              change before execution — nothing happens without your
-              explicit approval.
+              before running it.
+            </p>
+            <div className="rounded-lg bg-surface border border-border p-4">
+              <p className="font-mono text-[0.65rem] font-medium uppercase tracking-[0.12em] text-ink-muted mb-2">
+                SHA-256 Checksum — redcore-os-setup.exe
+              </p>
+              <code className="font-mono text-[0.72rem] text-ink-tertiary break-all select-all">
+                a1b9d3e8da26d7d101c6e805e139ca9551aadf6e647c60575ff6dc3a791b67b7
+              </code>
+            </div>
+            <p className="mt-3 text-ink-muted text-[12px]">
+              Verify in PowerShell: <code className="font-mono text-[11px]">Get-FileHash redcore-os-setup.exe</code>
             </p>
           </div>
         </article>
