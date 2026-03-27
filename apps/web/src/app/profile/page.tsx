@@ -126,7 +126,7 @@ export default function ProfilePage() {
                         redcore · Tuning
                       </span>
                       <span className={`text-[11px] font-medium uppercase tracking-wider ${
-                        lic.status === "active" ? "text-success" : "text-ink-tertiary"
+                        lic.status === "active" ? "text-accent" : "text-ink-tertiary"
                       }`}>
                         {lic.status}
                       </span>

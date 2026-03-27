@@ -48,7 +48,7 @@ export default function DownloadsPage() {
                   Free Windows transformation tool
                 </p>
               </div>
-              <span className="inline-flex items-center rounded-full bg-success/10 px-3 py-1 text-[12px] font-medium text-success">
+              <span className="inline-flex items-center rounded-full bg-accent/10 px-3 py-1 text-[12px] font-medium text-accent">
                 Available
               </span>
             </div>
