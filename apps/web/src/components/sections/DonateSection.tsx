@@ -29,7 +29,7 @@ export function DonateSection() {
             Support redcore · OS
           </h2>
           <p className="mt-3 text-[16px] text-ink-secondary max-w-lg mx-auto">
-            redcore · OS is free and open source. Donations help us maintain the project,
+            redcore · OS is free. Donations help us maintain the project,
             ship new features, and keep it independent.
           </p>
         </motion.div>
@@ -86,7 +86,7 @@ export function DonateSection() {
           transition={{ duration: duration.slow, ease: easing.enter, delay: 0.4 }}
           className="mt-6 text-[12px] text-ink-tertiary"
         >
-          Every contribution counts. Thank you for supporting open source.
+          Every contribution counts. Thank you for supporting redcore.
         </motion.p>
       </div>
     </section>

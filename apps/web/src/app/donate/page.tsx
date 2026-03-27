@@ -4,7 +4,7 @@ import { FooterSection } from "@/components/sections/FooterSection";
 
 export const metadata = {
   title: "Support redcore · OS — Donate",
-  description: "redcore · OS is free and open source. Support development with a donation.",
+  description: "redcore · OS is free. Support development with a donation.",
 };
 
 export default function DonatePage() {
