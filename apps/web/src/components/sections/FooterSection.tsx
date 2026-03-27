@@ -54,7 +54,7 @@ export function FooterSection() {
           </nav>
 
           {/* Copyright */}
-          <p className="text-[12px] text-ink-tertiary">2024 redcore</p>
+          <p className="text-[12px] text-ink-tertiary">2026 redcore</p>
         </div>
       </div>
     </footer>
