@@ -58,13 +58,10 @@
           "arch": ["x64"]
         }
       ],
-      "icon": "resources/redcore-icon.png"
     },
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
-      "installerIcon": "resources/redcore-icon.png",
-      "uninstallerIcon": "resources/redcore-icon.png",
       "artifactName": "redcore-os-setup.${ext}"
     },
     "asar": true,
