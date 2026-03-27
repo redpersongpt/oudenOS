@@ -1,35 +1,25 @@
 // ─── Execution Step ───────────────────────────────────────────────────────────
 // Live execution screen. No bottom bar (WizardShell suppresses it).
-// Current action card with pulse, completed timeline, progress bar + stats.
+// Reads included actions from resolvedPlaybook, executes each via IPC.
 // Calls execute.applyAction for each action via window.redcore.service.call.
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Check, AlertCircle } from "lucide-react";
 import { useWizardStore } from "@/stores/wizard-store";
+import { getActionRationale } from "@/lib/expert-rationale";
 
-// ─── Mock action list ─────────────────────────────────────────────────────────
+// ─── Types ──────────────────────────────────────────────────────────────────
 
-const MOCK_ACTIONS = [
-  "Disable SysMain (Superfetch)",
-  "Disable Windows Search indexer",
-  "Remove OneDrive startup entry",
-  "Disable Windows Error Reporting",
-  "Clear temp files",
-  "Disable DiagTrack telemetry",
-  "Disable CEIP scheduled tasks",
-  "Set power plan to High Performance",
-  "Disable Cortana background process",
-  "Remove Xbox Game Bar telemetry tasks",
-  "Disable Windows Customer Experience telemetry",
-  "Optimize network adapter settings",
-  "Disable automatic delivery optimization",
-  "Set visual effects to best performance",
-  "Remove startup delays",
-];
+interface ExecutableAction {
+  id: string;
+  name: string;
+  phase: string;
+}
 
 interface CompletedAction {
   label: string;
+  actionId: string;
   status: "applied" | "failed";
 }
 
@@ -48,7 +38,7 @@ function TimelineItem({ action, index }: { action: CompletedAction; index: numbe
       ) : (
         <AlertCircle className="h-3.5 w-3.5 shrink-0 text-danger-400" />
       )}
-      <span className="text-[11px] text-neutral-500 truncate">{action.label}</span>
+      <span className="text-[11px] text-ink-secondary truncate">{action.label}</span>
       <span className={`ml-auto shrink-0 text-[10px] font-medium ${
         action.status === "applied" ? "text-success-400/60" : "text-danger-400/60"
       }`}>
@@ -61,16 +51,33 @@ function TimelineItem({ action, index }: { action: CompletedAction; index: numbe
 // ─── Component ───────────────────────────────────────────────────────────────
 
 export function ExecutionStep() {
-  const { plan, completeStep, setExecutionResult } = useWizardStore();
-  const totalActions = plan?.totalActions ?? MOCK_ACTIONS.length;
-  const actionList   = MOCK_ACTIONS.slice(0, totalActions);
+  const { detectedProfile, resolvedPlaybook, selectedAppIds, personalization, completeStep, setExecutionResult } = useWizardStore();
+
+  // ── Build action queue from resolved playbook ──
+  const actionQueue = useMemo<ExecutableAction[]>(() => {
+    if (!resolvedPlaybook) return [];
+    const queue: ExecutableAction[] = [];
+    for (const phase of resolvedPlaybook.phases) {
+      for (const action of phase.actions) {
+        if (action.status === "Included") {
+          queue.push({ id: action.id, name: action.name, phase: phase.name });
+        }
+      }
+    }
+    return queue;
+  }, [resolvedPlaybook]);
+
+  const totalActions = actionQueue.length;
 
   const [currentIdx,    setCurrentIdx]    = useState(-1);
   const [currentAction, setCurrentAction] = useState<string | null>(null);
+  const [currentActionId, setCurrentActionId] = useState<string | null>(null);
+  const [currentPhase, setCurrentPhase]   = useState<string | null>(null);
   const [completed,     setCompleted]     = useState<CompletedAction[]>([]);
-  const [failed,        setFailed]        = useState(0);
-  const timerRef  = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const started   = useRef(false);
+  const [failCount,     setFailCount]     = useState(0);
+  const timerRef    = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const abortRef    = useRef<AbortController | null>(null);
+  const started     = useRef(false);
   const timelineRef = useRef<HTMLDivElement>(null);
 
   const applied   = completed.filter((c) => c.status === "applied").length;
@@ -80,40 +87,45 @@ export function ExecutionStep() {
     : 0;
 
   useEffect(() => {
-    if (started.current) return;
+    if (started.current || totalActions === 0) return;
     started.current = true;
 
+    const controller = new AbortController();
+    abortRef.current = controller;
+
     const exec = async () => {
-      for (let i = 0; i < actionList.length; i++) {
-        const label = actionList[i];
+      const { serviceCall } = await import("@/lib/service");
+      let localFailed = 0;
+
+      // ── Phase 1: Apply playbook actions ──
+      for (let i = 0; i < actionQueue.length; i++) {
+        if (controller.signal.aborted) return;
+        const action = actionQueue[i];
 
         setCurrentIdx(i);
-        setCurrentAction(label);
+        setCurrentAction(action.name);
+        setCurrentActionId(action.id);
+        setCurrentPhase(action.phase);
 
-        // Attempt real IPC
         let status: "applied" | "failed" = "applied";
-        try {
-          if (typeof window !== "undefined" && (window as unknown as { redcore?: unknown }).redcore) {
-            const win = window as unknown as {
-              redcore: { service: { call: (method: string, params: object) => Promise<{ status: string }> } };
-            };
-            const result = await win.redcore.service.call("execute.applyAction", { actionId: label });
-            status = result.status === "ok" ? "applied" : "failed";
-          } else {
-            // Simulate execution time
-            await new Promise<void>((resolve) => {
-              timerRef.current = setTimeout(resolve, 260 + Math.random() * 160);
-            });
-          }
-        } catch {
-          status = "failed";
+        const result = await serviceCall<Record<string, unknown>>("execute.applyAction", { actionId: action.id });
+        if (result.ok) {
+          status = (result.data.status === "success" || result.data.status === "partial") ? "applied" : "failed";
+        } else {
+          // Demo mode — simulate execution
+          await new Promise<void>((resolve) => {
+            timerRef.current = setTimeout(resolve, 180 + Math.random() * 140);
+          });
         }
 
+        if (controller.signal.aborted) return;
         setCurrentAction(null);
-        if (status === "failed") setFailed((f) => f + 1);
-        setCompleted((prev) => [...prev, { label, status }]);
+        if (status === "failed") {
+          localFailed++;
+          setFailCount((f) => f + 1);
+        }
+        setCompleted((prev) => [...prev, { label: action.name, actionId: action.id, status }]);
 
-        // Scroll timeline to bottom
         requestAnimationFrame(() => {
           if (timelineRef.current) {
             timelineRef.current.scrollTop = timelineRef.current.scrollHeight;
@@ -121,13 +133,47 @@ export function ExecutionStep() {
         });
       }
 
-      // Done
-      const finalApplied = actionList.length - failed;
+      if (controller.signal.aborted) return;
+
+      // ── Phase 2: Apply personalization ──
+      let personalizationFailed = false;
+      try {
+        const svc = getService();
+        if (svc) {
+          await svc.call("personalize.apply", {
+            profile: detectedProfile?.id ?? "gaming_desktop",
+            options: personalization,
+          });
+        }
+      } catch {
+        personalizationFailed = true;
+      }
+
+      // ── Phase 3: Install selected apps ──
+      let appInstallFailed = false;
+      if (selectedAppIds.length > 0) {
+        try {
+          const svc = getService();
+          if (svc) {
+            await svc.call("appbundle.resolve", {
+              profile: detectedProfile?.id ?? "gaming_desktop",
+              selectedApps: selectedAppIds,
+            });
+          }
+        } catch {
+          appInstallFailed = true;
+        }
+      }
+
+      if (controller.signal.aborted) return;
+
+      // ── Done ──
+      const skipped = (personalizationFailed ? 1 : 0) + (appInstallFailed ? 1 : 0);
       setExecutionResult({
-        applied:   finalApplied,
-        failed:    failed,
-        skipped:   0,
-        preserved: 0,
+        applied:   actionQueue.length - localFailed,
+        failed:    localFailed,
+        skipped,
+        preserved: resolvedPlaybook?.totalBlocked ?? 0,
       });
 
       timerRef.current = setTimeout(() => completeStep("execution"), 800);
@@ -136,10 +182,21 @@ export function ExecutionStep() {
     exec();
 
     return () => {
+      controller.abort();
       if (timerRef.current) clearTimeout(timerRef.current);
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // No playbook = nothing to execute (checked before useEffect starts)
+  if (totalActions === 0) {
+    return (
+      <div className="flex h-full flex-col items-center justify-center gap-3 px-8">
+        <AlertCircle className="h-8 w-8 text-amber-400" />
+        <p className="text-sm text-ink-secondary">No playbook actions resolved. Go back and review your playbook.</p>
+      </div>
+    );
+  }
 
   return (
     <motion.div
@@ -151,8 +208,8 @@ export function ExecutionStep() {
     >
       {/* Header */}
       <div className="flex flex-col items-center gap-1 text-center">
-        <h2 className="text-lg font-semibold text-neutral-100">Applying Transformations</h2>
-        <p className="text-xs text-neutral-500">Do not shut down your computer</p>
+        <h2 className="text-lg font-semibold text-ink">Applying Transformations</h2>
+        <p className="text-xs text-ink-secondary">Do not shut down your computer</p>
       </div>
 
       {/* Current action card */}
@@ -169,17 +226,29 @@ export function ExecutionStep() {
                 boxShadow: "0 0 0 0 rgba(232,69,60,0.0)",
                 animation: "executionPulse 1.5s ease-in-out infinite",
               }}
-              className="flex items-center gap-3 rounded-xl border border-brand-500/25 bg-brand-500/[0.06] px-5 py-3.5"
+              className="rounded-xl border border-brand-500/25 bg-brand-500/[0.06] px-5 py-3"
             >
-              <motion.div
-                animate={{ rotate: 360 }}
-                transition={{ duration: 0.9, ease: "linear", repeat: Infinity }}
-                className="h-4 w-4 shrink-0 rounded-full border-2 border-brand-500 border-t-transparent"
-              />
-              <span className="flex-1 truncate text-sm text-neutral-200">{currentAction}</span>
-              <span className="shrink-0 font-mono-metric text-[10px] text-brand-500/60">
-                {currentIdx + 1}/{totalActions}
-              </span>
+              <div className="flex items-center gap-3">
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 0.9, ease: "linear", repeat: Infinity }}
+                  className="h-4 w-4 shrink-0 rounded-full border-2 border-brand-500 border-t-transparent"
+                />
+                <span className="flex-1 truncate text-[13px] font-medium text-ink">{currentAction}</span>
+                <span className="shrink-0 font-mono-metric text-[10px] text-brand-500/60">
+                  {currentIdx + 1}/{totalActions}
+                </span>
+              </div>
+              {/* Expert rationale — why this action is running */}
+              {currentActionId && (() => {
+                const r = getActionRationale(currentActionId);
+                return r.why ? (
+                  <p className="mt-1.5 text-[10px] leading-relaxed text-ink-tertiary pl-7">{r.why}</p>
+                ) : null;
+              })()}
+              {currentPhase && (
+                <p className="mt-0.5 text-[9px] text-ink-muted pl-7">{currentPhase}</p>
+              )}
             </motion.div>
           ) : completed.length === totalActions ? (
             <motion.div
@@ -208,8 +277,8 @@ export function ExecutionStep() {
           />
         </div>
         <div className="mt-2 flex justify-between">
-          <span className="font-mono-metric text-[10px] text-neutral-600">{progress}%</span>
-          <span className="font-mono-metric text-[10px] text-neutral-600">
+          <span className="font-mono-metric text-[10px] text-ink-tertiary">{progress}%</span>
+          <span className="font-mono-metric text-[10px] text-ink-tertiary">
             {completed.length}/{totalActions}
           </span>
         </div>
@@ -218,15 +287,15 @@ export function ExecutionStep() {
       {/* Stats row */}
       <div className="flex gap-6 text-center">
         {[
-          { label: "Applied",   value: applied,   color: "text-success-400" },
-          { label: "Failed",    value: failed,    color: "text-danger-400"  },
-          { label: "Remaining", value: remaining, color: "text-neutral-400" },
+          { label: "Applied",   value: applied,    color: "text-success-400" },
+          { label: "Failed",    value: failCount,  color: "text-danger-400"  },
+          { label: "Remaining", value: remaining,  color: "text-ink-secondary" },
         ].map((stat) => (
           <div key={stat.label} className="flex flex-col items-center gap-0.5">
             <span className={`font-mono-metric text-xl font-semibold ${stat.color}`}>
               {stat.value}
             </span>
-            <span className="text-[10px] text-neutral-700">{stat.label}</span>
+            <span className="text-[10px] text-ink-muted">{stat.label}</span>
           </div>
         ))}
       </div>

@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Check, Monitor, Package, Rocket, Server, Clock, Briefcase, Box } from "lucide-react";
 import { useWizardStore } from "@/stores/wizard-store";
 import type { DetectedProfile } from "@/stores/wizard-store";
+import { serviceCall } from "@/lib/service";
 
 const CATEGORIES = [
   { id: "windows",  label: "Windows Version",    icon: Monitor,   desc: "Build & edition" },
@@ -16,8 +17,18 @@ const CATEGORIES = [
 
 type Status = "idle" | "scanning" | "done";
 
+const DEMO_PROFILE: DetectedProfile = {
+  id: "gaming_desktop",
+  label: "Gaming Desktop",
+  confidence: 92,
+  isWorkPc: false,
+  machineName: "REDCORE-PC",
+  signals: ["Steam detected", "No domain join", "NVIDIA GPU", "32 GB RAM"],
+  accentColor: "text-brand-400",
+};
+
 export function AssessmentStep() {
-  const { completeStep, setDetectedProfile } = useWizardStore();
+  const { completeStep, setDetectedProfile, setDemoMode } = useWizardStore();
   const [statuses, setStatuses] = useState<Record<string, Status>>(
     Object.fromEntries(CATEGORIES.map((c) => [c.id, "idle"]))
   );
@@ -28,38 +39,28 @@ export function AssessmentStep() {
     started.current = true;
 
     const run = async () => {
-      // Try real IPC
-      try {
-        const win = window as unknown as { redcore?: { service?: { call: (m: string, p: object) => Promise<unknown> } } };
-        if (win.redcore?.service) {
-          setStatuses(Object.fromEntries(CATEGORIES.map((c) => [c.id, "scanning"])));
-          const result = await win.redcore.service.call("assess.full", {});
-          // Check if service returned an error/unavailable
-          const r = result as Record<string, unknown>;
-          if (r && !r.__serviceUnavailable && !r.__serviceError && r.id !== undefined) {
-            setStatuses(Object.fromEntries(CATEGORIES.map((c) => [c.id, "done"])));
-            setDetectedProfile(result as DetectedProfile);
-            setTimeout(() => completeStep("assessment"), 500);
-            return;
-          }
-          // Service unavailable or errored — fall through to demo mode
-        }
-      } catch { /* fallback to demo */ }
+      // Try real service
+      setStatuses(Object.fromEntries(CATEGORIES.map((c) => [c.id, "scanning"])));
+      const result = await serviceCall<DetectedProfile>("assess.full");
 
-      // Demo mode scan (service not available)
+      if (result.ok) {
+        setStatuses(Object.fromEntries(CATEGORIES.map((c) => [c.id, "done"])));
+        setDetectedProfile(result.data);
+        setDemoMode(false);
+        setTimeout(() => completeStep("assessment"), 500);
+        return;
+      }
+
+      // Service unavailable — demo mode
+      setDemoMode(true);
       for (let i = 0; i < CATEGORIES.length; i++) {
         const id = CATEGORIES[i].id;
         setStatuses((p) => ({ ...p, [id]: "scanning" }));
-        await new Promise((r) => setTimeout(r, 320));
+        await new Promise((r) => setTimeout(r, 280));
         setStatuses((p) => ({ ...p, [id]: "done" }));
-        await new Promise((r) => setTimeout(r, 80));
+        await new Promise((r) => setTimeout(r, 60));
       }
-      setDetectedProfile({
-        id: "gaming_desktop", label: "Gaming Desktop", confidence: 92,
-        isWorkPc: false, machineName: "REDCORE-PC",
-        signals: ["Steam detected", "No domain join", "NVIDIA GPU", "32 GB RAM"],
-        accentColor: "text-brand-400",
-      });
+      setDetectedProfile(DEMO_PROFILE);
       setTimeout(() => completeStep("assessment"), 600);
     };
     run();
@@ -120,7 +121,6 @@ export function AssessmentStep() {
         })}
       </div>
 
-      {/* Progress */}
       <div className="w-full max-w-md">
         <div className="relative h-[3px] overflow-hidden rounded-full bg-white/[0.05]">
           <motion.div
@@ -131,9 +131,9 @@ export function AssessmentStep() {
         </div>
         <div className="mt-1.5 flex justify-between">
           <span className="text-[10px] text-ink-muted">
-            {done === CATEGORIES.length ? "Assessment complete" : `Scanning...`}
+            {done === CATEGORIES.length ? "Assessment complete" : "Scanning..."}
           </span>
-          <span className="font-mono-metric text-[10px] text-ink-disabled">{done}/{CATEGORIES.length}</span>
+          <span className="font-mono text-[10px] text-ink-disabled">{done}/{CATEGORIES.length}</span>
         </div>
       </div>
     </motion.div>
