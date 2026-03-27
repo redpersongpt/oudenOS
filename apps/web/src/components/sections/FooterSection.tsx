@@ -13,6 +13,7 @@ const resourceLinks = [
   { label: "Windows 11 Debloat", href: "/windows-11-debloat" },
   { label: "Custom Windows", href: "/custom-windows" },
   { label: "Why redcore", href: "/why-redcore" },
+  { label: "Work PC Debloat", href: "/work-pc-debloat" },
 ];
 
 const companyLinks = [
