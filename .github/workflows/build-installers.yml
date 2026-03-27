@@ -1,0 +1,184 @@
+name: Build Windows Installers
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/os-desktop/**'
+      - 'apps/tuning-desktop/**'
+      - 'services/os-service/**'
+      - 'services/tuning-service/**'
+      - '.github/workflows/build-installers.yml'
+
+concurrency:
+  group: build-installers-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  RUST_BACKTRACE: 1
+
+jobs:
+  build-rust-services:
+    name: Build Rust Services (Windows)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-pc-windows-msvc
+
+      - name: Cache Rust dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            services/os-service/target
+            services/tuning-service/target
+          key: rust-windows-${{ hashFiles('services/*/Cargo.lock', 'services/*/Cargo.toml') }}
+          restore-keys: rust-windows-
+
+      - name: Build OS service (release)
+        working-directory: services/os-service
+        run: cargo build --release
+
+      - name: Build Tuning service (release)
+        working-directory: services/tuning-service
+        run: cargo build --release
+
+      - name: Upload OS service binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: os-service-binary
+          path: services/os-service/target/release/redcore-os-service.exe
+          retention-days: 7
+
+      - name: Upload Tuning service binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: tuning-service-binary
+          path: services/tuning-service/target/release/redcore-service.exe
+          retention-days: 7
+
+  build-os-installer:
+    name: Package redcore OS Installer
+    runs-on: windows-latest
+    needs: build-rust-services
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Download OS service binary
+        uses: actions/download-artifact@v4
+        with:
+          name: os-service-binary
+          path: services/os-service/target/release/
+
+      - name: Build Electron app
+        working-directory: apps/os-desktop
+        run: pnpm build
+
+      - name: Package installer
+        working-directory: apps/os-desktop
+        run: pnpm dist
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload OS installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: redcore-os-installer
+          path: apps/os-desktop/dist/installers/redcore-os-setup.exe
+          retention-days: 30
+
+  build-tuning-installer:
+    name: Package redcore Tuning Installer
+    runs-on: windows-latest
+    needs: build-rust-services
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Download Tuning service binary
+        uses: actions/download-artifact@v4
+        with:
+          name: tuning-service-binary
+          path: services/tuning-service/target/release/
+
+      - name: Build Electron app
+        working-directory: apps/tuning-desktop
+        run: pnpm build
+
+      - name: Package installer
+        working-directory: apps/tuning-desktop
+        run: pnpm dist
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload Tuning installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: redcore-tuning-installer
+          path: apps/tuning-desktop/dist/installers/redcore-tuning-setup.exe
+          retention-days: 30
+
+  deploy-to-vds:
+    name: Deploy Installers to VDS
+    runs-on: ubuntu-latest
+    needs: [build-os-installer, build-tuning-installer]
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Download OS installer
+        uses: actions/download-artifact@v4
+        with:
+          name: redcore-os-installer
+          path: ./artifacts/os/
+
+      - name: Download Tuning installer
+        uses: actions/download-artifact@v4
+        with:
+          name: redcore-tuning-installer
+          path: ./artifacts/tuning/
+
+      - name: Setup SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.VDS_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H REDACTED_VDS_IP >> ~/.ssh/known_hosts
+
+      - name: Upload to VDS
+        run: |
+          scp ./artifacts/os/redcore-os-setup.exe ubuntu@REDACTED_VDS_IP:/var/www/redcore-downloads/os/
+          scp ./artifacts/tuning/redcore-tuning-setup.exe ubuntu@REDACTED_VDS_IP:/var/www/redcore-downloads/tuning/
+
+      - name: Verify uploads
+        run: |
+          ssh ubuntu@REDACTED_VDS_IP "ls -lh /var/www/redcore-downloads/os/redcore-os-setup.exe /var/www/redcore-downloads/tuning/redcore-tuning-setup.exe"

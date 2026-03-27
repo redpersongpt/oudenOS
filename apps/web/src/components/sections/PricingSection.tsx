@@ -118,15 +118,10 @@ export function PricingSection() {
               ))}
             </ul>
 
-            <motion.a
-              href="/downloads/os/redcore-os-setup.exe"
-              className="inline-flex items-center gap-2 rounded-xl bg-success/10 border border-success/20 px-5 py-3.5 text-[0.84rem] font-semibold text-success w-full justify-center hover:bg-success/15 transition-colors"
-              whileHover={{ scale: 1.01 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <Download className="h-4 w-4" />
-              Download Free
-            </motion.a>
+            <span className="inline-flex items-center gap-2 rounded-xl border border-success/15 bg-success/5 px-5 py-3.5 text-[0.84rem] font-medium text-ink-tertiary w-full justify-center">
+              <Download className="h-4 w-4 text-success/40" />
+              Windows installer building — coming soon
+            </span>
 
             <div className="mt-6 pt-5 border-t border-border text-center">
               <p className="text-[0.72rem] text-ink-muted mb-3">
