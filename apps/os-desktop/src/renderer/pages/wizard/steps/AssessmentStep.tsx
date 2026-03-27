@@ -37,33 +37,41 @@ export function AssessmentStep() {
   useEffect(() => {
     if (started.current) return;
     started.current = true;
+    let aborted = false;
 
     const run = async () => {
       // Try real service
       setStatuses(Object.fromEntries(CATEGORIES.map((c) => [c.id, "scanning"])));
       const result = await serviceCall<DetectedProfile>("assess.full");
 
+      if (aborted) return;
+
       if (result.ok) {
         setStatuses(Object.fromEntries(CATEGORIES.map((c) => [c.id, "done"])));
         setDetectedProfile(result.data);
         setDemoMode(false);
-        setTimeout(() => completeStep("assessment"), 500);
+        setTimeout(() => { if (!aborted) completeStep("assessment"); }, 500);
         return;
       }
 
       // Service unavailable — demo mode
       setDemoMode(true);
       for (let i = 0; i < CATEGORIES.length; i++) {
+        if (aborted) return;
         const id = CATEGORIES[i].id;
         setStatuses((p) => ({ ...p, [id]: "scanning" }));
         await new Promise((r) => setTimeout(r, 280));
+        if (aborted) return;
         setStatuses((p) => ({ ...p, [id]: "done" }));
         await new Promise((r) => setTimeout(r, 60));
       }
+      if (aborted) return;
       setDetectedProfile(DEMO_PROFILE);
-      setTimeout(() => completeStep("assessment"), 600);
+      setTimeout(() => { if (!aborted) completeStep("assessment"); }, 600);
     };
     run();
+
+    return () => { aborted = true; };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

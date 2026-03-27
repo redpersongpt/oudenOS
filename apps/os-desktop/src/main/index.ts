@@ -9,7 +9,7 @@
 // - Frameless with custom title bar
 // - Dark background to prevent white flash
 
-import { app, BrowserWindow, ipcMain, session } from "electron";
+import { app, BrowserWindow, ipcMain, session, shell } from "electron";
 import path from "node:path";
 import { spawn, type ChildProcess } from "node:child_process";
 import { createInterface } from "node:readline";
@@ -137,6 +137,13 @@ ipcMain.on("window:close", (event) => {
   BrowserWindow.fromWebContents(event.sender)?.close();
 });
 
+ipcMain.handle("shell:openExternal", (_event, url: string) => {
+  // Only allow https URLs to prevent arbitrary protocol execution
+  if (typeof url === "string" && url.startsWith("https://")) {
+    return shell.openExternal(url);
+  }
+});
+
 // ─── Window creation ────────────────────────────────────────────────────────
 
 function createWindow(): BrowserWindow {
@@ -211,7 +218,7 @@ app.whenReady().then(() => {
       ? "default-src 'self' 'unsafe-inline' 'unsafe-eval' http://localhost:* ws://localhost:*; img-src 'self' data:; font-src 'self' https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com"
       : [
           "default-src 'self'",
-          "script-src 'self' 'unsafe-inline'",
+          "script-src 'self'",
           "style-src 'self' 'unsafe-inline'",
           "font-src 'self' data:",
           "img-src 'self' data:",
@@ -231,9 +238,21 @@ app.whenReady().then(() => {
 });
 
 app.on("window-all-closed", () => {
+  // Clear all pending IPC timers
+  for (const [id, req] of pendingRequests) {
+    clearTimeout(req.timer);
+    pendingRequests.delete(id);
+  }
+
   if (serviceProcess) {
     serviceProcess.stdin?.end();
     serviceProcess.kill();
+    // Force kill after 3 seconds if still alive
+    setTimeout(() => {
+      if (serviceProcess && !serviceProcess.killed) {
+        serviceProcess.kill("SIGKILL");
+      }
+    }, 3000);
   }
   app.quit();
 });

@@ -72,4 +72,8 @@ contextBridge.exposeInMainWorld("redcore", {
     maximize: () => ipcRenderer.send("window:maximize"),
     close: () => ipcRenderer.send("window:close"),
   },
+
+  shell: {
+    openExternal: (url: string) => ipcRenderer.invoke("shell:openExternal", url),
+  },
 });
