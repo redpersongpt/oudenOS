@@ -59,10 +59,10 @@ export function PreservationStep() {
         <div className="mb-1 flex h-10 w-10 items-center justify-center rounded-xl bg-amber-500/10">
           <Briefcase className="h-5 w-5 text-amber-400" />
         </div>
-        <h2 className="text-lg font-semibold text-neutral-100">
+        <h2 className="text-lg font-semibold text-ink">
           Preserving Business-Critical Services
         </h2>
-        <p className="text-xs text-neutral-500">
+        <p className="text-xs text-ink-secondary">
           redcore-OS has identified your work environment and locked these services
         </p>
       </div>
@@ -85,8 +85,8 @@ export function PreservationStep() {
               >
                 <Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-success-400" />
                 <div>
-                  <div className="text-xs font-medium text-neutral-200">{svc.label}</div>
-                  <div className="text-[10px] text-neutral-600">{svc.detail}</div>
+                  <div className="text-xs font-medium text-ink">{svc.label}</div>
+                  <div className="text-[10px] text-ink-tertiary">{svc.detail}</div>
                 </div>
               </motion.div>
             ))}
@@ -95,7 +95,7 @@ export function PreservationStep() {
 
         {/* Blocked actions */}
         <div className="flex-1 rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
-          <div className="mb-3 flex items-center gap-2 text-[11px] font-medium uppercase tracking-widest text-neutral-600">
+          <div className="mb-3 flex items-center gap-2 text-[11px] font-medium uppercase tracking-widest text-ink-tertiary">
             <XCircle className="h-3 w-3" />
             Blocked Actions
           </div>
@@ -108,8 +108,8 @@ export function PreservationStep() {
                 transition={{ duration: 0.18, delay: 0.1 + i * 0.05 }}
                 className="flex items-start gap-2.5"
               >
-                <XCircle className="mt-0.5 h-3 w-3 shrink-0 text-neutral-700" />
-                <span className="text-[11px] leading-relaxed text-neutral-600">{action}</span>
+                <XCircle className="mt-0.5 h-3 w-3 shrink-0 text-ink-muted" />
+                <span className="text-[11px] leading-relaxed text-ink-tertiary">{action}</span>
               </motion.div>
             ))}
           </div>
@@ -121,7 +121,7 @@ export function PreservationStep() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.3, delay: 0.3 }}
-        className="flex items-center gap-2 text-[11px] text-neutral-600"
+        className="flex items-center gap-2 text-[11px] text-ink-tertiary"
       >
         <Shield className="h-3 w-3 text-success-500/60" />
         Your business workflows are fully protected throughout this transformation
