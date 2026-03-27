@@ -10,12 +10,15 @@ export type WizardStepId =
   | "assessment"
   | "profile"
   | "preservation"
+  | "playbook-strategy"
   | "playbook-review"
   | "personalization"
   | "app-setup"
   | "final-review"
   | "execution"
-  | "report";
+  | "reboot-resume"
+  | "report"
+  | "handoff";
 
 // ─── Step shape ───────────────────────────────────────────────────────────────
 
@@ -83,15 +86,6 @@ export interface RecommendedApp {
   workSafe: boolean;
 }
 
-// ─── Legacy plan (kept for backward compat) ──────────────────────────────────
-
-export interface TransformationPlan {
-  totalActions: number;
-  byCategory: Record<string, number>;
-  riskSummary: "safe" | "low" | "medium";
-  rebootRequired: boolean;
-}
-
 // ─── Personalization ─────────────────────────────────────────────────────────
 
 export interface PersonalizationPreferences {
@@ -124,13 +118,14 @@ export interface ExecutionResult {
 interface WizardState {
   currentStep: WizardStepId;
   steps: WizardStep[];
+  demoMode: boolean;
 
   // Data
   detectedProfile: DetectedProfile | null;
+  playbookPreset: string;
   resolvedPlaybook: ResolvedPlaybook | null;
   recommendedApps: RecommendedApp[];
   selectedAppIds: string[];
-  plan: TransformationPlan | null;
   executionResult: ExecutionResult | null;
   personalization: PersonalizationPreferences;
 
@@ -147,12 +142,13 @@ interface WizardState {
 
   // Data setters
   setDetectedProfile: (profile: DetectedProfile) => void;
+  setPlaybookPreset: (preset: string) => void;
   setResolvedPlaybook: (playbook: ResolvedPlaybook) => void;
   setRecommendedApps: (apps: RecommendedApp[]) => void;
   toggleApp: (appId: string) => void;
-  setPlan: (plan: TransformationPlan) => void;
   setExecutionResult: (result: ExecutionResult) => void;
   setPersonalization: (prefs: Partial<PersonalizationPreferences>) => void;
+  setDemoMode: (demo: boolean) => void;
 
   reset: () => void;
 }
@@ -160,16 +156,19 @@ interface WizardState {
 // ─── Ordered step definitions ────────────────────────────────────────────────
 
 const INITIAL_STEPS: WizardStep[] = [
-  { id: "welcome",          label: "Welcome",           status: "current" },
-  { id: "assessment",       label: "Assessment",        status: "locked"  },
-  { id: "profile",          label: "Profile",           status: "locked"  },
-  { id: "preservation",     label: "Preservation",      status: "locked"  },
-  { id: "playbook-review",  label: "Playbook Review",   status: "locked"  },
-  { id: "personalization",  label: "Personalization",   status: "locked"  },
-  { id: "app-setup",        label: "App Setup",         status: "locked"  },
-  { id: "final-review",     label: "Final Review",      status: "locked"  },
-  { id: "execution",        label: "Apply",             status: "locked"  },
-  { id: "report",           label: "Complete",          status: "locked"  },
+  { id: "welcome",            label: "Welcome",           status: "current" },
+  { id: "assessment",         label: "Assessment",        status: "locked"  },
+  { id: "profile",            label: "Profile",           status: "locked"  },
+  { id: "preservation",       label: "Preservation",      status: "locked"  },
+  { id: "playbook-strategy",  label: "Strategy",          status: "locked"  },
+  { id: "playbook-review",    label: "Playbook Review",   status: "locked"  },
+  { id: "personalization",    label: "Personalization",   status: "locked"  },
+  { id: "app-setup",          label: "App Setup",         status: "locked"  },
+  { id: "final-review",       label: "Final Review",      status: "locked"  },
+  { id: "execution",          label: "Apply",             status: "locked"  },
+  { id: "reboot-resume",      label: "Reboot",            status: "locked"  },
+  { id: "report",             label: "Complete",          status: "locked"  },
+  { id: "handoff",            label: "Next Steps",        status: "locked"  },
 ];
 
 const STEP_ORDER = INITIAL_STEPS.map((s) => s.id);
@@ -194,11 +193,12 @@ function computeCanGoBack(_steps: WizardStep[], currentStep: WizardStepId): bool
 export const useWizardStore = create<WizardState>((set, get) => ({
   currentStep: "welcome",
   steps: INITIAL_STEPS,
+  demoMode: false,
   detectedProfile: null,
+  playbookPreset: "balanced",
   resolvedPlaybook: null,
   recommendedApps: [],
   selectedAppIds: [],
-  plan: null,
   executionResult: null,
   personalization: { ...DEFAULT_PERSONALIZATION },
   canGoNext: true,
@@ -287,7 +287,8 @@ export const useWizardStore = create<WizardState>((set, get) => ({
       const prevId = STEP_ORDER[idx - 1] as WizardStepId;
 
       const steps = state.steps.map((s) => {
-        if (s.id === state.currentStep) return { ...s, status: "locked" as const };
+        // Mark the step we're leaving as completed (not locked) so we can return to it
+        if (s.id === state.currentStep) return { ...s, status: "completed" as const };
         if (s.id === prevId) return { ...s, status: "current" as const };
         return s;
       });
@@ -303,6 +304,7 @@ export const useWizardStore = create<WizardState>((set, get) => ({
   },
 
   setDetectedProfile: (profile) => set({ detectedProfile: profile }),
+  setPlaybookPreset: (preset) => set({ playbookPreset: preset, resolvedPlaybook: null }),
   setResolvedPlaybook: (playbook) => set({ resolvedPlaybook: playbook }),
   setRecommendedApps: (apps) => set({
     recommendedApps: apps,
@@ -313,20 +315,21 @@ export const useWizardStore = create<WizardState>((set, get) => ({
       ? state.selectedAppIds.filter(id => id !== appId)
       : [...state.selectedAppIds, appId],
   })),
-  setPlan: (plan) => set({ plan }),
   setExecutionResult: (result) => set({ executionResult: result }),
   setPersonalization: (prefs) =>
     set((state) => ({ personalization: { ...state.personalization, ...prefs } })),
+  setDemoMode: (demo) => set({ demoMode: demo }),
 
   reset: () =>
     set({
       currentStep: "welcome",
       steps: INITIAL_STEPS,
+      demoMode: false,
       detectedProfile: null,
+      playbookPreset: "balanced",
       resolvedPlaybook: null,
       recommendedApps: [],
       selectedAppIds: [],
-      plan: null,
       executionResult: null,
       personalization: { ...DEFAULT_PERSONALIZATION },
       canGoNext: true,
