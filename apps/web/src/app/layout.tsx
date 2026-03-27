@@ -17,20 +17,66 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "redcore — Premium Windows Performance Ecosystem",
+  metadataBase: new URL("https://redcoreos.net"),
+  title: {
+    default: "redcore — Windows Optimization & Transformation Tools",
+    template: "%s | redcore",
+  },
   description:
-    "Machine-aware optimization and in-place Windows transformation. Two precision instruments. One ecosystem.",
+    "Machine-aware Windows optimization and in-place transformation. redcore scans your hardware, builds a profile-specific plan, and applies reversible changes. Free OS transformation + $12.99 Tuning.",
+  keywords: [
+    "Windows optimizer",
+    "Windows debloat tool",
+    "Windows optimization software",
+    "Windows tuning",
+    "gaming PC optimization",
+    "Work PC Windows optimizer",
+    "Windows cleanup tool",
+    "Windows transformation",
+    "rollback-safe optimizer",
+    "machine-aware optimization",
+  ],
+  authors: [{ name: "redcore" }],
+  creator: "redcore",
+  publisher: "redcore",
   icons: {
     icon: "/favicon.png",
     apple: "/favicon.png",
   },
   openGraph: {
-    title: "redcore — Premium Windows Performance Ecosystem",
+    title: "redcore — Windows Optimization & Transformation Tools",
     description:
-      "Machine-aware optimization and in-place Windows transformation.",
+      "Scan your hardware. Build a plan. Transform your system. Free OS transformation + paid Tuning. 100% reversible.",
     type: "website",
     locale: "en_US",
+    siteName: "redcore",
+    url: "https://redcoreos.net",
+    images: [
+      {
+        url: "/redcore-logo.png",
+        width: 512,
+        height: 512,
+        alt: "redcore logo",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary",
+    title: "redcore — Windows Optimization & Transformation Tools",
+    description:
+      "Machine-aware Windows optimization. Free OS transformation + $12.99 Tuning. 100% reversible.",
     images: ["/redcore-logo.png"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+    },
+  },
+  alternates: {
+    canonical: "https://redcoreos.net",
   },
 };
 
@@ -44,6 +90,33 @@ export default function RootLayout({
       lang="en"
       className={`${jakarta.variable} ${jetbrainsMono.variable}`}
     >
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              name: "redcore",
+              url: "https://redcoreos.net",
+              logo: "https://redcoreos.net/redcore-logo.png",
+              description:
+                "Machine-aware Windows optimization and transformation tools.",
+            }),
+          }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              name: "redcore",
+              url: "https://redcoreos.net",
+            }),
+          }}
+        />
+      </head>
       <body className="bg-surface-base text-ink-primary antialiased">
         <SessionProvider>
           <SmoothScrollProvider>{children}</SmoothScrollProvider>
