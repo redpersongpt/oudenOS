@@ -163,7 +163,7 @@ export default function WindowsDebloatPage() {
 
           <div className="space-y-4 mt-8 mb-8">
             <TrustBlock
-              icon={<Shield className="h-4 w-4 text-success" />}
+              icon={<Shield className="h-4 w-4 text-accent" />}
               title="Machine-aware scanning"
               description="Detects CPU, GPU, disk type, network adapters, power source, and installed software before generating recommendations. Laptops get different defaults than desktops."
             />

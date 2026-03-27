@@ -43,8 +43,8 @@ function FeatureCard({ icon: Icon, title, body, delay, inView, accent }: {
       whileHover={{ y: -4, transition: { duration: 0.2 } }}
       className="group bg-surface p-7 lg:p-8 cursor-default"
     >
-      <div className={`mb-4 flex h-9 w-9 items-center justify-center rounded-lg ${accent === "red" ? "bg-accent/10" : "bg-success/10"}`}>
-        <Icon className={`h-4.5 w-4.5 ${accent === "red" ? "text-accent" : "text-success"}`} />
+      <div className={`mb-4 flex h-9 w-9 items-center justify-center rounded-lg ${accent === "red" ? "bg-accent/10" : "bg-accent/10"}`}>
+        <Icon className={`h-4.5 w-4.5 ${accent === "red" ? "text-accent" : "text-accent"}`} />
       </div>
       <h3 className="text-[0.88rem] font-semibold text-ink-primary mb-2 group-hover:text-white transition-colors">
         {title}
@@ -105,7 +105,7 @@ function OSSection() {
 
   return (
     <section id="os" ref={ref} className="relative py-28 lg:py-36">
-      <div className="pointer-events-none absolute left-0 top-1/2 -translate-y-1/2 h-[500px] w-[500px] rounded-full opacity-[0.03]" style={{ background: "radial-gradient(circle, #4ade80, transparent 65%)" }} />
+      <div className="pointer-events-none absolute left-0 top-1/2 -translate-y-1/2 h-[500px] w-[500px] rounded-full opacity-[0.03]" style={{ background: "radial-gradient(circle, #E8254B, transparent 65%)" }} />
 
       <div className="relative mx-auto max-w-[1100px] px-6 lg:px-12">
         <motion.div
@@ -118,7 +118,7 @@ function OSSection() {
             initial={{ opacity: 0, x: -20 }}
             animate={inView ? { opacity: 1, x: 0 } : {}}
             transition={{ duration: 0.5, ease }}
-            className="font-mono text-[0.6rem] font-medium uppercase tracking-[0.16em] text-success mb-5"
+            className="font-mono text-[0.6rem] font-medium uppercase tracking-[0.16em] text-accent mb-5"
           >
             redcore · OS
           </motion.p>

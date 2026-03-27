@@ -15,7 +15,7 @@ export function PricingSection() {
       {/* Dramatic ambient */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="absolute left-1/2 top-0 -translate-x-1/2 h-[600px] w-[800px] rounded-full opacity-[0.04]" style={{ background: "radial-gradient(ellipse, #E8254B, transparent 55%)" }} />
-        <div className="absolute left-[20%] bottom-0 h-[400px] w-[400px] rounded-full opacity-[0.02]" style={{ background: "radial-gradient(circle, #4ade80, transparent 60%)" }} />
+        <div className="absolute left-[20%] bottom-0 h-[400px] w-[400px] rounded-full opacity-[0.02]" style={{ background: "radial-gradient(circle, #E8254B, transparent 60%)" }} />
       </div>
 
       <div className="relative mx-auto max-w-[1100px] px-6 lg:px-12">
@@ -46,16 +46,16 @@ export function PricingSection() {
             className="relative rounded-2xl border border-border bg-gradient-to-b from-surface to-[#222226] p-9 lg:p-10 overflow-hidden"
           >
             {/* Green ambient */}
-            <div className="pointer-events-none absolute -top-24 -left-24 h-[200px] w-[200px] rounded-full opacity-[0.06]" style={{ background: "radial-gradient(circle, #4ade80, transparent 60%)" }} />
+            <div className="pointer-events-none absolute -top-24 -left-24 h-[200px] w-[200px] rounded-full opacity-[0.06]" style={{ background: "radial-gradient(circle, #E8254B, transparent 60%)" }} />
 
             <div className="relative">
               <div className="flex items-center gap-3 mb-6">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-success/10">
-                  <Shield className="h-5 w-5 text-success" />
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent/10">
+                  <Shield className="h-5 w-5 text-accent" />
                 </div>
                 <div>
                   <p className="text-[0.95rem] font-bold text-ink-primary">redcore · OS</p>
-                  <p className="font-mono text-[0.65rem] text-success tracking-wide">FREE FOREVER</p>
+                  <p className="font-mono text-[0.65rem] text-accent tracking-wide">FREE FOREVER</p>
                 </div>
               </div>
 
@@ -78,7 +78,7 @@ export function PricingSection() {
                   "Full rollback support",
                 ].map((f) => (
                   <li key={f} className="text-[0.82rem] text-ink-secondary flex items-start gap-3">
-                    <Check className="h-4 w-4 mt-0.5 shrink-0 text-success" />
+                    <Check className="h-4 w-4 mt-0.5 shrink-0 text-accent" />
                     {f}
                   </li>
                 ))}
@@ -86,7 +86,7 @@ export function PricingSection() {
 
               <motion.a
                 href="/downloads/os/redcore-os-setup.exe"
-                className="inline-flex items-center gap-2.5 rounded-xl bg-success/10 border border-success/25 px-6 py-4 text-[0.88rem] font-semibold text-success w-full justify-center hover:bg-success/15 transition-colors"
+                className="inline-flex items-center gap-2.5 rounded-xl bg-accent/10 border border-accent/25 px-6 py-4 text-[0.88rem] font-semibold text-accent w-full justify-center hover:bg-accent/15 transition-colors"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
