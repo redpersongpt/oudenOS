@@ -97,7 +97,7 @@ jobs:
         working-directory: apps/os-desktop
         run: pnpm dist
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CI: "true"
 
       - name: Upload OS installer
         uses: actions/upload-artifact@v4
@@ -140,7 +140,7 @@ jobs:
         working-directory: apps/tuning-desktop
         run: pnpm dist
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CI: "true"
 
       - name: Upload Tuning installer
         uses: actions/upload-artifact@v4
