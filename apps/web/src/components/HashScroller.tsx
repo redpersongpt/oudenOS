@@ -7,13 +7,14 @@ export function HashScroller() {
     const hash = window.location.hash.slice(1);
     if (!hash) return;
 
-    // Wait for page to render
+    // Wait for sections to render, then scroll
     const timer = setTimeout(() => {
       const el = document.getElementById(hash);
       if (el) {
-        el.scrollIntoView({ behavior: "smooth", block: "start" });
+        const top = el.getBoundingClientRect().top + window.scrollY - 80;
+        window.scrollTo({ top, behavior: "smooth" });
       }
-    }, 100);
+    }, 150);
 
     return () => clearTimeout(timer);
   }, []);
