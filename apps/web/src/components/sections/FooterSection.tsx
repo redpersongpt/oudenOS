@@ -12,7 +12,6 @@ const resourceLinks = [
   { label: "Windows Debloat", href: "/windows-debloat" },
   { label: "Windows 11 Debloat", href: "/windows-11-debloat" },
   { label: "Custom Windows", href: "/custom-windows" },
-  { label: "AtlasOS Alternative", href: "/atlasos-alternative" },
   { label: "Why redcore", href: "/why-redcore" },
 ];
 
