@@ -17,9 +17,9 @@ interface NavLink {
 // ─── Constants ───────────────────────────────────────────────────────────────
 
 const NAV_LINKS: NavLink[] = [
-  { label: "Tuning", sectionId: "tuning" },
-  { label: "OS", sectionId: "os" },
-  { label: "Profiles", sectionId: "intelligence" },
+  { label: "Products", sectionId: "ecosystem" },
+  { label: "How it works", sectionId: "how" },
+  { label: "Pricing", sectionId: "pricing" },
 ];
 
 const SECTION_IDS = NAV_LINKS.map((l) => l.sectionId);
@@ -161,26 +161,16 @@ function MobileOverlay({
               className="mt-4 flex flex-col items-center gap-6"
             >
               <a
-                href="#ecosystem"
+                href="#pricing"
                 onClick={(e) => {
                   e.preventDefault();
-                  scrollToSection("ecosystem");
+                  scrollToSection("pricing");
                   onClose();
                 }}
-                className="inline-flex items-center gap-1.5 text-sm font-medium tracking-wide text-ink-tertiary transition-colors duration-200 hover:text-ink-primary"
+                className="inline-flex items-center gap-2 rounded-lg bg-accent px-6 py-2.5 text-[13px] font-semibold text-white transition-all hover:bg-accent-dim"
               >
-                Download
-                <ArrowUpRight size={13} strokeWidth={2} />
+                Get redcore
               </a>
-              <button
-                onClick={() => {
-                  scrollToSection("get-started");
-                  onClose();
-                }}
-                className="btn-primary"
-              >
-                Get Started
-              </button>
             </motion.div>
           </nav>
         </motion.div>
