@@ -67,3 +67,77 @@ body {
 [id] {
   scroll-margin-top: 88px;
 }
+
+/* ─── Hero GPU animations (no React re-render) ─── */
+
+@keyframes pill-float {
+  0%, 100% { transform: translateY(0) translateX(0); }
+  33% { transform: translateY(-5px) translateX(2px); }
+  66% { transform: translateY(3px) translateX(-2px); }
+}
+.pill-float {
+  animation: pill-float 7s ease-in-out infinite;
+  will-change: transform;
+}
+
+@keyframes hex-glow {
+  0%, 100% { opacity: 0.05; transform: scale(0.92); }
+  50% { opacity: 0.12; transform: scale(1.08); }
+}
+.hex-glow {
+  animation: hex-glow 5s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+@keyframes hex-breathe {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(1.5deg); }
+  75% { transform: rotate(-1.5deg); }
+}
+.hex-breathe {
+  animation: hex-breathe 14s ease-in-out infinite;
+  will-change: transform;
+}
+
+@keyframes orbit-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.orbit-spin {
+  animation: orbit-spin 40s linear infinite;
+  transform-origin: 130px 131px;
+}
+
+@keyframes core-breathe {
+  0%, 100% { r: 34; opacity: 0.25; }
+  50% { r: 38; opacity: 0.08; }
+}
+.core-breathe {
+  animation: core-breathe 3.5s ease-in-out infinite;
+}
+
+@keyframes core-shimmer {
+  0%, 100% { opacity: 0.06; }
+  50% { opacity: 0.14; }
+}
+.core-shimmer {
+  animation: core-shimmer 2.5s ease-in-out infinite;
+}
+
+@keyframes orbit-cw {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.orbit-cw {
+  animation: orbit-cw 10s linear infinite;
+  transform-origin: 130px 131px;
+}
+
+@keyframes orbit-ccw {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(-360deg); }
+}
+.orbit-ccw {
+  animation: orbit-ccw 16s linear infinite;
+  transform-origin: 130px 131px;
+}
