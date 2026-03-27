@@ -89,11 +89,6 @@ jobs:
           name: os-service-binary
           path: services/os-service/target/release/
 
-      - name: Generate ICO from PNG
-        working-directory: apps/os-desktop
-        run: npx --yes png-to-ico resources/icon.png > resources/icon.ico
-        shell: pwsh
-
       - name: Build Electron app
         working-directory: apps/os-desktop
         run: pnpm build
