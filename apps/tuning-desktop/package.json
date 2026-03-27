@@ -7,8 +7,8 @@
   "scripts": {
     "dev": "vite",
     "dev:electron": "electron .",
-    "build": "tsc && vite build",
-    "build:electron": "tsc -p tsconfig.electron.json",
+    "build": "vite build && tsc --project tsconfig.main.json && tsc --project tsconfig.preload.json",
+    "build:electron": "tsc -p tsconfig.main.json && tsc -p tsconfig.preload.json",
     "typecheck": "tsc --noEmit",
     "preview": "vite preview",
     "test": "vitest run",
