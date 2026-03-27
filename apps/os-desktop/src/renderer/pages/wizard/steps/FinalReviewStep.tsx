@@ -84,6 +84,7 @@ export function FinalReviewStep() {
             {personalization.brandAccent && <span className="rounded-md bg-white/[0.06] px-2 py-1 text-[11px] text-ink-secondary">Brand Accent</span>}
             {personalization.taskbarCleanup && <span className="rounded-md bg-white/[0.06] px-2 py-1 text-[11px] text-ink-secondary">Taskbar Cleanup</span>}
             {personalization.explorerCleanup && <span className="rounded-md bg-white/[0.06] px-2 py-1 text-[11px] text-ink-secondary">Explorer Cleanup</span>}
+            {personalization.transparency && <span className="rounded-md bg-white/[0.06] px-2 py-1 text-[11px] text-ink-secondary">Transparency</span>}
           </div>
         </ReviewSection>
       </div>
