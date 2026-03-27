@@ -72,20 +72,18 @@
         }
       ],
       "executableName": "redcore-os",
-      "icon": "resources/icon.ico",
+      "icon": "resources/icon.png",
       "legalTrademarks": "redcore",
       "publisherName": "redcore",
       "requestedExecutionLevel": "asInvoker"
     },
     "nsis": {
-      "oneClick": false,
-      "allowToChangeInstallationDirectory": true,
+      "oneClick": true,
       "artifactName": "redcore-os-setup.${ext}",
       "shortcutName": "redcore OS",
       "uninstallDisplayName": "redcore OS",
       "createDesktopShortcut": true,
-      "createStartMenuShortcut": true,
-      "menuCategory": "redcore"
+      "createStartMenuShortcut": true
     },
     "asar": true,
     "compression": "maximum",
