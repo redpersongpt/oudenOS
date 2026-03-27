@@ -1,27 +1,3 @@
-// ─── Setup Wizard Shell ──────────────────────────────────────────────────────
-// Installer-style contained wizard. NOT a full-screen app canvas.
-//
-// Structure:
-//   ┌─────────────────────────────────────────────────┐
-//   │ [logo] redcore · OS Setup              [─ □ ×]  │  ← Thin title bar (drag region)
-//   ├──────────┬──────────────────────────────────────┤
-//   │          │                                      │
-//   │  STEP    │                                      │
-//   │  RAIL    │       STEP CONTENT                   │
-//   │          │       (centered, contained)          │
-//   │  1 ●──── │                                      │
-//   │  2 ○     │                                      │
-//   │  3 ○     │                                      │
-//   │  ...     │                                      │
-//   │          │                                      │
-//   │          │                                      │
-//   ├──────────┴──────────────────────────────────────┤
-//   │  ‹ Back              ████░░░░       Continue ›  │  ← Installer action bar
-//   └─────────────────────────────────────────────────┘
-//
-// This is NOT the same shell as redcore · Tuning.
-// It is a compact, contained, installer-feel setup wizard.
-
 import type { ReactNode } from "react";
 import { motion } from "framer-motion";
 import { ArrowLeft, ArrowRight, Check } from "lucide-react";
@@ -29,205 +5,162 @@ import { useWizardStore } from "@/stores/wizard-store";
 import type { WizardStepId } from "@/stores/wizard-store";
 import { LogoMark } from "@/components/brand/Logo";
 
-// ─── Step metadata ──────────────────────────────────────────────────────────
-
-const STEP_LABELS: Record<WizardStepId, string> = {
-  welcome:          "Welcome",
-  assessment:       "Assessment",
-  profile:          "Profile",
-  preservation:     "Preservation",
-  "playbook-review": "Playbook",
-  personalization:  "Personalization",
-  "app-setup":      "App Setup",
-  "final-review":   "Review",
-  execution:        "Apply",
-  report:           "Complete",
+const LABELS: Record<WizardStepId, string> = {
+  welcome: "Welcome", assessment: "Assessment", profile: "Profile",
+  preservation: "Preservation", "playbook-strategy": "Strategy",
+  "playbook-review": "Playbook", personalization: "Personalize",
+  "app-setup": "App Setup", "final-review": "Review",
+  execution: "Apply", "reboot-resume": "Reboot",
+  report: "Complete", handoff: "Next Steps",
 };
 
-const NEXT_LABELS: Partial<Record<WizardStepId, string>> = {
-  welcome:         "Begin",
-  "playbook-review": "Personalize",
-  "final-review":  "Apply Changes",
-  report:          "Finish",
+const CTA: Partial<Record<WizardStepId, string>> = {
+  welcome: "Begin Assessment", "playbook-strategy": "Review Playbook",
+  "playbook-review": "Personalize", "app-setup": "Review Changes",
+  "final-review": "Apply Changes", report: "Next Steps",
 };
 
-// ─── Step Rail ──────────────────────────────────────────────────────────────
+const NO_BAR = new Set<WizardStepId>(["execution", "reboot-resume", "handoff"]);
 
-function StepRail() {
+// ── Rail ────────────────────────────────────────────────────────────────────
+
+function Rail() {
   const { currentStep, steps } = useWizardStore();
-  const currentIdx = steps.findIndex((s) => s.id === currentStep);
+  const ci = steps.findIndex((s) => s.id === currentStep);
 
   return (
-    <div className="flex w-[180px] shrink-0 flex-col border-r border-white/[0.06] bg-[#0c0c11] px-5 py-6">
-      {/* Brand */}
-      <div className="mb-8 flex items-center gap-2">
-        <LogoMark size={18} />
-        <span className="text-[11px] font-semibold tracking-tight text-neutral-400">
-          Setup
-        </span>
+    <aside className="flex w-44 shrink-0 flex-col border-r border-white/[0.05] bg-surface-raised/60 px-4 pt-5 pb-4">
+      <div className="mb-7 flex items-center gap-2">
+        <LogoMark size={16} />
+        <span className="text-[10px] font-bold uppercase tracking-[0.12em] text-ink-tertiary">Setup</span>
       </div>
 
-      {/* Step list */}
-      <nav className="flex flex-1 flex-col gap-0.5">
+      <nav className="flex flex-1 flex-col gap-px">
         {steps.map((step, i) => {
-          const isCurrent = step.id === currentStep;
-          const isCompleted = step.status === "completed" || step.status === "skipped";
-          const isPast = i < currentIdx;
-          const isFuture = i > currentIdx && !isCompleted;
-
+          const cur = step.id === currentStep;
+          const done = step.status === "completed" || step.status === "skipped" || i < ci;
           return (
-            <div
-              key={step.id}
-              className="flex items-center gap-3 py-2"
-            >
-              {/* Step indicator */}
-              <div className="relative flex h-5 w-5 shrink-0 items-center justify-center">
-                {isCompleted || isPast ? (
-                  <motion.div
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    className="flex h-5 w-5 items-center justify-center rounded-full bg-brand-500"
-                  >
-                    <Check className="h-3 w-3 text-white" strokeWidth={2.5} />
+            <div key={step.id} className="relative flex items-center gap-2.5 py-[6px] pl-1">
+              {/* dot / check */}
+              <div className="flex h-4 w-4 shrink-0 items-center justify-center">
+                {done ? (
+                  <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="flex h-4 w-4 items-center justify-center rounded-full bg-brand-500">
+                    <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />
                   </motion.div>
-                ) : isCurrent ? (
-                  <motion.div
-                    layoutId="step-indicator"
-                    className="h-5 w-5 rounded-full border-2 border-brand-500 bg-brand-500/20"
-                    transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                  />
+                ) : cur ? (
+                  <motion.div layoutId="rail-dot" className="h-4 w-4 rounded-full border-[2px] border-brand-500 bg-brand-500/25" transition={{ type: "spring", stiffness: 380, damping: 26 }} />
                 ) : (
-                  <div className="h-2 w-2 rounded-full bg-white/[0.12]" />
-                )}
-
-                {/* Connector line */}
-                {i < steps.length - 1 && (
-                  <div
-                    className={`absolute left-[9px] top-5 h-[18px] w-[2px] rounded-full ${
-                      isPast || isCompleted ? "bg-brand-500/40" : "bg-white/[0.06]"
-                    }`}
-                  />
+                  <div className="h-[5px] w-[5px] rounded-full bg-white/10" />
                 )}
               </div>
-
-              {/* Label */}
-              <span
-                className={`text-[12px] font-medium transition-colors ${
-                  isCurrent
-                    ? "text-neutral-100"
-                    : isPast || isCompleted
-                    ? "text-neutral-400"
-                    : "text-neutral-600"
-                }`}
-              >
-                {STEP_LABELS[step.id]}
+              {/* label */}
+              <span className={`text-[11px] font-medium leading-none ${cur ? "text-ink" : done ? "text-ink-secondary" : "text-ink-muted"}`}>
+                {LABELS[step.id]}
               </span>
+              {/* connector */}
+              {i < steps.length - 1 && (
+                <div className={`absolute left-[14px] top-[26px] h-[10px] w-px ${done ? "bg-brand-500/35" : "bg-white/[0.05]"}`} />
+              )}
             </div>
           );
         })}
       </nav>
 
-      {/* Phase indicator */}
-      <div className="mt-auto pt-4 border-t border-white/[0.06]">
-        <p className="text-[10px] font-medium uppercase tracking-[0.08em] text-neutral-600">
-          Phase {currentIdx + 1} of {steps.length}
-        </p>
+      <div className="border-t border-white/[0.05] pt-3">
+        <span className="text-[9px] font-semibold uppercase tracking-[0.1em] text-ink-disabled">
+          {ci + 1} / {steps.length}
+        </span>
       </div>
-    </div>
+    </aside>
   );
 }
 
-// ─── Installer Action Bar ───────────────────────────────────────────────────
+// ── Bar ─────────────────────────────────────────────────────────────────────
 
-function ActionBar() {
-  const { currentStep, progress, canGoBack, canGoNext, goBack, goNext } =
-    useWizardStore();
-
-  const nextLabel = NEXT_LABELS[currentStep] ?? "Next";
-
-  // Execution step owns the full content — no action bar
-  if (currentStep === "execution") return null;
+function Bar() {
+  const { currentStep, progress, canGoBack, canGoNext, goBack, goNext } = useWizardStore();
+  if (NO_BAR.has(currentStep)) return null;
 
   return (
-    <div className="flex h-[52px] shrink-0 items-center justify-between border-t border-white/[0.06] bg-[#0c0c11] px-5">
-      {/* Back */}
+    <div className="flex h-12 shrink-0 items-center justify-between border-t border-white/[0.05] bg-surface-raised/60 px-5">
       {canGoBack ? (
-        <button
-          onClick={goBack}
-          className="flex items-center gap-1.5 text-[13px] font-medium text-neutral-500 hover:text-neutral-300 transition-colors"
-        >
-          <ArrowLeft className="h-3.5 w-3.5" />
-          Back
+        <button onClick={goBack} className="flex items-center gap-1 text-[11px] font-medium text-ink-tertiary hover:text-ink-secondary transition-colors">
+          <ArrowLeft className="h-3 w-3" /> Back
         </button>
-      ) : (
-        <div className="w-16" />
-      )}
+      ) : <div className="w-12" />}
 
-      {/* Progress */}
-      <div className="flex items-center gap-3">
-        <div className="relative h-1 w-24 overflow-hidden rounded-full bg-white/[0.08]">
-          <motion.div
-            className="absolute inset-y-0 left-0 rounded-full bg-brand-500"
-            animate={{ width: `${progress}%` }}
-            transition={{ type: "spring", stiffness: 300, damping: 30 }}
-          />
+      <div className="flex items-center gap-2">
+        <div className="relative h-[3px] w-16 overflow-hidden rounded-full bg-white/[0.06]">
+          <motion.div className="absolute inset-y-0 left-0 rounded-full bg-brand-500" animate={{ width: `${progress}%` }} transition={{ type: "spring", stiffness: 300, damping: 30 }} />
         </div>
-        <span className="text-[11px] font-mono text-neutral-600 tabular-nums">
-          {progress}%
-        </span>
+        <span className="font-mono-metric text-[9px] text-ink-disabled">{progress}%</span>
       </div>
 
-      {/* Next */}
       <button
         onClick={goNext}
         disabled={!canGoNext}
-        className={`flex items-center gap-1.5 rounded-lg px-4 py-2 text-[13px] font-semibold transition-all ${
-          canGoNext
-            ? "bg-brand-500 text-white hover:bg-brand-600 shadow-sm shadow-brand-500/20"
-            : "bg-white/[0.04] text-neutral-600 cursor-not-allowed"
+        className={`flex items-center gap-1.5 rounded-md px-3.5 py-[6px] text-[11px] font-bold transition-all ${
+          canGoNext ? "bg-brand-500 text-white hover:bg-brand-600" : "bg-white/[0.03] text-ink-disabled cursor-not-allowed"
         }`}
       >
-        {nextLabel}
-        {currentStep !== "report" && <ArrowRight className="h-3.5 w-3.5" />}
+        {CTA[currentStep] ?? "Continue"}
+        <ArrowRight className="h-3 w-3" />
       </button>
     </div>
   );
 }
 
-// ─── Title Bar ──────────────────────────────────────────────────────────────
+// ── Title ───────────────────────────────────────────────────────────────────
 
-function SetupTitleBar() {
+function TitleBar() {
+  const handleMinimize = () => {
+    const win = window as unknown as { redcore?: { window?: { minimize: () => void } } };
+    win.redcore?.window?.minimize();
+  };
+  const handleClose = () => {
+    const win = window as unknown as { redcore?: { window?: { close: () => void } } };
+    win.redcore?.window?.close();
+  };
+
   return (
-    <div className="flex h-8 shrink-0 items-center px-4 bg-[#0c0c11] drag-region">
-      <span className="text-[10px] font-medium text-neutral-600 tracking-tight no-drag">
-        redcore · OS Setup
+    <div className="flex h-8 shrink-0 items-center justify-between px-4 bg-surface-raised/60 drag-region border-b border-white/[0.03]">
+      <span className="text-[9px] font-semibold uppercase tracking-[0.12em] text-ink-disabled no-drag">
+        redcore · OS
       </span>
+      <div className="flex items-center gap-1 no-drag">
+        <button
+          onClick={handleMinimize}
+          className="flex h-5 w-7 items-center justify-center rounded-sm text-ink-muted hover:text-ink hover:bg-white/[0.06] transition-colors"
+          aria-label="Minimize"
+        >
+          <svg width="10" height="1" viewBox="0 0 10 1" fill="currentColor"><rect width="10" height="1" /></svg>
+        </button>
+        <button
+          onClick={handleClose}
+          className="flex h-5 w-7 items-center justify-center rounded-sm text-ink-muted hover:text-white hover:bg-red-500/80 transition-colors"
+          aria-label="Close"
+        >
+          <svg width="10" height="10" viewBox="0 0 10 10" stroke="currentColor" strokeWidth="1.2"><line x1="1" y1="1" x2="9" y2="9"/><line x1="9" y1="1" x2="1" y2="9"/></svg>
+        </button>
+      </div>
     </div>
   );
 }
 
-// ─── Shell ──────────────────────────────────────────────────────────────────
+// ── Shell ───────────────────────────────────────────────────────────────────
 
 export function WizardShell({ children }: { children: ReactNode }) {
   const { currentStep } = useWizardStore();
-  const isWelcome = currentStep === "welcome";
+  const welcome = currentStep === "welcome";
 
   return (
-    <div className="flex h-screen w-screen flex-col overflow-hidden bg-[#08080d]">
-      <SetupTitleBar />
-
+    <div className="flex h-screen w-screen flex-col overflow-hidden bg-surface-base">
+      <TitleBar />
       <div className="flex flex-1 overflow-hidden">
-        {/* Step rail — hidden on welcome for clean hero */}
-        {!isWelcome && <StepRail />}
-
-        {/* Content area */}
+        {!welcome && <Rail />}
         <main className="flex flex-1 flex-col overflow-hidden">
-          <div className="flex-1 overflow-y-auto overflow-x-hidden">
-            {children}
-          </div>
-
-          {/* Action bar — inside content column, not full width */}
-          {!isWelcome && <ActionBar />}
+          <div className="flex-1 overflow-y-auto overflow-x-hidden scrollbar-thin">{children}</div>
+          {!welcome && <Bar />}
         </main>
       </div>
     </div>

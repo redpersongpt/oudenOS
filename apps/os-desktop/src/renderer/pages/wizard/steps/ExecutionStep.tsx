@@ -138,13 +138,11 @@ export function ExecutionStep() {
       // ── Phase 2: Apply personalization ──
       let personalizationFailed = false;
       try {
-        const svc = getService();
-        if (svc) {
-          await svc.call("personalize.apply", {
-            profile: detectedProfile?.id ?? "gaming_desktop",
-            options: personalization,
-          });
-        }
+        const persResult = await serviceCall("personalize.apply", {
+          profile: detectedProfile?.id ?? "gaming_desktop",
+          options: personalization,
+        });
+        if (!persResult.ok) personalizationFailed = true;
       } catch {
         personalizationFailed = true;
       }
@@ -153,13 +151,11 @@ export function ExecutionStep() {
       let appInstallFailed = false;
       if (selectedAppIds.length > 0) {
         try {
-          const svc = getService();
-          if (svc) {
-            await svc.call("appbundle.resolve", {
-              profile: detectedProfile?.id ?? "gaming_desktop",
-              selectedApps: selectedAppIds,
-            });
-          }
+          const appResult = await serviceCall("appbundle.resolve", {
+            profile: detectedProfile?.id ?? "gaming_desktop",
+            selectedApps: selectedAppIds,
+          });
+          if (!appResult.ok) appInstallFailed = true;
         } catch {
           appInstallFailed = true;
         }
