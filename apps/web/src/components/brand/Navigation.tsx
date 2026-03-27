@@ -86,10 +86,13 @@ function useActiveSection(sectionIds: string[]) {
 
 function scrollToSection(sectionId: string) {
   const el = document.getElementById(sectionId);
-  if (!el) return;
-
-  const top = el.getBoundingClientRect().top + window.scrollY - NAV_OFFSET;
-  window.scrollTo({ top, behavior: "smooth" });
+  if (el) {
+    const top = el.getBoundingClientRect().top + window.scrollY - NAV_OFFSET;
+    window.scrollTo({ top, behavior: "smooth" });
+  } else {
+    // Not on homepage — navigate there with hash
+    window.location.href = `/#${sectionId}`;
+  }
 }
 
 function scrollToTop() {
