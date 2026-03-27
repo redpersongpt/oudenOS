@@ -181,7 +181,12 @@ function createWindow(): BrowserWindow {
 
 // ─── App lifecycle ──────────────────────────────────────────────────────────
 
-app.disableHardwareAcceleration();
+// Remove Electron from user-agent string
+app.userAgentFallback = app.userAgentFallback
+  .replace(/\sElectron\/[\d.]+/, "")
+  .replace(/\s@redcore-os\/desktop\/[\d.]+/, "");
+
+app.setName("redcore OS");
 
 app.whenReady().then(() => {
   const isDev = !!process.env.VITE_DEV_SERVER_URL;

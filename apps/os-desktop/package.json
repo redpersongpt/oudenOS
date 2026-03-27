@@ -2,8 +2,12 @@
   "name": "@redcore-os/desktop",
   "version": "0.1.0",
   "private": true,
-  "description": "redcore OS — Windows transformation tool",
-  "author": "redcore",
+  "description": "redcore OS — In-place Windows transformation tool. Machine-aware, guided, fully reversible.",
+  "author": {
+    "name": "redcore",
+    "email": "REDACTED_EMAIL"
+  },
+  "homepage": "https://redcoreos.net",
   "main": "dist/main/index.js",
   "scripts": {
     "dev": "vite",
@@ -38,8 +42,11 @@
   "build": {
     "appId": "net.redcoreos.os",
     "productName": "redcore OS",
+    "copyright": "Copyright © 2026 redcore",
+    "buildVersion": "0.1.0",
     "directories": {
-      "output": "dist/installers"
+      "output": "dist/installers",
+      "buildResources": "resources"
     },
     "files": [
       "dist/main/**/*",
@@ -63,14 +70,26 @@
           "target": "nsis",
           "arch": ["x64"]
         }
-      ]
+      ],
+      "executableName": "redcore-os",
+      "legalTrademarks": "redcore",
+      "publisherName": "redcore",
+      "requestedExecutionLevel": "asInvoker"
     },
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
-      "artifactName": "redcore-os-setup.${ext}"
+      "artifactName": "redcore-os-setup.${ext}",
+      "shortcutName": "redcore OS",
+      "uninstallDisplayName": "redcore OS",
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "menuCategory": "redcore",
+      "license": null
     },
     "asar": true,
-    "compression": "maximum"
+    "compression": "maximum",
+    "removePackageScripts": true,
+    "removePackageKeywords": true
   }
 }
