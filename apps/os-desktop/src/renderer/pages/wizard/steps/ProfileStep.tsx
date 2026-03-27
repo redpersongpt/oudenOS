@@ -1,143 +1,78 @@
-// ─── Profile Step ─────────────────────────────────────────────────────────────
-// Shows the machine profile detected during assessment.
-// Machine name + profile label + confidence + key signals.
-// Work PC preservation flags are called out prominently.
-
 import { motion } from "framer-motion";
-import { Monitor, Briefcase, Cpu, ChevronRight } from "lucide-react";
+import { Monitor, Briefcase } from "lucide-react";
 import { useWizardStore } from "@/stores/wizard-store";
-
-// ─── Signal pill ─────────────────────────────────────────────────────────────
-
-function SignalPill({ label }: { label: string }) {
-  return (
-    <span className="inline-flex items-center rounded-md border border-white/[0.08] bg-white/[0.04] px-2.5 py-1 text-[11px] text-neutral-400">
-      {label}
-    </span>
-  );
-}
-
-// ─── Confidence bar ──────────────────────────────────────────────────────────
-
-function ConfidenceBar({ value }: { value: number }) {
-  return (
-    <div className="flex items-center gap-3">
-      <div className="relative h-1.5 flex-1 overflow-hidden rounded-full bg-white/[0.06]">
-        <motion.div
-          className="absolute inset-y-0 left-0 rounded-full bg-brand-500"
-          initial={{ width: 0 }}
-          animate={{ width: `${value}%` }}
-          transition={{ duration: 0.6, ease: [0.2, 0.0, 0.0, 1.0], delay: 0.2 }}
-        />
-      </div>
-      <span className="font-mono-metric text-xs text-neutral-400">{value}%</span>
-    </div>
-  );
-}
-
-// ─── Component ───────────────────────────────────────────────────────────────
 
 export function ProfileStep() {
   const { detectedProfile } = useWizardStore();
+  const p = detectedProfile;
 
-  // Fallback if store hasn't been populated
-  const profile = detectedProfile ?? {
-    id:          "gaming-consumer",
-    label:       "Gaming Consumer",
-    confidence:  88,
-    isWorkPc:    false,
-    machineName: "REDCORE-PC",
-    signals:     ["Steam detected", "No domain join", "High-performance GPU"],
-    accentColor: "text-brand-400",
-  };
-
-  const ProfileIcon = profile.isWorkPc ? Briefcase : Monitor;
+  if (!p) {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <p className="text-[12px] text-ink-tertiary">No profile detected.</p>
+      </div>
+    );
+  }
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 8 }}
+      initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -8 }}
-      transition={{ duration: 0.22, ease: [0.0, 0.0, 0.2, 1.0] }}
-      className="flex h-full flex-col items-center justify-center gap-6 px-8"
+      exit={{ opacity: 0 }}
+      className="flex h-full flex-col items-center justify-center gap-5 px-8"
     >
-      {/* Header */}
-      <div className="flex flex-col items-center gap-1.5 text-center">
-        <h2 className="text-lg font-semibold text-neutral-100">Machine Profile Detected</h2>
-        <p className="text-xs text-neutral-500">
-          AI-classified based on hardware, software, and configuration signals
-        </p>
-      </div>
-
-      {/* Profile card */}
       <motion.div
-        initial={{ opacity: 0, scale: 0.97 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.25, ease: [0.2, 0.0, 0.0, 1.0], delay: 0.06 }}
-        className="w-full max-w-md rounded-xl border border-white/[0.08] bg-white/[0.03] p-5"
+        initial={{ scale: 0.8, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ type: "spring", stiffness: 300, damping: 18 }}
+        className="flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-500/10 border border-brand-500/20"
       >
-        {/* Machine name + icon */}
-        <div className="mb-4 flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-brand-500/10">
-            <ProfileIcon className="h-5 w-5 text-brand-400" />
-          </div>
-          <div>
-            <div className="text-[11px] font-medium uppercase tracking-widest text-neutral-600">
-              {profile.machineName}
-            </div>
-            <div className={`text-base font-semibold ${profile.accentColor}`}>
-              {profile.label}
-            </div>
-          </div>
-          {profile.isWorkPc && (
-            <span className="ml-auto inline-flex items-center gap-1 rounded-md border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 text-[10px] font-medium text-amber-400">
-              <Briefcase className="h-2.5 w-2.5" />
-              Work PC
-            </span>
-          )}
-        </div>
-
-        {/* Confidence */}
-        <div className="mb-4">
-          <div className="mb-1.5 flex items-center justify-between">
-            <span className="text-[11px] text-neutral-600">Classification confidence</span>
-          </div>
-          <ConfidenceBar value={profile.confidence} />
-        </div>
-
-        {/* Signals */}
-        <div>
-          <div className="mb-2 flex items-center gap-1.5 text-[11px] text-neutral-600">
-            <Cpu className="h-3 w-3" />
-            Key signals
-          </div>
-          <div className="flex flex-wrap gap-1.5">
-            {profile.signals.map((sig) => (
-              <SignalPill key={sig} label={sig} />
-            ))}
-          </div>
-        </div>
+        <Monitor className="h-6 w-6 text-brand-400" />
       </motion.div>
 
-      {/* Work PC notice */}
-      {profile.isWorkPc && (
+      <div className="text-center">
+        <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-ink-tertiary">{p.machineName}</p>
+        <h2 className="mt-1 text-[20px] font-bold text-ink">{p.label}</h2>
+      </div>
+
+      {/* Confidence */}
+      <div className="w-full max-w-xs">
+        <div className="flex justify-between text-[10px]">
+          <span className="text-ink-tertiary">Confidence</span>
+          <span className="font-mono-metric text-brand-400">{p.confidence}%</span>
+        </div>
+        <div className="mt-1 relative h-1 overflow-hidden rounded-full bg-white/[0.06]">
+          <motion.div
+            initial={{ width: 0 }}
+            animate={{ width: `${p.confidence}%` }}
+            transition={{ duration: 0.6, ease: [0.0, 0.0, 0.2, 1.0], delay: 0.15 }}
+            className="absolute inset-y-0 left-0 rounded-full bg-brand-500"
+          />
+        </div>
+      </div>
+
+      <div className="flex flex-wrap justify-center gap-1.5">
+        {p.signals.map((s) => (
+          <span key={s} className="rounded-full bg-white/[0.04] border border-white/[0.06] px-2.5 py-1 text-[10px] font-medium text-ink-secondary">
+            {s}
+          </span>
+        ))}
+      </div>
+
+      {p.isWorkPc && (
         <motion.div
           initial={{ opacity: 0, y: 4 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.2, delay: 0.18 }}
-          className="flex w-full max-w-md items-start gap-3 rounded-lg border border-amber-500/20 bg-amber-500/[0.06] px-4 py-3"
+          transition={{ delay: 0.3 }}
+          className="flex items-start gap-2.5 rounded-lg border border-amber-500/20 bg-amber-500/[0.04] px-3 py-2.5 max-w-sm"
         >
-          <Briefcase className="mt-0.5 h-4 w-4 shrink-0 text-amber-400" />
+          <Briefcase className="mt-0.5 h-3.5 w-3.5 shrink-0 text-amber-400" />
           <div>
-            <div className="text-xs font-medium text-amber-300">
-              Business workflow protection enabled
-            </div>
-            <div className="mt-0.5 text-[11px] leading-relaxed text-amber-500/70">
-              Critical services such as Print Spooler, RDP, and Group Policy will be preserved.
-              You can review these on the next screen.
-            </div>
+            <p className="text-[11px] font-semibold text-amber-300">Work PC Detected</p>
+            <p className="mt-0.5 text-[10px] leading-relaxed text-amber-400/70">
+              Business-critical services preserved. Aggressive optimizations blocked.
+            </p>
           </div>
-          <ChevronRight className="mt-0.5 h-3.5 w-3.5 shrink-0 text-amber-600" />
         </motion.div>
       )}
     </motion.div>
