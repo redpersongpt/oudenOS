@@ -1,6 +1,15 @@
 import type { Metadata } from "next";
 import { Navigation } from "@/components/brand/Navigation";
 import { FooterSection } from "@/components/sections/FooterSection";
+import {
+  PageHero,
+  QuickSummary,
+  ComparisonBlock,
+  TrustBlock,
+  CTAStrip,
+  RelatedPages,
+} from "@/components/seo";
+import { Shield, RotateCcw } from "lucide-react";
 import Link from "next/link";
 
 export const metadata: Metadata = {
@@ -33,11 +42,7 @@ const jsonLd = {
   name: "redcore OS",
   operatingSystem: "Windows 10, Windows 11",
   applicationCategory: "UtilitiesApplication",
-  offers: {
-    "@type": "Offer",
-    price: "0",
-    priceCurrency: "USD",
-  },
+  offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
   description:
     "Free Windows transformation tool with guided debloating, machine-aware scanning, and full rollback support.",
   url: "https://redcoreos.net/redcore-os",
@@ -55,30 +60,32 @@ export default function WindowsDebloatPage() {
             dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
           />
 
-          <p className="font-mono text-[11px] font-medium uppercase tracking-[0.12em] text-accent mb-4">
-            Windows Optimization
-          </p>
-          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-ink-primary mb-6 leading-tight">
-            Windows Debloat — Guided, Reversible, Machine-Aware
-          </h1>
+          <PageHero
+            overline="Windows Optimization"
+            title="Windows Debloat — Guided, Reversible, Machine-Aware"
+            description="Every Windows installation ships with software and services most users never asked for. Debloating removes this weight — but doing it blindly breaks things. Here's a better approach."
+          />
 
-          <p className="text-ink-secondary text-base leading-relaxed mb-8">
-            Every Windows installation ships with software and services most
-            users never asked for. Debloating removes this unnecessary weight
-            to reclaim resources, reduce attack surface, and make your system
-            feel like it belongs to you again.
-          </p>
+          <QuickSummary
+            items={[
+              "What debloating actually means",
+              "Why blind debloat scripts are risky",
+              "How machine-aware debloating works",
+              "What gets removed vs preserved",
+              "Work PC and gaming profile differences",
+            ]}
+          />
 
-          <h2 className="text-xl font-semibold text-ink-primary mt-10 mb-4">
+          <h2 className="text-xl font-semibold text-ink-primary mt-14 mb-4">
             What debloating actually means
           </h2>
           <p className="text-ink-secondary text-[15px] leading-relaxed mb-4">
-            Debloating is the process of removing or disabling pre-installed
-            software, background services, telemetry endpoints, and UI elements
-            that consume CPU, memory, disk, and network without providing value
-            to the user. On a stock Windows 11 install, there are typically
-            150+ background services running, dozens of scheduled tasks
-            phoning home, and several gigabytes of apps most people never open.
+            Debloating is removing or disabling pre-installed software,
+            background services, telemetry endpoints, and UI elements that
+            consume CPU, memory, disk, and network without providing value.
+            On a stock Windows 11 install, there are 150+ background services
+            running, dozens of scheduled tasks phoning home, and several
+            gigabytes of apps most people never open.
           </p>
           <p className="text-ink-secondary text-[15px] leading-relaxed mb-4">
             The goal is straightforward: keep what you use, remove what you
@@ -86,121 +93,123 @@ export default function WindowsDebloatPage() {
             correctly afterward.
           </p>
 
-          <h2 className="text-xl font-semibold text-ink-primary mt-10 mb-4">
+          <h2 className="text-xl font-semibold text-ink-primary mt-14 mb-4">
             Why blind debloat scripts are risky
           </h2>
           <p className="text-ink-secondary text-[15px] leading-relaxed mb-4">
-            The most common approach to debloating is running a PowerShell
-            script found on GitHub or Reddit. These scripts typically apply a
-            fixed list of registry changes and service removals without knowing
-            anything about your specific hardware, installed software, or use
-            case.
+            The most common approach is running a PowerShell script from
+            GitHub or Reddit. These apply a fixed list of registry changes
+            and service removals without knowing your hardware or use case.
           </p>
-          <p className="text-ink-secondary text-[15px] leading-relaxed mb-4">
-            The problems with this approach are real:
-          </p>
-          <ul className="list-disc pl-6 space-y-2 text-ink-secondary text-[15px] leading-relaxed mb-4">
+          <ul className="list-disc pl-6 space-y-2 text-ink-secondary text-[15px] leading-relaxed mb-6">
             <li>
               <strong className="text-ink-primary">No rollback path.</strong>{" "}
-              If a script disables a service your VPN client depends on, or
-              removes a component your employer&apos;s MDM requires, reverting
+              If a script disables a service your VPN depends on, reverting
               means manually hunting through registry exports or reinstalling.
             </li>
             <li>
               <strong className="text-ink-primary">Hardware-blind.</strong>{" "}
-              A script written for a desktop gaming rig will break Wi-Fi
-              power management on a laptop, or disable GPU scheduling on a
-              system that benefits from it.
+              A script for a gaming rig breaks Wi-Fi power management on a
+              laptop or disables GPU scheduling on systems that benefit from it.
             </li>
             <li>
               <strong className="text-ink-primary">Context-blind.</strong>{" "}
-              Disabling Windows Update delivery optimization saves bandwidth
-              at home but causes problems on managed corporate networks.
               Removing Microsoft Store blocks app installation for users who
-              depend on it.
+              depend on it. Disabling delivery optimization causes problems
+              on managed corporate networks.
             </li>
           </ul>
 
-          <h2 className="text-xl font-semibold text-ink-primary mt-10 mb-4">
-            How redcore approaches debloating differently
+          <ComparisonBlock
+            title="What changes vs what stays"
+            left={{
+              heading: "Typically removed",
+              items: [
+                "Consumer telemetry and diagnostic data",
+                "Pre-installed apps (Clipchamp, News, Solitaire)",
+                "Advertising ID and activity tracking",
+                "Widgets, Copilot, and AI integrations",
+                "Search highlights and web results in Start",
+                "Notification suggestions and tips",
+                "Unnecessary scheduled tasks",
+              ],
+            }}
+            right={{
+              heading: "Always preserved",
+              items: [
+                "Windows Update functionality",
+                "Windows Defender (unless alt AV present)",
+                "Hardware drivers and firmware",
+                "Print Spooler (on Work PCs)",
+                "Remote Desktop (on Work PCs)",
+                "VPN and domain services",
+                "Store access (configurable)",
+              ],
+            }}
+          />
+
+          <h2 className="text-xl font-semibold text-ink-primary mt-14 mb-4">
+            How redcore approaches debloating
           </h2>
           <p className="text-ink-secondary text-[15px] leading-relaxed mb-4">
             <Link href="/redcore-os" className="text-accent hover:text-accent-bright transition-colors">
               redcore OS
             </Link>{" "}
             does not apply a fixed script. It runs a hardware and software
-            assessment first, builds a machine-specific profile, then presents
-            a categorized plan of every change it intends to make. You review
-            the plan before anything is applied.
-          </p>
-          <p className="text-ink-secondary text-[15px] leading-relaxed mb-4">
-            Key differences from traditional debloat tools:
-          </p>
-          <ul className="list-disc pl-6 space-y-2 text-ink-secondary text-[15px] leading-relaxed mb-4">
-            <li>
-              <strong className="text-ink-primary">Machine-aware.</strong>{" "}
-              The tool detects your CPU, GPU, disk type, network adapters,
-              power source, and installed software before generating
-              recommendations. Laptop users get different defaults than
-              desktop users.
-            </li>
-            <li>
-              <strong className="text-ink-primary">Profile-driven.</strong>{" "}
-              Eight profiles (Gaming, Work PC, Development, Privacy, Minimal,
-              Balanced, Laptop, and Server) determine which changes are safe
-              for your use case. A Work PC profile preserves corporate
-              infrastructure. A Gaming profile prioritizes latency and
-              frame consistency.
-            </li>
-            <li>
-              <strong className="text-ink-primary">Fully reversible.</strong>{" "}
-              Every change creates a restore point and logs exactly what was
-              modified. Rolling back is a single action, not a guessing game.
-            </li>
-            <li>
-              <strong className="text-ink-primary">Transparent.</strong>{" "}
-              You see every registry key, every service, every scheduled task
-              before it is touched. Nothing happens without your approval.
-            </li>
-          </ul>
-
-          <h2 className="text-xl font-semibold text-ink-primary mt-10 mb-4">
-            What gets removed
-          </h2>
-          <p className="text-ink-secondary text-[15px] leading-relaxed mb-6">
-            The specific changes depend on your profile and hardware, but
-            typical debloating actions include: removing pre-installed apps
-            (Clipchamp, News, Solitaire, etc.), disabling telemetry and
-            diagnostic data collection, stopping advertising ID tracking,
-            removing Widgets and Copilot integration, disabling search
-            highlights and web results in Start, taming notifications and
-            suggestion prompts, and optimizing service startup types for
-            services you are not using.
+            assessment, classifies your machine into one of eight profiles,
+            then presents a categorized plan. You review every change before
+            anything is applied.
           </p>
 
-          <div className="border border-border rounded-lg p-6 mt-10 bg-surface">
-            <p className="text-ink-primary font-semibold mb-2">
-              Ready to debloat safely?
-            </p>
-            <p className="text-ink-secondary text-[14px] mb-4">
-              redcore OS is free. Download it, run the assessment, review the
-              plan, and apply only what makes sense for your machine.
-            </p>
-            <div className="flex flex-wrap gap-3">
-              <Link
-                href="/downloads"
-                className="inline-flex items-center rounded-lg bg-accent px-5 py-2.5 text-[13px] font-semibold text-white transition-all hover:bg-accent-dim"
-              >
-                Download redcore OS
-              </Link>
-              <Link
-                href="/windows-11-debloat"
-                className="inline-flex items-center rounded-lg border border-border px-5 py-2.5 text-[13px] font-medium text-ink-secondary transition-all hover:text-ink-primary hover:border-border-strong"
-              >
-                Windows 11 specific guide
-              </Link>
-            </div>
+          <div className="space-y-4 mt-8 mb-8">
+            <TrustBlock
+              icon={<Shield className="h-4 w-4 text-success" />}
+              title="Machine-aware scanning"
+              description="Detects CPU, GPU, disk type, network adapters, power source, and installed software before generating recommendations. Laptops get different defaults than desktops."
+            />
+            <TrustBlock
+              icon={<RotateCcw className="h-4 w-4 text-accent" />}
+              title="Per-action rollback"
+              description="Every change creates a granular restore snapshot. Roll back one change without affecting others — not a system restore point, but individual undo per action."
+            />
           </div>
+
+          <p className="text-ink-secondary text-[15px] leading-relaxed mb-4">
+            Eight profiles determine which changes are safe: Gaming, Work PC,
+            Development, Privacy, Minimal, Balanced, Laptop, and Server. A{" "}
+            <Link href="/work-pc-debloat" className="text-accent hover:text-accent-bright transition-colors">
+              Work PC profile
+            </Link>{" "}
+            preserves printing, RDP, and Group Policy. A Gaming profile
+            prioritizes latency and frame consistency.
+          </p>
+
+          <CTAStrip
+            title="Ready to debloat safely?"
+            description="redcore OS is free. Download it, run the assessment, and review the plan before applying anything."
+            primaryAction={{ label: "Download redcore OS", href: "/downloads" }}
+            secondaryAction={{ label: "Windows 11 specific guide", href: "/windows-11-debloat" }}
+          />
+
+          <RelatedPages
+            pages={[
+              {
+                title: "Windows 11 Debloat",
+                description: "Remove Copilot, Recall, telemetry, and Edge nags specific to Windows 11.",
+                href: "/windows-11-debloat",
+              },
+              {
+                title: "Work PC Safe Debloat",
+                description: "Clean up without breaking corporate infrastructure.",
+                href: "/work-pc-debloat",
+              },
+              {
+                title: "Why redcore",
+                description: "Machine-aware, profile-driven, fully reversible.",
+                href: "/why-redcore",
+              },
+            ]}
+          />
         </article>
       </main>
       <FooterSection />
