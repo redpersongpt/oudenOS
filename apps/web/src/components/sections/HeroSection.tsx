@@ -30,15 +30,6 @@ export function HeroSection() {
       </div>
 
       <div className="relative z-10 mx-auto w-full max-w-[1100px] px-6 lg:px-12">
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2, duration: 0.8 }}
-          className="font-mono text-[0.65rem] font-medium uppercase tracking-[0.14em] text-ink-tertiary mb-8"
-        >
-          Windows performance ecosystem
-        </motion.p>
-
         <h1
           style={{ fontSize: "clamp(2.6rem, 5.5vw, 5rem)" }}
           className="font-bold tracking-[-0.04em] leading-[1.02] max-w-[900px]"
