@@ -101,12 +101,26 @@ function callService(method: string, params: unknown): Promise<unknown> {
 // ─── IPC handlers ───────────────────────────────────────────────────────────
 
 ipcMain.handle("service:call", async (_event, method: string, params: unknown) => {
-  const result = await callService(method, params);
-  // If the service returned an error object, throw so the renderer gets a rejection
-  if (result && typeof result === "object" && "error" in result && !(result as Record<string, unknown>).result) {
-    throw new Error((result as { error: { message?: string } }).error?.message ?? "Service error");
+  if (!serviceProcess?.stdin?.writable) {
+    // Return a structured error instead of crashing the renderer
+    return { __serviceUnavailable: true, error: "Service not running. Running in demo mode." };
   }
-  return result;
+  try {
+    const result = await callService(method, params);
+    if (result && typeof result === "object" && "error" in result && !(result as Record<string, unknown>).result) {
+      return { __serviceError: true, error: (result as { error: { message?: string } }).error?.message ?? "Service error" };
+    }
+    return result;
+  } catch (e) {
+    return { __serviceError: true, error: e instanceof Error ? e.message : "Unknown error" };
+  }
+});
+
+ipcMain.handle("service:status", () => {
+  return {
+    running: !!serviceProcess?.stdin?.writable,
+    mode: serviceProcess?.stdin?.writable ? "live" : "demo",
+  };
 });
 
 ipcMain.on("window:minimize", (event) => {

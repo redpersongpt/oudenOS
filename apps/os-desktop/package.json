@@ -72,13 +72,14 @@
         }
       ],
       "executableName": "redcore-os",
-      "icon": "resources/icon.png",
       "legalTrademarks": "redcore",
       "publisherName": "redcore",
-      "requestedExecutionLevel": "asInvoker"
+      "requestedExecutionLevel": "requireAdministrator"
     },
     "nsis": {
-      "oneClick": true,
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "runAfterFinish": true,
       "artifactName": "redcore-os-setup.${ext}",
       "shortcutName": "redcore OS",
       "uninstallDisplayName": "redcore OS",
