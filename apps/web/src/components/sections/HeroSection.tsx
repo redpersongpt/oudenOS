@@ -1,62 +1,82 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowDown } from "lucide-react";
+import { ArrowDown, Download } from "lucide-react";
 
 const ease = [0.16, 1, 0.3, 1] as const;
 
 function scrollTo(id: string) {
   const el = document.getElementById(id);
-  if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+  if (el) {
+    const top = el.getBoundingClientRect().top + window.scrollY - 80;
+    window.scrollTo({ top, behavior: "smooth" });
+  }
 }
 
 export function HeroSection() {
   return (
-    <section className="relative flex min-h-screen items-end overflow-hidden pb-24 lg:pb-32">
+    <section className="relative flex min-h-[100dvh] items-center overflow-hidden">
+      {/* Cinematic background */}
       <div className="pointer-events-none absolute inset-0" aria-hidden="true">
         <div
           className="absolute inset-0"
           style={{
             background:
-              "radial-gradient(ellipse 80% 60% at 50% 40%, #0c0c10 0%, #060608 100%)",
+              "radial-gradient(ellipse 90% 70% at 50% 35%, #0e0e14 0%, #060608 100%)",
           }}
         />
-        <div
-          className="absolute top-[20%] right-[10%] h-[400px] w-[400px] rounded-full opacity-[0.04]"
+        {/* Red atmosphere — top right */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 0.07 }}
+          transition={{ duration: 2, delay: 0.5 }}
+          className="absolute top-[15%] right-[5%] h-[500px] w-[500px] rounded-full"
           style={{
-            background: "radial-gradient(circle, #E8453C, transparent 70%)",
+            background: "radial-gradient(circle, #E8453C, transparent 65%)",
           }}
         />
+        {/* Red atmosphere — bottom left */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 0.03 }}
+          transition={{ duration: 2.5, delay: 0.8 }}
+          className="absolute bottom-[10%] left-[10%] h-[400px] w-[400px] rounded-full"
+          style={{
+            background: "radial-gradient(circle, #E8453C, transparent 60%)",
+          }}
+        />
+        {/* Grain overlay */}
+        <div className="absolute inset-0 opacity-[0.015]" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E\")" }} />
       </div>
 
       <div className="relative z-10 mx-auto w-full max-w-[1100px] px-6 lg:px-12">
         <h1
-          style={{ fontSize: "clamp(2.6rem, 5.5vw, 5rem)" }}
-          className="font-bold tracking-[-0.04em] leading-[1.02] max-w-[900px]"
+          style={{ fontSize: "clamp(3rem, 6vw, 5.5rem)" }}
+          className="font-bold tracking-[-0.045em] leading-[0.98]"
         >
           <motion.span
             className="block text-ink-primary"
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.9, ease }}
+            initial={{ opacity: 0, y: 60, filter: "blur(10px)" }}
+            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            transition={{ delay: 0.2, duration: 1, ease }}
           >
             F*ck Windows.
           </motion.span>
           <motion.span
-            className="block text-accent"
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.42, duration: 0.9, ease }}
+            className="block bg-gradient-to-r from-accent via-[#FF6B5A] to-accent bg-clip-text text-transparent"
+            initial={{ opacity: 0, y: 60, filter: "blur(10px)" }}
+            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            transition={{ delay: 0.35, duration: 1, ease }}
           >
             Make it usable.
           </motion.span>
         </h1>
 
         <motion.p
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.7, duration: 0.7, ease }}
-          className="mt-8 max-w-[540px] text-[1.05rem] leading-[1.75] text-ink-secondary"
+          transition={{ delay: 0.65, duration: 0.8, ease }}
+          className="mt-8 max-w-[520px] text-[1.1rem] leading-[1.8] text-ink-secondary"
         >
           redcore turns a bloated install into a system that actually fits
           the machine, the workload, and the user. Guided. Reversible.
@@ -64,37 +84,48 @@ export function HeroSection() {
         </motion.p>
 
         <motion.div
-          initial={{ opacity: 0, y: 16 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.9, duration: 0.6, ease }}
+          transition={{ delay: 0.9, duration: 0.7, ease }}
           className="mt-12 flex flex-col sm:flex-row items-start gap-4"
         >
-          <button
+          <motion.button
             onClick={() => scrollTo("pricing")}
-            className="inline-flex items-center gap-2.5 rounded-lg bg-accent px-7 py-3.5 text-[0.88rem] font-semibold text-white transition-all hover:bg-accent-dim cursor-pointer"
+            className="group inline-flex items-center gap-2.5 rounded-xl bg-accent px-8 py-4 text-[0.92rem] font-semibold text-white cursor-pointer relative overflow-hidden"
+            whileHover={{ scale: 1.02, y: -2 }}
+            whileTap={{ scale: 0.98 }}
           >
+            <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700" />
+            <Download className="h-4 w-4" />
             Get redcore
-          </button>
-          <button
+          </motion.button>
+          <motion.button
             onClick={() => scrollTo("products")}
-            className="inline-flex items-center gap-2 px-2 py-3.5 text-[0.88rem] font-medium text-ink-tertiary transition-colors hover:text-ink-primary cursor-pointer"
+            className="inline-flex items-center gap-2 px-4 py-4 text-[0.92rem] font-medium text-ink-tertiary transition-colors hover:text-ink-primary cursor-pointer"
+            whileHover={{ y: -1 }}
           >
             See what it does
-            <ArrowDown className="h-3.5 w-3.5" />
-          </button>
+            <motion.span
+              animate={{ y: [0, 4, 0] }}
+              transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
+            >
+              <ArrowDown className="h-4 w-4" />
+            </motion.span>
+          </motion.button>
         </motion.div>
 
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 1.2, duration: 0.8 }}
-          className="mt-20 flex items-center gap-8 text-[0.7rem] font-mono font-medium tracking-wide text-ink-muted"
+          transition={{ delay: 1.3, duration: 1 }}
+          className="mt-20 flex items-center gap-8"
         >
-          <span>Windows 10 & 11</span>
-          <span className="h-3 w-px bg-border" />
-          <span>100% reversible</span>
-          <span className="h-3 w-px bg-border" />
-          <span>No subscription</span>
+          {["Windows 10 & 11", "100% reversible", "No subscription"].map((t, i) => (
+            <span key={t} className="flex items-center gap-3 text-[0.7rem] font-mono font-medium tracking-wider text-ink-muted">
+              {i > 0 && <span className="h-3 w-px bg-border" />}
+              {t}
+            </span>
+          ))}
         </motion.div>
       </div>
     </section>
