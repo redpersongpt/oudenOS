@@ -1,7 +1,16 @@
 import type { Metadata } from "next";
 import { Navigation } from "@/components/brand/Navigation";
 import { FooterSection } from "@/components/sections/FooterSection";
-import Link from "next/link";
+import {
+  PageHero,
+  QuickSummary,
+  ComparisonBlock,
+  TrustBlock,
+  ProcessSteps,
+  CTAStrip,
+  RelatedPages,
+} from "@/components/seo";
+import { Eye, RotateCcw } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Work PC Debloat — Safe Windows Cleanup for Corporate Machines",
@@ -31,142 +40,134 @@ export default function WorkPCDebloatPage() {
   return (
     <>
       <Navigation />
-      <main className="min-h-screen pt-28 pb-20 px-6">
-        <article className="max-w-[740px] mx-auto">
-          <p className="font-mono text-[11px] font-medium uppercase tracking-[0.12em] text-accent mb-4">
-            Work PC
-          </p>
-          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-ink-primary mb-6 leading-tight">
-            Work PC Debloat — Cleanup Without Breaking Corporate Infrastructure
-          </h1>
+      <main className="min-h-screen">
+        <article>
+          <PageHero
+            overline="Work PC"
+            title="Work PC Debloat — Cleanup Without Breaking Corporate Infrastructure"
+            description="You want to debloat your work computer — remove the telemetry, kill the suggestions, clean up the start menu — but you cannot afford to break printing, VPN, Remote Desktop, or Group Policy. Most debloat tools do not account for corporate dependencies. redcore OS does."
+          />
 
-          <p className="text-ink-secondary text-base leading-relaxed mb-8">
-            You want to debloat your work computer — remove the telemetry,
-            kill the suggestions, clean up the start menu — but you cannot
-            afford to break printing, VPN, Remote Desktop, or Group Policy.
-            Most debloat tools do not account for corporate dependencies.
-            redcore OS does.
-          </p>
+          <QuickSummary
+            items={[
+              "Print Spooler, RDP, SMB, Group Policy — all preserved",
+              "VPN adapters, MDM enrollment, certificate services — untouched",
+              "Consumer telemetry, bloatware, suggestions — removed",
+              "Automatic corporate environment detection",
+              "Full rollback for every individual change",
+              "Free to use, no account required",
+            ]}
+          />
 
-          <h2 className="text-xl font-semibold text-ink-primary mt-10 mb-4">
-            The Work PC problem
-          </h2>
-          <p className="text-ink-secondary text-[15px] leading-relaxed mb-4">
-            A standard debloat script disables services indiscriminately.
-            Print Spooler gets stopped — your network printer disappears.
-            Remote Registry gets disabled — your IT department&apos;s
-            management tools stop working. Windows Remote Management gets
-            turned off — remote support breaks. SMB file sharing gets
-            restricted — mapped network drives disconnect.
-          </p>
-          <p className="text-ink-secondary text-[15px] leading-relaxed mb-4">
-            These are not theoretical risks. They happen constantly when
-            people run debloat scripts on work machines. The result is a
-            support ticket, a reinstall, and a conversation with IT that
-            nobody wants to have.
-          </p>
+          <ComparisonBlock
+            title="What gets preserved vs what gets removed"
+            left={{
+              heading: "Preserved on Work PCs",
+              items: [
+                "Print Spooler — network and local printing",
+                "Remote Desktop (RDP) — IT support access",
+                "SMB/CIFS — network drive mapping and file sharing",
+                "Group Policy Client — domain policy enforcement",
+                "Windows Remote Management — remote administration",
+                "Certificate Services — enterprise certificate chain",
+                "VPN adapters and services — corporate network access",
+                "WSUS/Windows Update for Business — managed updates",
+                "MDM enrollment — Intune/SCCM management",
+              ],
+            }}
+            right={{
+              heading: "Removed or disabled",
+              items: [
+                "Consumer telemetry and advertising ID tracking",
+                "Pre-installed apps (Clipchamp, Solitaire, News)",
+                "Start menu suggestions and lock screen tips",
+                "Widgets panel and news feed",
+                "Copilot integration (unless org-deployed)",
+                "Notification spam and feature announcements",
+                "Search highlights and web results in Start",
+                "Unnecessary scheduled tasks",
+              ],
+            }}
+          />
 
-          <h2 className="text-xl font-semibold text-ink-primary mt-10 mb-4">
-            What redcore preserves on Work PCs
-          </h2>
-          <p className="text-ink-secondary text-[15px] leading-relaxed mb-4">
-            When redcore OS detects a Work PC profile — based on domain
-            membership, installed management agents, network configuration,
-            and enterprise software presence — it automatically protects:
-          </p>
-          <ul className="list-disc pl-6 space-y-2 text-ink-secondary text-[15px] leading-relaxed mb-6">
-            <li><strong className="text-ink-primary">Print Spooler</strong> — network and local printing</li>
-            <li><strong className="text-ink-primary">Remote Desktop (RDP)</strong> — remote access for IT support</li>
-            <li><strong className="text-ink-primary">SMB/CIFS</strong> — network drive mapping and file sharing</li>
-            <li><strong className="text-ink-primary">Group Policy Client</strong> — domain policy enforcement</li>
-            <li><strong className="text-ink-primary">Windows Remote Management</strong> — remote administration</li>
-            <li><strong className="text-ink-primary">Certificate Services</strong> — enterprise certificate chain</li>
-            <li><strong className="text-ink-primary">VPN adapters and services</strong> — corporate network access</li>
-            <li><strong className="text-ink-primary">WSUS/Windows Update for Business</strong> — managed update channels</li>
-            <li><strong className="text-ink-primary">MDM enrollment</strong> — Intune/SCCM management</li>
-          </ul>
+          <ProcessSteps
+            steps={[
+              {
+                title: "Environment detection",
+                description:
+                  "redcore checks Active Directory domain membership, MDM/SCCM/Intune agents, enterprise VPN clients, network share mappings, Group Policy registry keys, and enterprise certificate stores.",
+              },
+              {
+                title: "Work PC profile activation",
+                description:
+                  "If corporate signals are detected, the Work PC profile activates automatically. Every action that could interfere with managed infrastructure is excluded from the plan.",
+              },
+              {
+                title: "Plan review",
+                description:
+                  "You see the full list of actions with clear labels showing what is preserved and why. Override any individual action if needed. Nothing runs without your approval.",
+              },
+              {
+                title: "Safe execution with rollback",
+                description:
+                  "A restore point is created first. Every change is logged with exact parameters. If a niche corporate tool breaks, undo that specific change without affecting the rest of the cleanup.",
+              },
+            ]}
+          />
 
-          <h2 className="text-xl font-semibold text-ink-primary mt-10 mb-4">
-            What still gets cleaned up
-          </h2>
-          <p className="text-ink-secondary text-[15px] leading-relaxed mb-4">
-            Preserving corporate infrastructure does not mean keeping all
-            the bloat. The Work PC profile still removes or disables:
-          </p>
-          <ul className="list-disc pl-6 space-y-2 text-ink-secondary text-[15px] leading-relaxed mb-6">
-            <li>Consumer telemetry and advertising ID tracking</li>
-            <li>Pre-installed consumer apps (Clipchamp, Solitaire, News)</li>
-            <li>Start menu suggestions and lock screen tips</li>
-            <li>Widgets panel and news feed</li>
-            <li>Copilot integration (unless your org deploys it)</li>
-            <li>Notification spam and feature announcements</li>
-            <li>Search highlights and web results in Start</li>
-            <li>Unnecessary scheduled tasks that waste CPU cycles</li>
-          </ul>
-          <p className="text-ink-secondary text-[15px] leading-relaxed mb-4">
-            The result is a faster, quieter work machine that still works
-            correctly on your corporate network.
-          </p>
+          <TrustBlock
+            icon={<Eye className="h-5 w-5" />}
+            title="Automatic detection, not a dropdown"
+            description="redcore does not ask you to manually select Work PC from a list. It detects domain membership, management agents, VPN clients, network shares, and enterprise certificates automatically. The plan adjusts before you ever see it."
+          />
 
-          <h2 className="text-xl font-semibold text-ink-primary mt-10 mb-4">
-            How the detection works
-          </h2>
-          <p className="text-ink-secondary text-[15px] leading-relaxed mb-4">
-            redcore does not ask you to manually select &ldquo;Work
-            PC&rdquo; from a dropdown. It detects the environment
-            automatically by checking:
-          </p>
-          <ul className="list-disc pl-6 space-y-2 text-ink-secondary text-[15px] leading-relaxed mb-6">
-            <li>Active Directory domain membership</li>
-            <li>Presence of MDM/SCCM/Intune agents</li>
-            <li>Enterprise VPN client installation</li>
-            <li>Network share mappings</li>
-            <li>Group Policy registry keys</li>
-            <li>Enterprise certificate stores</li>
-          </ul>
-          <p className="text-ink-secondary text-[15px] leading-relaxed mb-4">
-            If corporate signals are detected, the Work PC profile activates
-            and the transformation plan adjusts accordingly. You still see
-            and approve every change before it runs.
-          </p>
+          <TrustBlock
+            icon={<RotateCcw className="h-5 w-5" />}
+            title="Granular rollback for corporate environments"
+            description="Even with automatic preservation, every change creates a granular rollback point. If something unexpected breaks — a niche corporate tool that depends on an unusual Windows service — undo that specific change without affecting the rest."
+          />
 
-          <h2 className="text-xl font-semibold text-ink-primary mt-10 mb-4">
-            Rollback if anything goes wrong
-          </h2>
-          <p className="text-ink-secondary text-[15px] leading-relaxed mb-4">
-            Even with automatic preservation, every change creates a
-            granular rollback point. If something unexpected breaks — a
-            niche corporate tool that depends on an unusual Windows service
-            — you undo that specific change without affecting the rest of
-            the cleanup. Read more about{" "}
-            <Link href="/why-redcore" className="text-accent hover:text-accent-bright transition-colors">
-              how rollback works
-            </Link>.
-          </p>
+          <CTAStrip
+            title="Clean up your work machine safely"
+            description="redcore OS is free. Run the assessment on your work PC and review the plan before applying anything. Corporate infrastructure stays intact."
+            primaryAction={{
+              label: "Download redcore OS",
+              href: "/downloads",
+            }}
+            secondaryAction={{
+              label: "General debloat guide",
+              href: "/windows-debloat",
+            }}
+          />
 
-          <div className="border border-border rounded-lg p-6 mt-10 bg-surface">
-            <p className="text-ink-primary font-semibold mb-2">
-              Clean up your work machine safely
-            </p>
-            <p className="text-ink-secondary text-[14px] mb-4">
-              redcore OS is free. Run the assessment on your work PC and
-              review the plan before applying anything.
-            </p>
-            <div className="flex flex-wrap gap-3">
-              <Link
-                href="/downloads"
-                className="inline-flex items-center rounded-lg bg-accent px-5 py-2.5 text-[13px] font-semibold text-white transition-all hover:bg-accent-dim"
-              >
-                Download redcore OS
-              </Link>
-              <Link
-                href="/windows-debloat"
-                className="inline-flex items-center rounded-lg border border-border px-5 py-2.5 text-[13px] font-medium text-ink-secondary transition-all hover:text-ink-primary hover:border-border-strong"
-              >
-                General debloat guide
-              </Link>
-            </div>
-          </div>
+          <RelatedPages
+            pages={[
+              {
+                title: "Downloads",
+                description:
+                  "Download redcore OS installer. Free, no account required.",
+                href: "/downloads",
+              },
+              {
+                title: "redcore OS",
+                description:
+                  "Free Windows transformation tool. 8 profiles, 150+ actions, full rollback.",
+                href: "/redcore-os",
+              },
+              {
+                title: "Windows Debloat",
+                description:
+                  "General guide to debloating Windows 10 and 11.",
+                href: "/windows-debloat",
+              },
+              {
+                title: "Why redcore",
+                description:
+                  "How redcore compares to blind debloat scripts and registry hacks.",
+                href: "/why-redcore",
+              },
+            ]}
+          />
         </article>
       </main>
       <FooterSection />
