@@ -1,36 +1,36 @@
 /* ─── redcore-Tuning Design Tokens (CSS Custom Properties) ─────────────────── */
-/* Dark-first. Use these in one-off styles outside Tailwind utility classes.     */
+/* Dark-first. Matching redperson brand banner color scheme.                    */
 
 :root {
-  /* ── Brand Red ──────────────────────────────────────────────────────────── */
-  --color-brand-500: #E8453C;
-  --color-brand-600: #D03030;
-  --color-brand-700: #B52424;
-  --color-brand-hover: #F05048;
-  --color-brand-active: #C83830;
-  --color-brand-disabled: #5C1A18;
+  /* ── Brand Red (pink-red) ─────────────────────────────────────────────── */
+  --color-brand-500: #E8254B;
+  --color-brand-600: #C41E3E;
+  --color-brand-700: #A01832;
+  --color-brand-hover: #FF3860;
+  --color-brand-active: #C41E3E;
+  --color-brand-disabled: #5C1A28;
 
-  /* ── Dark surfaces ──────────────────────────────────────────────────────── */
-  --color-dark-950: #0D0D10;
-  --color-dark-900: #131316;
-  --color-dark-850: #1B1B1F;
-  --color-dark-800: #232328;
-  --color-dark-750: #2A2A30;
-  --color-dark-border: #26262C;
-  --color-dark-border-subtle: #1C1C21;
-  --color-dark-border-strong: #3A3A44;
+  /* ── Dark surfaces (warm charcoal) ────────────────────────────────────── */
+  --color-dark-950: #1a1a1e;
+  --color-dark-900: #1e1e22;
+  --color-dark-850: #252529;
+  --color-dark-800: #2c2c31;
+  --color-dark-750: #333338;
+  --color-dark-border: #38383e;
+  --color-dark-border-subtle: #2e2e34;
+  --color-dark-border-strong: #48484f;
 
   /* ── Ink (text on dark) ─────────────────────────────────────────────────── */
-  --color-ink-primary: #EDEDEF;
-  --color-ink-secondary: #8A8A9E;
-  --color-ink-tertiary: #52526A;
-  --color-ink-inverse: #0D0D10;
+  --color-ink-primary: #f0f0f4;
+  --color-ink-secondary: #a0a0ac;
+  --color-ink-tertiary: #6a6a76;
+  --color-ink-inverse: #1e1e22;
 
   /* ── Semantic — single source of truth for components ───────────────────── */
-  --color-bg:               var(--color-dark-950);
-  --color-surface:          var(--color-dark-900);
-  --color-surface-raised:   var(--color-dark-850);
-  --color-surface-overlay:  var(--color-dark-800);
+  --color-bg:               var(--color-dark-900);
+  --color-surface:          var(--color-dark-850);
+  --color-surface-raised:   var(--color-dark-800);
+  --color-surface-overlay:  var(--color-dark-750);
   --color-surface-muted:    var(--color-dark-750);
 
   --color-border:           var(--color-dark-border);
@@ -46,15 +46,15 @@
   /* ── Status ─────────────────────────────────────────────────────────────── */
   --color-success:    #22C55E;
   --color-warning:    #F59E0B;
-  --color-error:      #E8453C;
+  --color-error:      #E8254B;
   --color-info:       #3B82F6;
 
   /* ── Risk ────────────────────────────────────────────────────────────────── */
   --color-risk-safe:    #22C55E;
   --color-risk-low:     #4ADE80;
   --color-risk-medium:  #F59E0B;
-  --color-risk-high:    #E8453C;
-  --color-risk-extreme: #FF4040;
+  --color-risk-high:    #E8254B;
+  --color-risk-extreme: #FF3040;
 
   /* ── Typography ─────────────────────────────────────────────────────────── */
   --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
@@ -81,10 +81,10 @@
   --radius-2xl: 20px;
 
   /* ── Shadow (dark-optimized) ─────────────────────────────────────────────── */
-  --shadow-card:       0 1px 3px rgba(0,0,0,0.45), 0 6px 16px rgba(0,0,0,0.3);
-  --shadow-card-hover: 0 2px 8px rgba(0,0,0,0.55), 0 12px 28px rgba(0,0,0,0.4);
-  --shadow-modal:      0 24px 48px -8px rgba(0,0,0,0.7), 0 8px 16px rgba(0,0,0,0.4);
-  --shadow-brand-glow: 0 0 0 3px rgba(232,69,60,0.25);
+  --shadow-card:       0 1px 3px rgba(0,0,0,0.35), 0 6px 16px rgba(0,0,0,0.2);
+  --shadow-card-hover: 0 2px 8px rgba(0,0,0,0.45), 0 12px 28px rgba(0,0,0,0.3);
+  --shadow-modal:      0 24px 48px -8px rgba(0,0,0,0.6), 0 8px 16px rgba(0,0,0,0.3);
+  --shadow-brand-glow: 0 0 0 3px rgba(232,37,75,0.25);
   --shadow-amber-glow: 0 0 0 3px rgba(245,158,11,0.2);
 
   /* ── Layout ─────────────────────────────────────────────────────────────── */
