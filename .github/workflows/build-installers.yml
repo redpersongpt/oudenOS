@@ -161,17 +161,20 @@ jobs:
           name: redcore-os-installer
           path: ./artifacts/os/
 
-      - name: Setup SSH key
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.VDS_SSH_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H REDACTED_VDS_IP >> ~/.ssh/known_hosts
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.VDS_SSH_KEY }}
+          known_hosts: unnecessary
+          if_key_exists: replace
+
+      - name: Add known hosts
+        run: ssh-keyscan -H REDACTED_VDS_IP >> ~/.ssh/known_hosts 2>/dev/null
 
       - name: Upload OS installer to VDS
         run: |
-          scp ./artifacts/os/redcore-os-setup.exe ubuntu@REDACTED_VDS_IP:/var/www/redcore-downloads/os/
+          scp -o StrictHostKeyChecking=no ./artifacts/os/redcore-os-setup.exe ubuntu@REDACTED_VDS_IP:/var/www/redcore-downloads/os/
 
       - name: Verify upload
         run: |
-          ssh ubuntu@REDACTED_VDS_IP "ls -lh /var/www/redcore-downloads/os/redcore-os-setup.exe"
+          ssh -o StrictHostKeyChecking=no ubuntu@REDACTED_VDS_IP "ls -lh /var/www/redcore-downloads/os/redcore-os-setup.exe"
