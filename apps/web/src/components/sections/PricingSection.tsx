@@ -14,7 +14,7 @@ export function PricingSection() {
     <section id="pricing" ref={ref} className="relative py-36 lg:py-48">
       {/* Dramatic ambient */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute left-1/2 top-0 -translate-x-1/2 h-[600px] w-[800px] rounded-full opacity-[0.04]" style={{ background: "radial-gradient(ellipse, #E8453C, transparent 55%)" }} />
+        <div className="absolute left-1/2 top-0 -translate-x-1/2 h-[600px] w-[800px] rounded-full opacity-[0.04]" style={{ background: "radial-gradient(ellipse, #E8254B, transparent 55%)" }} />
         <div className="absolute left-[20%] bottom-0 h-[400px] w-[400px] rounded-full opacity-[0.02]" style={{ background: "radial-gradient(circle, #4ade80, transparent 60%)" }} />
       </div>
 
@@ -43,7 +43,7 @@ export function PricingSection() {
             animate={inView ? { opacity: 1, y: 0 } : {}}
             transition={{ delay: 0.1, duration: 0.7, ease }}
             whileHover={{ y: -6, transition: { duration: 0.25 } }}
-            className="relative rounded-2xl border border-border bg-gradient-to-b from-surface to-[#0a0a0e] p-9 lg:p-10 overflow-hidden"
+            className="relative rounded-2xl border border-border bg-gradient-to-b from-surface to-[#222226] p-9 lg:p-10 overflow-hidden"
           >
             {/* Green ambient */}
             <div className="pointer-events-none absolute -top-24 -left-24 h-[200px] w-[200px] rounded-full opacity-[0.06]" style={{ background: "radial-gradient(circle, #4ade80, transparent 60%)" }} />
@@ -116,10 +116,10 @@ export function PricingSection() {
             animate={inView ? { opacity: 1, y: 0 } : {}}
             transition={{ delay: 0.2, duration: 0.7, ease }}
             whileHover={{ y: -6, transition: { duration: 0.25 } }}
-            className="relative rounded-2xl border border-accent/25 bg-gradient-to-b from-surface to-[#0c0a0a] p-9 lg:p-10 overflow-hidden"
+            className="relative rounded-2xl border border-accent/25 bg-gradient-to-b from-surface to-[#222226] p-9 lg:p-10 overflow-hidden"
           >
             {/* Red ambient */}
-            <div className="pointer-events-none absolute -top-24 -right-24 h-[200px] w-[200px] rounded-full opacity-[0.08]" style={{ background: "radial-gradient(circle, #E8453C, transparent 60%)" }} />
+            <div className="pointer-events-none absolute -top-24 -right-24 h-[200px] w-[200px] rounded-full opacity-[0.08]" style={{ background: "radial-gradient(circle, #E8254B, transparent 60%)" }} />
 
             {/* Popular tag */}
             <motion.div
