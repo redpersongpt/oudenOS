@@ -7,24 +7,39 @@ import { contextBridge, ipcRenderer } from "electron";
 // ─── Allowed IPC methods (defense-in-depth allowlist) ────────────────────────
 
 const ALLOWED_METHODS = new Set([
+  // System
   "system.status",
+  "system.reboot",
+  // Assessment & classification
   "assess.full",
   "classify.machine",
-  "transform.plan",
-  "transform.getActions",
+  // Playbook-native path (primary)
+  "playbook.resolve",
+  "appbundle.getRecommended",
+  "appbundle.resolve",
+  // Execution & rollback
   "execute.applyAction",
   "rollback.list",
   "rollback.restore",
   "rollback.audit",
+  // Personalization
   "personalize.options",
   "personalize.apply",
   "personalize.revert",
-  "pipeline.assessClassifyPlan",
+  // Verification
   "verify.registryValue",
-  // Playbook-native methods
-  "playbook.resolve",
-  "appbundle.getRecommended",
-  "appbundle.resolve",
+  // Journal (reboot/resume)
+  "journal.state",
+  "journal.resume",
+  "journal.cancel",
+]);
+
+// ─── Allowed IPC event channels (defense-in-depth) ─────────────────────────
+
+const ALLOWED_CHANNELS = new Set([
+  "execute.progress",
+  "service.error",
+  "journal.progress",
 ]);
 
 // ─── Exposed API ─────────────────────────────────────────────────────────────
@@ -37,9 +52,16 @@ contextBridge.exposeInMainWorld("redcore", {
       }
       return ipcRenderer.invoke("service:call", method, params ?? {}) as Promise<T>;
     },
+    status: (): Promise<{ running: boolean; mode: string }> => {
+      return ipcRenderer.invoke("service:status");
+    },
   },
 
   on: (channel: string, callback: (data: unknown) => void): (() => void) => {
+    if (!ALLOWED_CHANNELS.has(channel)) {
+      console.warn(`Blocked IPC channel: ${channel}`);
+      return () => {};
+    }
     const handler = (_event: Electron.IpcRendererEvent, data: unknown) => callback(data);
     ipcRenderer.on(channel, handler);
     return () => ipcRenderer.removeListener(channel, handler);
