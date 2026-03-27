@@ -17,7 +17,7 @@ interface NavLink {
 // ─── Constants ───────────────────────────────────────────────────────────────
 
 const NAV_LINKS: NavLink[] = [
-  { label: "Products", sectionId: "ecosystem" },
+  { label: "Products", sectionId: "products" },
   { label: "How it works", sectionId: "how" },
   { label: "Pricing", sectionId: "pricing" },
 ];
