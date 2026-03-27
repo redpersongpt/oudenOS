@@ -21,8 +21,8 @@ export const metadata: Metadata = {
   description:
     "Machine-aware optimization and in-place Windows transformation. Two precision instruments. One ecosystem.",
   icons: {
-    icon: "/redcore-logo.png",
-    apple: "/redcore-logo.png",
+    icon: "/favicon.png",
+    apple: "/favicon.png",
   },
   openGraph: {
     title: "redcore — Premium Windows Performance Ecosystem",
