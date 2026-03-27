@@ -1,7 +1,16 @@
 import type { Metadata } from "next";
 import { Navigation } from "@/components/brand/Navigation";
 import { FooterSection } from "@/components/sections/FooterSection";
-import Link from "next/link";
+import {
+  PageHero,
+  QuickSummary,
+  ProcessSteps,
+  TrustBlock,
+  ComparisonBlock,
+  CTAStrip,
+  RelatedPages,
+} from "@/components/seo";
+import { RotateCcw, Monitor } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "redcore OS — Free Windows Transformation Tool",
@@ -57,213 +66,145 @@ export default function RedcoreOSPage() {
   return (
     <>
       <Navigation />
-      <main className="min-h-screen pt-28 pb-20 px-6">
-        <article className="max-w-[740px] mx-auto">
+      <main className="min-h-screen">
+        <article>
           <script
             type="application/ld+json"
             dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
           />
 
-          <p className="font-mono text-[11px] font-medium uppercase tracking-[0.12em] text-accent mb-4">
-            Product
-          </p>
-          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-ink-primary mb-6 leading-tight">
-            redcore OS — Free Windows Transformation Tool
-          </h1>
+          <PageHero
+            overline="Product"
+            title="redcore OS — Free Windows Transformation Tool"
+            description="redcore OS is a desktop application that scans your Windows system, builds a hardware-aware optimization plan, and applies reversible changes across privacy, performance, shell customization, and bloatware removal. It is free to use."
+          />
 
-          <p className="text-ink-secondary text-base leading-relaxed mb-8">
-            redcore OS is a desktop application that scans your Windows
-            system, builds a hardware-aware optimization plan, and applies
-            reversible changes across privacy, performance, shell
-            customization, and bloatware removal. It is free to use.
-          </p>
+          <QuickSummary
+            items={[
+              "Free — no account, no subscription, no license key",
+              "Installer-like wizard with guided step-by-step flow",
+              "Playbook-driven: 150+ categorized actions across 8 domains",
+              "8 profiles: Gaming, Work PC, Development, Privacy, Minimal, Balanced, Laptop, Server",
+              "Machine-aware hardware scanning before any changes",
+              "Full rollback support with granular undo",
+              "Work PC preservation for corporate environments",
+              "Not open source — proprietary, free product",
+            ]}
+          />
 
-          <h2 className="text-xl font-semibold text-ink-primary mt-10 mb-4">
-            How it works
-          </h2>
-          <p className="text-ink-secondary text-[15px] leading-relaxed mb-4">
-            The tool follows a structured flow: assessment, profile
-            selection, plan review, and execution.
-          </p>
-          <ol className="list-decimal pl-6 space-y-3 text-ink-secondary text-[15px] leading-relaxed mb-6">
-            <li>
-              <strong className="text-ink-primary">Hardware assessment.</strong>{" "}
-              redcore OS scans your CPU, GPU, disk type (NVMe/SSD/HDD),
-              RAM, network adapters, power source, and installed software.
-              This information determines which optimizations are safe and
-              beneficial for your specific machine.
-            </li>
-            <li>
-              <strong className="text-ink-primary">Profile selection.</strong>{" "}
-              You choose from eight profiles that represent different use
-              cases. Each profile sets different defaults for which actions
-              to apply and which to skip.
-            </li>
-            <li>
-              <strong className="text-ink-primary">Plan review.</strong>{" "}
-              Before anything is changed, you see the full list of actions
-              grouped by category: privacy, performance, shell, services,
-              apps, networking, security, and startup. Each action shows what
-              it does, why it is recommended, and whether it is enabled or
-              skipped for your profile.
-            </li>
-            <li>
-              <strong className="text-ink-primary">Execution.</strong>{" "}
-              After you approve the plan, redcore applies the changes. A
-              restore point is created first. Every modification is logged
-              for rollback.
-            </li>
-          </ol>
+          <ProcessSteps
+            steps={[
+              {
+                title: "Scan",
+                description:
+                  "redcore OS scans your CPU, GPU, disk type (NVMe/SSD/HDD), RAM, network adapters, power source, and installed software. This determines which optimizations are safe and beneficial for your specific machine.",
+              },
+              {
+                title: "Classify",
+                description:
+                  "Based on scan results, redcore identifies your machine type — laptop vs desktop, gaming vs workstation, personal vs corporate. Domain membership, MDM agents, and enterprise software are detected automatically.",
+              },
+              {
+                title: "Plan",
+                description:
+                  "You choose from 8 profiles and see the full list of actions grouped by category: privacy, performance, shell, services, apps, networking, security, and startup. Each action shows what it does and whether it is enabled or skipped for your profile.",
+              },
+              {
+                title: "Execute",
+                description:
+                  "After you approve the plan, a system restore point is created first. Every modification is logged for rollback. Changes are applied in dependency order with validation checks.",
+              },
+              {
+                title: "Validate",
+                description:
+                  "After execution, redcore verifies that critical services are running, network connectivity is intact, and no expected functionality was disrupted. Issues are flagged for immediate rollback.",
+              },
+            ]}
+          />
 
-          <h2 className="text-xl font-semibold text-ink-primary mt-10 mb-4">
-            Eight profiles
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
-            {[
-              {
-                name: "Gaming",
-                desc: "Prioritizes latency, disables background noise, keeps game services.",
-              },
-              {
-                name: "Work PC",
-                desc: "Preserves corporate infrastructure, MDM, VPN, and enterprise services.",
-              },
-              {
-                name: "Development",
-                desc: "Keeps developer tools, WSL, Hyper-V, and debugging services intact.",
-              },
-              {
-                name: "Privacy",
-                desc: "Maximum telemetry removal, ad blocking, tracking prevention.",
-              },
-              {
-                name: "Minimal",
-                desc: "Strips everything non-essential. For users who know exactly what they need.",
-              },
-              {
-                name: "Balanced",
-                desc: "Moderate cleanup. Good starting point for most users.",
-              },
-              {
-                name: "Laptop",
-                desc: "Optimizes for battery life, Wi-Fi stability, and power management.",
-              },
-              {
-                name: "Server",
-                desc: "Disables desktop features, keeps network and remote management tools.",
-              },
-            ].map((profile) => (
-              <div
-                key={profile.name}
-                className="border border-border rounded-lg p-4 bg-surface"
-              >
-                <p className="text-ink-primary font-semibold text-[14px] mb-1">
-                  {profile.name}
-                </p>
-                <p className="text-ink-tertiary text-[13px] leading-relaxed">
-                  {profile.desc}
-                </p>
-              </div>
-            ))}
-          </div>
+          <ComparisonBlock
+            title="What changes vs what stays"
+            left={{
+              heading: "Changed or removed",
+              items: [
+                "Telemetry and diagnostic data collection",
+                "Copilot, Recall, and AI features",
+                "Pre-installed consumer apps",
+                "Widgets, suggestions, and ad notifications",
+                "Unnecessary background services",
+                "Edge browser forcing and protocol hijacking",
+                "Scheduled tasks that waste CPU cycles",
+                "Visual effects that hurt performance",
+              ],
+            }}
+            right={{
+              heading: "Always preserved",
+              items: [
+                "Windows Update functionality",
+                "Windows Defender (configurable)",
+                "Hardware drivers and kernel components",
+                "System stability services",
+                "Profile-specific tools (Xbox, Teams, WSL)",
+                "Corporate infrastructure (Work PC profile)",
+                "Network connectivity and VPN",
+                "User files and application data",
+              ],
+            }}
+          />
 
-          <h2 className="text-xl font-semibold text-ink-primary mt-10 mb-4">
-            150+ categorized actions
-          </h2>
-          <p className="text-ink-secondary text-[15px] leading-relaxed mb-4">
-            Actions are organized into playbook categories:
-          </p>
-          <ul className="list-disc pl-6 space-y-2 text-ink-secondary text-[15px] leading-relaxed mb-4">
-            <li>
-              <strong className="text-ink-primary">Privacy</strong> —
-              Telemetry, diagnostic data, advertising ID, Copilot, Recall,
-              activity history, input collection.
-            </li>
-            <li>
-              <strong className="text-ink-primary">Performance</strong> —
-              CPU scheduler priority, GPU optimizations, power plan,
-              visual effects, prefetch/superfetch tuning.
-            </li>
-            <li>
-              <strong className="text-ink-primary">Shell</strong> —
-              Taskbar cleanup, Explorer settings, Start menu layout,
-              search configuration, ads and tips removal.
-            </li>
-            <li>
-              <strong className="text-ink-primary">Services</strong> —
-              Disable unused services, optimize startup types, remove
-              consumer services on machines that do not need them.
-            </li>
-            <li>
-              <strong className="text-ink-primary">Apps</strong> —
-              Remove pre-installed bloatware, Edge forcing, third-party
-              bundled apps.
-            </li>
-            <li>
-              <strong className="text-ink-primary">Networking</strong> —
-              DNS optimization, adapter tuning, latency reduction for
-              gaming profiles.
-            </li>
-            <li>
-              <strong className="text-ink-primary">Security</strong> —
-              Windows Update control, firewall hardening, UAC configuration.
-            </li>
-            <li>
-              <strong className="text-ink-primary">Startup</strong> —
-              Boot optimization, startup program management, fast
-              shutdown configuration.
-            </li>
-          </ul>
+          <TrustBlock
+            icon={<RotateCcw className="h-5 w-5" />}
+            title="Full rollback at every level"
+            description="Every change is logged with exact registry keys, service states, and file modifications. Roll back individual actions or the entire transformation. A system restore point is created before execution begins."
+          />
 
-          <h2 className="text-xl font-semibold text-ink-primary mt-10 mb-4">
-            Rollback and safety
-          </h2>
-          <p className="text-ink-secondary text-[15px] leading-relaxed mb-4">
-            Every change redcore OS makes is logged with the exact registry
-            keys, service states, and file modifications involved. A system
-            restore point is created before execution begins. If any change
-            causes an issue, you can roll back individual actions or the
-            entire transformation from within the tool.
-          </p>
-          <p className="text-ink-secondary text-[15px] leading-relaxed mb-4">
-            The Work PC profile is specifically designed for machines managed
-            by an employer. It preserves Group Policy settings, MDM
-            enrollment, VPN configurations, Windows Defender for Endpoint,
-            and domain trust relationships.
-          </p>
+          <TrustBlock
+            icon={<Monitor className="h-5 w-5" />}
+            title="Work PC safe"
+            description="The Work PC profile preserves Group Policy, MDM enrollment, VPN configurations, Windows Defender for Endpoint, domain trust relationships, Print Spooler, RDP, and SMB. Corporate machines stay compliant."
+          />
 
-          <h2 className="text-xl font-semibold text-ink-primary mt-10 mb-4">
-            System requirements
-          </h2>
-          <ul className="list-disc pl-6 space-y-1 text-ink-secondary text-[15px] leading-relaxed mb-6">
-            <li>Windows 10 (21H2 or later) or Windows 11</li>
-            <li>x64 architecture</li>
-            <li>Administrator privileges</li>
-            <li>500 MB free disk space</li>
-          </ul>
+          <CTAStrip
+            title="Download redcore OS"
+            description="Free. No account required. Scan, review, apply, rollback. Windows 10 (21H2+) and Windows 11 supported."
+            primaryAction={{
+              label: "Go to downloads",
+              href: "/downloads",
+            }}
+            secondaryAction={{
+              label: "See redcore Tuning",
+              href: "/redcore-tuning",
+            }}
+          />
 
-          <div className="border border-border rounded-lg p-6 mt-10 bg-surface">
-            <p className="text-ink-primary font-semibold mb-2">
-              Download redcore OS
-            </p>
-            <p className="text-ink-secondary text-[14px] mb-4">
-              Free. No account required. Scan, review, apply, rollback.
-            </p>
-            <div className="flex flex-wrap gap-3">
-              <Link
-                href="/downloads"
-                className="inline-flex items-center rounded-lg bg-accent px-5 py-2.5 text-[13px] font-semibold text-white transition-all hover:bg-accent-dim"
-              >
-                Go to downloads
-              </Link>
-              <Link
-                href="/redcore-tuning"
-                className="inline-flex items-center rounded-lg border border-border px-5 py-2.5 text-[13px] font-medium text-ink-secondary transition-all hover:text-ink-primary hover:border-border-strong"
-              >
-                See redcore Tuning
-              </Link>
-            </div>
-          </div>
+          <RelatedPages
+            pages={[
+              {
+                title: "Downloads",
+                description:
+                  "Download redcore OS installer. Free, no account required.",
+                href: "/downloads",
+              },
+              {
+                title: "redcore Tuning",
+                description:
+                  "Hardware-level optimization. CPU scheduler, timer resolution, GPU tuning, memory management. $12.99 one-time.",
+                href: "/redcore-tuning",
+              },
+              {
+                title: "Windows Debloat",
+                description:
+                  "General guide to debloating Windows — what to remove, what to keep.",
+                href: "/windows-debloat",
+              },
+              {
+                title: "Why redcore",
+                description:
+                  "How redcore compares to blind debloat scripts and registry hacks.",
+                href: "/why-redcore",
+              },
+            ]}
+          />
         </article>
       </main>
       <FooterSection />
