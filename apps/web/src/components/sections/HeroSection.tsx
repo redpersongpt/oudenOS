@@ -1,8 +1,7 @@
 "use client";
 
-import { motion, useMotionValue, useTransform, animate } from "framer-motion";
+import { motion } from "framer-motion";
 import { ArrowDown, Download } from "lucide-react";
-import { useEffect, useRef } from "react";
 
 const ease = [0.16, 1, 0.3, 1] as const;
 const smooth = [0.25, 0.1, 0.25, 1] as const;
@@ -15,54 +14,71 @@ function scrollTo(id: string) {
   }
 }
 
-// ─── Animated Counter ────────────────────────────────────────────────────────
+// ─── Pill config ─────────────────────────────────────────────────────────────
 
-function Counter({ value, suffix = "", delay = 0 }: { value: number; suffix?: string; delay?: number }) {
-  const count = useMotionValue(0);
-  const rounded = useTransform(count, (v) => Math.round(v));
-  const ref = useRef<HTMLSpanElement>(null);
+const PILLS = [
+  { label: "Debloat",           x: -185, y: -130, delay: 0.7,  floatY: 6,  floatDur: 3.2 },
+  { label: "Better Frame Times",x:  155, y: -120, delay: 0.85, floatY: -5, floatDur: 3.6 },
+  { label: "No Input Lag",      x: -200, y: -30,  delay: 1.0,  floatY: -7, floatDur: 3.0 },
+  { label: "Privacy Hardened",  x:  180, y: -20,  delay: 1.15, floatY: 5,  floatDur: 3.4 },
+  { label: "Work PC Safe",      x: -170, y:  70,  delay: 1.3,  floatY: 6,  floatDur: 3.8 },
+  { label: "Full Rollback",     x:  165, y:  80,  delay: 1.45, floatY: -6, floatDur: 3.1 },
+  { label: "164 Actions",       x: -120, y:  160, delay: 1.6,  floatY: -5, floatDur: 3.5 },
+  { label: "8 Profiles",        x:  120, y:  160, delay: 1.75, floatY: 7,  floatDur: 3.3 },
+  { label: "−34% Boot Time",    x:    0, y: -170, delay: 0.9,  floatY: 5,  floatDur: 3.7 },
+  { label: "Zero Telemetry",    x:    0, y:  190, delay: 1.5,  floatY: -6, floatDur: 2.9 },
+];
 
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      const controls = animate(count, value, {
-        duration: 1.8,
-        ease: [0.16, 1, 0.3, 1],
-      });
-      return () => controls.stop();
-    }, delay * 1000);
-    return () => clearTimeout(timeout);
-  }, [count, value, delay]);
+// All pills finish entrance by t=2.0s (delay + 0.5s duration)
+// Logo finishes at t=2.0s as well
 
-  useEffect(() => {
-    const unsubscribe = rounded.on("change", (v) => {
-      if (ref.current) ref.current.textContent = v.toString() + suffix;
-    });
-    return unsubscribe;
-  }, [rounded, suffix]);
+// ─── Floating Pill ───────────────────────────────────────────────────────────
 
-  return <span ref={ref}>0{suffix}</span>;
+function Pill({ label, x, y, delay, floatY, floatDur }: typeof PILLS[number]) {
+  return (
+    <motion.div
+      className="absolute left-1/2 top-1/2 pointer-events-none"
+      style={{ x, y }}
+      initial={{ opacity: 0, scale: 0.6 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ delay, duration: 0.5, ease: smooth }}
+    >
+      <motion.div
+        animate={{ y: [0, floatY, 0] }}
+        transition={{ repeat: Infinity, duration: floatDur, ease: "easeInOut" }}
+        className="rounded-full border border-border bg-surface/80 backdrop-blur-sm px-4 py-1.5 whitespace-nowrap"
+      >
+        <span className="text-[11px] font-medium tracking-wide text-ink-secondary">
+          {label}
+        </span>
+      </motion.div>
+    </motion.div>
+  );
 }
 
-// ─── Orbiting Hexagon Mark ───────────────────────────────────────────────────
+// ─── Hexagon Mark ────────────────────────────────────────────────────────────
 
 function HexagonMark() {
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.8 }}
+      initial={{ opacity: 0, scale: 0.7 }}
       animate={{ opacity: 1, scale: 1 }}
-      transition={{ delay: 0.4, duration: 1.2, ease: smooth }}
+      transition={{ delay: 0.3, duration: 1.2, ease: smooth }}
       className="relative"
     >
-      {/* Outer glow pulse */}
+      {/* Ambient pulse */}
       <motion.div
-        animate={{ opacity: [0.03, 0.08, 0.03], scale: [0.95, 1.05, 0.95] }}
+        animate={{
+          opacity: [0.04, 0.1, 0.04],
+          scale: [0.92, 1.08, 0.92],
+        }}
         transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
-        className="absolute inset-[-40px] rounded-full"
-        style={{ background: "radial-gradient(circle, #E8254B, transparent 65%)" }}
+        className="absolute inset-[-60px] rounded-full"
+        style={{ background: "radial-gradient(circle, #E8254B, transparent 60%)" }}
       />
 
-      <svg width="200" height="200" viewBox="0 0 200 200" fill="none" className="relative">
-        {/* Hex outline */}
+      <svg width="180" height="180" viewBox="0 0 200 200" fill="none" className="relative">
+        {/* Hex outline — draws in */}
         <motion.path
           d="M100 15L175 57.5v85L100 185 25 142.5v-85L100 15z"
           stroke="#E8254B"
@@ -70,7 +86,7 @@ function HexagonMark() {
           fill="none"
           initial={{ pathLength: 0, opacity: 0 }}
           animate={{ pathLength: 1, opacity: 1 }}
-          transition={{ delay: 0.6, duration: 1.5, ease: smooth }}
+          transition={{ delay: 0.4, duration: 1.4, ease: smooth }}
         />
 
         {/* Hex fill */}
@@ -78,169 +94,92 @@ function HexagonMark() {
           d="M100 15L175 57.5v85L100 185 25 142.5v-85L100 15z"
           fill="#E8254B"
           initial={{ opacity: 0 }}
-          animate={{ opacity: 0.06 }}
-          transition={{ delay: 1.2, duration: 0.8 }}
+          animate={{ opacity: 0.07 }}
+          transition={{ delay: 1.2, duration: 0.6 }}
         />
 
-        {/* Orbital ring */}
+        {/* Outer orbital — draws in */}
         <motion.circle
-          cx="100" cy="100" r="55"
+          cx="100" cy="100" r="60"
           stroke="#E8254B"
-          strokeWidth="1.2"
+          strokeWidth="1"
           fill="none"
           initial={{ pathLength: 0, opacity: 0 }}
-          animate={{ pathLength: 1, opacity: 0.35 }}
-          transition={{ delay: 0.8, duration: 1.2, ease: smooth }}
+          animate={{ pathLength: 1, opacity: 0.25 }}
+          transition={{ delay: 0.6, duration: 1.2, ease: smooth }}
         />
 
-        {/* Inner core */}
+        {/* Inner orbital */}
         <motion.circle
-          cx="100" cy="100" r="28"
+          cx="100" cy="100" r="42"
+          stroke="#E8254B"
+          strokeWidth="0.8"
+          fill="none"
+          strokeDasharray="4 6"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 0.15 }}
+          transition={{ delay: 1, duration: 0.6 }}
+        />
+
+        {/* Core — pops in */}
+        <motion.circle
+          cx="100" cy="100" r="24"
           fill="#E8254B"
           initial={{ scale: 0, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          transition={{ delay: 1, duration: 0.6, type: "spring", stiffness: 200, damping: 20 }}
+          transition={{ delay: 0.9, duration: 0.5, type: "spring", stiffness: 220, damping: 18 }}
         />
 
-        {/* Orbiting dot */}
+        {/* Core inner ring — standby breathe */}
         <motion.circle
-          cx="155" cy="100" r="4"
+          cx="100" cy="100" r="24"
+          stroke="white"
+          strokeWidth="0.5"
+          fill="none"
+          animate={{ r: [24, 27, 24], opacity: [0.3, 0.1, 0.3] }}
+          transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
+        />
+
+        {/* Orbiting dot 1 */}
+        <motion.circle
+          cx="160" cy="100" r="3"
           fill="#E8254B"
           initial={{ opacity: 0 }}
-          animate={{ opacity: [0, 1, 1, 0.5], rotate: 360 }}
-          transition={{ delay: 1.5, duration: 6, repeat: Infinity, ease: "linear" }}
+          animate={{ opacity: [0, 0.8, 0.8, 0.3] }}
+          transition={{ delay: 1.3, duration: 0.5 }}
+        />
+        <motion.circle
+          cx="160" cy="100" r="3"
+          fill="#E8254B"
+          animate={{ rotate: 360 }}
+          transition={{ repeat: Infinity, duration: 8, ease: "linear" }}
           style={{ transformOrigin: "100px 100px" }}
+          className="opacity-60"
         />
 
-        {/* Accent notches */}
-        <motion.line
-          x1="140" y1="48" x2="152" y2="41"
-          stroke="#E8254B" strokeWidth="1.5" strokeLinecap="round"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 0.5 }}
-          transition={{ delay: 1.4, duration: 0.4 }}
+        {/* Orbiting dot 2 — counter direction */}
+        <motion.circle
+          cx="40" cy="100" r="2.5"
+          fill="#E8254B"
+          animate={{ rotate: -360 }}
+          transition={{ repeat: Infinity, duration: 12, ease: "linear" }}
+          style={{ transformOrigin: "100px 100px" }}
+          className="opacity-30"
         />
-        <motion.line
-          x1="48" y1="152" x2="60" y2="159"
-          stroke="#E8254B" strokeWidth="1.5" strokeLinecap="round"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 0.25 }}
-          transition={{ delay: 1.6, duration: 0.4 }}
-        />
+
+        {/* Accent tick marks */}
+        <motion.line x1="142" y1="46" x2="152" y2="40" stroke="#E8254B" strokeWidth="1.5" strokeLinecap="round"
+          initial={{ opacity: 0 }} animate={{ opacity: 0.45 }} transition={{ delay: 1.5, duration: 0.3 }} />
+        <motion.line x1="48" y1="154" x2="58" y2="160" stroke="#E8254B" strokeWidth="1.5" strokeLinecap="round"
+          initial={{ opacity: 0 }} animate={{ opacity: 0.2 }} transition={{ delay: 1.6, duration: 0.3 }} />
       </svg>
-    </motion.div>
-  );
-}
 
-// ─── System Detection Card ───────────────────────────────────────────────────
-
-function SystemCard() {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 24, scale: 0.96 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ delay: 1.2, duration: 0.9, ease }}
-      className="w-[280px] rounded-xl border border-border bg-surface/80 backdrop-blur-sm p-5"
-    >
-      {/* Status indicator */}
-      <div className="flex items-center gap-2.5 mb-4">
-        <motion.span
-          animate={{ opacity: [0.4, 1, 0.4] }}
-          transition={{ repeat: Infinity, duration: 2 }}
-          className="h-2 w-2 rounded-full bg-emerald-400"
-        />
-        <span className="font-mono text-[9px] font-medium uppercase tracking-[0.12em] text-ink-muted">
-          System detected
-        </span>
-      </div>
-
-      {/* Profile */}
-      <motion.p
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.6, duration: 0.5 }}
-        className="text-[1rem] font-bold text-ink-primary"
-      >
-        Gaming Desktop
-      </motion.p>
-      <motion.p
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.8, duration: 0.5 }}
-        className="mt-0.5 font-mono text-[10px] text-ink-tertiary"
-      >
-        94% confidence · Ryzen 9 · RTX 4090
-      </motion.p>
-
-      {/* Specs grid */}
-      <div className="mt-4 grid grid-cols-2 gap-x-4 gap-y-2.5">
-        {[
-          ["CPU", "Ryzen 9 7950X"],
-          ["GPU", "RTX 4090"],
-          ["RAM", "32 GB DDR5"],
-          ["Disk", "2 TB NVMe"],
-        ].map(([k, v], i) => (
-          <motion.div
-            key={k}
-            initial={{ opacity: 0, x: -8 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 2 + i * 0.12, duration: 0.4, ease }}
-          >
-            <p className="text-[8px] font-medium uppercase tracking-[0.12em] text-ink-muted">{k}</p>
-            <p className="font-mono text-[11px] text-ink-secondary">{v}</p>
-          </motion.div>
-        ))}
-      </div>
-
-      {/* Optimization preview */}
+      {/* Standby: subtle hex rotation */}
       <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 2.6, duration: 0.6 }}
-        className="mt-4 pt-3 border-t border-border"
-      >
-        <p className="font-mono text-[8px] font-medium uppercase tracking-[0.12em] text-accent mb-2">
-          Optimization plan
-        </p>
-        {[
-          ["Disable Game DVR", "Safe"],
-          ["Tune CPU Scheduler", "Low"],
-          ["Reduce Telemetry", "Safe"],
-        ].map(([name, risk], i) => (
-          <motion.div
-            key={name}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 2.8 + i * 0.15, duration: 0.3 }}
-            className="flex items-center justify-between py-1"
-          >
-            <span className="text-[10px] text-ink-secondary">{name}</span>
-            <span className={`font-mono text-[9px] font-medium ${risk === "Safe" ? "text-emerald-400" : "text-amber-400"}`}>
-              {risk}
-            </span>
-          </motion.div>
-        ))}
-      </motion.div>
-    </motion.div>
-  );
-}
-
-// ─── Floating Stat Pill ──────────────────────────────────────────────────────
-
-function StatPill({ label, value, suffix, delay, className }: {
-  label: string; value: number; suffix: string; delay: number; className: string;
-}) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.9, y: 10 }}
-      animate={{ opacity: 1, scale: 1, y: 0 }}
-      transition={{ delay, duration: 0.6, ease }}
-      className={`rounded-xl border border-border bg-surface/90 backdrop-blur-sm px-4 py-3 text-center ${className}`}
-    >
-      <p className="font-mono text-[1.4rem] font-bold text-ink-primary leading-none">
-        <Counter value={value} suffix={suffix} delay={delay} />
-      </p>
-      <p className="mt-1 text-[8px] font-medium uppercase tracking-[0.1em] text-ink-muted">{label}</p>
+        className="absolute inset-0"
+        animate={{ rotate: [0, 3, -3, 0] }}
+        transition={{ repeat: Infinity, duration: 12, ease: "easeInOut" }}
+      />
     </motion.div>
   );
 }
@@ -249,27 +188,30 @@ function StatPill({ label, value, suffix, delay, className }: {
 
 function HeroVisual() {
   return (
-    <div className="relative w-[420px] h-[460px]">
-      {/* Hexagon mark — centered */}
-      <div className="absolute top-4 left-1/2 -translate-x-1/2">
-        <HexagonMark />
-      </div>
+    <div className="relative w-[440px] h-[440px] flex items-center justify-center">
+      {/* Center hexagon */}
+      <HexagonMark />
 
-      {/* System card — bottom left */}
-      <div className="absolute bottom-0 left-0">
-        <SystemCard />
-      </div>
+      {/* Orbiting pills */}
+      {PILLS.map((pill) => (
+        <Pill key={pill.label} {...pill} />
+      ))}
 
-      {/* Stat pills — floating around */}
-      <div className="absolute top-2 right-0">
-        <StatPill label="Actions" value={164} suffix="" delay={2.2} className="" />
-      </div>
-      <div className="absolute top-[140px] right-[-10px]">
-        <StatPill label="Boot time" value={34} suffix="%" delay={2.5} className="" />
-      </div>
-      <div className="absolute bottom-[90px] right-[20px]">
-        <StatPill label="Profiles" value={8} suffix="" delay={2.8} className="" />
-      </div>
+      {/* Connecting lines — subtle radial lines from center to pill area */}
+      <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 440 440">
+        {PILLS.map((pill, i) => (
+          <motion.line
+            key={i}
+            x1="220" y1="220"
+            x2={220 + pill.x * 0.5} y2={220 + pill.y * 0.5}
+            stroke="#E8254B"
+            strokeWidth="0.5"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 0.06 }}
+            transition={{ delay: pill.delay + 0.2, duration: 0.5 }}
+          />
+        ))}
+      </svg>
     </div>
   );
 }
@@ -299,7 +241,7 @@ export function HeroSection() {
       </div>
 
       <div className="relative z-10 mx-auto w-full max-w-[1200px] px-6 lg:px-12">
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-12 lg:gap-20 items-center min-h-[80vh]">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-12 lg:gap-16 items-center min-h-[80vh]">
           {/* Left — Copy */}
           <div className="pt-16 lg:pt-0">
             <h1
@@ -381,8 +323,8 @@ export function HeroSection() {
             </motion.div>
           </div>
 
-          {/* Right — Visual composition */}
-          <div className="hidden lg:block">
+          {/* Right — Hexagon + pills constellation */}
+          <div className="hidden lg:flex items-center justify-center">
             <HeroVisual />
           </div>
         </div>
