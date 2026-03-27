@@ -152,7 +152,7 @@ jobs:
   deploy-to-vds:
     name: Deploy Installers to VDS
     runs-on: ubuntu-latest
-    needs: [build-os-installer, build-tuning-installer]
+    needs: [build-os-installer]
     if: github.ref == 'refs/heads/main'
     steps:
       - name: Download OS installer
@@ -161,12 +161,6 @@ jobs:
           name: redcore-os-installer
           path: ./artifacts/os/
 
-      - name: Download Tuning installer
-        uses: actions/download-artifact@v4
-        with:
-          name: redcore-tuning-installer
-          path: ./artifacts/tuning/
-
       - name: Setup SSH key
         run: |
           mkdir -p ~/.ssh
@@ -174,11 +168,10 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H REDACTED_VDS_IP >> ~/.ssh/known_hosts
 
-      - name: Upload to VDS
+      - name: Upload OS installer to VDS
         run: |
           scp ./artifacts/os/redcore-os-setup.exe ubuntu@REDACTED_VDS_IP:/var/www/redcore-downloads/os/
-          scp ./artifacts/tuning/redcore-tuning-setup.exe ubuntu@REDACTED_VDS_IP:/var/www/redcore-downloads/tuning/
 
-      - name: Verify uploads
+      - name: Verify upload
         run: |
-          ssh ubuntu@REDACTED_VDS_IP "ls -lh /var/www/redcore-downloads/os/redcore-os-setup.exe /var/www/redcore-downloads/tuning/redcore-tuning-setup.exe"
+          ssh ubuntu@REDACTED_VDS_IP "ls -lh /var/www/redcore-downloads/os/redcore-os-setup.exe"
