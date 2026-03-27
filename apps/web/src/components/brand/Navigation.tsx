@@ -22,6 +22,10 @@ const NAV_LINKS: NavLink[] = [
   { label: "Pricing", sectionId: "pricing" },
 ];
 
+const PAGE_LINKS = [
+  { label: "Downloads", href: "/downloads" },
+];
+
 const SECTION_IDS = NAV_LINKS.map((l) => l.sectionId);
 const SCROLL_THRESHOLD = 40;
 const NAV_OFFSET = 80;
@@ -254,6 +258,15 @@ export function Navigation() {
                 >
                   {link.label}
                 </button>
+              ))}
+              {PAGE_LINKS.map((link) => (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  className="cursor-pointer text-[13px] font-medium tracking-wide text-ink-tertiary hover:text-ink-primary transition-colors duration-200"
+                >
+                  {link.label}
+                </a>
               ))}
             </nav>
 
