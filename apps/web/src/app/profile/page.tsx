@@ -178,7 +178,7 @@ export default function ProfilePage() {
 
             <div className="premium-card rounded-lg p-6 text-center">
               <p className="text-[14px] text-ink-secondary mb-4">
-                redcore · OS is free and open source. Support development with a donation.
+                redcore · OS is free. Support development with a donation.
               </p>
               <a
                 href="/donate"

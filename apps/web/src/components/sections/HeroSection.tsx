@@ -5,10 +5,14 @@ import { ArrowDown } from "lucide-react";
 
 const ease = [0.16, 1, 0.3, 1] as const;
 
+function scrollTo(id: string) {
+  const el = document.getElementById(id);
+  if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
 export function HeroSection() {
   return (
     <section className="relative flex min-h-screen items-end overflow-hidden pb-24 lg:pb-32">
-      {/* Atmospheric depth */}
       <div className="pointer-events-none absolute inset-0" aria-hidden="true">
         <div
           className="absolute inset-0"
@@ -53,7 +57,7 @@ export function HeroSection() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.42, duration: 0.9, ease }}
           >
-            Then make it usable.
+            Make it usable.
           </motion.span>
         </h1>
 
@@ -74,19 +78,19 @@ export function HeroSection() {
           transition={{ delay: 0.9, duration: 0.6, ease }}
           className="mt-12 flex flex-col sm:flex-row items-start gap-4"
         >
-          <a
-            href="#pricing"
-            className="inline-flex items-center gap-2.5 rounded-lg bg-accent px-7 py-3.5 text-[0.88rem] font-semibold text-white transition-all hover:bg-accent-dim"
+          <button
+            onClick={() => scrollTo("pricing")}
+            className="inline-flex items-center gap-2.5 rounded-lg bg-accent px-7 py-3.5 text-[0.88rem] font-semibold text-white transition-all hover:bg-accent-dim cursor-pointer"
           >
             Get redcore
-          </a>
-          <a
-            href="#products"
-            className="inline-flex items-center gap-2 px-2 py-3.5 text-[0.88rem] font-medium text-ink-tertiary transition-colors hover:text-ink-primary"
+          </button>
+          <button
+            onClick={() => scrollTo("products")}
+            className="inline-flex items-center gap-2 px-2 py-3.5 text-[0.88rem] font-medium text-ink-tertiary transition-colors hover:text-ink-primary cursor-pointer"
           >
             See what it does
             <ArrowDown className="h-3.5 w-3.5" />
-          </a>
+          </button>
         </motion.div>
 
         <motion.div
