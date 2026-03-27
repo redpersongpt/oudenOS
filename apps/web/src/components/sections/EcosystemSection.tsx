@@ -63,7 +63,7 @@ function TuningSection() {
   return (
     <section id="tuning" ref={ref} className="relative py-28 lg:py-36">
       {/* Subtle red glow */}
-      <div className="pointer-events-none absolute right-0 top-1/2 -translate-y-1/2 h-[500px] w-[500px] rounded-full opacity-[0.03]" style={{ background: "radial-gradient(circle, #E8453C, transparent 65%)" }} />
+      <div className="pointer-events-none absolute right-0 top-1/2 -translate-y-1/2 h-[500px] w-[500px] rounded-full opacity-[0.03]" style={{ background: "radial-gradient(circle, #E8254B, transparent 65%)" }} />
 
       <div className="relative mx-auto max-w-[1100px] px-6 lg:px-12">
         <motion.div

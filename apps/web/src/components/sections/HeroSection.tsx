@@ -22,7 +22,7 @@ export function HeroSection() {
           className="absolute inset-0"
           style={{
             background:
-              "radial-gradient(ellipse 90% 70% at 50% 35%, #0e0e14 0%, #060608 100%)",
+              "radial-gradient(ellipse 90% 70% at 50% 35%, #222226 0%, #1e1e22 100%)",
           }}
         />
         {/* Red atmosphere — top right */}
@@ -32,7 +32,7 @@ export function HeroSection() {
           transition={{ duration: 2, delay: 0.5 }}
           className="absolute top-[15%] right-[5%] h-[500px] w-[500px] rounded-full"
           style={{
-            background: "radial-gradient(circle, #E8453C, transparent 65%)",
+            background: "radial-gradient(circle, #E8254B, transparent 65%)",
           }}
         />
         {/* Red atmosphere — bottom left */}
@@ -42,7 +42,7 @@ export function HeroSection() {
           transition={{ duration: 2.5, delay: 0.8 }}
           className="absolute bottom-[10%] left-[10%] h-[400px] w-[400px] rounded-full"
           style={{
-            background: "radial-gradient(circle, #E8453C, transparent 60%)",
+            background: "radial-gradient(circle, #E8254B, transparent 60%)",
           }}
         />
         {/* Grain overlay */}
@@ -63,7 +63,7 @@ export function HeroSection() {
             F*ck Windows.
           </motion.span>
           <motion.span
-            className="block bg-gradient-to-r from-accent via-[#FF6B5A] to-accent bg-clip-text text-transparent"
+            className="block bg-gradient-to-r from-accent via-[#FF3860] to-accent bg-clip-text text-transparent"
             initial={{ opacity: 0, y: 60, filter: "blur(10px)" }}
             animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
             transition={{ delay: 0.35, duration: 1, ease }}

@@ -164,7 +164,7 @@ function createWindow(): BrowserWindow {
     titleBarOverlay: false,
 
     // ── Dark background prevents white flash ──
-    backgroundColor: "#08080d",
+    backgroundColor: "#1e1e22",
     show: false, // Show after ready-to-show
 
     webPreferences: {

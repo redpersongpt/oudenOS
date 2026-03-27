@@ -1,44 +1,41 @@
 // ─── redcore-Tuning Color System ────────────────────────────────────────────
-// Premium dark-first palette. Deep/muted, not garish.
-// Red accent, cool-charcoal surfaces, precise hierarchy.
+// Premium dark-first palette matching redperson brand banner.
+// Pink-red accent, warm charcoal surfaces, precise hierarchy.
 
 export const colors = {
   // ─── Brand Red ──────────────────────────────────────────────────────────
-  // Signature accent. CTAs, active states, critical indicators.
   red: {
-    50: "#FFF5F5",
-    100: "#FFE3E3",
-    200: "#FFC9C9",
-    300: "#FFA3A3",
-    400: "#FF7070",
-    500: "#E8453C",   // Primary brand red
-    600: "#D03030",
-    700: "#B52424",
-    800: "#961E1E",
-    900: "#7A1A1A",
-    950: "#4C0D0D",
+    50: "#FFF5F7",
+    100: "#FFE3E8",
+    200: "#FFC9D3",
+    300: "#FFA3B4",
+    400: "#FF4D6A",
+    500: "#E8254B",   // Primary brand red (pink-red)
+    600: "#C41E3E",
+    700: "#A01832",
+    800: "#7C1226",
+    900: "#580C1A",
+    950: "#34070F",
   },
 
   // ─── Dark surfaces ───────────────────────────────────────────────────────
-  // Layered elevation system. Cool-tinted near-blacks.
-  // Each step is visually distinct but never garish.
   dark: {
-    950: "#0D0D10",   // deepest background
-    900: "#131316",   // primary card / surface
-    850: "#1B1B1F",   // raised surface (modals, elevated cards)
-    800: "#232328",   // overlay (menus, dropdowns, hover fills)
-    750: "#2A2A30",   // muted fill (disabled, subtle backgrounds)
-    border: "#26262C",     // default border
-    borderSubtle: "#1C1C21", // hairline / very subtle
-    borderStrong: "#3A3A44", // strong separation
+    950: "#1a1a1e",   // deepest background
+    900: "#1e1e22",   // primary bg
+    850: "#252529",   // raised surface
+    800: "#2c2c31",   // overlay
+    750: "#333338",   // muted fill
+    border: "#38383e",
+    borderSubtle: "#2e2e34",
+    borderStrong: "#48484f",
   },
 
   // ─── Ink (text on dark) ─────────────────────────────────────────────────
   ink: {
-    primary: "#EDEDEF",    // near-white, slightly cool
-    secondary: "#8A8A9E",  // mid-gray, readable
-    tertiary: "#52526A",   // dim, disabled, helper text
-    inverse: "#0D0D10",    // text on light/brand backgrounds
+    primary: "#f0f0f4",
+    secondary: "#a0a0ac",
+    tertiary: "#6a6a76",
+    inverse: "#1e1e22",
   },
 
   // ─── Success ────────────────────────────────────────────────────────────
@@ -51,10 +48,9 @@ export const colors = {
     600: "#16A34A",
     700: "#15803D",
     900: "#14532D",
-    // Dark-mode variants (muted, not neon)
-    subtle: "#0D2318",  // dark bg fill
-    dim: "#1A4A2E",     // border on dark
-    muted: "#2A7A4A",   // text-accessible on dark
+    subtle: "#1A2E22",
+    dim: "#244A32",
+    muted: "#2A7A4A",
   },
 
   // ─── Warning ────────────────────────────────────────────────────────────
@@ -67,8 +63,7 @@ export const colors = {
     600: "#D97706",
     700: "#B45309",
     900: "#78350F",
-    // Dark-mode variants
-    subtle: "#1F1500",
+    subtle: "#2A2200",
     dim: "#3D2800",
     muted: "#8A5A00",
   },
@@ -83,14 +78,12 @@ export const colors = {
     600: "#2563EB",
     700: "#1D4ED8",
     900: "#1E3A5F",
-    // Dark-mode variants
-    subtle: "#0A1628",
-    dim: "#152444",
-    muted: "#1E4A8A",
+    subtle: "#1A2238",
+    dim: "#1E2C4A",
+    muted: "#2A4A8A",
   },
 
   // ─── Neutral (warm gray) ────────────────────────────────────────────────
-  // Preserved for migration. Prefer ink.* and dark.* on dark surfaces.
   neutral: {
     0: "#FFFFFF",
     25: "#FAFAF9",
@@ -109,46 +102,39 @@ export const colors = {
   },
 
   // ─── Semantic aliases ───────────────────────────────────────────────────
-  // Source of truth for component authors — use these, never raw values.
   semantic: {
-    // Surfaces (dark-first)
-    background: "#0D0D10",
-    surface: "#131316",
-    surfaceRaised: "#1B1B1F",
-    surfaceOverlay: "#232328",
-    surfaceMuted: "#2A2A30",
+    background: "#1e1e22",
+    surface: "#252529",
+    surfaceRaised: "#2c2c31",
+    surfaceOverlay: "#333338",
+    surfaceMuted: "#38383e",
 
-    // Text
-    textPrimary: "#EDEDEF",
-    textSecondary: "#8A8A9E",
-    textTertiary: "#52526A",
-    textInverse: "#0D0D10",
-    textBrand: "#E8453C",
+    textPrimary: "#f0f0f4",
+    textSecondary: "#a0a0ac",
+    textTertiary: "#6a6a76",
+    textInverse: "#1e1e22",
+    textBrand: "#E8254B",
 
-    // Borders
-    border: "#26262C",
-    borderSubtle: "#1C1C21",
-    borderStrong: "#3A3A44",
-    borderFocus: "#E8453C",
+    border: "#38383e",
+    borderSubtle: "#2e2e34",
+    borderStrong: "#48484f",
+    borderFocus: "#E8254B",
 
-    // Interactive
-    primaryDefault: "#E8453C",
-    primaryHover: "#F05048",   // brighter on hover against dark
-    primaryActive: "#C83830",
-    primaryDisabled: "#5C1A18",
+    primaryDefault: "#E8254B",
+    primaryHover: "#FF3860",
+    primaryActive: "#C41E3E",
+    primaryDisabled: "#5C1A28",
 
-    // Status
     success: "#22C55E",
     warning: "#F59E0B",
-    error: "#E8453C",
+    error: "#E8254B",
     info: "#3B82F6",
 
-    // Risk levels (accessible on dark surfaces)
     riskSafe: "#22C55E",
     riskLow: "#4ADE80",
     riskMedium: "#F59E0B",
-    riskHigh: "#E8453C",
-    riskExtreme: "#FF4040",
+    riskHigh: "#E8254B",
+    riskExtreme: "#FF3040",
   },
 } as const;
 

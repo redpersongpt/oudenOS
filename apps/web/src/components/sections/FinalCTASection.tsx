@@ -15,7 +15,7 @@ export function FinalCTASection() {
       <div
         className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[500px] w-[700px] rounded-full opacity-[0.05]"
         style={{
-          background: "radial-gradient(ellipse, #E8453C, transparent 55%)",
+          background: "radial-gradient(ellipse, #E8254B, transparent 55%)",
         }}
       />
 
@@ -28,7 +28,7 @@ export function FinalCTASection() {
           <h2 className="text-[clamp(2rem,4vw,3.2rem)] font-bold tracking-[-0.035em] leading-[1.08] text-ink-primary">
             Built for the machines
             <br />
-            <span className="bg-gradient-to-r from-accent to-[#FF6B5A] bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-accent to-[#FF3860] bg-clip-text text-transparent">
               that matter to you.
             </span>
           </h2>
