@@ -2,7 +2,7 @@
 
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
-import { ArrowRight } from "lucide-react";
+import { Heart } from "lucide-react";
 
 const ease = [0.16, 1, 0.3, 1] as const;
 
@@ -17,113 +17,118 @@ export function PricingSection() {
           initial={{ opacity: 0, y: 30 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.7, ease }}
-          className="mb-16 max-w-[480px]"
+          className="mb-16"
         >
           <h2 className="text-[clamp(1.6rem,3vw,2.4rem)] font-bold tracking-[-0.03em] leading-[1.12] text-ink-primary">
-            Simple pricing. No subscriptions.
+            Pricing
           </h2>
-          <p className="mt-5 text-[0.95rem] leading-[1.75] text-ink-secondary">
-            Pay once for Tuning. Use OS for free. No recurring charges.
-          </p>
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-[760px]">
-          {/* OS — Free */}
+          {/* Tuning — Premium */}
           <motion.div
             initial={{ opacity: 0, y: 24 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}
             transition={{ delay: 0.1, duration: 0.7, ease }}
-            className="rounded-xl border border-border bg-surface p-8"
-          >
-            <p className="font-mono text-[0.6rem] font-medium uppercase tracking-[0.14em] text-ink-tertiary mb-4">
-              redcore · OS
-            </p>
-            <div className="flex items-baseline gap-2 mb-2">
-              <span className="text-[2.2rem] font-bold tracking-tight text-ink-primary">
-                Free
-              </span>
-            </div>
-            <p className="text-[0.82rem] text-ink-tertiary mb-8">
-              Full Windows transformation. No limits.
-            </p>
-
-            <div className="space-y-3 mb-8">
-              {[
-                "Playbook-driven transformation",
-                "8 machine profiles",
-                "Work PC preservation",
-                "Bloatware & telemetry removal",
-                "Per-action rollback",
-              ].map((f) => (
-                <p
-                  key={f}
-                  className="text-[0.78rem] text-ink-secondary flex items-start gap-2.5"
-                >
-                  <span className="mt-1.5 h-1 w-1 rounded-full bg-success shrink-0" />
-                  {f}
-                </p>
-              ))}
-            </div>
-
-            <span className="inline-flex items-center gap-2 rounded-lg border border-border bg-surface-raised px-5 py-3 text-[0.82rem] font-medium text-ink-tertiary w-full justify-center">
-              Coming soon
-            </span>
-          </motion.div>
-
-          {/* Tuning — $12.99 */}
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            animate={inView ? { opacity: 1, y: 0 } : {}}
-            transition={{ delay: 0.2, duration: 0.7, ease }}
             className="rounded-xl border border-accent/20 bg-surface p-8 relative"
           >
-            <p className="font-mono text-[0.6rem] font-medium uppercase tracking-[0.14em] text-accent mb-4">
-              redcore · Tuning
+            <p className="font-mono text-[0.6rem] font-medium uppercase tracking-[0.14em] text-accent mb-5">
+              Premium License
             </p>
             <div className="flex items-baseline gap-2 mb-1">
-              <span className="text-[2.2rem] font-bold tracking-tight text-ink-primary">
+              <span className="text-[2.4rem] font-bold tracking-tight text-ink-primary">
                 $12.99
               </span>
             </div>
             <p className="text-[0.72rem] text-ink-muted mb-8">
-              One-time purchase · Lifetime license
+              one-time purchase, per machine
             </p>
 
-            <div className="space-y-3 mb-8">
+            <ul className="space-y-3 mb-8">
               {[
-                "Everything in OS, plus:",
-                "Deep hardware analysis",
-                "CPU, GPU, latency optimization",
-                "Timer resolution & scheduler tuning",
-                "Benchmark lab (before/after)",
+                "All 8 machine profiles",
+                "15+ tuning modules",
+                "Benchmark lab",
+                "BIOS guidance",
+                "Unlimited rollback history",
+                "Lifetime license key",
                 "Priority support",
-              ].map((f, i) => (
-                <p
+              ].map((f) => (
+                <li
                   key={f}
-                  className={`text-[0.78rem] flex items-start gap-2.5 ${i === 0 ? "font-medium text-ink-primary" : "text-ink-secondary"}`}
+                  className="text-[0.8rem] text-ink-secondary flex items-start gap-2.5"
                 >
-                  {i > 0 && (
-                    <span className="mt-1.5 h-1 w-1 rounded-full bg-accent/50 shrink-0" />
-                  )}
+                  <span className="mt-1.5 h-1 w-1 rounded-full bg-accent/50 shrink-0" />
                   {f}
-                </p>
+                </li>
               ))}
-            </div>
+            </ul>
 
             <span className="inline-flex items-center gap-2 rounded-lg border border-accent/20 bg-accent/5 px-5 py-3 text-[0.82rem] font-medium text-ink-tertiary w-full justify-center">
               Coming soon
             </span>
+
+            <p className="mt-4 text-[0.68rem] text-ink-muted text-center">
+              Free tier available with core modules
+            </p>
+          </motion.div>
+
+          {/* OS — Free */}
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            animate={inView ? { opacity: 1, y: 0 } : {}}
+            transition={{ delay: 0.2, duration: 0.7, ease }}
+            className="rounded-xl border border-border bg-surface p-8"
+          >
+            <p className="font-mono text-[0.6rem] font-medium uppercase tracking-[0.14em] text-success mb-5">
+              Free
+            </p>
+            <div className="flex items-baseline gap-2 mb-1">
+              <span className="text-[2.4rem] font-bold tracking-tight text-ink-primary">
+                Free
+              </span>
+            </div>
+            <p className="text-[0.72rem] text-ink-muted mb-8">
+              forever, for everyone
+            </p>
+
+            <ul className="space-y-3 mb-8">
+              {[
+                "In-place Windows transformation",
+                "All 150+ actions",
+                "8 machine profiles",
+                "Work PC preservation",
+                "Full rollback support",
+                "Community-driven",
+              ].map((f) => (
+                <li
+                  key={f}
+                  className="text-[0.8rem] text-ink-secondary flex items-start gap-2.5"
+                >
+                  <span className="mt-1.5 h-1 w-1 rounded-full bg-success/50 shrink-0" />
+                  {f}
+                </li>
+              ))}
+            </ul>
+
+            <span className="inline-flex items-center gap-2 rounded-lg border border-border bg-surface-raised px-5 py-3 text-[0.82rem] font-medium text-ink-tertiary w-full justify-center">
+              Coming soon
+            </span>
+
+            <div className="mt-6 pt-6 border-t border-border text-center">
+              <p className="text-[0.72rem] text-ink-muted mb-3">
+                Love redcore · OS? Support development.
+              </p>
+              <a
+                href="/donate"
+                className="inline-flex items-center gap-1.5 text-[0.75rem] font-medium text-accent hover:text-accent-bright transition-colors"
+              >
+                <Heart className="h-3 w-3" />
+                Support with a Donation
+              </a>
+            </div>
           </motion.div>
         </div>
-
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={inView ? { opacity: 1 } : {}}
-          transition={{ delay: 0.4, duration: 0.6 }}
-          className="mt-8 text-[0.72rem] text-ink-muted"
-        >
-          Both products are in active development. Sign up to get notified when they launch.
-        </motion.p>
       </div>
     </section>
   );
