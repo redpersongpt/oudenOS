@@ -19,14 +19,6 @@ function GoogleIcon() {
   );
 }
 
-function AppleIcon() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M17.05 20.28c-.98.95-2.05.88-3.08.4-1.09-.5-2.08-.48-3.24 0-1.44.62-2.2.44-3.06-.4C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/>
-    </svg>
-  );
-}
-
 const ease: [number, number, number, number] = [0, 0, 0.2, 1];
 const fade = (delay: number) => ({
   initial: { opacity: 0, y: 16 },
@@ -87,7 +79,7 @@ export default function LoginPage() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full h-11 px-3.5 rounded-lg bg-surface-card border border-border-default text-[14px] text-ink-primary placeholder:text-ink-tertiary outline-none focus:border-brand-500 transition-colors"
+                className="w-full h-11 px-3.5 rounded-lg bg-surface-card border border-border text-[14px] text-ink-primary placeholder:text-ink-tertiary outline-none focus:border-accent/50 transition-colors"
                 placeholder="you@example.com"
               />
             </div>
@@ -101,14 +93,14 @@ export default function LoginPage() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full h-11 px-3.5 rounded-lg bg-surface-card border border-border-default text-[14px] text-ink-primary placeholder:text-ink-tertiary outline-none focus:border-brand-500 transition-colors"
+                className="w-full h-11 px-3.5 rounded-lg bg-surface-card border border-border text-[14px] text-ink-primary placeholder:text-ink-tertiary outline-none focus:border-accent/50 transition-colors"
                 placeholder="Your password"
               />
             </div>
 
             <motion.button
               type="submit"
-              className="w-full h-11 rounded-lg bg-brand-500 hover:bg-brand-600 text-white text-[14px] font-medium cursor-pointer transition-colors"
+              className="w-full h-11 rounded-lg bg-accent hover:bg-accent-dim text-white text-[14px] font-medium cursor-pointer transition-colors"
               whileHover={{ y: -1 }}
               whileTap={{ scale: 0.98 }}
             >
@@ -117,37 +109,27 @@ export default function LoginPage() {
           </motion.form>
 
           <motion.div {...fade(0.2)} className="flex items-center gap-3 my-5">
-            <div className="flex-1 h-px bg-border-default" />
+            <div className="flex-1 h-px bg-border" />
             <span className="text-[11px] text-ink-tertiary">or</span>
-            <div className="flex-1 h-px bg-border-default" />
+            <div className="flex-1 h-px bg-border" />
           </motion.div>
 
-          <motion.div {...fade(0.25)} className="flex gap-3">
+          <motion.div {...fade(0.25)}>
             <motion.button
               type="button"
               onClick={() => signIn("google", { callbackUrl: "/profile" })}
-              className="flex-1 h-9 rounded-lg bg-surface-card border border-border-default text-[12px] font-medium text-ink-secondary cursor-pointer transition-colors hover:border-border-strong inline-flex items-center justify-center gap-2"
+              className="w-full h-10 rounded-lg bg-surface-card border border-border text-[13px] font-medium text-ink-secondary cursor-pointer transition-colors hover:border-border-strong inline-flex items-center justify-center gap-2.5"
               whileHover={{ y: -1 }}
               whileTap={{ scale: 0.98 }}
             >
               <GoogleIcon />
-              Google
-            </motion.button>
-            <motion.button
-              type="button"
-              onClick={() => signIn("apple", { callbackUrl: "/profile" })}
-              className="flex-1 h-9 rounded-lg bg-surface-card border border-border-default text-[12px] font-medium text-ink-secondary cursor-pointer transition-colors hover:border-border-strong inline-flex items-center justify-center gap-2"
-              whileHover={{ y: -1 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <AppleIcon />
-              Apple
+              Continue with Google
             </motion.button>
           </motion.div>
 
           <motion.p {...fade(0.3)} className="mt-6 text-center text-[13px] text-ink-tertiary">
             Don&apos;t have an account?{" "}
-            <Link href="/register" className="text-brand-500 hover:text-brand-400 transition-colors">
+            <Link href="/register" className="text-accent hover:text-accent-bright transition-colors">
               Create one
             </Link>
           </motion.p>
