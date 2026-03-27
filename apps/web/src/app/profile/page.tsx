@@ -36,7 +36,7 @@ function CopyButton({ text }: { text: string }) {
   return (
     <button
       onClick={copy}
-      className="p-1.5 rounded-md text-ink-tertiary hover:text-ink-primary hover:bg-surface-overlay transition-colors cursor-pointer"
+      className="p-1.5 rounded-md text-ink-tertiary hover:text-ink-primary hover:bg-surface-raised transition-colors cursor-pointer"
       title="Copy license key"
     >
       {copied ? <Check size={14} /> : <Copy size={14} />}
@@ -77,18 +77,6 @@ export default function ProfilePage() {
 
   if (!session?.user) return null;
 
-  const handleBuyLicense = async () => {
-    const res = await fetch("/api/checkout", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ product: "tuning" }),
-    });
-    const data = await res.json();
-    if (data.url) {
-      window.location.href = data.url;
-    }
-  };
-
   return (
     <>
       <Navigation />
@@ -121,27 +109,24 @@ export default function ProfilePage() {
             </div>
 
             {licenses.length === 0 ? (
-              <div className="premium-card rounded-lg p-6 text-center">
+              <div className="rounded-xl border border-border bg-surface p-6 text-center">
                 <p className="text-[14px] text-ink-secondary mb-4">
-                  No license keys yet. Purchase redcore · Tuning to get started.
+                  No license keys yet. redcore · Tuning will be available soon.
                 </p>
-                <button
-                  onClick={handleBuyLicense}
-                  className="inline-flex items-center justify-center h-10 px-6 text-[13px] font-medium rounded-lg text-white cursor-pointer bg-brand-500 hover:bg-brand-600 transition-colors"
-                >
-                  Buy License — $12.99
-                </button>
+                <span className="inline-flex items-center justify-center h-10 px-6 text-[13px] font-medium rounded-lg text-ink-tertiary border border-border bg-surface-raised">
+                  Coming soon — $12.99
+                </span>
               </div>
             ) : (
               <div className="space-y-3">
                 {licenses.map((lic) => (
-                  <div key={lic.id} className="premium-card rounded-lg p-5">
+                  <div key={lic.id} className="rounded-xl border border-border bg-surface p-5">
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-[12px] text-ink-tertiary uppercase tracking-wider">
                         redcore · Tuning
                       </span>
                       <span className={`text-[11px] font-medium uppercase tracking-wider ${
-                        lic.status === "active" ? "text-green-400" : "text-ink-tertiary"
+                        lic.status === "active" ? "text-success" : "text-ink-tertiary"
                       }`}>
                         {lic.status}
                       </span>
@@ -158,13 +143,6 @@ export default function ProfilePage() {
                     </p>
                   </div>
                 ))}
-
-                <button
-                  onClick={handleBuyLicense}
-                  className="w-full inline-flex items-center justify-center h-10 text-[13px] font-medium rounded-lg text-ink-secondary cursor-pointer border border-border-default hover:border-border-strong transition-colors"
-                >
-                  Buy another license
-                </button>
               </div>
             )}
           </motion.section>
@@ -173,16 +151,16 @@ export default function ProfilePage() {
           <motion.section {...fade(0.2)}>
             <div className="flex items-center gap-2 mb-4">
               <Heart size={16} className="text-ink-tertiary" />
-              <h2 className="text-lg font-semibold text-ink-primary">Donations</h2>
+              <h2 className="text-lg font-semibold text-ink-primary">Support</h2>
             </div>
 
-            <div className="premium-card rounded-lg p-6 text-center">
+            <div className="rounded-xl border border-border bg-surface p-6 text-center">
               <p className="text-[14px] text-ink-secondary mb-4">
                 redcore · OS is free. Support development with a donation.
               </p>
               <a
                 href="/donate"
-                className="inline-flex items-center justify-center gap-2 h-10 px-6 text-[13px] font-medium rounded-lg text-ink-primary cursor-pointer border border-border-default hover:border-border-strong transition-colors"
+                className="inline-flex items-center justify-center gap-2 h-10 px-6 text-[13px] font-medium rounded-lg text-ink-primary cursor-pointer border border-border hover:border-border-strong transition-colors"
               >
                 <Heart size={14} />
                 Donate
