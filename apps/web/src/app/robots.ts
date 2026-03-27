@@ -6,7 +6,13 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
-        disallow: ["/api/", "/setup", "/profile"],
+        disallow: [
+          "/api/",
+          "/setup",
+          "/profile",
+          "/login",
+          "/register",
+        ],
       },
     ],
     sitemap: "https://redcoreos.net/sitemap.xml",
