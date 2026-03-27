@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
-import type { ReactNode } from "react";
+import React, { type ReactNode } from "react";
 import { spring } from "@/lib/motion";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -79,7 +79,7 @@ export function Button({
       <motion.div {...motionProps} className="inline-flex">
         <Link href={href} className={baseStyles}>
           {icon && <span className="shrink-0">{icon}</span>}
-          {children}
+          {children as React.ReactNode}
         </Link>
       </motion.div>
     );
