@@ -1,237 +1,108 @@
 "use client";
 
-import { useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
-import { Check } from "lucide-react";
-import {
-  staggerContainer,
-  staggerChild,
-  duration,
-  easing,
-} from "@/lib/motion";
+import { useRef } from "react";
+import { ArrowRight, Check } from "lucide-react";
 
-// ─── Types ───────────────────────────────────────────────────────────────────
-
-interface PricingFeature {
-  text: string;
-  highlighted?: boolean;
-}
-
-// ─── Data ────────────────────────────────────────────────────────────────────
-
-const freeFeatures: PricingFeature[] = [
-  { text: "Machine profiling" },
-  { text: "Basic startup cleanup" },
-  { text: "Core tuning modules" },
-  { text: "Single rollback point" },
-  { text: "Community support" },
-];
-
-const premiumFeatures: PricingFeature[] = [
-  { text: "Everything in Free", highlighted: true },
-  { text: "All 8 machine profiles" },
-  { text: "15+ tuning modules" },
-  { text: "redcore · OS full access" },
-  { text: "Benchmark lab" },
-  { text: "BIOS guidance" },
-  { text: "Unlimited rollback history" },
-  { text: "Priority support" },
-];
-
-// ─── Sub-components ──────────────────────────────────────────────────────────
-
-function BillingToggle({
-  isAnnual,
-  onToggle,
-}: {
-  isAnnual: boolean;
-  onToggle: () => void;
-}) {
-  return (
-    <div className="flex items-center justify-center gap-6" role="radiogroup" aria-label="Billing period">
-      <button
-        type="button"
-        role="radio"
-        aria-checked={!isAnnual}
-        onClick={() => isAnnual && onToggle()}
-        className={`text-[13px] transition-colors duration-200 cursor-pointer ${
-          !isAnnual ? "text-ink-primary font-medium" : "text-ink-tertiary"
-        }`}
-      >
-        Monthly
-      </button>
-
-      <button
-        type="button"
-        role="radio"
-        aria-checked={isAnnual}
-        onClick={() => !isAnnual && onToggle()}
-        className={`text-[13px] transition-colors duration-200 cursor-pointer ${
-          isAnnual ? "text-ink-primary font-medium" : "text-ink-tertiary"
-        }`}
-      >
-        Annual{" "}
-        <span className="text-brand-500 ml-1">(save 20%)</span>
-      </button>
-    </div>
-  );
-}
-
-function FeatureList({
-  features,
-  checkColor,
-}: {
-  features: PricingFeature[];
-  checkColor: string;
-}) {
-  return (
-    <ul className="space-y-0" role="list">
-      {features.map((feature) => (
-        <li key={feature.text} className="flex items-center gap-3 py-2">
-          <Check
-            className={`h-4 w-4 flex-shrink-0 ${checkColor}`}
-            aria-hidden="true"
-          />
-          <span
-            className={`text-[14px] ${
-              feature.highlighted
-                ? "text-ink-primary font-semibold"
-                : "text-ink-secondary"
-            }`}
-          >
-            {feature.text}
-          </span>
-        </li>
-      ))}
-    </ul>
-  );
-}
-
-// ─── Main Component ──────────────────────────────────────────────────────────
+const ease = [0.16, 1, 0.3, 1] as const;
 
 export function PricingSection() {
-  const sectionRef = useRef<HTMLElement>(null);
-  const isInView = useInView(sectionRef, { once: true, margin: "-15% 0px" });
-  const [isAnnual, setIsAnnual] = useState(false);
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, margin: "-80px" });
 
   return (
-    <section
-      ref={sectionRef}
-      id="pricing"
-      className="relative py-16 md:py-20 lg:py-24 overflow-hidden"
-      aria-labelledby="pricing-heading"
-    >
-      <div className="section-divide" aria-hidden="true" />
-
-      <div className="max-w-5xl mx-auto px-6 lg:px-8">
-        {/* ─── Header ─── */}
+    <section id="pricing" ref={ref} className="relative py-32 lg:py-40">
+      <div className="mx-auto max-w-[1200px] px-6 lg:px-12">
         <motion.div
-          variants={staggerContainer(0.1, 0)}
-          initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
-          className="text-center"
+          initial={{ opacity: 0, y: 30 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.7, ease }}
+          className="mb-16 text-center"
         >
-          <motion.h2
-            id="pricing-heading"
-            variants={staggerChild}
-            className="mt-4 text-4xl md:text-5xl font-bold text-ink-primary leading-tight"
-          >
-            Built for depth.
-          </motion.h2>
-
-          <motion.p
-            variants={staggerChild}
-            className="mt-4 text-lg text-ink-secondary"
-          >
-            Start free. Go premium when you need the full system.
-          </motion.p>
+          <p className="overline mb-4">Pricing</p>
+          <h2 className="text-[clamp(1.8rem,3.5vw,2.8rem)] font-bold tracking-[-0.03em] leading-[1.1] text-ink-primary">
+            Simple. Honest. No subscriptions.
+          </h2>
+          <p className="mt-5 mx-auto max-w-[480px] text-[1rem] leading-[1.7] text-ink-secondary">
+            Pay once for Tuning. Use OS for free. No recurring charges, no hidden fees, no data selling.
+          </p>
         </motion.div>
 
-        {/* ─── Billing Toggle ─── */}
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 12 }}
-          transition={{
-            duration: duration.slow,
-            ease: easing.enter,
-            delay: 0.3,
-          }}
-          className="mt-8 flex justify-center"
-        >
-          <BillingToggle
-            isAnnual={isAnnual}
-            onToggle={() => setIsAnnual((prev) => !prev)}
-          />
-        </motion.div>
-
-        {/* ─── Pricing Cards ─── */}
-        <motion.div
-          variants={staggerContainer(0.12, 0.2)}
-          initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
-          className="mt-12 grid grid-cols-1 lg:grid-cols-2 gap-6"
-        >
-          {/* ─── Free Tier ─── */}
+        <div className="mx-auto grid max-w-[800px] grid-cols-1 md:grid-cols-2 gap-6">
+          {/* OS — Free */}
           <motion.div
-            variants={staggerChild}
-            className="premium-card rounded-lg p-8"
+            initial={{ opacity: 0, y: 24 }}
+            animate={inView ? { opacity: 1, y: 0 } : {}}
+            transition={{ delay: 0.1, duration: 0.7, ease }}
+            className="rounded-2xl border border-border bg-surface p-8"
           >
-            <p className="overline text-ink-tertiary">Free</p>
-
-            <div className="mt-4">
-              <span className="text-4xl font-mono font-bold text-ink-primary">
-                $0
-              </span>
+            <p className="font-mono text-[0.65rem] font-medium uppercase tracking-[0.12em] text-ink-tertiary mb-3">redcore · OS</p>
+            <div className="flex items-baseline gap-1 mb-2">
+              <span className="text-[2.5rem] font-bold tracking-tight text-ink-primary">Free</span>
             </div>
-            <p className="text-[13px] text-ink-tertiary mt-1">forever</p>
-
-            <div className="line-h mt-6 mb-6" aria-hidden="true" />
-
-            <FeatureList features={freeFeatures} checkColor="text-ink-tertiary" />
-
-            <div className="mt-8">
-              <button
-                type="button"
-                className="w-full inline-flex items-center justify-center h-12 px-8 text-[14px] font-medium rounded-lg text-ink-primary cursor-pointer transition-all duration-200 border border-white/[0.1] hover:border-white/[0.18] hover:bg-white/[0.03]"
-              >
-                Download Free
-              </button>
-            </div>
+            <p className="text-[0.85rem] text-ink-secondary mb-6">
+              Full Windows transformation. No paywall, no limits.
+            </p>
+            <a href="/downloads/os/redcore-os-setup.exe" className="mb-8 inline-flex w-full items-center justify-center gap-2 rounded-lg border border-border bg-surface-raised px-5 py-3 text-[0.85rem] font-semibold text-ink-primary transition-colors hover:border-border-strong">
+              Download OS <ArrowRight className="h-4 w-4" />
+            </a>
+            <ul className="space-y-2.5">
+              {[
+                "Full playbook-driven transformation",
+                "164 optimization actions",
+                "8 machine profiles",
+                "Work PC preservation",
+                "Bloatware & telemetry removal",
+                "Edge suppression & cleanup",
+                "App setup & personalization",
+                "Rollback for every action",
+              ].map((f) => (
+                <li key={f} className="flex items-start gap-2.5 text-[0.8rem] text-ink-secondary">
+                  <Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-success" />
+                  {f}
+                </li>
+              ))}
+            </ul>
           </motion.div>
 
-          {/* ─── Premium Tier ─── */}
+          {/* Tuning — $12.99 */}
           <motion.div
-            variants={staggerChild}
-            className="premium-card rounded-lg p-8 relative border-brand-500/20"
+            initial={{ opacity: 0, y: 24 }}
+            animate={inView ? { opacity: 1, y: 0 } : {}}
+            transition={{ delay: 0.2, duration: 0.7, ease }}
+            className="relative rounded-2xl border border-accent/30 bg-surface p-8"
           >
-            <span className="absolute top-4 right-4 bg-brand-950/60 text-brand-400 rounded-md px-2.5 py-1 text-[10px] font-mono uppercase tracking-wider">
-              Recommended
-            </span>
+            {/* Accent glow */}
+            <div className="pointer-events-none absolute -inset-px rounded-2xl opacity-[0.06]" style={{ background: "radial-gradient(ellipse at 50% 0%, #E8453C, transparent 60%)" }} />
 
-            <p className="overline text-brand-500">Premium</p>
-
-            <div className="mt-4 flex items-baseline gap-1">
-              <span className="text-4xl font-mono font-bold text-brand-400">
-                {isAnnual ? "$7.99" : "$12.99"}
-              </span>
-              <span className="text-lg text-ink-tertiary">/mo</span>
+            <p className="font-mono text-[0.65rem] font-medium uppercase tracking-[0.12em] text-accent mb-3">redcore · Tuning</p>
+            <div className="flex items-baseline gap-1 mb-1">
+              <span className="text-[2.5rem] font-bold tracking-tight text-ink-primary">$12.99</span>
             </div>
-            <p className="text-[13px] text-ink-tertiary mt-1">per machine</p>
-
-            <div className="line-h-brand mt-6 mb-6" aria-hidden="true" />
-
-            <FeatureList features={premiumFeatures} checkColor="text-brand-500" />
-
-            <div className="mt-8">
-              <button
-                type="button"
-                className="w-full inline-flex items-center justify-center h-12 px-8 text-[14px] font-medium rounded-lg text-white cursor-pointer transition-all duration-200 bg-brand-500 hover:bg-brand-600"
-              >
-                Get Premium
-              </button>
-            </div>
+            <p className="text-[0.75rem] text-ink-tertiary mb-5">One-time purchase · Lifetime license</p>
+            <a href="/profile" className="mb-8 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-accent px-5 py-3 text-[0.85rem] font-semibold text-white transition-all hover:bg-accent-dim hover:shadow-[0_0_24px_rgba(232,69,60,0.15)]">
+              Get Tuning <ArrowRight className="h-4 w-4" />
+            </a>
+            <ul className="space-y-2.5">
+              {[
+                "Everything in OS, plus:",
+                "Deep hardware analysis engine",
+                "Question-driven tuning consultant",
+                "CPU, GPU, and latency optimization",
+                "Timer resolution & scheduler tuning",
+                "BIOS guidance layer",
+                "Benchmark Lab (before/after)",
+                "Advanced service & process control",
+                "Priority support",
+              ].map((f, i) => (
+                <li key={f} className={`flex items-start gap-2.5 text-[0.8rem] ${i === 0 ? "font-semibold text-ink-primary" : "text-ink-secondary"}`}>
+                  {i > 0 && <Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-accent" />}
+                  {f}
+                </li>
+              ))}
+            </ul>
           </motion.div>
-        </motion.div>
+        </div>
       </div>
     </section>
   );
