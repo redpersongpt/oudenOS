@@ -11,7 +11,7 @@
   "main": "dist/main/index.js",
   "scripts": {
     "dev": "vite",
-    "build": "pnpm build:renderer && pnpm build:main && pnpm build:preload",
+    "build": "pnpm build:renderer && node -e \"let h=require('fs').readFileSync('dist/renderer/index.html','utf8');h=h.replace(/ crossorigin/g,'');require('fs').writeFileSync('dist/renderer/index.html',h)\" && pnpm build:main && pnpm build:preload",
     "build:renderer": "vite build",
     "build:main": "tsc --project tsconfig.main.json",
     "build:preload": "tsc --project tsconfig.preload.json",
@@ -72,6 +72,7 @@
         }
       ],
       "executableName": "redcore-os",
+      "icon": "resources/icon.ico",
       "legalTrademarks": "redcore",
       "publisherName": "redcore",
       "requestedExecutionLevel": "asInvoker"
@@ -84,8 +85,7 @@
       "uninstallDisplayName": "redcore OS",
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "menuCategory": "redcore",
-      "license": null
+      "menuCategory": "redcore"
     },
     "asar": true,
     "compression": "maximum",
