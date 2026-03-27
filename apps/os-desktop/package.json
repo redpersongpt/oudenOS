@@ -2,6 +2,8 @@
   "name": "@redcore-os/desktop",
   "version": "0.1.0",
   "private": true,
+  "description": "redcore OS — Windows transformation tool",
+  "author": "redcore",
   "main": "dist/main/index.js",
   "scripts": {
     "dev": "vite",
@@ -49,6 +51,10 @@
       {
         "from": "../../services/os-service/target/release/redcore-os-service.exe",
         "to": "redcore-os-service.exe"
+      },
+      {
+        "from": "resources/redcore-icon.png",
+        "to": "redcore-icon.png"
       }
     ],
     "win": {
