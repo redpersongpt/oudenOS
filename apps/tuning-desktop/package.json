@@ -12,7 +12,8 @@
     "typecheck": "tsc --noEmit",
     "preview": "vite preview",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "dist": "electron-builder --win --x64"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.0",
@@ -49,5 +50,42 @@
     "typescript": "^5.7.0",
     "vite": "^6.0.0",
     "vitest": "^2.1.0"
+  },
+  "build": {
+    "appId": "net.redcoreos.tuning",
+    "productName": "redcore Tuning",
+    "directories": {
+      "output": "dist/installers"
+    },
+    "files": [
+      "dist/main/**/*",
+      "dist/preload/**/*",
+      "dist/renderer/**/*",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "../../services/tuning-service/target/release/redcore-service.exe",
+        "to": "redcore-service.exe"
+      }
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        }
+      ],
+      "icon": "resources/redcore-icon.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "installerIcon": "resources/redcore-icon.png",
+      "uninstallerIcon": "resources/redcore-icon.png",
+      "artifactName": "redcore-tuning-setup.${ext}"
+    },
+    "asar": true,
+    "compression": "maximum"
   }
 }
