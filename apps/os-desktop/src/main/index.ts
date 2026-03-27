@@ -50,8 +50,11 @@ function startService(): void {
   console.log(`[Main] Starting service: ${servicePath}`);
   serviceProcess = spawn(servicePath, [], { stdio: ["pipe", "pipe", "pipe"] });
 
-  // Drain stderr to prevent pipe buffer deadlock
-  serviceProcess.stderr?.on("data", () => {});
+  // Log stderr to prevent pipe buffer deadlock and surface service errors
+  serviceProcess.stderr?.on("data", (chunk: Buffer) => {
+    const msg = chunk.toString().trim();
+    if (msg) console.error(`[Service] ${msg}`);
+  });
 
   const rl = createInterface({ input: serviceProcess.stdout! });
   rl.on("line", (line: string) => {
@@ -98,11 +101,12 @@ function callService(method: string, params: unknown): Promise<unknown> {
 // ─── IPC handlers ───────────────────────────────────────────────────────────
 
 ipcMain.handle("service:call", async (_event, method: string, params: unknown) => {
-  try {
-    return await callService(method, params);
-  } catch (err) {
-    return { error: err instanceof Error ? err.message : String(err) };
+  const result = await callService(method, params);
+  // If the service returned an error object, throw so the renderer gets a rejection
+  if (result && typeof result === "object" && "error" in result && !(result as Record<string, unknown>).result) {
+    throw new Error((result as { error: { message?: string } }).error?.message ?? "Service error");
   }
+  return result;
 });
 
 ipcMain.on("window:minimize", (event) => {
@@ -123,8 +127,10 @@ ipcMain.on("window:close", (event) => {
 
 function createWindow(): BrowserWindow {
   const preloadPath = path.join(__dirname, "..", "preload", "index.js");
+  const iconPath = path.join(process.resourcesPath ?? __dirname, "redcore-icon.png");
 
   const win = new BrowserWindow({
+    icon: iconPath,
     // ── Installer proportions — compact and contained ──
     width: 820,
     height: 580,
@@ -178,21 +184,25 @@ function createWindow(): BrowserWindow {
 app.disableHardwareAcceleration();
 
 app.whenReady().then(() => {
-  // Set CSP
+  const isDev = !!process.env.VITE_DEV_SERVER_URL;
+
+  // Set CSP — relaxed in dev to allow Vite HMR
   session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
+    const csp = isDev
+      ? "default-src 'self' 'unsafe-inline' 'unsafe-eval' http://localhost:* ws://localhost:*; img-src 'self' data:; font-src 'self' https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com"
+      : [
+          "default-src 'self'",
+          "script-src 'self' 'unsafe-inline'",
+          "style-src 'self' 'unsafe-inline'",
+          "font-src 'self' data:",
+          "img-src 'self' data:",
+          "connect-src 'self'",
+        ].join("; ");
+
     callback({
       responseHeaders: {
         ...details.responseHeaders,
-        "Content-Security-Policy": [
-          [
-            "default-src 'self'",
-            "script-src 'self'",
-            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-            "font-src 'self' https://fonts.gstatic.com",
-            "img-src 'self' data:",
-            "connect-src 'self'",
-          ].join("; "),
-        ],
+        "Content-Security-Policy": [csp],
       },
     });
   });
