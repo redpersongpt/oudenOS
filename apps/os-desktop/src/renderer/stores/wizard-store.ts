@@ -192,7 +192,7 @@ function computeCanGoBack(_steps: WizardStep[], currentStep: WizardStepId): bool
 
 export const useWizardStore = create<WizardState>((set, get) => ({
   currentStep: "welcome",
-  steps: INITIAL_STEPS,
+  steps: INITIAL_STEPS.map(s => ({ ...s })),
   demoMode: false,
   detectedProfile: null,
   playbookPreset: "balanced",
@@ -323,7 +323,7 @@ export const useWizardStore = create<WizardState>((set, get) => ({
   reset: () =>
     set({
       currentStep: "welcome",
-      steps: INITIAL_STEPS,
+      steps: INITIAL_STEPS.map(s => ({ ...s })),
       demoMode: false,
       detectedProfile: null,
       playbookPreset: "balanced",
