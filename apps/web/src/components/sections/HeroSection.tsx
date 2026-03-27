@@ -45,16 +45,15 @@ export function HeroSection() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.9, ease }}
           >
-            Know what your machine
+            F*ck Windows.
           </motion.span>
           <motion.span
-            className="block text-ink-primary"
+            className="block text-accent"
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.42, duration: 0.9, ease }}
           >
-            needs.{" "}
-            <span className="text-accent">Then do it.</span>
+            Then make it usable.
           </motion.span>
         </h1>
 
@@ -62,11 +61,11 @@ export function HeroSection() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.7, duration: 0.7, ease }}
-          className="mt-8 max-w-[520px] text-[1.05rem] leading-[1.75] text-ink-secondary"
+          className="mt-8 max-w-[540px] text-[1.05rem] leading-[1.75] text-ink-secondary"
         >
-          redcore reads your hardware, detects your use case, and builds a
-          transformation plan specific to your system. Not presets.
-          Not scripts. A guided, reversible process.
+          redcore turns a bloated install into a system that actually fits
+          the machine, the workload, and the user. Guided. Reversible.
+          Machine-aware.
         </motion.p>
 
         <motion.div
