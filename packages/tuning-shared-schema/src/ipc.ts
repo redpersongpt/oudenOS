@@ -10,6 +10,19 @@ import type { JournalState } from "./journal.js";
 import type { LicenseState } from "./license.js";
 import type { MachineClassification, IntelligentTuningProfile, IntelligentRecommendation, MachineArchetype } from "./device-intelligence.js";
 
+// ─── IPC Error types ─────────────────────────────────────────────────────────
+
+export interface IpcError {
+  code: string;                  // Machine-readable error code, e.g. "SCAN_FAILED"
+  message: string;               // Human-readable message for logging
+  detail?: string;               // Additional context or stack trace excerpt
+}
+
+// Generic IPC response wrapper for explicit ok/err branching.
+export type IpcResponse<T> =
+  | { ok: true; data: T }
+  | { ok: false; error: IpcError };
+
 // ─── Request/Response pairs ─────────────────────────────────────────────────
 
 export interface IpcMethods {
@@ -71,28 +84,43 @@ export interface IpcMethods {
 }
 
 // ─── Events (push-based) ─────────────────────────────────────────────────────
-// Only events that are ACTUALLY emitted are listed here.
-// Emitted from Electron main process (not Rust — Rust has no event emission yet):
+// Events ACTUALLY emitted today — add to preload ALLOWED_EVENTS to subscribe.
 
 export interface IpcEvents {
   "license.changed": { state: LicenseState };
   "service.error": { code: string; message: string };
+
+  // Scan progress — emitted during scan.hardware / scan.quick
+  // NOTE: Rust emission wiring pending. Add to preload ALLOWED_EVENTS when ready.
+  "scan.progress": { phase: string; percent: number; detail: string };
+
+  // Tuning execution progress — emitted per-action during tuning.applyPlan
+  // NOTE: Rust emission wiring pending. Add to preload ALLOWED_EVENTS when ready.
+  "tuning.actionProgress": { actionId: string; status: string; detail: string };
+  "tuning.phaseComplete": { phaseId: string; nextPhaseId: string | null };
+
+  // Benchmark progress — emitted during benchmark.run
+  // NOTE: Rust emission wiring pending. Add to preload ALLOWED_EVENTS when ready.
+  "benchmark.progress": { percent: number; currentMetric: string };
+  "benchmark.complete": { resultId: string };
+
+  // Rollback progress — emitted during rollback.restore
+  // NOTE: Rust emission wiring pending. Add to preload ALLOWED_EVENTS when ready.
+  "rollback.progress": { percent: number; currentAction: string };
+
+  // Journal updates — emitted when a reboot-resume step completes
+  // NOTE: Rust emission wiring pending. Add to preload ALLOWED_EVENTS when ready.
+  "journal.updated": { state: JournalState };
+
+  // Thermal monitoring — emitted periodically during benchmarks
+  // NOTE: Rust emission wiring pending. Add to preload ALLOWED_EVENTS when ready.
+  "thermal.update": { cpuTempC: number | null; gpuTempC: number | null; throttling: boolean };
 }
 
-// NOTE: The following events are PLANNED but not yet implemented.
-// They are commented out to prevent dead contracts from creating fake surface area.
-// Uncomment and add to preload ALLOWED_EVENTS when Rust emission is wired.
-//
-// "scan.progress": { phase: string; percent: number; detail: string };
-// "tuning.actionProgress": { actionId: string; status: string; detail: string };
-// "tuning.phaseComplete": { phaseId: string; nextPhaseId: string | null };
-// "benchmark.progress": { percent: number; currentMetric: string };
-// "benchmark.complete": { resultId: string };
-// "rollback.progress": { percent: number; currentAction: string };
-// "journal.updated": { state: JournalState };
-// "thermal.update": { cpuTempC: number | null; gpuTempC: number | null; throttling: boolean };
-
 // ─── Supporting types ───────────────────────────────────────────────────────
+// AppCatalogEntry is the lighter IPC-level type returned by apphub.getCatalog.
+// It differs from AppCatalogItem in app-catalog.ts which is the rich local type
+// used by the download center. Both are intentionally separate.
 
 export interface AppCatalogEntry {
   id: string;

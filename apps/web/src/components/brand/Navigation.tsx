@@ -155,6 +155,26 @@ function MobileOverlay({
               </motion.button>
             ))}
 
+            {/* Mobile page links */}
+            {PAGE_LINKS.map((link, i) => (
+              <motion.a
+                key={link.href}
+                href={link.href}
+                initial={{ opacity: 0, y: 24 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 12 }}
+                transition={{
+                  duration: duration.normal,
+                  ease: easing.enter,
+                  delay: (NAV_LINKS.length + i) * 0.05,
+                }}
+                onClick={onClose}
+                className="text-2xl font-medium tracking-wide text-ink-tertiary hover:text-ink-primary transition-colors duration-200"
+              >
+                {link.label}
+              </motion.a>
+            ))}
+
             {/* Mobile actions */}
             <motion.div
               initial={{ opacity: 0, y: 24 }}
@@ -163,7 +183,7 @@ function MobileOverlay({
               transition={{
                 duration: duration.normal,
                 ease: easing.enter,
-                delay: NAV_LINKS.length * 0.05,
+                delay: (NAV_LINKS.length + PAGE_LINKS.length) * 0.05,
               }}
               className="mt-4 flex flex-col items-center gap-6"
             >
@@ -223,13 +243,13 @@ export function Navigation() {
       >
         <div
           className={[
-            "transition-all duration-500",
+            "transition-all duration-300",
             isScrolled
-              ? "glass border-b border-border-default"
+              ? "glass border-b border-border/60 shadow-lg shadow-black/20"
               : "border-b border-transparent bg-transparent",
           ].join(" ")}
         >
-          <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5 sm:px-6 lg:h-20 lg:px-8">
+          <div className="mx-auto flex h-16 max-w-[1440px] items-center justify-between px-5 sm:px-6 lg:h-20 lg:px-8 2xl:px-16">
             {/* ── Logo ── */}
             <a
               href="/"

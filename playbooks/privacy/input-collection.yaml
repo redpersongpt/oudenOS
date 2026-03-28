@@ -62,6 +62,96 @@ actions:
     powerShellCommands:
       - "$key = 'HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Appx\\AppxAllUserStore\\Deprovisioned'; if (!(Test-Path $key)) { New-Item -Path $key -Force | Out-Null }"
 
+  - id: privacy.disable-online-speech
+    name: "Disable Online Speech Recognition"
+    description: "Opt out of online speech recognition data collection"
+    rationale: "Windows sends speech data to Microsoft for cloud-based recognition improvements"
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKCU
+        path: "SOFTWARE\\Microsoft\\Speech_OneCore\\Settings\\OnlineSpeechPrivacy"
+        valueName: HasAccepted
+        value: 0
+        valueType: DWord
+
+  - id: privacy.disable-tipc
+    name: "Disable Touch Input Collection"
+    description: "Disable touch keyboard and handwriting data collection"
+    rationale: "TIPC sends touch and handwriting patterns to Microsoft"
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKCU
+        path: "SOFTWARE\\Microsoft\\Input\\TIPC"
+        valueName: Enabled
+        value: 0
+        valueType: DWord
+
+  - id: privacy.disable-harvest-contacts
+    name: "Disable Contact Harvesting"
+    description: "Prevent trained data store from harvesting contacts for input prediction"
+    rationale: "Windows mines contact names for keyboard prediction improvements"
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKCU
+        path: "SOFTWARE\\Microsoft\\InputPersonalization\\TrainedDataStore"
+        valueName: HarvestContacts
+        value: 0
+        valueType: DWord
+
+  - id: privacy.disable-siuf
+    name: "Disable Feedback Frequency"
+    description: "Set Windows feedback solicitation frequency to never"
+    rationale: "SIUF periodically prompts users for feedback, collecting usage patterns"
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKCU
+        path: "SOFTWARE\\Microsoft\\Siuf\\Rules"
+        valueName: NumberOfSIUFInPeriod
+        value: 0
+        valueType: DWord
+
+  - id: privacy.disable-find-my-device
+    name: "Disable Find My Device"
+    description: "Disable the Find My Device location tracking feature"
+    rationale: "Find My Device continuously reports device location to Microsoft"
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKLM
+        path: "SOFTWARE\\Policies\\Microsoft\\FindMyDevice"
+        valueName: AllowFindMyDevice
+        value: 0
+        valueType: DWord
+
   - id: privacy.disable-smartscreen
     name: "Disable SmartScreen Filter"
     description: "Disable the Windows SmartScreen filter that checks downloaded files and visited websites against Microsoft's reputation database"

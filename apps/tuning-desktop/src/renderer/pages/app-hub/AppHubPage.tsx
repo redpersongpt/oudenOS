@@ -1,4 +1,5 @@
 import { useState } from "react";
+import type { ElementType } from "react";
 import { motion } from "framer-motion";
 import {
   Search,
@@ -27,7 +28,7 @@ interface AppEntry {
   version: string;
   description: string;
   category: AppCategory;
-  icon: React.ElementType;
+  icon: ElementType;
   trusted: boolean;
   installed: boolean;
   updateAvailable: boolean;
@@ -48,7 +49,7 @@ const mockApps: AppEntry[] = [
   { id: "timer-resolution", name: "TimerResolution", version: "1.6", description: "Windows timer resolution measurement tool", category: "utilities", icon: Wrench, trusted: true, installed: true, updateAvailable: false },
 ];
 
-const categoryTabs: Array<{ id: AppCategory; label: string; icon: React.ElementType }> = [
+const categoryTabs: Array<{ id: AppCategory; label: string; icon: ElementType }> = [
   { id: "all", label: "All", icon: Package },
   { id: "browsers", label: "Browsers", icon: Globe },
   { id: "utilities", label: "Utilities", icon: Wrench },

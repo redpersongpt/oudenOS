@@ -1,6 +1,6 @@
 // ─── Personalization Step ─────────────────────────────────────────────────────
 // Premium visual personalization: theme toggles with live desktop preview mockup.
-// Compact — fits 900×600 without scrolling.
+// Compact — fits 820×580 without scrolling.
 
 import { motion } from "framer-motion";
 import { useWizardStore } from "@/stores/wizard-store";
@@ -39,11 +39,7 @@ function ToggleCard({ label, description, checked, disabled = false, onChange }:
           aria-hidden="true"
           className={[
             "relative inline-flex h-4 w-7 shrink-0 items-center rounded-full transition-colors",
-            disabled
-              ? "bg-ink-muted"
-              : checked
-              ? "bg-brand-500"
-              : "bg-ink-muted",
+            disabled ? "bg-ink-muted" : checked ? "bg-brand-500" : "bg-ink-muted",
           ].join(" ")}
         >
           <span
@@ -61,11 +57,7 @@ function ToggleCard({ label, description, checked, disabled = false, onChange }:
 
 // ─── Desktop preview mockup ───────────────────────────────────────────────────
 
-interface PreviewProps {
-  prefs: PersonalizationPreferences;
-}
-
-function DesktopPreview({ prefs }: PreviewProps) {
+function DesktopPreview({ prefs }: { prefs: PersonalizationPreferences }) {
   const wallpaperBg = prefs.darkMode
     ? "linear-gradient(135deg, #0d0d14 0%, #111120 40%, #0a0a10 100%)"
     : "linear-gradient(135deg, #1e1e2e 0%, #252538 40%, #1a1a2a 100%)";
@@ -81,12 +73,13 @@ function DesktopPreview({ prefs }: PreviewProps) {
         height: 280,
         background: wallpaperBg,
         border: "1px solid rgba(255,255,255,0.07)",
+        transition: "background 0.3s ease",
       }}
     >
       {/* Accent bar at top */}
       <div
-        className="absolute inset-x-0 top-0 h-[2px] transition-colors duration-300"
-        style={{ background: accentColor }}
+        className="absolute inset-x-0 top-0 h-[2px]"
+        style={{ background: accentColor, transition: "background 0.25s ease" }}
       />
 
       {/* Subtle grid texture */}
@@ -99,18 +92,17 @@ function DesktopPreview({ prefs }: PreviewProps) {
         }}
       />
 
-      {/* Transparency shimmer overlay (visible when transparency on) */}
+      {/* Transparency shimmer overlay */}
       {prefs.transparency && (
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
-            background:
-              "radial-gradient(ellipse 60% 50% at 70% 30%, rgba(255,255,255,0.025) 0%, transparent 100%)",
+            background: "radial-gradient(ellipse 60% 50% at 70% 30%, rgba(255,255,255,0.025) 0%, transparent 100%)",
           }}
         />
       )}
 
-      {/* Centered redcore wordmark watermark */}
+      {/* Centered watermark */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none">
         <span
           className="font-sans text-[13px] font-semibold tracking-widest uppercase"
@@ -120,7 +112,7 @@ function DesktopPreview({ prefs }: PreviewProps) {
         </span>
       </div>
 
-      {/* Simulated window chrome */}
+      {/* Window chrome */}
       <div
         className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
         style={{ marginTop: -16 }}
@@ -130,10 +122,9 @@ function DesktopPreview({ prefs }: PreviewProps) {
           style={{
             width: 220,
             border: "1px solid rgba(255,255,255,0.09)",
-            background: prefs.transparency
-              ? "rgba(16,16,22,0.72)"
-              : "rgba(16,16,22,0.95)",
+            background: prefs.transparency ? "rgba(16,16,22,0.72)" : "rgba(16,16,22,0.95)",
             backdropFilter: prefs.transparency ? "blur(12px)" : undefined,
+            transition: "background 0.25s ease",
           }}
         >
           {/* Window titlebar */}
@@ -142,35 +133,19 @@ function DesktopPreview({ prefs }: PreviewProps) {
             style={{
               height: 28,
               borderBottom: "1px solid rgba(255,255,255,0.06)",
-              background: prefs.transparency
-                ? "rgba(20,20,28,0.6)"
-                : "rgba(20,20,28,0.95)",
+              background: prefs.transparency ? "rgba(20,20,28,0.6)" : "rgba(20,20,28,0.95)",
+              transition: "background 0.25s ease",
             }}
           >
-            <div className="h-2 w-2 rounded-full" style={{ background: accentColor, opacity: 0.9 }} />
+            <div className="h-2 w-2 rounded-full" style={{ background: accentColor, opacity: 0.9, transition: "background 0.25s ease" }} />
             <div className="h-2 w-2 rounded-full bg-ink-muted" />
             <div className="h-2 w-2 rounded-full bg-ink-muted" />
-            <div
-              className="ml-2 rounded"
-              style={{
-                height: 6,
-                width: 64,
-                background: "rgba(255,255,255,0.07)",
-              }}
-            />
+            <div className="ml-2 rounded" style={{ height: 6, width: 64, background: "rgba(255,255,255,0.07)" }} />
           </div>
           {/* Window body */}
           <div className="p-3 flex flex-col gap-2">
             {[80, 56, 68].map((w, i) => (
-              <div
-                key={i}
-                className="rounded"
-                style={{
-                  height: 5,
-                  width: `${w}%`,
-                  background: "rgba(255,255,255,0.06)",
-                }}
-              />
+              <div key={i} className="rounded" style={{ height: 5, width: `${w}%`, background: "rgba(255,255,255,0.06)" }} />
             ))}
           </div>
         </div>
@@ -181,17 +156,16 @@ function DesktopPreview({ prefs }: PreviewProps) {
         className="absolute inset-x-0 bottom-0 flex items-center gap-1.5 px-4"
         style={{
           height: 36,
-          background: prefs.transparency
-            ? "rgba(8,8,12,0.7)"
-            : "rgba(8,8,12,0.96)",
+          background: prefs.transparency ? "rgba(8,8,12,0.7)" : "rgba(8,8,12,0.96)",
           backdropFilter: prefs.transparency ? "blur(20px)" : undefined,
           borderTop: "1px solid rgba(255,255,255,0.05)",
+          transition: "background 0.25s ease",
         }}
       >
         {/* Start button */}
         <div
           className="flex h-5 w-5 items-center justify-center rounded-sm"
-          style={{ background: accentColor, opacity: 0.85 }}
+          style={{ background: accentColor, opacity: 0.85, transition: "background 0.25s ease" }}
         >
           <div className="grid grid-cols-2 gap-[1.5px]">
             {[0, 1, 2, 3].map((i) => (
@@ -200,7 +174,7 @@ function DesktopPreview({ prefs }: PreviewProps) {
           </div>
         </div>
 
-        {/* Task dots (pinned apps) */}
+        {/* Task dots */}
         <div className="flex items-center gap-1.5 ml-1">
           {Array.from({ length: taskbarDotCount }).map((_, i) => (
             <div
@@ -213,21 +187,16 @@ function DesktopPreview({ prefs }: PreviewProps) {
                   ? `rgba(232,69,60,${prefs.brandAccent ? 0.35 : 0.12})`
                   : "rgba(255,255,255,0.07)",
                 border: "1px solid rgba(255,255,255,0.06)",
+                transition: "background 0.2s ease",
               }}
             />
           ))}
         </div>
 
-        {/* Clock stub — right side */}
+        {/* Clock stub */}
         <div className="ml-auto flex items-center gap-2">
-          <div
-            className="rounded"
-            style={{ width: 28, height: 5, background: "rgba(255,255,255,0.07)" }}
-          />
-          <div
-            className="rounded"
-            style={{ width: 20, height: 5, background: "rgba(255,255,255,0.05)" }}
-          />
+          <div className="rounded" style={{ width: 28, height: 5, background: "rgba(255,255,255,0.07)" }} />
+          <div className="rounded" style={{ width: 20, height: 5, background: "rgba(255,255,255,0.05)" }} />
         </div>
       </div>
     </div>
@@ -257,14 +226,25 @@ function ProfileNote({ isWorkPc, isLowSpec }: { isWorkPc: boolean; isLowSpec: bo
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export function PersonalizationStep() {
-  const { personalization, setPersonalization, detectedProfile, goNext } = useWizardStore();
+  const { personalization, setPersonalization, detectedProfile } = useWizardStore();
   const profileId = detectedProfile?.id;
 
-  const isWorkPc   = detectedProfile?.isWorkPc ?? false;
-  const isLowSpec  = profileId === "low_spec_system" || profileId === "low_spec";
+  const isWorkPc  = detectedProfile?.isWorkPc ?? false;
+  const isLowSpec = profileId === "low_spec_system" || profileId === "low_spec";
 
   const toggle = (key: keyof typeof personalization) =>
     setPersonalization({ [key]: !personalization[key] });
+
+  // Toggle card definitions with stable delays
+  const row1 = [
+    { label: "Dark Mode",     description: "Dark theme for apps and system", key: "darkMode"    as const, disabled: false },
+    { label: "Brand Accent",  description: "redcore red accent color",        key: "brandAccent" as const, disabled: false },
+    { label: "Transparency",  description: "Window transparency effects",     key: "transparency" as const, disabled: isLowSpec },
+  ];
+  const row2 = [
+    { label: "Taskbar Cleanup",  description: "Hide Task View, Widgets, Chat",   key: "taskbarCleanup"  as const, disabled: isWorkPc },
+    { label: "Explorer Cleanup", description: "Show extensions, hide recents",   key: "explorerCleanup" as const, disabled: isWorkPc },
+  ];
 
   return (
     <motion.div
@@ -281,9 +261,7 @@ export function PersonalizationStep() {
         transition={{ duration: 0.22, ease: [0.0, 0.0, 0.2, 1.0], delay: 0.04 }}
         className="flex flex-col items-center gap-1 text-center"
       >
-        <h2 className="text-lg font-semibold tracking-tight text-ink">
-          Visual Personalization
-        </h2>
+        <h2 className="text-lg font-semibold tracking-tight text-ink">Visual Personalization</h2>
         <p className="text-xs text-ink-secondary">Make Windows feel like yours</p>
       </motion.div>
 
@@ -296,57 +274,51 @@ export function PersonalizationStep() {
         <DesktopPreview prefs={personalization} />
       </motion.div>
 
-      {/* Toggles — row of 3 then row of 2 */}
-      <motion.div
-        initial={{ opacity: 0, y: 6 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.22, ease: [0.0, 0.0, 0.2, 1.0], delay: 0.15 }}
-        className="w-full max-w-[500px] space-y-2"
-      >
+      {/* Toggles — staggered per card */}
+      <div className="w-full max-w-[500px] space-y-2">
         <div className="grid grid-cols-3 gap-2">
-          <ToggleCard
-            label="Dark Mode"
-            description="Dark theme for apps and system"
-            checked={personalization.darkMode}
-            onChange={() => toggle("darkMode")}
-          />
-          <ToggleCard
-            label="Brand Accent"
-            description="redcore red accent color"
-            checked={personalization.brandAccent}
-            onChange={() => toggle("brandAccent")}
-          />
-          <ToggleCard
-            label="Transparency"
-            description="Window transparency effects"
-            checked={personalization.transparency}
-            disabled={isLowSpec}
-            onChange={() => toggle("transparency")}
-          />
+          {row1.map(({ label, description, key, disabled }, i) => (
+            <motion.div
+              key={key}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.15 + i * 0.07, duration: 0.2, ease: [0.0, 0.0, 0.2, 1.0] }}
+            >
+              <ToggleCard
+                label={label}
+                description={description}
+                checked={personalization[key]}
+                disabled={disabled}
+                onChange={() => toggle(key)}
+              />
+            </motion.div>
+          ))}
         </div>
         <div className="grid grid-cols-2 gap-2">
-          <ToggleCard
-            label="Taskbar Cleanup"
-            description="Hide Task View, Widgets, Chat"
-            checked={personalization.taskbarCleanup}
-            disabled={isWorkPc}
-            onChange={() => toggle("taskbarCleanup")}
-          />
-          <ToggleCard
-            label="Explorer Cleanup"
-            description="Show extensions, hide recents"
-            checked={personalization.explorerCleanup}
-            disabled={isWorkPc}
-            onChange={() => toggle("explorerCleanup")}
-          />
+          {row2.map(({ label, description, key, disabled }, i) => (
+            <motion.div
+              key={key}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.36 + i * 0.07, duration: 0.2, ease: [0.0, 0.0, 0.2, 1.0] }}
+            >
+              <ToggleCard
+                label={label}
+                description={description}
+                checked={personalization[key]}
+                disabled={disabled}
+                onChange={() => toggle(key)}
+              />
+            </motion.div>
+          ))}
         </div>
-      </motion.div>
+      </div>
 
       {/* Profile note */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 0.2 }}
+        transition={{ delay: 0.5 }}
         className="w-full max-w-[500px]"
       >
         <ProfileNote isWorkPc={isWorkPc} isLowSpec={isLowSpec} />

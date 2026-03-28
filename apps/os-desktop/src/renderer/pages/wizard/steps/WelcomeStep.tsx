@@ -17,7 +17,8 @@ export function WelcomeStep() {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
+      exit={{ opacity: 0, y: -6 }}
+      transition={{ duration: 0.22, ease: [0.0, 0.0, 0.2, 1.0] }}
       className="flex h-full flex-col items-center justify-center px-10"
     >
       <LogoHero size={56} />

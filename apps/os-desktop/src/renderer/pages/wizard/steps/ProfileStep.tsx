@@ -1,10 +1,36 @@
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Monitor, Briefcase } from "lucide-react";
 import { useWizardStore } from "@/stores/wizard-store";
 
+// ── Count-up hook ────────────────────────────────────────────────────────────
+
+function useCountUp(target: number, duration = 1100): number {
+  const [v, setV] = useState(0);
+  useEffect(() => {
+    if (target === 0) { setV(0); return; }
+    let raf: number;
+    const start = performance.now();
+    const tick = (now: number) => {
+      const t = Math.min((now - start) / duration, 1);
+      const ease = 1 - Math.pow(1 - t, 3); // ease-out cubic
+      setV(Math.round(target * ease));
+      if (t < 1) raf = requestAnimationFrame(tick);
+      else setV(target);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [target, duration]);
+  return v;
+}
+
+// ── Component ────────────────────────────────────────────────────────────────
+
 export function ProfileStep() {
   const { detectedProfile } = useWizardStore();
   const p = detectedProfile;
+
+  const displayConfidence = useCountUp(p?.confidence ?? 0, 1100);
 
   if (!p) {
     return (
@@ -18,7 +44,8 @@ export function ProfileStep() {
     <motion.div
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0 }}
+      exit={{ opacity: 0, y: -6 }}
+      transition={{ duration: 0.22, ease: [0.0, 0.0, 0.2, 1.0] }}
       className="flex h-full flex-col items-center justify-center gap-5 px-8"
     >
       <motion.div
@@ -35,27 +62,41 @@ export function ProfileStep() {
         <h2 className="mt-1 text-[20px] font-bold text-ink">{p.label}</h2>
       </div>
 
-      {/* Confidence */}
+      {/* Confidence with count-up */}
       <div className="w-full max-w-xs">
         <div className="flex justify-between text-[10px]">
           <span className="text-ink-tertiary">Confidence</span>
-          <span className="font-mono-metric text-brand-400">{p.confidence}%</span>
+          <motion.span
+            className="font-mono-metric text-brand-400"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.1 }}
+          >
+            {displayConfidence}%
+          </motion.span>
         </div>
         <div className="mt-1 relative h-1 overflow-hidden rounded-full bg-white/[0.06]">
           <motion.div
             initial={{ width: 0 }}
             animate={{ width: `${p.confidence}%` }}
-            transition={{ duration: 0.6, ease: [0.0, 0.0, 0.2, 1.0], delay: 0.15 }}
-            className="absolute inset-y-0 left-0 rounded-full bg-brand-500"
+            transition={{ duration: 1.1, ease: [0.0, 0.0, 0.2, 1.0], delay: 0.1 }}
+            className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-brand-600 to-brand-400"
           />
         </div>
       </div>
 
+      {/* Signal chips — staggered entrance */}
       <div className="flex flex-wrap justify-center gap-1.5">
-        {p.signals.map((s) => (
-          <span key={s} className="rounded-full bg-white/[0.04] border border-white/[0.06] px-2.5 py-1 text-[10px] font-medium text-ink-secondary">
+        {p.signals.map((s, i) => (
+          <motion.span
+            key={s}
+            initial={{ opacity: 0, scale: 0.82 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.15 + i * 0.07, type: "spring", stiffness: 400, damping: 20 }}
+            className="rounded-full bg-white/[0.04] border border-white/[0.06] px-2.5 py-1 text-[10px] font-medium text-ink-secondary"
+          >
             {s}
-          </span>
+          </motion.span>
         ))}
       </div>
 

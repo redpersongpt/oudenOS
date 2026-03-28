@@ -1,9 +1,9 @@
+@import "@redcore/design-system/tokens/tokens.css";
+@import "./wizard.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-@import "@redcore/design-system/css";
-@import "./wizard.css";
 
 @layer base {
   *,

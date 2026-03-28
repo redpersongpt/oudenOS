@@ -2,7 +2,7 @@
 // Spawns and manages the Rust service binary.
 // All system operations go through the Rust service via JSON-RPC over stdio.
 
-import { app, BrowserWindow, ipcMain, session } from "electron";
+import { app, BrowserWindow, ipcMain, session, shell } from "electron";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawn, ChildProcess } from "node:child_process";
@@ -238,6 +238,20 @@ function createWindow() {
     mainWindow.loadFile(path.join(__dirname, "../renderer/index.html"));
   }
 
+  // Restrict navigation — prevent renderer from being redirected to attacker URLs
+  mainWindow.webContents.on("will-navigate", (event, url) => {
+    const allowedOrigins = isDev
+      ? ["http://localhost:5173"]
+      : [`file://${path.join(__dirname, "../renderer/")}`];
+    const isAllowed = allowedOrigins.some((origin) => url.startsWith(origin));
+    if (!isAllowed) {
+      event.preventDefault();
+    }
+  });
+
+  // Block new window creation from renderer
+  mainWindow.webContents.setWindowOpenHandler(() => ({ action: "deny" }));
+
   mainWindow.on("closed", () => {
     mainWindow = null;
   });
@@ -288,6 +302,15 @@ ipcMain.handle("service:call", async (_event, method: string, params: unknown) =
   }
 });
 
+// ─── Shell IPC ───────────────────────────────────────────────────────────────
+
+ipcMain.handle("shell:openExternal", (_event, url: string) => {
+  // Only allow https:// URLs — prevent arbitrary protocol execution
+  if (typeof url === "string" && url.startsWith("https://")) {
+    return shell.openExternal(url);
+  }
+});
+
 // ─── License IPC ─────────────────────────────────────────────────────────────
 
 // Renderer can request the current license state
@@ -302,6 +325,23 @@ ipcMain.handle("license:refresh", async () => {
 });
 
 // ─── App lifecycle ────────────────────────────────────────────────────────────
+
+const LICENSE_REFRESH_INTERVAL_MS = 60 * 60 * 1000; // 1 hour
+
+async function refreshLicensePeriodic(): Promise<void> {
+  try {
+    const state = await initLicense();
+    console.log(`[Main] License refresh: tier=${state.tier} status=${state.status}`);
+    mainWindow?.webContents.send("service:license.changed", state);
+    try {
+      await callService("license.setTier", { tier: state.tier, status: state.status });
+    } catch {
+      // Non-fatal
+    }
+  } catch {
+    // Silently keep existing cached state
+  }
+}
 
 app.whenReady().then(async () => {
   // Fetch license before starting service so tier is available immediately
@@ -319,6 +359,9 @@ app.whenReady().then(async () => {
       // Non-fatal — service uses free tier by default
     }
   }, 3000);
+
+  // Periodic license refresh every hour
+  setInterval(refreshLicensePeriodic, LICENSE_REFRESH_INTERVAL_MS);
 });
 
 app.on("before-quit", () => {

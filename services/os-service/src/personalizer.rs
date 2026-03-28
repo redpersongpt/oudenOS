@@ -544,10 +544,12 @@ fn apply_explorer_cleanup() -> anyhow::Result<()> {
 
 #[cfg(windows)]
 fn read_registry_value(hive: &str, path: &str, value_name: &str) -> Option<Value> {
+    let escaped_path = powershell::escape_ps_string(path);
+    let escaped_name = powershell::escape_ps_string(value_name);
     let script = format!(
         "$val = Get-ItemProperty -Path 'Registry::{}\\{}' -Name '{}' -ErrorAction SilentlyContinue; \
          if ($val) {{ $val.'{}' }} else {{ $null }}",
-        hive, path, value_name, value_name,
+        hive, escaped_path, escaped_name, escaped_name,
     );
     match powershell::execute(&script) {
         Ok(result) if result.success => {

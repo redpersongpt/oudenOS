@@ -4,23 +4,25 @@ import { FooterSection } from "@/components/sections/FooterSection";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Custom Windows Optimization Without Reinstalling",
+  title: "AtlasOS Alternative — In-Place Windows Optimization Without Reinstalling",
   description:
-    "redcore OS transforms your current Windows install in place. No custom ISO, no fresh install required. Guided, machine-aware, fully reversible.",
+    "Looking for an AtlasOS alternative that works on your current Windows install? redcore OS transforms Windows in place — no custom ISO, no fresh install, no lost programs. Machine-aware, guided, fully reversible.",
   keywords: [
-    "windows optimization",
-    "custom windows without reinstall",
+    "atlasos alternative",
+    "atlas os alternative",
+    "windows optimization without reinstall",
     "in-place windows transformation",
     "guided windows optimization",
     "windows debloat tool",
+    "custom windows without reinstall",
   ],
   alternates: {
     canonical: "https://redcoreos.net/atlasos-alternative",
   },
   openGraph: {
-    title: "Custom Windows Optimization Without Reinstalling | redcore",
+    title: "AtlasOS Alternative — In-Place Windows Optimization | redcore",
     description:
-      "Transform your current Windows installation without reinstalling. Machine-aware, guided, reversible.",
+      "redcore OS as an AtlasOS alternative: transforms your current Windows installation without reinstalling. Machine-aware, guided, reversible.",
     url: "https://redcoreos.net/atlasos-alternative",
     type: "article",
   },

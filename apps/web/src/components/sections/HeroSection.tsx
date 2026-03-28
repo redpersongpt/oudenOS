@@ -1,6 +1,7 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
+import { useRef } from "react";
 import { ArrowDown, Download } from "lucide-react";
 
 const ease = [0.16, 1, 0.3, 1] as const;
@@ -11,6 +12,33 @@ function scrollTo(id: string) {
     const top = el.getBoundingClientRect().top + window.scrollY - 80;
     window.scrollTo({ top, behavior: "smooth" });
   }
+}
+
+// ─── Dot Grid Background ────────────────────────────────────────────────────
+
+function DotGrid() {
+  return (
+    <svg
+      className="absolute inset-0 w-full h-full opacity-[0.035] pointer-events-none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      <defs>
+        <pattern id="dots" x="0" y="0" width="28" height="28" patternUnits="userSpaceOnUse">
+          <circle cx="1" cy="1" r="1" fill="#f0f0f4" />
+        </pattern>
+        <radialGradient id="dots-fade" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="white" stopOpacity="1" />
+          <stop offset="70%" stopColor="white" stopOpacity="0.4" />
+          <stop offset="100%" stopColor="white" stopOpacity="0" />
+        </radialGradient>
+        <mask id="dots-mask">
+          <rect width="100%" height="100%" fill="url(#dots-fade)" />
+        </mask>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#dots)" mask="url(#dots-mask)" />
+    </svg>
+  );
 }
 
 // ─── Pills — positioned around hex, CSS float (no React stutter) ────────────
@@ -40,7 +68,6 @@ function Pill({ label, angle, r, i }: { label: string; angle: number; r: number;
         ease,
       }}
     >
-      {/* CSS-only float — GPU accelerated, no React re-render */}
       <div
         className="pill-float rounded-full border border-accent/15 bg-surface/90 backdrop-blur-md px-5 py-2 whitespace-nowrap shadow-lg shadow-black/20"
         style={{ animationDelay: `${i * 0.4}s` }}
@@ -131,7 +158,7 @@ function HexagonMark() {
 
 function HeroVisual() {
   return (
-    <div className="relative w-[480px] h-[480px] flex items-center justify-center">
+    <div className="relative w-[440px] h-[440px] xl:w-[480px] xl:h-[480px] flex items-center justify-center">
       <HexagonMark />
       {PILLS.map((p, i) => <Pill key={p.label} {...p} i={i} />)}
     </div>
@@ -141,11 +168,31 @@ function HeroVisual() {
 // ─── Hero Section ────────────────────────────────────────────────────────────
 
 export function HeroSection() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start start", "end start"],
+  });
+
+  // Parallax: content drifts up and fades as user scrolls
+  const contentY = useTransform(scrollYProgress, [0, 1], [0, -80]);
+  const contentOpacity = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
+  const visualY = useTransform(scrollYProgress, [0, 1], [0, -40]);
+  const visualOpacity = useTransform(scrollYProgress, [0, 0.55], [1, 0]);
+
   return (
-    <section className="relative flex min-h-[100dvh] items-center overflow-hidden">
-      {/* Background — diagonal accent lines */}
+    <section
+      ref={sectionRef}
+      className="relative flex min-h-[100dvh] items-center overflow-hidden"
+    >
+      {/* Background */}
       <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+        {/* Base gradient */}
         <div className="absolute inset-0" style={{ background: "radial-gradient(ellipse 80% 60% at 42% 45%, #28282d 0%, #1e1e22 100%)" }} />
+
+        {/* Dot grid */}
+        <DotGrid />
+
         {/* Diagonal decorative lines — left */}
         <svg className="absolute left-[5%] top-[15%] opacity-[0.04]" width="200" height="400" viewBox="0 0 200 400">
           {[0,1,2,3,4,5].map(i => (
@@ -162,19 +209,48 @@ export function HeroSection() {
               transition={{ delay: 0.5 + i*0.15, duration: 1.5, ease }} />
           ))}
         </svg>
-        {/* Red ambient */}
+
+        {/* Red ambient blooms */}
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 0.07 }} transition={{ duration: 3, delay: 0.3 }}
           className="absolute top-[5%] right-[10%] h-[700px] w-[700px] rounded-full"
           style={{ background: "radial-gradient(circle, #E8254B, transparent 55%)" }} />
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 0.03 }} transition={{ duration: 3, delay: 1 }}
           className="absolute bottom-[0%] left-[5%] h-[500px] w-[500px] rounded-full"
           style={{ background: "radial-gradient(circle, #E8254B, transparent 50%)" }} />
+
+        {/* Horizontal accent line at the bottom of hero */}
+        <motion.div
+          className="absolute bottom-0 left-0 right-0 h-px"
+          style={{ background: "linear-gradient(90deg, transparent 0%, #E8254B 30%, #FF3860 50%, #E8254B 70%, transparent 100%)" }}
+          initial={{ scaleX: 0, opacity: 0 }}
+          animate={{ scaleX: 1, opacity: 0.3 }}
+          transition={{ delay: 1.8, duration: 1.2, ease }}
+        />
       </div>
 
-      <div className="relative z-10 mx-auto w-full max-w-[1240px] px-6 lg:px-12">
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-8 lg:gap-12 items-center min-h-[85vh]">
-          <div className="pt-16 lg:pt-0">
-            <h1 style={{ fontSize: "clamp(2.8rem, 5.5vw, 5rem)" }} className="font-bold tracking-[-0.045em] leading-[0.98]">
+      {/* Main content with parallax */}
+      <div className="relative z-10 mx-auto w-full max-w-[1440px] px-6 sm:px-8 lg:px-16 2xl:px-24">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-8 lg:gap-16 items-center min-h-[85vh]">
+
+          {/* ── Left: text ── */}
+          <motion.div
+            className="pt-20 lg:pt-0"
+            style={{ y: contentY, opacity: contentOpacity }}
+          >
+            {/* Pre-badge */}
+            <motion.div
+              initial={{ opacity: 0, x: -16 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.05, duration: 0.6, ease }}
+              className="mb-7 inline-flex items-center gap-2.5"
+            >
+              <span className="h-px w-8 bg-accent" />
+              <span className="font-mono text-[0.6rem] font-medium uppercase tracking-[0.18em] text-accent">
+                Windows Optimization
+              </span>
+            </motion.div>
+
+            <h1 style={{ fontSize: "clamp(2.8rem, 5.5vw, 5.2rem)" }} className="font-bold tracking-[-0.045em] leading-[0.96]">
               <motion.span className="block text-ink-primary"
                 initial={{ opacity: 0, y: 60, filter: "blur(12px)" }}
                 animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
@@ -188,13 +264,15 @@ export function HeroSection() {
                 Make it usable.
               </motion.span>
             </h1>
+
             <motion.p initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.55, duration: 0.8, ease }}
               className="mt-8 max-w-[480px] text-[1.05rem] leading-[1.8] text-ink-secondary">
-              redcore turns a bloated install into a system that actually fits
-              the machine, the workload, and the user. Guided. Reversible.
-              Machine-aware.
+              redcore scans your hardware, builds a machine-specific plan,
+              then transforms your Windows install — guided, reversible, and
+              actually intelligent.
             </motion.p>
+
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.8, duration: 0.7, ease }}
               className="mt-10 flex flex-col sm:flex-row items-start gap-4">
@@ -214,8 +292,10 @@ export function HeroSection() {
                 </motion.span>
               </motion.button>
             </motion.div>
+
+            {/* Trust signals */}
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.1, duration: 1 }}
-              className="mt-14 flex items-center gap-8">
+              className="mt-14 flex flex-wrap items-center gap-x-8 gap-y-3">
               {["Windows 10 & 11", "100% reversible", "No subscription"].map((t, i) => (
                 <span key={t} className="flex items-center gap-3 text-[0.7rem] font-mono font-medium tracking-wider text-ink-muted">
                   {i > 0 && <span className="h-3 w-px bg-accent/20" />}
@@ -223,12 +303,32 @@ export function HeroSection() {
                 </span>
               ))}
             </motion.div>
-          </div>
-          <div className="hidden lg:flex items-center justify-center">
+          </motion.div>
+
+          {/* ── Right: visual ── */}
+          <motion.div
+            className="hidden lg:flex items-center justify-center"
+            style={{ y: visualY, opacity: visualOpacity }}
+          >
             <HeroVisual />
-          </div>
+          </motion.div>
         </div>
       </div>
+
+      {/* Scroll cue — only visible above fold */}
+      <motion.div
+        className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 pointer-events-none"
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 2, duration: 0.8 }}
+        style={{ opacity: contentOpacity }}
+      >
+        <motion.div
+          className="w-px h-8 bg-gradient-to-b from-accent/40 to-transparent"
+          animate={{ scaleY: [0.4, 1, 0.4], opacity: [0.4, 1, 0.4] }}
+          transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+        />
+      </motion.div>
     </section>
   );
 }

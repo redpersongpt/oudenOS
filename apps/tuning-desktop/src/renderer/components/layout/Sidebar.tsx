@@ -5,6 +5,7 @@ import {
   LayoutDashboard,
   Cpu,
   Brain,
+  Activity,
   Sliders,
   Play,
   Monitor,
@@ -28,6 +29,7 @@ const navGroups = [
       { path: "/dashboard",    label: "Dashboard",    icon: LayoutDashboard },
       { path: "/hardware",     label: "Hardware",     icon: Cpu             },
       { path: "/intelligence", label: "Intelligence", icon: Brain           },
+      { path: "/diagnostics",  label: "Diagnostics",  icon: Activity        },
     ],
   },
   {

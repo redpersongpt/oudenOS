@@ -215,16 +215,19 @@ pub fn restore_snapshot(
 
 #[cfg(windows)]
 fn restore_registry(prev: &PreviousValue) -> anyhow::Result<()> {
+    let escaped_path = powershell::escape_ps_string(&prev.path);
+    let escaped_name = powershell::escape_ps_string(&prev.value_name);
+
     match &prev.previous_value {
         Some(value) => {
             let value_str = match value {
                 serde_json::Value::Number(n) => n.to_string(),
-                serde_json::Value::String(s) => format!("'{}'", s),
+                serde_json::Value::String(s) => format!("'{}'", powershell::escape_ps_string(s)),
                 other => other.to_string(),
             };
             let script = format!(
                 "Set-ItemProperty -Path 'Registry::{}' -Name '{}' -Value {} -Type DWord -Force",
-                prev.path, prev.value_name, value_str,
+                escaped_path, escaped_name, value_str,
             );
             let result = powershell::execute(&script)?;
             if !result.success {
@@ -237,7 +240,7 @@ fn restore_registry(prev: &PreviousValue) -> anyhow::Result<()> {
         None => {
             let script = format!(
                 "Remove-ItemProperty -Path 'Registry::{}' -Name '{}' -Force -ErrorAction SilentlyContinue",
-                prev.path, prev.value_name,
+                escaped_path, escaped_name,
             );
             let result = powershell::execute(&script)?;
             if !result.success {
@@ -259,9 +262,14 @@ fn restore_service(prev: &PreviousValue) -> anyhow::Result<()> {
         .and_then(|v| v.as_str())
         .unwrap_or("Manual");
 
+    // Validate and escape inputs before interpolation
+    let safe_path = powershell::validate_safe_arg(&prev.path, "service name")?;
+    let safe_start_type = powershell::validate_safe_arg(start_type, "start type")?;
+    let escaped_path = powershell::escape_ps_string(safe_path);
+
     let script = format!(
         "Set-Service -Name '{}' -StartupType {} -ErrorAction Stop",
-        prev.path, start_type,
+        escaped_path, safe_start_type,
     );
     let result = powershell::execute(&script)?;
     if !result.success {
@@ -274,7 +282,7 @@ fn restore_service(prev: &PreviousValue) -> anyhow::Result<()> {
     if !start_type.eq_ignore_ascii_case("Disabled") {
         let start_script = format!(
             "Start-Service -Name '{}' -ErrorAction SilentlyContinue",
-            prev.path,
+            escaped_path,
         );
         powershell::execute(&start_script)?;
     }
@@ -284,9 +292,12 @@ fn restore_service(prev: &PreviousValue) -> anyhow::Result<()> {
 
 #[cfg(windows)]
 fn restore_task(prev: &PreviousValue) -> anyhow::Result<()> {
+    let escaped_name = powershell::escape_ps_string(&prev.value_name);
+    let escaped_path = powershell::escape_ps_string(&prev.path);
+
     let script = format!(
         "Enable-ScheduledTask -TaskName '{}' -TaskPath '{}' -ErrorAction Stop",
-        prev.value_name, prev.path,
+        escaped_name, escaped_path,
     );
     let result = powershell::execute(&script)?;
     if !result.success {

@@ -10,6 +10,8 @@ import * as crypto from "node:crypto";
 import * as fs from "node:fs";
 import * as path from "node:path";
 
+export { FEATURE_GATES } from "@redcore/shared-schema/license";
+
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 export interface FetchLicenseOptions {
@@ -29,7 +31,8 @@ export interface LicenseCache {
 }
 
 const CACHE_FILE = "license-cache.enc";
-const GRACE_DAYS = 7;
+export const GRACE_PERIOD_DAYS = 7;
+const GRACE_DAYS = GRACE_PERIOD_DAYS;
 const REVALIDATE_AFTER_SECS = 86400; // 24 hours
 
 // ─── Public API ───────────────────────────────────────────────────────────────
@@ -107,6 +110,51 @@ export function isLicenseValid(state: LicenseState): boolean {
   if (state.tier === "free") return true;
   if (state.offlineDaysRemaining <= 0) return false;
   return true;
+}
+
+/** Compare tier rank: expert > premium > free */
+export function isTierSufficient(current: SubscriptionTier, required: SubscriptionTier): boolean {
+  const rank: Record<SubscriptionTier, number> = { free: 0, premium: 1, expert: 2 };
+  return rank[current] >= rank[required];
+}
+
+/**
+ * Check whether a named action is permitted for the given tier.
+ * Uses FEATURE_GATES from shared-schema for tier requirements.
+ */
+export function canApplyAction(action: string, tier: SubscriptionTier): boolean {
+  const requiredTier = FEATURE_GATES[action];
+  if (!requiredTier) return false;
+  return isTierSufficient(tier, requiredTier as SubscriptionTier);
+}
+
+/**
+ * Encrypt and persist a LicenseState to disk.
+ * Key is derived from the device fingerprint via PBKDF2.
+ */
+export function cacheLicense(
+  cacheDir: string,
+  license: LicenseState,
+  deviceFingerprint: string,
+): void {
+  const cachePath = path.join(cacheDir, CACHE_FILE);
+  const key = deriveCacheKey(deviceFingerprint);
+  saveCache(cachePath, key, license);
+}
+
+/**
+ * Load and decrypt the cached LicenseState from disk.
+ * Returns null if the cache is missing, tampered, or grace period is expired.
+ */
+export function loadCachedLicense(
+  cacheDir: string,
+  deviceFingerprint: string,
+): LicenseState | null {
+  const cachePath = path.join(cacheDir, CACHE_FILE);
+  const key = deriveCacheKey(deviceFingerprint);
+  const cached = loadCache(cachePath, key);
+  if (!cached) return null;
+  return applyOfflineGrace(cached);
 }
 
 /**

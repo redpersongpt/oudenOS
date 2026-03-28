@@ -4,6 +4,7 @@ export * from "./benchmark.js";
 export * from "./rollback.js";
 export * from "./journal.js";
 export * from "./license.js";
+export * from "./auth.js";
 export * from "./ipc.js";
 export * from "./compatibility.js";
 export * from "./app-catalog.js";

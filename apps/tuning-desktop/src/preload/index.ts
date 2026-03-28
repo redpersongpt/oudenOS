@@ -5,7 +5,7 @@
 // SECURITY: All IPC channels are validated against strict allowlists derived
 // from the IPC contract. Arbitrary channel access is blocked.
 
-import { contextBridge, ipcRenderer, shell } from "electron";
+import { contextBridge, ipcRenderer } from "electron";
 
 // ─── IPC Allowlists ─────────────────────────────────────────────────────────
 // These MUST match the keys of IpcMethods and IpcEvents in shared-schema/ipc.ts.
@@ -118,10 +118,8 @@ const api: RedcoreAPI = {
 
   shell: {
     openExternal: (url: string) => {
-      // Only allow https:// URLs to prevent arbitrary protocol execution
-      if (url.startsWith("https://")) {
-        shell.openExternal(url);
-      }
+      // Route through main process for defense-in-depth URL validation
+      void ipcRenderer.invoke("shell:openExternal", url);
     },
   },
 

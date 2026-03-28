@@ -78,7 +78,7 @@ export function PricingSection() {
               </ul>
 
               <motion.a
-                href="/downloads/os/redcore-os-setup.exe"
+                href="/downloads"
                 className="inline-flex items-center gap-2.5 rounded-xl border border-border bg-surface-raised px-6 py-4 text-[0.88rem] font-semibold text-ink-primary w-full justify-center hover:bg-border/30 transition-colors"
                 whileHover={{ scale: 1.01 }}
                 whileTap={{ scale: 0.98 }}

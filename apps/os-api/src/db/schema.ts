@@ -77,6 +77,7 @@ export const users = pgTable(
     }),
     stripeCustomerId: varchar('stripe_customer_id', { length: 255 }),
     role: varchar('role', { length: 10 }).notNull().default('user'),
+    isDonor: boolean('is_donor').notNull().default(false),
     deletedAt: timestamp('deleted_at', { withTimezone: true }),
     createdAt: timestamp('created_at', { withTimezone: true })
       .notNull()
@@ -276,6 +277,51 @@ export const adminAuditLog = pgTable(
   (t) => [
     index('admin_audit_log_admin_id_idx').on(t.adminId),
     index('admin_audit_log_action_idx').on(t.action),
+  ],
+);
+
+// ---------------------------------------------------------------------------
+// Donations
+// ---------------------------------------------------------------------------
+
+export const donationTypeEnum = pgEnum('donation_type', [
+  'one_time',
+  'monthly',
+]);
+
+export const donationStatusEnum = pgEnum('donation_status', [
+  'pending',
+  'completed',
+  'failed',
+  'cancelled',
+  'refunded',
+]);
+
+export const donations = pgTable(
+  'donations',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    userId: uuid('user_id').references(() => users.id, { onDelete: 'set null' }),
+    displayName: varchar('display_name', { length: 100 }),
+    isPublic: boolean('is_public').notNull().default(true),
+    type: donationTypeEnum('type').notNull(),
+    status: donationStatusEnum('status').notNull().default('pending'),
+    amountCents: integer('amount_cents').notNull(),
+    currency: varchar('currency', { length: 3 }).notNull().default('usd'),
+    stripeSessionId: varchar('stripe_session_id', { length: 255 }),
+    stripeSubscriptionId: varchar('stripe_subscription_id', { length: 255 }),
+    message: text('message'),
+    createdAt: timestamp('created_at', { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    updatedAt: timestamp('updated_at', { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (t) => [
+    index('donations_user_id_idx').on(t.userId),
+    index('donations_status_idx').on(t.status),
+    index('donations_created_at_idx').on(t.createdAt),
   ],
 );
 

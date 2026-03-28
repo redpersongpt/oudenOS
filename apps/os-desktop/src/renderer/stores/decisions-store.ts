@@ -45,6 +45,18 @@ export interface PerformanceDecisions {
   serviceCleanupDepth: "conservative" | "moderate" | "aggressive" | null;
   startupCleanupDepth: "conservative" | "moderate" | "aggressive" | null;
   suppressBrowserBackground: boolean;
+  // Oneclick-mapped performance tuning
+  powerPlan: "windows-balanced" | "ultimate" | "ultimate-idle-off" | null;
+  prioritySeparation: "balanced" | "latency" | "fps" | null;
+  timerResolution: "system" | "locked-05ms" | "locked-1ms" | null;
+}
+
+export interface SecurityDecisions {
+  defenderAction: "keep" | "suppress" | "disable" | null;
+}
+
+export interface SystemDecisions {
+  searchAction: "keep" | "remove" | null;
 }
 
 export interface PowerDecisions {
@@ -104,6 +116,8 @@ interface DecisionsState {
   personalization: PersonalizationDecisions;
   apps: AppDecisions;
   gaming: GamingDecisions;
+  security: SecurityDecisions;
+  system: SystemDecisions;
 
   // Completion tracking
   completedSections: string[];
@@ -121,6 +135,8 @@ interface DecisionsState {
   setPersonalization: (d: Partial<PersonalizationDecisions>) => void;
   setApps: (d: Partial<AppDecisions>) => void;
   setGaming: (d: Partial<GamingDecisions>) => void;
+  setSecurity: (d: Partial<SecurityDecisions>) => void;
+  setSystem: (d: Partial<SystemDecisions>) => void;
   markSectionComplete: (section: string) => void;
 
   // Computed
@@ -158,6 +174,17 @@ const DEFAULT_PERFORMANCE: PerformanceDecisions = {
   aggressionLevel: null, prioritizeLatency: false,
   serviceCleanupDepth: null, startupCleanupDepth: null,
   suppressBrowserBackground: true,
+  powerPlan: null,
+  prioritySeparation: null,
+  timerResolution: null,
+};
+
+const DEFAULT_SECURITY: SecurityDecisions = {
+  defenderAction: null,
+};
+
+const DEFAULT_SYSTEM: SystemDecisions = {
+  searchAction: null,
 };
 
 const DEFAULT_POWER: PowerDecisions = {
@@ -223,6 +250,41 @@ function computeImpact(state: DecisionsState): PlaybookImpact {
     blocked += 2;
   }
 
+  // Defender action
+  if (state.security.defenderAction === "disable") {
+    warnings.push("Windows Defender disabled — real-time protection removed");
+    estimated += 1;
+  } else if (state.security.defenderAction === "suppress") {
+    estimated += 1;
+  }
+
+  // Power plan
+  if (state.performance.powerPlan === "ultimate-idle-off") {
+    warnings.push("Idle-off power plan: significantly higher heat and power draw");
+    reboot = true;
+    estimated += 2;
+  } else if (state.performance.powerPlan === "ultimate") {
+    estimated += 1;
+  }
+
+  // Priority separation
+  if (state.performance.prioritySeparation) {
+    estimated += 1;
+  }
+
+  // Timer resolution
+  if (state.performance.timerResolution && state.performance.timerResolution !== "system") {
+    estimated += 1;
+    reboot = true;
+  }
+
+  // Search removal
+  if (state.system.searchAction === "remove") {
+    warnings.push("Windows Search removal: Start Menu search will stop working");
+    reboot = true;
+    estimated += 2;
+  }
+
   const riskLevel = state.performance.aggressionLevel === "expert" ? "expert"
     : state.performance.aggressionLevel === "aggressive" ? "aggressive"
     : state.browser.edgeAction === "remove" ? "aggressive"
@@ -248,6 +310,8 @@ export const useDecisionsStore = create<DecisionsState>((set, get) => ({
   personalization: { ...DEFAULT_PERSONALIZATION },
   apps: { ...DEFAULT_APPS },
   gaming: { ...DEFAULT_GAMING },
+  security: { ...DEFAULT_SECURITY },
+  system: { ...DEFAULT_SYSTEM },
   completedSections: [],
   impact: { estimatedActions: 47, estimatedBlocked: 0, estimatedPreserved: 0, rebootRequired: false, riskLevel: "mixed", warnings: [] },
 
@@ -285,6 +349,14 @@ export const useDecisionsStore = create<DecisionsState>((set, get) => ({
   }),
   setGaming: (d) => set((s) => {
     const next = { ...s, gaming: { ...s.gaming, ...d } };
+    return { ...next, impact: computeImpact(next) };
+  }),
+  setSecurity: (d) => set((s) => {
+    const next = { ...s, security: { ...s.security, ...d } };
+    return { ...next, impact: computeImpact(next) };
+  }),
+  setSystem: (d) => set((s) => {
+    const next = { ...s, system: { ...s.system, ...d } };
     return { ...next, impact: computeImpact(next) };
   }),
   markSectionComplete: (section) => set((s) => ({
@@ -328,6 +400,8 @@ export const useDecisionsStore = create<DecisionsState>((set, get) => ({
     personalization: { ...DEFAULT_PERSONALIZATION },
     apps: { ...DEFAULT_APPS },
     gaming: { ...DEFAULT_GAMING },
+    security: { ...DEFAULT_SECURITY },
+    system: { ...DEFAULT_SYSTEM },
     completedSections: [],
     impact: { estimatedActions: 47, estimatedBlocked: 0, estimatedPreserved: 0, rebootRequired: false, riskLevel: "mixed", warnings: [] },
   }),

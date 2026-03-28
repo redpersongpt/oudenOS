@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import type { ReactNode } from "react";
+import * as React from "react";
 import { spring } from "@/lib/motion";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -9,7 +9,7 @@ import { spring } from "@/lib/motion";
 type CardVariant = "default" | "glass";
 
 interface CardProps {
-  children: ReactNode;
+  children: React.ReactNode;
   className?: string;
   hover?: boolean;
   glow?: boolean;
@@ -59,7 +59,7 @@ export function Card({
       }}
       className={[baseStyles, hoverClass].filter(Boolean).join(" ")}
     >
-      {children}
+      <>{children}</>
     </motion.div>
   );
 }

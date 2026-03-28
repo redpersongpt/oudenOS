@@ -41,7 +41,7 @@ export function Checkbox({
         className={`relative mt-0.5 flex shrink-0 items-center justify-center rounded border transition-all duration-150 ${
           isChecked || indeterminate
             ? "border-brand-500 bg-brand-500"
-            : "border-neutral-300 bg-white hover:border-neutral-400"
+            : "border-border bg-surface-overlay hover:border-border-strong"
         }`}
         style={{ width: 18, height: 18 }}
       >
@@ -86,7 +86,7 @@ export function Checkbox({
       {(label || description) && (
         <div className="min-w-0">
           {label && (
-            <p className="text-sm font-medium text-neutral-800 leading-tight select-none">
+            <p className="text-sm font-medium text-ink leading-tight select-none">
               {label}
             </p>
           )}

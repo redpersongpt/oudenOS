@@ -418,10 +418,13 @@ async fn dispatch(
             let entries: Vec<String> = match db.conn().prepare(
                 "SELECT id FROM journal_entries WHERE status = 'awaiting_reboot' ORDER BY step_order ASC"
             ) {
-                Ok(mut stmt) => stmt.query_map([], |row| row.get(0))
-                    .unwrap_or_else(|_| panic!("query_map failed"))
-                    .filter_map(|r| r.ok())
-                    .collect(),
+                Ok(mut stmt) => match stmt.query_map([], |row| row.get(0)) {
+                    Ok(rows) => rows.filter_map(|r| r.ok()).collect(),
+                    Err(e) => {
+                        tracing::error!("Failed to map journal entries: {}", e);
+                        return RpcResponse::err(id, -17, format!("Journal query failed: {}", e));
+                    }
+                },
                 Err(e) => {
                     tracing::error!("Failed to query journal entries: {}", e);
                     return RpcResponse::err(id, -17, format!("Journal query failed: {}", e));

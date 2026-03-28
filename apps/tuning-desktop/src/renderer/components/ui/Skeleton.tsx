@@ -15,8 +15,9 @@ const shimmerKeyframes = {
 
 const shimmerStyle: CSSProperties = {
   backgroundImage:
-    "linear-gradient(90deg, #F0EFED 0%, #E8E7E4 40%, #F7F6F5 60%, #F0EFED 100%)",
+    "linear-gradient(90deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.08) 40%, rgba(255,255,255,0.11) 60%, rgba(255,255,255,0.04) 100%)",
   backgroundSize: "400% 100%",
+  backgroundColor: "rgba(255,255,255,0.05)",
 };
 
 const roundedMap = {
@@ -66,7 +67,7 @@ export function SkeletonText({
 export function SkeletonCard({ className = "" }: { className?: string }) {
   return (
     <div
-      className={`rounded-xl border border-neutral-150 bg-white p-5 shadow-card ${className}`}
+      className={`rounded-xl border border-border bg-surface p-5 shadow-card ${className}`}
     >
       <div className="flex items-start gap-3">
         <Skeleton className="h-10 w-10 shrink-0" rounded="lg" />
@@ -89,7 +90,7 @@ export function DashboardSkeleton() {
     <div className="space-y-6">
       <div className="grid grid-cols-4 gap-4">
         {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="rounded-xl border border-neutral-150 bg-white p-5">
+          <div key={i} className="rounded-xl border border-border bg-surface p-5">
             <Skeleton className="h-3 w-16 mb-3" />
             <Skeleton className="h-7 w-24" />
           </div>

@@ -169,7 +169,7 @@ fn run_system_latency_benchmark() -> Vec<serde_json::Value> {
         std::thread::sleep(std::time::Duration::from_millis(1));
         sleep_samples.push(start.elapsed().as_micros() as f64);
     }
-    sleep_samples.sort_by(|a, b| a.partial_cmp(b).unwrap());
+    sleep_samples.sort_by(|a, b| a.total_cmp(b));
     let median_sleep = sleep_samples[50];
     let p99_sleep = sleep_samples[99];
 
@@ -193,10 +193,12 @@ fn run_system_latency_benchmark() -> Vec<serde_json::Value> {
     for _ in 0..50 {
         let start = std::time::Instant::now();
         let handle = std::thread::spawn(|| {});
-        handle.join().unwrap();
+        if let Err(e) = handle.join() {
+            tracing::warn!("Benchmark spawn thread panicked: {:?}", e);
+        }
         spawn_samples.push(start.elapsed().as_micros() as f64);
     }
-    spawn_samples.sort_by(|a, b| a.partial_cmp(b).unwrap());
+    spawn_samples.sort_by(|a, b| a.total_cmp(b));
     let median_spawn = spawn_samples[25];
 
     metrics.push(serde_json::json!({
@@ -214,7 +216,7 @@ fn run_system_latency_benchmark() -> Vec<serde_json::Value> {
         let _ = std::time::Instant::now();
         clock_samples.push(start.elapsed().as_nanos() as f64);
     }
-    clock_samples.sort_by(|a, b| a.partial_cmp(b).unwrap());
+    clock_samples.sort_by(|a, b| a.total_cmp(b));
     let median_clock = clock_samples[500];
 
     metrics.push(serde_json::json!({

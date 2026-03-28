@@ -10,8 +10,8 @@ import type {
   IntelligentRecommendation,
   IntelligentTuningProfile,
   ClassificationSignal,
-  ARCHETYPE_META,
 } from "@redcore/shared-schema/device-intelligence";
+import { ARCHETYPE_META } from "@redcore/shared-schema/device-intelligence";
 
 // ─── Archetype accent color → Tailwind class map ─────────────────────────────
 
@@ -273,7 +273,6 @@ export function SignalCard({ signal, archetypeMeta }: SignalCardProps) {
 // ─── Score Bar Row ────────────────────────────────────────────────────────────
 
 interface ScoreBarProps {
-  archetype: MachineArchetype;
   score: number;
   isPrimary: boolean;
   accentColor: string;
@@ -324,7 +323,6 @@ export function ScoreBreakdown({ classification, archetypeMeta, allMeta }: Score
       {ARCHETYPE_ORDER.map((arch) => (
         <ScoreBar
           key={arch}
-          archetype={arch}
           label={allMeta[arch].label}
           score={classification.scores[arch] ?? 0}
           isPrimary={arch === classification.primary}

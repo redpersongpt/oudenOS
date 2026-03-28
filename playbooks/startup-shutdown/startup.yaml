@@ -85,6 +85,47 @@ actions:
         value: 0
         valueType: DWord
 
+  - id: startup.disable-autoplay
+    name: "Disable AutoPlay & AutoRun"
+    description: "Disable automatic media playback and program execution when inserting removable drives"
+    rationale: "AutoPlay/AutoRun is a security risk (malware spreads via USB) and an annoyance"
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKLM
+        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer"
+        valueName: NoDriveTypeAutoRun
+        value: 255
+        valueType: DWord
+      - hive: HKCU
+        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\AutoplayHandlers"
+        valueName: DisableAutoplay
+        value: 1
+        valueType: DWord
+
+  - id: startup.enable-game-mode
+    name: "Enable Game Mode"
+    description: "Enable Windows Game Mode to prioritize game processes and reduce background interference"
+    rationale: "Game Mode tells Windows to deprioritize background tasks and Windows Update during gameplay"
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKCU
+        path: "SOFTWARE\\Microsoft\\GameBar"
+        valueName: AutoGameModeEnabled
+        value: 1
+        valueType: DWord
+
   - id: startup.disable-cloud-notifications
     name: "Disable Cloud Notification Network Usage"
     description: "Block Windows Push Notification System from making network calls to Microsoft cloud servers for notification delivery"
