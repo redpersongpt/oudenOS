@@ -2,12 +2,7 @@ import Fastify from 'fastify';
 import cors from '@fastify/cors';
 import helmet from '@fastify/helmet';
 import { closeDb } from './db/index.js';
-import authRoutes from './routes/auth.js';
-import userRoutes from './routes/users.js';
-import subscriptionRoutes from './routes/subscription.js';
-import webhookRoutes from './routes/webhooks.js';
 import adminRoutes from './routes/admin.js';
-import telemetryRoutes from './routes/telemetry.js';
 import licenseRoutes from './routes/license.js';
 import updateRoutes from './routes/updates.js';
 
@@ -75,12 +70,7 @@ app.get('/health', async (_request, reply) => {
 
 await app.register(
   async function v1Routes(v1) {
-    await v1.register(authRoutes, { prefix: '/auth' });
-    await v1.register(userRoutes, { prefix: '/users' });
-    await v1.register(subscriptionRoutes, { prefix: '/subscription' });
-    await v1.register(webhookRoutes, { prefix: '/webhooks' });
     await v1.register(adminRoutes, { prefix: '/admin' });
-    await v1.register(telemetryRoutes, { prefix: '/telemetry' });
     await v1.register(licenseRoutes, { prefix: '/license' });
     await v1.register(updateRoutes, { prefix: '/updates' });
   },

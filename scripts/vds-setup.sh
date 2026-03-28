@@ -135,21 +135,35 @@ echo "  /home/ubuntu/redcoreECO ready"
 
 # ─── 10. Environment Template ─────────────────────────────────────────────
 echo "── 10. Environment template ──"
-cat > /home/ubuntu/redcoreECO/.env << 'ENVEOF'
+JWT_SECRET_VALUE=$(openssl rand -hex 32)
+NEXTAUTH_SECRET_VALUE=$(openssl rand -hex 32)
+cat > /home/ubuntu/redcoreECO/.env << ENVEOF
 # ─── Shared across all services ──────────────────────────────────────────
 DATABASE_URL=postgres://redcore:${DB_PASS}@localhost:5432/redcore
-JWT_SECRET=$(openssl rand -hex 32)
+JWT_SECRET=${JWT_SECRET_VALUE}
 NODE_ENV=production
 
 # ─── Web (Next.js) ──────────────────────────────────────────────────────
 NEXTAUTH_URL=https://redcoreos.net
-NEXTAUTH_SECRET=$(openssl rand -hex 32)
+NEXTAUTH_SECRET=${NEXTAUTH_SECRET_VALUE}
 GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
 APPLE_CLIENT_ID=
 APPLE_CLIENT_SECRET=
 STRIPE_SECRET_KEY=
 STRIPE_WEBHOOK_SECRET=
+
+# ─── cloud-api ───────────────────────────────────────────────────────────
+APP_URL=https://app.redcore-tuning.com
+OS_APP_URL=https://redcoreos.net
+CORS_ORIGINS=https://app.redcore-tuning.com,https://redcoreos.net
+ALLOWED_REDIRECT_HOSTS=app.redcore-tuning.com,redcoreos.net
+SENDGRID_API_KEY=
+EMAIL_FROM=noreply@redcore-tuning.com
+STRIPE_PRICE_PREMIUM_MONTHLY=
+STRIPE_PRICE_PREMIUM_ANNUAL=
+STRIPE_PRICE_EXPERT_MONTHLY=
+STRIPE_PRICE_EXPERT_ANNUAL=
 
 # ─── tuning-api ─────────────────────────────────────────────────────────
 TUNING_API_PORT=3001

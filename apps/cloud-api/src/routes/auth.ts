@@ -486,7 +486,9 @@ export const authRoutes: FastifyPluginAsync = async (app) => {
     providedName?: string;
     reply: import("fastify").FastifyReply;
   }) {
-    const email = profile.email.toLowerCase().trim();
+    const normalizedEmail = profile.email?.toLowerCase().trim();
+    const fallbackAppleEmail = `apple-${profile.id}@privaterelay.redcore.invalid`;
+    const accountEmail = normalizedEmail ?? fallbackAppleEmail;
 
     // 1. Check if this OAuth account is already linked
     const [existingLink] = await db
@@ -535,11 +537,13 @@ export const authRoutes: FastifyPluginAsync = async (app) => {
     }
 
     // 2. Check if an account with this email already exists (link to it)
-    const [existingUser] = await db
-      .select()
-      .from(users)
-      .where(eq(users.email, email))
-      .limit(1);
+    const [existingUser] = normalizedEmail
+      ? await db
+          .select()
+          .from(users)
+          .where(eq(users.email, normalizedEmail))
+          .limit(1)
+      : [];
 
     let userId: string;
     let isNewUser = false;
@@ -554,7 +558,7 @@ export const authRoutes: FastifyPluginAsync = async (app) => {
       const [newUser] = await db
         .insert(users)
         .values({
-          email,
+          email: accountEmail,
           name: providedName ?? profile.name,
           avatarUrl: profile.avatarUrl ?? null,
           oauthProvider: provider,
@@ -580,7 +584,7 @@ export const authRoutes: FastifyPluginAsync = async (app) => {
         userId,
         provider,
         providerUserId: profile.id,
-        providerEmail: email,
+        providerEmail: normalizedEmail ?? null,
       })
       .onConflictDoNothing();
 
