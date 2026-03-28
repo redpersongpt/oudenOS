@@ -253,10 +253,14 @@ export const webhookRoutes: FastifyPluginAsync = async (app) => {
 
       let event: Stripe.Event;
       try {
-        // fastify-raw-body stores as string when encoding:"utf8" is set
-        const rawBody =
-          (request as unknown as { rawBody?: string | Buffer }).rawBody ??
-          JSON.stringify(request.body);
+        // fastify-raw-body stores as string when encoding:"utf8" is set.
+        // Do NOT fall back to JSON.stringify — it cannot guarantee byte-identical
+        // output and would silently mask a plugin misconfiguration.
+        const rawBody = (request as unknown as { rawBody?: string | Buffer }).rawBody;
+        if (!rawBody) {
+          app.log.error("rawBody not available — fastify-raw-body plugin may be misconfigured");
+          return reply.code(500).send({ error: "Server configuration error" });
+        }
         event = stripe.webhooks.constructEvent(rawBody, sig, WEBHOOK_SECRET);
       } catch (err) {
         app.log.warn({ err }, "Stripe webhook signature verification failed");
