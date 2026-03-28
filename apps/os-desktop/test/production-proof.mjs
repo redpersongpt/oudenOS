@@ -4,12 +4,14 @@
  * but with mock service. Proves the production shell owns the installer form.
  */
 
-import { app, BrowserWindow, ipcMain, session } from "electron";
+import electron from "electron";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawn } from "node:child_process";
 import { createInterface } from "node:readline";
 import fs from "node:fs";
+
+const { app, BrowserWindow, ipcMain, session } = electron;
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const resultsDir = path.join(__dirname, "..", "..", "..", "proof-screenshots-os");

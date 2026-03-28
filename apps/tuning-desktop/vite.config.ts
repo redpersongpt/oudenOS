@@ -9,8 +9,8 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "src/renderer"),
-      "@redcore/design-system": path.resolve(__dirname, "../../packages/design-system/src"),
-      "@redcore/shared-schema": path.resolve(__dirname, "../../packages/shared-schema/src"),
+      "@redcore/design-system": path.resolve(__dirname, "../../packages/tuning-design-system/src"),
+      "@redcore/shared-schema": path.resolve(__dirname, "../../packages/tuning-shared-schema/src"),
     },
   },
   build: {
