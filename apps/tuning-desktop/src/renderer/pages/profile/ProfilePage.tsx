@@ -18,6 +18,7 @@ import { staggerContainer, staggerChild } from "@redcore/design-system";
 import { Card, CardHeader, CardContent } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
+import { toast } from "@/components/ui/Toast";
 import { useAuthStore } from "@/stores/auth-store";
 import { useLicenseStore } from "@/stores/license-store";
 import { cloudApi } from "@/lib/cloud-api";
@@ -107,9 +108,16 @@ function InlineEditName({
 
 // ─── Danger zone ──────────────────────────────────────────────────────────────
 
-function DangerZone() {
+function DangerZone({
+  deleting,
+  onDelete,
+}: {
+  deleting: boolean;
+  onDelete: (password?: string) => Promise<void>;
+}) {
   const [expanded, setExpanded] = useState(false);
   const [confirmText, setConfirmText] = useState("");
+  const [password, setPassword] = useState("");
   const canDelete = confirmText === "DELETE";
 
   return (
@@ -159,14 +167,25 @@ function DangerZone() {
                   className="w-full rounded-lg border border-red-900/40 bg-red-950/20 px-3 py-2 font-mono text-sm text-ink placeholder-ink-tertiary/50 outline-none transition-all focus:border-red-600/50 focus:ring-1 focus:ring-red-500/20"
                 />
               </div>
+              <div>
+                <label className="mb-1.5 block text-xs font-medium text-ink-tertiary">
+                  Current password <span className="text-ink-tertiary/70">(required for password accounts)</span>
+                </label>
+                <input
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  type="password"
+                  placeholder="Current password"
+                  className="w-full rounded-lg border border-red-900/40 bg-red-950/20 px-3 py-2 text-sm text-ink placeholder-ink-tertiary/50 outline-none transition-all focus:border-red-600/50 focus:ring-1 focus:ring-red-500/20"
+                />
+              </div>
               <Button
                 variant="danger"
                 size="sm"
                 disabled={!canDelete}
                 className="w-full"
-                onClick={() => {
-                  // TODO: implement account deletion
-                }}
+                loading={deleting}
+                onClick={() => void onDelete(password.trim() || undefined)}
               >
                 Permanently Delete Account
               </Button>
@@ -183,7 +202,11 @@ function DangerZone() {
 export function ProfilePage() {
   const navigate = useNavigate();
   const user = useAuthStore((s) => s.user);
+  const accessToken = useAuthStore((s) => s.accessToken);
+  const refreshToken = useAuthStore((s) => s.refreshToken);
+  const setAuth = useAuthStore((s) => s.setAuth);
   const clearAuth = useAuthStore((s) => s.clearAuth);
+  const setLicense = useLicenseStore((s) => s.setLicense);
   const isPremium = useLicenseStore((s) => {
     const l = s.license;
     return (l?.tier === "premium" || l?.tier === "expert") && l?.status === "active";
@@ -192,14 +215,34 @@ export function ProfilePage() {
 
   const [activeTab, setActiveTab] = useState<TabId>("account");
   const [refreshing, setRefreshing] = useState(false);
+  const [savingName, setSavingName] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
+  const [deletingAccount, setDeletingAccount] = useState(false);
 
   async function handleRefreshProfile() {
     setRefreshing(true);
     try {
-      await cloudApi.auth.me();
-    } catch {
-      // best-effort
+      const profile = await cloudApi.auth.me();
+      if (accessToken && refreshToken) {
+        setAuth(profile.user, accessToken, refreshToken);
+      }
+      setLicense({
+        tier: profile.subscription.tier,
+        status: profile.subscription.status,
+        expiresAt: profile.subscription.currentPeriodEnd,
+        deviceBound: false,
+        deviceId: null,
+        lastValidatedAt: new Date().toISOString(),
+        offlineGraceDays: 0,
+        offlineDaysRemaining: 0,
+        features: [],
+      });
+      toast.success("Profile Refreshed", "Account and subscription state are up to date.");
+    } catch (error) {
+      toast.error(
+        "Refresh Failed",
+        error instanceof Error ? error.message : "Could not refresh your profile.",
+      );
     } finally {
       setRefreshing(false);
     }
@@ -211,8 +254,42 @@ export function ProfilePage() {
     navigate("/login", { replace: true });
   }
 
-  function handleSaveName(_next: string) {
-    // TODO: call update profile API
+  async function handleSaveName(next: string) {
+    setSavingName(true);
+    try {
+      const updatedUser = await cloudApi.users.updateProfile({ displayName: next });
+      if (accessToken && refreshToken) {
+        setAuth({ ...(user ?? updatedUser), ...updatedUser }, accessToken, refreshToken);
+      }
+      toast.success("Profile Updated", "Your display name was saved.");
+    } catch (error) {
+      toast.error(
+        "Update Failed",
+        error instanceof Error ? error.message : "Could not update your display name.",
+      );
+    } finally {
+      setSavingName(false);
+    }
+  }
+
+  async function handleDeleteAccount(password?: string) {
+    setDeletingAccount(true);
+    try {
+      await cloudApi.users.deleteAccount({
+        confirmation: "DELETE MY ACCOUNT",
+        password,
+      });
+      clearAuth();
+      toast.success("Account Deleted", "Your account has been deleted.");
+      navigate("/login", { replace: true });
+    } catch (error) {
+      toast.error(
+        "Delete Failed",
+        error instanceof Error ? error.message : "Could not delete your account.",
+      );
+    } finally {
+      setDeletingAccount(false);
+    }
   }
 
   const displayName = user?.displayName ?? user?.email ?? "User";
@@ -293,7 +370,9 @@ export function ProfilePage() {
                 </motion.div>
 
                 <div>
-                  <InlineEditName value={displayName} onSave={handleSaveName} />
+                  <div className={savingName ? "pointer-events-none opacity-70" : ""}>
+                    <InlineEditName value={displayName} onSave={handleSaveName} />
+                  </div>
                   {user?.email && (
                     <p className="mt-0.5 text-xs text-ink-tertiary">{user.email}</p>
                   )}
@@ -417,7 +496,7 @@ export function ProfilePage() {
                     <p className="mb-4 text-xs text-ink-tertiary">
                       Irreversible actions. Proceed with caution.
                     </p>
-                    <DangerZone />
+                    <DangerZone deleting={deletingAccount} onDelete={handleDeleteAccount} />
                   </CardContent>
                 </motion.div>
               )}

@@ -38,6 +38,16 @@ const apiEnv = {
   NODE_ENV: "production",
 };
 
+const webEnvFile = loadEnvFile(path.join(__dirname, "apps/web/.env.local"));
+const webAppUrl =
+  process.env.APP_URL ??
+  process.env.AUTH_URL ??
+  process.env.NEXTAUTH_URL ??
+  webEnvFile.APP_URL ??
+  webEnvFile.AUTH_URL ??
+  webEnvFile.NEXTAUTH_URL ??
+  "https://redcoreos.net";
+
 const webDatabaseUrl =
   process.env.WEB_DATABASE_URL ??
   `file:${path.join(__dirname, "apps/web/prisma/prisma/dev.db")}`;
@@ -52,6 +62,17 @@ module.exports = {
         NODE_ENV: "production",
         PORT: 3000,
         DATABASE_URL: webDatabaseUrl,
+        APP_URL: webAppUrl,
+        AUTH_URL: webAppUrl,
+        NEXTAUTH_URL: webAppUrl,
+        NEXTAUTH_SECRET:
+          process.env.NEXTAUTH_SECRET ??
+          process.env.AUTH_SECRET ??
+          webEnvFile.NEXTAUTH_SECRET,
+        AUTH_SECRET:
+          process.env.AUTH_SECRET ??
+          process.env.NEXTAUTH_SECRET ??
+          webEnvFile.NEXTAUTH_SECRET,
       },
       instances: 1,
       autorestart: true,
