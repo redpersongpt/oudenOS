@@ -40,11 +40,9 @@ export const metadata: Metadata = {
   creator: "redcore",
   publisher: "redcore",
   icons: {
-    icon: [
-      { url: "/icon.svg", type: "image/svg+xml" },
-      { url: "/favicon.png", type: "image/png" },
-    ],
-    apple: "/favicon.png",
+    icon: [{ url: "/redcore-logo.png", type: "image/png" }],
+    shortcut: ["/redcore-logo.png"],
+    apple: "/redcore-logo.png",
   },
   openGraph: {
     title: "redcore — Windows Optimization & Transformation Tools",
