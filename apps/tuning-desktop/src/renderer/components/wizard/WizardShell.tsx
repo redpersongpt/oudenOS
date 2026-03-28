@@ -11,7 +11,7 @@ import { useWizardStore } from "@/stores/wizard-store";
 import type { WizardStepId } from "@/stores/wizard-store";
 import { Button } from "@/components/ui/Button";
 import { LogoMark } from "@/components/brand/Logo";
-import { useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 
 // ─── Step metadata ──────────────────────────────────────────────────────────
 
@@ -44,29 +44,55 @@ const NEXT_LABELS: Partial<Record<WizardStepId, string>> = {
 
 function StepPicker() {
   const [open, setOpen] = useState(false);
+  const menuId = useId();
+  const containerRef = useRef<HTMLDivElement>(null);
   const { currentStep, steps, goToStep } = useWizardStore();
   const currentIdx = steps.findIndex(s => s.id === currentStep);
   const currentLabel = STEP_LABELS[currentStep] ?? currentStep;
 
+  useEffect(() => {
+    if (!open) return;
+
+    const onPointerDown = (event: PointerEvent) => {
+      if (!containerRef.current?.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    };
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpen(false);
+    };
+
+    window.addEventListener("pointerdown", onPointerDown);
+    window.addEventListener("keydown", onKeyDown);
+    return () => {
+      window.removeEventListener("pointerdown", onPointerDown);
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [open]);
+
   return (
-    <div className="relative">
+    <div ref={containerRef} className="relative">
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-2 rounded-md px-3 py-1.5 text-xs font-medium text-neutral-400 hover:text-neutral-200 hover:bg-white/[0.06] transition-colors"
+        aria-expanded={open}
+        aria-controls={menuId}
+        className="flex min-w-0 items-center gap-2 rounded-md px-3 py-1.5 text-xs font-medium text-ink-secondary transition-colors hover:bg-white/[0.06] hover:text-ink"
       >
-        <span className="text-neutral-600">{currentIdx + 1}/{steps.length}</span>
-        <span>{currentLabel}</span>
-        <ChevronDown className={`h-3 w-3 transition-transform ${open ? "rotate-180" : ""}`} />
+        <span className="text-ink-tertiary">{currentIdx + 1}/{steps.length}</span>
+        <span className="max-w-[11rem] truncate">{currentLabel}</span>
+        <ChevronDown className={`h-3 w-3 shrink-0 transition-transform ${open ? "rotate-180" : ""}`} />
       </button>
 
       <AnimatePresence>
         {open && (
           <motion.div
+            id={menuId}
             initial={{ opacity: 0, y: -4, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -4, scale: 0.98 }}
             transition={{ duration: 0.15 }}
-            className="absolute left-0 top-full mt-1 z-50 w-56 rounded-lg border border-white/[0.08] bg-[#1a1a1f] shadow-2xl shadow-black/40 py-1 overflow-hidden"
+            className="absolute left-0 top-full z-50 mt-1 max-h-80 w-56 overflow-y-auto rounded-lg border border-white/[0.08] bg-[#1a1a1f] py-1 shadow-2xl shadow-black/40"
           >
             {steps.map((step, i) => {
               const isCompleted = step.status === "completed";
@@ -86,8 +112,8 @@ function StepPicker() {
                         : "text-neutral-400 hover:bg-white/[0.05] hover:text-neutral-200"
                   }`}
                 >
-                  <span className="w-4 text-right font-mono text-[10px] text-neutral-600">{i + 1}</span>
-                  <span className="flex-1 truncate">{STEP_LABELS[step.id]}</span>
+                  <span className="w-4 shrink-0 text-right font-mono text-[10px] text-neutral-600">{i + 1}</span>
+                  <span className="min-w-0 flex-1 truncate">{STEP_LABELS[step.id]}</span>
                   {isCompleted && <div className="h-1.5 w-1.5 rounded-full bg-green-500/70" />}
                   {isCurrent && <div className="h-1.5 w-1.5 rounded-full bg-brand-400" />}
                 </button>

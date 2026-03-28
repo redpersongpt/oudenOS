@@ -10,6 +10,15 @@ jobs:
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - name: Install workspace dependencies
+        run: pnpm install --frozen-lockfile
       - uses: dtolnay/rust-toolchain@stable
       - name: Cargo build
         working-directory: services/os-service
@@ -823,3 +832,17 @@ jobs:
               Write-Output "RESULT: SOME PROOFS FAILED — see above"
               exit 1
           }
+
+      - name: Build OS desktop
+        run: pnpm --dir apps/os-desktop build
+
+      - name: Production Electron smoke proof
+        run: pnpm --dir apps/os-desktop exec electron test/production-proof.mjs
+
+      - name: Upload OS smoke proof screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: os-desktop-proof-screenshots
+          path: proof-screenshots-os/
+          if-no-files-found: warn

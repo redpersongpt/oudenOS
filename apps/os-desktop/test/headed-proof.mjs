@@ -4,12 +4,14 @@
  * Opens the 9-step transformation wizard, advances through steps, captures screenshots.
  */
 
-import { app, BrowserWindow, ipcMain } from "electron";
+import electron from "electron";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawn } from "node:child_process";
 import { createInterface } from "node:readline";
 import fs from "node:fs";
+
+const { app, BrowserWindow, ipcMain } = electron;
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const resultsDir = path.join(__dirname, "..", "..", "..", "proof-screenshots-os");

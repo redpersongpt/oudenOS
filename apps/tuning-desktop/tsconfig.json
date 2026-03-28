@@ -7,10 +7,10 @@
     "moduleResolution": "bundler",
     "paths": {
       "@/*": ["./src/renderer/*"],
-      "@redcore/design-system": ["../../packages/design-system/src"],
-      "@redcore/design-system/*": ["../../packages/design-system/src/*"],
-      "@redcore/shared-schema": ["../../packages/shared-schema/src"],
-      "@redcore/shared-schema/*": ["../../packages/shared-schema/src/*"],
+      "@redcore/design-system": ["../../packages/tuning-design-system/src"],
+      "@redcore/design-system/*": ["../../packages/tuning-design-system/src/*"],
+      "@redcore/shared-schema": ["../../packages/tuning-shared-schema/src"],
+      "@redcore/shared-schema/*": ["../../packages/tuning-shared-schema/src/*"],
       "@redcore/system-analyzer": ["../../packages/system-analyzer/src"],
       "@redcore/system-analyzer/*": ["../../packages/system-analyzer/src/*"]
     }
