@@ -65,7 +65,15 @@ mkdir -p "$RELEASES_DIR" "$ARCHIVE_DIR"
 
 pushd "$ROOT_DIR" >/dev/null
 
-COMMIT_SHA="$(git rev-parse --short HEAD)"
+if git rev-parse --short HEAD >/dev/null 2>&1; then
+  COMMIT_SHA="$(git rev-parse --short HEAD)"
+elif [ -n "${SOURCE_COMMIT_SHA:-}" ]; then
+  COMMIT_SHA="$SOURCE_COMMIT_SHA"
+else
+  echo "Unable to resolve source commit. Set SOURCE_COMMIT_SHA when building outside a git checkout." >&2
+  exit 1
+fi
+
 BUILD_DATE_UTC="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
 VERSION="$(node -p "require('./apps/os-desktop/package.json').version")"
 VERSION_TAG="v${VERSION}-${COMMIT_SHA}"
