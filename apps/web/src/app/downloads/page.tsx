@@ -34,7 +34,7 @@ export default function DownloadsPage() {
 
           <p className="text-ink-secondary text-base leading-relaxed mb-10">
             Download redcore tools for your Windows system. All downloads
-            are standard Windows executables — no command line required.
+            are standard Windows installers — no command line required.
           </p>
 
           {/* redcore OS */}
@@ -130,7 +130,7 @@ export default function DownloadsPage() {
             </p>
             <p className="text-ink-secondary text-[13px] leading-relaxed mb-3">
               Chrome, Edge, and Windows SmartScreen may show a warning because
-              the executable is not yet code-signed with an EV certificate.
+              the installer is not yet code-signed with an EV certificate.
               This is normal for new independent software. To proceed:
             </p>
             <ul className="text-ink-secondary text-[13px] leading-relaxed space-y-1 mb-3 pl-4">
