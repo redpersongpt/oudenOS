@@ -10,12 +10,20 @@ export default defineConfig({
     emptyOutDir: true,
     // Don't add crossorigin attribute — breaks file:// in Electron
     modulePreload: false,
+    chunkSizeWarningLimit: 700,
     rollupOptions: {
       output: {
         // Stable filenames for ASAR packaging
         entryFileNames: "assets/[name].js",
         chunkFileNames: "assets/[name].js",
         assetFileNames: "assets/[name].[ext]",
+        manualChunks(id) {
+          if (!id.includes("node_modules")) return;
+          if (id.includes("react") || id.includes("scheduler")) return "react-vendor";
+          if (id.includes("framer-motion")) return "motion-vendor";
+          if (id.includes("lucide-react")) return "icons-vendor";
+          return "vendor";
+        },
       },
     },
   },
