@@ -158,7 +158,10 @@ export interface UserProfile {
   displayName: string | null;
   tier: "free" | "premium" | "expert";
   subscriptionStatus: "active" | "past_due" | "cancelled" | "expired" | "trialing";
-  createdAt: string;
+  createdAt?: string;
+  avatarUrl?: string | null;
+  emailVerified?: string | boolean | null;
+  role?: string;
 }
 export interface SubscriptionDetails {
   tier: "free" | "premium" | "expert";
@@ -167,14 +170,125 @@ export interface SubscriptionDetails {
   cancelAtPeriodEnd: boolean;
   paymentMethod: { brand: string; last4: string } | null;
 }
+export interface CloudPreferences {
+  telemetryEnabled?: boolean;
+  autoUpdate?: boolean;
+  notificationsEnabled?: boolean;
+  autoBackup?: boolean;
+  showRiskWarnings?: boolean;
+  expertMode?: boolean;
+  logLevel?: "error" | "warn" | "info" | "debug";
+  extra?: Record<string, unknown>;
+}
+export interface ConnectedAccount {
+  id?: string;
+  provider: string;
+  providerEmail?: string | null;
+  createdAt?: string;
+}
+export interface MachineActivation {
+  id: string;
+  machineFingerprint?: string;
+  hostname?: string | null;
+  osVersion?: string | null;
+  appVersion?: string | null;
+  status: "active" | "revoked";
+  activatedAt?: string;
+  lastSeenAt?: string;
+}
+export interface ProfileResponse {
+  user: UserProfile;
+  subscription: SubscriptionDetails;
+  preferences: CloudPreferences | null;
+  connectedAccounts: ConnectedAccount[];
+  machines?: MachineActivation[];
+}
+
+type RawUserProfile = Partial<UserProfile> & {
+  id: string;
+  email: string;
+  name?: string | null;
+  displayName?: string | null;
+};
+
+type RawProfileResponse = {
+  user: RawUserProfile;
+  subscription?: Partial<SubscriptionDetails> | null;
+  preferences?: CloudPreferences | null;
+  connectedAccounts?: ConnectedAccount[];
+  machines?: MachineActivation[];
+};
+
+function normalizeUserProfile(user: RawUserProfile): UserProfile {
+  return {
+    id: user.id,
+    email: user.email,
+    displayName: user.displayName ?? user.name ?? null,
+    tier: user.tier ?? "free",
+    subscriptionStatus: user.subscriptionStatus ?? "active",
+    createdAt: user.createdAt,
+    avatarUrl: user.avatarUrl ?? null,
+    emailVerified: user.emailVerified ?? null,
+    role: user.role,
+  };
+}
+
+function normalizeSubscription(
+  subscription?: Partial<SubscriptionDetails> | null,
+): SubscriptionDetails {
+  return {
+    tier: subscription?.tier ?? "free",
+    status: subscription?.status ?? "active",
+    currentPeriodEnd: subscription?.currentPeriodEnd ?? null,
+    cancelAtPeriodEnd: subscription?.cancelAtPeriodEnd ?? false,
+    paymentMethod: subscription?.paymentMethod ?? null,
+  };
+}
+
+function normalizeProfileResponse(data: RawProfileResponse): ProfileResponse {
+  return {
+    user: normalizeUserProfile(data.user),
+    subscription: normalizeSubscription(data.subscription),
+    preferences: data.preferences ?? null,
+    connectedAccounts: data.connectedAccounts ?? [],
+    machines: data.machines ?? [],
+  };
+}
 
 export const cloudApi = {
   auth: {
-    login: (data: AuthLoginRequest) =>
-      request<AuthResponse>("POST", "/auth/login", data),
-    register: (data: AuthRegisterRequest) =>
-      request<AuthResponse>("POST", "/auth/register", data),
-    me: () => request<UserProfile>("GET", "/users/me"),
+    login: async (data: AuthLoginRequest) => {
+      const response = await request<{
+        accessToken: string;
+        refreshToken: string;
+        user: RawUserProfile;
+      }>("POST", "/auth/login", data);
+      return {
+        accessToken: response.accessToken,
+        refreshToken: response.refreshToken,
+        user: normalizeUserProfile(response.user),
+      } satisfies AuthResponse;
+    },
+    register: async (data: AuthRegisterRequest) => {
+      const response = await request<{
+        accessToken: string;
+        refreshToken: string;
+        user: RawUserProfile;
+      }>("POST", "/auth/register", {
+        email: data.email,
+        password: data.password,
+        name: data.displayName,
+      });
+      return {
+        accessToken: response.accessToken,
+        refreshToken: response.refreshToken,
+        user: normalizeUserProfile(response.user),
+      } satisfies AuthResponse;
+    },
+    me: async () => {
+      const response = await request<RawProfileResponse>("GET", "/users/me");
+      return normalizeProfileResponse(response);
+    },
     logout: () =>
       request<void>("POST", "/auth/logout"),
     refresh: (refreshToken: string) =>
@@ -183,6 +297,16 @@ export const cloudApi = {
       ),
     forgotPassword: (email: string) =>
       request<{ message: string }>("POST", "/auth/forgot-password", { email }),
+  },
+  users: {
+    updateProfile: async (data: { displayName?: string }) => {
+      const response = await request<{ user: RawUserProfile }>("PATCH", "/users/me", {
+        name: data.displayName,
+      });
+      return normalizeUserProfile(response.user);
+    },
+    deleteAccount: (data: { confirmation: "DELETE MY ACCOUNT"; password?: string }) =>
+      request<{ ok: true }>("DELETE", "/users/me", data),
   },
   subscription: {
     get: () => request<SubscriptionDetails>("GET", "/license/subscription"),

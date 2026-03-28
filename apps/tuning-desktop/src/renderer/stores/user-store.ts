@@ -2,27 +2,20 @@
 // Thin wrapper around auth-store + cloudApi for profile/subscription data.
 
 import { create } from "zustand";
-import { cloudApi, setApiTokens, clearApiTokens, type UserProfile, type SubscriptionDetails } from "@/lib/cloud-api";
+import {
+  cloudApi,
+  setApiTokens,
+  clearApiTokens,
+  type UserProfile,
+  type SubscriptionDetails,
+  type ConnectedAccount,
+  type MachineActivation,
+  type CloudPreferences,
+} from "@/lib/cloud-api";
 
 // Re-export compatible type aliases
 export type CloudUser = UserProfile;
 export type CloudSubscription = SubscriptionDetails;
-export interface CloudPreferences {
-  telemetry: boolean;
-  autoUpdate: boolean;
-  notifications: boolean;
-}
-export interface ConnectedAccount {
-  provider: string;
-  providerId: string;
-}
-export interface MachineActivation {
-  id: string;
-  name: string;
-  status: "active" | "revoked";
-  lastSeen: string;
-}
-
 interface UserStoreState {
   // Auth
   isAuthenticated: boolean;
@@ -104,7 +97,11 @@ export const useUserStore = create<UserStoreState>((set, get) => ({
     try {
       const data = await cloudApi.auth.me();
       set({
-        user: data,
+        user: data.user,
+        subscription: data.subscription,
+        preferences: data.preferences,
+        connectedAccounts: data.connectedAccounts,
+        machines: data.machines ?? [],
         isAuthenticated: true,
       });
     } catch (err) {
@@ -114,8 +111,17 @@ export const useUserStore = create<UserStoreState>((set, get) => ({
     }
   },
 
-  updateProfile: async (_data) => {
-    // TODO: Add updateProfile endpoint to cloudApi
+  updateProfile: async (data) => {
+    set({ isLoading: true, error: null });
+    try {
+      const user = await cloudApi.users.updateProfile(data);
+      set({ user });
+    } catch (err) {
+      set({ error: err instanceof Error ? err.message : "Failed to update profile" });
+      throw err;
+    } finally {
+      set({ isLoading: false });
+    }
   },
 
   fetchSubscription: async () => {

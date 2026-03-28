@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
+import { getAppUrl } from "@/lib/app-url";
 import { stripe, TUNING_PRICE_CENTS } from "@/lib/stripe";
 
 export async function POST(req: NextRequest) {
@@ -14,6 +15,8 @@ export async function POST(req: NextRequest) {
   if (product !== "tuning") {
     return NextResponse.json({ error: "Invalid product" }, { status: 400 });
   }
+
+  const appUrl = getAppUrl(req.nextUrl.origin);
 
   const checkoutSession = await stripe.checkout.sessions.create({
     mode: "payment",
@@ -36,8 +39,8 @@ export async function POST(req: NextRequest) {
       userId: session.user.id || "",
       product: "tuning",
     },
-    success_url: `${process.env.NEXTAUTH_URL}/profile?purchased=true`,
-    cancel_url: `${process.env.NEXTAUTH_URL}/#tuning`,
+    success_url: `${appUrl}/profile?purchased=true`,
+    cancel_url: `${appUrl}/#tuning`,
   });
 
   return NextResponse.json({ url: checkoutSession.url });
