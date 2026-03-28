@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Downloads | redcore",
     description:
-      "Download redcore OS for free. Windows 10/11 x64 installer.",
+      "Download redcore OS for free. Windows 10/11 x64 executable.",
     url: "https://redcoreos.net/downloads",
     type: "website",
   },
@@ -33,7 +33,7 @@ export default function DownloadsPage() {
           </h1>
 
           <p className="text-ink-secondary text-base leading-relaxed mb-10">
-            Download redcore tools for your Windows system. All installers
+            Download redcore tools for your Windows system. All downloads
             are standard Windows executables — no command line required.
           </p>
 
@@ -130,7 +130,7 @@ export default function DownloadsPage() {
             </p>
             <p className="text-ink-secondary text-[13px] leading-relaxed mb-3">
               Chrome, Edge, and Windows SmartScreen may show a warning because
-              the installer is not yet code-signed with an EV certificate.
+              the executable is not yet code-signed with an EV certificate.
               This is normal for new independent software. To proceed:
             </p>
             <ul className="text-ink-secondary text-[13px] leading-relaxed space-y-1 mb-3 pl-4">
@@ -162,7 +162,7 @@ export default function DownloadsPage() {
                 SHA-256 Checksum — redcore-os-setup.exe
               </p>
               <code className="font-mono text-[0.72rem] text-ink-tertiary break-all select-all">
-                a1b9d3e8da26d7d101c6e805e139ca9551aadf6e647c60575ff6dc3a791b67b7
+                75f19994d3ce10a696ac66c3254ca9a78e213741d6511806c2998510f1992e21
               </code>
             </div>
             <p className="mt-3 text-ink-muted text-[12px]">
