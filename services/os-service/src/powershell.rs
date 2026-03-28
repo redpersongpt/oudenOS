@@ -21,7 +21,7 @@ pub fn escape_ps_string(s: &str) -> String {
 
 /// Validate that a string is safe to use as a PowerShell argument (no injection).
 /// Rejects strings containing characters that could break out of quoting context.
-pub fn validate_safe_arg(s: &str, context: &str) -> anyhow::Result<&str> {
+pub fn validate_safe_arg<'a>(s: &'a str, context: &str) -> anyhow::Result<&'a str> {
     const DANGEROUS: &[char] = &[';', '`', '$', '|', '&', '(', ')', '\n', '\r'];
     for ch in DANGEROUS {
         if s.contains(*ch) {
