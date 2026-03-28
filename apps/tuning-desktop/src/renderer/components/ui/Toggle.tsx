@@ -51,7 +51,7 @@ export function Toggle({
         aria-checked={isChecked}
         disabled={disabled}
         className={`relative shrink-0 rounded-full transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/40 ${config.track} ${
-          isChecked ? "bg-brand-500" : "bg-neutral-200"
+          isChecked ? "bg-brand-500" : "bg-white/[0.10]"
         }`}
       >
         <motion.span
@@ -64,7 +64,7 @@ export function Toggle({
       {(label || description) && (
         <div className="min-w-0">
           {label && (
-            <p className="text-sm font-medium text-neutral-800 leading-tight">
+            <p className="text-sm font-medium text-ink leading-tight">
               {label}
             </p>
           )}

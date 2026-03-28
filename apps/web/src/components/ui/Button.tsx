@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
-import React, { type ReactNode } from "react";
+import * as React from "react";
 import { spring } from "@/lib/motion";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -13,10 +13,10 @@ type ButtonSize = "sm" | "md" | "lg";
 interface ButtonProps {
   variant?: ButtonVariant;
   size?: ButtonSize;
-  children: ReactNode;
+  children: React.ReactNode;
   className?: string;
   href?: string;
-  icon?: ReactNode;
+  icon?: React.ReactElement;
   disabled?: boolean;
   onClick?: () => void;
   type?: "button" | "submit" | "reset";
@@ -79,7 +79,7 @@ export function Button({
       <motion.div {...motionProps} className="inline-flex">
         <Link href={href} className={baseStyles}>
           {icon && <span className="shrink-0">{icon}</span>}
-          {children as React.ReactNode}
+          <>{children}</>
         </Link>
       </motion.div>
     );
@@ -95,7 +95,7 @@ export function Button({
       aria-label={ariaLabel}
     >
       {icon && <span className="shrink-0">{icon}</span>}
-      {children}
+      <>{children}</>
     </motion.button>
   );
 }

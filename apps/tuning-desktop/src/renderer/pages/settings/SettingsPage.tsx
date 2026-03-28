@@ -50,8 +50,8 @@ function ToggleSwitch({
   return (
     <button
       onClick={onToggle}
-      className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 ${
-        enabled ? "bg-brand-500" : "bg-neutral-200"
+      className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/40 ${
+        enabled ? "bg-brand-500" : "bg-white/[0.10]"
       }`}
       role="switch"
       aria-checked={enabled}
@@ -78,8 +78,8 @@ function SettingRow({
   return (
     <div className="flex items-center justify-between gap-6 py-3.5 first:pt-0 last:pb-0">
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-neutral-800">{label}</p>
-        <p className="mt-0.5 text-xs text-neutral-400 leading-relaxed">{description}</p>
+        <p className="text-sm font-medium text-ink">{label}</p>
+        <p className="mt-0.5 text-xs text-ink-tertiary leading-relaxed">{description}</p>
       </div>
       <div className="shrink-0">{children}</div>
     </div>
@@ -90,8 +90,8 @@ function SettingRow({
 function InfoRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex items-center justify-between py-2 first:pt-0">
-      <span className="text-xs font-medium text-neutral-400">{label}</span>
-      <span className="text-xs text-neutral-700 font-mono">{value}</span>
+      <span className="text-xs font-medium text-ink-tertiary">{label}</span>
+      <span className="text-xs text-ink-secondary font-mono">{value}</span>
     </div>
   );
 }
@@ -122,23 +122,23 @@ export function SettingsPage() {
         return (
           <div className="space-y-4">
             {/* Avatar + name */}
-            <div className="flex items-center gap-4 rounded-xl bg-gradient-to-br from-brand-50 to-neutral-50 border border-neutral-100 p-4">
+            <div className="flex items-center gap-4 rounded-xl bg-surface-overlay border border-border p-4">
               <div className="relative flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-brand-400 to-brand-600 shadow-sm">
                 <span className="text-lg font-bold text-white">
                   {mockLicense.email[0]?.toUpperCase()}
                 </span>
               </div>
               <div>
-                <p className="text-sm font-semibold text-neutral-900">{mockLicense.email}</p>
-                <p className="text-xs text-neutral-400 mt-0.5">
+                <p className="text-sm font-semibold text-ink">{mockLicense.email}</p>
+                <p className="text-xs text-ink-tertiary mt-0.5">
                   Member since March 2026 &middot;{" "}
-                  <span className="text-brand-500 font-medium">{mockLicense.tier}</span> tier
+                  <span className="text-brand-400 font-medium">{mockLicense.tier}</span> tier
                 </p>
               </div>
               <Badge variant="premium" className="ml-auto">{mockLicense.tier}</Badge>
             </div>
 
-            <div className="divide-y divide-neutral-100">
+            <div className="divide-y divide-border">
               <InfoRow label="Email"  value={mockLicense.email} />
               <InfoRow label="Device" value={mockLicense.deviceId} />
               <InfoRow label="OS"     value="Windows 11 Pro 24H2 (Build 26100)" />
@@ -155,20 +155,20 @@ export function SettingsPage() {
       case "license":
         return (
           <div className="space-y-4">
-            <div className="flex items-center justify-between rounded-xl bg-brand-50 border border-brand-100 p-4">
+            <div className="flex items-center justify-between rounded-xl bg-brand-500/10 border border-brand-500/20 p-4">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-100">
-                  <Shield className="h-5 w-5 text-brand-600" />
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-500/20">
+                  <Shield className="h-5 w-5 text-brand-400" />
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-brand-700">{mockLicense.tier} License</p>
-                  <p className="text-xs text-brand-500">All premium features unlocked</p>
+                  <p className="text-sm font-semibold text-brand-300">{mockLicense.tier} License</p>
+                  <p className="text-xs text-brand-400/70">All premium features unlocked</p>
                 </div>
               </div>
               <Badge variant="premium">{mockLicense.status}</Badge>
             </div>
 
-            <div className="divide-y divide-neutral-100">
+            <div className="divide-y divide-border">
               <InfoRow label="Tier"           value={mockLicense.tier}                                          />
               <InfoRow label="Status"         value={mockLicense.status}                                        />
               <InfoRow label="Expires"        value={mockLicense.expiresAt}                                     />
@@ -192,10 +192,10 @@ export function SettingsPage() {
         return (
           <div className="space-y-5">
             <div>
-              <p className="mb-3 text-[10px] font-semibold uppercase tracking-wider text-neutral-400">
+              <p className="mb-3 text-[10px] font-semibold uppercase tracking-wider text-ink-tertiary">
                 Privacy & Updates
               </p>
-              <div className="divide-y divide-neutral-100">
+              <div className="divide-y divide-border">
                 <SettingRow
                   label="Telemetry Opt-in"
                   description="Send anonymous usage data to help improve redcore-Tuning"
@@ -218,10 +218,10 @@ export function SettingsPage() {
             </div>
 
             <div>
-              <p className="mb-3 text-[10px] font-semibold uppercase tracking-wider text-neutral-400">
+              <p className="mb-3 text-[10px] font-semibold uppercase tracking-wider text-ink-tertiary">
                 Tuning Behaviour
               </p>
-              <div className="divide-y divide-neutral-100">
+              <div className="divide-y divide-border">
                 <SettingRow
                   label="Auto Backup Before Apply"
                   description="Always create a restore point before applying any changes"
@@ -238,26 +238,26 @@ export function SettingsPage() {
             </div>
 
             <div>
-              <p className="mb-3 text-[10px] font-semibold uppercase tracking-wider text-neutral-400">
+              <p className="mb-3 text-[10px] font-semibold uppercase tracking-wider text-ink-tertiary">
                 Logging
               </p>
               <SettingRow
                 label="Logging Level"
                 description="Set verbosity of application logs"
               >
-                <div className="flex gap-1 rounded-lg bg-neutral-50 border border-neutral-150 p-1">
+                <div className="flex gap-1 rounded-lg bg-surface-overlay border border-border p-1">
                   {(["Error", "Warn", "Info", "Debug"] as LogLevel[]).map((level) => (
                     <button
                       key={level}
                       onClick={() => setLogLevel(level)}
                       className={`relative rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${
-                        logLevel === level ? "text-neutral-900" : "text-neutral-500 hover:text-neutral-700"
+                        logLevel === level ? "text-ink" : "text-ink-tertiary hover:text-ink-secondary"
                       }`}
                     >
                       {logLevel === level && (
                         <motion.div
                           layoutId="log-level-tab"
-                          className="absolute inset-0 rounded-md bg-white shadow-sm"
+                          className="absolute inset-0 rounded-md bg-surface-raised shadow-sm"
                           transition={{ type: "spring", stiffness: 500, damping: 35 }}
                         />
                       )}
@@ -276,10 +276,10 @@ export function SettingsPage() {
           <div className="space-y-4">
             <div className="flex items-center gap-2">
               <Badge variant="risk" risk="medium">Advanced</Badge>
-              <p className="text-xs text-neutral-400">These settings affect low-level system behaviour.</p>
+              <p className="text-xs text-ink-tertiary">These settings affect low-level system behaviour.</p>
             </div>
 
-            <div className="divide-y divide-neutral-100">
+            <div className="divide-y divide-border">
               <SettingRow
                 label="Enable Expert Mode"
                 description="Unlock advanced options and manual registry editing capabilities"
@@ -300,14 +300,14 @@ export function SettingsPage() {
               </SettingRow>
             </div>
 
-            <div className="rounded-xl border border-amber-200 bg-amber-50 p-4">
+            <div className="rounded-xl border border-amber-500/20 bg-amber-500/10 p-4">
               <div className="flex items-start gap-3">
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-amber-100">
-                  <Wrench className="h-4 w-4 text-amber-600" />
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-amber-500/20">
+                  <Wrench className="h-4 w-4 text-amber-400" />
                 </div>
                 <div>
-                  <p className="text-xs font-semibold text-amber-700">Expert Mode Warning</p>
-                  <p className="mt-1 text-xs text-amber-600 leading-relaxed">
+                  <p className="text-xs font-semibold text-amber-300">Expert Mode Warning</p>
+                  <p className="mt-1 text-xs text-amber-400/80 leading-relaxed">
                     Expert mode exposes low-level system controls. Incorrect modifications to registry
                     values or system services can cause instability or boot failures. Always create a
                     backup before making manual changes.
@@ -323,16 +323,16 @@ export function SettingsPage() {
         return (
           <div className="space-y-4">
             <div className="flex items-center gap-4">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-50 border border-brand-100">
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-500/10 border border-brand-500/20">
                 <Monitor className="h-7 w-7 text-brand-500" strokeWidth={1.5} />
               </div>
               <div>
-                <p className="text-sm font-semibold text-neutral-900">redcore-Tuning</p>
-                <p className="text-xs text-neutral-400">Windows performance optimization toolkit</p>
+                <p className="text-sm font-semibold text-ink">redcore-Tuning</p>
+                <p className="text-xs text-ink-tertiary">Windows performance optimization toolkit</p>
               </div>
             </div>
 
-            <div className="rounded-xl border border-neutral-150 bg-neutral-25 divide-y divide-neutral-100 px-3">
+            <div className="rounded-xl border border-border bg-surface-overlay divide-y divide-border px-3">
               {[
                 { label: "Version",    value: "1.0.0-beta.3"         },
                 { label: "Electron",   value: "33.2.0"               },
@@ -341,8 +341,8 @@ export function SettingsPage() {
                 { label: "Build Date", value: "2026-03-23"           },
               ].map((item) => (
                 <div key={item.label} className="flex items-center justify-between py-2.5">
-                  <span className="text-xs font-medium text-neutral-400">{item.label}</span>
-                  <span className="text-xs text-neutral-700 font-mono">{item.value}</span>
+                  <span className="text-xs font-medium text-ink-tertiary">{item.label}</span>
+                  <span className="text-xs text-ink-secondary font-mono">{item.value}</span>
                 </div>
               ))}
             </div>
@@ -369,12 +369,12 @@ export function SettingsPage() {
       <motion.div variants={staggerChild}>
         <Card>
           <div className="flex items-center gap-3 px-5 py-4">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-50 border border-brand-100">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-500/10 border border-brand-500/20">
               <Settings2 className="h-5 w-5 text-brand-500" strokeWidth={1.5} />
             </div>
             <div>
-              <h2 className="text-sm font-semibold text-neutral-900">Settings</h2>
-              <p className="text-xs text-neutral-400">
+              <h2 className="text-sm font-semibold text-ink">Settings</h2>
+              <p className="text-xs text-ink-tertiary">
                 Manage your account, license, and application preferences
               </p>
             </div>
@@ -396,31 +396,31 @@ export function SettingsPage() {
                       key={section.id}
                       onClick={() => setActiveSection(section.id)}
                       className={`relative flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-left transition-colors ${
-                        isActive ? "text-brand-600" : "text-neutral-600 hover:bg-neutral-50 hover:text-neutral-800"
+                        isActive ? "text-ink" : "text-ink-secondary hover:bg-surface-overlay hover:text-ink"
                       }`}
                     >
                       {isActive && (
                         <motion.div
                           layoutId="settings-active-bg"
-                          className="absolute inset-0 rounded-lg bg-brand-50/60 border border-brand-100"
+                          className="absolute inset-0 rounded-lg bg-brand-500/10 border border-brand-500/20"
                           transition={{ type: "spring", stiffness: 500, damping: 35 }}
                         />
                       )}
                       <Icon
-                        className={`relative z-10 h-4 w-4 shrink-0 ${isActive ? "text-brand-500" : "text-neutral-400"}`}
+                        className={`relative z-10 h-4 w-4 shrink-0 ${isActive ? "text-brand-500" : "text-ink-tertiary"}`}
                         strokeWidth={1.5}
                       />
                       <div className="relative z-10 flex-1 min-w-0">
                         <p className="text-sm font-medium leading-none">{section.label}</p>
-                        <p className="mt-0.5 text-[10px] text-neutral-400 leading-none">{section.description}</p>
+                        <p className="mt-0.5 text-[10px] text-ink-tertiary leading-none">{section.description}</p>
                       </div>
                       {isActive && (
                         <motion.div
                           layoutId="settings-active-check"
-                          className="relative z-10 flex h-4 w-4 items-center justify-center rounded-full bg-brand-100 shrink-0"
+                          className="relative z-10 flex h-4 w-4 items-center justify-center rounded-full bg-brand-500/20 shrink-0"
                           transition={{ type: "spring", stiffness: 500, damping: 35 }}
                         >
-                          <Check className="h-2.5 w-2.5 text-brand-600" />
+                          <Check className="h-2.5 w-2.5 text-brand-400" />
                         </motion.div>
                       )}
                     </button>
@@ -443,7 +443,7 @@ export function SettingsPage() {
             >
               <Card>
                 <CardHeader>
-                  <h2 className="text-sm font-semibold text-neutral-900">
+                  <h2 className="text-sm font-semibold text-ink">
                     {sections.find((s) => s.id === activeSection)?.label}
                   </h2>
                 </CardHeader>

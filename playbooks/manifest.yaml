@@ -27,11 +27,13 @@ phases:
 
   - id: cleanup
     name: "Bloatware Cleanup"
-    description: "Remove pre-installed consumer apps and provisioned packages"
+    description: "Remove pre-installed consumer apps, third-party bloatware, and optionally Edge"
     modules:
       - appx/consumer-bloat.yaml
       - appx/microsoft-apps.yaml
       - appx/gaming-apps.yaml
+      - appx/third-party-bloat.yaml
+      - appx/edge-removal.yaml
 
   - id: services
     name: "Background Services"

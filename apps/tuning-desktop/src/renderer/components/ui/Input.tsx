@@ -43,30 +43,30 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         className="relative"
       >
         <div
-          className={`relative flex items-center rounded-lg border bg-white transition-all duration-150 ${
+          className={`relative flex items-center rounded-lg border bg-surface-overlay transition-all duration-150 ${
             error
               ? "border-brand-500 ring-2 ring-brand-500/20"
               : focused
               ? "border-brand-500 ring-2 ring-brand-500/15"
-              : "border-neutral-200 hover:border-neutral-300"
+              : "border-border hover:border-border-strong"
           } ${className}`}
         >
           {leftIcon && (
-            <span className="ml-3 shrink-0 text-neutral-400">{leftIcon}</span>
+            <span className="ml-3 shrink-0 text-ink-tertiary">{leftIcon}</span>
           )}
           <div className="relative flex-1">
             {label && (
               <motion.label
                 htmlFor={id}
-                className="pointer-events-none absolute left-3 origin-top-left select-none text-neutral-400"
+                className="pointer-events-none absolute left-3 origin-top-left select-none text-ink-tertiary"
                 animate={
                   isFloated
                     ? {
                         y: 6,
                         scale: 0.75,
-                        color: error ? "#E8254B" : focused ? "#E8254B" : "#A3A29C",
+                        color: error ? "#E8254B" : focused ? "#E8254B" : "#6a6a76",
                       }
-                    : { y: 18, scale: 1, color: "#A3A29C" }
+                    : { y: 18, scale: 1, color: "#6a6a76" }
                 }
                 transition={{ duration: 0.18, ease: [0.25, 0.1, 0.25, 1] }}
                 style={{ fontSize: 14, lineHeight: 1 }}
@@ -79,7 +79,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
               id={id}
               value={value}
               defaultValue={value === undefined ? defaultValue : undefined}
-              className={`w-full bg-transparent px-3 text-sm text-neutral-900 outline-none placeholder-transparent ${
+              className={`w-full bg-transparent px-3 text-sm text-ink outline-none placeholder-transparent ${
                 label ? "pb-2 pt-6" : "py-2.5"
               }`}
               onFocus={(e) => {
@@ -107,7 +107,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
               exit={{ opacity: 0, y: -4 }}
               transition={{ duration: 0.15 }}
               className={`mt-1.5 px-1 text-xs ${
-                error ? "text-brand-500" : "text-neutral-400"
+                error ? "text-brand-500" : "text-ink-tertiary"
               }`}
             >
               {error ?? hint}

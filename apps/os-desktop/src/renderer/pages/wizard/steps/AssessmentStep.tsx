@@ -4,6 +4,8 @@ import { Check, Monitor, Package, Rocket, Server, Clock, Briefcase, Box } from "
 import { useWizardStore } from "@/stores/wizard-store";
 import type { DetectedProfile } from "@/stores/wizard-store";
 import { serviceCall } from "@/lib/service";
+import { useSystemAnalysis } from "@/hooks/use-system-analysis";
+import { SystemAnalysisPanel } from "@/components/wizard/SystemAnalysisPanel";
 
 const CATEGORIES = [
   { id: "windows",  label: "Windows Version",    icon: Monitor,   desc: "Build & edition" },
@@ -32,7 +34,9 @@ export function AssessmentStep() {
   const [statuses, setStatuses] = useState<Record<string, Status>>(
     Object.fromEntries(CATEGORIES.map((c) => [c.id, "idle"]))
   );
+  const [showAnalysis, setShowAnalysis] = useState(false);
   const started = useRef(false);
+  const { state: analysisState, isRunning: analysisRunning, run: runAnalysis, toggle: toggleRec } = useSystemAnalysis();
 
   useEffect(() => {
     if (started.current) return;
@@ -40,21 +44,39 @@ export function AssessmentStep() {
     let aborted = false;
 
     const run = async () => {
-      // Try real service
+      // Try real service — assess.full + hardware scan in parallel
       setStatuses(Object.fromEntries(CATEGORIES.map((c) => [c.id, "scanning"])));
-      const result = await serviceCall<DetectedProfile>("assess.full");
+
+      const [assessResult, hardwareResult] = await Promise.allSettled([
+        serviceCall<DetectedProfile>("assess.full"),
+        serviceCall<object>("scan.hardware"),
+      ]);
 
       if (aborted) return;
 
-      if (result.ok) {
+      // If assess.full succeeded, use real profile
+      if (assessResult.status === "fulfilled" && assessResult.value.ok) {
         setStatuses(Object.fromEntries(CATEGORIES.map((c) => [c.id, "done"])));
-        setDetectedProfile(result.data);
+        setDetectedProfile(assessResult.value.data);
         setDemoMode(false);
-        setTimeout(() => { if (!aborted) completeStep("assessment"); }, 500);
+
+        // Kick off system-analyzer pipeline with hardware data if available
+        if (
+          hardwareResult.status === "fulfilled" &&
+          hardwareResult.value.ok &&
+          hardwareResult.value.data &&
+          typeof hardwareResult.value.data === "object" &&
+          "cpu" in hardwareResult.value.data
+        ) {
+          setShowAnalysis(true);
+          runAnalysis(hardwareResult.value.data as Parameters<typeof runAnalysis>[0]);
+        }
+
+        setTimeout(() => { if (!aborted) completeStep("assessment"); }, 800);
         return;
       }
 
-      // Service unavailable — demo mode
+      // Service unavailable — demo mode with simulated scan
       setDemoMode(true);
       for (let i = 0; i < CATEGORIES.length; i++) {
         if (aborted) return;
@@ -82,8 +104,9 @@ export function AssessmentStep() {
     <motion.div
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0 }}
-      className="flex h-full flex-col items-center justify-center gap-5 px-8"
+      exit={{ opacity: 0, y: -6 }}
+      transition={{ duration: 0.22, ease: [0.0, 0.0, 0.2, 1.0] }}
+      className="flex h-full flex-col items-center justify-center gap-5 px-8 py-6"
     >
       <div className="text-center">
         <h2 className="text-[17px] font-bold text-ink">Assessing Your System</h2>
@@ -144,6 +167,17 @@ export function AssessmentStep() {
           <span className="font-mono text-[10px] text-ink-disabled">{done}/{CATEGORIES.length}</span>
         </div>
       </div>
+
+      {/* System Analyzer pipeline panel — shown when hardware scan succeeds */}
+      {showAnalysis && (
+        <div className="w-full max-w-md">
+          <SystemAnalysisPanel
+            pipelineState={analysisState}
+            isRunning={analysisRunning}
+            onToggleRecommendation={toggleRec}
+          />
+        </div>
+      )}
     </motion.div>
   );
 }

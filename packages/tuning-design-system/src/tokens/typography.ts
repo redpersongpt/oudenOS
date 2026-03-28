@@ -1,8 +1,8 @@
 // ─── Typography System ──────────────────────────────────────────────────────
-// Apple-grade type hierarchy. Inter for UI, JetBrains Mono for code/metrics.
+// Plus Jakarta Sans for UI (unified with eco-site). JetBrains Mono for code/metrics.
 
 export const fontFamily = {
-  sans: '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif',
+  sans: '"Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif',
   mono: '"JetBrains Mono", "Cascadia Code", "Fira Code", "Consolas", monospace',
 } as const;
 

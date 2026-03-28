@@ -145,7 +145,13 @@ impl Database {
             CREATE INDEX IF NOT EXISTS idx_classification_device ON machine_classifications(device_profile_id);
             CREATE INDEX IF NOT EXISTS idx_audit_timestamp ON audit_log(timestamp DESC);
             CREATE INDEX IF NOT EXISTS idx_journal_plan ON journal_entries(plan_id, step_order);
+            CREATE INDEX IF NOT EXISTS idx_journal_status ON journal_entries(status);
             CREATE INDEX IF NOT EXISTS idx_benchmark_device ON benchmark_results(device_profile_id);
+            CREATE INDEX IF NOT EXISTS idx_rollback_created ON rollback_snapshots(created_at DESC);
+            CREATE INDEX IF NOT EXISTS idx_rollback_plan ON rollback_snapshots(plan_id);
+            CREATE INDEX IF NOT EXISTS idx_tuning_plans_device ON tuning_plans(device_profile_id);
+            CREATE INDEX IF NOT EXISTS idx_outcomes_action ON action_outcomes(action_id);
+            CREATE INDEX IF NOT EXISTS idx_outcomes_plan ON action_outcomes(plan_id);
             ",
         )?;
         Ok(())

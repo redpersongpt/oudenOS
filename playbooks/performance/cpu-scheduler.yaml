@@ -59,6 +59,63 @@ actions:
         value: 1
         valueType: DWord
 
+  - id: perf.disable-fault-tolerant-heap
+    name: "Disable Fault Tolerant Heap"
+    description: "Prevent Windows from auto-applying crash mitigations to applications that crash repeatedly"
+    rationale: "FTH silently adds compatibility shims to crashed apps, increasing memory usage and reducing performance. Sourced from valleyofdoom/PC-Tuning."
+    risk: low
+    tier: free
+    default: true
+    expertOnly: false
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKLM
+        path: "SOFTWARE\\Microsoft\\FTH"
+        valueName: Enabled
+        value: 0
+        valueType: DWord
+
+  - id: perf.disable-sticky-keys
+    name: "Disable Sticky Keys Shortcut"
+    description: "Disable the Shift×5 sticky keys shortcut that interrupts gameplay"
+    rationale: "Pressing Shift 5 times triggers an accessibility dialog that breaks fullscreen games"
+    risk: safe
+    tier: free
+    default: true
+    expertOnly: false
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKCU
+        path: "Control Panel\\Accessibility\\StickyKeys"
+        valueName: Flags
+        value: "506"
+        valueType: String
+
+  - id: perf.disable-driver-updates-via-wu
+    name: "Exclude Driver Updates from Windows Update"
+    description: "Prevent Windows Update from automatically installing driver updates"
+    rationale: "Auto-installed drivers can break GPU performance, audio, or peripherals. Manual driver management is safer for tuned systems."
+    risk: low
+    tier: free
+    default: false
+    expertOnly: false
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: [work_pc]
+    registryChanges:
+      - hive: HKLM
+        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate"
+        valueName: ExcludeWUDriversInQualityUpdate
+        value: 1
+        valueType: DWord
+
   - id: cpu.win32-priority-separation
     name: "Optimize Thread Priority"
     description: "Set Win32PrioritySeparation for foreground-biased scheduling"

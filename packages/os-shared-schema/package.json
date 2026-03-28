@@ -9,7 +9,22 @@
     ".": "./src/index.ts",
     "./profiles": "./src/profiles.ts",
     "./transformation": "./src/transformation.ts",
+    "./assessment": "./src/assessment.ts",
+    "./playbook": "./src/playbook.ts",
+    "./execution": "./src/execution.ts",
+    "./personalization": "./src/personalization.ts",
+    "./rollback": "./src/rollback.ts",
+    "./journal": "./src/journal.ts",
+    "./errors": "./src/errors.ts",
+    "./verify": "./src/verify.ts",
     "./ipc": "./src/ipc.ts",
     "./actions": "./src/actions.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0"
   }
 }

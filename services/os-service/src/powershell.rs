@@ -12,6 +12,30 @@ pub struct PsResult {
     pub exit_code: i32,
 }
 
+/// Escape a string for safe interpolation inside a PowerShell single-quoted string.
+/// Single quotes inside the value are doubled (`'` -> `''`) which is the PS escape
+/// for literal single quotes within `'...'` strings.
+pub fn escape_ps_string(s: &str) -> String {
+    s.replace('\'', "''")
+}
+
+/// Validate that a string is safe to use as a PowerShell argument (no injection).
+/// Rejects strings containing characters that could break out of quoting context.
+pub fn validate_safe_arg(s: &str, context: &str) -> anyhow::Result<&str> {
+    const DANGEROUS: &[char] = &[';', '`', '$', '|', '&', '(', ')', '\n', '\r'];
+    for ch in DANGEROUS {
+        if s.contains(*ch) {
+            anyhow::bail!(
+                "Unsafe character '{}' in {} value '{}' — possible injection attempt",
+                ch,
+                context,
+                &s[..s.len().min(80)]
+            );
+        }
+    }
+    Ok(s)
+}
+
 /// Execute a PowerShell command and return the result.
 /// All commands are logged to the audit trail.
 pub fn execute(script: &str) -> anyhow::Result<PsResult> {
@@ -45,6 +69,7 @@ pub fn execute(script: &str) -> anyhow::Result<PsResult> {
 }
 
 /// Execute a PowerShell command with elevated privileges via MinSudo.
+#[allow(dead_code)]
 pub fn execute_elevated(script: &str, minsudo_path: &str) -> anyhow::Result<PsResult> {
     tracing::info!("PowerShell elevated exec: {}", &script[..script.len().min(200)]);
 

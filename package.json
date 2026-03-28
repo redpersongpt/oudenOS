@@ -15,6 +15,9 @@
     "build:tuning": "pnpm --filter @redcore/desktop build",
     "dev:os": "pnpm --filter @redcore-os/desktop dev",
     "build:os": "pnpm --filter @redcore-os/desktop build",
+    "dev:cloud-api": "pnpm --filter @redcore/cloud-api dev",
+    "build:cloud-api": "pnpm --filter @redcore/cloud-api build",
+    "start:cloud-api": "pnpm --filter @redcore/cloud-api start",
     "typecheck": "pnpm -r typecheck",
     "lint": "pnpm -r lint",
     "build": "pnpm -r build"

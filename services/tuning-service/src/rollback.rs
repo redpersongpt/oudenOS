@@ -293,17 +293,20 @@ pub fn get_diff(
 
 #[cfg(windows)]
 fn restore_registry(prev: &PreviousValue) -> anyhow::Result<()> {
+    let safe_path = powershell::escape_ps_string(&prev.path);
+    let safe_name = powershell::escape_ps_string(&prev.value_name);
+
     match &prev.previous_value {
         Some(value) => {
             // Value existed before -- restore it
             let value_str = match value {
                 serde_json::Value::Number(n) => n.to_string(),
-                serde_json::Value::String(s) => format!("'{}'", s),
+                serde_json::Value::String(s) => format!("'{}'", powershell::escape_ps_string(s)),
                 other => other.to_string(),
             };
             let script = format!(
                 "Set-ItemProperty -Path 'Registry::{}' -Name '{}' -Value {} -Type DWord -Force",
-                prev.path, prev.value_name, value_str,
+                safe_path, safe_name, value_str,
             );
             let result = powershell::execute(&script)?;
             if !result.success {
@@ -317,7 +320,7 @@ fn restore_registry(prev: &PreviousValue) -> anyhow::Result<()> {
             // Value did not exist before -- remove it
             let script = format!(
                 "Remove-ItemProperty -Path 'Registry::{}' -Name '{}' -Force -ErrorAction SilentlyContinue",
-                prev.path, prev.value_name,
+                safe_path, safe_name,
             );
             let result = powershell::execute(&script)?;
             if !result.success {
@@ -339,10 +342,14 @@ fn restore_service(prev: &PreviousValue) -> anyhow::Result<()> {
         .and_then(|v| v.as_str())
         .unwrap_or("Manual");
 
+    // Validate and escape inputs before interpolation
+    let safe_path = powershell::validate_safe_arg(&prev.path, "service name")?;
+    let safe_start_type = powershell::validate_safe_arg(start_type, "start type")?;
+
     // Restore the startup type
     let script = format!(
         "Set-Service -Name '{}' -StartupType {} -ErrorAction Stop",
-        prev.path, start_type,
+        powershell::escape_ps_string(safe_path), safe_start_type,
     );
     let result = powershell::execute(&script)?;
     if !result.success {
@@ -356,7 +363,7 @@ fn restore_service(prev: &PreviousValue) -> anyhow::Result<()> {
     if !start_type.eq_ignore_ascii_case("Disabled") {
         let start_script = format!(
             "Start-Service -Name '{}' -ErrorAction SilentlyContinue",
-            prev.path,
+            powershell::escape_ps_string(safe_path),
         );
         powershell::execute(&start_script)?;
     }
@@ -380,6 +387,11 @@ fn restore_power(prev: &PreviousValue) -> anyhow::Result<()> {
     let (subgroup, setting) = parse_power_guids(&prev.path)
         .ok_or_else(|| anyhow::anyhow!("Invalid power setting path: {}", prev.path))?;
 
+    // Validate GUIDs and value before interpolation
+    powershell::validate_safe_arg(&subgroup, "power subgroup")?;
+    powershell::validate_safe_arg(&setting, "power setting")?;
+    powershell::validate_safe_arg(&value_str, "power value")?;
+
     let set_script = format!(
         "powercfg /setacvalueindex SCHEME_CURRENT {} {} {}",
         subgroup, setting, value_str,
@@ -402,10 +414,12 @@ fn restore_power(prev: &PreviousValue) -> anyhow::Result<()> {
 
 #[cfg(windows)]
 fn read_current_registry(path: &str, value_name: &str) -> Option<serde_json::Value> {
+    let escaped_path = powershell::escape_ps_string(path);
+    let escaped_name = powershell::escape_ps_string(value_name);
     let script = format!(
         "$val = Get-ItemProperty -Path 'Registry::{}' -Name '{}' -ErrorAction SilentlyContinue; \
          if ($val) {{ $val.'{}' }} else {{ $null }}",
-        path, value_name, value_name,
+        escaped_path, escaped_name, escaped_name,
     );
     match powershell::execute(&script) {
         Ok(result) if result.success => {
@@ -426,7 +440,7 @@ fn read_current_registry(path: &str, value_name: &str) -> Option<serde_json::Val
 fn read_current_service(service_name: &str) -> Option<serde_json::Value> {
     let script = format!(
         "(Get-Service -Name '{}' -ErrorAction SilentlyContinue).StartType",
-        service_name,
+        powershell::escape_ps_string(service_name),
     );
     match powershell::execute(&script) {
         Ok(result) if result.success => {
@@ -444,6 +458,12 @@ fn read_current_service(service_name: &str) -> Option<serde_json::Value> {
 #[cfg(windows)]
 fn read_current_power(setting_path: &str) -> Option<serde_json::Value> {
     let (subgroup, setting) = parse_power_guids(setting_path)?;
+    // Validate GUIDs — return None if they contain dangerous characters
+    if powershell::validate_safe_arg(&subgroup, "power subgroup").is_err()
+        || powershell::validate_safe_arg(&setting, "power setting").is_err()
+    {
+        return None;
+    }
     let script = format!("powercfg /query SCHEME_CURRENT {} {}", subgroup, setting);
     match powershell::execute(&script) {
         Ok(result) if result.success => {
@@ -467,12 +487,16 @@ fn read_current_power(setting_path: &str) -> Option<serde_json::Value> {
 #[cfg(windows)]
 fn restore_bcd(prev: &PreviousValue) -> anyhow::Result<()> {
     let element = &prev.value_name;
+    // Validate element name before interpolation
+    powershell::validate_safe_arg(element, "BCD element")?;
+
     match &prev.previous_value {
         Some(value) => {
             let val_str = match value {
                 serde_json::Value::String(s) => s.clone(),
                 other => other.to_string(),
             };
+            powershell::validate_safe_arg(&val_str, "BCD value")?;
             // Restore: bcdedit /set {current} <element> <previous_value>
             let script = format!("bcdedit /set {{current}} {} {}", element, val_str);
             let result = powershell::execute(&script)?;
@@ -500,9 +524,13 @@ fn restore_bcd(prev: &PreviousValue) -> anyhow::Result<()> {
 
 #[cfg(windows)]
 fn read_current_bcd(element: &str) -> Option<serde_json::Value> {
+    // Validate element before interpolation — return None if unsafe
+    if powershell::validate_safe_arg(element, "BCD element").is_err() {
+        return None;
+    }
     let script = format!(
         "bcdedit /enum {{current}} 2>$null | Select-String -Pattern '{}' | ForEach-Object {{ $_.Line }}",
-        element,
+        powershell::escape_ps_string(element),
     );
     match powershell::execute(&script) {
         Ok(result) if result.success => {

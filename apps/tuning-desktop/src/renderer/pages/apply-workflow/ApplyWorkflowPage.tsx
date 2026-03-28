@@ -679,7 +679,7 @@ function CompletePhase({
             size="sm"
             onClick={() => {
               reset();
-              navigate("/rollback-center");
+              navigate("/rollback");
             }}
           >
             View Snapshots
@@ -723,7 +723,7 @@ export function ApplyWorkflowPage() {
 
   const hasStarted = useRef(false);
   const forceRender = useForceRender();
-  const logContainerRef = useRef<HTMLDivElement | null>(null);
+  const logContainerRef = useRef<HTMLDivElement>(null);
 
   // Auto-scroll log to bottom
   const { logs } = useTuningStore();
@@ -819,7 +819,7 @@ export function ApplyWorkflowPage() {
   const handleStartOver = () => {
     reset();
     hasStarted.current = false;
-    navigate("/tuning-plan");
+    navigate("/tuning");
   };
 
   const completedCount = actionStatesRef.current.filter(
@@ -859,7 +859,7 @@ export function ApplyWorkflowPage() {
               <Button
                 variant="secondary"
                 size="sm"
-                onClick={() => navigate("/tuning-plan")}
+                onClick={() => navigate("/tuning")}
               >
                 Go to Tuning Plan
               </Button>
@@ -876,7 +876,7 @@ export function ApplyWorkflowPage() {
         {phase === "review" && (
           <motion.div key="review">
             <ReviewPhase
-              onBack={() => navigate("/tuning-plan")}
+              onBack={() => navigate("/tuning")}
               onBegin={() => setPhase("executing")}
             />
           </motion.div>

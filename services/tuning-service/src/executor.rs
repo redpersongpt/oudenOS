@@ -638,10 +638,12 @@ pub fn execute_action(
 
 #[cfg(windows)]
 fn read_registry_value(hive: &str, path: &str, value_name: &str) -> Option<serde_json::Value> {
+    let escaped_path = powershell::escape_ps_string(path);
+    let escaped_name = powershell::escape_ps_string(value_name);
     let script = format!(
         "$val = Get-ItemProperty -Path 'Registry::{}\\{}' -Name '{}' -ErrorAction SilentlyContinue; \
          if ($val) {{ $val.'{}' }} else {{ $null }}",
-        hive, path, value_name, value_name,
+        hive, escaped_path, escaped_name, escaped_name,
     );
     match powershell::execute(&script) {
         Ok(result) if result.success => {
@@ -666,10 +668,12 @@ fn apply_registry_change(
     value_type: &str,
     new_value: &serde_json::Value,
 ) -> anyhow::Result<bool> {
-    let reg_path = format!("Registry::{}\\{}", hive, path);
+    let escaped_path = powershell::escape_ps_string(path);
+    let escaped_name = powershell::escape_ps_string(value_name);
+    let reg_path = format!("Registry::{}\\{}", hive, escaped_path);
     let value_str = match new_value {
         serde_json::Value::Number(n) => n.to_string(),
-        serde_json::Value::String(s) => format!("'{}'", s),
+        serde_json::Value::String(s) => format!("'{}'", powershell::escape_ps_string(s)),
         other => other.to_string(),
     };
 
@@ -694,7 +698,7 @@ fn apply_registry_change(
     // Write the new value
     let set_script = format!(
         "Set-ItemProperty -Path '{}' -Name '{}' -Value {} -Type {} -Force",
-        reg_path, value_name, value_str, ps_type,
+        reg_path, escaped_name, value_str, ps_type,
     );
     let set_result = powershell::execute(&set_script)?;
     if !set_result.success {
@@ -775,7 +779,7 @@ fn apply_registry_change(
 fn read_service_start_type(service_name: &str) -> Option<serde_json::Value> {
     let script = format!(
         "(Get-Service -Name '{}' -ErrorAction SilentlyContinue).StartType",
-        service_name,
+        powershell::escape_ps_string(service_name),
     );
     match powershell::execute(&script) {
         Ok(result) if result.success => {
@@ -794,10 +798,15 @@ fn read_service_start_type(service_name: &str) -> Option<serde_json::Value> {
 /// post-execution verification. Returns `Ok(verified)`.
 #[cfg(windows)]
 fn apply_service_action(service_name: &str, new_start_type: &str) -> anyhow::Result<bool> {
+    // Validate inputs before interpolation
+    powershell::validate_safe_arg(service_name, "service name")?;
+    powershell::validate_safe_arg(new_start_type, "start type")?;
+    let escaped_name = powershell::escape_ps_string(service_name);
+
     // Pre-execution validation: ensure service exists before writing
     let exists_script = format!(
         "if (Get-Service -Name '{}' -ErrorAction SilentlyContinue) {{ 'true' }} else {{ 'false' }}",
-        service_name,
+        escaped_name,
     );
     let exists_result = powershell::execute(&exists_script)?;
     if !exists_result.stdout.trim().eq_ignore_ascii_case("true") {
@@ -807,7 +816,7 @@ fn apply_service_action(service_name: &str, new_start_type: &str) -> anyhow::Res
     // Apply: set the new startup type
     let set_script = format!(
         "Set-Service -Name '{}' -StartupType {} -ErrorAction Stop",
-        service_name, new_start_type,
+        escaped_name, new_start_type,
     );
     let set_result = powershell::execute(&set_script)?;
     if !set_result.success {
@@ -821,7 +830,7 @@ fn apply_service_action(service_name: &str, new_start_type: &str) -> anyhow::Res
     if new_start_type.eq_ignore_ascii_case("Disabled") {
         let stop_script = format!(
             "Stop-Service -Name '{}' -Force -ErrorAction SilentlyContinue",
-            service_name,
+            escaped_name,
         );
         powershell::execute(&stop_script)?;
     }
@@ -847,6 +856,11 @@ fn apply_service_action(service_name: &str, new_start_type: &str) -> anyhow::Res
 #[cfg(windows)]
 fn read_power_setting(setting_path: &str) -> Option<serde_json::Value> {
     let (subgroup, setting) = parse_power_guids(setting_path)?;
+    if powershell::validate_safe_arg(&subgroup, "power subgroup").is_err()
+        || powershell::validate_safe_arg(&setting, "power setting").is_err()
+    {
+        return None;
+    }
     let script = format!("powercfg /query SCHEME_CURRENT {} {}", subgroup, setting);
     match powershell::execute(&script) {
         Ok(result) if result.success => {
@@ -879,6 +893,11 @@ fn apply_power_change(
         serde_json::Value::String(s) => s.clone(),
         other => other.to_string(),
     };
+
+    // Validate GUIDs and value before interpolation
+    powershell::validate_safe_arg(&subgroup, "power subgroup")?;
+    powershell::validate_safe_arg(&setting, "power setting")?;
+    powershell::validate_safe_arg(&value_str, "power value")?;
 
     // Set AC value
     let set_script = format!(
@@ -916,9 +935,12 @@ fn parse_power_guids(setting_path: &str) -> Option<(String, String)> {
 
 #[cfg(windows)]
 fn read_bcd_value(element: &str) -> Option<serde_json::Value> {
+    if powershell::validate_safe_arg(element, "BCD element").is_err() {
+        return None;
+    }
     let script = format!(
         "bcdedit /enum {{current}} 2>$null | Select-String -Pattern '{}' | ForEach-Object {{ $_.Line }}",
-        element,
+        powershell::escape_ps_string(element),
     );
     match powershell::execute(&script) {
         Ok(result) if result.success => {
@@ -943,6 +965,10 @@ fn apply_bcdedit_action(element: &str, new_value: &str) -> anyhow::Result<bool> 
         anyhow::bail!("BCD element name must not be empty");
     }
 
+    // Validate inputs before interpolation
+    powershell::validate_safe_arg(element, "BCD element")?;
+    powershell::validate_safe_arg(new_value, "BCD value")?;
+
     // bcdedit /set {current} <element> <value>
     let script = format!(
         "bcdedit /set {{current}} {} {}",
@@ -959,7 +985,7 @@ fn apply_bcdedit_action(element: &str, new_value: &str) -> anyhow::Result<bool> 
     // Post-execution verification: read back and compare
     let verify_script = format!(
         "bcdedit /enum {{current}} 2>$null | Select-String -Pattern '{}' | ForEach-Object {{ $_.Line }}",
-        element,
+        powershell::escape_ps_string(element),
     );
     let verify_result = powershell::execute(&verify_script)?;
     let output = verify_result.stdout.trim().to_string();
@@ -1041,6 +1067,9 @@ fn apply_powercfg_action(subcommand: &str, value: &str) -> anyhow::Result<bool> 
         );
     }
 
+    // Validate value before interpolation
+    powershell::validate_safe_arg(value, "powercfg value")?;
+
     let script = format!("powercfg /{} {} 2>&1", subcommand, value);
     let result = powershell::execute(&script)?;
     if !result.success {
@@ -1094,6 +1123,13 @@ const FSUTIL_BEHAVIOR_ALLOWLIST: &[&str] = &[
 
 #[cfg(windows)]
 fn read_fsutil_behavior(behavior: &str, volume_path: &str) -> Option<serde_json::Value> {
+    // Validate inputs — return None if they contain dangerous characters
+    if powershell::validate_safe_arg(behavior, "fsutil behavior").is_err() {
+        return None;
+    }
+    if !volume_path.is_empty() && powershell::validate_safe_arg(volume_path, "volume path").is_err() {
+        return None;
+    }
     let script = if volume_path.is_empty() {
         format!("fsutil behavior query {} 2>$null", behavior)
     } else {
@@ -1134,6 +1170,12 @@ fn apply_fsutil_action(behavior: &str, volume_path: &str, value: &str) -> anyhow
             "fsutil behavior '{}' is not in the allowed list",
             behavior
         );
+    }
+
+    // Validate inputs before interpolation
+    powershell::validate_safe_arg(value, "fsutil value")?;
+    if !volume_path.is_empty() {
+        powershell::validate_safe_arg(volume_path, "volume path")?;
     }
 
     let script = if volume_path.is_empty() {
