@@ -1,8 +1,8 @@
-# ECOBUGHUNTERCLAUDE — Round 4 Final Status
+# ECOBUGHUNTERCLAUDE — Round 5 Final Status
 
 **Date:** 2026-03-28
-**Session:** Round 4 — Documentation consolidation
-**Branch:** `main` (HEAD: `8db171b`)
+**Session:** Round 5 — Comprehensive build test + race condition fixes
+**Branch:** `main` (HEAD: `fcf04ec`)
 
 ---
 
@@ -25,7 +25,7 @@
 | `packages/auth-core` | ✅ PASS | 0 | |
 | `packages/db` | ✅ PASS | 0 | |
 | `packages/system-analyzer` | ✅ PASS | 0 | |
-| **Total TypeScript errors** | **0** | — | Down from 15 in Round 2 |
+| **Total TypeScript errors** | **0** | — | Verified Round 5: `pnpm typecheck` all green |
 
 ---
 
@@ -37,6 +37,7 @@
 | Round 2 | `20ce97f` | Freemium expansion, intelligence system, BUGHUNTERCLAUDE audit |
 | Round 3 | `1612187` | Full platform wiring, zero TS errors, all builds passing |
 | Round 4 | `8db171b` | Documentation consolidation (this file) |
+| Round 5 | `fcf04ec` | Comprehensive build test: 0 TS errors, all 5 builds pass; fixed race conditions in BenchmarkStep + ExecutionStep |
 
 ---
 
@@ -266,6 +267,13 @@
 | P3 | All remaining MEDIUM | Both | — | Cleanup pass |
 
 ---
+
+## ROUND 5 FIXES
+
+| ID | File | Fix Applied |
+|----|------|-------------|
+| RACE-1 | `apps/tuning-desktop/src/renderer/pages/wizard/steps/BenchmarkStep.tsx` | Added `cancelledRef` + `intervalRef` cleanup on unmount — prevents state update after unmount |
+| RACE-2 | `apps/tuning-desktop/src/renderer/pages/wizard/steps/ExecutionStep.tsx` | Added `cancelledRef` guards at all state update sites in async loop — prevents stale update after unmount |
 
 ## NEXT SESSION PRIORITIES
 
