@@ -17,6 +17,16 @@ export default defineConfig({
     outDir: path.resolve(__dirname, "dist/renderer"),
     emptyOutDir: true,
     sourcemap: false,
+    chunkSizeWarningLimit: 900,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (!id.includes("node_modules")) return;
+          if (id.includes("echarts")) return "echarts-vendor";
+          return "vendor";
+        },
+      },
+    },
   },
   server: {
     port: 5173,

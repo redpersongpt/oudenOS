@@ -3,7 +3,6 @@ import { motion } from "framer-motion";
 import { Check, Monitor, Package, Rocket, Server, Clock, Briefcase, Box } from "lucide-react";
 import { useWizardStore } from "@/stores/wizard-store";
 import type { DetectedProfile } from "@/stores/wizard-store";
-import { serviceCall } from "@/lib/service";
 import { useSystemAnalysis } from "@/hooks/use-system-analysis";
 import { SystemAnalysisPanel } from "@/components/wizard/SystemAnalysisPanel";
 
@@ -44,6 +43,7 @@ export function AssessmentStep() {
     let aborted = false;
 
     const run = async () => {
+      const { serviceCall } = await import("@/lib/service");
       // Try real service — assess.full + hardware scan in parallel
       setStatuses(Object.fromEntries(CATEGORIES.map((c) => [c.id, "scanning"])));
 
