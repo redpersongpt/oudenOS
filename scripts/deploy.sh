@@ -14,20 +14,23 @@ git pull origin main
 echo "── Install dependencies ──"
 pnpm install --frozen-lockfile
 
+echo "── Build shared DB package ──"
+pnpm --dir packages/db build
+
 echo "── Build web ──"
-pnpm --filter redcore-web build
+pnpm --dir apps/web build
 
 echo "── Build tuning-api ──"
-pnpm --filter tuning-api build 2>/dev/null || echo "  (skipped — no build script)"
+pnpm --dir apps/tuning-api build
 
 echo "── Build os-api ──"
-pnpm --filter os-api build 2>/dev/null || echo "  (skipped — no build script)"
+pnpm --dir apps/os-api build
 
 echo "── Build cloud-api ──"
-pnpm --filter cloud-api build 2>/dev/null || echo "  (skipped — no build script)"
+pnpm --dir apps/cloud-api build
 
 echo "── Run database migrations ──"
-cd packages/db && npx drizzle-kit push && cd ../..
+pnpm --dir packages/db db:push
 
 echo "── Restart services ──"
 pm2 startOrRestart ecosystem.config.cjs --env production

@@ -25,6 +25,7 @@ import {
   paymentHistory,
   adminAuditLog,
   telemetryEvents,
+  fleetGroups,
 } from "../db/index.js";
 import { requireAdmin } from "../middleware/admin.js";
 
@@ -173,7 +174,7 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
     const machines = await db
       .select({
         id: machineActivations.id,
-        machineFingerprint: machineActivations.machineFingerprint,
+        machineFingerprint: machineActivations.deviceFingerprint,
         hostname: machineActivations.hostname,
         osVersion: machineActivations.osVersion,
         status: machineActivations.status,
@@ -186,7 +187,7 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
 
     const recentPayments = await db
       .select({
-        amount: paymentHistory.amount,
+        amount: paymentHistory.amountCents,
         currency: paymentHistory.currency,
         status: paymentHistory.status,
         createdAt: paymentHistory.createdAt,
@@ -405,12 +406,12 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
     const mrr = premiumCount * 9.99 + expertCount * 19.99;
 
     const [revenueThisMonth] = await db
-      .select({ total: sql<number>`coalesce(sum(amount), 0)` })
+      .select({ total: sql<number>`coalesce(sum(amount_cents), 0)` })
       .from(paymentHistory)
       .where(and(gte(paymentHistory.createdAt, monthStart), eq(paymentHistory.status, "succeeded")));
 
     const [revenueLastMonth] = await db
-      .select({ total: sql<number>`coalesce(sum(amount), 0)` })
+      .select({ total: sql<number>`coalesce(sum(amount_cents), 0)` })
       .from(paymentHistory)
       .where(
         and(
@@ -495,7 +496,7 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
         .select({
           id: machineActivations.id,
           userId: machineActivations.userId,
-          machineFingerprint: machineActivations.machineFingerprint,
+          machineFingerprint: machineActivations.deviceFingerprint,
           hostname: machineActivations.hostname,
           osVersion: machineActivations.osVersion,
           appVersion: machineActivations.appVersion,
@@ -554,6 +555,17 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
     });
 
     return reply.send({ ok: true, revokedMachineId: id });
+  });
+
+  // ── GET /fleet-groups ─────────────────────────────────────────────────────
+  app.get("/fleet-groups", async (_request, reply) => {
+    const groups = await db
+      .select()
+      .from(fleetGroups)
+      .where(eq(fleetGroups.product, "os"))
+      .orderBy(desc(fleetGroups.createdAt));
+
+    return reply.send({ fleetGroups: groups });
   });
 
   // ── GET /audit-log ────────────────────────────────────────────────────────

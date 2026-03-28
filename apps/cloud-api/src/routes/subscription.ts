@@ -195,7 +195,10 @@ export const subscriptionRoutes: FastifyPluginAsync = async (app) => {
       line_items: [{ price: priceId, quantity: 1 }],
       success_url: successUrl ?? `${appUrl}/subscription?success=1&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: cancelUrl ?? `${appUrl}/subscription`,
+      // metadata on the session object — read by the checkout.session.completed webhook handler
+      metadata: { userId: request.userId },
       subscription_data: {
+        // Also propagate to the subscription for reference via customer.subscription.* events
         metadata: { userId: request.userId, tier, billingPeriod },
       },
       allow_promotion_codes: true,

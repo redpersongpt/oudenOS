@@ -12,6 +12,10 @@ import type { FastifyPluginAsync } from "fastify";
 import Stripe from "stripe";
 import { eq } from "drizzle-orm";
 import { db, users, subscriptions, paymentHistory } from "../db/index.js";
+import {
+  handleDonationCheckoutCompleted,
+  handleDonationSubscriptionCancelled,
+} from "./donations.js";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY ?? "", {
   apiVersion: "2025-02-24.acacia",
@@ -55,6 +59,10 @@ function billingPeriodFromPriceId(priceId: string): "monthly" | "annual" {
 // ─── Event handlers ───────────────────────────────────────────────────────────
 
 async function handleCheckoutCompleted(session: Stripe.Checkout.Session): Promise<void> {
+  if (session.metadata?.["donationId"]) {
+    await handleDonationCheckoutCompleted(session);
+    return;
+  }
   if (session.mode !== "subscription") return;
 
   const customerId = session.customer as string;
@@ -147,6 +155,10 @@ async function handleSubscriptionUpdated(stripeSub: Stripe.Subscription): Promis
 }
 
 async function handleSubscriptionDeleted(stripeSub: Stripe.Subscription): Promise<void> {
+  if (stripeSub.metadata?.["donationId"]) {
+    await handleDonationSubscriptionCancelled(stripeSub);
+    return;
+  }
   const customerId = stripeSub.customer as string;
 
   const [user] = await db
@@ -192,9 +204,11 @@ async function handleInvoiceSucceeded(invoice: Stripe.Invoice): Promise<void> {
     .values({
       userId: user.id,
       subscriptionId: sub?.id ?? null,
+      product: "tuning",
+      type: "subscription",
       stripeInvoiceId: invoice.id,
       stripePaymentIntentId: invoice.payment_intent as string | null,
-      amount: invoice.amount_paid,
+      amountCents: invoice.amount_paid,
       currency: invoice.currency,
       status: "succeeded",
       description: invoice.description ?? `Invoice ${invoice.number ?? ""}`.trim(),
@@ -233,9 +247,11 @@ async function handleInvoiceFailed(invoice: Stripe.Invoice): Promise<void> {
     .values({
       userId: user.id,
       subscriptionId: sub?.id ?? null,
+      product: "tuning",
+      type: "subscription",
       stripeInvoiceId: invoice.id,
       stripePaymentIntentId: invoice.payment_intent as string | null,
-      amount: invoice.amount_due,
+      amountCents: invoice.amount_due,
       currency: invoice.currency,
       status: "failed",
       description: `Failed payment for invoice ${invoice.number ?? ""}`.trim(),

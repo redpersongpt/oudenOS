@@ -14,7 +14,7 @@ const appleJwks = createRemoteJWKSet(
 
 export interface OAuthProfile {
   id: string;         // provider-scoped user ID (sub claim)
-  email: string;
+  email?: string;
   name: string;
   avatarUrl?: string;
   emailVerified: boolean;
@@ -59,8 +59,8 @@ export async function verifyAppleIdToken(idToken: string): Promise<OAuthProfile>
   // when Apple provides an email.
   const emailVerified = Boolean(payload["email_verified"] ?? true);
 
-  if (!sub || !email) throw new Error("Apple id_token is missing sub or email claim");
+  if (!sub) throw new Error("Apple id_token is missing sub claim");
 
-  const name = email.split("@")[0] ?? sub;
+  const name = email?.split("@")[0] ?? sub;
   return { id: sub, email, name, emailVerified };
 }

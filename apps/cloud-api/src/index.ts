@@ -18,6 +18,7 @@ import { webhookRoutes } from "./routes/webhooks.js";
 import { telemetryRoutes } from "./routes/telemetry.js";
 import { updateRoutes } from "./routes/updates.js";
 import { adminRoutes } from "./routes/admin.js";
+import { donationRoutes } from "./routes/donations.js";
 
 // ─── Server setup ─────────────────────────────────────────────────────────────
 
@@ -57,7 +58,7 @@ async function start(): Promise<void> {
   const originsEnv = process.env.CORS_ORIGINS ?? "";
   const allowedOrigins = originsEnv
     ? originsEnv.split(",").map((o) => o.trim()).filter(Boolean)
-    : ["https://app.redcore-tuning.com", "http://localhost:5173"];
+    : ["https://app.redcore-tuning.com", "https://redcoreos.net", "http://localhost:5173"];
 
   await app.register(cors, {
     origin: allowedOrigins,
@@ -77,6 +78,7 @@ async function start(): Promise<void> {
   await app.register(telemetryRoutes,    { prefix: "/v1/telemetry" });
   await app.register(updateRoutes,       { prefix: "/v1/updates" });
   await app.register(adminRoutes,        { prefix: "/v1/admin" });
+  await app.register(donationRoutes,     { prefix: "/v1/donations" });
 
   // ── Health check ──────────────────────────────────────────────────────────
 

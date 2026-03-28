@@ -10,7 +10,10 @@ if (_configuredUrl && !_configuredUrl.startsWith("https://")) {
   throw new Error(`VITE_API_URL must use HTTPS, got: ${_configuredUrl}`);
 }
 
-const BASE_URL: string = _configuredUrl || "https://api.redcore-tuning.com";
+const RAW_BASE_URL: string = _configuredUrl || "https://api.redcore-tuning.com";
+const BASE_URL: string = RAW_BASE_URL.endsWith("/v1")
+  ? RAW_BASE_URL
+  : `${RAW_BASE_URL.replace(/\/$/, "")}/v1`;
 
 export interface CloudApiError {
   status: number;

@@ -318,7 +318,7 @@ export const usersRoutes: FastifyPluginAsync = async (app) => {
     const machines = await db
       .select({
         id: machineActivations.id,
-        machineFingerprint: machineActivations.machineFingerprint,
+        machineFingerprint: machineActivations.deviceFingerprint,
         hostname: machineActivations.hostname,
         osVersion: machineActivations.osVersion,
         appVersion: machineActivations.appVersion,
@@ -353,7 +353,7 @@ export const usersRoutes: FastifyPluginAsync = async (app) => {
       .where(
         and(
           eq(machineActivations.userId, request.userId),
-          eq(machineActivations.machineFingerprint, machineFingerprint),
+          eq(machineActivations.deviceFingerprint, machineFingerprint),
           eq(machineActivations.status, "active"),
         ),
       )
@@ -393,7 +393,7 @@ export const usersRoutes: FastifyPluginAsync = async (app) => {
 
     const [activation] = await db
       .insert(machineActivations)
-      .values({ userId: request.userId, machineFingerprint, hostname, osVersion, appVersion })
+      .values({ userId: request.userId, deviceFingerprint: machineFingerprint, hostname, osVersion, appVersion })
       .returning();
 
     return reply.code(201).send({ ok: true, activated: true, machineId: activation!.id, machine: activation });
@@ -430,7 +430,7 @@ export const usersRoutes: FastifyPluginAsync = async (app) => {
     const payments = await db
       .select({
         id: paymentHistory.id,
-        amount: paymentHistory.amount,
+        amount: paymentHistory.amountCents,
         currency: paymentHistory.currency,
         status: paymentHistory.status,
         description: paymentHistory.description,
@@ -588,7 +588,7 @@ export const usersRoutes: FastifyPluginAsync = async (app) => {
       .limit(1);
 
     const payments = await db
-      .select({ amount: paymentHistory.amount, currency: paymentHistory.currency, status: paymentHistory.status, createdAt: paymentHistory.createdAt })
+      .select({ amount: paymentHistory.amountCents, currency: paymentHistory.currency, status: paymentHistory.status, createdAt: paymentHistory.createdAt })
       .from(paymentHistory)
       .where(eq(paymentHistory.userId, request.userId))
       .orderBy(desc(paymentHistory.createdAt));
@@ -647,11 +647,16 @@ export const usersRoutes: FastifyPluginAsync = async (app) => {
       })
       .where(eq(users.id, request.userId));
 
-    // Revoke all refresh tokens immediately
+    // Revoke all refresh tokens and machine activations immediately
     await db
       .update(refreshTokens)
       .set({ revokedAt: new Date() })
       .where(eq(refreshTokens.userId, request.userId));
+
+    await db
+      .update(machineActivations)
+      .set({ status: "revoked", revokedAt: new Date() })
+      .where(eq(machineActivations.userId, request.userId));
 
     return reply.send({ ok: true });
   });

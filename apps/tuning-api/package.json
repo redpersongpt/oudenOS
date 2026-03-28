@@ -1,5 +1,5 @@
 {
-  "name": "@redcore/cloud-api",
+  "name": "@redcore/tuning-api",
   "version": "0.1.0",
   "private": true,
   "type": "module",
