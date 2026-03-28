@@ -255,13 +255,13 @@ export function HeroSection() {
                 initial={{ opacity: 0, y: 60, filter: "blur(12px)" }}
                 animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
                 transition={{ delay: 0.1, duration: 1, ease }}>
-                F*ck Windows.
+                we hate Windows,
               </motion.span>
               <motion.span className="block bg-gradient-to-r from-accent via-[#FF3860] to-accent bg-clip-text text-transparent"
                 initial={{ opacity: 0, y: 60, filter: "blur(12px)" }}
                 animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
                 transition={{ delay: 0.25, duration: 1, ease }}>
-                Make it usable.
+                and you should too.
               </motion.span>
             </h1>
 

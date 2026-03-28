@@ -1,5 +1,5 @@
 // ─── Wizard Shell ─────────────────────────────────────────────────────────────
-// AME Wizard / AtlasOS-inspired: full-screen centered wizard layout.
+// Full-screen centered wizard layout with a focused, cinematic flow.
 // Each step takes the entire window. No persistent sidebar during flow.
 // Navigation via bottom bar only. Clean, dark, cinematic.
 

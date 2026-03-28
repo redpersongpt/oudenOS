@@ -79,7 +79,7 @@ These commits were made before the main cowork session:
 |--------|------|-------------|
 | `57bc229` | 22:01 | Fix OS installer — fix black screen, add icon, fix CSP |
 | `3ca79f2` | 22:05 | Fully branded OS installer — no Electron traces |
-| `038816c` | 22:23 | Remove AtlasOS comparison, remove all "open source" references |
+| `038816c` | 22:23 | Remove legacy comparison page, remove all "open source" references |
 | `6807525` | 22:40 | Add /work-pc-debloat page, expand sitemap + footer links |
 | `f36a5d1` | 22:48 | SEO component system + premium page templates + internal linking |
 | `dff8e22` | 22:53 | Fix OS app **black screen** + icon quality |
@@ -135,7 +135,7 @@ This was the mega-commit (240 files, 35,707 insertions). See Round 3 section bel
 
 - Eco-site: Fixed 4 critical CSS bugs (`.section-divide`, `.premium-card`, `.glow-surface`, `.glow-brand-edge` undefined)
 - Fixed broken "Download Free" CTA href on home page
-- Fixed `/atlasos-alternative` SEO metadata mismatch
+- Fixed legacy comparison page SEO metadata mismatch
 - Added hero live scan visual
 - Full audit of 16 bugs documented in `eco-site-bugs.md`
 
@@ -238,7 +238,7 @@ Fixed 8 security vulnerabilities in `apps/cloud-api`:
 | BUG-01 | Eco-site | `.section-divide` / `.premium-card` CSS undefined → donate page invisible | `02861cf` |
 | BUG-02 | Eco-site | "Download Free" button → 404 (wrong href) | `02861cf` |
 | BUG-03 | Eco-site | `.glow-surface` / `.glow-brand-edge` undefined | `02861cf` |
-| BUG-06 | Eco-site | AtlasOS page had no AtlasOS keywords in SEO | `02861cf` |
+| BUG-06 | Eco-site | Legacy comparison page had no targeted SEO metadata | `02861cf` |
 | OS-CRIT-2 | OS Desktop | `failed` count stale closure in ExecutionStep → always 0 | `1612187` |
 | OS-MED-1 | OS Desktop | `main/index.ts` and `preload/index.ts` missing | `1612187` |
 | CRIT-2 | Tuning | 15 TypeScript errors (build broken) | `1612187` |
