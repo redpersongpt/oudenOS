@@ -9,6 +9,7 @@ import {
   CTAStrip,
   RelatedPages,
 } from "@/components/seo";
+import { REDCORE_OS_DOWNLOAD } from "@/lib/downloads";
 import { Shield, RotateCcw } from "lucide-react";
 import Link from "next/link";
 
@@ -46,7 +47,7 @@ const jsonLd = {
   description:
     "Free Windows transformation tool with guided debloating, machine-aware scanning, and full rollback support.",
   url: "https://redcoreos.net/redcore-os",
-  downloadUrl: "https://redcoreos.net/downloads/os/redcore-os-setup.exe",
+  downloadUrl: REDCORE_OS_DOWNLOAD.absoluteUrl,
 };
 
 export default function WindowsDebloatPage() {

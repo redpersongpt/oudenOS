@@ -9,6 +9,7 @@ import {
   CTAStrip,
   RelatedPages,
 } from "@/components/seo";
+import { REDCORE_OS_DOWNLOAD } from "@/lib/downloads";
 import { Shield, RotateCcw } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -130,8 +131,7 @@ export default function Windows11DebloatPage() {
               },
               {
                 title: "Downloads",
-                description:
-                  "Download redcore OS installer. Free, no account required.",
+                description: REDCORE_OS_DOWNLOAD.marketingSummary,
                 href: "/downloads",
               },
               {

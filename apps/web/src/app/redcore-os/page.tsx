@@ -10,6 +10,7 @@ import {
   CTAStrip,
   RelatedPages,
 } from "@/components/seo";
+import { REDCORE_OS_DOWNLOAD } from "@/lib/downloads";
 import { RotateCcw, Monitor } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -50,7 +51,7 @@ const jsonLd = {
   description:
     "Free Windows transformation tool with guided debloating, 8 profiles, 150+ actions, and full rollback support.",
   url: "https://redcoreos.net/redcore-os",
-  downloadUrl: "https://redcoreos.net/downloads/os/redcore-os-setup.exe",
+  downloadUrl: REDCORE_OS_DOWNLOAD.absoluteUrl,
   softwareVersion: "1.0",
   featureList: [
     "Machine-aware hardware scanning",
@@ -181,8 +182,7 @@ export default function RedcoreOSPage() {
             pages={[
               {
                 title: "Downloads",
-                description:
-                  "Download redcore OS installer. Free, no account required.",
+                description: REDCORE_OS_DOWNLOAD.marketingSummary,
                 href: "/downloads",
               },
               {
