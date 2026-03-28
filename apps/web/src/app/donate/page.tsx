@@ -18,8 +18,8 @@ export const metadata: Metadata = {
     images: [
       {
         url: "/redcore-logo.png",
-        width: 512,
-        height: 512,
+        width: 1200,
+        height: 360,
         alt: "redcore logo",
       },
     ],
