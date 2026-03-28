@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Mail, Lock, Eye, EyeOff, User, AlertCircle, Zap, Check, X } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { useAuthStore } from "@/stores/auth-store";
+import { openExternalUrl, PRIVACY_URL, REGISTER_URL, TERMS_URL } from "@/lib/external-links";
 
 // ─── Motion variants ──────────────────────────────────────────────────────────
 
@@ -59,14 +60,6 @@ function GoogleIcon() {
       <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
       <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
       <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
-    </svg>
-  );
-}
-
-function AppleIcon() {
-  return (
-    <svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor" aria-hidden="true" focusable="false">
-      <path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.54 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zm3.378-3.066c.7-.858 1.17-2.04 1.04-3.23-1.007.04-2.232.675-2.958 1.52-.652.754-1.217 1.96-1.065 3.114 1.12.085 2.265-.572 2.983-1.404z" />
     </svg>
   );
 }
@@ -165,6 +158,7 @@ export function RegisterPage() {
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [fieldError, setFieldError] = useState<string | null>(null);
   const [registered, setRegistered] = useState(false);
+  const [oauthNotice, setOauthNotice] = useState<string | null>(null);
 
   const { requirements, score } = usePasswordStrength(password);
   const strength = strengthConfig[score];
@@ -194,6 +188,12 @@ export function RegisterPage() {
       // Navigate to dashboard after a brief success moment
       setTimeout(() => navigate("/dashboard", { replace: true }), 3500);
     }
+  }
+
+  function handleGoogleRegister() {
+    openExternalUrl(`${REGISTER_URL}?provider=google`);
+    setOauthNotice("Google sign-up opened in your browser.");
+    setTimeout(() => setOauthNotice(null), 3500);
   }
 
   const displayError = fieldError || error;
@@ -259,10 +259,30 @@ export function RegisterPage() {
                     )}
                   </AnimatePresence>
 
+                  <AnimatePresence>
+                    {oauthNotice && !displayError && (
+                      <motion.div
+                        key="oauth-notice"
+                        initial={{ opacity: 0, height: 0, marginBottom: 0 }}
+                        animate={{ opacity: 1, height: "auto", marginBottom: 16 }}
+                        exit={{ opacity: 0, height: 0, marginBottom: 0 }}
+                        transition={{ duration: 0.2 }}
+                        className="overflow-hidden"
+                      >
+                        <div className="rounded-xl border border-brand-500/30 bg-brand-500/10 px-3 py-2.5">
+                          <p className="text-xs leading-relaxed text-brand-200">{oauthNotice}</p>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+
                   {/* OAuth */}
                   <div className="space-y-2.5">
-                    <OAuthButton icon={<GoogleIcon />} label="Sign up with Google" />
-                    <OAuthButton icon={<AppleIcon />} label="Sign up with Apple" />
+                    <OAuthButton
+                      onClick={handleGoogleRegister}
+                      icon={<GoogleIcon />}
+                      label="Continue with Google"
+                    />
                   </div>
 
                   {/* Divider */}
@@ -486,14 +506,18 @@ export function RegisterPage() {
                         <span className="text-xs leading-relaxed text-neutral-500">
                           I agree to the{" "}
                           <a
-                            href="#"
+                            href={TERMS_URL}
+                            target="_blank"
+                            rel="noopener noreferrer"
                             className="text-brand-400 hover:text-brand-300 transition-colors"
                           >
                             Terms of Service
                           </a>{" "}
                           and{" "}
                           <a
-                            href="#"
+                            href={PRIVACY_URL}
+                            target="_blank"
+                            rel="noopener noreferrer"
                             className="text-brand-400 hover:text-brand-300 transition-colors"
                           >
                             Privacy Policy
@@ -593,15 +617,16 @@ export function RegisterPage() {
 // ─── OAuth button ─────────────────────────────────────────────────────────────
 
 interface OAuthButtonProps {
+  onClick: () => void;
   icon: React.ReactNode;
   label: string;
 }
 
-function OAuthButton({ icon, label }: OAuthButtonProps) {
+function OAuthButton({ onClick, icon, label }: OAuthButtonProps) {
   return (
     <motion.button
       type="button"
-      onClick={() => {}}
+      onClick={onClick}
       whileHover={{ scale: 1.005, backgroundColor: "rgba(255,255,255,0.05)" }}
       whileTap={{ scale: 0.98 }}
       transition={{ type: "spring", stiffness: 550, damping: 32 }}

@@ -25,7 +25,7 @@ let isQuitting = false;
 let currentLicense: LicenseState | null = null;
 const CACHE_DIR = path.join(app.getPath("userData"), "license");
 const DEVICE_FINGERPRINT = generateDeviceFingerprint();
-const API_BASE = process.env.REDCORE_API_URL ?? "https://api.redcore-tuning.com";
+const API_BASE = process.env.REDCORE_API_URL ?? "https://api.redcoreos.net";
 
 async function initLicense(): Promise<LicenseState> {
   const licenseKey = process.env.REDCORE_LICENSE_KEY ?? "";
@@ -77,9 +77,9 @@ const pendingRequests = new Map<
 function getServicePath(): string {
   const ext = process.platform === "win32" ? ".exe" : "";
   if (isDev) {
-    return path.join(
+    return path.resolve(
       __dirname,
-      "../../service-core/target/debug/redcore-service" + ext,
+      "../../../services/tuning-service/target/debug/redcore-service" + ext,
     );
   }
   return path.join(process.resourcesPath!, "redcore-service" + ext);
@@ -220,7 +220,7 @@ function createWindow() {
           "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
           "font-src 'self' https://fonts.gstatic.com",
           "img-src 'self' data: https:",
-          "connect-src 'self' https://api.redcore-tuning.com",
+          "connect-src 'self' https://api.redcoreos.net https://api.redcore-tuning.com",
         ].join("; "),
       },
     });

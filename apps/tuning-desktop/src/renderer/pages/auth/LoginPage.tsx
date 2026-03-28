@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Mail, Lock, Eye, EyeOff, AlertCircle, Zap } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { useAuthStore } from "@/stores/auth-store";
+import { LOGIN_URL, openExternalUrl } from "@/lib/external-links";
 
 // ─── Motion variants ──────────────────────────────────────────────────────────
 
@@ -59,14 +60,6 @@ function GoogleIcon() {
   );
 }
 
-function AppleIcon() {
-  return (
-    <svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor" aria-hidden="true" focusable="false">
-      <path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.54 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zm3.378-3.066c.7-.858 1.17-2.04 1.04-3.23-1.007.04-2.232.675-2.958 1.52-.652.754-1.217 1.96-1.065 3.114 1.12.085 2.265-.572 2.983-1.404z" />
-    </svg>
-  );
-}
-
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export function LoginPage() {
@@ -78,7 +71,7 @@ export function LoginPage() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
-  const [oauthError, setOauthError] = useState<string | null>(null);
+  const [oauthNotice, setOauthNotice] = useState<string | null>(null);
 
   const from =
     (location.state as { from?: { pathname: string } })?.from?.pathname ?? "/dashboard";
@@ -90,15 +83,13 @@ export function LoginPage() {
     if (ok) navigate(from, { replace: true });
   }
 
-  function handleOAuth(provider: "google" | "apple") {
-    // TODO: Wire to Electron IPC — window.electron?.openOAuth(provider)
-    setOauthError(
-      `Sign in with ${provider === "google" ? "Google" : "Apple"} is coming soon.`,
-    );
-    setTimeout(() => setOauthError(null), 3500);
+  function handleOAuth() {
+    openExternalUrl(`${LOGIN_URL}?provider=google`);
+    setOauthNotice("Google sign-in opened in your browser.");
+    setTimeout(() => setOauthNotice(null), 3500);
   }
 
-  const displayError = error || oauthError;
+  const displayError = error;
 
   return (
     <div className="flex h-screen w-screen items-center justify-center bg-neutral-950 drag-region overflow-hidden">
@@ -156,17 +147,29 @@ export function LoginPage() {
               )}
             </AnimatePresence>
 
+            <AnimatePresence>
+              {oauthNotice && !displayError && (
+                <motion.div
+                  key="oauth-notice"
+                  initial={{ opacity: 0, height: 0, marginBottom: 0 }}
+                  animate={{ opacity: 1, height: "auto", marginBottom: 16 }}
+                  exit={{ opacity: 0, height: 0, marginBottom: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="overflow-hidden"
+                >
+                  <div className="rounded-xl border border-brand-500/30 bg-brand-500/10 px-3 py-2.5">
+                    <p className="text-xs leading-relaxed text-brand-200">{oauthNotice}</p>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
             {/* OAuth */}
             <div className="space-y-2.5">
               <OAuthButton
-                onClick={() => handleOAuth("google")}
+                onClick={handleOAuth}
                 icon={<GoogleIcon />}
-                label="Sign in with Google"
-              />
-              <OAuthButton
-                onClick={() => handleOAuth("apple")}
-                icon={<AppleIcon />}
-                label="Sign in with Apple"
+                label="Continue with Google"
               />
             </div>
 

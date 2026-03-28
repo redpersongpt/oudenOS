@@ -33,7 +33,17 @@ const pendingRequests = new Map();
 
 function getServicePath() {
   const ext = process.platform === "win32" ? ".exe" : "";
-  return path.join(__dirname, "..", "..", "service-core", "target", "debug", "redcore-service" + ext);
+  return path.resolve(
+    __dirname,
+    "..",
+    "..",
+    "..",
+    "services",
+    "tuning-service",
+    "target",
+    "debug",
+    "redcore-service" + ext,
+  );
 }
 
 function startService() {
