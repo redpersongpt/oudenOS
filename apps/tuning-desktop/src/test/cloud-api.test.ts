@@ -133,4 +133,31 @@ describe("cloud-api — request behavior (mocked fetch)", () => {
       machines: [],
     });
   });
+
+  it("normalizes subscription status responses from /subscription/status", async () => {
+    globalThis.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: async () => ({
+        tier: "premium",
+        status: "active",
+        subscription: {
+          tier: "premium",
+          status: "active",
+          currentPeriodEnd: "2026-12-01T00:00:00.000Z",
+          cancelAtPeriodEnd: false,
+          paymentMethod: { brand: "visa", last4: "4242" },
+        },
+      }),
+    } as Response);
+
+    const { cloudApi: api } = await import("@/lib/cloud-api");
+    await expect(api.subscription.get()).resolves.toEqual({
+      tier: "premium",
+      status: "active",
+      currentPeriodEnd: "2026-12-01T00:00:00.000Z",
+      cancelAtPeriodEnd: false,
+      paymentMethod: { brand: "visa", last4: "4242" },
+    });
+  });
 });

@@ -10,7 +10,7 @@ if (_configuredUrl && !_configuredUrl.startsWith("https://")) {
   throw new Error(`VITE_API_URL must use HTTPS, got: ${_configuredUrl}`);
 }
 
-const RAW_BASE_URL: string = _configuredUrl || "https://api.redcore-tuning.com";
+const RAW_BASE_URL: string = _configuredUrl || "https://api.redcoreos.net";
 const BASE_URL: string = RAW_BASE_URL.endsWith("/v1")
   ? RAW_BASE_URL
   : `${RAW_BASE_URL.replace(/\/$/, "")}/v1`;
@@ -170,6 +170,11 @@ export interface SubscriptionDetails {
   cancelAtPeriodEnd: boolean;
   paymentMethod: { brand: string; last4: string } | null;
 }
+interface SubscriptionStatusResponse {
+  tier: SubscriptionDetails["tier"];
+  status: SubscriptionDetails["status"];
+  subscription?: Partial<SubscriptionDetails> | null;
+}
 export interface CloudPreferences {
   telemetryEnabled?: boolean;
   autoUpdate?: boolean;
@@ -309,7 +314,19 @@ export const cloudApi = {
       request<{ ok: true }>("DELETE", "/users/me", data),
   },
   subscription: {
-    get: () => request<SubscriptionDetails>("GET", "/license/subscription"),
+    get: async () => {
+      const response = await request<SubscriptionStatusResponse>("GET", "/subscription/status");
+      return normalizeSubscription(
+        response.subscription ?? {
+          tier: response.tier,
+          status: response.status,
+        },
+      );
+    },
+    checkout: (data: { tier: "premium" | "expert"; billingPeriod: "monthly" | "annual" }) =>
+      request<{ checkoutUrl: string; sessionId: string }>("POST", "/subscription/checkout", data),
+    portal: () =>
+      request<{ portalUrl: string }>("POST", "/subscription/portal"),
     activate: (token: string) =>
       request<{ success: boolean }>("POST", "/license/activate", { token }),
     deactivate: () =>

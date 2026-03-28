@@ -5,6 +5,7 @@
 import type { ReactNode } from "react";
 import { motion } from "framer-motion";
 import { Lock, Zap } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { useLicenseStore } from "@/stores/license-store";
 import { FEATURE_GATES } from "@redcore/shared-schema/license";
 import type { SubscriptionTier } from "@redcore/shared-schema/license";
@@ -145,13 +146,10 @@ function InlineGate({ featureLabel, requiredTier }: GateUIProps) {
 }
 
 function UpgradeButton({ size = "sm" }: { size?: "sm" | "md" }) {
-  const handleUpgrade = () => {
-    // TODO: Open upgrade flow (web billing portal or in-app purchase)
-    window.open("https://redcore-tuning.com/pricing", "_blank", "noopener,noreferrer");
-  };
+  const navigate = useNavigate();
 
   return (
-    <Button variant="primary" size={size} onClick={handleUpgrade}>
+    <Button variant="primary" size={size} onClick={() => navigate("/subscription")}>
       Upgrade to Premium
     </Button>
   );

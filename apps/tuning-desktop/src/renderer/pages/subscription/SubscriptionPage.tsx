@@ -26,6 +26,9 @@ import { Button } from "@/components/ui/Button";
 import { TierBadge } from "@/components/tier/TierBadge";
 import { useLicenseStore } from "@/stores/license-store";
 import type { AppTier } from "@/hooks/useTier";
+import { toast } from "@/components/ui/Toast";
+import { cloudApi } from "@/lib/cloud-api";
+import { openExternalUrl, PRIVACY_URL } from "@/lib/external-links";
 
 // ─── Pricing data ──────────────────────────────────────────────────────────
 
@@ -178,6 +181,7 @@ export function SubscriptionPage() {
   const [billing, setBilling] = useState<"monthly" | "annual">("monthly");
   const [checkout, setCheckout] = useState<CheckoutState | null>(null);
   const [showComparison, setShowComparison] = useState(false);
+  const [portalLoading, setPortalLoading] = useState(false);
 
   function annualPrice(monthly: number) {
     return (monthly * (1 - ANNUAL_DISCOUNT)).toFixed(2);
@@ -189,6 +193,20 @@ export function SubscriptionPage() {
 
   function handleUpgrade(tier: "premium" | "expert") {
     setCheckout({ targetTier: tier, billing });
+  }
+
+  async function handleOpenBillingPortal() {
+    setPortalLoading(true);
+    try {
+      const { portalUrl } = await cloudApi.subscription.portal();
+      openExternalUrl(portalUrl);
+      toast.success("Billing Portal Opened", "Your subscription settings opened in your browser.");
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Unable to open the billing portal right now.";
+      toast.error("Billing Portal Unavailable", message);
+    } finally {
+      setPortalLoading(false);
+    }
   }
 
   return (
@@ -358,8 +376,9 @@ export function SubscriptionPage() {
                   </Button>
                 ) : isDowngrade ? (
                   <button
-                    className="w-full text-center text-xs text-ink-tertiary underline decoration-dotted underline-offset-2 hover:text-ink-secondary"
-                    onClick={() => window.open("https://redcore-tuning.com/billing", "_blank")}
+                    className="w-full text-center text-xs text-ink-tertiary underline decoration-dotted underline-offset-2 hover:text-ink-secondary disabled:cursor-not-allowed disabled:opacity-60"
+                    onClick={() => void handleOpenBillingPortal()}
+                    disabled={portalLoading}
                   >
                     Downgrade via billing portal
                   </button>
@@ -507,10 +526,6 @@ function CheckoutModal({
   currentTier: AppTier;
 }) {
   const tierConfig = TIERS.find((t) => t.id === checkout.targetTier)!;
-  const [cardNumber, setCardNumber] = useState("");
-  const [expiry, setExpiry] = useState("");
-  const [cvc, setCvc] = useState("");
-  const [name, setName] = useState("");
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -520,29 +535,20 @@ function CheckoutModal({
       ? Number(((tierConfig.monthlyPrice * (1 - ANNUAL_DISCOUNT)) * 12).toFixed(2))
       : tierConfig.monthlyPrice;
 
-  function formatCard(v: string) {
-    return v
-      .replace(/\D/g, "")
-      .slice(0, 16)
-      .replace(/(.{4})/g, "$1 ")
-      .trim();
-  }
-  function formatExpiry(v: string) {
-    const d = v.replace(/\D/g, "").slice(0, 4);
-    return d.length > 2 ? `${d.slice(0, 2)} / ${d.slice(2)}` : d;
-  }
-
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
     setProcessing(true);
-    // Stripe integration point — replace with real Stripe.js confirmPayment
     try {
-      await new Promise((r) => setTimeout(r, 1500));
-      // TODO: call cloudApi.subscription.upgrade(checkout.targetTier, paymentMethodId)
+      const { checkoutUrl } = await cloudApi.subscription.checkout({
+        tier: checkout.targetTier,
+        billingPeriod: checkout.billing,
+      });
+      openExternalUrl(checkoutUrl);
+      toast.success("Checkout Opened", "Secure Stripe checkout opened in your browser.");
       onClose();
-    } catch {
-      setError("Payment failed. Please check your card details and try again.");
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "Unable to start checkout right now.");
     } finally {
       setProcessing(false);
     }
@@ -630,73 +636,17 @@ function CheckoutModal({
             </div>
           </div>
 
-          {/* Stripe card fields */}
-          <div className="space-y-3">
-            <label className="block">
-              <span className="mb-1.5 block text-xs font-medium text-ink-secondary">
-                Cardholder name
-              </span>
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Jane Smith"
-                autoComplete="cc-name"
-                required
-                className="w-full rounded-lg border border-border bg-surface-overlay px-3 py-2.5 text-sm text-ink placeholder-ink-tertiary outline-none transition-colors focus:border-blue-500/60 focus:ring-1 focus:ring-blue-500/30"
-              />
-            </label>
-
-            <label className="block">
-              <span className="mb-1.5 block text-xs font-medium text-ink-secondary">
-                Card number
-              </span>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-ink-tertiary" />
-                <input
-                  type="text"
-                  inputMode="numeric"
-                  value={cardNumber}
-                  onChange={(e) => setCardNumber(formatCard(e.target.value))}
-                  placeholder="1234 5678 9012 3456"
-                  autoComplete="cc-number"
-                  required
-                  className="w-full rounded-lg border border-border bg-surface-overlay py-2.5 pl-9 pr-3 font-mono text-sm text-ink placeholder-ink-tertiary outline-none transition-colors focus:border-blue-500/60 focus:ring-1 focus:ring-blue-500/30"
-                />
+          <div className="rounded-xl border border-border bg-surface-overlay/40 p-4">
+            <div className="flex items-start gap-3">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-blue-500/20 bg-blue-500/10">
+                <Lock className="h-4 w-4 text-blue-400" />
               </div>
-            </label>
-
-            <div className="grid grid-cols-2 gap-3">
-              <label className="block">
-                <span className="mb-1.5 block text-xs font-medium text-ink-secondary">
-                  Expiry
-                </span>
-                <input
-                  type="text"
-                  inputMode="numeric"
-                  value={expiry}
-                  onChange={(e) => setExpiry(formatExpiry(e.target.value))}
-                  placeholder="MM / YY"
-                  autoComplete="cc-exp"
-                  required
-                  className="w-full rounded-lg border border-border bg-surface-overlay px-3 py-2.5 font-mono text-sm text-ink placeholder-ink-tertiary outline-none transition-colors focus:border-blue-500/60 focus:ring-1 focus:ring-blue-500/30"
-                />
-              </label>
-              <label className="block">
-                <span className="mb-1.5 block text-xs font-medium text-ink-secondary">
-                  CVC
-                </span>
-                <input
-                  type="text"
-                  inputMode="numeric"
-                  value={cvc}
-                  onChange={(e) => setCvc(e.target.value.replace(/\D/g, "").slice(0, 4))}
-                  placeholder="•••"
-                  autoComplete="cc-csc"
-                  required
-                  className="w-full rounded-lg border border-border bg-surface-overlay px-3 py-2.5 font-mono text-sm text-ink placeholder-ink-tertiary outline-none transition-colors focus:border-blue-500/60 focus:ring-1 focus:ring-blue-500/30"
-                />
-              </label>
+              <div className="space-y-1">
+                <p className="text-sm font-medium text-ink">Secure Stripe checkout</p>
+                <p className="text-xs leading-relaxed text-ink-tertiary">
+                  Card entry happens in your browser on Stripe&apos;s hosted checkout page. redcore Tuning never collects your raw card details inside the desktop app.
+                </p>
+              </div>
             </div>
           </div>
 
@@ -727,7 +677,7 @@ function CheckoutModal({
                 checkout.targetTier === "expert" ? "!bg-violet-600 hover:!bg-violet-700" : ""
               }`}
             >
-              {processing ? "Processing…" : `Pay $${checkout.billing === "annual" ? price : tierConfig.monthlyPrice}`}
+              {processing ? "Opening Checkout…" : `Continue to Stripe · $${checkout.billing === "annual" ? price : tierConfig.monthlyPrice}`}
             </Button>
           </div>
 
@@ -736,7 +686,7 @@ function CheckoutModal({
             <button
               type="button"
               className="inline-flex items-center gap-0.5 underline decoration-dotted hover:text-ink-secondary"
-              onClick={() => window.open("https://redcore-tuning.com/privacy", "_blank")}
+              onClick={() => openExternalUrl(PRIVACY_URL)}
             >
               Privacy Policy <ExternalLink className="h-2.5 w-2.5" />
             </button>

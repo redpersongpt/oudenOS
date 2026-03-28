@@ -20,6 +20,8 @@ const companyLinks = [
   { label: "GitHub",  href: "https://github.com/redpersongpt", external: true },
   { label: "Donate",  href: "/donate" },
   { label: "Account", href: "/profile" },
+  { label: "Privacy", href: "/privacy" },
+  { label: "Terms", href: "/terms" },
 ];
 
 const contactLinks = [

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
@@ -32,6 +32,20 @@ export default function RegisterPage() {
   const [confirm, setConfirm] = useState("");
   const [error, setError] = useState("");
   const router = useRouter();
+  const attemptedProviderRef = useRef(false);
+
+  useEffect(() => {
+    const provider =
+      typeof window !== "undefined"
+        ? new URLSearchParams(window.location.search).get("provider")
+        : null;
+    if (provider !== "google" || attemptedProviderRef.current) {
+      return;
+    }
+
+    attemptedProviderRef.current = true;
+    void signIn("google", { callbackUrl: "/profile" });
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
