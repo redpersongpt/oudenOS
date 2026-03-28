@@ -10,6 +10,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 APP_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+WEB_DATABASE_URL="${WEB_DATABASE_URL:-file:${APP_ROOT}/apps/web/prisma/prisma/dev.db}"
 
 cd "${APP_ROOT}"
 
@@ -27,8 +28,8 @@ if [[ -f apps/web/.env.local ]]; then
 fi
 
 echo "── Sync web Prisma client and schema ──"
-pnpm --dir apps/web db:generate
-pnpm --dir apps/web db:push
+DATABASE_URL="${WEB_DATABASE_URL}" pnpm --dir apps/web db:generate
+DATABASE_URL="${WEB_DATABASE_URL}" pnpm --dir apps/web db:push
 
 echo "── Build shared DB package ──"
 pnpm --dir packages/db build
