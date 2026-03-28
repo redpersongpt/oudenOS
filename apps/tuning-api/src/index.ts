@@ -29,7 +29,7 @@ async function start() {
   // CORS — kept for the catalog manifest consumed by desktop clients
   await app.register(cors, {
     origin: [
-      "https://app.redcore-tuning.com",
+      "https://redcoreos.net",
       "http://localhost:5173",
     ],
     credentials: true,

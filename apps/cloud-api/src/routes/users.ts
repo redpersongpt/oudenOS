@@ -213,7 +213,7 @@ export const usersRoutes: FastifyPluginAsync = async (app) => {
       })
       .where(eq(users.id, request.userId));
 
-    const appUrl = process.env.APP_URL ?? "https://app.redcore-tuning.com";
+    const appUrl = process.env.APP_URL ?? "https://redcoreos.net";
     const verifyLink = `${appUrl}/verify-email?token=${verificationToken}`;
 
     sendEmail({

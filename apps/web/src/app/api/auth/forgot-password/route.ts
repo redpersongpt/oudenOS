@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { sendEmail, resetPasswordTemplate } from "@/lib/email";
 import { buildPasswordResetUrl, generatePasswordResetToken, hashPasswordResetToken } from "@/lib/password-reset";
+import { callCloudApi } from "@/lib/cloud-api";
 
 function isValidEmail(value: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
@@ -51,6 +52,13 @@ export async function POST(req: NextRequest) {
       console.error("Failed to send password reset email", error);
     });
   }
+
+  // Best-effort cloud-api compatibility: desktop and cloud accounts can use the same web UI.
+  void callCloudApi("/auth/forgot-password", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email }),
+  });
 
   return NextResponse.json({
     ok: true,
