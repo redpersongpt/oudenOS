@@ -19,6 +19,17 @@ git pull origin main
 echo "── Install dependencies ──"
 pnpm install --frozen-lockfile
 
+if [[ -f apps/web/.env.local ]]; then
+  echo "── Load web environment ──"
+  set -a
+  . apps/web/.env.local
+  set +a
+fi
+
+echo "── Sync web Prisma client and schema ──"
+pnpm --dir apps/web db:generate
+pnpm --dir apps/web db:push
+
 echo "── Build shared DB package ──"
 pnpm --dir packages/db build
 
