@@ -9,6 +9,7 @@ on:
       - 'apps/tuning-desktop/**'
       - 'services/os-service/**'
       - 'services/tuning-service/**'
+      - 'scripts/build-and-publish-os-release.sh'
       - '.github/workflows/build-installers.yml'
 
 concurrency:
@@ -98,6 +99,14 @@ jobs:
         run: pnpm dist
         env:
           CI: "true"
+
+      - name: Verify OS installer size
+        shell: pwsh
+        run: |
+          $size = (Get-Item "apps/os-desktop/dist/installers/redcore-os-setup.exe").Length
+          if ($size -lt 20000000) {
+            throw "OS installer too small: $size bytes"
+          }
 
       - name: Upload OS installer
         uses: actions/upload-artifact@v4
