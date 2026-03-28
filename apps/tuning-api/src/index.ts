@@ -7,6 +7,7 @@
 
 import Fastify from "fastify";
 import cors from "@fastify/cors";
+import helmet from "@fastify/helmet";
 import rawBody from "fastify-raw-body";
 import { authRoutes } from "./routes/auth.js";
 import { usersRoutes } from "./routes/users.js";
@@ -24,9 +25,15 @@ const app = Fastify({
       ? { target: "pino-pretty" }
       : undefined,
   },
+  bodyLimit: 1 * 1024 * 1024, // 1 MB
 });
 
 async function start() {
+  // Security headers
+  await app.register(helmet, {
+    contentSecurityPolicy: false, // API-only, no HTML served
+  });
+
   // Raw body plugin — required for Stripe webhook signature verification
   await app.register(rawBody, {
     field: "rawBody",

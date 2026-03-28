@@ -1,45 +1,60 @@
 // ─── redcore · OS — Preload Script ───────────────────────────────────────────
 // Exposes a strict, typed API to the renderer via contextBridge.
 // The renderer NEVER has direct access to Node.js or Electron APIs.
+//
+// SECURITY: ALLOWED_METHODS and ALLOWED_CHANNELS MUST stay in sync with
+// IpcMethods and IpcEvents in @redcore-os/shared-schema/ipc.
 
 import { contextBridge, ipcRenderer } from "electron";
 
 // ─── Allowed IPC methods (defense-in-depth allowlist) ────────────────────────
+// Must match the keys of IpcMethods in @redcore-os/shared-schema/ipc.ts.
 
 const ALLOWED_METHODS = new Set([
-  // System
-  "system.status",
-  "system.reboot",
-  // Assessment & classification
+  // Assessment
   "assess.full",
+  "assess.health",
+  "assess.workIndicators",
+  // Classification
   "classify.machine",
-  // Playbook-native path (primary)
+  // Playbook (primary transformation path)
   "playbook.resolve",
+  // App bundle
   "appbundle.getRecommended",
   "appbundle.resolve",
-  // Execution & rollback
+  // Execution
+  "execute.apply",
   "execute.applyAction",
-  "rollback.list",
-  "rollback.restore",
-  "rollback.audit",
+  "execute.pause",
+  "execute.resume",
   // Personalization
   "personalize.options",
   "personalize.apply",
   "personalize.revert",
-  // Verification
-  "verify.registryValue",
+  // Rollback
+  "rollback.list",
+  "rollback.restore",
+  "rollback.audit",
   // Journal (reboot/resume)
   "journal.state",
   "journal.resume",
   "journal.cancel",
+  // Verification
+  "verify.registryValue",
+  // System
+  "system.status",
+  "system.reboot",
 ]);
 
 // ─── Allowed IPC event channels (defense-in-depth) ─────────────────────────
+// Must match the keys of IpcEvents in @redcore-os/shared-schema/ipc.ts.
+// Only channels that Rust ACTUALLY emits belong here.
 
 const ALLOWED_CHANNELS = new Set([
   "execute.progress",
   "service.error",
   "journal.progress",
+  // "scan.progress",    // Add when Rust scan emission is wired
 ]);
 
 // ─── Exposed API ─────────────────────────────────────────────────────────────

@@ -9,7 +9,11 @@ declare module "fastify" {
   }
 }
 
-const JWT_SECRET = process.env.JWT_SECRET ?? "dev-secret-change-in-production";
+const _rawSecret = process.env.JWT_SECRET;
+if (!_rawSecret) {
+  throw new Error("JWT_SECRET environment variable is required");
+}
+const JWT_SECRET: string = _rawSecret;
 
 export function signAccessToken(userId: string): string {
   return jwt.sign({ userId }, JWT_SECRET, { expiresIn: "15m" });

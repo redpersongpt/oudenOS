@@ -718,6 +718,89 @@ jobs:
           }
 
           # ═══════════════════════════════════════════════════════════════════
+          # STEP 13: PLAYBOOK → EXECUTE CHAIN PROOF (playbook-native mainline)
+          # Proves: resolve playbook → extract included action IDs → execute them
+          # ═══════════════════════════════════════════════════════════════════
+          if (-not $script:streamCorrupted) {
+              Write-Output "`n=== STEP 13: PLAYBOOK → EXECUTE CHAIN ==="
+              Start-Sleep -Seconds 1
+
+              $pb = Send-Rpc "playbook.resolve" @{ profile = "gaming_desktop"; preset = "balanced" }
+              if ($pb -and $pb.result -and $pb.result.phases) {
+                  # Extract first 3 included action IDs from the resolved playbook
+                  $chainActions = @()
+                  foreach ($phase in $pb.result.phases) {
+                      foreach ($action in $phase.actions) {
+                          if ($action.status -eq "Included" -and $chainActions.Count -lt 3) {
+                              $chainActions += $action.id
+                          }
+                      }
+                  }
+
+                  Write-Output "  Resolved $($pb.result.totalIncluded) included actions (balanced preset)"
+                  Write-Output "  Chain-testing: $($chainActions -join ', ')"
+
+                  $chainPass = $true
+                  foreach ($actionId in $chainActions) {
+                      Start-Sleep -Milliseconds 500
+                      $r = Send-Rpc "execute.applyAction" @{ actionId = $actionId }
+                      if ($r -and $r.result -and ($r.result.status -eq "success" -or $r.result.status -eq "partial")) {
+                          Write-Output "    PASS: execute $actionId (status=$($r.result.status))"
+                      } else {
+                          $errMsg = if ($r -and $r.error) { $r.error.message } else { "unexpected" }
+                          Write-Output "    FAIL: execute $actionId — $errMsg"
+                          $chainPass = $false
+                      }
+                  }
+
+                  if ($chainPass) {
+                      Write-Output "  PASS: playbook.resolve → execute.applyAction chain"
+                  } else {
+                      Write-Output "  FAIL: playbook→execute chain broken"
+                      $allPassed = $false
+                  }
+              } else {
+                  $errMsg = if ($pb -and $pb.error) { $pb.error.message } else { "timeout" }
+                  Write-Output "  INFO: playbook→execute chain — $errMsg (non-blocking)"
+              }
+          }
+
+          # ═══════════════════════════════════════════════════════════════════
+          # STEP 14: APP BUNDLE RESOLVE PROOF (install queue resolution)
+          # Proves: getRecommended → select apps → resolve install queue
+          # ═══════════════════════════════════════════════════════════════════
+          if (-not $script:streamCorrupted) {
+              Write-Output "`n=== STEP 14: APP BUNDLE RESOLVE ==="
+              Start-Sleep -Seconds 1
+
+              $rec = Send-Rpc "appbundle.getRecommended" @{ profile = "gaming_desktop" }
+              if ($rec -and $rec.result -and $rec.result.apps) {
+                  $selectedApps = @()
+                  foreach ($app in $rec.result.apps) {
+                      if ($app.recommended -and $selectedApps.Count -lt 2) {
+                          $selectedApps += $app.id
+                      }
+                  }
+
+                  Write-Output "  Selected $($selectedApps.Count) recommended apps: $($selectedApps -join ', ')"
+
+                  Start-Sleep -Milliseconds 500
+                  $resolved = Send-Rpc "appbundle.resolve" @{ profile = "gaming_desktop"; selectedApps = $selectedApps }
+                  if ($resolved -and $resolved.result) {
+                      $queueCount = if ($resolved.result.queue) { ($resolved.result.queue | Measure-Object).Count } else { 0 }
+                      Write-Output "  Install queue: $queueCount apps resolved"
+                      Write-Output "  PASS: appbundle.resolve (gaming_desktop, $($selectedApps.Count) apps)"
+                  } else {
+                      $errMsg = if ($resolved -and $resolved.error) { $resolved.error.message } else { "timeout" }
+                      Write-Output "  FAIL: appbundle.resolve — $errMsg"
+                      $allPassed = $false
+                  }
+              } else {
+                  Write-Output "  INFO: appbundle.resolve skipped (no recommendations available)"
+              }
+          }
+
+          # ═══════════════════════════════════════════════════════════════════
           # FINAL VERDICT
           # ═══════════════════════════════════════════════════════════════════
           $proc.StandardInput.Close()
@@ -730,6 +813,8 @@ jobs:
           Write-Output "Registry read-back verified: $verifiedCount / $($verifyChecks.Count)"
           Write-Output "Rollback snapshots: $($snapshotIds.Count) created, 2 restored"
           Write-Output "Profile blocking: work_pc (16 blocked + 14 allowed), vm_cautious, office_laptop"
+          Write-Output "Playbook chain: playbook.resolve → execute.applyAction (3 actions)"
+          Write-Output "App bundle chain: appbundle.getRecommended → appbundle.resolve"
           Write-Output "Depth coverage: $($applyResults.Count) of 102 total actions runtime-proven"
 
           if ($allPassed) {

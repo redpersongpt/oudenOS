@@ -1,9 +1,9 @@
 # ─── Services: Consumer Services ──────────────────────────────────────────────
-# Disables Print Spooler and Remote Access services.
+# Disables Print Spooler, Remote Access, and Xbox services.
 
 module: services.consumer-services
 name: "Consumer Service Reduction"
-description: "Disable Print Spooler and Remote Access services to reduce attack surface"
+description: "Disable Print Spooler, Remote Access, and Xbox services to reduce attack surface and resource usage"
 category: services
 
 actions:
@@ -47,4 +47,26 @@ actions:
       - name: TermService
         startupType: Disabled
       - name: SessionEnv
+        startupType: Disabled
+
+  - id: services.disable-xbox-services
+    name: "Disable Xbox Background Services"
+    description: "Disable Xbox Live Auth Manager, Xbox Live Game Save, and Xbox Accessory Management services"
+    rationale: "Xbox services run in the background even without Xbox hardware or Game Pass. They consume resources and maintain network connections to Xbox Live."
+    risk: low
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 3
+    blockedProfiles:
+      - vm_cautious
+    serviceChanges:
+      - name: XblAuthManager
+        startupType: Disabled
+      - name: XblGameSave
+        startupType: Disabled
+      - name: XboxNetApiSvc
+        startupType: Disabled
+      - name: XboxGipSvc
         startupType: Disabled

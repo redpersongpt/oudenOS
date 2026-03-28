@@ -254,7 +254,8 @@ impl ProfileScores {
         let (name, score) = pairs
             .iter()
             .max_by(|a, b| a.1.partial_cmp(&b.1).unwrap_or(std::cmp::Ordering::Equal))
-            .unwrap();
+            // SAFETY: `pairs` is a non-empty fixed-size array of 5 elements
+            .expect("ProfileScores::primary called on non-empty array");
         (name.to_string(), *score)
     }
 }

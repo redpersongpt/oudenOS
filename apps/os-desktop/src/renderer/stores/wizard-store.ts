@@ -18,6 +18,7 @@ export type WizardStepId =
   | "execution"
   | "reboot-resume"
   | "report"
+  | "donation"
   | "handoff";
 
 // ─── Step shape ───────────────────────────────────────────────────────────────
@@ -149,6 +150,9 @@ interface WizardState {
   setExecutionResult: (result: ExecutionResult) => void;
   setPersonalization: (prefs: Partial<PersonalizationPreferences>) => void;
   setDemoMode: (demo: boolean) => void;
+
+  /** Navigate to the optional donation step (bypasses lock — accessible from report). */
+  gotoDonation: () => void;
 
   reset: () => void;
 }
@@ -319,6 +323,24 @@ export const useWizardStore = create<WizardState>((set, get) => ({
   setPersonalization: (prefs) =>
     set((state) => ({ personalization: { ...state.personalization, ...prefs } })),
   setDemoMode: (demo) => set({ demoMode: demo }),
+
+  // Donation step is optional — navigate directly without checking lock status.
+  // Also marks "handoff" as unlocked so the user can continue after donating.
+  gotoDonation: () =>
+    set((state) => {
+      const steps = state.steps.map((s) => {
+        if (s.id === state.currentStep) return { ...s, status: "completed" as const };
+        if (s.id === "handoff" && s.status === "locked") return { ...s, status: "current" as const };
+        return s;
+      });
+      return {
+        currentStep: "donation" as WizardStepId,
+        steps,
+        progress: computeProgress(steps),
+        canGoNext: true,
+        canGoBack: false,
+      };
+    }),
 
   reset: () =>
     set({

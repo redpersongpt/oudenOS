@@ -29,18 +29,18 @@ export function ErrorState({
     >
       <motion.div
         variants={staggerChild}
-        className={`mb-4 flex items-center justify-center rounded-2xl bg-brand-50 border border-brand-100 ${
+        className={`mb-4 flex items-center justify-center rounded-2xl bg-brand-500/10 border border-brand-500/20 ${
           compact ? "h-12 w-12" : "h-16 w-16"
         }`}
       >
         <AlertTriangle
-          className={`text-brand-500 ${compact ? "h-5 w-5" : "h-7 w-7"}`}
+          className={`text-brand-400 ${compact ? "h-5 w-5" : "h-7 w-7"}`}
           strokeWidth={1.5}
         />
       </motion.div>
       <motion.p
         variants={staggerChild}
-        className={`font-semibold text-neutral-800 ${
+        className={`font-semibold text-ink-secondary ${
           compact ? "text-sm" : "text-base"
         }`}
       >
@@ -48,7 +48,7 @@ export function ErrorState({
       </motion.p>
       <motion.p
         variants={staggerChild}
-        className={`mt-1.5 text-neutral-400 max-w-xs leading-relaxed ${
+        className={`mt-1.5 text-ink-tertiary max-w-xs leading-relaxed ${
           compact ? "text-xs" : "text-sm"
         }`}
       >

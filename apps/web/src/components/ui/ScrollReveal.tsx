@@ -1,15 +1,15 @@
 "use client";
 
+import * as React from "react";
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
-import type { ReactNode } from "react";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 type RevealDirection = "up" | "down" | "left" | "right";
 
 interface ScrollRevealProps {
-  children: ReactNode;
+  children: React.ReactNode;
   className?: string;
   delay?: number;
   direction?: RevealDirection;
@@ -72,7 +72,7 @@ export function ScrollReveal({
       }}
       className={className}
     >
-      {children}
+      <>{children}</>
     </motion.div>
   );
 }

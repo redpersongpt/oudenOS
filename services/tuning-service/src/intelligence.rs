@@ -565,7 +565,7 @@ pub fn classify(profile: &Value) -> Result<Value> {
 
     // Find primary (highest) and second highest for confidence
     let mut sorted_indices: Vec<usize> = (0..ARCHETYPES.len()).collect();
-    sorted_indices.sort_by(|a, b| normalized[*b].partial_cmp(&normalized[*a]).unwrap());
+    sorted_indices.sort_by(|a, b| normalized[*b].total_cmp(&normalized[*a]));
 
     let primary_idx = sorted_indices[0];
     let primary = ARCHETYPES[primary_idx];

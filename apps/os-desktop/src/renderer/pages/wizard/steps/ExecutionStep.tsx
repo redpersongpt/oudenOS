@@ -25,12 +25,21 @@ interface CompletedAction {
 
 // ─── Timeline item ────────────────────────────────────────────────────────────
 
-function TimelineItem({ action, index }: { action: CompletedAction; index: number }) {
+function TimelineItem({ action }: { action: CompletedAction }) {
+  const failed = action.status === "failed";
   return (
     <motion.div
       initial={{ opacity: 0, x: -10, height: 0 }}
-      animate={{ opacity: 1, x: 0, height: "auto" }}
-      transition={{ duration: 0.18, ease: [0.0, 0.0, 0.2, 1.0] }}
+      animate={
+        failed
+          ? { opacity: 1, x: [0, -5, 5, -3, 3, -1, 0], height: "auto" }
+          : { opacity: 1, x: 0, height: "auto" }
+      }
+      transition={
+        failed
+          ? { duration: 0.44, ease: "easeOut" }
+          : { duration: 0.18, ease: [0.0, 0.0, 0.2, 1.0] }
+      }
       className="flex items-center gap-2.5 py-1"
     >
       {action.status === "applied" ? (
@@ -74,13 +83,13 @@ export function ExecutionStep() {
   const [currentActionId, setCurrentActionId] = useState<string | null>(null);
   const [currentPhase, setCurrentPhase]   = useState<string | null>(null);
   const [completed,     setCompleted]     = useState<CompletedAction[]>([]);
-  const [failCount,     setFailCount]     = useState(0);
   const timerRef    = useRef<ReturnType<typeof setTimeout> | null>(null);
   const abortRef    = useRef<AbortController | null>(null);
   const started     = useRef(false);
   const timelineRef = useRef<HTMLDivElement>(null);
 
   const applied   = completed.filter((c) => c.status === "applied").length;
+  const failCount = completed.filter((c) => c.status === "failed").length;
   const remaining = Math.max(0, totalActions - completed.length - (currentAction ? 1 : 0));
   const progress  = totalActions > 0
     ? Math.round((completed.length / totalActions) * 100)
@@ -122,7 +131,6 @@ export function ExecutionStep() {
         setCurrentAction(null);
         if (status === "failed") {
           localFailed++;
-          setFailCount((f) => f + 1);
         }
         setCompleted((prev) => [...prev, { label: action.name, actionId: action.id, status }]);
 
@@ -267,7 +275,7 @@ export function ExecutionStep() {
       <div className="w-full max-w-md">
         <div className="relative h-1.5 overflow-hidden rounded-full bg-white/[0.06]">
           <motion.div
-            className="absolute inset-y-0 left-0 rounded-full bg-brand-500"
+            className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-brand-600 to-brand-400"
             animate={{ width: `${progress}%` }}
             transition={{ type: "spring", stiffness: 280, damping: 28 }}
           />
@@ -283,14 +291,20 @@ export function ExecutionStep() {
       {/* Stats row */}
       <div className="flex gap-6 text-center">
         {[
-          { label: "Applied",   value: applied,    color: "text-success-400" },
-          { label: "Failed",    value: failCount,  color: "text-danger-400"  },
+          { label: "Applied",   value: applied,    color: "text-success-400"   },
+          { label: "Failed",    value: failCount,  color: "text-danger-400"    },
           { label: "Remaining", value: remaining,  color: "text-ink-secondary" },
         ].map((stat) => (
           <div key={stat.label} className="flex flex-col items-center gap-0.5">
-            <span className={`font-mono-metric text-xl font-semibold ${stat.color}`}>
+            <motion.span
+              key={stat.value}
+              initial={{ scale: 0.75, opacity: 0.4 }}
+              animate={{ scale: 1,    opacity: 1   }}
+              transition={{ type: "spring", stiffness: 600, damping: 18 }}
+              className={`font-mono-metric text-xl font-semibold ${stat.color}`}
+            >
               {stat.value}
-            </span>
+            </motion.span>
             <span className="text-[10px] text-ink-muted">{stat.label}</span>
           </div>
         ))}
@@ -303,8 +317,8 @@ export function ExecutionStep() {
         style={{ maxHeight: "120px" }}
       >
         <div className="flex flex-col divide-y divide-white/[0.03] px-1">
-          {completed.map((action, i) => (
-            <TimelineItem key={`${action.label}-${i}`} action={action} index={i} />
+          {(completed as CompletedAction[]).map((action, i) => (
+            <TimelineItem key={`${action.label}-${i}`} action={action} />
           ))}
         </div>
       </div>

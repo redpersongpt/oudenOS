@@ -11,10 +11,10 @@ dist/
 target/
 *.tsbuildinfo
 
-# Environment
+# Environment (all nested paths)
 .env
-.env.local
-.env.*.local
+.env.*
+!.env.example
 
 # OS
 .DS_Store

@@ -1,3 +1,4 @@
+import type { ElementType } from "react";
 import { motion } from "framer-motion";
 import {
   Cpu,
@@ -18,7 +19,7 @@ import { useDeviceStore } from "@/stores/device-store";
 import { serviceCall } from "@/lib/api";
 
 interface HardwareCardProps {
-  icon: React.ElementType;
+  icon: ElementType;
   title: string;
   subtitle: string;
   details: Array<{ label: string; value: string }>;

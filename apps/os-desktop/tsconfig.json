@@ -23,7 +23,11 @@
     /* Paths */
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/renderer/*"]
+      "@/*": ["src/renderer/*"],
+      "@redcore/shared-schema": ["../../packages/tuning-shared-schema/src"],
+      "@redcore/shared-schema/*": ["../../packages/tuning-shared-schema/src/*"],
+      "@redcore/system-analyzer": ["../../packages/system-analyzer/src"],
+      "@redcore/system-analyzer/*": ["../../packages/system-analyzer/src/*"]
     }
   },
   "include": ["src/renderer"]

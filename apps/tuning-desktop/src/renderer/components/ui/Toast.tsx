@@ -75,9 +75,9 @@ export function ToastProvider() {
   };
 
   const borderMap: Record<ToastVariant, string> = {
-    success: "border-green-200",
-    error: "border-red-200",
-    warning: "border-amber-200",
+    success: "border-green-500/25",
+    error: "border-brand-500/25",
+    warning: "border-amber-500/25",
   };
 
   return (
@@ -90,18 +90,18 @@ export function ToastProvider() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -8, scale: 0.95 }}
             transition={{ type: "spring", stiffness: 400, damping: 30 }}
-            className={`pointer-events-auto flex w-[320px] items-start gap-3 rounded-xl border bg-white p-4 shadow-lg ${borderMap[item.variant]}`}
+            className={`pointer-events-auto flex w-[320px] items-start gap-3 rounded-xl border bg-surface-raised p-4 shadow-xl ${borderMap[item.variant]}`}
           >
             <span className="mt-0.5 shrink-0">{iconMap[item.variant]}</span>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-neutral-900">{item.title}</p>
+              <p className="text-sm font-semibold text-ink">{item.title}</p>
               {item.message && (
-                <p className="mt-0.5 text-xs text-neutral-500">{item.message}</p>
+                <p className="mt-0.5 text-xs text-ink-secondary">{item.message}</p>
               )}
             </div>
             <button
               onClick={() => dismiss(item.id)}
-              className="shrink-0 rounded-md p-0.5 text-neutral-400 hover:text-neutral-700 transition-colors"
+              className="shrink-0 rounded-md p-0.5 text-ink-tertiary hover:text-ink-secondary transition-colors"
             >
               <X className="h-3.5 w-3.5" />
             </button>

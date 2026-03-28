@@ -97,19 +97,19 @@ interface GateUIProps {
 function OverlayGate({ featureLabel, requiredTier }: GateUIProps) {
   return (
     <motion.div
-      className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-white/60 backdrop-blur-[2px]"
+      className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-page/70 backdrop-blur-[4px]"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.2 }}
     >
-      <div className="flex h-11 w-11 items-center justify-center rounded-full bg-brand-50 border border-brand-200 shadow-sm">
-        <Lock className="h-5 w-5 text-brand-500" />
+      <div className="flex h-11 w-11 items-center justify-center rounded-full bg-brand-500/15 border border-brand-500/30 shadow-sm">
+        <Lock className="h-5 w-5 text-brand-400" />
       </div>
       <div className="text-center">
-        <p className="text-sm font-semibold text-neutral-900">{featureLabel}</p>
+        <p className="text-sm font-semibold text-ink">{featureLabel}</p>
         {requiredTier && (
-          <p className="text-xs text-neutral-500 mt-0.5">
-            Requires <span className="font-medium capitalize text-brand-600">{requiredTier}</span>
+          <p className="text-xs text-ink-tertiary mt-0.5">
+            Requires <span className="font-medium capitalize text-brand-400">{requiredTier}</span>
           </p>
         )}
       </div>
@@ -121,23 +121,23 @@ function OverlayGate({ featureLabel, requiredTier }: GateUIProps) {
 function InlineGate({ featureLabel, requiredTier }: GateUIProps) {
   return (
     <motion.div
-      className="flex items-center gap-3 rounded-lg border border-brand-100 bg-brand-50 px-4 py-3"
+      className="flex items-center gap-3 rounded-lg border border-brand-500/20 bg-brand-500/10 px-4 py-3"
       initial={{ opacity: 0, y: 4 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.18 }}
     >
-      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand-100">
-        <Zap className="h-4 w-4 text-brand-500" />
+      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand-500/20">
+        <Zap className="h-4 w-4 text-brand-400" />
       </div>
       <div className="min-w-0 flex-1">
-        <p className="text-sm font-medium text-neutral-900">
+        <p className="text-sm font-medium text-ink">
           {featureLabel} is a{" "}
           {requiredTier && (
-            <span className="capitalize text-brand-600">{requiredTier}</span>
+            <span className="capitalize text-brand-400">{requiredTier}</span>
           )}{" "}
           feature
         </p>
-        <p className="text-xs text-neutral-500">Upgrade to unlock all optimization tools</p>
+        <p className="text-xs text-ink-tertiary">Upgrade to unlock all optimization tools</p>
       </div>
       <UpgradeButton size="sm" />
     </motion.div>

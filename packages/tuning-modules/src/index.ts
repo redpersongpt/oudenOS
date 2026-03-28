@@ -17,5 +17,6 @@ export { servicesActions } from "./services/index.js";
 export { systemControlsActions } from "./system-controls/index.js";
 export { schedulerActions } from "./scheduler/index.js";
 export { gamingActions } from "./gaming/index.js";
+export { aiActions } from "./ai/index.js";
 
 export type { TuningActionDefinition } from "./types.js";

@@ -11,16 +11,17 @@ const LABELS: Record<WizardStepId, string> = {
   "playbook-review": "Playbook", personalization: "Personalize",
   "app-setup": "App Setup", "final-review": "Review",
   execution: "Apply", "reboot-resume": "Reboot",
-  report: "Complete", handoff: "Next Steps",
+  report: "Complete", donation: "Support", handoff: "Next Steps",
 };
 
 const CTA: Partial<Record<WizardStepId, string>> = {
   welcome: "Begin Assessment", "playbook-strategy": "Review Playbook",
   "playbook-review": "Personalize", "app-setup": "Review Changes",
   "final-review": "Apply Changes", report: "Next Steps",
+  profile: "Configure Playbook",
 };
 
-const NO_BAR = new Set<WizardStepId>(["execution", "reboot-resume", "handoff"]);
+const NO_BAR = new Set<WizardStepId>(["execution", "reboot-resume", "donation", "handoff"]);
 
 // ── Rail ────────────────────────────────────────────────────────────────────
 
@@ -84,28 +85,41 @@ function Bar() {
   return (
     <div className="flex h-12 shrink-0 items-center justify-between border-t border-white/[0.05] bg-surface-raised/60 px-5">
       {canGoBack ? (
-        <button onClick={goBack} className="flex items-center gap-1 text-[11px] font-medium text-ink-tertiary hover:text-ink-secondary transition-colors">
+        <motion.button
+          onClick={goBack}
+          whileHover={{ x: -1 }}
+          whileTap={{ scale: 0.95 }}
+          transition={{ type: "spring", stiffness: 500, damping: 28 }}
+          className="flex items-center gap-1 text-[11px] font-medium text-ink-tertiary hover:text-ink-secondary transition-colors"
+        >
           <ArrowLeft className="h-3 w-3" /> Back
-        </button>
+        </motion.button>
       ) : <div className="w-12" />}
 
       <div className="flex items-center gap-2">
         <div className="relative h-[3px] w-16 overflow-hidden rounded-full bg-white/[0.06]">
-          <motion.div className="absolute inset-y-0 left-0 rounded-full bg-brand-500" animate={{ width: `${progress}%` }} transition={{ type: "spring", stiffness: 300, damping: 30 }} />
+          <motion.div
+            className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-brand-600 to-brand-400"
+            animate={{ width: `${progress}%` }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+          />
         </div>
         <span className="font-mono-metric text-[9px] text-ink-disabled">{progress}%</span>
       </div>
 
-      <button
+      <motion.button
         onClick={goNext}
         disabled={!canGoNext}
+        whileHover={canGoNext ? { y: -1 } : {}}
+        whileTap={canGoNext ? { scale: 0.97 } : {}}
+        transition={{ type: "spring", stiffness: 500, damping: 28 }}
         className={`flex items-center gap-1.5 rounded-md px-3.5 py-[6px] text-[11px] font-bold transition-all ${
           canGoNext ? "bg-brand-500 text-white hover:bg-brand-600" : "bg-white/[0.03] text-ink-disabled cursor-not-allowed"
         }`}
       >
         {CTA[currentStep] ?? "Continue"}
         <ArrowRight className="h-3 w-3" />
-      </button>
+      </motion.button>
     </div>
   );
 }

@@ -198,3 +198,54 @@ actions:
         valueName: EnableTransparency
         value: 0
         valueType: DWord
+
+  - id: gpu.disable-nvidia-container
+    name: "Disable Nvidia Container Services"
+    description: "Disable NVDisplay.ContainerLocalSystem and NvContainerLocalSystem background services that run telemetry, overlay, and update checks."
+    rationale: "Nvidia Container services consume CPU and GPU resources for overlay rendering, telemetry collection, and driver update checks. Disabling them reduces driver overhead."
+    risk: low
+    tier: free
+    default: false
+    expertOnly: false
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 3
+    warningMessage: "GeForce Experience overlay (Alt+Z), ShadowPlay recording, and automatic driver updates will stop working. Manual driver updates via nvidia.com will still work."
+    blockedProfiles:
+      - vm_cautious
+    serviceChanges:
+      - name: NVDisplay.ContainerLocalSystem
+        startupType: Disabled
+      - name: NvContainerLocalSystem
+        startupType: Disabled
+
+  - id: gpu.disable-amd-services
+    name: "Disable AMD Background Services"
+    description: "Disable AMD Crash Defender, External Events Utility, and AUEPLauncher services that run crash monitoring, event processing, and update checks."
+    rationale: "AMD background services consume CPU resources for crash analysis and event handling. Disabling them reduces driver overhead on AMD GPU systems."
+    risk: low
+    tier: free
+    default: false
+    expertOnly: false
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 3
+    warningMessage: "AMD Adrenalin overlay, crash reporting, and automatic driver updates will stop working. Manual driver updates via amd.com will still work."
+    blockedProfiles:
+      - vm_cautious
+    registryChanges:
+      - hive: HKLM
+        path: "SYSTEM\\CurrentControlSet\\Services\\AMD Crash Defender Service"
+        valueName: Start
+        value: 4
+        valueType: DWord
+      - hive: HKLM
+        path: "SYSTEM\\CurrentControlSet\\Services\\AMD External Events Utility"
+        valueName: Start
+        value: 4
+        valueType: DWord
+      - hive: HKLM
+        path: "SYSTEM\\CurrentControlSet\\Services\\AUEPLauncher"
+        valueName: Start
+        value: 4
+        valueType: DWord

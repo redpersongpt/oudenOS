@@ -21,6 +21,8 @@
   --color-surface-base: #1e1e22;
   --color-surface-card: #252529;
   --color-surface-muted: #222226;
+  --color-surface-overlay: #2a2a2f;
+  --color-border-default: #38383e;
   --font-sans: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", "Cascadia Code", monospace;
 }
@@ -61,6 +63,27 @@ body {
   background: rgba(30, 30, 34, 0.85);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
+}
+
+/* ─── Legacy utility classes (used by DonateSection and other components) ─── */
+
+.section-divide {
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, var(--color-border) 30%, var(--color-border) 70%, transparent 100%);
+  opacity: 0.5;
+}
+
+.premium-card {
+  background: var(--color-surface-card);
+  border: 1px solid var(--color-border);
+}
+
+.glow-surface {
+  box-shadow: 0 0 40px rgba(232, 37, 75, 0.06);
+}
+
+.glow-brand-edge {
+  box-shadow: 0 0 0 1px rgba(232, 37, 75, 0.15), 0 0 32px rgba(232, 37, 75, 0.08);
 }
 
 /* Scroll targets account for fixed nav */

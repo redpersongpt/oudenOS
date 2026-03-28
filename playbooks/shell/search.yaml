@@ -1,0 +1,41 @@
+# ─── Shell: Search Cleanup ────────────────────────────────────────────────────
+
+module: shell.search
+name: "Search Cleanup"
+description: "Disable search highlights, history, and Cortana remnants"
+category: shell
+
+actions:
+  - id: shell.disable-search-highlights
+    name: "Disable Search Highlights"
+    description: "Remove trending and promotional content from Windows Search"
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKCU
+        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\SearchSettings"
+        valueName: IsDynamicSearchBoxEnabled
+        value: 0
+        valueType: DWord
+
+  - id: shell.disable-search-history
+    name: "Disable Search History"
+    description: "Disable device search history used for search suggestions"
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKCU
+        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\SearchSettings"
+        valueName: IsDeviceSearchHistoryEnabled
+        value: 0
+        valueType: DWord

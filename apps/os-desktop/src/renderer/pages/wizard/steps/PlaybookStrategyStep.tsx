@@ -1,10 +1,15 @@
 // ─── Playbook Strategy — Sequential Question Flow ───────────────────────────
 // ONE question per screen. Sequential navigation. Branching based on answers.
-// The user builds the playbook by answering focused questions, one at a time.
+// Oneclick workflow mapped: power plan, defender, priority sep, timer res, search
+// + existing: aggression, browser, privacy, work compat, gaming, power/battery
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, type ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Shield, Zap, Globe, Eye, Briefcase, Gamepad2, Check, ChevronRight, ChevronLeft, AlertTriangle, Info, Battery } from "lucide-react";
+import {
+  Shield, Zap, Globe, Eye, Briefcase, Gamepad2, Check,
+  ChevronRight, ChevronLeft, AlertTriangle, Info, Battery,
+  Cpu, Clock, Search,
+} from "lucide-react";
 import { useDecisionsStore } from "@/stores/decisions-store";
 import { useWizardStore } from "@/stores/wizard-store";
 
@@ -57,7 +62,7 @@ function Toggle({ label, desc, checked, onChange, warning }: {
 }
 
 function Screen({ icon: Icon, label, title, desc, note, children }: {
-  icon: typeof Shield; label: string; title: string; desc: string; note?: string; children: React.ReactNode;
+  icon: typeof Shield; label: string; title: string; desc: string; note?: string; children: ReactNode;
 }) {
   return (
     <div className="flex flex-col h-full">
@@ -82,10 +87,11 @@ function Screen({ icon: Icon, label, title, desc, note, children }: {
 
 // ─── Question screens ───────────────────────────────────────────────────────
 
+// Q1 — Transformation depth
 function Q1() {
   const { performance: p, setPerformance } = useDecisionsStore();
   return (
-    <Screen icon={Shield} label="Question 1" title="How aggressive should the transformation be?" desc="This determines which categories of changes are included. Conservative is always safe. Each level unlocks more powerful but riskier optimizations." note="Conservative is recommended for Work PCs. Balanced is recommended for most personal machines.">
+    <Screen icon={Shield} label="Question 1 of 11" title="How aggressive should the transformation be?" desc="This determines which categories of changes are included. Conservative is always safe. Each level unlocks more powerful but riskier optimizations." note="Conservative is recommended for Work PCs. Balanced is recommended for most personal machines.">
       <Option selected={p.aggressionLevel === "safe"} onClick={() => setPerformance({ aggressionLevel: "safe" })} title="Conservative — privacy and cleanup only" desc="Removes bloatware, disables telemetry, cleans ads and suggestions. Does not touch services, CPU scheduling, or system behavior. Nothing can break." badge="Safest" badgeColor="bg-emerald-500/15 text-emerald-400" />
       <Option selected={p.aggressionLevel === "balanced"} onClick={() => setPerformance({ aggressionLevel: "balanced" })} title="Balanced — cleanup + performance tuning" desc="Everything above, plus: disables unnecessary services, tunes CPU scheduler, disables Game DVR, reduces AI features. Good for gaming PCs and personal machines." badge="Recommended" badgeColor="bg-brand-500/15 text-brand-400" />
       <Option selected={p.aggressionLevel === "aggressive"} onClick={() => setPerformance({ aggressionLevel: "aggressive" })} title="Aggressive — deep system optimization" desc="Everything above, plus: core parking disabled, timer resolution tuned, dynamic tick disabled, PCIe power management off, network latency hardened. Requires reboot." />
@@ -94,28 +100,228 @@ function Q1() {
   );
 }
 
-function Q2() {
-  const { browser: b, setBrowser } = useDecisionsStore();
+// Q2 — Power Plan (Oneclick core question)
+function QPowerPlan() {
+  const { performance: p, setPerformance } = useDecisionsStore();
   return (
-    <Screen icon={Globe} label="Question 2" title="What should happen with Microsoft Edge?" desc="Edge preloads at startup, runs background processes even when closed, and aggressively promotes itself as default browser." note="Suppression is safe and recommended. Full removal is irreversible — install an alternative browser first.">
-      <Option selected={b.edgeAction === "keep"} onClick={() => setBrowser({ edgeAction: "keep" })} title="Keep Edge unchanged" desc="No modifications. Choose this if you actively use Edge as your primary browser." />
-      <Option selected={b.edgeAction === "suppress"} onClick={() => setBrowser({ edgeAction: "suppress" })} title="Suppress background behavior" desc="Disable preloading, startup boost, background mode, and default browser nags. Edge still works when you open it. Reclaims 100-300 MB RAM." badge="Recommended" badgeColor="bg-brand-500/15 text-brand-400" />
-      <Option selected={b.edgeAction === "disable-updates"} onClick={() => setBrowser({ edgeAction: "disable-updates" })} title="Suppress + disable auto-updates" desc="Everything above, plus prevent Edge from auto-updating or reinstalling. Edge keeps working but stays on current version." />
-      <Option selected={b.edgeAction === "remove"} onClick={() => setBrowser({ edgeAction: "remove" })} title="Remove Edge completely" desc="Permanent uninstall. Cannot be undone from within Windows. Windows Help, Feedback, and some Settings pages will fail to open web links." badge="High risk" badgeColor="bg-red-500/15 text-red-400" danger />
-      {b.edgeAction === "remove" && (
-        <div className="rounded-xl border border-red-500/20 bg-red-500/[0.04] p-4">
-          <p className="text-[11px] font-semibold text-red-400">⚠ Last warning</p>
-          <p className="mt-1 text-[10px] leading-[1.6] text-red-400/70">Edge removal is irreversible. Install Brave or another browser FIRST. WebView2-dependent apps (Teams, Widgets) may also break. This will be flagged as expert-only in the playbook.</p>
+    <Screen
+      icon={Zap}
+      label="Power Plan"
+      title="Which power plan should be activated?"
+      desc="The power plan controls CPU frequency scaling, core parking, sleep states, and USB power management. Higher performance plans keep the CPU at full speed at all times."
+      note="Ultimate Performance Idle-Off disables all CPU C-states — the CPU never sleeps. Only use this if your cooling is adequate, as temperatures will be significantly higher."
+    >
+      <Option
+        selected={p.powerPlan === "windows-balanced"}
+        onClick={() => setPerformance({ powerPlan: "windows-balanced" })}
+        title="Windows Balanced"
+        desc="Default Windows power plan. CPU scales dynamically based on workload. Recommended for laptops and machines where power draw matters."
+      />
+      <Option
+        selected={p.powerPlan === "ultimate"}
+        onClick={() => setPerformance({ powerPlan: "ultimate" })}
+        title="Ultimate Performance — Idle ON"
+        desc="Maximum CPU performance. Eliminates power-saving throttling while allowing idle states between bursts. Best for most gaming desktops — fast response with manageable temperatures."
+        badge="Recommended"
+        badgeColor="bg-brand-500/15 text-brand-400"
+      />
+      <Option
+        selected={p.powerPlan === "ultimate-idle-off"}
+        onClick={() => setPerformance({ powerPlan: "ultimate-idle-off" })}
+        title="Ultimate Performance — Idle OFF"
+        desc="Completely disables CPU C-states (idle/sleep). The CPU runs at maximum frequency 100% of the time — zero wake-up latency, lowest possible scheduler jitter, but significantly more heat."
+        badge="High heat"
+        badgeColor="bg-amber-500/15 text-amber-400"
+      />
+      {p.powerPlan === "ultimate-idle-off" && (
+        <div className="rounded-xl border border-amber-500/20 bg-amber-500/[0.04] p-4">
+          <p className="text-[11px] font-semibold text-amber-300">⚠ Thermal warning</p>
+          <p className="mt-1 text-[10px] leading-[1.6] text-amber-400/70">
+            With C-states disabled, your CPU will generate significantly more heat even when idle. Ensure your cooler is adequate before applying. Not recommended for laptops.
+          </p>
         </div>
       )}
     </Screen>
   );
 }
 
-function Q3() {
+// Q3 — Windows Defender (Oneclick security question — aggressive/expert only)
+function QDefender() {
+  const { security: s, setSecurity } = useDecisionsStore();
+  return (
+    <Screen
+      icon={Shield}
+      label="Security · Defender"
+      title="How should Windows Defender be handled?"
+      desc="Windows Defender provides real-time malware protection. Disabling it reduces background CPU and RAM usage but removes active threat detection entirely."
+      note="Keep Defender enabled on any machine used for browsing, email, or handling sensitive data. Only disable on isolated gaming rigs."
+    >
+      <Option
+        selected={s.defenderAction === "keep"}
+        onClick={() => setSecurity({ defenderAction: "keep" })}
+        title="Keep Windows Defender enabled"
+        desc="Full real-time protection. Defender runs background scans and blocks threats automatically. No change from Windows default."
+        badge="Recommended"
+        badgeColor="bg-brand-500/15 text-brand-400"
+      />
+      <Option
+        selected={s.defenderAction === "suppress"}
+        onClick={() => setSecurity({ defenderAction: "suppress" })}
+        title="Suppress — disable real-time scanning only"
+        desc="Turns off continuous file scanning and periodic background scans. Defender stays installed — you can re-enable it from Windows Security at any time."
+      />
+      <Option
+        selected={s.defenderAction === "disable"}
+        onClick={() => setSecurity({ defenderAction: "disable" })}
+        title="Disable completely via Dcontrol"
+        desc="Uses Dcontrol to disable Tamper Protection and fully shut down Defender. Requires manual re-enable through the same tool. No real-time, on-access, or scheduled protection."
+        badge="High risk"
+        badgeColor="bg-red-500/15 text-red-400"
+        danger
+      />
+      {s.defenderAction === "disable" && (
+        <div className="rounded-xl border border-red-500/20 bg-red-500/[0.04] p-4">
+          <p className="text-[11px] font-semibold text-red-400">⚠ Security risk</p>
+          <p className="mt-1 text-[10px] leading-[1.6] text-red-400/70">
+            With Defender fully disabled, malware, ransomware, and keyloggers will not be detected or blocked. Only apply this on a dedicated offline gaming machine. You accept full responsibility for security after this change.
+          </p>
+        </div>
+      )}
+    </Screen>
+  );
+}
+
+// Q4 — CPU Priority Separation (Oneclick Win32PrioritySeparation)
+function QPrioritySep() {
+  const { performance: p, setPerformance } = useDecisionsStore();
+  return (
+    <Screen
+      icon={Cpu}
+      label="CPU Scheduler"
+      title="How should Windows prioritize CPU time?"
+      desc="Win32PrioritySeparation controls how much extra CPU scheduling time the foreground process (your active game or window) receives compared to background processes."
+      note="Higher foreground boost = lower input lag and tighter frame pacing, but background tasks (streaming, downloads) get less CPU time."
+    >
+      <Option
+        selected={p.prioritySeparation === "balanced"}
+        onClick={() => setPerformance({ prioritySeparation: "balanced" })}
+        title="Balanced (26 decimal)"
+        desc="Default Windows behavior. Equal scheduling slots for foreground and background. Best for streaming, rendering, or multitasking while gaming."
+      />
+      <Option
+        selected={p.prioritySeparation === "latency"}
+        onClick={() => setPerformance({ prioritySeparation: "latency" })}
+        title="Latency mode (36 decimal)"
+        desc="Increases foreground process priority. Reduces input lag and scheduler jitter by giving your active game more CPU scheduling time. Recommended for competitive gaming."
+        badge="Recommended"
+        badgeColor="bg-brand-500/15 text-brand-400"
+      />
+      <Option
+        selected={p.prioritySeparation === "fps"}
+        onClick={() => setPerformance({ prioritySeparation: "fps" })}
+        title="FPS mode (42 decimal)"
+        desc="Maximum foreground boost. The active process dominates CPU scheduling. Highest raw FPS ceiling — at the cost of background task performance and multitasking stability."
+      />
+    </Screen>
+  );
+}
+
+// Q5 — Timer Resolution (Oneclick SetTimerResolution — aggressive/expert only)
+function QTimerRes() {
+  const { performance: p, setPerformance } = useDecisionsStore();
+  return (
+    <Screen
+      icon={Clock}
+      label="Timer Resolution"
+      title="Should the system timer resolution be locked?"
+      desc="Windows uses a variable timer (15.6ms default, 0.5ms when apps request it). Locking it to a fixed low value ensures consistent frame pacing and eliminates scheduler jitter between high and low load states."
+      note="A startup entry (SetTimerResolution.exe) is added to maintain the locked value after reboot. This only affects scheduling precision — not CPU frequency."
+    >
+      <Option
+        selected={p.timerResolution === "system"}
+        onClick={() => setPerformance({ timerResolution: "system" })}
+        title="System-managed (default)"
+        desc="Windows and applications set timer resolution dynamically. Varies between 15.6ms at idle and 0.5ms when games are running. Saves power when the system is idle."
+      />
+      <Option
+        selected={p.timerResolution === "locked-05ms"}
+        onClick={() => setPerformance({ timerResolution: "locked-05ms" })}
+        title="Locked at 0.5ms (5000μs)"
+        desc="Forces minimum timer resolution system-wide at all times. Provides the most consistent frame pacing and lowest scheduler jitter — even in menus or between rounds. Recommended for competitive FPS."
+        badge="Recommended"
+        badgeColor="bg-brand-500/15 text-brand-400"
+      />
+      <Option
+        selected={p.timerResolution === "locked-1ms"}
+        onClick={() => setPerformance({ timerResolution: "locked-1ms" })}
+        title="Locked at 1ms (10000μs)"
+        desc="A middle ground between precision and power consumption. Better consistency than system-managed, less aggressive than 0.5ms. Good for mixed gaming and productivity workloads."
+      />
+    </Screen>
+  );
+}
+
+// Q6 — Windows Search & Start Menu (Oneclick search removal)
+function QSearch() {
+  const { system: s, setSystem } = useDecisionsStore();
+  return (
+    <Screen
+      icon={Search}
+      label="Start Menu & Search"
+      title="What should happen to Windows Search?"
+      desc="Windows Search runs SearchIndexer.exe continuously to index your drive. It integrates into the Start Menu and Taskbar. Removing it eliminates constant background disk and CPU activity."
+      note="If removed, the Start Menu will no longer find files or settings by typing. The Open Shell Menu replacement can be installed in the App Setup step."
+    >
+      <Option
+        selected={s.searchAction === "keep"}
+        onClick={() => setSystem({ searchAction: "keep" })}
+        title="Keep Windows Search"
+        desc="No modification. SearchIndexer.exe continues running. Start Menu file search, settings search, and quick launch work normally."
+      />
+      <Option
+        selected={s.searchAction === "remove"}
+        onClick={() => setSystem({ searchAction: "remove" })}
+        title="Remove Windows Search"
+        desc="Disables SearchIndexer.exe and SearchHost.exe. Reduces background disk and CPU activity. Requires a restart. Open Shell Menu is recommended as a Start Menu replacement."
+        badge="Requires restart"
+        badgeColor="bg-amber-500/15 text-amber-400"
+      />
+      {s.searchAction === "remove" && (
+        <div className="rounded-xl border border-amber-500/20 bg-amber-500/[0.04] p-4">
+          <p className="text-[11px] font-semibold text-amber-300">What breaks</p>
+          <p className="mt-1 text-[10px] leading-[1.6] text-amber-400/70">
+            After removing Windows Search: Start Menu typing will not find files or apps. File Explorer search still works via the address bar. Settings and Control Panel can still be opened manually. Open Shell Menu (available in App Setup) restores a classic Start Menu experience.
+          </p>
+        </div>
+      )}
+    </Screen>
+  );
+}
+
+// Q7 — Edge/browser (existing, renumbered)
+function QEdge() {
+  const { browser: b, setBrowser } = useDecisionsStore();
+  return (
+    <Screen icon={Globe} label="Browser · Edge" title="What should happen with Microsoft Edge?" desc="Edge preloads at startup, runs background processes even when closed, and aggressively promotes itself as default browser." note="Suppression is safe and recommended. Full removal is irreversible — install an alternative browser first.">
+      <Option selected={b.edgeAction === "keep"} onClick={() => setBrowser({ edgeAction: "keep" })} title="Keep Edge unchanged" desc="No modifications. Choose this if you actively use Edge as your primary browser." />
+      <Option selected={b.edgeAction === "suppress"} onClick={() => setBrowser({ edgeAction: "suppress" })} title="Suppress background behavior" desc="Disable preloading, startup boost, background mode, and default browser nags. Edge still works when you open it. Reclaims 100–300 MB RAM." badge="Recommended" badgeColor="bg-brand-500/15 text-brand-400" />
+      <Option selected={b.edgeAction === "disable-updates"} onClick={() => setBrowser({ edgeAction: "disable-updates" })} title="Suppress + disable auto-updates" desc="Everything above, plus prevent Edge from auto-updating or reinstalling. Edge keeps working but stays on current version." />
+      <Option selected={b.edgeAction === "remove"} onClick={() => setBrowser({ edgeAction: "remove" })} title="Remove Edge completely" desc="Permanent uninstall. Cannot be undone from within Windows. Help, Feedback, and some Settings pages will fail to open web links." badge="High risk" badgeColor="bg-red-500/15 text-red-400" danger />
+      {b.edgeAction === "remove" && (
+        <div className="rounded-xl border border-red-500/20 bg-red-500/[0.04] p-4">
+          <p className="text-[11px] font-semibold text-red-400">⚠ Last warning</p>
+          <p className="mt-1 text-[10px] leading-[1.6] text-red-400/70">Edge removal is irreversible. Install Brave or another browser FIRST. WebView2-dependent apps (Teams, Widgets) may also break.</p>
+        </div>
+      )}
+    </Screen>
+  );
+}
+
+// Q8 — Privacy (existing)
+function QPrivacy() {
   const { privacy: p, setPrivacy } = useDecisionsStore();
   return (
-    <Screen icon={Eye} label="Question 3" title="Which privacy and AI features should be disabled?" desc="Windows 11 includes Recall (screen capture AI), Copilot (AI sidebar), AI features in Paint/Notepad/Edge, telemetry services, and ad tracking." note="All of these are safe to disable with no functional impact on normal Windows use.">
+    <Screen icon={Eye} label="Privacy & AI" title="Which privacy and AI features should be disabled?" desc="Windows 11 includes Recall (screen capture AI), Copilot (AI sidebar), AI features in Paint/Notepad/Edge, telemetry services, and ad tracking." note="All of these are safe to disable with no functional impact on normal Windows use.">
       <Toggle label="Disable Windows Recall" desc="Prevents continuous screen capture for AI-powered activity search. Recall stores a visual history of everything on screen." checked={p.disableRecall} onChange={(v) => setPrivacy({ disableRecall: v })} />
       <Toggle label="Disable Copilot sidebar" desc="Removes the AI assistant from the taskbar. Prevents background AI service from auto-starting." checked={p.disableCopilot} onChange={(v) => setPrivacy({ disableCopilot: v })} />
       <Toggle label="Disable AI in system apps" desc="Disables AI features in Paint (Cocreator, Image Creator), Notepad (AI rewrite), and Edge (Copilot, AI compose)." checked={p.disableAiApps} onChange={(v) => setPrivacy({ disableAiApps: v })} />
@@ -131,7 +337,8 @@ function Q3() {
   );
 }
 
-function Q4() {
+// Q9 — Work compat (existing, conditional)
+function QWork() {
   const { workCompat: w, setWorkCompat } = useDecisionsStore();
   return (
     <Screen icon={Briefcase} label="Work compatibility" title="Which business services does this machine need?" desc="Services you enable here will be preserved — they will not be disabled or removed during transformation." note="If you're unsure, keep it enabled. It's safer to preserve a dependency than to discover it's missing later.">
@@ -145,7 +352,8 @@ function Q4() {
   );
 }
 
-function Q5() {
+// Q10 — Gaming (existing, conditional)
+function QGaming() {
   const { gaming: g, setGaming } = useDecisionsStore();
   return (
     <Screen icon={Gamepad2} label="Gaming & anti-cheat" title="Configure gaming-specific optimizations." desc="These settings affect overlays, anti-cheat compatibility, background recording, and fullscreen behavior." note="Anti-cheat games (Valorant, FACEIT, THE FINALS) require specific Windows features. Disabling them may cause bans.">
@@ -158,7 +366,8 @@ function Q5() {
   );
 }
 
-function Q6() {
+// Q11 — Power/battery (existing, conditional)
+function QPower() {
   const { power: p, setPower } = useDecisionsStore();
   return (
     <Screen icon={Battery} label="Power & battery" title="How should this laptop handle power?" desc="Aggressive performance tuning increases power consumption and heat. These settings protect battery life and sleep behavior." note="If battery life matters, keep these enabled. Performance tweaks that increase power draw will be blocked.">
@@ -171,19 +380,65 @@ function Q6() {
 
 // ─── Sequencer ──────────────────────────────────────────────────────────────
 
-interface QDef { id: string; component: () => React.JSX.Element; condition?: () => boolean; }
+interface QDef { id: string; component: () => JSX.Element; condition?: () => boolean; }
 
 export function PlaybookStrategyStep() {
   const decisions = useDecisionsStore();
+  const { detectedProfile } = useWizardStore();
+  const isWorkPc = detectedProfile?.isWorkPc ?? false;
 
   const questions: QDef[] = useMemo(() => [
-    { id: "q1", component: Q1 },
-    { id: "q2", component: Q2 },
-    { id: "q3", component: Q3 },
-    { id: "q4", component: Q4, condition: () => decisions.needsWorkQuestions() },
-    { id: "q5", component: Q5, condition: () => decisions.needsGamingQuestions() },
-    { id: "q6", component: Q6, condition: () => decisions.needsPowerQuestions() },
-  ], [decisions]);
+    // ── Core: always shown ────────────────────────────────────────────────
+    { id: "q-aggression",    component: Q1 },
+    { id: "q-power-plan",    component: QPowerPlan },
+
+    // ── Oneclick security — aggressive/expert only ────────────────────────
+    {
+      id: "q-defender",
+      component: QDefender,
+      condition: () =>
+        decisions.performance.aggressionLevel === "aggressive" ||
+        decisions.performance.aggressionLevel === "expert",
+    },
+
+    // ── Oneclick CPU scheduler — balanced and above ───────────────────────
+    {
+      id: "q-priority-sep",
+      component: QPrioritySep,
+      condition: () =>
+        decisions.performance.aggressionLevel === "balanced" ||
+        decisions.performance.aggressionLevel === "aggressive" ||
+        decisions.performance.aggressionLevel === "expert",
+    },
+
+    // ── Oneclick timer resolution — aggressive/expert only ────────────────
+    {
+      id: "q-timer-res",
+      component: QTimerRes,
+      condition: () =>
+        decisions.performance.aggressionLevel === "aggressive" ||
+        decisions.performance.aggressionLevel === "expert",
+    },
+
+    // ── Oneclick search — balanced and above ─────────────────────────────
+    {
+      id: "q-search",
+      component: QSearch,
+      condition: () =>
+        decisions.performance.aggressionLevel === "balanced" ||
+        decisions.performance.aggressionLevel === "aggressive" ||
+        decisions.performance.aggressionLevel === "expert",
+    },
+
+    // ── Browser & privacy — always shown ─────────────────────────────────
+    { id: "q-edge",    component: QEdge },
+    { id: "q-privacy", component: QPrivacy },
+
+    // ── Conditional: work, gaming, power ─────────────────────────────────
+    { id: "q-work",   component: QWork,   condition: () => decisions.needsWorkQuestions() || isWorkPc },
+    { id: "q-gaming", component: QGaming, condition: () => decisions.needsGamingQuestions() },
+    { id: "q-power",  component: QPower,  condition: () => decisions.needsPowerQuestions() },
+  ], [decisions, isWorkPc]);
 
   const active = questions.filter((q) => !q.condition || q.condition());
   const [idx, setIdx] = useState(0);
@@ -193,34 +448,74 @@ export function PlaybookStrategyStep() {
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex flex-col h-full">
-      {/* Progress */}
+      {/* Progress dots */}
       <div className="flex items-center justify-center gap-1.5 py-2.5 px-6">
         {active.map((q, i) => (
-          <button key={q.id} onClick={() => setIdx(i)}
-            className={`h-1.5 rounded-full transition-all ${i === clamped ? "w-7 bg-brand-500" : i < clamped ? "w-2 bg-brand-500/40" : "w-2 bg-white/[0.08]"}`} />
+          <button
+            key={q.id}
+            onClick={() => i < clamped && setIdx(i)}
+            className={`h-1.5 rounded-full transition-all ${
+              i === clamped
+                ? "w-7 bg-brand-500"
+                : i < clamped
+                ? "w-2 bg-brand-500/40 cursor-pointer hover:bg-brand-500/60"
+                : "w-2 bg-white/[0.08] cursor-default"
+            }`}
+          />
         ))}
       </div>
 
       {/* Content */}
       <div className="flex-1 overflow-hidden">
         <AnimatePresence mode="wait">
-          <motion.div key={current.id} initial={{ opacity: 0, x: 50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -50 }} transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }} className="h-full">
+          <motion.div
+            key={current.id}
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -50 }}
+            transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+            className="h-full"
+          >
             <Comp />
           </motion.div>
         </AnimatePresence>
       </div>
 
       {/* Bottom bar */}
-      <div className="shrink-0 flex items-center justify-between border-t border-white/[0.05] bg-surface-card px-5 py-2.5">
-        <button onClick={() => setIdx((i) => Math.max(0, i - 1))} disabled={clamped === 0} className={`flex items-center gap-1 text-[11px] font-medium ${clamped === 0 ? "text-ink-disabled" : "text-ink-tertiary hover:text-ink"}`}>
+      <div className="shrink-0 flex items-center justify-between border-t border-white/[0.05] bg-surface-raised/60 px-5 py-2.5">
+        <button
+          onClick={() => setIdx((i) => Math.max(0, i - 1))}
+          disabled={clamped === 0}
+          className={`flex items-center gap-1 text-[11px] font-medium ${clamped === 0 ? "text-ink-disabled" : "text-ink-tertiary hover:text-ink"}`}
+        >
           <ChevronLeft className="h-3.5 w-3.5" /> Back
         </button>
+
         <div className="flex items-center gap-3 text-[10px]">
-          <span className="text-ink-muted"><span className="font-mono font-bold text-ink">{decisions.impact.estimatedActions}</span> actions</span>
-          {decisions.impact.estimatedPreserved > 0 && <span className="text-amber-400"><span className="font-mono font-bold">{decisions.impact.estimatedPreserved}</span> preserved</span>}
-          {decisions.impact.rebootRequired && <span className="text-amber-400 text-[9px]">Reboot</span>}
+          <span className="text-ink-muted">
+            <span className="font-mono font-bold text-ink">{decisions.impact.estimatedActions}</span> actions
+          </span>
+          {decisions.impact.estimatedPreserved > 0 && (
+            <span className="text-amber-400">
+              <span className="font-mono font-bold">{decisions.impact.estimatedPreserved}</span> preserved
+            </span>
+          )}
+          {decisions.impact.rebootRequired && (
+            <span className="text-amber-400 text-[9px] font-semibold uppercase tracking-wider">Reboot req.</span>
+          )}
+          {decisions.impact.warnings.length > 0 && (
+            <span className="text-red-400/80 text-[9px] flex items-center gap-0.5">
+              <AlertTriangle className="h-2.5 w-2.5" />
+              {decisions.impact.warnings.length} warning{decisions.impact.warnings.length > 1 ? "s" : ""}
+            </span>
+          )}
         </div>
-        <button onClick={() => setIdx((i) => Math.min(active.length - 1, i + 1))} disabled={clamped >= active.length - 1} className={`flex items-center gap-1 text-[11px] font-medium ${clamped >= active.length - 1 ? "text-ink-disabled" : "text-ink-tertiary hover:text-ink"}`}>
+
+        <button
+          onClick={() => setIdx((i) => Math.min(active.length - 1, i + 1))}
+          disabled={clamped >= active.length - 1}
+          className={`flex items-center gap-1 text-[11px] font-medium ${clamped >= active.length - 1 ? "text-ink-disabled" : "text-ink-tertiary hover:text-ink"}`}
+        >
           Next <ChevronRight className="h-3.5 w-3.5" />
         </button>
       </div>

@@ -108,6 +108,10 @@ impl Database {
                 ON audit_log(timestamp DESC);
             CREATE INDEX IF NOT EXISTS idx_rollback_created
                 ON rollback_snapshots(created_at DESC);
+            CREATE INDEX IF NOT EXISTS idx_assessments_time
+                ON assessments(assessed_at DESC);
+            CREATE INDEX IF NOT EXISTS idx_outcomes_action
+                ON action_outcomes(action_id);
             ",
         )?;
         Ok(())

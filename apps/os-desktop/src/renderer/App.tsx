@@ -1,6 +1,7 @@
 import { Component, type ReactNode } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { WizardPage } from "./pages/wizard/WizardPage";
+import { DonationPage } from "./pages/donation/DonationPage";
 
 // ─── Error Boundary ──────────────────────────────────────────────────────────
 // Catches unhandled renderer crashes and shows recovery UI instead of black screen
@@ -71,6 +72,7 @@ export function App() {
     <ErrorBoundary>
       <Routes>
         <Route path="/wizard" element={<WizardPage />} />
+        <Route path="/donation" element={<DonationPage />} />
         <Route path="*" element={<Navigate to="/wizard" replace />} />
       </Routes>
     </ErrorBoundary>

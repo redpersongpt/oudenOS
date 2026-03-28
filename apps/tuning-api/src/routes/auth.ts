@@ -10,6 +10,7 @@ import {
   signAccessToken,
   requireAuth,
 } from "../middleware/auth.js";
+import { authRateLimit } from "../lib/rate-limit.js";
 
 const registerSchema = z.object({
   email: z.string().email(),
@@ -27,8 +28,10 @@ const refreshSchema = z.object({
 });
 
 export const authRoutes: FastifyPluginAsync = async (app) => {
+  const rateLimit = authRateLimit(10, 60_000);
+
   // ── Register ──────────────────────────────────────────────────────────────
-  app.post("/register", async (request, reply) => {
+  app.post("/register", { preHandler: rateLimit }, async (request, reply) => {
     const parse = registerSchema.safeParse(request.body);
     if (!parse.success) {
       return reply.code(400).send({ error: "Invalid input", details: parse.error.flatten() });
@@ -79,7 +82,7 @@ export const authRoutes: FastifyPluginAsync = async (app) => {
   });
 
   // ── Login ─────────────────────────────────────────────────────────────────
-  app.post("/login", async (request, reply) => {
+  app.post("/login", { preHandler: rateLimit }, async (request, reply) => {
     const parse = loginSchema.safeParse(request.body);
     if (!parse.success) {
       return reply.code(400).send({ error: "Invalid input" });
@@ -133,7 +136,7 @@ export const authRoutes: FastifyPluginAsync = async (app) => {
   });
 
   // ── Refresh token ─────────────────────────────────────────────────────────
-  app.post("/refresh", async (request, reply) => {
+  app.post("/refresh", { preHandler: rateLimit }, async (request, reply) => {
     const parse = refreshSchema.safeParse(request.body);
     if (!parse.success) {
       return reply.code(400).send({ error: "Invalid input" });

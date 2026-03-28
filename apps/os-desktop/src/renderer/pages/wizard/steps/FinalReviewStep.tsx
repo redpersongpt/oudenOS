@@ -2,14 +2,15 @@
 // Last chance to review before applying. Shows: profile, playbook stats,
 // selected apps, personalization choices. Apply button is the primary CTA.
 
+import type { ElementType, ReactNode, ReactElement } from "react";
 import { motion } from "framer-motion";
 import { Shield, Package, Palette, Download } from "lucide-react";
 import { useWizardStore } from "@/stores/wizard-store";
 
 function ReviewSection({ icon: Icon, title, children }: {
-  icon: React.ElementType;
+  icon: ElementType;
   title: string;
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   return (
     <div className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-4">
@@ -24,6 +25,67 @@ function ReviewSection({ icon: Icon, title, children }: {
 
 export function FinalReviewStep() {
   const { detectedProfile, resolvedPlaybook, selectedAppIds, personalization } = useWizardStore();
+
+  const sections = [
+    {
+      key: "profile",
+      node: (
+        <ReviewSection icon={Shield} title="Machine Profile">
+          <p className="text-[13px] font-semibold text-ink">{detectedProfile?.label ?? "Unknown"}</p>
+          <p className="text-[11px] text-ink-tertiary">{detectedProfile?.machineName ?? "—"}</p>
+        </ReviewSection>
+      ),
+    },
+    resolvedPlaybook
+      ? {
+          key: "playbook",
+          node: (
+            <ReviewSection icon={Package} title="Playbook">
+              <div className="flex gap-4">
+                <div>
+                  <p className="text-lg font-bold font-mono text-green-400">{resolvedPlaybook.totalIncluded}</p>
+                  <p className="text-[10px] text-ink-tertiary">Actions</p>
+                </div>
+                <div>
+                  <p className="text-lg font-bold font-mono text-red-400">{resolvedPlaybook.totalBlocked}</p>
+                  <p className="text-[10px] text-ink-tertiary">Blocked</p>
+                </div>
+                <div>
+                  <p className="text-lg font-bold font-mono text-ink-secondary">{resolvedPlaybook.phases.length}</p>
+                  <p className="text-[10px] text-ink-tertiary">Phases</p>
+                </div>
+              </div>
+            </ReviewSection>
+          ),
+        }
+      : null,
+    {
+      key: "apps",
+      node: (
+        <ReviewSection icon={Download} title="App Install">
+          <p className="text-[13px] text-ink">
+            {selectedAppIds.length > 0
+              ? `${selectedAppIds.length} app${selectedAppIds.length !== 1 ? "s" : ""} will be installed after transformation`
+              : "No apps selected"}
+          </p>
+        </ReviewSection>
+      ),
+    },
+    {
+      key: "personalization",
+      node: (
+        <ReviewSection icon={Palette} title="Personalization">
+          <div className="flex flex-wrap gap-2">
+            {personalization.darkMode       && <span className="rounded-md bg-white/[0.06] px-2 py-1 text-[11px] text-ink-secondary">Dark Mode</span>}
+            {personalization.brandAccent    && <span className="rounded-md bg-white/[0.06] px-2 py-1 text-[11px] text-ink-secondary">Brand Accent</span>}
+            {personalization.taskbarCleanup && <span className="rounded-md bg-white/[0.06] px-2 py-1 text-[11px] text-ink-secondary">Taskbar Cleanup</span>}
+            {personalization.explorerCleanup && <span className="rounded-md bg-white/[0.06] px-2 py-1 text-[11px] text-ink-secondary">Explorer Cleanup</span>}
+            {personalization.transparency   && <span className="rounded-md bg-white/[0.06] px-2 py-1 text-[11px] text-ink-secondary">Transparency</span>}
+          </div>
+        </ReviewSection>
+      ),
+    },
+  ].filter((s): s is { key: string; node: ReactElement } => s !== null);
 
   return (
     <motion.div
@@ -42,57 +104,27 @@ export function FinalReviewStep() {
       </div>
 
       <div className="space-y-3">
-        {/* Profile */}
-        <ReviewSection icon={Shield} title="Machine Profile">
-          <p className="text-[13px] font-semibold text-ink">{detectedProfile?.label ?? "Unknown"}</p>
-          <p className="text-[11px] text-ink-tertiary">{detectedProfile?.machineName ?? "—"}</p>
-        </ReviewSection>
-
-        {/* Playbook */}
-        {resolvedPlaybook && (
-          <ReviewSection icon={Package} title="Playbook">
-            <div className="flex gap-4">
-              <div>
-                <p className="text-lg font-bold font-mono text-green-400">{resolvedPlaybook.totalIncluded}</p>
-                <p className="text-[10px] text-ink-tertiary">Actions</p>
-              </div>
-              <div>
-                <p className="text-lg font-bold font-mono text-red-400">{resolvedPlaybook.totalBlocked}</p>
-                <p className="text-[10px] text-ink-tertiary">Blocked</p>
-              </div>
-              <div>
-                <p className="text-lg font-bold font-mono text-ink-secondary">{resolvedPlaybook.phases.length}</p>
-                <p className="text-[10px] text-ink-tertiary">Phases</p>
-              </div>
-            </div>
-          </ReviewSection>
-        )}
-
-        {/* Apps */}
-        <ReviewSection icon={Download} title="App Install">
-          <p className="text-[13px] text-ink">
-            {selectedAppIds.length > 0
-              ? `${selectedAppIds.length} app${selectedAppIds.length !== 1 ? "s" : ""} will be installed after transformation`
-              : "No apps selected"}
-          </p>
-        </ReviewSection>
-
-        {/* Personalization */}
-        <ReviewSection icon={Palette} title="Personalization">
-          <div className="flex flex-wrap gap-2">
-            {personalization.darkMode && <span className="rounded-md bg-white/[0.06] px-2 py-1 text-[11px] text-ink-secondary">Dark Mode</span>}
-            {personalization.brandAccent && <span className="rounded-md bg-white/[0.06] px-2 py-1 text-[11px] text-ink-secondary">Brand Accent</span>}
-            {personalization.taskbarCleanup && <span className="rounded-md bg-white/[0.06] px-2 py-1 text-[11px] text-ink-secondary">Taskbar Cleanup</span>}
-            {personalization.explorerCleanup && <span className="rounded-md bg-white/[0.06] px-2 py-1 text-[11px] text-ink-secondary">Explorer Cleanup</span>}
-            {personalization.transparency && <span className="rounded-md bg-white/[0.06] px-2 py-1 text-[11px] text-ink-secondary">Transparency</span>}
-          </div>
-        </ReviewSection>
+        {sections.map(({ key, node }, i) => (
+          <motion.div
+            key={key}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.06 + i * 0.08, duration: 0.22, ease: [0.0, 0.0, 0.2, 1.0] }}
+          >
+            {node}
+          </motion.div>
+        ))}
       </div>
 
       {/* Trust note */}
-      <p className="mt-4 text-center text-[11px] text-ink-tertiary">
+      <motion.p
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.38 }}
+        className="mt-4 text-center text-[11px] text-ink-tertiary"
+      >
         All changes are reversible. A snapshot is created before any modification.
-      </p>
+      </motion.p>
     </motion.div>
   );
 }

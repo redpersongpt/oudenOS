@@ -187,6 +187,25 @@ function createWindow(): BrowserWindow {
     win.show();
   });
 
+  // Block navigation — renderer must not redirect to arbitrary URLs
+  win.webContents.on("will-navigate", (event, url) => {
+    const isDev = !!process.env.VITE_DEV_SERVER_URL;
+    const allowedPrefixes = isDev ? ["http://localhost:5173"] : [];
+    const isAllowed = allowedPrefixes.some((prefix) => url.startsWith(prefix));
+    if (!isAllowed) {
+      event.preventDefault();
+      console.warn("[Main] Blocked navigation to:", url);
+    }
+  });
+
+  // Block new window creation from renderer
+  win.webContents.setWindowOpenHandler(({ url }) => {
+    if (url.startsWith("https://")) {
+      shell.openExternal(url);
+    }
+    return { action: "deny" };
+  });
+
   // Load the renderer
   if (process.env.VITE_DEV_SERVER_URL) {
     // Dev mode: connect to Vite dev server

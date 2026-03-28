@@ -1,0 +1,180 @@
+# ─── AppX: Microsoft Edge Control ─────────────────────────────────────────────
+# Graduated Edge management: suppress → disable → remove.
+# Each level is independent. Only the final two are destructive.
+#
+# PRODUCT POLICY:
+# - Suppress/disable actions are safe defaults (registry policies only)
+# - Force removal is expert-only, irreversible, and blocked on work/laptop/VM profiles
+# - WebView2 removal is extreme-risk, blocked on most profiles, with explicit warnings
+# - Install an alternative browser (Brave recommended) BEFORE any removal action
+
+module: appx.edge-removal
+name: "Microsoft Edge Control"
+description: "Graduated Edge management — from suppressing background activity to complete removal"
+category: appx
+
+actions:
+  # ── LEVEL 1: Suppress (safe, reversible, default on) ────────────────────────
+
+  - id: appx.disable-edge-updates
+    name: "Disable Edge Auto-Updates"
+    description: "Prevent Edge from auto-updating and reinstalling itself via the Microsoft Edge Update service. Registry policy only — does not remove Edge."
+    rationale: "Edge Update runs background checks and can reinstall Edge components. Disabling it stops this without affecting Edge functionality."
+    risk: safe
+    tier: free
+    default: true
+    expertOnly: false
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 3
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKLM
+        path: "SOFTWARE\\Policies\\Microsoft\\EdgeUpdate"
+        valueName: DoNotUpdateToEdgeWithChromium
+        value: 1
+        valueType: DWord
+      - hive: HKLM
+        path: "SOFTWARE\\Policies\\Microsoft\\EdgeUpdate"
+        valueName: UpdateDefault
+        value: 0
+        valueType: DWord
+    serviceChanges:
+      - name: edgeupdate
+        startupType: Disabled
+      - name: edgeupdatem
+        startupType: Disabled
+      - name: MicrosoftEdgeElevationService
+        startupType: Disabled
+
+  - id: appx.disable-edge-preload
+    name: "Disable Edge Preloading & Background"
+    description: "Prevent Edge from preloading at startup, running startup boost, and staying resident in background when closed. Registry policy only."
+    rationale: "Edge preloads into memory at login even if you never open it. Startup boost keeps Edge processes resident after closing. This reclaims 100-300 MB of RAM."
+    risk: safe
+    tier: free
+    default: true
+    expertOnly: false
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKLM
+        path: "SOFTWARE\\Policies\\Microsoft\\Edge"
+        valueName: StartupBoostEnabled
+        value: 0
+        valueType: DWord
+      - hive: HKLM
+        path: "SOFTWARE\\Policies\\Microsoft\\Edge"
+        valueName: BackgroundModeEnabled
+        value: 0
+        valueType: DWord
+      - hive: HKLM
+        path: "SOFTWARE\\Policies\\Microsoft\\MicrosoftEdge\\Main"
+        valueName: AllowPrelaunch
+        value: 0
+        valueType: DWord
+
+  - id: appx.disable-edge-default-nag
+    name: "Disable Edge Default Browser Prompts"
+    description: "Stop Edge from prompting users to set it as the default browser and showing first-run experience screens."
+    rationale: "Edge aggressively promotes itself as default browser on every launch and after updates. These policies silence the prompts."
+    risk: safe
+    tier: free
+    default: true
+    expertOnly: false
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKLM
+        path: "SOFTWARE\\Policies\\Microsoft\\Edge"
+        valueName: DefaultBrowserSettingEnabled
+        value: 0
+        valueType: DWord
+      - hive: HKLM
+        path: "SOFTWARE\\Policies\\Microsoft\\Edge"
+        valueName: DefaultBrowserSettingsCampaignEnabled
+        value: 0
+        valueType: DWord
+      - hive: HKLM
+        path: "SOFTWARE\\Policies\\Microsoft\\Edge"
+        valueName: HideFirstRunExperience
+        value: 1
+        valueType: DWord
+
+  # ── LEVEL 2: Remove Edge (destructive, expert-only) ─────────────────────────
+
+  - id: appx.remove-edge
+    name: "Remove Microsoft Edge"
+    description: "Permanently uninstall Microsoft Edge using the setup.exe force-uninstall flag and remove AppX provisioning to prevent reinstallation. This action cannot be undone — Edge must be reinstalled from microsoft.com if needed."
+    rationale: "For users who have installed an alternative browser and want to fully eliminate Edge from their system. Removes the browser binary, AppX package, and provisioning entry."
+    risk: high
+    tier: free
+    default: false
+    expertOnly: true
+    requiresReboot: true
+    reversible: false
+    estimatedSeconds: 30
+    warningMessage: "This permanently removes Microsoft Edge. It cannot be undone from within Windows — you must download Edge from microsoft.com to reinstall. Some Windows features that open web links via Edge (Help, Feedback, some Settings pages) will fail to open. Ensure you have an alternative browser installed before proceeding."
+    blockedProfiles:
+      - work_pc
+      - office_laptop
+      - vm_cautious
+    tags: ["edge", "browser", "removal", "irreversible"]
+    powerShellCommands:
+      - |
+        $edgePath = "${env:ProgramFiles(x86)}\Microsoft\Edge\Application"
+        if (Test-Path $edgePath) {
+          $versions = Get-ChildItem $edgePath -Directory | Where-Object { $_.Name -match '^\d+\.' } | Sort-Object { [version]$_.Name } -Descending
+          if ($versions) {
+            $setupPath = Join-Path $versions[0].FullName "Installer\setup.exe"
+            if (Test-Path $setupPath) {
+              Start-Process -FilePath $setupPath -ArgumentList "--uninstall --system-level --force-uninstall" -Wait -NoNewWindow
+            }
+          }
+        }
+      - |
+        Get-AppxPackage -AllUsers *MicrosoftEdge* | Remove-AppxPackage -AllUsers -ErrorAction SilentlyContinue
+        Get-AppxProvisionedPackage -Online | Where-Object { $_.PackageName -like "*MicrosoftEdge*" } | Remove-AppxProvisionedPackage -Online -ErrorAction SilentlyContinue
+      - |
+        $deprovPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Appx\AppxAllUserStore\Deprovisioned"
+        foreach ($pkg in @("Microsoft.MicrosoftEdge.Stable_8wekyb3d8bbwe", "Microsoft.MicrosoftEdge_8wekyb3d8bbwe")) {
+          $keyPath = Join-Path $deprovPath $pkg
+          if (!(Test-Path $keyPath)) { New-Item -Path $keyPath -Force | Out-Null }
+        }
+
+  # ── LEVEL 3: Remove WebView2 (extreme risk, blocked on most profiles) ──────
+
+  - id: appx.remove-edge-webview
+    name: "Remove Edge WebView2 Runtime"
+    description: "Remove the Microsoft Edge WebView2 runtime. This is a shared system component used by many modern desktop applications for rendering web content inside their UI. Removing it WILL break applications that depend on it."
+    rationale: "WebView2 is technically an Edge component, but it is used as an embedded browser engine by Microsoft Teams, Widgets, many Electron-based apps, and some Windows system dialogs. Only remove this if you understand exactly which apps will break."
+    risk: extreme
+    tier: free
+    default: false
+    expertOnly: true
+    requiresReboot: true
+    reversible: false
+    estimatedSeconds: 15
+    warningMessage: "WebView2 is a shared system component. Removing it WILL break: Microsoft Teams, Windows Widgets, some installer UIs, some Electron apps, and any app using embedded web views. This cannot be undone — you must manually download and reinstall WebView2 from developer.microsoft.com. Do NOT remove this unless you are certain no app on your system depends on it."
+    blockedProfiles:
+      - work_pc
+      - office_laptop
+      - vm_cautious
+      - low_spec_system
+      - gaming_laptop
+    powerShellCommands:
+      - |
+        $wv2Path = "${env:ProgramFiles(x86)}\Microsoft\EdgeWebView\Application"
+        if (Test-Path $wv2Path) {
+          $versions = Get-ChildItem $wv2Path -Directory | Where-Object { $_.Name -match '^\d+\.' } | Sort-Object { [version]$_.Name } -Descending
+          if ($versions) {
+            $setupPath = Join-Path $versions[0].FullName "Installer\setup.exe"
+            if (Test-Path $setupPath) {
+              Start-Process -FilePath $setupPath -ArgumentList "--uninstall --msedgewebview --system-level --force-uninstall" -Wait -NoNewWindow
+            }
+          }
+        }

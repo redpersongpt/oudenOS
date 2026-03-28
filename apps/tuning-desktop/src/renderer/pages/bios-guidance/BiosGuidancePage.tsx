@@ -1,4 +1,5 @@
 import { useState } from "react";
+import type { ElementType } from "react";
 import { motion } from "framer-motion";
 import {
   Monitor,
@@ -84,7 +85,7 @@ const mockChecklist: BiosCheckItem[] = [
   },
 ];
 
-const statusConfig: Record<CheckStatus, { icon: React.ElementType; color: string; label: string }> = {
+const statusConfig: Record<CheckStatus, { icon: ElementType; color: string; label: string }> = {
   checked: { icon: CheckCircle2, color: "text-green-500", label: "Configured" },
   unchecked: { icon: Circle, color: "text-neutral-300", label: "Action Needed" },
   warning: { icon: AlertTriangle, color: "text-amber-500", label: "Review" },

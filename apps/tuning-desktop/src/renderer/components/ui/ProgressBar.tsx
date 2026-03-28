@@ -18,7 +18,7 @@ const variantColor: Record<
   brand: "bg-brand-500",
   success: "bg-green-500",
   warning: "bg-amber-500",
-  neutral: "bg-neutral-400",
+  neutral: "bg-white/[0.25]",
 };
 
 const sizeClass: Record<NonNullable<ProgressBarProps["size"]>, string> = {
@@ -42,15 +42,15 @@ export function ProgressBar({
       {(label || showValue) && (
         <div className="mb-1.5 flex items-center justify-between">
           {label && (
-            <span className="text-xs font-medium text-neutral-600">{label}</span>
+            <span className="text-xs font-medium text-ink-secondary">{label}</span>
           )}
           {showValue && (
-            <span className="font-mono text-xs text-neutral-400">{clamped}%</span>
+            <span className="font-mono text-xs text-ink-tertiary">{clamped}%</span>
           )}
         </div>
       )}
       <div
-        className={`w-full overflow-hidden rounded-full bg-neutral-100 ${sizeClass[size]}`}
+        className={`w-full overflow-hidden rounded-full bg-white/[0.07] ${sizeClass[size]}`}
       >
         <motion.div
           className={`h-full rounded-full ${variantColor[variant]}`}
