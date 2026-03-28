@@ -37,6 +37,11 @@ pnpm --dir packages/db build
 echo "── Build web ──"
 pnpm --dir apps/web build
 
+echo "── Wire web standalone assets ──"
+mkdir -p apps/web/.next/standalone/apps/web/.next
+ln -sfn ../../../../public apps/web/.next/standalone/apps/web/public
+ln -sfn ../../../../static apps/web/.next/standalone/apps/web/.next/static
+
 echo "── Build tuning-api ──"
 pnpm --dir apps/tuning-api build
 

@@ -46,8 +46,8 @@ module.exports = {
   apps: [
     {
       name: "redcore-web",
-      cwd: "./apps/web/.next/standalone/apps/web",
-      script: "server.js",
+      cwd: "./apps/web",
+      script: ".next/standalone/apps/web/server.js",
       env: {
         NODE_ENV: "production",
         PORT: 3000,
