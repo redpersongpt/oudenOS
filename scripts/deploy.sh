@@ -2,11 +2,16 @@
 # ═══════════════════════════════════════════════════════════════════════════════
 # redcoreECO — Deploy to VDS
 # ═══════════════════════════════════════════════════════════════════════════════
-# Run from the project root on the VDS:
-#   cd /home/ubuntu/redcoreECO && bash scripts/deploy.sh
+# Canonical VDS root:
+#   cd /opt/redcore/app && bash scripts/deploy.sh
 # ═══════════════════════════════════════════════════════════════════════════════
 
 set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+APP_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+
+cd "${APP_ROOT}"
 
 echo "── Pull latest code ──"
 git pull origin main
