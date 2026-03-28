@@ -4,6 +4,8 @@
 
 import type { FastifyRequest, FastifyReply } from "fastify";
 import { verifyAccessToken } from "../lib/jwt.js";
+import { eq } from "drizzle-orm";
+import { db, users } from "../db/index.js";
 
 declare module "fastify" {
   interface FastifyRequest {
@@ -28,6 +30,18 @@ export async function requireAuth(
   const token = header.slice(7);
   try {
     const payload = await verifyAccessToken(token);
+
+    // Reject tokens for soft-deleted accounts
+    const [user] = await db
+      .select({ deletedAt: users.deletedAt })
+      .from(users)
+      .where(eq(users.id, payload.sub))
+      .limit(1);
+
+    if (!user || user.deletedAt) {
+      return reply.code(401).send({ error: "Account not found or has been deleted" });
+    }
+
     request.userId = payload.sub;
     request.userRole = payload.role;
   } catch {

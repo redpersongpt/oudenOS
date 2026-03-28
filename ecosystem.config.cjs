@@ -40,5 +40,18 @@ module.exports = {
       autorestart: true,
       max_memory_restart: "256M",
     },
+    {
+      name: "cloud-api",
+      cwd: "./apps/cloud-api",
+      script: "dist/index.js",
+      env: {
+        NODE_ENV: "production",
+        PORT: 3003,
+        HOST: "127.0.0.1",
+      },
+      instances: 1,
+      autorestart: true,
+      max_memory_restart: "256M",
+    },
   ],
 };

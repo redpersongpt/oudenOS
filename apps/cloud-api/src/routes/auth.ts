@@ -14,7 +14,7 @@ import type { FastifyPluginAsync } from "fastify";
 import bcrypt from "bcryptjs";
 import crypto from "node:crypto";
 import { z } from "zod";
-import { eq, and, gt, isNull } from "drizzle-orm";
+import { eq, and, gt, isNull, desc } from "drizzle-orm";
 import {
   db,
   users,
@@ -52,6 +52,7 @@ async function getUserSubscriptionTier(userId: string) {
     .select({ tier: subscriptions.tier, status: subscriptions.status })
     .from(subscriptions)
     .where(eq(subscriptions.userId, userId))
+    .orderBy(desc(subscriptions.updatedAt))
     .limit(1);
   return sub ?? { tier: "free" as const, status: "active" as const };
 }
@@ -117,24 +118,30 @@ export const authRoutes: FastifyPluginAsync = async (app) => {
     const verificationToken = generateSecureToken();
     const verificationExpiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
 
-    const [user] = await db
-      .insert(users)
-      .values({
-        email: normalizedEmail,
-        name: name ?? null,
-        passwordHash,
-        emailVerificationToken: hashToken(verificationToken),
-        emailVerificationExpiresAt: verificationExpiresAt,
-      })
-      .returning({ id: users.id, email: users.email, name: users.name, createdAt: users.createdAt });
+    // Atomic: user row + seed rows must all succeed or all roll back
+    const user = await db.transaction(async (tx) => {
+      const [newUser] = await tx
+        .insert(users)
+        .values({
+          email: normalizedEmail,
+          name: name ?? null,
+          passwordHash,
+          emailVerificationToken: hashToken(verificationToken),
+          emailVerificationExpiresAt: verificationExpiresAt,
+        })
+        .returning({ id: users.id, email: users.email, name: users.name, createdAt: users.createdAt });
+
+      if (!newUser) throw new Error("Insert returned no row");
+
+      await Promise.all([
+        tx.insert(subscriptions).values({ userId: newUser.id, tier: "free", status: "active" }),
+        tx.insert(userPreferences).values({ userId: newUser.id }),
+      ]);
+
+      return newUser;
+    });
 
     if (!user) return reply.code(500).send({ error: "Registration failed" });
-
-    // Seed default subscription + preferences in parallel
-    await Promise.all([
-      db.insert(subscriptions).values({ userId: user.id, tier: "free", status: "active" }),
-      db.insert(userPreferences).values({ userId: user.id }),
-    ]);
 
     // Send verification email (fire-and-forget; don't fail registration if email fails)
     const appUrl = process.env.APP_URL ?? "https://app.redcore-tuning.com";

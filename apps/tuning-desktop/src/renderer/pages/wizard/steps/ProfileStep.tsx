@@ -115,7 +115,7 @@ export function ProfileStep() {
   const archetype = classification?.primary;
   const meta      = archetype ? ARCHETYPE_META[archetype] : null;
   const signals   = classification?.signals.slice(0, 4) ?? [];
-  const warnings  = profile?.warningNotes ?? [];
+  const warnings  = profile?.warnings ?? [];
   const strategy  = archetype ? (ARCHETYPE_STRATEGY[archetype] ?? []) : [];
   const preset    = profile?.suggestedPreset ?? meta?.suggestedPreset;
 
