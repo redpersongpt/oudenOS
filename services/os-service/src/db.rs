@@ -60,7 +60,7 @@ impl Database {
 
             CREATE TABLE IF NOT EXISTS classifications (
                 id TEXT PRIMARY KEY,
-                assessment_id TEXT NOT NULL,
+                assessment_id TEXT,  -- nullable: NULL when classification was done inline (no stored assessment)
                 profile TEXT NOT NULL,
                 confidence REAL NOT NULL,
                 data TEXT NOT NULL,  -- JSON blob
@@ -69,7 +69,7 @@ impl Database {
 
             CREATE TABLE IF NOT EXISTS transform_plans (
                 id TEXT PRIMARY KEY,
-                classification_id TEXT NOT NULL,
+                classification_id TEXT,  -- nullable: NULL when plan was generated inline (no stored classification)
                 preset TEXT NOT NULL,
                 created_at TEXT NOT NULL,
                 data TEXT NOT NULL,  -- JSON blob

@@ -36,6 +36,13 @@ const app = Fastify({
 // ─── Bootstrap ────────────────────────────────────────────────────────────────
 
 async function start(): Promise<void> {
+  // ── Validate required env vars at startup ──────────────────────────────
+  const required = ["JWT_SECRET", "DATABASE_URL"] as const;
+  const missing = required.filter((k) => !process.env[k]);
+  if (missing.length > 0) {
+    throw new Error(`Missing required env vars: ${missing.join(", ")}`);
+  }
+
   // ── Plugins ───────────────────────────────────────────────────────────────
 
   // Raw body — must be registered before any routes that need it (Stripe webhooks)

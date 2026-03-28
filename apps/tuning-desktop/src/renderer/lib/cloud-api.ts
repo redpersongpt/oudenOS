@@ -153,12 +153,12 @@ export interface UserProfile {
   id: string;
   email: string;
   displayName: string | null;
-  tier: "free" | "premium";
+  tier: "free" | "premium" | "expert";
   subscriptionStatus: "active" | "past_due" | "cancelled" | "expired" | "trialing";
   createdAt: string;
 }
 export interface SubscriptionDetails {
-  tier: "free" | "premium";
+  tier: "free" | "premium" | "expert";
   status: "active" | "past_due" | "cancelled" | "expired" | "trialing";
   currentPeriodEnd: string | null;
   cancelAtPeriodEnd: boolean;
@@ -171,7 +171,7 @@ export const cloudApi = {
       request<AuthResponse>("POST", "/auth/login", data),
     register: (data: AuthRegisterRequest) =>
       request<AuthResponse>("POST", "/auth/register", data),
-    me: () => request<UserProfile>("GET", "/auth/me"),
+    me: () => request<UserProfile>("GET", "/users/me"),
     logout: () =>
       request<void>("POST", "/auth/logout"),
     refresh: (refreshToken: string) =>

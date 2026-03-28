@@ -62,7 +62,10 @@ export function Sidebar() {
   const navigate = useNavigate();
   const user = useAuthStore((s) => s.user);
   const clearAuth = useAuthStore((s) => s.clearAuth);
-  const isPremium = useLicenseStore((s) => s.isPremium)();
+  const isPremium = useLicenseStore((s) => {
+    const l = s.license;
+    return (l?.tier === "premium" || l?.tier === "expert") && l?.status === "active";
+  });
 
   const displayName = user?.displayName ?? user?.email ?? "Account";
   const initials = displayName.slice(0, 2).toUpperCase();

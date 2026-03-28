@@ -119,7 +119,7 @@ export interface IntelligentTuningProfile {
   classification: MachineClassification;
   recommendations: IntelligentRecommendation[];
   suggestedPreset: PlanPreset;
-  warningNotes: string[];
+  warnings: string[];
   quickWins: IntelligentRecommendation[];
   archetypeMeta: typeof ARCHETYPE_META[MachineArchetype];
 }

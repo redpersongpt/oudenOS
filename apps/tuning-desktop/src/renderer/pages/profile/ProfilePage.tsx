@@ -184,7 +184,10 @@ export function ProfilePage() {
   const navigate = useNavigate();
   const user = useAuthStore((s) => s.user);
   const clearAuth = useAuthStore((s) => s.clearAuth);
-  const isPremium = useLicenseStore((s) => s.isPremium)();
+  const isPremium = useLicenseStore((s) => {
+    const l = s.license;
+    return (l?.tier === "premium" || l?.tier === "expert") && l?.status === "active";
+  });
   const license = useLicenseStore((s) => s.license);
 
   const [activeTab, setActiveTab] = useState<TabId>("account");

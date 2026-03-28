@@ -59,7 +59,26 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session): Promis
 
   const customerId = session.customer as string;
   const stripeSubId = session.subscription as string;
-  const userId = session.metadata?.["userId"];
+
+  // Resolve userId: session metadata → subscription metadata → DB lookup by customerId.
+  // Stripe may deliver checkout.session.completed with empty session.metadata in some
+  // edge cases (e.g. expired sessions replayed), so we always have a fallback chain.
+  let userId = session.metadata?.["userId"];
+
+  if (!userId) {
+    const stripeSub = await stripe.subscriptions.retrieve(stripeSubId);
+    userId = stripeSub.metadata?.["userId"];
+  }
+
+  if (!userId && customerId) {
+    const [user] = await db
+      .select({ id: users.id })
+      .from(users)
+      .where(eq(users.stripeCustomerId, customerId))
+      .limit(1);
+    userId = user?.id;
+  }
+
   if (!userId) return;
 
   const stripeSub = await stripe.subscriptions.retrieve(stripeSubId);
