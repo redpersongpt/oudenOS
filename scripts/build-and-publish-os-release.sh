@@ -11,11 +11,28 @@ ARCHIVE_DIR="$RELEASE_ROOT/archive"
 STABLE_NAME="redcore-os-setup.exe"
 MANIFEST_PATH="$RELEASE_ROOT/latest.json"
 MIN_BYTES="${MIN_BYTES:-20000000}"
+MIN_FREE_MB="${MIN_FREE_MB:-3072}"
 
-if ! command -v pnpm >/dev/null 2>&1; then
-  echo "pnpm is required" >&2
-  exit 1
-fi
+need_cmd() {
+  if ! command -v "$1" >/dev/null 2>&1; then
+    echo "$1 is required" >&2
+    exit 1
+  fi
+}
+
+check_free_space_mb() {
+  local free_mb
+  free_mb="$(df -Pm "$ROOT_DIR" | awk 'NR==2 {print $4}')"
+  if [ -z "$free_mb" ] || [ "$free_mb" -lt "$MIN_FREE_MB" ]; then
+    echo "Not enough free disk space: ${free_mb:-0}MB available, ${MIN_FREE_MB}MB required" >&2
+    exit 1
+  fi
+}
+
+need_cmd pnpm
+need_cmd node
+need_cmd sha256sum
+need_cmd stat
 
 if ! command -v cargo >/dev/null 2>&1; then
   if [ -f "$HOME/.cargo/env" ]; then
@@ -29,10 +46,20 @@ if ! command -v cargo >/dev/null 2>&1; then
   exit 1
 fi
 
-if ! command -v xvfb-run >/dev/null 2>&1; then
-  echo "xvfb-run is required for headless Windows packaging" >&2
-  exit 1
-fi
+need_cmd xvfb-run
+
+CACHE_ROOT="${CACHE_ROOT:-$(mktemp -d "${TMPDIR:-/tmp}/redcore-os-release-cache.XXXXXX")}"
+WINEPREFIX="${WINEPREFIX:-$(mktemp -d "${TMPDIR:-/tmp}/redcore-os-release-wine.XXXXXX")}"
+ELECTRON_CACHE="${ELECTRON_CACHE:-$CACHE_ROOT/electron}"
+ELECTRON_BUILDER_CACHE="${ELECTRON_BUILDER_CACHE:-$CACHE_ROOT/electron-builder}"
+export WINEPREFIX ELECTRON_CACHE ELECTRON_BUILDER_CACHE
+
+cleanup() {
+  rm -rf "$CACHE_ROOT" "$WINEPREFIX"
+}
+trap cleanup EXIT
+
+check_free_space_mb
 
 mkdir -p "$RELEASES_DIR" "$ARCHIVE_DIR"
 
@@ -50,8 +77,12 @@ echo "==> Ensuring Rust target"
 cargo --version >/dev/null
 rustup target add x86_64-pc-windows-gnu >/dev/null
 
-echo "==> Installing workspace dependencies"
-pnpm install --frozen-lockfile
+if [ -d "$ROOT_DIR/node_modules" ] && [ "${FORCE_INSTALL:-0}" != "1" ]; then
+  echo "==> Reusing existing workspace node_modules"
+else
+  echo "==> Installing workspace dependencies"
+  pnpm install --frozen-lockfile
+fi
 
 echo "==> Building Windows service"
 pushd "$SERVICE_DIR" >/dev/null
