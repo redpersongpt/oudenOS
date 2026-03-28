@@ -169,12 +169,12 @@ STRIPE_SECRET_KEY=
 STRIPE_WEBHOOK_SECRET=
 
 # ─── cloud-api ───────────────────────────────────────────────────────────
-APP_URL=https://app.redcore-tuning.com
+APP_URL=https://redcoreos.net
 OS_APP_URL=https://redcoreos.net
-CORS_ORIGINS=https://app.redcore-tuning.com,https://redcoreos.net
-ALLOWED_REDIRECT_HOSTS=app.redcore-tuning.com,redcoreos.net
+CORS_ORIGINS=https://redcoreos.net
+ALLOWED_REDIRECT_HOSTS=redcoreos.net
 SENDGRID_API_KEY=
-EMAIL_FROM=noreply@redcore-tuning.com
+EMAIL_FROM=noreply@redcoreos.net
 STRIPE_PRICE_PREMIUM_MONTHLY=
 STRIPE_PRICE_PREMIUM_ANNUAL=
 STRIPE_PRICE_EXPERT_MONTHLY=
