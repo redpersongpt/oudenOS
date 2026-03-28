@@ -29,7 +29,7 @@ export async function sendEmail(opts: EmailOptions): Promise<void> {
 async function deliverViaSendGrid(opts: EmailOptions): Promise<void> {
   const apiKey = process.env.SENDGRID_API_KEY!;
   const from = {
-    email: process.env.EMAIL_FROM ?? "noreply@redcore-tuning.com",
+    email: process.env.EMAIL_FROM ?? "noreply@redcoreos.net",
     name: process.env.EMAIL_FROM_NAME ?? "redcore-Tuning",
   };
 

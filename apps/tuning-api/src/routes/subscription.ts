@@ -129,8 +129,8 @@ export const subscriptionRoutes: FastifyPluginAsync = async (app) => {
       customer: customerId,
       mode: "subscription",
       line_items: [{ price: priceId, quantity: 1 }],
-      success_url: successUrl ?? `${process.env.APP_URL ?? "https://app.redcore-tuning.com"}/subscription?success=1`,
-      cancel_url: cancelUrl ?? `${process.env.APP_URL ?? "https://app.redcore-tuning.com"}/subscription`,
+      success_url: successUrl ?? `${process.env.APP_URL ?? "https://redcoreos.net"}/subscription?success=1`,
+      cancel_url: cancelUrl ?? `${process.env.APP_URL ?? "https://redcoreos.net"}/subscription`,
       subscription_data: {
         metadata: { userId: request.userId, tier, billingPeriod },
       },
@@ -154,7 +154,7 @@ export const subscriptionRoutes: FastifyPluginAsync = async (app) => {
 
     const session = await stripe.billingPortal.sessions.create({
       customer: user.stripeCustomerId,
-      return_url: `${process.env.APP_URL ?? "https://app.redcore-tuning.com"}/subscription`,
+      return_url: `${process.env.APP_URL ?? "https://redcoreos.net"}/subscription`,
     });
 
     return reply.send({ portalUrl: session.url });

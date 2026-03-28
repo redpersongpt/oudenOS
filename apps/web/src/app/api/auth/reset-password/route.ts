@@ -2,6 +2,7 @@ import bcrypt from "bcryptjs";
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { hashPasswordResetToken } from "@/lib/password-reset";
+import { callCloudApi } from "@/lib/cloud-api";
 
 export async function POST(req: NextRequest) {
   let payload: unknown;
@@ -37,7 +38,20 @@ export async function POST(req: NextRequest) {
   });
 
   if (!user) {
-    return NextResponse.json({ error: "Reset token is invalid or has expired" }, { status: 400 });
+    const cloudResponse = await callCloudApi<{ ok: true; message?: string }>("/auth/reset-password", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token, password }),
+    });
+
+    if (!cloudResponse.ok) {
+      return NextResponse.json({ error: cloudResponse.error }, { status: cloudResponse.status || 400 });
+    }
+
+    return NextResponse.json({
+      ok: true,
+      message: cloudResponse.data.message ?? "Password has been reset. You can sign in with your new password now.",
+    });
   }
 
   const passwordHash = await bcrypt.hash(password, 12);
