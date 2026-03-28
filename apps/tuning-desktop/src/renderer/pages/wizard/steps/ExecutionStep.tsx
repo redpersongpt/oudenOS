@@ -107,6 +107,7 @@ export function ExecutionStep() {
   const [failedCount, setFailedCount] = useState(0);
   const [logsOpen, setLogsOpen] = useState(false);
   const logEndRef = useRef<HTMLDivElement>(null);
+  const cancelledRef = useRef(false);
 
   const planActions = plan?.actions ?? [];
   const selected    = planActions.filter((pa) => selectedActions.includes(pa.actionId));
@@ -120,9 +121,13 @@ export function ExecutionStep() {
 
   // Auto-start
   useEffect(() => {
+    cancelledRef.current = false;
     if (phase === "idle" && selected.length > 0) {
       void runAll();
     }
+    return () => {
+      cancelledRef.current = true;
+    };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -131,6 +136,7 @@ export function ExecutionStep() {
     let failed = 0;
 
     for (let i = 0; i < selected.length; i++) {
+      if (cancelledRef.current) return;
       const pa = selected[i]!;
       setCurrentIdx(i);
       setProgress(Math.round((i / selected.length) * 100));
@@ -140,6 +146,8 @@ export function ExecutionStep() {
         const outcome = (await window.redcore.service.call("tuning.applyAction", {
           actionId: pa.actionId,
         })) as ActionOutcome;
+
+        if (cancelledRef.current) return;
 
         if (outcome.status === "failed") failed++;
 
@@ -153,6 +161,7 @@ export function ExecutionStep() {
           `${pa.action.name}: ${outcome.status}${outcome.error ? ` — ${outcome.error}` : ""}`
         );
       } catch (err: unknown) {
+        if (cancelledRef.current) return;
         failed++;
         const msg = err instanceof Error ? err.message : "Unknown error";
         addLog("error", `${pa.action.name}: exception — ${msg}`);
@@ -176,6 +185,7 @@ export function ExecutionStep() {
       }
     }
 
+    if (cancelledRef.current) return;
     setFailedCount(failed);
     setProgress(100);
     setPhase("done");
