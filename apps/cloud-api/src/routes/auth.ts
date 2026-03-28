@@ -144,7 +144,7 @@ export const authRoutes: FastifyPluginAsync = async (app) => {
     if (!user) return reply.code(500).send({ error: "Registration failed" });
 
     // Send verification email (fire-and-forget; don't fail registration if email fails)
-    const appUrl = process.env.APP_URL ?? "https://app.redcore-tuning.com";
+    const appUrl = process.env.APP_URL ?? "https://redcoreos.net";
     const verifyLink = `${appUrl}/verify-email?token=${verificationToken}`;
     sendEmail({
       to: normalizedEmail,
@@ -308,7 +308,7 @@ export const authRoutes: FastifyPluginAsync = async (app) => {
         })
         .where(eq(users.id, user.id));
 
-      const appUrl = process.env.APP_URL ?? "https://app.redcore-tuning.com";
+      const appUrl = process.env.APP_URL ?? "https://redcoreos.net";
       const resetLink = `${appUrl}/reset-password?token=${rawToken}`;
       sendEmail({
         to: email,
@@ -427,7 +427,7 @@ export const authRoutes: FastifyPluginAsync = async (app) => {
       })
       .where(eq(users.id, user.id));
 
-    const appUrl = process.env.APP_URL ?? "https://app.redcore-tuning.com";
+    const appUrl = process.env.APP_URL ?? "https://redcoreos.net";
     const verifyLink = `${appUrl}/verify-email?token=${rawToken}`;
     sendEmail({
       to: user.email,

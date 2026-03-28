@@ -58,7 +58,7 @@ async function start(): Promise<void> {
   const originsEnv = process.env.CORS_ORIGINS ?? "";
   const allowedOrigins = originsEnv
     ? originsEnv.split(",").map((o) => o.trim()).filter(Boolean)
-    : ["https://app.redcore-tuning.com", "https://redcoreos.net", "http://localhost:5173"];
+    : ["https://redcoreos.net", "http://localhost:5173"];
 
   await app.register(cors, {
     origin: allowedOrigins,

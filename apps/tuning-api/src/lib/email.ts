@@ -27,7 +27,7 @@ export async function sendEmail(opts: SendEmailOptions): Promise<void> {
     },
     body: JSON.stringify({
       personalizations: [{ to: [{ email: opts.to }] }],
-      from: { email: "noreply@redcore-tuning.com", name: "redcore-Tuning" },
+      from: { email: "noreply@redcoreos.net", name: "redcore-Tuning" },
       subject: opts.subject,
       content: [{ type: "text/html", value: opts.html }],
     }),
