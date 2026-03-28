@@ -2,7 +2,7 @@
 // Baseline performance measurement before optimization.
 // Runs system benchmark and displays metric cards.
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Activity, TrendingDown, TrendingUp, ChevronRight } from "lucide-react";
 import {
@@ -78,12 +78,25 @@ export function BenchmarkStep() {
   const [result, setResult] = useState<BenchmarkResult | null>(null);
   const [runLabel, setRunLabel] = useState(RUNNING_LABELS[0]);
   const labelIndexRef = useRef(0);
+  const cancelledRef = useRef(false);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useEffect(() => {
+    cancelledRef.current = false;
+    return () => {
+      cancelledRef.current = true;
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
+  }, []);
 
   async function handleRun() {
     setState("running");
     labelIndexRef.current = 0;
 
-    const interval = setInterval(() => {
+    intervalRef.current = setInterval(() => {
       labelIndexRef.current = (labelIndexRef.current + 1) % RUNNING_LABELS.length;
       setRunLabel(RUNNING_LABELS[labelIndexRef.current]);
     }, 1800);
@@ -99,12 +112,19 @@ export function BenchmarkStep() {
         },
         tags: ["baseline", "wizard"],
       });
-      setResult(res as BenchmarkResult);
-      setState("complete");
+      if (!cancelledRef.current) {
+        setResult(res as BenchmarkResult);
+        setState("complete");
+      }
     } catch {
-      setState("idle");
+      if (!cancelledRef.current) {
+        setState("idle");
+      }
     } finally {
-      clearInterval(interval);
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
     }
   }
 

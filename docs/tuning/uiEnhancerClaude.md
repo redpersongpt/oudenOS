@@ -47,6 +47,14 @@ Error:           #ef4444 (red-500, muted in dark)
 Info:            #3b82f6 (blue-500, muted in dark)
 ```
 
+**ECO-SITE overrides** (`apps/web` uses different tokens):
+```
+Accent:   #E8254B (brand red — not indigo)
+Surface:  #1e1e22 (base), #252529 (card)
+Border:   #38383e
+Text:     #f0f0f4 primary, #a0a0ac secondary, #6a6a76 tertiary
+```
+
 VIOLATIONS TO CATCH:
 - Any garish neon colors
 - Any pure white (#fff) backgrounds in dark mode
@@ -320,14 +328,197 @@ Severities:
 
 ## CURRENT SCAN RESULTS
 
-*Last scan: Pending first run*
+*Last scan: 2026-03-28 (Round 4 — partial automated audit)*
 
-*Run UI Enhancer Claude to populate this section.*
+---
+
+### RESOLVED — UI Issues Fixed Across Rounds
+
+| Issue | File | Fix Applied |
+|-------|------|-------------|
+| Donate page cards invisible (CRITICAL) | `apps/web/src/components/sections/DonateSection.tsx` | Added `.section-divide` + `.premium-card` to `globals.css` |
+| glow-surface / glow-brand-edge missing (HIGH) | Various orphaned sections | Added both classes to `globals.css` |
+| Download CTA linked to nonexistent .exe (CRITICAL) | `PricingSection.tsx:81` | Changed href to `/downloads` |
+| ExecutionStep failed-count always 0 (CRITICAL) | `apps/os-desktop` ExecutionStep | Replaced stale `failed` state with derived `failCount` |
+
+---
+
+### OPEN — CRITICAL
+
+*(None currently — all critical visual bugs fixed)*
+
+---
+
+### OPEN — HIGH
+
+#### [HIGH] Stale License Tier in Sidebar and Profile Pages
+- **Files**: `apps/tuning-desktop/src/renderer/components/layout/Sidebar.tsx:43`, `pages/profile/ProfilePage.tsx:17`, `pages/subscription/SubscriptionPage.tsx:45`
+- **Category**: UX Pattern / State management
+- **Description**: `useLicenseStore((s) => s.isPremium)()` is a Zustand anti-pattern. The selector extracts the function reference (always stable), so Zustand never triggers re-render on tier change. All three components show stale premium status until full page reload — even after the user just purchased.
+- **Expected**: Tier badge and feature gates update immediately after license change event.
+- **Fix**: Change to `useLicenseStore((s) => s.isPremium())` (call inside selector, not outside).
+
+#### [HIGH] Intelligence Safety Warnings Never Show
+- **File**: `apps/tuning-desktop/src/renderer/pages/wizard/steps/ProfileStep.tsx:124`
+- **Category**: UX Pattern / Data mismatch
+- **Description**: `profile?.warningNotes ?? []` always returns `[]` because Rust returns `"warnings"` not `"warningNotes"`. The warning section in the wizard is permanently empty, hiding per-archetype safety information (e.g., "Registry changes may not persist across VM resets").
+- **Expected**: Safety warnings visible in the wizard profile step.
+- **Fix**: Rename Rust field from `"warnings"` to `"warningNotes"` in `intelligence.rs:697`.
+
+---
+
+### OPEN — MEDIUM
+
+#### [MEDIUM] os-desktop Wizard Missing RebootResume and Handoff Steps
+- **Files**: Missing: `apps/os-desktop/src/renderer/pages/wizard/steps/RebootResumeStep.tsx`, `HandoffStep.tsx`
+- **Category**: UX Pattern / Incompleteness
+- **Description**: The OS wizard currently ends at Report step. The spec calls for a RebootResume step (conditional reboot prompt) and a Handoff step (CTA to redcore-Tuning). Without HandoffStep, the Tuning CTA is embedded in ReportStep — poor separation of concerns.
+- **Expected**: 13-step wizard: ... → execution → reboot-resume → report → handoff
+
+#### [MEDIUM] PlaybookStrategyStep Not Wired
+- **File**: `apps/os-desktop/src/renderer/pages/wizard/steps/PlaybookStrategyStep.tsx`
+- **Category**: UX Pattern / Incompleteness
+- **Description**: The strategy selection step (Conservative / Balanced / Aggressive) exists as a component but calls `setPlaybookPreset` which doesn't exist in wizard-store yet. Not rendered in WizardPage. User cannot select a preset from the wizard.
+- **Fix**: See CODEXHANDOFF.md Task 1 — wire `playbookPreset` into store + add step to WizardPage.
+
+#### [MEDIUM] og:image is Square Logo (512×512) Not Social Card
+- **File**: `apps/web/src/app/layout.tsx:57-64`
+- **Category**: Consistency / Missing asset
+- **Description**: All pages inherit `og:image: /redcore-logo.png` at 512×512. Social shares (Discord, Twitter, LinkedIn) show a small square icon instead of a rich preview card.
+- **Expected**: 1200×630 banner image at `public/og-image.png`
+- **Fix**: Create banner, update `layout.tsx` metadata.
+
+#### [MEDIUM] /donate Page Missing Canonical and openGraph Tags
+- **File**: `apps/web/src/app/donate/page.tsx:5-8`
+- **Category**: SEO / Consistency
+- **Description**: `metadata` has title + description but no `alternates.canonical` or explicit `openGraph`. Google decides which URL to index.
+- **Fix**: Add `alternates: { canonical: "https://redcore.app/donate" }` and openGraph block.
+
+---
+
+### OPEN — LOW
+
+#### [LOW] success Color Token Set to Red (Same as Accent)
+- **File**: `apps/web/src/app/globals.css:17`
+- **Category**: Consistency
+- **Description**: `--color-success: #E8254B` is identical to accent. Any future component using `text-success` or `bg-success` will render in red, not green.
+- **Fix**: Change to `#22c55e` (green-500) or remove the token and use `text-green-500` directly.
+
+#### [LOW] 19 Orphaned UI Components Not Used on Any Active Page
+- **Files**: `apps/web/src/components/sections/{OSSection,TuningSection,WizardSection,IntelligenceSection,...}.tsx`, various `ui/*.tsx`
+- **Category**: Dead UI Code
+- **Description**: 10+ section components and 9+ UI components (Badge, Button, Card, GlowOrb, etc.) build fine but are not imported by any active page route. Left over from homepage redesign iterations.
+- **Fix**: Either activate them in the new homepage version or delete them to reduce bundle analysis noise.
+
+#### [LOW] border-l-brand-500 Invalid Tailwind Class in PathsSection
+- **File**: `apps/web/src/components/sections/PathsSection.tsx:61`
+- **Category**: Consistency
+- **Description**: `border-l-brand-500` is not valid Tailwind syntax. Should be `border-l border-brand-500`. No visual impact (component not used).
+
+#### [LOW] brand-950 and brand-900 Tokens Used but Not Defined
+- **File**: `apps/web/src/components/ui/Badge.tsx:17`
+- **Category**: Consistency
+- **Description**: `bg-brand-950/60` and `border-brand-900/40` — only `brand-400`, `brand-500`, `brand-600` are defined. The `brand` Badge variant renders with no background. No visual impact (Badge not used on active pages).
+
+---
+
+## ECO-SITE SPECIFIC AUDIT (apps/web)
+
+### Dark Theme — PASS
+- All active components use dark tokens consistently
+- Background: `#1e1e22`, Cards: `#252529`, Text: `#f0f0f4`
+- No light colors bleed through
+- No `prefers-color-scheme` media queries (dark-only intentional)
+
+### Framer Motion — PASS
+- `framer-motion` v12.38.0 installed correctly
+- All components with animations use `"use client"` directive
+- `motion`, `AnimatePresence`, `useInView` correctly imported
+- `lib/motion.ts` exports (`fadeIn`, `slideUp`, `staggerContainer`) used correctly
+- Hero uses CSS-only animations for GPU-accelerated performance — correct approach
+
+### Responsive Design — PASS (with noted intentional decisions)
+| Section | Mobile | Tablet | Desktop |
+|---------|--------|--------|---------|
+| Navigation | Hamburger menu + full-screen overlay | Same | Nav links + auth buttons |
+| Hero | Text + CTAs only (visual hidden) | Same | 2-col with hexagon constellation |
+| Ecosystem | 1-col | 2-col | 3-col grid |
+| Pricing | 1-col stacked | Same | 2-col side-by-side |
+| Footer | 2-col | 4-col | 4-col |
+
+Note: Hero visual (`HeroVisual`) is `hidden lg:flex` — intentional, clean on mobile.
+
+### Meta Tags — MOSTLY PASS
+| Page | Title | og:title | og:image | canonical |
+|------|-------|----------|----------|-----------|
+| `/` | ✓ | ✓ | Logo (wrong size) | ✓ |
+| `/downloads` | ✓ | ✓ | Inherited | ✓ |
+| `/donate` | ✓ | Inherited | Inherited | **Missing** |
+| `/atlasos-alternative` | ✓ Fixed | ✓ Fixed | Inherited | ✓ |
+| All other SEO pages | ✓ | ✓ | Inherited | ✓ |
+
+---
+
+## TUNING-DESKTOP SPECIFIC AUDIT
+
+### Animation — PASS
+- All wizard steps use `motion.div` with `initial/animate/exit` transitions
+- `AnimatePresence` wraps step rendering in WizardPage
+- Step transitions use consistent `opacity: 0, y: 8` → `opacity: 1, y: 0` pattern with `duration: 0.22`
+
+### Wizard UI — PARTIAL
+- Auth pages (login, register, forgot-password): Complete
+- Dashboard, Hardware, Intelligence, Diagnostics, AppHub: Complete
+- Settings, Profile, Subscription, Rollback: Complete
+- BiosGuidance, ThermalBottleneck: Complete
+- ErrorBoundary, TierGate, TierBadge: Complete
+- Sidebar collapse animation: Present
+- Missing: Wizard execution progress events (IPC events not yet emitted from Rust)
+
+### Known UI Gaps (from MED-11 / DEAD-3)
+- `ApplyWorkflowPage.tsx` subscribes to `"tuning.actionProgress"` IPC event — never fires, no visual progress
+- `DashboardPage.tsx` + `HardwarePage.tsx` subscribe to `"scan.progress"` — never fires, no scan progress bar
+
+---
+
+## OS-DESKTOP SPECIFIC AUDIT
+
+### Wizard Steps — IN PROGRESS
+| Step | Status |
+|------|--------|
+| Welcome | Complete |
+| Assessment (SystemAnalysisPanel) | Complete |
+| Profile | Complete |
+| Preservation | Complete |
+| PlaybookStrategy | Component built, NOT wired |
+| PlaybookReview | Complete (uses hardcoded preset) |
+| Personalization | Complete |
+| AppSetup | Complete |
+| FinalReview | Complete |
+| Execution | Complete (failCount fix applied) |
+| RebootResume | NOT CREATED |
+| Report | Complete |
+| Handoff | NOT CREATED |
+
+### Visual Quality
+- Motion pattern consistent with `{ opacity: 0, y: 8 }` → `{ opacity: 1, y: 0 }` on all steps
+- `px-6 py-6` spacing consistent across steps
+- No hardcoded colors found in wizard steps — all use Tailwind tokens
+- `DonationStep` + `DonationPage` — fully designed, matches OS theme
 
 ---
 
 ## ENHANCEMENT BACKLOG
 
-*Accumulated tips and enhancement ideas from scans:*
+*Accumulated improvement ideas:*
 
-*(Will be populated after first scan)*
+1. **Tuning dashboard**: Add real-time scan progress bar (requires DEAD-3 fix — IPC events)
+2. **OS wizard**: Add step-level timing display (how long each action takes)
+3. **Eco-site hero**: Add mobile visual (simplified version of hexagon, not hidden)
+4. **Eco-site**: Create proper 1200×630 og:image for social sharing
+5. **Tuning sidebar**: Add collapse animation (currently just toggle)
+6. **All apps**: Add keyboard shortcut hints in tooltips on interactive elements
+7. **OS wizard ExecutionStep**: Show per-action progress with action name, not just overall bar
+8. **Tuning IntelligencePage**: Wire `warningNotes` display once Rust field is renamed
+9. **All apps**: Audit scrollbar styling — should be thin, custom (`scrollbar-thin` or CSS `::-webkit-scrollbar`)
+10. **Eco-site /donate**: Add openGraph block + canonical URL
