@@ -16,7 +16,7 @@
 
 import type { FastifyPluginAsync } from "fastify";
 import { z } from "zod";
-import { eq, ilike, or, desc, count, and, gte, sql } from "drizzle-orm";
+import { eq, ilike, or, desc, count, and, gte, sql, inArray } from "drizzle-orm";
 import {
   db,
   users,
@@ -88,10 +88,12 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
 
       const conditions = [];
       if (search) {
+        // Escape SQL wildcard characters to prevent unintended pattern matching
+        const escapedSearch = search.replace(/[%_\\]/g, "\\$&");
         conditions.push(
           or(
-            ilike(users.email, `%${search}%`),
-            ilike(users.name, `%${search}%`),
+            ilike(users.email, `%${escapedSearch}%`),
+            ilike(users.name, `%${escapedSearch}%`),
           ),
         );
       }
@@ -129,7 +131,7 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
         ? await db
             .select({ userId: subscriptions.userId, tier: subscriptions.tier, status: subscriptions.status })
             .from(subscriptions)
-            .where(sql`user_id = any(${userIds})`)
+            .where(inArray(subscriptions.userId, userIds))
         : [];
 
       const subMap = new Map(subs.map((s) => [s.userId, s]));
@@ -511,7 +513,7 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
       // Join user emails
       const uids = [...new Set(machines.map((m) => m.userId))];
       const userEmails = uids.length > 0
-        ? await db.select({ id: users.id, email: users.email }).from(users).where(sql`id = any(${uids})`)
+        ? await db.select({ id: users.id, email: users.email }).from(users).where(inArray(users.id, uids))
         : [];
       const emailMap = new Map(userEmails.map((u) => [u.id, u.email]));
 
@@ -570,7 +572,10 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
     const conditions = [];
     if (request.query.adminId) conditions.push(eq(adminAuditLog.adminId, request.query.adminId));
     if (request.query.targetUserId) conditions.push(eq(adminAuditLog.targetUserId, request.query.targetUserId));
-    if (request.query.action) conditions.push(ilike(adminAuditLog.action, `%${request.query.action}%`));
+    if (request.query.action) {
+      const escapedAction = request.query.action.replace(/[%_\\]/g, "\\$&");
+      conditions.push(ilike(adminAuditLog.action, `%${escapedAction}%`));
+    }
 
     const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
 
