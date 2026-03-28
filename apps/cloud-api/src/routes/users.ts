@@ -19,7 +19,7 @@ import type { FastifyPluginAsync } from "fastify";
 import bcrypt from "bcryptjs";
 import crypto from "node:crypto";
 import { z } from "zod";
-import { eq, and, desc } from "drizzle-orm";
+import { eq, and, desc, ne } from "drizzle-orm";
 import {
   db,
   users,
@@ -33,6 +33,7 @@ import {
 import { requireAuth } from "../middleware/auth.js";
 import { sendEmail, emailChangedTemplate, verifyEmailTemplate } from "../lib/email.js";
 import { authRateLimit } from "../lib/rate-limit.js";
+import { verifyGoogleIdToken, verifyAppleIdToken } from "../lib/oauth.js";
 
 function hashToken(raw: string): string {
   return crypto.createHash("sha256").update(raw).digest("hex");
@@ -82,8 +83,7 @@ const registerMachineSchema = z.object({
 
 const linkAccountSchema = z.object({
   provider: z.enum(["google", "apple"]),
-  providerUserId: z.string().min(1),
-  providerEmail: z.string().email().optional(),
+  idToken: z.string().min(1),
 });
 
 const deleteAccountSchema = z.object({
@@ -466,7 +466,23 @@ export const usersRoutes: FastifyPluginAsync = async (app) => {
     if (!parse.success) {
       return reply.code(400).send({ error: "Invalid input" });
     }
-    const { provider, providerUserId, providerEmail } = parse.data;
+    const { provider, idToken } = parse.data;
+
+    // Verify the OAuth id_token to confirm the user actually controls this account.
+    // Accepting a user-supplied providerUserId without verification would allow
+    // any authenticated user to claim ownership of arbitrary OAuth identities.
+    let profile;
+    try {
+      profile = provider === "google"
+        ? await verifyGoogleIdToken(idToken)
+        : await verifyAppleIdToken(idToken);
+    } catch (err) {
+      app.log.warn({ err }, "OAuth token verification failed for account linking");
+      return reply.code(401).send({ error: `Invalid ${provider} token` });
+    }
+
+    const providerUserId = profile.id;
+    const providerEmail = profile.email;
 
     // Check not already linked on this account
     const [existing] = await db
@@ -526,16 +542,18 @@ export const usersRoutes: FastifyPluginAsync = async (app) => {
         .limit(1);
 
       if (!user?.passwordHash) {
+        // Count connected accounts EXCLUDING the one being removed.
+        // If none remain and there's no password, the user would lose all sign-in access.
         const otherAccounts = await db
           .select({ id: connectedAccounts.id })
           .from(connectedAccounts)
           .where(
             and(
               eq(connectedAccounts.userId, request.userId),
-              // not the one being deleted
+              ne(connectedAccounts.provider, provider),
             ),
           );
-        if (otherAccounts.length <= 1) {
+        if (otherAccounts.length < 1) {
           return reply.code(400).send({
             error: "Cannot unlink the only sign-in method. Set a password first.",
           });
@@ -604,7 +622,12 @@ export const usersRoutes: FastifyPluginAsync = async (app) => {
       .where(eq(users.id, request.userId))
       .limit(1);
 
-    if (user?.passwordHash && parse.data.password) {
+    // Require password verification for password-based accounts to prevent
+    // account deletion with only a stolen access token.
+    if (user?.passwordHash) {
+      if (!parse.data.password) {
+        return reply.code(400).send({ error: "Password is required to delete this account" });
+      }
       const valid = await bcrypt.compare(parse.data.password, user.passwordHash);
       if (!valid) return reply.code(401).send({ error: "Password is incorrect" });
     }

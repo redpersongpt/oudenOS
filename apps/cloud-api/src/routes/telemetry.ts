@@ -99,7 +99,7 @@ export const telemetryRoutes: FastifyPluginAsync = async (app) => {
   });
 
   // ── POST /opt-out ─────────────────────────────────────────────────────────
-  app.post("/opt-out", async (request, reply) => {
+  app.post("/opt-out", { preHandler: telemetryRateLimit() }, async (request, reply) => {
     const parsed = z.object({ sessionId: z.string().uuid() }).safeParse(request.body);
     if (!parsed.success) return reply.code(400).send({ error: "Invalid body" });
 

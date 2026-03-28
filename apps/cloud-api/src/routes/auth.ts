@@ -110,7 +110,6 @@ export const authRoutes: FastifyPluginAsync = async (app) => {
       .limit(1);
 
     if (existing.length > 0) {
-      // Deliberate generic error to avoid user enumeration
       return reply.code(409).send({ error: "An account with this email already exists" });
     }
 
@@ -217,21 +216,26 @@ export const authRoutes: FastifyPluginAsync = async (app) => {
     }
 
     const tokenHash = hashToken(parse.data.refreshToken);
+
+    // Atomic revoke: UPDATE with validity conditions prevents race conditions
+    // where two concurrent requests with the same token both succeed.
+    // If the token was already revoked (or expired), revokedAt/expiresAt
+    // conditions fail and nothing is returned — no second session is issued.
     const [record] = await db
-      .select()
-      .from(refreshTokens)
-      .where(eq(refreshTokens.tokenHash, tokenHash))
-      .limit(1);
-
-    if (!record || record.revokedAt || record.expiresAt < new Date()) {
-      return reply.code(401).send({ error: "Invalid or expired refresh token" });
-    }
-
-    // Rotate: atomically revoke old token and issue new one
-    await db
       .update(refreshTokens)
       .set({ revokedAt: new Date() })
-      .where(eq(refreshTokens.id, record.id));
+      .where(
+        and(
+          eq(refreshTokens.tokenHash, tokenHash),
+          isNull(refreshTokens.revokedAt),
+          gt(refreshTokens.expiresAt, new Date()),
+        ),
+      )
+      .returning();
+
+    if (!record) {
+      return reply.code(401).send({ error: "Invalid or expired refresh token" });
+    }
 
     const [user] = await db
       .select({ id: users.id, role: users.role, deletedAt: users.deletedAt })
