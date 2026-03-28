@@ -117,6 +117,11 @@ os-api.redcoreos.net {
     reverse_proxy localhost:3002
     encode gzip
 }
+
+api.redcore-tuning.com {
+    reverse_proxy localhost:3003
+    encode gzip
+}
 CADDYEOF
 
 systemctl restart caddy

@@ -678,7 +678,8 @@ fn store_classification(
         .as_f64()
         .unwrap_or(0.0);
     let data = serde_json::to_string(classification)?;
-    let aid = assessment_id.unwrap_or("inline");
+    // Use NULL when no stored assessment exists to avoid FK violation
+    let aid: Option<&str> = assessment_id;
 
     db.conn().execute(
         "INSERT INTO classifications (id, assessment_id, profile, confidence, data)
@@ -714,7 +715,8 @@ fn store_plan(
         .unwrap_or(&uuid::Uuid::new_v4().to_string())
         .to_string();
     let now = chrono::Utc::now().to_rfc3339();
-    let cid = classification_id.unwrap_or("inline");
+    // Use NULL when no stored classification exists to avoid FK violation
+    let cid: Option<&str> = classification_id;
     let data = serde_json::to_string(plan)?;
 
     db.conn().execute(

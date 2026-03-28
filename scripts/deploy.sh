@@ -23,6 +23,9 @@ pnpm --filter tuning-api build 2>/dev/null || echo "  (skipped — no build scri
 echo "── Build os-api ──"
 pnpm --filter os-api build 2>/dev/null || echo "  (skipped — no build script)"
 
+echo "── Build cloud-api ──"
+pnpm --filter cloud-api build 2>/dev/null || echo "  (skipped — no build script)"
+
 echo "── Run database migrations ──"
 cd packages/db && npx drizzle-kit push && cd ../..
 

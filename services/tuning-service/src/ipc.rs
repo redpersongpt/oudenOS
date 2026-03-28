@@ -418,13 +418,27 @@ async fn dispatch(
             let entries: Vec<String> = match db.conn().prepare(
                 "SELECT id FROM journal_entries WHERE status = 'awaiting_reboot' ORDER BY step_order ASC"
             ) {
-                Ok(mut stmt) => match stmt.query_map([], |row| row.get(0)) {
-                    Ok(rows) => rows.filter_map(|r| r.ok()).collect(),
-                    Err(e) => {
-                        tracing::error!("Failed to map journal entries: {}", e);
-                        return RpcResponse::err(id, -17, format!("Journal query failed: {}", e));
+                Ok(mut stmt) => {
+                    match stmt.query_map([], |row| row.get(0)) {
+                        Ok(rows) => {
+                            let mut ids = Vec::new();
+                            for row_result in rows {
+                                match row_result {
+                                    Ok(entry_id) => ids.push(entry_id),
+                                    Err(e) => {
+                                        tracing::error!("Failed to read journal entry row: {}", e);
+                                        return RpcResponse::err(id, -17, format!("Journal query failed: {}", e));
+                                    }
+                                }
+                            }
+                            ids
+                        }
+                        Err(e) => {
+                            tracing::error!("Failed to map journal entries: {}", e);
+                            return RpcResponse::err(id, -17, format!("Journal query failed: {}", e));
+                        }
                     }
-                },
+                }
                 Err(e) => {
                     tracing::error!("Failed to query journal entries: {}", e);
                     return RpcResponse::err(id, -17, format!("Journal query failed: {}", e));
