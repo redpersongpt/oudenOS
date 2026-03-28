@@ -13,6 +13,7 @@
 #   - PM2
 #   - Caddy (reverse proxy + auto-HTTPS)
 #   - UFW firewall rules
+#   - Windows installer build prerequisites (Rust + MinGW + NSIS + Wine + Xvfb)
 # ═══════════════════════════════════════════════════════════════════════════════
 
 set -euo pipefail
@@ -98,8 +99,22 @@ ufw allow 443/tcp
 ufw --force enable
 echo "  UFW: SSH + HTTP + HTTPS allowed"
 
-# ─── 8. Caddy Config ─────────────────────────────────────────────────────
-echo "── 8. Caddy config ──"
+# ─── 8. Windows build prerequisites ─────────────────────────────────────
+echo "── 8. Windows build prerequisites ──"
+dpkg --add-architecture i386
+apt update
+apt install -y mingw-w64 nsis wine64 wine32:i386 xvfb
+sudo -u ubuntu bash -lc '
+  if ! command -v rustup >/dev/null 2>&1; then
+    curl https://sh.rustup.rs -sSf | sh -s -- -y --profile minimal
+  fi
+  source "$HOME/.cargo/env"
+  rustup target add x86_64-pc-windows-gnu
+'
+echo "  Rust + MinGW + NSIS + Wine + Xvfb ready"
+
+# ─── 9. Caddy Config ─────────────────────────────────────────────────────
+echo "── 9. Caddy config ──"
 cat > /etc/caddy/Caddyfile << 'CADDYEOF'
 # ─── redcoreECO Reverse Proxy ────────────────────────────────────────────
 
@@ -127,14 +142,14 @@ CADDYEOF
 systemctl restart caddy
 echo "  Caddy configured for redcoreos.net + subdomains"
 
-# ─── 9. App Directory ────────────────────────────────────────────────────
-echo "── 9. App directory ──"
+# ─── 10. App Directory ───────────────────────────────────────────────────
+echo "── 10. App directory ──"
 mkdir -p /home/ubuntu/redcoreECO
 chown ubuntu:ubuntu /home/ubuntu/redcoreECO
 echo "  /home/ubuntu/redcoreECO ready"
 
-# ─── 10. Environment Template ─────────────────────────────────────────────
-echo "── 10. Environment template ──"
+# ─── 11. Environment Template ────────────────────────────────────────────
+echo "── 11. Environment template ──"
 JWT_SECRET_VALUE=$(openssl rand -hex 32)
 NEXTAUTH_SECRET_VALUE=$(openssl rand -hex 32)
 cat > /home/ubuntu/redcoreECO/.env << ENVEOF

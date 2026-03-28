@@ -155,6 +155,13 @@ jobs:
     needs: [build-os-installer]
     if: github.ref == 'refs/heads/main'
     steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
       - name: Download OS installer
         uses: actions/download-artifact@v4
         with:
@@ -173,8 +180,39 @@ jobs:
 
       - name: Upload OS installer to VDS
         run: |
-          scp -o StrictHostKeyChecking=no ./artifacts/os/redcore-os-setup.exe ubuntu@REDACTED_VDS_IP:/var/www/redcore-downloads/os/
+          VERSION=$(node -p "require('./apps/os-desktop/package.json').version")
+          SHA=$(sha256sum ./artifacts/os/redcore-os-setup.exe | awk '{print $1}')
+          COMMIT_SHA="${GITHUB_SHA::7}"
+          RELEASE_NAME="redcore-os-${VERSION}-${COMMIT_SHA}.exe"
+          SIZE=$(stat -c %s ./artifacts/os/redcore-os-setup.exe)
+          BUILT_AT=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+          mkdir -p ./artifacts/os/publish
+          cp ./artifacts/os/redcore-os-setup.exe ./artifacts/os/publish/redcore-os-setup.exe
+          cp ./artifacts/os/redcore-os-setup.exe "./artifacts/os/publish/${RELEASE_NAME}"
+
+          cat > ./artifacts/os/publish/latest.json <<JSON
+          {
+            "product": "redcore-os",
+            "channel": "latest",
+            "version": "${VERSION}",
+            "versionTag": "v${VERSION}-${COMMIT_SHA}",
+            "commit": "${COMMIT_SHA}",
+            "builtAt": "${BUILT_AT}",
+            "filename": "redcore-os-setup.exe",
+            "releaseFilename": "${RELEASE_NAME}",
+            "sizeBytes": ${SIZE},
+            "sha256": "${SHA}",
+            "url": "https://redcoreos.net/downloads/os/redcore-os-setup.exe",
+            "releaseUrl": "https://redcoreos.net/downloads/os/releases/${RELEASE_NAME}"
+          }
+          JSON
+
+          ssh -o StrictHostKeyChecking=no ubuntu@REDACTED_VDS_IP "mkdir -p /var/www/redcore-downloads/os/releases /var/www/redcore-downloads/os/archive"
+          scp -o StrictHostKeyChecking=no ./artifacts/os/publish/redcore-os-setup.exe ubuntu@REDACTED_VDS_IP:/var/www/redcore-downloads/os/
+          scp -o StrictHostKeyChecking=no "./artifacts/os/publish/${RELEASE_NAME}" ubuntu@REDACTED_VDS_IP:/var/www/redcore-downloads/os/releases/
+          scp -o StrictHostKeyChecking=no ./artifacts/os/publish/latest.json ubuntu@REDACTED_VDS_IP:/var/www/redcore-downloads/os/
 
       - name: Verify upload
         run: |
-          ssh -o StrictHostKeyChecking=no ubuntu@REDACTED_VDS_IP "ls -lh /var/www/redcore-downloads/os/redcore-os-setup.exe"
+          ssh -o StrictHostKeyChecking=no ubuntu@REDACTED_VDS_IP "ls -lh /var/www/redcore-downloads/os/redcore-os-setup.exe /var/www/redcore-downloads/os/latest.json && cat /var/www/redcore-downloads/os/latest.json"
