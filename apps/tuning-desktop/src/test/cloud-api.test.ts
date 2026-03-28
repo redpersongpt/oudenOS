@@ -88,12 +88,23 @@ describe("cloud-api — request behavior (mocked fetch)", () => {
 
   it("returns parsed JSON on 200", async () => {
     const profile = {
-      id: "u1",
-      email: "a@b.com",
-      displayName: null,
-      tier: "free",
-      subscriptionStatus: "active",
-      createdAt: "2026-01-01T00:00:00Z",
+      user: {
+        id: "u1",
+        email: "a@b.com",
+        name: "Test User",
+        tier: "free",
+        subscriptionStatus: "active",
+        createdAt: "2026-01-01T00:00:00Z",
+      },
+      subscription: {
+        tier: "free",
+        status: "active",
+        currentPeriodEnd: null,
+        cancelAtPeriodEnd: false,
+        paymentMethod: null,
+      },
+      preferences: null,
+      connectedAccounts: [],
     };
     globalThis.fetch = vi.fn().mockResolvedValue({
       ok: true,
@@ -104,6 +115,22 @@ describe("cloud-api — request behavior (mocked fetch)", () => {
     setApiTokens("valid-token", "refresh-token");
     const { cloudApi: api } = await import("@/lib/cloud-api");
     const result = await api.auth.me();
-    expect(result).toEqual(profile);
+    expect(result).toEqual({
+      user: {
+        id: "u1",
+        email: "a@b.com",
+        displayName: "Test User",
+        tier: "free",
+        subscriptionStatus: "active",
+        createdAt: "2026-01-01T00:00:00Z",
+        avatarUrl: null,
+        emailVerified: null,
+        role: undefined,
+      },
+      subscription: profile.subscription,
+      preferences: null,
+      connectedAccounts: [],
+      machines: [],
+    });
   });
 });

@@ -1,4 +1,5 @@
 import crypto from "node:crypto";
+import { getAppUrl } from "./app-url";
 
 export function generatePasswordResetToken(): string {
   return crypto.randomBytes(40).toString("hex");
@@ -9,6 +10,6 @@ export function hashPasswordResetToken(rawToken: string): string {
 }
 
 export function buildPasswordResetUrl(rawToken: string): string {
-  const baseUrl = (process.env.NEXTAUTH_URL ?? "https://redcoreos.net").replace(/\/$/, "");
+  const baseUrl = getAppUrl();
   return `${baseUrl}/reset-password?token=${encodeURIComponent(rawToken)}`;
 }
