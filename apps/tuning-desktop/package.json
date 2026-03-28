@@ -80,13 +80,14 @@
           ]
         }
       ],
-      "icon": "resources/redcore-icon.png"
+      "icon": "resources/redcore-icon.ico"
     },
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
-      "installerIcon": "resources/redcore-icon.png",
-      "uninstallerIcon": "resources/redcore-icon.png",
+      "installerIcon": "resources/redcore-icon.ico",
+      "uninstallerIcon": "resources/redcore-icon.ico",
+      "installerHeaderIcon": "resources/redcore-icon.ico",
       "artifactName": "redcore-tuning-setup.${ext}"
     },
     "asar": true,

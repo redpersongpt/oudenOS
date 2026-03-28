@@ -73,6 +73,7 @@
           "arch": ["x64"]
         }
       ],
+      "icon": "resources/redcore-icon.ico",
       "executableName": "redcore-os",
       "legalTrademarks": "redcore",
       "publisherName": "redcore",
@@ -83,6 +84,9 @@
       "allowToChangeInstallationDirectory": true,
       "runAfterFinish": true,
       "artifactName": "redcore-os-setup.${ext}",
+      "installerIcon": "resources/redcore-icon.ico",
+      "uninstallerIcon": "resources/redcore-icon.ico",
+      "installerHeaderIcon": "resources/redcore-icon.ico",
       "shortcutName": "redcore OS",
       "uninstallDisplayName": "redcore OS",
       "createDesktopShortcut": true,
