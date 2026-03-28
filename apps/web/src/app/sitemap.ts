@@ -11,7 +11,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${base}/windows-debloat`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
     { url: `${base}/windows-11-debloat`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
     { url: `${base}/custom-windows`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
-    { url: `${base}/atlasos-alternative`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     { url: `${base}/why-redcore`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     { url: `${base}/work-pc-debloat`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     { url: `${base}/downloads`, lastModified: now, changeFrequency: "weekly", priority: 0.8 },

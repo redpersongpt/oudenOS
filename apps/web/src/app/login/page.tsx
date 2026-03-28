@@ -96,6 +96,11 @@ export default function LoginPage() {
                 className="w-full h-11 px-3.5 rounded-lg bg-surface-card border border-border text-[14px] text-ink-primary placeholder:text-ink-tertiary outline-none focus:border-accent/50 transition-colors"
                 placeholder="Your password"
               />
+              <div className="mt-2 text-right">
+                <Link href="/forgot-password" className="text-[12px] text-accent hover:text-accent-bright transition-colors">
+                  Forgot your password?
+                </Link>
+              </div>
             </div>
 
             <motion.button

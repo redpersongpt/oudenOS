@@ -164,10 +164,10 @@ export default function CustomWindowsPage() {
                 Download redcore OS
               </Link>
               <Link
-                href="/atlasos-alternative"
+                href="/why-redcore"
                 className="inline-flex items-center rounded-lg border border-border px-5 py-2.5 text-[13px] font-medium text-ink-secondary transition-all hover:text-ink-primary hover:border-border-strong"
               >
-                Compare with AtlasOS
+                See why redcore works
               </Link>
             </div>
           </div>
