@@ -31,12 +31,12 @@ export function EmptyState({
       {icon && (
         <motion.div
           variants={staggerChild}
-          className={`mb-4 flex items-center justify-center rounded-2xl border border-neutral-150 bg-neutral-50 ${
+          className={`mb-4 flex items-center justify-center rounded-2xl border border-border bg-surface-overlay ${
             compact ? "h-12 w-12" : "h-16 w-16"
           }`}
         >
           <span
-            className={`text-neutral-300 ${
+            className={`text-ink-tertiary ${
               compact
                 ? "[&>svg]:h-6 [&>svg]:w-6"
                 : "[&>svg]:h-8 [&>svg]:w-8"
@@ -48,7 +48,7 @@ export function EmptyState({
       )}
       <motion.p
         variants={staggerChild}
-        className={`font-semibold text-neutral-700 ${
+        className={`font-semibold text-ink-secondary ${
           compact ? "text-sm" : "text-base"
         }`}
       >
@@ -57,7 +57,7 @@ export function EmptyState({
       {description && (
         <motion.p
           variants={staggerChild}
-          className={`mt-1.5 text-neutral-400 max-w-xs leading-relaxed ${
+          className={`mt-1.5 text-ink-tertiary max-w-xs leading-relaxed ${
             compact ? "text-xs" : "text-sm"
           }`}
         >

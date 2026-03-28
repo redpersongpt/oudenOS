@@ -59,7 +59,7 @@ actions:
 
   - id: shell.disable-copilot
     name: "Disable Windows Copilot"
-    description: "Disable the Copilot AI sidebar and taskbar button"
+    description: "Disable the Copilot AI sidebar and remove the taskbar button"
     risk: safe
     tier: free
     default: true
@@ -71,6 +71,51 @@ actions:
       - hive: HKCU
         path: "Software\\Policies\\Microsoft\\Windows\\WindowsCopilot"
         valueName: TurnOffWindowsCopilot
+        value: 1
+        valueType: DWord
+      - hive: HKLM
+        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsCopilot"
+        valueName: TurnOffWindowsCopilot
+        value: 1
+        valueType: DWord
+      - hive: HKCU
+        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced"
+        valueName: ShowCopilotButton
+        value: 0
+        valueType: DWord
+
+  - id: shell.hide-chat-icon
+    name: "Hide Teams Chat Icon"
+    description: "Remove the Teams Chat icon from the taskbar"
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKCU
+        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced"
+        valueName: TaskbarMn
+        value: 0
+        valueType: DWord
+
+  - id: shell.enable-end-task
+    name: "Enable End Task in Taskbar"
+    description: "Show End Task option when right-clicking apps on the taskbar"
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    minWindowsBuild: 22631
+    registryChanges:
+      - hive: HKCU
+        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\\TaskbarDeveloperSettings"
+        valueName: TaskbarEndTask
         value: 1
         valueType: DWord
 

@@ -3,9 +3,14 @@
 // Handles automatic token refresh on 401 and network error normalization.
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-const BASE_URL: string =
-  (typeof import.meta !== "undefined" && (import.meta as any).env?.VITE_API_URL) ||
-  "http://localhost:3000";
+const _configuredUrl: string =
+  (typeof import.meta !== "undefined" && (import.meta as any).env?.VITE_API_URL) || "";
+
+if (_configuredUrl && !_configuredUrl.startsWith("https://")) {
+  throw new Error(`VITE_API_URL must use HTTPS, got: ${_configuredUrl}`);
+}
+
+const BASE_URL: string = _configuredUrl || "https://api.redcore-tuning.com";
 
 export interface CloudApiError {
   status: number;
@@ -167,6 +172,14 @@ export const cloudApi = {
     register: (data: AuthRegisterRequest) =>
       request<AuthResponse>("POST", "/auth/register", data),
     me: () => request<UserProfile>("GET", "/auth/me"),
+    logout: () =>
+      request<void>("POST", "/auth/logout"),
+    refresh: (refreshToken: string) =>
+      request<{ accessToken: string; refreshToken: string }>(
+        "POST", "/auth/refresh", { refreshToken }
+      ),
+    forgotPassword: (email: string) =>
+      request<{ message: string }>("POST", "/auth/forgot-password", { email }),
   },
   subscription: {
     get: () => request<SubscriptionDetails>("GET", "/license/subscription"),

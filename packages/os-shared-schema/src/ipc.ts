@@ -1,50 +1,85 @@
 // ─── IPC Contract ────────────────────────────────────────────────────────────
 // Source of truth for all communication between UI and Rust service.
+// The renderer NEVER talks to the service directly — always through main.
+//
+// IMPORTANT: ALLOWED_METHODS in preload/index.ts MUST stay in sync with
+// the keys of IpcMethods below.
 
 import type { ProfileClassification, MachineProfile } from "./profiles.js";
-import type { TransformPlan, TransformAction, OSHealthAssessment } from "./transformation.js";
+import type { OSHealthAssessment } from "./transformation.js";
+import type { HardwareAssessment, WorkIndicatorAssessment } from "./assessment.js";
+import type { TransformPreset, ResolvedPlaybook, RecommendedApp, AppBundleResolveResult } from "./playbook.js";
+import type { ExecutionStartResult, ActionExecutionResult } from "./execution.js";
+import type { PersonalizationOptions, PersonalizationPreferences } from "./personalization.js";
+import type { OsRollbackSnapshot, OsRollbackOperation, OsAuditLogEntry } from "./rollback.js";
+import type { OsJournalState } from "./journal.js";
+import type { RegistryVerifyResult } from "./verify.js";
+
+// ─── Request / Response pairs ─────────────────────────────────────────────────
 
 export interface IpcMethods {
-  // System assessment
-  "assess.hardware": { params: {}; result: unknown };
+  // ── Assessment ────────────────────────────────────────────────────────────
+  // assess.full replaces the earlier assess.hardware + assess.workIndicators split.
+  "assess.full": { params: {}; result: HardwareAssessment };
   "assess.health": { params: {}; result: OSHealthAssessment };
-  "assess.workIndicators": { params: {}; result: unknown };
+  "assess.workIndicators": { params: {}; result: WorkIndicatorAssessment };
 
-  // Classification
+  // ── Classification ────────────────────────────────────────────────────────
   "classify.machine": { params: { assessmentId: string }; result: ProfileClassification };
 
-  // Transformation planning
-  "transform.plan": { params: { profile: MachineProfile; preset: string }; result: TransformPlan };
-  "transform.getActions": { params: { category?: string }; result: TransformAction[] };
-  "transform.preview": { params: { actionId: string }; result: TransformAction };
+  // ── Playbook (primary transformation path) ────────────────────────────────
+  // playbook.resolve takes the user-confirmed profile + preset and returns
+  // a fully resolved plan with per-action status (Included/Blocked/Optional…).
+  "playbook.resolve": { params: { profile: MachineProfile; preset: TransformPreset }; result: ResolvedPlaybook };
 
-  // Execution
-  "execute.apply": { params: { planId: string }; result: unknown };
-  "execute.applyAction": { params: { actionId: string }; result: unknown };
+  // ── App bundle ────────────────────────────────────────────────────────────
+  "appbundle.getRecommended": { params: { profile: MachineProfile }; result: RecommendedApp[] };
+  "appbundle.resolve": { params: { appIds: string[] }; result: AppBundleResolveResult };
+
+  // ── Execution ─────────────────────────────────────────────────────────────
+  "execute.apply": { params: { planId: string }; result: ExecutionStartResult };
+  "execute.applyAction": { params: { actionId: string }; result: ActionExecutionResult };
   "execute.pause": { params: {}; result: void };
   "execute.resume": { params: {}; result: void };
 
-  // Rollback
-  "rollback.list": { params: {}; result: unknown };
-  "rollback.restore": { params: { snapshotId: string }; result: unknown };
-  "rollback.audit": { params: { limit: number }; result: unknown };
+  // ── Personalization ───────────────────────────────────────────────────────
+  "personalize.options": { params: {}; result: PersonalizationOptions };
+  "personalize.apply": { params: { preferences: PersonalizationPreferences }; result: void };
+  "personalize.revert": { params: {}; result: void };
 
-  // Journal
-  "journal.state": { params: {}; result: unknown };
-  "journal.resume": { params: {}; result: unknown };
-  "journal.cancel": { params: {}; result: unknown };
+  // ── Rollback ─────────────────────────────────────────────────────────────
+  "rollback.list": { params: {}; result: OsRollbackSnapshot[] };
+  "rollback.restore": { params: { snapshotId: string }; result: OsRollbackOperation };
+  "rollback.audit": { params: { limit: number }; result: OsAuditLogEntry[] };
 
-  // App hub
-  "apphub.catalog": { params: {}; result: unknown };
-  "apphub.install": { params: { appId: string }; result: unknown };
+  // ── Journal (reboot-resume) ───────────────────────────────────────────────
+  "journal.state": { params: {}; result: OsJournalState | null };
+  "journal.resume": { params: {}; result: void };
+  "journal.cancel": { params: {}; result: void };
 
-  // System
-  "system.status": { params: {}; result: { version: string; uptime: number } };
+  // ── Verification ──────────────────────────────────────────────────────────
+  "verify.registryValue": { params: { hive: string; path: string; valueName: string }; result: RegistryVerifyResult };
+
+  // ── System ────────────────────────────────────────────────────────────────
+  "system.status": { params: {}; result: { version: string; uptime: number; mode: "live" | "demo" } };
   "system.reboot": { params: { reason: string }; result: void };
 }
 
-// Only events that are ACTUALLY emitted
+// ─── Push events (Rust → main → renderer) ────────────────────────────────────
+// Only events that are ACTUALLY emitted belong here.
+// Add to preload ALLOWED_CHANNELS when Rust emission is wired.
+
 export interface IpcEvents {
-  "execute.progress": { actionId: string; status: string; percent: number };
+  // Execution progress — emitted per action during execute.apply
+  "execute.progress": { actionId: string; status: string; percent: number; detail: string };
+
+  // Scan progress — emitted during assess.full when hardware scan is running
+  // NOTE: Rust emission wiring pending; subscribe in preload when ready.
+  "scan.progress": { phase: string; percent: number; detail: string };
+
+  // Journal progress — emitted when a reboot-resume step completes
+  "journal.progress": { planId: string; completedActions: number; totalActions: number };
+
+  // Service-level errors not tied to a specific call
   "service.error": { code: string; message: string };
 }

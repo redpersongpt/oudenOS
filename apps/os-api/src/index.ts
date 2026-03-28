@@ -1,5 +1,6 @@
 import Fastify from 'fastify';
 import cors from '@fastify/cors';
+import helmet from '@fastify/helmet';
 import { closeDb } from './db/index.js';
 import authRoutes from './routes/auth.js';
 import userRoutes from './routes/users.js';
@@ -43,6 +44,11 @@ const extraOrigins = process.env.ALLOWED_ORIGINS;
 if (extraOrigins) {
   allowedOrigins.push(...extraOrigins.split(',').map((o) => o.trim()));
 }
+
+// Security headers
+await app.register(helmet, {
+  contentSecurityPolicy: false, // API-only, no HTML served
+});
 
 await app.register(cors, {
   origin: allowedOrigins,

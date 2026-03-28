@@ -1,9 +1,9 @@
 # ─── Shell: Explorer Settings ─────────────────────────────────────────────────
-# Shows file extensions in File Explorer.
+# File Explorer usability and cleanup improvements.
 
 module: shell.explorer
 name: "Explorer Settings"
-description: "Improve File Explorer usability by showing file extensions"
+description: "Improve File Explorer usability — show extensions, show hidden files, clean navigation"
 category: shell
 
 actions:
@@ -11,7 +11,7 @@ actions:
     name: "Show File Extensions"
     description: "Show file extensions in File Explorer for all file types"
     rationale: "Improves file identification and security awareness (hidden extensions can mask malware)"
-    risk: low
+    risk: safe
     tier: free
     default: true
     requiresReboot: false
@@ -23,4 +23,42 @@ actions:
         path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced"
         valueName: HideFileExt
         value: 0
+        valueType: DWord
+
+  - id: shell.show-hidden-files
+    name: "Show Hidden Files"
+    description: "Display hidden files and folders in File Explorer"
+    rationale: "Power users need to see hidden files for configuration and troubleshooting"
+    risk: safe
+    tier: free
+    default: false
+    expertOnly: false
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKCU
+        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced"
+        valueName: Hidden
+        value: 1
+        valueType: DWord
+
+  - id: shell.explorer-default-this-pc
+    name: "Open Explorer to This PC"
+    description: "Set File Explorer to open to This PC instead of Home/Quick Access"
+    rationale: "This PC view shows drives and system info, more useful than recent files"
+    risk: safe
+    tier: free
+    default: false
+    expertOnly: false
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKCU
+        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced"
+        valueName: LaunchTo
+        value: 1
         valueType: DWord

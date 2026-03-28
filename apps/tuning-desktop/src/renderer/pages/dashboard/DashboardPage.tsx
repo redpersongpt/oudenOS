@@ -1,3 +1,4 @@
+import type { ElementType } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -130,7 +131,7 @@ function HealthGauge({ score }: HealthGaugeProps) {
 // ─── Opportunity card ─────────────────────────────────────────────────────────
 
 interface OpportunityCardProps {
-  icon: React.ElementType;
+  icon: ElementType;
   iconBg: string;
   iconColor: string;
   title: string;
@@ -472,7 +473,7 @@ export function DashboardPage() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => navigate("/tuning-plan")}
+                    onClick={() => navigate("/tuning")}
                   >
                     View Plan
                     <ChevronRight className="h-3.5 w-3.5" />
@@ -671,7 +672,7 @@ export function DashboardPage() {
                 <Button
                   variant="secondary"
                   size="sm"
-                  onClick={() => navigate("/tuning-plan")}
+                  onClick={() => navigate("/tuning")}
                   icon={<Wifi className="h-3.5 w-3.5" />}
                 >
                   Generate Tuning Plan

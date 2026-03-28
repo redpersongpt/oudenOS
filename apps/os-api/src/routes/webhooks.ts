@@ -4,6 +4,10 @@ import { eq } from 'drizzle-orm';
 import { db } from '../db/index.js';
 import { subscriptions, paymentHistory, users } from '../db/schema.js';
 import { sendSubscriptionConfirmationEmail } from '../lib/email.js';
+import {
+  handleDonationCheckoutCompleted,
+  handleDonationSubscriptionCancelled,
+} from './donations.js';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -107,17 +111,29 @@ export default async function webhookRoutes(app: FastifyInstance): Promise<void>
 
     try {
       switch (event.type) {
-        case 'checkout.session.completed':
-          await handleCheckoutCompleted(event.data.object as Stripe.Checkout.Session);
+        case 'checkout.session.completed': {
+          const session = event.data.object as Stripe.Checkout.Session;
+          if (session.metadata?.donationId) {
+            await handleDonationCheckoutCompleted(session);
+          } else {
+            await handleCheckoutCompleted(session);
+          }
           break;
+        }
 
         case 'customer.subscription.updated':
           await handleSubscriptionUpdated(event.data.object as Stripe.Subscription);
           break;
 
-        case 'customer.subscription.deleted':
-          await handleSubscriptionDeleted(event.data.object as Stripe.Subscription);
+        case 'customer.subscription.deleted': {
+          const sub = event.data.object as Stripe.Subscription;
+          if (sub.metadata?.donationId) {
+            await handleDonationSubscriptionCancelled(sub);
+          } else {
+            await handleSubscriptionDeleted(sub);
+          }
           break;
+        }
 
         case 'invoice.payment_succeeded':
           await handlePaymentSucceeded(event.data.object as Stripe.Invoice);

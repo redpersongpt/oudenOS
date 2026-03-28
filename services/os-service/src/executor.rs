@@ -113,11 +113,12 @@ pub fn execute_action(
 
     for change in &bcd_changes_pre {
         let element = change["element"].as_str().unwrap_or("");
+        let prev = read_bcd_value(element);
         previous_values.push(rollback::PreviousValue {
             change_type: "bcd".to_string(),
             path: "bcd".to_string(),
             value_name: element.to_string(),
-            previous_value: None, // BCD previous value read is complex; store None
+            previous_value: prev,
             action_id: action_id.to_string(),
         });
     }
@@ -131,11 +132,12 @@ pub fn execute_action(
 
     for change in &power_changes_pre {
         let setting_path = change["settingPath"].as_str().unwrap_or("");
+        let prev = read_power_value(setting_path);
         previous_values.push(rollback::PreviousValue {
             change_type: "power".to_string(),
             path: setting_path.to_string(),
             value_name: "value".to_string(),
-            previous_value: None, // Power previous value would need powercfg /query
+            previous_value: prev,
             action_id: action_id.to_string(),
         });
     }
@@ -446,7 +448,7 @@ pub fn execute_action(
 fn remove_appx_package(package_name: &str) -> anyhow::Result<()> {
     let script = format!(
         "Get-AppxPackage -AllUsers -Name '{}' | Remove-AppxPackage -AllUsers",
-        package_name,
+        powershell::escape_ps_string(package_name),
     );
     let result = powershell::execute(&script)?;
     if !result.success {
@@ -459,7 +461,8 @@ fn remove_appx_package(package_name: &str) -> anyhow::Result<()> {
 fn disable_scheduled_task(task_name: &str, task_path: &str) -> anyhow::Result<()> {
     let script = format!(
         "Disable-ScheduledTask -TaskName '{}' -TaskPath '{}' -ErrorAction Stop",
-        task_name, task_path,
+        powershell::escape_ps_string(task_name),
+        powershell::escape_ps_string(task_path),
     );
     let result = powershell::execute(&script)?;
     if !result.success {
@@ -476,17 +479,22 @@ fn apply_registry_change(
     value: &Value,
     value_type: &str,
 ) -> anyhow::Result<()> {
+    let escaped_path = powershell::escape_ps_string(path);
     let value_str = match value {
         Value::Number(n) => n.to_string(),
-        Value::String(s) => format!("'{}'", s),
+        Value::String(s) => format!("'{}'", powershell::escape_ps_string(s)),
         other => other.to_string(),
     };
     // Handle empty value_name (default value) — use '(Default)' for Set-ItemProperty
-    let ps_name = if value_name.is_empty() { "(Default)" } else { value_name };
+    let ps_name = if value_name.is_empty() {
+        "(Default)".to_string()
+    } else {
+        powershell::escape_ps_string(value_name)
+    };
     let script = format!(
         "New-Item -Path 'Registry::{}\\{}' -Force | Out-Null; \
          Set-ItemProperty -Path 'Registry::{}\\{}' -Name '{}' -Value {} -Type {} -Force",
-        hive, path, hive, path, ps_name, value_str, value_type,
+        hive, escaped_path, hive, escaped_path, ps_name, value_str, value_type,
     );
     let result = powershell::execute(&script)?;
     if !result.success {
@@ -500,10 +508,15 @@ fn apply_registry_change(
 
 #[cfg(windows)]
 fn apply_service_change(service_name: &str, startup_type: &str) -> anyhow::Result<()> {
+    // Validate inputs before interpolation
+    powershell::validate_safe_arg(service_name, "service name")?;
+    powershell::validate_safe_arg(startup_type, "startup type")?;
+    let escaped_name = powershell::escape_ps_string(service_name);
+
     let script = format!(
         "Set-Service -Name '{}' -StartupType {} -ErrorAction Stop; \
          if ('{}' -eq 'Disabled') {{ Stop-Service -Name '{}' -Force -ErrorAction SilentlyContinue }}",
-        service_name, startup_type, startup_type, service_name,
+        escaped_name, startup_type, startup_type, escaped_name,
     );
     let result = powershell::execute(&script)?;
     if !result.success {
@@ -517,11 +530,16 @@ fn apply_service_change(service_name: &str, startup_type: &str) -> anyhow::Resul
 
 #[cfg(windows)]
 fn read_registry_value(hive: &str, path: &str, value_name: &str) -> Option<Value> {
-    let ps_name = if value_name.is_empty() { "(Default)" } else { value_name };
+    let escaped_path = powershell::escape_ps_string(path);
+    let ps_name = if value_name.is_empty() {
+        "(Default)".to_string()
+    } else {
+        powershell::escape_ps_string(value_name)
+    };
     let script = format!(
         "$val = Get-ItemProperty -Path 'Registry::{}\\{}' -Name '{}' -ErrorAction SilentlyContinue; \
          if ($val) {{ $val.'{}' }} else {{ $null }}",
-        hive, path, ps_name, ps_name,
+        hive, escaped_path, ps_name, ps_name,
     );
     match powershell::execute(&script) {
         Ok(result) if result.success => {
@@ -542,7 +560,7 @@ fn read_registry_value(hive: &str, path: &str, value_name: &str) -> Option<Value
 fn read_service_start_type(service_name: &str) -> Option<Value> {
     let script = format!(
         "(Get-Service -Name '{}' -ErrorAction SilentlyContinue).StartType",
-        service_name,
+        powershell::escape_ps_string(service_name),
     );
     match powershell::execute(&script) {
         Ok(result) if result.success => {
@@ -566,6 +584,75 @@ pub fn read_registry_value_public(hive: &str, path: &str, value_name: &str) -> O
 #[cfg(not(windows))]
 pub fn read_registry_value_public(hive: &str, path: &str, value_name: &str) -> Option<Value> {
     read_registry_value(hive, path, value_name)
+}
+
+// ─── BCD and Power read functions ─────────────────────────────────────────
+
+#[cfg(windows)]
+fn read_bcd_value(element: &str) -> Option<Value> {
+    if element.is_empty() {
+        return None;
+    }
+    if powershell::validate_safe_arg(element, "BCD element").is_err() {
+        return None;
+    }
+    let script = format!(
+        "bcdedit /enum {{current}} 2>$null | Select-String -Pattern '{}' | ForEach-Object {{ $_.Line }}",
+        powershell::escape_ps_string(element),
+    );
+    match powershell::execute(&script) {
+        Ok(result) if result.success => {
+            let trimmed = result.stdout.trim();
+            if trimmed.is_empty() {
+                None
+            } else {
+                let value = trimmed.split_whitespace().last().unwrap_or(trimmed);
+                Some(Value::String(value.to_string()))
+            }
+        }
+        _ => None,
+    }
+}
+
+#[cfg(not(windows))]
+fn read_bcd_value(_element: &str) -> Option<Value> {
+    None
+}
+
+#[cfg(windows)]
+fn read_power_value(setting_path: &str) -> Option<Value> {
+    let parts: Vec<&str> = setting_path.split('/').collect();
+    if parts.len() != 2 {
+        return None;
+    }
+    if powershell::validate_safe_arg(parts[0], "power subgroup").is_err()
+        || powershell::validate_safe_arg(parts[1], "power setting").is_err()
+    {
+        return None;
+    }
+    let script = format!("powercfg /query SCHEME_CURRENT {} {}", parts[0], parts[1]);
+    match powershell::execute(&script) {
+        Ok(result) if result.success => {
+            for line in result.stdout.lines() {
+                let line = line.trim();
+                if line.starts_with("Current AC Power Setting Index:") {
+                    if let Some(hex_val) = line.split(':').nth(1) {
+                        let hex_val = hex_val.trim().trim_start_matches("0x");
+                        if let Ok(n) = u64::from_str_radix(hex_val, 16) {
+                            return Some(serde_json::json!(n));
+                        }
+                    }
+                }
+            }
+            None
+        }
+        _ => None,
+    }
+}
+
+#[cfg(not(windows))]
+fn read_power_value(_setting_path: &str) -> Option<Value> {
+    None
 }
 
 // ─── Non-Windows simulation ─────────────────────────────────────────────────
@@ -620,6 +707,8 @@ fn apply_service_change(service_name: &str, startup_type: &str) -> anyhow::Resul
 
 #[cfg(windows)]
 fn apply_bcd_change(element: &str, new_value: &str) -> anyhow::Result<()> {
+    powershell::validate_safe_arg(element, "BCD element")?;
+    powershell::validate_safe_arg(new_value, "BCD value")?;
     let script = format!("bcdedit /set {{current}} {} {}", element, new_value);
     let result = powershell::execute(&script)?;
     if !result.success {
@@ -642,6 +731,10 @@ fn apply_power_change(setting_path: &str, new_value: &str) -> anyhow::Result<()>
     if parts.len() != 2 {
         anyhow::bail!("Invalid power setting path: {}", setting_path);
     }
+    // Validate GUIDs and value before interpolation
+    powershell::validate_safe_arg(parts[0], "power subgroup")?;
+    powershell::validate_safe_arg(parts[1], "power setting")?;
+    powershell::validate_safe_arg(new_value, "power value")?;
     let script = format!(
         "powercfg /setacvalueindex SCHEME_CURRENT {} {} {}; powercfg /setactive SCHEME_CURRENT",
         parts[0], parts[1], new_value,
@@ -660,6 +753,9 @@ fn apply_power_change(_setting_path: &str, _new_value: &str) -> anyhow::Result<(
 }
 
 // ─── PowerShell command execution ───────────────────────────────────────────
+// NOTE: These scripts come from action definitions (YAML playbooks), NOT from
+// user input. They are trusted, audited commands embedded in the playbook data.
+// Do not pass user-controlled strings through this path.
 
 #[cfg(windows)]
 fn execute_ps_command(script: &str) -> anyhow::Result<()> {

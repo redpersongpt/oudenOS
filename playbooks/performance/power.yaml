@@ -92,3 +92,26 @@ actions:
     powerChanges:
       - settingPath: "501a4d13-42af-4429-9fd1-a8218c268e20/ee12f906-d277-404b-b6da-e5fa1a576df5"
         newValue: "0"
+
+  - id: power.disable-modern-standby
+    name: "Disable Modern Standby"
+    description: "Disable Modern Standby (S0 Low Power Idle) to force legacy S3 sleep. Prevents network activity, background updates, and battery drain during sleep."
+    rationale: "Modern Standby keeps CPU, network, and peripherals partially active during sleep. On desktops this wastes power. On laptops it drains battery. PlatformAoAcOverride=0 forces classic S3 sleep."
+    risk: medium
+    tier: free
+    default: false
+    expertOnly: false
+    requiresReboot: true
+    reversible: true
+    estimatedSeconds: 2
+    warningMessage: "Changes sleep behavior from Modern Standby to legacy S3. Instant wake and background sync will no longer work. Verify sleep works correctly after reboot."
+    blockedProfiles:
+      - office_laptop
+      - gaming_laptop
+      - low_spec_system
+    registryChanges:
+      - hive: HKLM
+        path: "SYSTEM\\CurrentControlSet\\Control\\Power"
+        valueName: PlatformAoAcOverride
+        value: 0
+        valueType: DWord

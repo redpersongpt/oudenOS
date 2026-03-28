@@ -14,13 +14,18 @@
     "./journal": "./src/journal.ts",
     "./license": "./src/license.ts",
     "./ipc": "./src/ipc.ts",
-    "./compatibility": "./src/compatibility.ts"
+    "./compatibility": "./src/compatibility.ts",
+    "./device-intelligence": "./src/device-intelligence.ts",
+    "./app-catalog": "./src/app-catalog.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "devDependencies": {
-    "typescript": "^5.7.0"
+    "typescript": "^5.7.0",
+    "vitest": "^2.1.0"
   }
 }

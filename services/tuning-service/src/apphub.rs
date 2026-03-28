@@ -112,11 +112,15 @@ fn download_installer(url: &str, app_id: &str) -> anyhow::Result<String> {
 
     tracing::info!(url, dest = %dest, "Downloading installer");
 
+    // Escape URL and dest path for safe PS single-quote interpolation
+    let escaped_url = crate::powershell::escape_ps_string(url);
+    let escaped_dest = crate::powershell::escape_ps_string(&dest);
+
     // Use PowerShell Invoke-WebRequest for download (no external deps needed)
     let script = format!(
         "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; \
          Invoke-WebRequest -Uri '{}' -OutFile '{}' -UseBasicParsing",
-        url, dest,
+        escaped_url, escaped_dest,
     );
     let result = crate::powershell::execute(&script)?;
     if !result.success {

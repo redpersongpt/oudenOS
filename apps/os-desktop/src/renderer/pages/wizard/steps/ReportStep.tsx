@@ -2,11 +2,11 @@
 // Transformation complete. Shows expert-grade summary of what changed and why.
 
 import { motion } from "framer-motion";
-import { Check, Shield, AlertTriangle, Lock } from "lucide-react";
+import { Check, Shield, AlertTriangle, Lock, Heart } from "lucide-react";
 import { useWizardStore } from "@/stores/wizard-store";
 
 export function ReportStep() {
-  const { executionResult, resolvedPlaybook, detectedProfile } = useWizardStore();
+  const { executionResult, resolvedPlaybook, detectedProfile, gotoDonation } = useWizardStore();
   const result = executionResult ?? { applied: 0, failed: 0, skipped: 0, preserved: 0 };
   const pb = resolvedPlaybook;
 
@@ -14,7 +14,8 @@ export function ReportStep() {
     <motion.div
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0 }}
+      exit={{ opacity: 0, y: -6 }}
+      transition={{ duration: 0.22, ease: [0.0, 0.0, 0.2, 1.0] }}
       className="flex h-full flex-col items-center justify-center gap-5 px-8"
     >
       {/* Success icon */}
@@ -113,6 +114,18 @@ export function ReportStep() {
       >
         A rollback snapshot was created before every change · All transformations are reversible
       </motion.p>
+
+      {/* Optional donation CTA */}
+      <motion.button
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.55 }}
+        onClick={gotoDonation}
+        className="flex items-center gap-1.5 rounded-lg border border-pink-500/20 bg-pink-500/[0.06] px-3.5 py-1.5 text-[10px] font-medium text-pink-400 transition-all hover:border-pink-500/35 hover:bg-pink-500/10"
+      >
+        <Heart className="h-3 w-3" strokeWidth={2} />
+        Support the project
+      </motion.button>
     </motion.div>
   );
 }

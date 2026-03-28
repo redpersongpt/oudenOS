@@ -53,9 +53,9 @@ describe("license-store", () => {
     it("free user cannot access premium features", () => {
       useLicenseStore.getState().setLicense(makeLicense("free"));
       expect(useLicenseStore.getState().canAccess("full_tuning_engine")).toBe(false);
-      expect(useLicenseStore.getState().canAccess("benchmark_lab")).toBe(false);
-      expect(useLicenseStore.getState().canAccess("rollback_center")).toBe(false);
       expect(useLicenseStore.getState().canAccess("thermal_analysis")).toBe(false);
+      expect(useLicenseStore.getState().canAccess("reboot_resume")).toBe(false);
+      expect(useLicenseStore.getState().canAccess("bottleneck_analysis")).toBe(false);
     });
 
     it("premium user can access all features", () => {
