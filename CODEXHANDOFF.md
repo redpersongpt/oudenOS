@@ -1,328 +1,190 @@
-# CODEX HANDOFF — redcore-OS Playbook-Native Wiring
+# CODEX HANDOFF — redcoreECO Post-CoWork Session
 
-**Date:** 2026-03-26
-**Previous session:** Claude Opus (Hizir) — two sessions
+**Date:** 2026-03-28
+**Previous sessions:** Hızır (bug hunt, March 26) → CoWork Claude (20hr marathon, March 27-28)
 **Workspace:** `/Users/redperson/redcoreECO`
-**Mission:** Finish wiring to make redcore-OS truly playbook-native in runtime, UI, and CI.
+**HEAD:** `9f55d4b` (fix: cloud-api security hardening)
 
 ---
 
-## GIT STATE RIGHT NOW
+## WHAT COWORK CLAUDE DID (20hr session, 48 commits, 301 files, 41,693 insertions)
 
-**Modified:**
-- `apps/os-desktop/src/renderer/pages/wizard/steps/ExecutionStep.tsx`
+### 7 Work Blocks
 
-**Untracked:**
-- `apps/os-desktop/src/renderer/pages/wizard/steps/PlaybookStrategyStep.tsx`
-- `CODEXHANDOFF.md`
+| Block | Time | Work |
+|-------|------|------|
+| 1. Website Rebuild | Mar 27 18:16-19:56 | Nav fixes, auth flow, product sections, OAuth username setup |
+| 2. Installer Pipeline | Mar 27 20:08-21:57 | GitHub Actions NSIS build, SSH deploy key, SEO 8 pages |
+| 3. OS App + Branding | Mar 27 22:01-23:57 | Black screen fix ×2, AtlasOS removal, full rebrand pink-red |
+| 4. Hero Visual | Mar 28 00:08-00:41 | Animated hexagon constellation, floating pills, live scan card |
+| 5. Website Polish | Mar 28 00:30-01:34 | Hero v3, diagonal bg, pricing distinction, unified ecosystem |
+| 6. Round 3 Mega-commit | Mar 28 11:07-11:23 | 240 files, 35k+ lines — see below |
+| 7. Security Hardening | Mar 28 14:45 | 8 cloud-api vulns fixed |
 
----
+### Major Deliverables
 
-## WHAT IS DONE (verified in files)
+1. **`apps/cloud-api` (ENTIRELY NEW)** — Full SaaS backend
+   - 3,307 lines across 8 route files
+   - Auth (register, login, OAuth, refresh, password reset)
+   - Users (profile, avatar, preferences, account deletion)
+   - Subscriptions (Stripe checkout, portal, proration)
+   - Webhooks (Stripe events)
+   - Admin (user search, impersonation, stats)
+   - Licensing (validation, activation)
+   - Telemetry + Updates
+   - Security-hardened: SQL injection, SSRF, OAuth bypass, race condition fixes
 
-### ExecutionStep.tsx — REWIRED ✅
+2. **`packages/system-analyzer` (ENTIRELY NEW)** — 3,313 lines
+   - Hardware tier classification, action recommendation, impact estimation
+   - Risk assessment, safety validation
+   - React components: SystemAnalysisCard, RecommendationList, AnalysisTimeline, ImpactPreview
 
-Old state: Used `MOCK_ACTIONS` — 15 hardcoded label strings. Sent label text as `actionId`.
+3. **40 Playbook YAMLs** — Complete playbook library
+   - Categories: appx, networking, performance, privacy, security, shell, startup-shutdown, services, tasks, personalization
 
-New state:
-- `useMemo` builds `ExecutableAction[]` from `resolvedPlaybook.phases[].actions` where `status === "Included"`
-- Sends real `action.id` to `execute.applyAction` via IPC
-- Phase 2: calls `personalize.apply` after playbook actions
-- Phase 3: calls `appbundle.resolve` for `selectedAppIds`
-- Empty-state guard if no actions resolved
-- `failCount` replaces shadowed `failed` variable
+4. **Eco-site (apps/web)** — Production rebuild
+   - 24 routes, 8 SEO content pages, sitemap
+   - Animated hero (hexagon constellation + floating pills)
+   - Pink-red brand, no green anywhere
+   - OAuth flow working, download CTA live
 
-**Known issues in this file:**
-- Imports `PlaybookResolvedAction` but doesn't use it directly (unused import — fix or remove)
-- Passes `profile: "auto"` to `personalize.apply` — should use `detectedProfile?.id`
-- `appbundle.resolve` resolves install queue but doesn't execute installs
-- Treats `"partial"` status as applied
+5. **Windows Installer Pipeline** — GitHub Actions → NSIS `.exe`
 
-### PlaybookStrategyStep.tsx — CREATED, NOT WIRED ⚠️
+6. **OS Desktop** — Playbook-native wizard fully wired
+   - Assessment → strategy → execution using real Rust IPC
+   - `main/index.ts` and `preload/index.ts` created (were missing)
+   - ExecutionStep uses real `resolvedPlaybook.phases[].actions`
 
-Component exists with 3 strategy cards (Conservative/Balanced/Aggressive). But:
-- Calls `setPlaybookPreset` which DOES NOT EXIST in wizard-store yet
-- Not in `WizardStepId` type
-- Not in `INITIAL_STEPS` array
-- Not imported in `WizardPage.tsx`
+7. **VDS Scripts** — `vds-deploy.sh` (234 lines) + `vds-setup.sh` (176 lines)
 
----
+8. **Research** — 5 competitive crawl reports (QuakedK, opcore, valleyofdoom, win11debloat, oneclick-ux)
 
-## EXACT REMAINING TASKS (in order)
-
-### Task 1: Wire PlaybookStrategyStep into store + router
-
-**File: `apps/os-desktop/src/renderer/stores/wizard-store.ts`**
-
-1. Add `"playbook-strategy"` to `WizardStepId` union (between `"preservation"` and `"playbook-review"`):
-```typescript
-export type WizardStepId =
-  | "welcome"
-  | "assessment"
-  | "profile"
-  | "preservation"
-  | "playbook-strategy"   // ← ADD
-  | "playbook-review"
-  | "personalization"
-  | "app-setup"
-  | "final-review"
-  | "execution"
-  | "reboot-resume"       // ← ADD (Task 2)
-  | "report"
-  | "handoff";            // ← ADD (Task 2)
-```
-
-2. Add to `WizardState` interface:
-```typescript
-playbookPreset: string;
-setPlaybookPreset: (preset: string) => void;
-```
-
-3. Add to `INITIAL_STEPS` after preservation:
-```typescript
-{ id: "playbook-strategy", label: "Strategy",  status: "locked" },
-```
-
-4. Implement in store:
-```typescript
-playbookPreset: "balanced",
-setPlaybookPreset: (preset) => set({ playbookPreset: preset, resolvedPlaybook: null }),
-// ^ clears resolvedPlaybook so PlaybookReviewStep re-fetches with new preset
-```
-
-5. Add to `reset()`: `playbookPreset: "balanced"`
-
-**File: `apps/os-desktop/src/renderer/pages/wizard/WizardPage.tsx`**
-
-Add import and render:
-```typescript
-import { PlaybookStrategyStep } from "./steps/PlaybookStrategyStep";
-// in JSX:
-{currentStep === "playbook-strategy" && <PlaybookStrategyStep key="playbook-strategy" />}
-```
-
-**File: `apps/os-desktop/src/renderer/pages/wizard/steps/PlaybookReviewStep.tsx`**
-
-Line 78-82: Replace hardcoded preset with store value:
-```typescript
-const { detectedProfile, resolvedPlaybook, setResolvedPlaybook, playbookPreset } = useWizardStore();
-// ...
-const result = await win.redcore.service.call("playbook.resolve", {
-  profile,
-  preset: playbookPreset ?? (detectedProfile?.isWorkPc ? "conservative" : "balanced"),
-});
-```
-
-### Task 2: Create RebootResumeStep + HandoffStep
-
-**File to create: `apps/os-desktop/src/renderer/pages/wizard/steps/RebootResumeStep.tsx`**
-
-Purpose: After execution, if any resolved actions had `requiresReboot: true`, show reboot prompt. Otherwise auto-skip.
-
-Pattern to follow (same as PreservationStep auto-skip):
-```typescript
-useEffect(() => {
-  if (!needsReboot) {
-    const t = setTimeout(() => skipStep("reboot-resume"), 150);
-    return () => clearTimeout(t);
-  }
-}, [needsReboot, skipStep]);
-```
-
-Determine `needsReboot` from: `resolvedPlaybook.phases[].actions.some(a => a.status === "Included" && a.requiresReboot)`
-
-IPC methods available: `journal.state`, `journal.resume` (already in preload allowlist).
-
-**File to create: `apps/os-desktop/src/renderer/pages/wizard/steps/HandoffStep.tsx`**
-
-Purpose: Final step. "Your OS is optimized. Continue with redcore-Tuning for advanced tuning."
-
-Move the Tuning CTA from ReportStep into this dedicated step. ReportStep becomes stats-only.
-
-**Store + WizardPage updates:**
-- Add `"reboot-resume"` and `"handoff"` to `WizardStepId`, `INITIAL_STEPS`
-- Add imports + render in WizardPage
-- Final step order (13 steps):
-
-```
-welcome → assessment → profile → preservation → playbook-strategy → playbook-review → personalization → app-setup → final-review → execution → reboot-resume → report → handoff
-```
-
-### Task 3: Deprecate transform.plan from store
-
-**File: `apps/os-desktop/src/renderer/stores/wizard-store.ts`**
-
-Remove:
-- `TransformationPlan` interface (lines 88-93)
-- `plan: TransformationPlan | null` from state (line 133)
-- `setPlan` from interface and implementation
-- `plan: null` from initial state and reset()
-
-**DO NOT** remove `transform.plan` from Rust service or preload — it's still a valid IPC method for direct testing. Just remove it from UI state.
-
-### Task 4: Update CI to prove playbook→execute chain
-
-**File: `.github/workflows/os-windows-proof.yml`**
-
-After existing step 11 (`playbook.resolve` test at line ~674), add:
-
-```powershell
-# ── STEP 13: PLAYBOOK → EXECUTE CHAIN PROOF ──
-Write-Output "`n── STEP 13: playbook.resolve → execute.applyAction chain ──"
-$pb = Send-Rpc "playbook.resolve" @{ profile = "gaming_desktop"; preset = "balanced" }
-$includedActions = @()
-foreach ($phase in $pb.result.phases) {
-    foreach ($action in $phase.actions) {
-        if ($action.status -eq "Included" -and $includedActions.Count -lt 3) {
-            $includedActions += $action.id
-        }
-    }
-}
-Write-Output "  Resolved $($pb.result.totalIncluded) included actions"
-Write-Output "  Testing execution of: $($includedActions -join ', ')"
-$chainPass = $true
-foreach ($actionId in $includedActions) {
-    $r = Send-Rpc "execute.applyAction" @{ actionId = $actionId }
-    if ($r.result.status -eq "success" -or $r.result.status -eq "partial") {
-        Write-Output "  PASS: execute $actionId"
-    } else {
-        Write-Output "  FAIL: execute $actionId"
-        $chainPass = $false
-    }
-}
-if ($chainPass) { Write-Output "  PASS: playbook→execute chain" }
-else { Write-Output "  FAIL: playbook→execute chain"; $allPassed = $false }
-
-# ── STEP 14: appbundle.resolve PROOF ──
-Write-Output "`n── STEP 14: appbundle.resolve ──"
-$rec = Send-Rpc "appbundle.getRecommended" @{ profile = "gaming_desktop" }
-$selectedApps = @()
-foreach ($app in $rec.result.apps) {
-    if ($app.recommended -and $selectedApps.Count -lt 2) {
-        $selectedApps += $app.id
-    }
-}
-$resolved = Send-Rpc "appbundle.resolve" @{ profile = "gaming_desktop"; selectedApps = $selectedApps }
-if ($resolved.result) {
-    Write-Output "  PASS: appbundle.resolve ($($selectedApps.Count) apps)"
-} else {
-    Write-Output "  FAIL: appbundle.resolve"; $allPassed = $false
-}
-```
-
-### Task 5: Update mock-service.mjs
-
-**File: `apps/os-desktop/test/mock-service.mjs`**
-
-Add handlers for:
-- `playbook.resolve` — return mock resolved playbook matching `ResolvedPlaybook` shape
-- `appbundle.getRecommended` — return mock recommended apps matching `RecommendedApp[]` shape
-- `appbundle.resolve` — return mock install queue
-
-Without these, the headed UI dev flow breaks because renderer calls playbook methods that mock service doesn't handle.
-
-### Task 6: Fix minor issues in ExecutionStep
-
-**File: `apps/os-desktop/src/renderer/pages/wizard/steps/ExecutionStep.tsx`**
-
-1. Remove unused `PlaybookResolvedAction` import (line 10)
-2. Replace `profile: "auto"` with `detectedProfile?.id ?? "auto"` in personalize.apply call (need to add `detectedProfile` to store destructure)
+### Build Status: ALL GREEN
+- 0 TypeScript errors across 15 targets (down from 15 errors pre-session)
+- All packages build successfully
 
 ---
 
-## KEY FILE MAP
+## WHAT'S STILL BROKEN (Prioritized)
 
-| File | Status | What to do |
-|------|--------|-----------|
-| `stores/wizard-store.ts` | ❌ NEEDS UPDATE | Add 3 step IDs, playbookPreset, setPlaybookPreset, remove TransformationPlan |
-| `WizardPage.tsx` | ❌ NEEDS UPDATE | Import + render 3 new steps |
-| `PlaybookStrategyStep.tsx` | ✅ CREATED | Wire into store (needs setPlaybookPreset to exist) |
-| `PlaybookReviewStep.tsx` | ❌ NEEDS UPDATE | Use playbookPreset from store instead of hardcoding |
-| `RebootResumeStep.tsx` | ❌ NOT CREATED | Auto-skip if no reboot needed, journal.state/resume |
-| `HandoffStep.tsx` | ❌ NOT CREATED | Tuning CTA as dedicated step |
-| `ExecutionStep.tsx` | ✅ DONE | Minor cleanup: unused import, profile:auto |
-| `os-windows-proof.yml` | ❌ NEEDS UPDATE | Add playbook→execute chain + appbundle.resolve proofs |
-| `test/mock-service.mjs` | ❌ NEEDS UPDATE | Add playbook.resolve, appbundle.* handlers |
+### P0 — Revenue & Data Integrity
+
+| ID | Platform | Bug | Impact | Effort |
+|----|----------|-----|--------|--------|
+| **CRIT-1** | cloud-api | `webhooks.ts:62` — `session.metadata?.["userId"]` always undefined → subscriptions never activate | **Revenue = $0** | 30 min |
+| **OS-CRIT-1** | os-service | FK violation in `store_plan` — crashes without prior classify call | Plan generation broken | 15 min |
+| **OS-CRIT-3** | CI | `os-windows-proof.yml:128` — TEST 4 doesn't set `$allPassed = $false` | CI lies (green on fail) | 10 min |
+
+### P1 — Service Crashes & Security
+
+| ID | Platform | Bug | Effort |
+|----|----------|-----|--------|
+| **CRIT-3** | tuning-service | 13 IPC methods declared but unimplemented in Rust → pages crash | 2 hr |
+| **HIGH-2** | tuning-service | `journal.resume` uses `.unwrap_or_else(panic!)` | 5 min |
+| **HIGH-9** | tuning-service | Rust `"warnings"` vs TS `"warningNotes"` → safety warnings hidden | 5 min |
+| **SEC-1** | cloud-api | JWT secret defaults to `"dev-secret-change-in-production"` | 5 min |
+| **OS-HIGH-3** | os-service | `execute_elevated` not wired → AppX removal fails on Win11 | 45 min |
+| **OS-HIGH-4** | os-service | 11 of 20 IPC methods return "Unknown method" | 1 hr |
+
+### P2 — Correctness
+
+| ID | Platform | Bug | Effort |
+|----|----------|-----|--------|
+| **HIGH-1** | tuning-desktop | `cloudApi.auth.me()` calls `/auth/me` (should be `/users/me`) | 5 min |
+| **HIGH-5** | cloud-api | Login returns oldest subscription (missing `.desc()`) | 5 min |
+| **HIGH-6** | tuning-desktop | Dev API client port 3000, server on 3001 | 5 min |
+| **HIGH-7** | cloud-api | Deleted users can still authenticate, Stripe not cancelled | 30 min |
+| **HIGH-10** | tuning-service | Machine classification runs 3× on single click | 15 min |
+| **MED-11** | tuning-desktop | Zustand `(s) => s.isPremium)()` anti-pattern → stale tier | 10 min |
+
+### P3 — Polish & Tech Debt
+
+| Category | Count | Notes |
+|----------|-------|-------|
+| Medium bugs | 15 | Field mismatches, dead code, missing error handling |
+| Security | 3 | SEC-2 (PowerShell injection), SEC-3 (openExternal), SEC-4 (env fallback) |
+| Architecture | 4 | SQLite migration, license split, rusqlite Send |
+| Performance | 4 | WMI scan, reqwest client, action catalog, triple classification |
+| Dead code | 7 | Unused functions, unimplemented IPC stubs, orphaned table |
+| OS wiring | 10 | Old CODEXHANDOFF tasks (some completed by CoWork) |
+| Eco-site | 2 | og:image, download 404 |
 
 ---
 
-## ARCHITECTURE REFERENCE
+## WHAT CHANGED FROM OLD CODEXHANDOFF
 
-### IPC Methods (preload allowlist — all already registered)
-```
-playbook.resolve         → PlaybookReviewStep (wired)
-appbundle.getRecommended → AppSetupStep (wired)
-appbundle.resolve        → ExecutionStep (just wired)
-execute.applyAction      → ExecutionStep (just wired — now sends real IDs)
-personalize.apply        → ExecutionStep (just wired)
-journal.state            → RebootResumeStep (needs wiring)
-journal.resume           → RebootResumeStep (needs wiring)
-verify.registryValue     → available for post-reboot verification
-```
+The March 26 CODEXHANDOFF listed 6 tasks. Here's what CoWork Claude did:
 
-### Store Data Flow (after all wiring complete)
-```
-Assessment       → detectedProfile
-PlaybookStrategy → playbookPreset (clears resolvedPlaybook)
-PlaybookReview   → playbook.resolve(profile, preset) → resolvedPlaybook
-AppSetup         → appbundle.getRecommended(profile) → recommendedApps
-FinalReview      → reads all state for summary
-Execution        → resolvedPlaybook.phases[].actions → execute.applyAction(id)
-                 → personalize.apply
-                 → appbundle.resolve(selectedApps)
-RebootResume     → journal.state / journal.resume (or auto-skip)
-Report           → executionResult stats
-Handoff          → Tuning CTA
-```
+| Old Task | Status | Notes |
+|----------|--------|-------|
+| Task 1: Wire PlaybookStrategyStep into store | ✅ DONE | `setPlaybookPreset` added to store, step wired in WizardPage |
+| Task 2: Create RebootResumeStep + HandoffStep | ✅ DONE | Both created and wired, 13-step flow complete |
+| Task 3: Deprecate transform.plan from store | ❓ UNCLEAR | Report says "open" but verify current store |
+| Task 4: Update CI playbook→execute chain | ❓ PARTIAL | Proof script expanded but still uses hardcoded IDs per report |
+| Task 5: Update mock-service.mjs | ❓ PARTIAL | Handlers updated but "missing playbook/appbundle" per ECOBUGHUNTER |
+| Task 6: Fix ExecutionStep minor issues | ✅ DONE | failCount fix, real action IDs |
 
-### Design Pattern for Steps
-```tsx
-import { motion } from "framer-motion";
-import { useWizardStore } from "@/stores/wizard-store";
+---
 
-export function XxxStep() {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -8 }}
-      transition={{ duration: 0.22, ease: [0.0, 0.0, 0.2, 1.0] }}
-      className="flex h-full flex-col px-6 py-6"
-    >
-      {/* content */}
-    </motion.div>
-  );
-}
+## RECOMMENDED NEXT SESSION ORDER
+
 ```
-
-### Auto-skip Pattern (for conditional steps)
-```tsx
-useEffect(() => {
-  if (shouldSkip) {
-    const t = setTimeout(() => skipStep("step-id"), 150);
-    return () => clearTimeout(t);
-  }
-}, [shouldSkip, skipStep]);
+1. CRIT-1  → Fix Stripe webhook userId (revenue blocker)
+2. OS-CRIT-1 + OS-CRIT-3 → FK violation + CI silent fail
+3. SEC-1   → Remove JWT secret default
+4. HIGH-2 + HIGH-9 → Service panic + warningNotes field
+5. HIGH-1 + HIGH-5 + HIGH-6 → Quick 5-min fixes (auth route, sort, port)
+6. HIGH-7  → Deleted user auth + Stripe cancellation
+7. OS-HIGH-3 + OS-HIGH-4 → execute_elevated + 11 IPC methods
+8. CRIT-3  → 13 unimplemented Rust IPC methods
+9. cloud-api DB migrations → pnpm drizzle-kit generate
+10. VDS deployment → vds-setup.sh + deploy.sh on IHS.com.tr
 ```
 
 ---
 
-## HONEST STATUS
+## ARCHITECTURE DECISIONS (Locked by CoWork)
 
-| Criteria | Status |
-|----------|--------|
-| UI calls playbook.resolve | ✅ PlaybookReviewStep |
-| ExecutionStep reads playbook | ✅ Wired this session |
-| PlaybookReview exists | ✅ Fully functional |
-| AppSetup exists | ✅ Recommendation picker |
-| PlaybookStrategy exists | ⚠️ Component created, NOT wired |
-| RebootResume exists | ❌ Not created |
-| Handoff step exists | ❌ Not created |
-| CI proves playbook→execute | ❌ Still uses hardcoded IDs |
-| CI proves appbundle.resolve | ❌ Not tested |
-| Old path deprecated from UI | ❌ TransformationPlan still in store |
-| Mock service updated | ❌ Missing playbook/appbundle handlers |
+1. **Monorepo** — pnpm workspace, 8 apps + 11 packages, single lock
+2. **IPC** — Renderer → contextBridge → Electron main → JSON-RPC stdio → Rust
+3. **Playbook-native** — YAML source → Rust resolver → real action IDs → executor
+4. **cloud-api = SaaS hub** — Tuning uses it for auth/billing/licensing. OS is free.
+5. **OS = Free + donations** — No SaaS subscription
+6. **Brand = Pink-red only** — `#E8254B`, no green anywhere
+7. **No Apple auth** — Google OAuth only
+8. **VDS target** — IHS.com.tr for APIs. Eco-site on Vercel.
+9. **Drizzle ORM** — No raw SQL ever
+10. **system-analyzer shared** — Hardware detection shared via package
 
-**Verdict: architecture strong, wiring ~60% complete.**
+---
 
-The critical bridge (ExecutionStep→playbook) is done. Store wiring, 2 new steps, CI updates, and mock service remain.
+## KEY FILE MAP (Post-CoWork)
+
+| Area | Key Files | Status |
+|------|-----------|--------|
+| SaaS Backend | `apps/cloud-api/src/routes/*.ts` | NEW, security-hardened |
+| System Analyzer | `packages/system-analyzer/src/` | NEW, 3,313 lines |
+| Playbooks | `playbooks/**/*.yaml` (40 files) | NEW |
+| OS Wizard | `apps/os-desktop/src/renderer/pages/wizard/` | 13 steps wired |
+| Eco-site | `apps/web/src/` | Rebuilt, 24 routes |
+| Installer | `.github/workflows/build-installers.yml` | NSIS pipeline |
+| Deploy | `scripts/vds-deploy.sh`, `scripts/vds-setup.sh` | Ready |
+| Bug Audits | `ECOBUGHUNTERCLAUDE.md`, `docs/tuning/BUGHUNTERCLAUDE.md`, `docs/os/OSBUGHUNTERCLAUDE.md` | Comprehensive |
+| Branding | All 3 apps + website | Unified pink-red |
+
+---
+
+## 5 ACTIVE WORKTREES
+
+All behind `main`, no unmerged changes. Safe to clean up:
+```
+claude/sharp-perlman       → at HEAD
+claude/intelligent-lederberg → 1 behind
+claude/keen-dubinsky        → 1 behind
+claude/unruffled-chaum      → 1 behind
+claude/funny-ishizaka       → 4 behind
+```
+
+---
+
+*Updated 2026-03-28 by Hızır (Claude Opus 4.6)*
