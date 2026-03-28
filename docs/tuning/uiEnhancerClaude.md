@@ -454,7 +454,7 @@ Note: Hero visual (`HeroVisual`) is `hidden lg:flex` — intentional, clean on m
 | `/` | ✓ | ✓ | Logo (wrong size) | ✓ |
 | `/downloads` | ✓ | ✓ | Inherited | ✓ |
 | `/donate` | ✓ | Inherited | Inherited | **Missing** |
-| `/atlasos-alternative` | ✓ Fixed | ✓ Fixed | Inherited | ✓ |
+| `/why-redcore` | ✓ Fixed | ✓ Fixed | Inherited | ✓ |
 | All other SEO pages | ✓ | ✓ | Inherited | ✓ |
 
 ---

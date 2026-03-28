@@ -50,7 +50,7 @@
 | BUG-01 | `.section-divide` and `.premium-card` CSS classes undefined → donate page cards invisible | Added to `globals.css` |
 | BUG-02 | "Download Free" button linked to nonexistent `.exe` path | Changed href to `/downloads` |
 | BUG-03 | `.glow-surface` and `.glow-brand-edge` undefined in orphaned sections | Added to `globals.css` |
-| BUG-06 | SEO metadata on `/atlasos-alternative` had no AtlasOS keywords | Updated title, description, keywords |
+| BUG-06 | SEO metadata on the legacy comparison page missed its target terms | Updated title, description, keywords |
 
 ### OPEN — Requires Manual Action
 

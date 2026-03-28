@@ -33,21 +33,25 @@ function loadEnvFile(filePath) {
   return env;
 }
 
-const sharedEnv = {
+const apiEnv = {
   ...loadEnvFile(path.join(__dirname, ".env")),
   NODE_ENV: "production",
 };
+
+const webDatabaseUrl =
+  process.env.WEB_DATABASE_URL ??
+  `file:${path.join(__dirname, "apps/web/prisma/prisma/dev.db")}`;
 
 module.exports = {
   apps: [
     {
       name: "redcore-web",
-      cwd: "./apps/web",
-      script: "node_modules/.bin/next",
-      args: "start -p 3000",
+      cwd: "./apps/web/.next/standalone/apps/web",
+      script: "server.js",
       env: {
-        ...sharedEnv,
+        NODE_ENV: "production",
         PORT: 3000,
+        DATABASE_URL: webDatabaseUrl,
       },
       instances: 1,
       autorestart: true,
@@ -58,7 +62,7 @@ module.exports = {
       cwd: "./apps/tuning-api",
       script: "dist/index.js",
       env: {
-        ...sharedEnv,
+        ...apiEnv,
         PORT: 3001,
         HOST: "127.0.0.1",
       },
@@ -71,7 +75,7 @@ module.exports = {
       cwd: "./apps/os-api",
       script: "dist/index.js",
       env: {
-        ...sharedEnv,
+        ...apiEnv,
         PORT: 3002,
         HOST: "127.0.0.1",
       },
@@ -84,7 +88,7 @@ module.exports = {
       cwd: "./apps/cloud-api",
       script: "dist/index.js",
       env: {
-        ...sharedEnv,
+        ...apiEnv,
         PORT: 3003,
         HOST: "127.0.0.1",
       },

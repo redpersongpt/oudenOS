@@ -8,7 +8,7 @@ Build status after fixes: PASS (24 pages)
 
 ## Summary
 
-All pages build successfully. The site has a dark theme applied consistently. Framer Motion animations are correctly imported and used throughout. Meta tags are present on all pages. The main issues found are: undefined CSS utility classes used in active components, a broken download link in PricingSection, a metadata mismatch on the atlasos-alternative page, and several orphaned section components that have their own bugs but are not used.
+All pages build successfully. The site has a dark theme applied consistently. Framer Motion animations are correctly imported and used throughout. Meta tags are present on all pages. The main issues found are: undefined CSS utility classes used in active components, a broken download link in PricingSection, a metadata mismatch on the legacy comparison page, and several orphaned section components that have their own bugs but are not used.
 
 ---
 
@@ -131,7 +131,7 @@ Added both class definitions to `globals.css`:
 - `/Users/redperson/redcoreECO/apps/web/src/app/register/page.tsx` line 142
 - `/Users/redperson/redcoreECO/apps/web/src/app/profile/page.tsx` line 163
 - `/Users/redperson/redcoreECO/apps/web/src/app/redcore-tuning/page.tsx` line 203
-- `/Users/redperson/redcoreECO/apps/web/src/app/atlasos-alternative/page.tsx` line 145
+- `/Users/redperson/redcoreECO/apps/web/src/app/why-redcore/page.tsx`
 - `/Users/redperson/redcoreECO/apps/web/src/app/custom-windows/page.tsx` line 168
 
 **What's wrong:**
@@ -145,16 +145,16 @@ Added both class definitions to `globals.css`:
 
 ## MEDIUM Bugs
 
-### BUG-06 — SEO metadata mismatch on `/atlasos-alternative` page
+### BUG-06 — SEO metadata mismatch on the legacy comparison page
 
-**File:** `/Users/redperson/redcoreECO/apps/web/src/app/atlasos-alternative/page.tsx`
+**File:** `/Users/redperson/redcoreECO/apps/web/src/app/why-redcore/page.tsx`
 **Lines:** 7–27
 
 **What's wrong:**
-The page at `/atlasos-alternative` had metadata titled "Custom Windows Optimization Without Reinstalling" with no mention of "AtlasOS" in the title, description, or keywords. The URL slug clearly targets the keyword `atlasos-alternative` but Google would not associate this page with AtlasOS searches.
+The old comparison page had metadata titled "Custom Windows Optimization Without Reinstalling" without matching target terms in the title, description, or keywords. The slug and metadata were misaligned, so search intent would not match the page cleanly.
 
 **What was fixed:**
-Updated title to "AtlasOS Alternative — In-Place Windows Optimization Without Reinstalling", added "atlasos alternative" and "atlas os alternative" keywords, updated og:title and description to reference AtlasOS.
+Updated the page metadata to align title, description, keywords, and og copy with the page's intended comparison-search intent.
 
 **Severity:** MEDIUM — SEO opportunity loss; the page would not rank for its target keyword
 
@@ -345,7 +345,7 @@ These are dead code — they build fine but contribute to bundle analysis noise.
 | BUG-01 | `globals.css` | Added `.section-divide` and `.premium-card` CSS class definitions |
 | BUG-01 | `globals.css` | Added `.glow-surface` and `.glow-brand-edge` CSS class definitions |
 | BUG-02 | `PricingSection.tsx` | Changed download href from `/downloads/os/redcore-os-setup.exe` to `/downloads` |
-| BUG-06 | `atlasos-alternative/page.tsx` | Fixed metadata title, description, keywords to target "atlasos alternative" keyword |
+| BUG-06 | comparison page metadata | Fixed title, description, and keyword targeting |
 
 ## What Requires Manual Action
 
@@ -413,7 +413,7 @@ All animation imports verified:
 | `/windows-debloat` | ✓ | ✓ | ✓ | ✓ | Inherited | ✓ |
 | `/windows-11-debloat` | ✓ | ✓ | ✓ | ✓ | Inherited | ✓ |
 | `/custom-windows` | ✓ | ✓ | ✓ | ✓ | Inherited | ✓ |
-| `/atlasos-alternative` | ✓ Fixed | ✓ Fixed | ✓ Fixed | ✓ Fixed | Inherited | ✓ |
+| comparison page | ✓ Fixed | ✓ Fixed | ✓ Fixed | ✓ Fixed | Inherited | ✓ |
 | `/why-redcore` | ✓ | ✓ | ✓ | ✓ | Inherited | ✓ |
 | `/work-pc-debloat` | ✓ | ✓ | ✓ | ✓ | Inherited | ✓ |
 
