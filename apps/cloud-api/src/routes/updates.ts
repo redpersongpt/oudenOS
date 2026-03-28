@@ -62,7 +62,7 @@ export const updateRoutes: FastifyPluginAsync = async (app) => {
       const [latest] = await db
         .select()
         .from(appReleases)
-        .where(eq(appReleases.channel, channel))
+        .where(and(eq(appReleases.product, "tuning"), eq(appReleases.channel, channel)))
         .orderBy(desc(appReleases.publishedAt))
         .limit(1);
 
@@ -123,7 +123,7 @@ export const updateRoutes: FastifyPluginAsync = async (app) => {
           publishedAt: appReleases.publishedAt,
         })
         .from(appReleases)
-        .where(eq(appReleases.channel, channel))
+        .where(and(eq(appReleases.product, "tuning"), eq(appReleases.channel, channel)))
         .orderBy(desc(appReleases.publishedAt))
         .limit(limit);
 
@@ -143,7 +143,12 @@ export const updateRoutes: FastifyPluginAsync = async (app) => {
       const [release] = await db
         .select()
         .from(appReleases)
-        .where(eq(appReleases.version, semver.coerce(version)!.version))
+        .where(
+          and(
+            eq(appReleases.product, "tuning"),
+            eq(appReleases.version, semver.coerce(version)!.version),
+          ),
+        )
         .limit(1);
 
       if (!release) {
@@ -181,7 +186,7 @@ export const updateRoutes: FastifyPluginAsync = async (app) => {
     const [existing] = await db
       .select({ id: appReleases.id })
       .from(appReleases)
-      .where(eq(appReleases.version, version))
+      .where(and(eq(appReleases.product, "tuning"), eq(appReleases.version, version)))
       .limit(1);
 
     if (existing) {
@@ -191,6 +196,7 @@ export const updateRoutes: FastifyPluginAsync = async (app) => {
     const [release] = await db
       .insert(appReleases)
       .values({
+        product: "tuning",
         version,
         channel: data.channel,
         downloadUrl: data.downloadUrl,

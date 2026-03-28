@@ -8,9 +8,9 @@
     "node": ">=20"
   },
   "scripts": {
-    "dev:web": "pnpm --filter redcore-web dev",
-    "build:web": "pnpm --filter redcore-web build",
-    "start:web": "pnpm --filter redcore-web start",
+    "dev:web": "pnpm --dir apps/web dev",
+    "build:web": "pnpm --dir apps/web build",
+    "start:web": "pnpm --dir apps/web start",
     "dev:tuning": "pnpm --filter @redcore/desktop dev",
     "build:tuning": "pnpm --filter @redcore/desktop build",
     "dev:os": "pnpm --filter @redcore-os/desktop dev",

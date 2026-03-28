@@ -73,7 +73,7 @@ async function getActiveTier(userId: string): Promise<"free" | "premium" | "expe
   }
 
   if (sub.status !== "active" && sub.status !== "trialing") return "free";
-  return sub.tier;
+  return sub.tier === "premium" || sub.tier === "expert" ? sub.tier : "free";
 }
 
 // ─── Plugin ───────────────────────────────────────────────────────────────────
@@ -93,7 +93,7 @@ export const licenseRoutes: FastifyPluginAsync = async (app) => {
     const [machine] = await db
       .select({
         id: machineActivations.id,
-        machineFingerprint: machineActivations.machineFingerprint,
+        machineFingerprint: machineActivations.deviceFingerprint,
         status: machineActivations.status,
         userId: machineActivations.userId,
       })
