@@ -32,6 +32,11 @@ pnpm --dir apps/cloud-api build
 echo "── Run database migrations ──"
 pnpm --dir packages/db db:push
 
+if [[ "${BUILD_OS_RELEASE:-0}" == "1" ]]; then
+  echo "── Build and publish latest redcore OS release ──"
+  bash scripts/build-and-publish-os-release.sh
+fi
+
 echo "── Restart services ──"
 pm2 startOrRestart ecosystem.config.cjs --env production
 pm2 save
