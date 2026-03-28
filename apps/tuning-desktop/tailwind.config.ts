@@ -5,7 +5,7 @@ const config: Config = {
   presets: [redcorePreset as Config],
   content: [
     "./src/renderer/**/*.{ts,tsx}",
-    "../../packages/design-system/src/**/*.{ts,tsx}",
+    "../../packages/tuning-design-system/src/**/*.{ts,tsx}",
   ],
   theme: {
     extend: {},
