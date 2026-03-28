@@ -1,3 +1,5 @@
+import nodemailer from "nodemailer";
+
 export interface EmailOptions {
   to: string;
   subject: string;
@@ -14,9 +16,53 @@ const MUTED = "#B1A8C0";
 const CAPTION = "#8A8198";
 
 export async function sendEmail(opts: EmailOptions): Promise<void> {
-  const isDev = process.env.NODE_ENV !== "production" || !process.env.SENDGRID_API_KEY;
+  const fromEmail = process.env.EMAIL_FROM ?? "noreply@redcoreos.net";
+  const fromName = process.env.EMAIL_FROM_NAME ?? APP_NAME;
+  const canUseSendGrid = Boolean(process.env.SENDGRID_API_KEY);
+  const canUseSendmail = process.env.SENDMAIL_ENABLED !== "false";
 
-  if (isDev) {
+  if (canUseSendGrid) {
+    const res = await fetch("https://api.sendgrid.com/v3/mail/send", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${process.env.SENDGRID_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        personalizations: [{ to: [{ email: opts.to }] }],
+        from: {
+          email: fromEmail,
+          name: fromName,
+        },
+        subject: opts.subject,
+        content: [{ type: "text/html", value: opts.html }],
+      }),
+    });
+
+    if (!res.ok) {
+      const body = await res.text().catch(() => "(no body)");
+      throw new Error(`SendGrid delivery failed (${res.status}): ${body}`);
+    }
+    return;
+  }
+
+  if (canUseSendmail) {
+    const transporter = nodemailer.createTransport({
+      sendmail: true,
+      newline: "unix",
+      path: process.env.SENDMAIL_BIN ?? "/usr/sbin/sendmail",
+    });
+
+    await transporter.sendMail({
+      from: `"${fromName}" <${fromEmail}>`,
+      to: opts.to,
+      subject: opts.subject,
+      html: opts.html,
+    });
+    return;
+  }
+
+  if (process.env.NODE_ENV !== "production") {
     const links = [...opts.html.matchAll(/href="([^"]+)"/g)].map((m) => m[1]);
     console.log(`\n📧  Email → ${opts.to}`);
     console.log(`    Subject: ${opts.subject}`);
@@ -25,27 +71,7 @@ export async function sendEmail(opts: EmailOptions): Promise<void> {
     return;
   }
 
-  const res = await fetch("https://api.sendgrid.com/v3/mail/send", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${process.env.SENDGRID_API_KEY}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      personalizations: [{ to: [{ email: opts.to }] }],
-      from: {
-        email: process.env.EMAIL_FROM ?? "noreply@redcoreos.net",
-        name: process.env.EMAIL_FROM_NAME ?? APP_NAME,
-      },
-      subject: opts.subject,
-      content: [{ type: "text/html", value: opts.html }],
-    }),
-  });
-
-  if (!res.ok) {
-    const body = await res.text().catch(() => "(no body)");
-    throw new Error(`SendGrid delivery failed (${res.status}): ${body}`);
-  }
+  throw new Error("Email delivery is not configured. Set SENDGRID_API_KEY or enable sendmail.");
 }
 
 function emailWrapper(title: string, body: string): string {

@@ -22,6 +22,12 @@ const companyLinks = [
   { label: "Account", href: "/profile" },
 ];
 
+const contactLinks = [
+  { label: "Info", href: "mailto:info@redcoreos.net", value: "info@redcoreos.net" },
+  { label: "Support", href: "mailto:support@redcoreos.net", value: "support@redcoreos.net" },
+  { label: "System Mail", href: "mailto:noreply@redcoreos.net", value: "noreply@redcoreos.net" },
+];
+
 export function FooterSection() {
   return (
     <footer className="border-t border-border/60" role="contentinfo">
@@ -36,6 +42,28 @@ export function FooterSection() {
               Machine-aware Windows optimization and transformation. Built for
               people who care about their hardware.
             </p>
+            <div className="mt-6 rounded-2xl border border-border/80 bg-surface-elevated/50 p-4">
+              <p className="text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-ink-tertiary">
+                Contact
+              </p>
+              <ul className="mt-3 space-y-2.5">
+                {contactLinks.map((link) => (
+                  <li key={link.label}>
+                    <a
+                      href={link.href}
+                      className="group flex items-center justify-between gap-4 text-[0.72rem] text-ink-muted transition-colors duration-150 hover:text-ink-primary"
+                    >
+                      <span className="font-mono uppercase tracking-[0.14em] text-ink-tertiary">
+                        {link.label}
+                      </span>
+                      <span className="truncate text-right text-[0.72rem] text-ink-secondary transition-colors group-hover:text-ink-primary">
+                        {link.value}
+                      </span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
             {/* Badges */}
             <div className="mt-5 flex flex-wrap gap-2">
               {["Windows 10", "Windows 11", "x64"].map((b) => (
