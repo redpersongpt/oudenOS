@@ -10,6 +10,15 @@ const outputPath = path.join(
   repoRoot,
   "apps/os-desktop/src/renderer/lib/generated-playbook-fallback.json",
 );
+const supportedExecutionKinds = [
+  "registryChanges",
+  "serviceChanges",
+  "bcdChanges",
+  "powerChanges",
+  "powerShellCommands",
+  "packages",
+  "tasks",
+];
 
 function stripQuotes(value) {
   return value.replace(/^"/, "").replace(/"$/, "").replace(/^'/, "").replace(/'$/, "");
@@ -125,6 +134,7 @@ function parseActionChunk(chunk) {
     warningMessage: null,
     blockedProfiles: [],
     minWindowsBuild: null,
+    executionKinds: [],
   };
 
   let inBlockedProfiles = false;
@@ -183,6 +193,14 @@ function parseActionChunk(chunk) {
         inBlockedProfiles = false;
       } else {
         inBlockedProfiles = true;
+      }
+      continue;
+    }
+
+    const executionKind = supportedExecutionKinds.find((key) => line.startsWith(`    ${key}:`));
+    if (executionKind) {
+      if (!action.executionKinds.includes(executionKind)) {
+        action.executionKinds.push(executionKind);
       }
       continue;
     }
