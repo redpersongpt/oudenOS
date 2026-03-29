@@ -65,10 +65,10 @@ mkdir -p "$RELEASES_DIR" "$ARCHIVE_DIR"
 
 pushd "$ROOT_DIR" >/dev/null
 
-if git rev-parse --short HEAD >/dev/null 2>&1; then
-  COMMIT_SHA="$(git rev-parse --short HEAD)"
-elif [ -n "${SOURCE_COMMIT_SHA:-}" ]; then
+if [ -n "${SOURCE_COMMIT_SHA:-}" ]; then
   COMMIT_SHA="$SOURCE_COMMIT_SHA"
+elif git rev-parse --short HEAD >/dev/null 2>&1; then
+  COMMIT_SHA="$(git rev-parse --short HEAD)"
 else
   echo "Unable to resolve source commit. Set SOURCE_COMMIT_SHA when building outside a git checkout." >&2
   exit 1
