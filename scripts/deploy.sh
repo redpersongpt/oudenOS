@@ -14,8 +14,12 @@ WEB_DATABASE_URL="${WEB_DATABASE_URL:-file:${APP_ROOT}/apps/web/prisma/prisma/de
 
 cd "${APP_ROOT}"
 
-echo "── Pull latest code ──"
-git pull origin main
+if [[ "${SKIP_GIT_PULL:-0}" == "1" ]]; then
+  echo "── Skip git pull (release checkout mode) ──"
+else
+  echo "── Pull latest code ──"
+  git pull origin main
+fi
 
 echo "── Install dependencies ──"
 pnpm install --frozen-lockfile
