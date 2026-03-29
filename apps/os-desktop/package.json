@@ -65,6 +65,10 @@
         "to": "redcore-os-service.exe"
       },
       {
+        "from": "../../playbooks",
+        "to": "playbooks"
+      },
+      {
         "from": "resources/redcore-icon.png",
         "to": "redcore-icon.png"
       }
