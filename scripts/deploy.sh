@@ -21,6 +21,8 @@ if [[ -f .env ]]; then
   set +a
 fi
 
+API_DATABASE_URL="${DATABASE_URL:-}"
+
 if [[ "${SKIP_GIT_PULL:-0}" == "1" ]]; then
   echo "── Skip git pull (release checkout mode) ──"
 else
@@ -64,7 +66,7 @@ echo "── Build cloud-api ──"
 pnpm --dir apps/cloud-api build
 
 echo "── Run database migrations ──"
-pnpm --dir packages/db db:push
+DATABASE_URL="${API_DATABASE_URL}" pnpm --dir packages/db db:push
 
 if [[ "${BUILD_OS_RELEASE:-0}" == "1" ]]; then
   echo "── Build and publish latest redcore OS release ──"
