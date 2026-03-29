@@ -27,11 +27,7 @@ pub fn execute_action(
     let mut previous_values: Vec<rollback::PreviousValue> = Vec::new();
 
     // Registry changes
-    let registry_changes = action_data
-        .get("registryChanges")
-        .and_then(|v| v.as_array())
-        .cloned()
-        .unwrap_or_default();
+    let registry_changes = resolve_registry_changes(action_data)?;
 
     for change in &registry_changes {
         let hive = change["hive"].as_str().unwrap_or("HKLM");
@@ -528,6 +524,184 @@ fn apply_service_change(service_name: &str, startup_type: &str) -> anyhow::Resul
     Ok(())
 }
 
+fn resolve_registry_changes(action_data: &Value) -> anyhow::Result<Vec<Value>> {
+    let registry_changes = action_data
+        .get("registryChanges")
+        .and_then(|v| v.as_array())
+        .cloned()
+        .unwrap_or_default();
+
+    let mut resolved: Vec<Value> = Vec::new();
+    for change in &registry_changes {
+        resolved.extend(resolve_registry_change(change)?);
+    }
+    Ok(resolved)
+}
+
+#[cfg(windows)]
+fn resolve_registry_change(change: &Value) -> anyhow::Result<Vec<Value>> {
+    let path = change
+        .get("path")
+        .and_then(|v| v.as_str())
+        .unwrap_or("");
+
+    if !path.contains('<') {
+        return Ok(vec![change.clone()]);
+    }
+
+    if path.contains("<Interface GUID>") {
+        return expand_registry_template(
+            change,
+            "<Interface GUID>",
+            &resolve_active_interface_guids()?,
+        );
+    }
+
+    if path.contains("<Adapter Index>") {
+        return expand_registry_template(
+            change,
+            "<Adapter Index>",
+            &resolve_active_adapter_indices()?,
+        );
+    }
+
+    if path.contains("<GPU Device ID>\\<Instance>") {
+        return expand_registry_template(
+            change,
+            "<GPU Device ID>\\<Instance>",
+            &resolve_display_pci_instances()?,
+        );
+    }
+
+    if path.contains("<device>\\<instance>") {
+        return expand_registry_template(
+            change,
+            "<device>\\<instance>",
+            &resolve_scsi_disk_instances()?,
+        );
+    }
+
+    anyhow::bail!("Unsupported registry placeholder path: {}", path)
+}
+
+#[cfg(not(windows))]
+fn resolve_registry_change(change: &Value) -> anyhow::Result<Vec<Value>> {
+    Ok(vec![change.clone()])
+}
+
+fn replace_registry_change_path(change: &Value, new_path: String) -> Value {
+    let mut resolved = change.clone();
+    if let Some(obj) = resolved.as_object_mut() {
+        obj.insert("path".to_string(), serde_json::json!(new_path));
+    }
+    resolved
+}
+
+#[cfg(windows)]
+fn expand_registry_template(
+    change: &Value,
+    token: &str,
+    replacements: &[String],
+) -> anyhow::Result<Vec<Value>> {
+    let path = change
+        .get("path")
+        .and_then(|v| v.as_str())
+        .unwrap_or("");
+
+    if replacements.is_empty() {
+        anyhow::bail!("No runtime targets resolved for placeholder {}", token);
+    }
+
+    Ok(replacements
+        .iter()
+        .map(|replacement| replace_registry_change_path(change, path.replace(token, replacement)))
+        .collect())
+}
+
+fn parse_nonempty_lines(stdout: &str) -> Vec<String> {
+    stdout
+        .lines()
+        .map(str::trim)
+        .filter(|line| !line.is_empty())
+        .map(ToOwned::to_owned)
+        .collect()
+}
+
+#[cfg(windows)]
+fn resolve_active_interface_guids() -> anyhow::Result<Vec<String>> {
+    let script = "\
+        Get-NetAdapter | Where-Object { \
+            $_.Status -eq 'Up' -and $_.HardwareInterface -eq $true -and $_.InterfaceDescription -notmatch 'Virtual|Hyper-V|VPN|Loopback' \
+        } | Select-Object -ExpandProperty InterfaceGuid | ForEach-Object { \
+            $guid = [string]$_; \
+            if ($guid -and -not $guid.StartsWith('{')) { '{' + $guid.Trim('{}') + '}' } else { $guid } \
+        }";
+    let result = powershell::execute(script)?;
+    if !result.success {
+        anyhow::bail!("Failed to resolve active NIC GUIDs: {}", result.stderr.trim());
+    }
+    let guids = parse_nonempty_lines(&result.stdout);
+    if guids.is_empty() {
+        anyhow::bail!("No active physical NIC GUIDs found");
+    }
+    Ok(guids)
+}
+
+#[cfg(windows)]
+fn resolve_active_adapter_indices() -> anyhow::Result<Vec<String>> {
+    let script = "\
+        $wanted = Get-NetAdapter | Where-Object { \
+            $_.Status -eq 'Up' -and $_.HardwareInterface -eq $true -and $_.InterfaceDescription -notmatch 'Virtual|Hyper-V|VPN|Loopback' \
+        } | Select-Object -ExpandProperty InterfaceGuid | ForEach-Object { ([string]$_).Trim('{}') }; \
+        $classRoot = 'HKLM:\\SYSTEM\\CurrentControlSet\\Control\\Class\\{4d36e972-e325-11ce-bfc1-08002be10318}'; \
+        foreach ($key in Get-ChildItem $classRoot -ErrorAction SilentlyContinue) { \
+            $props = Get-ItemProperty $key.PSPath -ErrorAction SilentlyContinue; \
+            $instance = [string]$props.NetCfgInstanceId; \
+            if ($instance -and ($wanted -contains $instance.Trim('{}'))) { $key.PSChildName } \
+        }";
+    let result = powershell::execute(script)?;
+    if !result.success {
+        anyhow::bail!("Failed to resolve active adapter indices: {}", result.stderr.trim());
+    }
+    let indices = parse_nonempty_lines(&result.stdout);
+    if indices.is_empty() {
+        anyhow::bail!("No active adapter registry indices found");
+    }
+    Ok(indices)
+}
+
+#[cfg(windows)]
+fn resolve_display_pci_instances() -> anyhow::Result<Vec<String>> {
+    let script = "\
+        Get-CimInstance Win32_VideoController | Select-Object -ExpandProperty PNPDeviceID | \
+        Where-Object { $_ -like 'PCI\\\\*' } | ForEach-Object { $_.Substring(4) }";
+    let result = powershell::execute(script)?;
+    if !result.success {
+        anyhow::bail!("Failed to resolve display PCI instances: {}", result.stderr.trim());
+    }
+    let instances = parse_nonempty_lines(&result.stdout);
+    if instances.is_empty() {
+        anyhow::bail!("No physical display PCI instances found");
+    }
+    Ok(instances)
+}
+
+#[cfg(windows)]
+fn resolve_scsi_disk_instances() -> anyhow::Result<Vec<String>> {
+    let script = "\
+        Get-CimInstance Win32_DiskDrive | Select-Object -ExpandProperty PNPDeviceID | \
+        Where-Object { $_ -like 'SCSI\\\\*' } | ForEach-Object { $_.Substring(5) }";
+    let result = powershell::execute(script)?;
+    if !result.success {
+        anyhow::bail!("Failed to resolve SCSI disk instances: {}", result.stderr.trim());
+    }
+    let instances = parse_nonempty_lines(&result.stdout);
+    if instances.is_empty() {
+        anyhow::bail!("No SCSI-backed disk instances found");
+    }
+    Ok(instances)
+}
+
 #[cfg(windows)]
 fn read_registry_value(hive: &str, path: &str, value_name: &str) -> Option<Value> {
     let escaped_path = powershell::escape_ps_string(path);
@@ -537,15 +711,22 @@ fn read_registry_value(hive: &str, path: &str, value_name: &str) -> Option<Value
         powershell::escape_ps_string(value_name)
     };
     let script = format!(
-        "$val = Get-ItemProperty -Path 'Registry::{}\\{}' -Name '{}' -ErrorAction SilentlyContinue; \
-         if ($val) {{ $val.'{}' }} else {{ $null }}",
+        "try {{ \
+            $val = Get-ItemProperty -Path 'Registry::{}\\{}' -Name '{}' -ErrorAction Stop; \
+            $raw = $val.'{}'; \
+            if ($null -eq $raw) {{ '__REDCORE_NULL__' }} \
+            elseif ($raw -is [string] -and $raw.Length -eq 0) {{ '__REDCORE_EMPTY_STRING__' }} \
+            else {{ $raw }} \
+         }} catch {{ '__REDCORE_MISSING__' }}",
         hive, escaped_path, ps_name, ps_name,
     );
     match powershell::execute(&script) {
         Ok(result) if result.success => {
             let trimmed = result.stdout.trim();
-            if trimmed.is_empty() {
+            if trimmed.is_empty() || trimmed == "__REDCORE_MISSING__" {
                 None
+            } else if trimmed == "__REDCORE_NULL__" || trimmed == "__REDCORE_EMPTY_STRING__" {
+                Some(Value::String(String::new()))
             } else if let Ok(n) = trimmed.parse::<i64>() {
                 Some(Value::Number(n.into()))
             } else {
