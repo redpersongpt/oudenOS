@@ -1,0 +1,17 @@
+{
+  "aggressionPreset": "conservative",
+  "keepPrinterSupport": true,
+  "keepRemoteAccess": true,
+  "edgeBehavior": "keep",
+  "preserveWebView2": true,
+  "telemetryLevel": "reduce",
+  "disableClipboardHistory": true,
+  "disableActivityFeed": true,
+  "disableTailoredExperiences": true,
+  "restoreClassicContextMenu": true,
+  "enableEndTask": true,
+  "disableBackgroundApps": true,
+  "disableAutomaticMaintenance": false,
+  "enableGameMode": false,
+  "disableTransparency": false
+}

@@ -220,14 +220,18 @@ fn restore_registry(prev: &PreviousValue) -> anyhow::Result<()> {
 
     match &prev.previous_value {
         Some(value) => {
-            let value_str = match value {
-                serde_json::Value::Number(n) => n.to_string(),
-                serde_json::Value::String(s) => format!("'{}'", powershell::escape_ps_string(s)),
-                other => other.to_string(),
+            let (value_str, value_type) = match value {
+                serde_json::Value::Number(n) => (n.to_string(), "DWord"),
+                serde_json::Value::Bool(flag) => (((if *flag { 1 } else { 0 }).to_string()), "DWord"),
+                serde_json::Value::String(s) => (format!("'{}'", powershell::escape_ps_string(s)), "String"),
+                other => (
+                    format!("'{}'", powershell::escape_ps_string(&other.to_string())),
+                    "String",
+                ),
             };
             let script = format!(
-                "Set-ItemProperty -Path 'Registry::{}' -Name '{}' -Value {} -Type DWord -Force",
-                escaped_path, escaped_name, value_str,
+                "Set-ItemProperty -Path 'Registry::{}' -Name '{}' -Value {} -Type {} -Force",
+                escaped_path, escaped_name, value_str, value_type,
             );
             let result = powershell::execute(&script)?;
             if !result.success {
