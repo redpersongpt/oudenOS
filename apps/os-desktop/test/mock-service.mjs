@@ -97,13 +97,26 @@ function handleMethod(method, params) {
     case "appbundle.resolve":
       return {
         profile: params?.profile ?? "gaming_desktop",
-        queue: (params?.selectedApps ?? []).map((id) => ({
+        installQueue: (params?.selectedApps ?? []).map((id) => ({
           id,
           name: APP_CATALOG[id]?.name ?? id,
           url: APP_CATALOG[id]?.url ?? "https://example.com",
           silentArgs: APP_CATALOG[id]?.silentArgs ?? "/S",
-          status: "queued",
+          selected: true,
+          recommended: true,
         })),
+        skipped: [],
+        totalQueued: (params?.selectedApps ?? []).length,
+      };
+
+    case "appbundle.install":
+      return {
+        id: params?.appId ?? "unknown",
+        name: APP_CATALOG[params?.appId]?.name ?? params?.appId ?? "unknown",
+        status: "installed",
+        downloadedPath: `C:\\Users\\mock\\Downloads\\${params?.appId ?? "unknown"}.exe`,
+        exitCode: 0,
+        error: null,
       };
 
     // ─── Execution & rollback ─────────────────────────────────────────
@@ -135,7 +148,7 @@ function handleMethod(method, params) {
         brandAccent: true,
         taskbarCleanup: true,
         explorerCleanup: true,
-        wallpaper: true,
+        wallpaper: false,
         transparency: false
       };
 

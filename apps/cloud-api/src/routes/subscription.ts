@@ -10,7 +10,7 @@
 import type { FastifyPluginAsync } from "fastify";
 import Stripe from "stripe";
 import { z } from "zod";
-import { eq, and } from "drizzle-orm";
+import { eq, and, desc } from "drizzle-orm";
 import { db, users, subscriptions } from "../db/index.js";
 import { requireAuth } from "../middleware/auth.js";
 import { apiRateLimit } from "../lib/rate-limit.js";
@@ -18,6 +18,8 @@ import { apiRateLimit } from "../lib/rate-limit.js";
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY ?? "", {
   apiVersion: "2025-02-24.acacia",
 });
+
+const SUBSCRIPTION_PRODUCT = "tuning" as const;
 
 // Price IDs are configured via environment variables so they can differ between
 // test and production Stripe accounts without touching code.
@@ -154,7 +156,8 @@ export const subscriptionRoutes: FastifyPluginAsync = async (app) => {
         overrideExpiresAt: subscriptions.overrideExpiresAt,
       })
       .from(subscriptions)
-      .where(eq(subscriptions.userId, request.userId))
+      .where(and(eq(subscriptions.userId, request.userId), eq(subscriptions.product, SUBSCRIPTION_PRODUCT)))
+      .orderBy(desc(subscriptions.updatedAt))
       .limit(1);
 
     if (!sub) {
@@ -166,7 +169,7 @@ export const subscriptionRoutes: FastifyPluginAsync = async (app) => {
       await db
         .update(subscriptions)
         .set({ tier: "free", status: "cancelled", manualOverride: false, updatedAt: new Date() })
-        .where(eq(subscriptions.userId, request.userId));
+        .where(and(eq(subscriptions.userId, request.userId), eq(subscriptions.product, SUBSCRIPTION_PRODUCT)));
       return reply.send({ tier: "free", status: "cancelled", subscription: null });
     }
 
@@ -200,7 +203,7 @@ export const subscriptionRoutes: FastifyPluginAsync = async (app) => {
       metadata: { userId: request.userId },
       subscription_data: {
         // Also propagate to the subscription for reference via customer.subscription.* events
-        metadata: { userId: request.userId, tier, billingPeriod },
+        metadata: { userId: request.userId, product: SUBSCRIPTION_PRODUCT, tier, billingPeriod },
       },
       allow_promotion_codes: true,
       billing_address_collection: "auto",
@@ -243,6 +246,7 @@ export const subscriptionRoutes: FastifyPluginAsync = async (app) => {
       .where(
         and(
           eq(subscriptions.userId, request.userId),
+          eq(subscriptions.product, SUBSCRIPTION_PRODUCT),
           eq(subscriptions.status, "active"),
         ),
       )
@@ -274,7 +278,8 @@ export const subscriptionRoutes: FastifyPluginAsync = async (app) => {
     const [sub] = await db
       .select()
       .from(subscriptions)
-      .where(eq(subscriptions.userId, request.userId))
+      .where(and(eq(subscriptions.userId, request.userId), eq(subscriptions.product, SUBSCRIPTION_PRODUCT)))
+      .orderBy(desc(subscriptions.updatedAt))
       .limit(1);
 
     if (!sub?.stripeSubscriptionId) {

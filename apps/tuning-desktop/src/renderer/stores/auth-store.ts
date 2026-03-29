@@ -16,6 +16,8 @@ import {
   clearApiTokens,
 } from "@/lib/cloud-api";
 import type { UserProfile } from "@/lib/cloud-api";
+import { useLicenseStore } from "@/stores/license-store";
+import type { LicenseState } from "@redcore/shared-schema/license";
 
 // ─── Obfuscated storage adapter ───────────────────────────────────────────────
 // Wraps localStorage with base64 encode/decode. Not cryptographic — use
@@ -64,6 +66,21 @@ interface AuthState {
   refreshTokens: () => Promise<boolean>;
 }
 
+function buildLicenseState(user: UserProfile | null): LicenseState | null {
+  if (!user) return null;
+  return {
+    tier: user.tier ?? "free",
+    status: user.subscriptionStatus ?? "expired",
+    expiresAt: null,
+    deviceBound: false,
+    deviceId: null,
+    lastValidatedAt: new Date().toISOString(),
+    offlineGraceDays: 0,
+    offlineDaysRemaining: 0,
+    features: [],
+  };
+}
+
 // ─── Store ────────────────────────────────────────────────────────────────────
 
 export const useAuthStore = create<AuthState>()(
@@ -83,6 +100,10 @@ export const useAuthStore = create<AuthState>()(
 
       setAuth: (user, accessToken, refreshToken) => {
         setApiTokens(accessToken, refreshToken);
+        const license = buildLicenseState(user);
+        if (license) {
+          useLicenseStore.getState().setLicense(license);
+        }
         set({ user, accessToken, refreshToken, isAuthenticated: true });
       },
 
@@ -93,6 +114,7 @@ export const useAuthStore = create<AuthState>()(
 
       clearAuth: () => {
         clearApiTokens();
+        useLicenseStore.setState({ license: null });
         set({
           user: null,
           accessToken: null,
@@ -121,6 +143,10 @@ export const useAuthStore = create<AuthState>()(
         const { accessToken, refreshToken } = get();
         if (accessToken && refreshToken) {
           setApiTokens(accessToken, refreshToken);
+          const license = buildLicenseState(get().user);
+          if (license) {
+            useLicenseStore.getState().setLicense(license);
+          }
         }
       },
 

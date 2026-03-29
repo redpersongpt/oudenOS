@@ -23,7 +23,7 @@ pub fn get_personalization_options(profile: &str) -> Value {
         "gaming_desktop" => serde_json::json!({
             "darkMode": true,
             "brandAccent": true,
-            "wallpaper": true,
+            "wallpaper": false,
             "taskbarCleanup": true,
             "explorerCleanup": true,
             "transparency": true,
@@ -32,7 +32,7 @@ pub fn get_personalization_options(profile: &str) -> Value {
         "work_pc" => serde_json::json!({
             "darkMode": true,
             "brandAccent": true,
-            "wallpaper": true,
+            "wallpaper": false,
             "taskbarCleanup": false,
             "explorerCleanup": false,
             "transparency": true,
@@ -41,7 +41,7 @@ pub fn get_personalization_options(profile: &str) -> Value {
         "low_spec_system" => serde_json::json!({
             "darkMode": true,
             "brandAccent": true,
-            "wallpaper": true,
+            "wallpaper": false,
             "taskbarCleanup": true,
             "explorerCleanup": true,
             "transparency": false,
@@ -59,7 +59,7 @@ pub fn get_personalization_options(profile: &str) -> Value {
         _ => serde_json::json!({
             "darkMode": true,
             "brandAccent": true,
-            "wallpaper": true,
+            "wallpaper": false,
             "taskbarCleanup": true,
             "explorerCleanup": true,
             "transparency": true,
@@ -92,19 +92,27 @@ pub fn apply_personalization(
     let wallpaper = options
         .get("wallpaper")
         .and_then(|v| v.as_bool())
-        .unwrap_or_else(|| opts["wallpaper"].as_bool().unwrap_or(true));
-    let taskbar_cleanup = options
+        .unwrap_or_else(|| opts["wallpaper"].as_bool().unwrap_or(false));
+    let mut taskbar_cleanup = options
         .get("taskbarCleanup")
         .and_then(|v| v.as_bool())
         .unwrap_or_else(|| opts["taskbarCleanup"].as_bool().unwrap_or(false));
-    let explorer_cleanup = options
+    let mut explorer_cleanup = options
         .get("explorerCleanup")
         .and_then(|v| v.as_bool())
         .unwrap_or_else(|| opts["explorerCleanup"].as_bool().unwrap_or(false));
-    let transparency = options
+    let mut transparency = options
         .get("transparency")
         .and_then(|v| v.as_bool())
         .unwrap_or_else(|| opts["transparency"].as_bool().unwrap_or(true));
+
+    if profile == "work_pc" {
+        taskbar_cleanup = false;
+        explorer_cleanup = false;
+    }
+    if profile == "low_spec_system" || profile == "low_spec" {
+        transparency = false;
+    }
 
     // ── Phase 1: Collect current values for rollback ────────────────────
 
@@ -550,6 +558,12 @@ fn apply_wallpaper() -> anyhow::Result<()> {
     let wallpaper_path = std::env::var("LOCALAPPDATA")
         .unwrap_or_else(|_| "C:\\ProgramData".to_string());
     let wallpaper_path = format!("{}\\redcore-os\\assets\\wallpaper.png", wallpaper_path);
+    if !std::path::Path::new(&wallpaper_path).exists() {
+        anyhow::bail!(
+            "Wallpaper asset not found at '{}' — packaging/runtime did not provide a wallpaper file.",
+            wallpaper_path
+        );
+    }
     let wallpaper_path_ps = powershell::escape_ps_string(&wallpaper_path);
 
     let script = format!(
@@ -842,7 +856,7 @@ mod tests {
     fn test_gaming_options_all_enabled() {
         let opts = get_personalization_options("gaming_desktop");
         assert_eq!(opts["darkMode"], true);
-        assert_eq!(opts["wallpaper"], true);
+        assert_eq!(opts["wallpaper"], false);
         assert_eq!(opts["taskbarCleanup"], true);
         assert_eq!(opts["explorerCleanup"], true);
         assert_eq!(opts["transparency"], true);
@@ -854,6 +868,7 @@ mod tests {
         let opts = get_personalization_options("work_pc");
         assert_eq!(opts["darkMode"], true);
         assert_eq!(opts["brandAccent"], true);
+        assert_eq!(opts["wallpaper"], false);
         assert_eq!(opts["taskbarCleanup"], false);
         assert_eq!(opts["explorerCleanup"], false);
     }
@@ -864,6 +879,7 @@ mod tests {
         assert_eq!(opts["transparency"], false);
         assert_eq!(opts["darkMode"], true);
         assert_eq!(opts["brandAccent"], true);
+        assert_eq!(opts["wallpaper"], false);
     }
 
     #[test]

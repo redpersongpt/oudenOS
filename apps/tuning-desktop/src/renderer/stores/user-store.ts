@@ -12,6 +12,7 @@ import {
   type MachineActivation,
   type CloudPreferences,
 } from "@/lib/cloud-api";
+import { useLicenseStore } from "@/stores/license-store";
 
 // Re-export compatible type aliases
 export type CloudUser = UserProfile;
@@ -54,6 +55,17 @@ export const useUserStore = create<UserStoreState>((set, get) => ({
     try {
       const result = await cloudApi.auth.login({ email, password });
       setApiTokens(result.accessToken, result.refreshToken);
+      useLicenseStore.getState().setLicense({
+        tier: result.user.tier,
+        status: result.user.subscriptionStatus,
+        expiresAt: null,
+        deviceBound: false,
+        deviceId: null,
+        lastValidatedAt: new Date().toISOString(),
+        offlineGraceDays: 0,
+        offlineDaysRemaining: 0,
+        features: [],
+      });
       set({ isAuthenticated: true, user: result.user });
       await get().fetchProfile();
     } catch (err) {
@@ -68,6 +80,17 @@ export const useUserStore = create<UserStoreState>((set, get) => ({
     try {
       const result = await cloudApi.auth.register({ email, password, displayName });
       setApiTokens(result.accessToken, result.refreshToken);
+      useLicenseStore.getState().setLicense({
+        tier: result.user.tier,
+        status: result.user.subscriptionStatus,
+        expiresAt: null,
+        deviceBound: false,
+        deviceId: null,
+        lastValidatedAt: new Date().toISOString(),
+        offlineGraceDays: 0,
+        offlineDaysRemaining: 0,
+        features: [],
+      });
       set({
         isAuthenticated: true,
         user: result.user,
@@ -81,7 +104,13 @@ export const useUserStore = create<UserStoreState>((set, get) => ({
   },
 
   logout: async () => {
+    try {
+      await cloudApi.auth.logout();
+    } catch {
+      // ignore network/logout failures and clear local state anyway
+    }
     clearApiTokens();
+    useLicenseStore.setState({ license: null });
     set({
       isAuthenticated: false,
       user: null,

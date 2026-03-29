@@ -82,3 +82,12 @@ export interface AppBundleResolveResult {
   skipped: string[];
   totalQueued: number;
 }
+
+export interface AppInstallResult {
+  id: string;
+  name: string;
+  status: "installed" | "failed" | "skipped";
+  downloadedPath: string | null;
+  exitCode: number | null;
+  error: string | null;
+}

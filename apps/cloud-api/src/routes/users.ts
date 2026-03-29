@@ -23,6 +23,7 @@ import { eq, and, desc, ne } from "drizzle-orm";
 import {
   db,
   users,
+  licenses,
   subscriptions,
   userPreferences,
   connectedAccounts,
@@ -41,6 +42,60 @@ function hashToken(raw: string): string {
 
 function generateSecureToken(): string {
   return crypto.randomBytes(40).toString("hex");
+}
+
+const SUBSCRIPTION_PRODUCT = "tuning" as const;
+
+async function getTuningEntitlement(userId: string) {
+  const [activeLicense] = await db
+    .select({
+      id: licenses.id,
+      createdAt: licenses.createdAt,
+    })
+    .from(licenses)
+    .where(
+      and(
+        eq(licenses.userId, userId),
+        eq(licenses.product, SUBSCRIPTION_PRODUCT),
+        eq(licenses.status, "active"),
+      ),
+    )
+    .orderBy(desc(licenses.createdAt))
+    .limit(1);
+
+  if (activeLicense) {
+    return {
+      tier: "premium" as const,
+      status: "active" as const,
+      currentPeriodEnd: null,
+      cancelAtPeriodEnd: false,
+      billingPeriod: null,
+      manualOverride: false,
+    };
+  }
+
+  const [sub] = await db
+    .select({
+      tier: subscriptions.tier,
+      status: subscriptions.status,
+      billingPeriod: subscriptions.billingPeriod,
+      currentPeriodEnd: subscriptions.currentPeriodEnd,
+      cancelAtPeriodEnd: subscriptions.cancelAtPeriodEnd,
+      manualOverride: subscriptions.manualOverride,
+    })
+    .from(subscriptions)
+    .where(and(eq(subscriptions.userId, userId), eq(subscriptions.product, SUBSCRIPTION_PRODUCT)))
+    .orderBy(desc(subscriptions.updatedAt))
+    .limit(1);
+
+  return sub ?? {
+    tier: "free" as const,
+    status: "active" as const,
+    currentPeriodEnd: null,
+    cancelAtPeriodEnd: false,
+    billingPeriod: null,
+    manualOverride: false,
+  };
 }
 
 // ─── Schemas ──────────────────────────────────────────────────────────────────
@@ -89,6 +144,8 @@ const linkAccountSchema = z.object({
 const deleteAccountSchema = z.object({
   confirmation: z.literal("DELETE MY ACCOUNT"),
   password: z.string().max(128).optional(),
+  provider: z.enum(["google", "apple"]).optional(),
+  idToken: z.string().min(1).optional(),
 });
 
 // ─── Plugin ───────────────────────────────────────────────────────────────────
@@ -113,18 +170,7 @@ export const usersRoutes: FastifyPluginAsync = async (app) => {
 
     if (!user) return reply.code(404).send({ error: "User not found" });
 
-    const [sub] = await db
-      .select({
-        tier: subscriptions.tier,
-        status: subscriptions.status,
-        billingPeriod: subscriptions.billingPeriod,
-        currentPeriodEnd: subscriptions.currentPeriodEnd,
-        cancelAtPeriodEnd: subscriptions.cancelAtPeriodEnd,
-        manualOverride: subscriptions.manualOverride,
-      })
-      .from(subscriptions)
-      .where(eq(subscriptions.userId, request.userId))
-      .limit(1);
+    const sub = await getTuningEntitlement(request.userId);
 
     const [prefs] = await db
       .select()
@@ -143,7 +189,7 @@ export const usersRoutes: FastifyPluginAsync = async (app) => {
 
     return reply.send({
       user,
-      subscription: sub ?? { tier: "free", status: "active" },
+      subscription: sub,
       preferences: prefs ?? null,
       connectedAccounts: linked,
     });
@@ -259,6 +305,11 @@ export const usersRoutes: FastifyPluginAsync = async (app) => {
       .set({ passwordHash: newHash, updatedAt: new Date() })
       .where(eq(users.id, request.userId));
 
+    await db
+      .update(refreshTokens)
+      .set({ revokedAt: new Date() })
+      .where(eq(refreshTokens.userId, request.userId));
+
     return reply.send({ ok: true });
   });
 
@@ -368,11 +419,7 @@ export const usersRoutes: FastifyPluginAsync = async (app) => {
     }
 
     // Enforce machine limits based on subscription tier
-    const [sub] = await db
-      .select({ tier: subscriptions.tier })
-      .from(subscriptions)
-      .where(eq(subscriptions.userId, request.userId))
-      .limit(1);
+    const sub = await getTuningEntitlement(request.userId);
 
     const activeMachines = await db
       .select({ id: machineActivations.id })
@@ -384,10 +431,10 @@ export const usersRoutes: FastifyPluginAsync = async (app) => {
         ),
       );
 
-    const maxMachines = sub?.tier === "expert" ? 3 : 1;
+    const maxMachines = sub.tier === "expert" ? 3 : 1;
     if (activeMachines.length >= maxMachines) {
       return reply.code(403).send({
-        error: `Machine limit reached (${maxMachines} for ${sub?.tier ?? "free"} plan). Revoke an existing machine to add a new one.`,
+        error: `Machine limit reached (${maxMachines} for ${sub.tier} plan). Revoke an existing machine to add a new one.`,
       });
     }
 
@@ -483,6 +530,10 @@ export const usersRoutes: FastifyPluginAsync = async (app) => {
 
     const providerUserId = profile.id;
     const providerEmail = profile.email;
+
+    if (providerEmail && !profile.emailVerified) {
+      return reply.code(400).send({ error: `${provider} did not return a verified email for this account` });
+    }
 
     // Check not already linked on this account
     const [existing] = await db
@@ -617,7 +668,11 @@ export const usersRoutes: FastifyPluginAsync = async (app) => {
     }
 
     const [user] = await db
-      .select({ passwordHash: users.passwordHash })
+      .select({
+        passwordHash: users.passwordHash,
+        oauthProvider: users.oauthProvider,
+        oauthId: users.oauthId,
+      })
       .from(users)
       .where(eq(users.id, request.userId))
       .limit(1);
@@ -630,6 +685,38 @@ export const usersRoutes: FastifyPluginAsync = async (app) => {
       }
       const valid = await bcrypt.compare(parse.data.password, user.passwordHash);
       if (!valid) return reply.code(401).send({ error: "Password is incorrect" });
+    } else {
+      if (!parse.data.provider || !parse.data.idToken) {
+        return reply.code(400).send({ error: "Social sign-in accounts must confirm deletion with a fresh provider login." });
+      }
+
+      const providerProfile = parse.data.provider === "google"
+        ? await verifyGoogleIdToken(parse.data.idToken).catch(() => null)
+        : await verifyAppleIdToken(parse.data.idToken).catch(() => null);
+
+      if (!providerProfile) {
+        return reply.code(401).send({ error: "Provider re-authentication failed" });
+      }
+
+      const [linkedAccount] = await db
+        .select({ id: connectedAccounts.id })
+        .from(connectedAccounts)
+        .where(
+          and(
+            eq(connectedAccounts.userId, request.userId),
+            eq(connectedAccounts.provider, parse.data.provider),
+            eq(connectedAccounts.providerUserId, providerProfile.id),
+          ),
+        )
+        .limit(1);
+
+      const matchesLegacyProvider =
+        user?.oauthProvider === parse.data.provider &&
+        user?.oauthId === providerProfile.id;
+
+      if (!linkedAccount && !matchesLegacyProvider) {
+        return reply.code(401).send({ error: "Provider re-authentication does not match this account" });
+      }
     }
 
     // Soft-delete: scrub PII, preserve billing records for accounting

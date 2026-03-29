@@ -7,7 +7,7 @@
 
 import type { ProfileClassification, MachineProfile } from "./profiles.js";
 import type { HardwareAssessment } from "./assessment.js";
-import type { TransformPreset, ResolvedPlaybook, RecommendedAppsResult, AppBundleResolveResult } from "./playbook.js";
+import type { TransformPreset, ResolvedPlaybook, RecommendedAppsResult, AppBundleResolveResult, AppInstallResult } from "./playbook.js";
 import type { ActionExecutionResult } from "./execution.js";
 import type { PersonalizationPreferences } from "./personalization.js";
 import type { OsRollbackSnapshot, OsRollbackOperation, OsAuditLogEntry } from "./rollback.js";
@@ -32,6 +32,7 @@ export interface IpcMethods {
   // ── App bundle ────────────────────────────────────────────────────────────
   "appbundle.getRecommended": { params: { profile: MachineProfile }; result: RecommendedAppsResult };
   "appbundle.resolve": { params: { profile: MachineProfile; selectedApps: string[] }; result: AppBundleResolveResult };
+  "appbundle.install": { params: { appId: string }; result: AppInstallResult };
 
   // ── Execution ─────────────────────────────────────────────────────────────
   "execute.applyAction": { params: { actionId: string }; result: ActionExecutionResult };

@@ -5,19 +5,18 @@ import { stripe, TUNING_PRICE_CENTS } from "@/lib/stripe";
 
 export async function POST(req: NextRequest) {
   const session = await auth();
-  if (!session?.user?.email) {
+  if (!session?.user?.email || !session.user.id) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
 
-  const body = await req.json();
-  const product = body.product || "tuning";
+  const body = await req.json().catch(() => ({}));
+  const product = body?.product || "tuning";
 
   if (product !== "tuning") {
     return NextResponse.json({ error: "Invalid product" }, { status: 400 });
   }
 
   const appUrl = getAppUrl(req.nextUrl.origin);
-
   const checkoutSession = await stripe.checkout.sessions.create({
     mode: "payment",
     payment_method_types: ["card"],
@@ -36,11 +35,11 @@ export async function POST(req: NextRequest) {
       },
     ],
     metadata: {
-      userId: session.user.id || "",
+      userId: session.user.id,
       product: "tuning",
     },
     success_url: `${appUrl}/profile?purchased=true`,
-    cancel_url: `${appUrl}/#tuning`,
+    cancel_url: `${appUrl}/redcore-tuning`,
   });
 
   return NextResponse.json({ url: checkoutSession.url });

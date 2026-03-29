@@ -10,7 +10,7 @@
 
 import type { FastifyPluginAsync } from "fastify";
 import Stripe from "stripe";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { db, users, subscriptions, paymentHistory } from "../db/index.js";
 import {
   handleDonationCheckoutCompleted,
@@ -22,6 +22,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY ?? "", {
 });
 
 const WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET ?? "";
+const SUBSCRIPTION_PRODUCT = "tuning" as const;
 
 // ─── Status mapping ───────────────────────────────────────────────────────────
 
@@ -95,6 +96,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session): Promis
   const billingPeriod = billingPeriodFromPriceId(priceId);
 
   const subData = {
+    product: SUBSCRIPTION_PRODUCT,
     stripeSubscriptionId: stripeSubId,
     stripeCustomerId: customerId,
     stripePriceId: priceId,
@@ -110,11 +112,19 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session): Promis
   const [existing] = await db
     .select({ id: subscriptions.id })
     .from(subscriptions)
-    .where(eq(subscriptions.userId, userId))
+    .where(
+      and(
+        eq(subscriptions.userId, userId),
+        eq(subscriptions.product, SUBSCRIPTION_PRODUCT),
+      ),
+    )
     .limit(1);
 
   if (existing) {
-    await db.update(subscriptions).set(subData).where(eq(subscriptions.userId, userId));
+    await db
+      .update(subscriptions)
+      .set(subData)
+      .where(and(eq(subscriptions.userId, userId), eq(subscriptions.product, SUBSCRIPTION_PRODUCT)));
   } else {
     await db.insert(subscriptions).values({ userId, ...subData });
   }
@@ -126,15 +136,17 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session): Promis
 }
 
 async function handleSubscriptionUpdated(stripeSub: Stripe.Subscription): Promise<void> {
-  const customerId = stripeSub.customer as string;
-
-  const [user] = await db
-    .select({ id: users.id })
-    .from(users)
-    .where(eq(users.stripeCustomerId, customerId))
+  const [sub] = await db
+    .select({ id: subscriptions.id })
+    .from(subscriptions)
+    .where(
+      and(
+        eq(subscriptions.stripeSubscriptionId, stripeSub.id),
+        eq(subscriptions.product, SUBSCRIPTION_PRODUCT),
+      ),
+    )
     .limit(1);
-
-  if (!user) return;
+  if (!sub) return;
 
   const priceId = stripeSub.items.data[0]?.price.id ?? "";
 
@@ -151,7 +163,7 @@ async function handleSubscriptionUpdated(stripeSub: Stripe.Subscription): Promis
       cancelledAt: stripeSub.canceled_at ? new Date(stripeSub.canceled_at * 1000) : null,
       updatedAt: new Date(),
     })
-    .where(eq(subscriptions.userId, user.id));
+    .where(eq(subscriptions.id, sub.id));
 }
 
 async function handleSubscriptionDeleted(stripeSub: Stripe.Subscription): Promise<void> {
@@ -159,15 +171,17 @@ async function handleSubscriptionDeleted(stripeSub: Stripe.Subscription): Promis
     await handleDonationSubscriptionCancelled(stripeSub);
     return;
   }
-  const customerId = stripeSub.customer as string;
-
-  const [user] = await db
-    .select({ id: users.id })
-    .from(users)
-    .where(eq(users.stripeCustomerId, customerId))
+  const [sub] = await db
+    .select({ id: subscriptions.id })
+    .from(subscriptions)
+    .where(
+      and(
+        eq(subscriptions.stripeSubscriptionId, stripeSub.id),
+        eq(subscriptions.product, SUBSCRIPTION_PRODUCT),
+      ),
+    )
     .limit(1);
-
-  if (!user) return;
+  if (!sub) return;
 
   await db
     .update(subscriptions)
@@ -178,7 +192,7 @@ async function handleSubscriptionDeleted(stripeSub: Stripe.Subscription): Promis
       stripeSubscriptionId: null,
       updatedAt: new Date(),
     })
-    .where(eq(subscriptions.userId, user.id));
+    .where(eq(subscriptions.id, sub.id));
 }
 
 async function handleInvoiceSucceeded(invoice: Stripe.Invoice): Promise<void> {
@@ -195,7 +209,7 @@ async function handleInvoiceSucceeded(invoice: Stripe.Invoice): Promise<void> {
   const [sub] = await db
     .select({ id: subscriptions.id })
     .from(subscriptions)
-    .where(eq(subscriptions.userId, user.id))
+    .where(and(eq(subscriptions.userId, user.id), eq(subscriptions.product, SUBSCRIPTION_PRODUCT)))
     .limit(1);
 
   // Insert payment record (idempotent via unique stripeInvoiceId)
@@ -204,7 +218,7 @@ async function handleInvoiceSucceeded(invoice: Stripe.Invoice): Promise<void> {
     .values({
       userId: user.id,
       subscriptionId: sub?.id ?? null,
-      product: "tuning",
+      product: SUBSCRIPTION_PRODUCT,
       type: "subscription",
       stripeInvoiceId: invoice.id,
       stripePaymentIntentId: invoice.payment_intent as string | null,
@@ -239,7 +253,7 @@ async function handleInvoiceFailed(invoice: Stripe.Invoice): Promise<void> {
   const [sub] = await db
     .select({ id: subscriptions.id })
     .from(subscriptions)
-    .where(eq(subscriptions.userId, user.id))
+    .where(and(eq(subscriptions.userId, user.id), eq(subscriptions.product, SUBSCRIPTION_PRODUCT)))
     .limit(1);
 
   await db
@@ -247,7 +261,7 @@ async function handleInvoiceFailed(invoice: Stripe.Invoice): Promise<void> {
     .values({
       userId: user.id,
       subscriptionId: sub?.id ?? null,
-      product: "tuning",
+      product: SUBSCRIPTION_PRODUCT,
       type: "subscription",
       stripeInvoiceId: invoice.id,
       stripePaymentIntentId: invoice.payment_intent as string | null,

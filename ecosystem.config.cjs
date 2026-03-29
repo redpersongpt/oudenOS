@@ -49,7 +49,6 @@ const webAppUrl =
   "https://redcoreos.net";
 
 const webDatabaseUrl =
-  process.env.WEB_DATABASE_URL ??
   `file:${path.join(__dirname, "apps/web/prisma/prisma/dev.db")}`;
 
 module.exports = {
@@ -73,6 +72,10 @@ module.exports = {
           process.env.AUTH_SECRET ??
           process.env.NEXTAUTH_SECRET ??
           webEnvFile.NEXTAUTH_SECRET,
+        GOOGLE_CLIENT_ID:
+          process.env.GOOGLE_CLIENT_ID ?? webEnvFile.GOOGLE_CLIENT_ID,
+        GOOGLE_CLIENT_SECRET:
+          process.env.GOOGLE_CLIENT_SECRET ?? webEnvFile.GOOGLE_CLIENT_SECRET,
       },
       instances: 1,
       autorestart: true,

@@ -7,7 +7,9 @@ import { useEffect, useRef, useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Check, AlertCircle } from "lucide-react";
 import { useWizardStore } from "@/stores/wizard-store";
+import { useDecisionsStore } from "@/stores/decisions-store";
 import { getActionRationale } from "@/lib/expert-rationale";
+import { resolveEffectivePersonalization } from "@/lib/personalization-resolution";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -21,6 +23,12 @@ interface CompletedAction {
   label: string;
   actionId: string;
   status: "applied" | "failed";
+}
+
+interface AppInstallProgress {
+  requested: number;
+  installed: number;
+  failed: number;
 }
 
 // ─── Timeline item ────────────────────────────────────────────────────────────
@@ -61,6 +69,11 @@ function TimelineItem({ action }: { action: CompletedAction }) {
 
 export function ExecutionStep() {
   const { detectedProfile, resolvedPlaybook, selectedAppIds, personalization, demoMode, completeStep, setExecutionResult } = useWizardStore();
+  const answers = useDecisionsStore((state) => state.answers);
+  const effectivePersonalization = useMemo(
+    () => resolveEffectivePersonalization(detectedProfile?.id, personalization, answers),
+    [answers, detectedProfile?.id, personalization],
+  );
 
   // ── Build action queue from resolved playbook ──
   const actionQueue = useMemo<ExecutableAction[]>(() => {
@@ -76,7 +89,7 @@ export function ExecutionStep() {
     return queue;
   }, [resolvedPlaybook]);
 
-  const totalActions = actionQueue.length;
+  const totalActions = actionQueue.length + selectedAppIds.length + 1;
 
   const [currentIdx,    setCurrentIdx]    = useState(-1);
   const [currentAction, setCurrentAction] = useState<string | null>(null);
@@ -105,13 +118,14 @@ export function ExecutionStep() {
     const exec = async () => {
       const { serviceCall } = await import("@/lib/service");
       let localFailed = 0;
+      let operationIndex = 0;
 
       // ── Phase 1: Apply playbook actions ──
       for (let i = 0; i < actionQueue.length; i++) {
         if (controller.signal.aborted) return;
         const action = actionQueue[i];
 
-        setCurrentIdx(i);
+        setCurrentIdx(operationIndex);
         setCurrentAction(action.name);
         setCurrentActionId(action.id);
         setCurrentPhase(action.phase);
@@ -136,6 +150,7 @@ export function ExecutionStep() {
           localFailed++;
         }
         setCompleted((prev) => [...prev, { label: action.name, actionId: action.id, status }]);
+        operationIndex += 1;
 
         requestAnimationFrame(() => {
           if (timelineRef.current) {
@@ -148,10 +163,15 @@ export function ExecutionStep() {
 
       // ── Phase 2: Apply personalization ──
       let personalizationFailed = false;
+      let personalizationApplied = false;
       try {
+        setCurrentIdx(operationIndex);
+        setCurrentAction("Applying personalization");
+        setCurrentActionId("personalize.apply");
+        setCurrentPhase("Personalization");
         const persResult = await serviceCall("personalize.apply", {
           profile: detectedProfile?.id ?? "gaming_desktop",
-          options: personalization,
+          options: effectivePersonalization,
         });
         if (!persResult.ok) {
           personalizationFailed = true;
@@ -160,34 +180,105 @@ export function ExecutionStep() {
           const rpcStatus = typeof payload?.status === "string" ? payload.status : "failed";
           const failedCount = typeof payload?.failed === "number" ? payload.failed : 0;
           personalizationFailed = rpcStatus !== "success" || failedCount > 0;
+          personalizationApplied = !personalizationFailed;
         }
       } catch {
         personalizationFailed = true;
       }
+      setCurrentAction(null);
+      setCompleted((prev) => [
+        ...prev,
+        {
+          label: "Apply personalization",
+          actionId: "personalize.apply",
+          status: personalizationFailed ? "failed" : "applied",
+        },
+      ]);
+      operationIndex += 1;
 
       // ── Phase 3: Install selected apps ──
-      let appInstallFailed = false;
+      let appInstallProgress: AppInstallProgress = {
+        requested: selectedAppIds.length,
+        installed: 0,
+        failed: 0,
+      };
       if (selectedAppIds.length > 0) {
         try {
           const appResult = await serviceCall("appbundle.resolve", {
             profile: detectedProfile?.id ?? "gaming_desktop",
             selectedApps: selectedAppIds,
           });
-          if (!appResult.ok) appInstallFailed = true;
+          if (!appResult.ok) {
+            appInstallProgress.failed = selectedAppIds.length;
+          } else {
+            const payload = appResult.data as { installQueue?: Array<{ id: string; name: string }> } | undefined;
+            const installQueue = Array.isArray(payload?.installQueue) ? payload.installQueue : [];
+
+            for (const app of installQueue) {
+              if (controller.signal.aborted) return;
+
+              setCurrentIdx(operationIndex);
+              setCurrentAction(`Installing ${app.name}`);
+              setCurrentActionId(`app.${app.id}`);
+              setCurrentPhase("App Setup");
+
+              let status: "applied" | "failed" = "failed";
+              const installResult = await serviceCall<{
+                status?: unknown;
+                error?: unknown;
+                name?: unknown;
+              }>("appbundle.install", { appId: app.id });
+
+              if (installResult.ok) {
+                const rpcStatus = typeof installResult.data.status === "string" ? installResult.data.status : "failed";
+                status = rpcStatus === "installed" || rpcStatus === "skipped" ? "applied" : "failed";
+              } else if (demoMode) {
+                await new Promise<void>((resolve) => {
+                  timerRef.current = setTimeout(resolve, 180 + Math.random() * 140);
+                });
+                status = "applied";
+              }
+
+              if (status === "applied") {
+                appInstallProgress.installed += 1;
+              } else {
+                appInstallProgress.failed += 1;
+              }
+
+              setCurrentAction(null);
+              setCompleted((prev) => [
+                ...prev,
+                {
+                  label: `Install ${app.name}`,
+                  actionId: `app.${app.id}`,
+                  status,
+                },
+              ]);
+              operationIndex += 1;
+
+              requestAnimationFrame(() => {
+                if (timelineRef.current) {
+                  timelineRef.current.scrollTop = timelineRef.current.scrollHeight;
+                }
+              });
+            }
+          }
         } catch {
-          appInstallFailed = true;
+          appInstallProgress.failed = selectedAppIds.length;
         }
       }
 
       if (controller.signal.aborted) return;
 
       // ── Done ──
-      const skipped = (personalizationFailed ? 1 : 0) + (appInstallFailed ? 1 : 0);
+      const skipped = personalizationFailed ? 1 : 0;
       setExecutionResult({
         applied:   actionQueue.length - localFailed,
         failed:    localFailed,
         skipped,
         preserved: resolvedPlaybook?.totalBlocked ?? 0,
+        personalizationApplied,
+        appInstall: appInstallProgress,
       });
 
       timerRef.current = setTimeout(() => completeStep("execution"), 800);
@@ -201,6 +292,12 @@ export function ExecutionStep() {
         failed: actionQueue.length,
         skipped: 0,
         preserved: resolvedPlaybook?.totalBlocked ?? 0,
+        personalizationApplied: false,
+        appInstall: {
+          requested: selectedAppIds.length,
+          installed: 0,
+          failed: selectedAppIds.length,
+        },
       });
       setTimeout(() => completeStep("execution"), 800);
     });
@@ -213,7 +310,7 @@ export function ExecutionStep() {
   }, []);
 
   // No playbook = nothing to execute (checked before useEffect starts)
-  if (totalActions === 0) {
+  if (!resolvedPlaybook) {
     return (
       <div className="flex h-full flex-col items-center justify-center gap-3 px-8">
         <AlertCircle className="h-8 w-8 text-amber-400" />
