@@ -15,7 +15,7 @@ import {
   RotateCcw,
   Settings,
   Zap,
-  CreditCard,
+  KeyRound,
   LogOut,
   PanelLeft,
 } from "lucide-react";
@@ -61,7 +61,7 @@ export function Sidebar() {
   const location = useLocation();
   const navigate = useNavigate();
   const user = useAuthStore((s) => s.user);
-  const clearAuth = useAuthStore((s) => s.clearAuth);
+  const logout = useAuthStore((s) => s.logout);
   const isPremium = useLicenseStore((s) => {
     const l = s.license;
     return (l?.tier === "premium" || l?.tier === "expert") && l?.status === "active";
@@ -70,8 +70,8 @@ export function Sidebar() {
   const displayName = user?.displayName ?? user?.email ?? "Account";
   const initials = displayName.slice(0, 2).toUpperCase();
 
-  function handleSignOut() {
-    clearAuth();
+  async function handleSignOut() {
+    await logout();
     navigate("/login", { replace: true });
   }
 
@@ -172,11 +172,11 @@ export function Sidebar() {
 
       {/* Bottom section */}
       <div className="border-t border-border px-2 py-2 space-y-0.5 shrink-0">
-        {/* Subscription link */}
+        {/* License link */}
         <AnimatePresence initial={false}>
           {!collapsed && (
             <motion.div
-              key="subscription-link"
+              key="license-link"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -192,13 +192,13 @@ export function Sidebar() {
                   }`
                 }
               >
-                <CreditCard className="h-[18px] w-[18px] shrink-0" strokeWidth={1.5} />
+                <KeyRound className="h-[18px] w-[18px] shrink-0" strokeWidth={1.5} />
                 <span className="font-medium whitespace-nowrap">
-                  {isPremium ? "Premium" : "Upgrade"}
+                  {isPremium ? "License" : "Unlock Premium"}
                 </span>
                 {!isPremium && (
                   <span className="ml-auto rounded-full bg-brand-500/15 px-2 py-0.5 text-[10px] font-semibold text-brand-400">
-                    PRO
+                    $12.99
                   </span>
                 )}
               </NavLink>

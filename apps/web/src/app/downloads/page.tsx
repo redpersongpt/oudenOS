@@ -179,9 +179,15 @@ export default async function DownloadsPage() {
               <p className="font-mono text-[0.65rem] font-medium uppercase tracking-[0.12em] text-ink-muted mb-2">
                 SHA-256 Checksum — redcore-os-setup.exe
               </p>
-              <code className="font-mono text-[0.72rem] text-ink-tertiary break-all select-all">
-                {currentChecksum}
-              </code>
+              {currentChecksum ? (
+                <code className="font-mono text-[0.72rem] text-ink-tertiary break-all select-all">
+                  {currentChecksum}
+                </code>
+              ) : (
+                <p className="text-[13px] text-ink-tertiary">
+                  Live checksum is temporarily unavailable. Use <code className="font-mono text-[11px]">latest.json</code> or verify after download with PowerShell.
+                </p>
+              )}
             </div>
             <p className="mt-3 text-ink-muted text-[12px]">
               Verify in PowerShell: <code className="font-mono text-[11px]">Get-FileHash redcore-os-setup.exe</code>

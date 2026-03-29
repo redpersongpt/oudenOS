@@ -1,211 +1,120 @@
-// ─── SubscriptionPage ────────────────────────────────────────────────────────
-// Three-tier pricing (Free / Premium / Expert) with monthly/annual toggle,
-// feature comparison table, and Stripe-ready checkout flow.
-
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import {
-  CreditCard,
   Check,
-  X,
-  Zap,
   Crown,
-  Shield,
-  Minus,
-  Sparkles,
-  Lock,
-  AlertTriangle,
-  ChevronDown,
-  ChevronUp,
   ExternalLink,
+  KeyRound,
+  RefreshCw,
+  Shield,
+  Trash2,
+  Zap,
 } from "lucide-react";
 import { staggerContainer, staggerChild, spring } from "@redcore/design-system";
-import { Card, CardContent } from "@/components/ui/Card";
+import type { LicenseState } from "@redcore/shared-schema/license";
+import { Card, CardContent, CardHeader } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 import { TierBadge } from "@/components/tier/TierBadge";
-import { useLicenseStore } from "@/stores/license-store";
-import type { AppTier } from "@/hooks/useTier";
 import { toast } from "@/components/ui/Toast";
-import { cloudApi } from "@/lib/cloud-api";
-import { openExternalUrl, PRIVACY_URL } from "@/lib/external-links";
+import { useLicenseStore } from "@/stores/license-store";
+import { openExternalUrl, PRIVACY_URL, TUNING_SITE_URL } from "@/lib/external-links";
 
-// ─── Pricing data ──────────────────────────────────────────────────────────
-
-const ANNUAL_DISCOUNT = 0.20; // 20% off
-
-interface TierConfig {
-  id: AppTier;
-  name: string;
-  monthlyPrice: number;
-  description: string;
-  icon: React.ReactNode;
-  iconBg: string;
-  cardBorder: string;
-  cardBg: string;
-  accentColor: string;
-  mostPopular: boolean;
-  features: string[];
-  machines: string;
-  support: string;
-  ctaLabel: string;
-}
-
-const TIERS: TierConfig[] = [
-  {
-    id: "free",
-    name: "Free",
-    monthlyPrice: 0,
-    description: "Essential scans and safe optimizations",
-    icon: <Shield className="h-5 w-5" strokeWidth={1.5} />,
-    iconBg: "bg-surface-overlay border-border",
-    cardBorder: "border-border",
-    cardBg: "bg-surface-overlay/30",
-    accentColor: "text-ink-secondary",
-    mostPopular: false,
-    features: [
-      "Hardware scan & health overview",
-      "5 safe optimizations",
-      "Basic startup cleanup",
-      "Basic debloat",
-      "Basic benchmark",
-      "Community support",
-    ],
-    machines: "1 machine",
-    support: "Community",
-    ctaLabel: "Current plan",
-  },
-  {
-    id: "premium",
-    name: "Premium",
-    monthlyPrice: 9,
-    description: "Full suite for serious PC optimizers",
-    icon: <Zap className="h-5 w-5" strokeWidth={2} />,
-    iconBg: "bg-blue-500/10 border-blue-500/30",
-    cardBorder: "border-blue-500/40",
-    cardBg: "bg-blue-500/5",
-    accentColor: "text-blue-400",
-    mostPopular: true,
-    features: [
-      "Full scan & all 50+ optimizations",
-      "Benchmark Lab with comparisons",
-      "Rollback Center (unlimited snapshots)",
-      "Reboot-resume journal",
-      "Thermal & bottleneck analysis",
-      "App Install Hub (28 apps)",
-      "Auto-updates",
-      "Config sync",
-      "Priority support",
-    ],
-    machines: "3 machines",
-    support: "Priority",
-    ctaLabel: "Upgrade to Premium",
-  },
-  {
-    id: "expert",
-    name: "Expert",
-    monthlyPrice: 19,
-    description: "Maximum control for power users",
-    icon: <Crown className="h-5 w-5" strokeWidth={2} />,
-    iconBg: "bg-violet-500/10 border-violet-500/30",
-    cardBorder: "border-violet-500/40",
-    cardBg: "bg-violet-500/5",
-    accentColor: "text-violet-400",
-    mostPopular: false,
-    features: [
-      "Everything in Premium",
-      "Expert-only system tweaks",
-      "Full BIOS guidance",
-      "Advanced registry controls",
-      "CPU parking & GPU P-State lock",
-      "Speculative mitigation control",
-      "API access",
-      "10 machines",
-      "Priority support",
-    ],
-    machines: "10 machines",
-    support: "Priority + API",
-    ctaLabel: "Upgrade to Expert",
-  },
+const FREE_FEATURES = [
+  "Hardware scan and health overview",
+  "Safe optimization plans",
+  "Benchmark lab",
+  "Rollback center",
+  "App Install Hub",
+  "Machine intelligence",
 ];
 
-// ─── Feature comparison table ──────────────────────────────────────────────
-
-type CellValue = boolean | string;
-
-interface ComparisonRow {
-  label: string;
-  free: CellValue;
-  premium: CellValue;
-  expert: CellValue;
-  section?: string;
-}
-
-const COMPARISON_ROWS: ComparisonRow[] = [
-  // Core
-  { label: "Hardware scan", free: true, premium: true, expert: true, section: "Core" },
-  { label: "Safe optimizations", free: "5", premium: "50+", expert: "50+" },
-  { label: "Benchmark", free: "Basic", premium: "Full Lab", expert: "Full Lab" },
-  { label: "BIOS guidance", free: "Preview", premium: false, expert: "Full" },
-  // Advanced
-  { label: "Rollback Center", free: false, premium: true, expert: true, section: "Advanced" },
-  { label: "Thermal analysis", free: false, premium: true, expert: true },
-  { label: "Bottleneck analysis", free: false, premium: true, expert: true },
-  { label: "App Install Hub", free: false, premium: true, expert: true },
-  { label: "Config sync", free: false, premium: true, expert: true },
-  // Expert-only
-  { label: "Expert-only tweaks", free: false, premium: false, expert: true, section: "Expert" },
-  { label: "Advanced controls", free: false, premium: false, expert: true },
-  { label: "CPU parking / GPU P-State", free: false, premium: false, expert: true },
-  { label: "Speculative mitigation", free: false, premium: false, expert: true },
-  { label: "API access", free: false, premium: false, expert: true },
-  // Limits
-  { label: "Machines", free: "1", premium: "3", expert: "10", section: "Limits" },
-  { label: "Auto-updates", free: false, premium: true, expert: true },
-  { label: "Support", free: "Community", premium: "Priority", expert: "Priority" },
+const PREMIUM_FEATURES = [
+  "Full tuning engine",
+  "Reboot-resume workflow",
+  "Thermal and bottleneck analysis",
+  "Advanced low-level tuning controls",
+  "One machine premium activation",
+  "License-key based unlock",
 ];
 
-// ─── Checkout modal ────────────────────────────────────────────────────────
-
-interface CheckoutState {
-  targetTier: "premium" | "expert";
-  billing: "monthly" | "annual";
+function normalizeLicenseState(raw: unknown): LicenseState {
+  const state = (raw ?? {}) as Partial<LicenseState>;
+  return {
+    tier: state.tier ?? "free",
+    status: state.status ?? "expired",
+    expiresAt: state.expiresAt ?? null,
+    deviceBound: state.deviceBound ?? false,
+    deviceId: state.deviceId ?? null,
+    lastValidatedAt: state.lastValidatedAt ?? new Date().toISOString(),
+    offlineGraceDays: state.offlineGraceDays ?? 0,
+    offlineDaysRemaining: state.offlineDaysRemaining ?? 0,
+    features: state.features ?? [],
+  };
 }
-
-// ─── Main component ────────────────────────────────────────────────────────
 
 export function SubscriptionPage() {
   const license = useLicenseStore((s) => s.license);
-  const currentTier = (license?.tier ?? "free") as AppTier;
+  const setLicense = useLicenseStore((s) => s.setLicense);
+  const currentTier = license?.tier ?? "free";
+  const [licenseKey, setLicenseKey] = useState("");
+  const [activating, setActivating] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const [deactivating, setDeactivating] = useState(false);
 
-  const [billing, setBilling] = useState<"monthly" | "annual">("monthly");
-  const [checkout, setCheckout] = useState<CheckoutState | null>(null);
-  const [showComparison, setShowComparison] = useState(false);
-  const [portalLoading, setPortalLoading] = useState(false);
+  async function handleActivate() {
+    const normalized = licenseKey.trim().toUpperCase();
+    if (!normalized) {
+      toast.error("License Key Required", "Enter your redcore Tuning license key first.");
+      return;
+    }
 
-  function annualPrice(monthly: number) {
-    return (monthly * (1 - ANNUAL_DISCOUNT)).toFixed(2);
-  }
-
-  function yearlyTotal(monthly: number) {
-    return (monthly * 12 * (1 - ANNUAL_DISCOUNT)).toFixed(2);
-  }
-
-  function handleUpgrade(tier: "premium" | "expert") {
-    setCheckout({ targetTier: tier, billing });
-  }
-
-  async function handleOpenBillingPortal() {
-    setPortalLoading(true);
+    setActivating(true);
     try {
-      const { portalUrl } = await cloudApi.subscription.portal();
-      openExternalUrl(portalUrl);
-      toast.success("Billing Portal Opened", "Your subscription settings opened in your browser.");
+      const nextState = normalizeLicenseState(await window.redcore.license.activate(normalized));
+      setLicense(nextState);
+      setLicenseKey("");
+      toast.success("License Activated", "Premium features are now unlocked on this machine.");
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Unable to open the billing portal right now.";
-      toast.error("Billing Portal Unavailable", message);
+      toast.error(
+        "Activation Failed",
+        error instanceof Error ? error.message : "Could not activate this license key.",
+      );
     } finally {
-      setPortalLoading(false);
+      setActivating(false);
+    }
+  }
+
+  async function handleRefresh() {
+    setRefreshing(true);
+    try {
+      const nextState = normalizeLicenseState(await window.redcore.license.refresh());
+      setLicense(nextState);
+      toast.success("License Refreshed", "The local license state is up to date.");
+    } catch (error) {
+      toast.error(
+        "Refresh Failed",
+        error instanceof Error ? error.message : "Could not refresh your license right now.",
+      );
+    } finally {
+      setRefreshing(false);
+    }
+  }
+
+  async function handleDeactivate() {
+    setDeactivating(true);
+    try {
+      await window.redcore.license.deactivate();
+      setLicense(normalizeLicenseState(await window.redcore.license.get()));
+      toast.success("License Removed", "This machine is back on the free tier.");
+    } catch (error) {
+      toast.error(
+        "Remove Failed",
+        error instanceof Error ? error.message : "Could not remove the local license key.",
+      );
+    } finally {
+      setDeactivating(false);
     }
   }
 
@@ -216,482 +125,172 @@ export function SubscriptionPage() {
       animate="visible"
       className="space-y-6"
     >
-      {/* ── Page header ── */}
-      <motion.div variants={staggerChild}>
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-brand-500/20 bg-brand-500/10">
-            <CreditCard className="h-5 w-5 text-brand-500" strokeWidth={1.5} />
-          </div>
-          <div className="flex-1">
-            <h1 className="text-base font-semibold text-ink">Subscription</h1>
-            <p className="text-xs text-ink-tertiary">Choose the plan that fits your needs</p>
-          </div>
-          <TierBadge tier={currentTier} size="md" />
+      <motion.div variants={staggerChild} className="flex items-center gap-3">
+        <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-brand-500/20 bg-brand-500/10">
+          <KeyRound className="h-5 w-5 text-brand-500" strokeWidth={1.5} />
         </div>
-      </motion.div>
-
-      {/* ── Billing toggle ── */}
-      <motion.div variants={staggerChild} className="flex items-center justify-center gap-3">
-        <button
-          onClick={() => setBilling("monthly")}
-          className={`text-sm font-medium transition-colors ${
-            billing === "monthly" ? "text-ink" : "text-ink-tertiary hover:text-ink-secondary"
-          }`}
-        >
-          Monthly
-        </button>
-
-        <button
-          onClick={() => setBilling(billing === "monthly" ? "annual" : "monthly")}
-          className={`relative h-6 w-11 rounded-full border transition-colors ${
-            billing === "annual"
-              ? "border-blue-500/40 bg-blue-500/20"
-              : "border-border bg-surface-overlay"
-          }`}
-        >
-          <motion.div
-            className="absolute top-0.5 h-5 w-5 rounded-full bg-white shadow"
-            animate={{ left: billing === "annual" ? "calc(100% - 22px)" : "2px" }}
-            transition={spring.snappy}
-          />
-        </button>
-
-        <button
-          onClick={() => setBilling("annual")}
-          className={`flex items-center gap-1.5 text-sm font-medium transition-colors ${
-            billing === "annual" ? "text-ink" : "text-ink-tertiary hover:text-ink-secondary"
-          }`}
-        >
-          Annual
-          <AnimatePresence>
-            {billing === "annual" && (
-              <motion.span
-                initial={{ opacity: 0, scale: 0.7 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.7 }}
-                transition={spring.snappy}
-                className="rounded-full border border-green-500/30 bg-green-500/15 px-1.5 py-0.5 text-[10px] font-semibold text-green-400"
-              >
-                Save 20%
-              </motion.span>
-            )}
-          </AnimatePresence>
-        </button>
-      </motion.div>
-
-      {/* ── Tier cards ── */}
-      <motion.div variants={staggerChild}>
-        <div className="grid grid-cols-3 gap-4">
-          {TIERS.map((tier) => {
-            const isCurrent = tier.id === currentTier;
-            const isDowngrade =
-              (currentTier === "expert" && tier.id === "premium") ||
-              (currentTier !== "free" && tier.id === "free");
-            const price =
-              tier.monthlyPrice === 0
-                ? null
-                : billing === "annual"
-                ? annualPrice(tier.monthlyPrice)
-                : String(tier.monthlyPrice);
-
-            return (
-              <motion.div
-                key={tier.id}
-                className={`relative flex flex-col rounded-2xl border p-5 transition-colors ${tier.cardBorder} ${tier.cardBg}`}
-                whileHover={!isCurrent ? { y: -2, transition: spring.gentle } : undefined}
-              >
-                {/* Most Popular badge */}
-                {tier.mostPopular && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                    <span className="flex items-center gap-1 rounded-full border border-blue-500/30 bg-[#0D0D10] px-3 py-0.5 text-[11px] font-semibold text-blue-400">
-                      <Sparkles className="h-3 w-3" />
-                      Most Popular
-                    </span>
-                  </div>
-                )}
-
-                {/* Current plan indicator */}
-                {isCurrent && (
-                  <div className="absolute right-3 top-3">
-                    <span className="rounded-full border border-green-500/30 bg-green-500/10 px-2 py-0.5 text-[10px] font-semibold text-green-400">
-                      Your Plan
-                    </span>
-                  </div>
-                )}
-
-                {/* Icon + name */}
-                <div className="mb-4 flex items-center gap-3">
-                  <div
-                    className={`flex h-9 w-9 items-center justify-center rounded-xl border ${tier.iconBg}`}
-                  >
-                    <span className={tier.accentColor}>{tier.icon}</span>
-                  </div>
-                  <div>
-                    <p className={`text-sm font-bold ${tier.accentColor}`}>{tier.name}</p>
-                    <p className="text-xs text-ink-tertiary">{tier.description}</p>
-                  </div>
-                </div>
-
-                {/* Price */}
-                <div className="mb-4">
-                  {price === null ? (
-                    <p className="text-2xl font-bold text-ink">
-                      Free
-                    </p>
-                  ) : (
-                    <div className="flex items-end gap-1">
-                      <span className="text-2xl font-bold text-ink">${price}</span>
-                      <span className="mb-0.5 text-xs text-ink-tertiary">/mo</span>
-                    </div>
-                  )}
-                  {billing === "annual" && tier.monthlyPrice > 0 && (
-                    <p className="mt-0.5 text-[11px] text-ink-tertiary">
-                      ${yearlyTotal(tier.monthlyPrice)} billed annually
-                    </p>
-                  )}
-                </div>
-
-                {/* Features */}
-                <ul className="mb-5 flex-1 space-y-2">
-                  {tier.features.map((f) => (
-                    <li key={f} className="flex items-start gap-2 text-xs text-ink-secondary">
-                      <Check
-                        className={`mt-0.5 h-3.5 w-3.5 shrink-0 ${tier.accentColor}`}
-                        strokeWidth={2.5}
-                      />
-                      {f}
-                    </li>
-                  ))}
-                  <li className="flex items-start gap-2 text-xs text-ink-tertiary">
-                    <Minus className="mt-0.5 h-3.5 w-3.5 shrink-0" strokeWidth={2} />
-                    {tier.machines}
-                  </li>
-                </ul>
-
-                {/* CTA */}
-                {isCurrent ? (
-                  <Button variant="secondary" size="sm" disabled className="w-full">
-                    <Check className="h-3.5 w-3.5" />
-                    Current Plan
-                  </Button>
-                ) : isDowngrade ? (
-                  <button
-                    className="w-full text-center text-xs text-ink-tertiary underline decoration-dotted underline-offset-2 hover:text-ink-secondary disabled:cursor-not-allowed disabled:opacity-60"
-                    onClick={() => void handleOpenBillingPortal()}
-                    disabled={portalLoading}
-                  >
-                    Downgrade via billing portal
-                  </button>
-                ) : (
-                  <Button
-                    variant="primary"
-                    size="sm"
-                    className={`w-full ${
-                      tier.id === "expert"
-                        ? "!bg-violet-600 hover:!bg-violet-700"
-                        : ""
-                    }`}
-                    onClick={() => handleUpgrade(tier.id as "premium" | "expert")}
-                  >
-                    {tier.ctaLabel}
-                  </Button>
-                )}
-              </motion.div>
-            );
-          })}
+        <div className="flex-1">
+          <h1 className="text-base font-semibold text-ink">License</h1>
+          <p className="text-xs text-ink-tertiary">
+            redcore Tuning is free by default. Premium is a $12.99 one-time license key.
+          </p>
         </div>
+        <TierBadge tier={currentTier} size="md" />
       </motion.div>
 
-      {/* ── Feature comparison table ── */}
-      <motion.div variants={staggerChild}>
+      <motion.div variants={staggerChild} className="grid grid-cols-2 gap-4">
         <Card>
-          <button
-            className="flex w-full items-center justify-between px-5 py-4"
-            onClick={() => setShowComparison((v) => !v)}
-          >
-            <span className="text-sm font-semibold text-ink">Full feature comparison</span>
-            {showComparison ? (
-              <ChevronUp className="h-4 w-4 text-ink-tertiary" />
-            ) : (
-              <ChevronDown className="h-4 w-4 text-ink-tertiary" />
-            )}
-          </button>
-
-          <AnimatePresence initial={false}>
-            {showComparison && (
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: "auto", opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.25, ease: "easeInOut" }}
-                className="overflow-hidden"
-              >
-                <CardContent className="pt-0">
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-xs">
-                      <thead>
-                        <tr className="border-b border-border">
-                          <th className="pb-3 text-left font-medium text-ink-tertiary">Feature</th>
-                          <th className="pb-3 text-center font-medium text-ink-tertiary">Free</th>
-                          <th className="pb-3 text-center font-medium text-blue-400">Premium</th>
-                          <th className="pb-3 text-center font-medium text-violet-400">Expert</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {COMPARISON_ROWS.map((row, i) => (
-                          <>
-                            {row.section && i > 0 && (
-                              <tr key={`sep-${row.section}`}>
-                                <td colSpan={4} className="py-2 pt-4 text-[10px] font-semibold uppercase tracking-wider text-ink-tertiary">
-                                  {row.section}
-                                </td>
-                              </tr>
-                            )}
-                            <tr
-                              key={row.label}
-                              className="border-b border-border/40 last:border-0 hover:bg-surface-overlay/30"
-                            >
-                              <td className="py-2.5 text-ink-secondary">{row.label}</td>
-                              <td className="py-2.5 text-center">
-                                <CellDisplay value={row.free} />
-                              </td>
-                              <td className="py-2.5 text-center">
-                                <CellDisplay value={row.premium} tier="premium" />
-                              </td>
-                              <td className="py-2.5 text-center">
-                                <CellDisplay value={row.expert} tier="expert" />
-                              </td>
-                            </tr>
-                          </>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </CardContent>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </Card>
-      </motion.div>
-
-      {/* ── Checkout modal ── */}
-      <AnimatePresence>
-        {checkout && (
-          <CheckoutModal
-            checkout={checkout}
-            onClose={() => setCheckout(null)}
-            currentTier={currentTier}
-          />
-        )}
-      </AnimatePresence>
-    </motion.div>
-  );
-}
-
-// ─── CellDisplay helper ────────────────────────────────────────────────────
-
-function CellDisplay({
-  value,
-  tier,
-}: {
-  value: CellValue;
-  tier?: "premium" | "expert";
-}) {
-  if (value === true) {
-    const color =
-      tier === "premium" ? "text-blue-400" : tier === "expert" ? "text-violet-400" : "text-green-400";
-    return <Check className={`mx-auto h-4 w-4 ${color}`} strokeWidth={2.5} />;
-  }
-  if (value === false) {
-    return <X className="mx-auto h-3.5 w-3.5 text-ink-tertiary/40" strokeWidth={1.5} />;
-  }
-  const color =
-    tier === "premium"
-      ? "text-blue-400"
-      : tier === "expert"
-      ? "text-violet-400"
-      : "text-ink-secondary";
-  return <span className={`font-medium ${color}`}>{value}</span>;
-}
-
-// ─── Checkout modal ────────────────────────────────────────────────────────
-
-function CheckoutModal({
-  checkout,
-  onClose,
-  currentTier,
-}: {
-  checkout: CheckoutState;
-  onClose: () => void;
-  currentTier: AppTier;
-}) {
-  const tierConfig = TIERS.find((t) => t.id === checkout.targetTier)!;
-  const [processing, setProcessing] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const isUpgrade = currentTier === "premium" && checkout.targetTier === "expert";
-  const price =
-    checkout.billing === "annual"
-      ? Number(((tierConfig.monthlyPrice * (1 - ANNUAL_DISCOUNT)) * 12).toFixed(2))
-      : tierConfig.monthlyPrice;
-
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setError(null);
-    setProcessing(true);
-    try {
-      const { checkoutUrl } = await cloudApi.subscription.checkout({
-        tier: checkout.targetTier,
-        billingPeriod: checkout.billing,
-      });
-      openExternalUrl(checkoutUrl);
-      toast.success("Checkout Opened", "Secure Stripe checkout opened in your browser.");
-      onClose();
-    } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "Unable to start checkout right now.");
-    } finally {
-      setProcessing(false);
-    }
-  }
-
-  return (
-    <motion.div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-    >
-      {/* Backdrop */}
-      <motion.div
-        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        onClick={onClose}
-      />
-
-      {/* Modal */}
-      <motion.div
-        className="relative z-10 w-full max-w-md rounded-2xl border border-border bg-[#0D0D10] shadow-2xl"
-        initial={{ opacity: 0, scale: 0.95, y: 12 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.95, y: 12 }}
-        transition={spring.gentle}
-      >
-        {/* Header */}
-        <div className="border-b border-border px-6 py-5">
-          <div className="flex items-center gap-3">
-            <div className={`flex h-9 w-9 items-center justify-center rounded-xl border ${tierConfig.iconBg}`}>
-              <span className={tierConfig.accentColor}>{tierConfig.icon}</span>
-            </div>
+          <CardHeader className="flex-row items-start justify-between space-y-0">
             <div>
-              <p className="text-sm font-semibold text-ink">
-                Upgrade to {tierConfig.name}
-              </p>
-              <p className="text-xs text-ink-tertiary">{tierConfig.description}</p>
-            </div>
-          </div>
-        </div>
-
-        <form onSubmit={handleSubmit} className="p-6 space-y-5">
-          {/* Proration notice (upgrade mid-cycle) */}
-          {isUpgrade && (
-            <div className="flex items-start gap-2.5 rounded-xl border border-amber-500/20 bg-amber-500/10 p-3.5">
-              <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-400" />
-              <div>
-                <p className="text-xs font-medium text-amber-400">Proration applied</p>
-                <p className="mt-0.5 text-xs text-amber-400/80">
-                  You'll be charged only for the remaining days in your current billing period.
-                  Your new plan starts immediately.
-                </p>
+              <div className="flex items-center gap-2">
+                <Shield className="h-4 w-4 text-ink-tertiary" />
+                <p className="text-sm font-semibold text-ink">Free</p>
               </div>
+              <p className="mt-1 text-xs text-ink-tertiary">No account lock-in. Safe defaults stay available.</p>
             </div>
-          )}
+            <Badge variant="secondary">Included</Badge>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-2xl font-bold text-ink">Free</p>
+            <ul className="space-y-2">
+              {FREE_FEATURES.map((feature) => (
+                <li key={feature} className="flex items-start gap-2 text-xs text-ink-secondary">
+                  <Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-ink-tertiary" strokeWidth={2.5} />
+                  {feature}
+                </li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
 
-          {/* Price summary */}
-          <div className="rounded-xl border border-border bg-surface-overlay/40 p-4 space-y-2">
-            <div className="flex justify-between text-xs">
-              <span className="text-ink-tertiary">{tierConfig.name} plan</span>
-              <span className="text-ink-secondary">
-                {checkout.billing === "annual"
-                  ? `$${((tierConfig.monthlyPrice * (1 - ANNUAL_DISCOUNT))).toFixed(2)}/mo`
-                  : `$${tierConfig.monthlyPrice}/mo`}
-              </span>
-            </div>
-            {checkout.billing === "annual" && (
-              <div className="flex justify-between text-xs">
-                <span className="text-ink-tertiary">Billed annually</span>
-                <span className="text-green-400 font-medium">
-                  ${price}/yr — save ${(tierConfig.monthlyPrice * 12 * ANNUAL_DISCOUNT).toFixed(2)}
-                </span>
+        <Card className="border-brand-500/30 bg-brand-500/5">
+          <CardHeader className="flex-row items-start justify-between space-y-0">
+            <div>
+              <div className="flex items-center gap-2">
+                <Crown className="h-4 w-4 text-brand-400" />
+                <p className="text-sm font-semibold text-brand-300">Premium</p>
               </div>
-            )}
-            <div className="border-t border-border pt-2 flex justify-between">
-              <span className="text-sm font-semibold text-ink">
-                Due today
-              </span>
-              <span className="text-sm font-bold text-ink">
-                ${checkout.billing === "annual" ? price : tierConfig.monthlyPrice}
-              </span>
+              <p className="mt-1 text-xs text-brand-400/80">One-time purchase. Lifetime key for one machine.</p>
             </div>
-          </div>
-
-          <div className="rounded-xl border border-border bg-surface-overlay/40 p-4">
-            <div className="flex items-start gap-3">
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-blue-500/20 bg-blue-500/10">
-                <Lock className="h-4 w-4 text-blue-400" />
-              </div>
-              <div className="space-y-1">
-                <p className="text-sm font-medium text-ink">Secure Stripe checkout</p>
-                <p className="text-xs leading-relaxed text-ink-tertiary">
-                  Card entry happens in your browser on Stripe&apos;s hosted checkout page. redcore Tuning never collects your raw card details inside the desktop app.
-                </p>
-              </div>
+            <Badge variant="premium">{currentTier === "free" ? "Paid" : "Active"}</Badge>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-end gap-1">
+              <span className="text-2xl font-bold text-ink">$12.99</span>
+              <span className="mb-0.5 text-xs text-ink-tertiary">one-time</span>
             </div>
-          </div>
-
-          {error && (
-            <div className="flex items-start gap-2 rounded-xl border border-red-500/20 bg-red-500/10 p-3">
-              <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-red-400" />
-              <p className="text-xs text-red-400">{error}</p>
-            </div>
-          )}
-
-          {/* Actions */}
-          <div className="flex gap-3">
-            <Button
-              variant="ghost"
-              size="sm"
-              type="button"
-              onClick={onClose}
-              className="flex-1"
-            >
-              Cancel
-            </Button>
+            <ul className="space-y-2">
+              {PREMIUM_FEATURES.map((feature) => (
+                <li key={feature} className="flex items-start gap-2 text-xs text-ink-secondary">
+                  <Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-brand-400" strokeWidth={2.5} />
+                  {feature}
+                </li>
+              ))}
+            </ul>
             <Button
               variant="primary"
               size="sm"
-              type="submit"
-              loading={processing}
-              className={`flex-1 ${
-                checkout.targetTier === "expert" ? "!bg-violet-600 hover:!bg-violet-700" : ""
-              }`}
+              className="w-full"
+              onClick={() => openExternalUrl(TUNING_SITE_URL)}
             >
-              {processing ? "Opening Checkout…" : `Continue to Stripe · $${checkout.billing === "annual" ? price : tierConfig.monthlyPrice}`}
+              Buy On redcoreos.net
+              <ExternalLink className="h-3.5 w-3.5" />
             </Button>
-          </div>
+          </CardContent>
+        </Card>
+      </motion.div>
 
-          <p className="text-center text-[10px] text-ink-tertiary">
-            Secured by Stripe · Cancel anytime ·{" "}
+      <motion.div variants={staggerChild} className="grid grid-cols-[1.3fr_1fr] gap-4">
+        <Card>
+          <CardHeader>
+            <p className="text-sm font-semibold text-ink">Activate License Key</p>
+            <p className="text-xs text-ink-tertiary">
+              Buy once on the website, then paste the key from your profile or purchase email.
+            </p>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <Input
+              label="License key"
+              placeholder="RCTN-XXXX-XXXX-XXXX"
+              value={licenseKey}
+              onChange={(e) => setLicenseKey(e.target.value.toUpperCase())}
+              hint="Keys are tied to one machine when activated."
+            />
+            <div className="flex gap-3">
+              <Button
+                variant="primary"
+                size="sm"
+                className="flex-1"
+                loading={activating}
+                onClick={() => void handleActivate()}
+              >
+                Activate Key
+                <Zap className="h-3.5 w-3.5" />
+              </Button>
+              <Button
+                variant="secondary"
+                size="sm"
+                loading={refreshing}
+                onClick={() => void handleRefresh()}
+              >
+                <RefreshCw className="h-3.5 w-3.5" />
+                Refresh
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                loading={deactivating}
+                onClick={() => void handleDeactivate()}
+                disabled={!license?.deviceBound && currentTier === "free"}
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+                Remove
+              </Button>
+            </div>
+            <p className="text-[11px] text-ink-tertiary">
+              Purchase and privacy details live on the website. The desktop app never collects raw card data.
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <p className="text-sm font-semibold text-ink">Current Machine State</p>
+            <p className="text-xs text-ink-tertiary">This reflects the locally cached license and latest validation.</p>
+          </CardHeader>
+          <CardContent className="space-y-3 text-xs">
+            <div className="flex items-center justify-between">
+              <span className="text-ink-tertiary">Tier</span>
+              <span className="font-medium text-ink capitalize">{license?.tier ?? "free"}</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-ink-tertiary">Status</span>
+              <span className="font-medium text-ink capitalize">{license?.status ?? "active"}</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-ink-tertiary">Bound Device</span>
+              <span className="font-medium text-ink">{license?.deviceId ?? "Not bound"}</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-ink-tertiary">Offline Grace</span>
+              <span className="font-medium text-ink">{license?.offlineDaysRemaining ?? 0} days</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-ink-tertiary">Validated</span>
+              <span className="font-medium text-ink">
+                {license?.lastValidatedAt ? new Date(license.lastValidatedAt).toLocaleString() : "Never"}
+              </span>
+            </div>
             <button
               type="button"
-              className="inline-flex items-center gap-0.5 underline decoration-dotted hover:text-ink-secondary"
+              className="inline-flex items-center gap-1 text-[11px] text-ink-tertiary underline decoration-dotted underline-offset-2 hover:text-ink-secondary"
               onClick={() => openExternalUrl(PRIVACY_URL)}
             >
-              Privacy Policy <ExternalLink className="h-2.5 w-2.5" />
+              Privacy Policy
+              <ExternalLink className="h-3 w-3" />
             </button>
-          </p>
-        </form>
+          </CardContent>
+        </Card>
       </motion.div>
     </motion.div>
   );

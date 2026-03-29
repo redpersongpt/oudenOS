@@ -111,11 +111,14 @@ export default function ProfilePage() {
             {licenses.length === 0 ? (
               <div className="rounded-xl border border-border bg-surface p-6 text-center">
                 <p className="text-[14px] text-ink-secondary mb-4">
-                  No license keys yet. redcore · Tuning will be available soon.
+                  No license keys yet. Buy redcore · Tuning once and your license key will appear here.
                 </p>
-                <span className="inline-flex items-center justify-center h-10 px-6 text-[13px] font-medium rounded-lg text-ink-tertiary border border-border bg-surface-raised">
-                  Coming soon — $12.99
-                </span>
+                <a
+                  href="/redcore-tuning"
+                  className="inline-flex items-center justify-center h-10 px-6 text-[13px] font-medium rounded-lg text-ink-primary border border-border bg-surface-raised hover:border-border-strong transition-colors"
+                >
+                  Buy redcore · Tuning — $12.99 one-time
+                </a>
               </div>
             ) : (
               <div className="space-y-3">

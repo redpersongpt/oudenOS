@@ -78,9 +78,8 @@ cd apps/web
 npx prisma generate
 pnpm build
 
-# Copy static assets into standalone bundle
-cp -r .next/static .next/standalone/apps/web/.next/static
-cp -r public .next/standalone/apps/web/public
+# Copy static assets into the standalone bundle used by PM2
+bash ../../scripts/sync-web-standalone-assets.sh "$(pwd)"
 BUILDEOF
 
 echo "═══ STEP 6/10: Environment ═══"

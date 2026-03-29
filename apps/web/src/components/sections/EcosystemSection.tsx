@@ -1,6 +1,7 @@
 "use client";
 
 import { motion, useInView } from "framer-motion";
+import { useReducedMotion } from "framer-motion";
 import { useRef } from "react";
 import {
   Cpu, Gauge, RotateCcw, Wand2, BarChart3, Settings2,
@@ -63,13 +64,13 @@ function FeatureCard({ icon: Icon, title, body, delay, inView }: {
 function EcosystemDiagram({ inView }: { inView: boolean }) {
   const layers = [
     {
-      label: "redcore · Tuning",
-      badge: "$12.99 one-time",
-      badgeStyle: "text-accent bg-accent/10 border border-accent/20",
-      pills: ["CPU tuning", "GPU latency", "Benchmark lab", "BIOS guidance", "Timer resolution"],
-      desc: "Deep optimization layer — adds benchmark-validated hardware tuning on top",
-      borderStyle: "border-accent/40",
-      bgStyle: "bg-gradient-to-b from-[#2a2229]/80 to-surface/60",
+      label: "Your Windows 10 / 11",
+      badge: "Foundation",
+      badgeStyle: "text-ink-muted bg-transparent border border-border/50",
+      pills: ["Stock install", "Untouched data", "Your apps"],
+      desc: "Left unchanged — redcore only adds a transformation layer on top",
+      borderStyle: "border-border/40",
+      bgStyle: "bg-surface-base/60",
       delay: 0.1,
     },
     {
@@ -83,16 +84,17 @@ function EcosystemDiagram({ inView }: { inView: boolean }) {
       delay: 0.25,
     },
     {
-      label: "Your Windows 10 / 11",
-      badge: "Foundation",
-      badgeStyle: "text-ink-muted bg-transparent border border-border/50",
-      pills: ["Stock install", "Untouched data", "Your apps"],
-      desc: "Left unchanged — redcore only adds a transformation layer on top",
-      borderStyle: "border-border/40",
-      bgStyle: "bg-surface-base/60",
+      label: "redcore · Tuning",
+      badge: "$12.99 one-time",
+      badgeStyle: "text-accent bg-accent/10 border border-accent/20",
+      pills: ["CPU tuning", "GPU latency", "Benchmark lab", "BIOS guidance", "Timer resolution"],
+      desc: "Deep optimization layer — adds benchmark-validated hardware tuning on top",
+      borderStyle: "border-accent/40",
+      bgStyle: "bg-gradient-to-b from-[#2a2229]/80 to-surface/60",
       delay: 0.4,
     },
   ];
+  const prefersReducedMotion = useReducedMotion();
 
   return (
     <div className="relative mx-auto max-w-[740px]">
@@ -105,20 +107,31 @@ function EcosystemDiagram({ inView }: { inView: boolean }) {
         transition={{ delay: 0.5, duration: 1.2, ease }}
       />
 
+      {!prefersReducedMotion && (
+        <motion.div
+          className="pointer-events-none absolute left-1/2 top-0 h-8 w-8 -translate-x-1/2 rounded-full bg-accent/20 blur-2xl"
+          initial={{ opacity: 0, y: -12 }}
+          animate={inView ? { opacity: [0, 1, 0.55, 0], y: [0, 120, 250, 340] } : {}}
+          transition={{ delay: 0.55, duration: 1.8, ease }}
+          aria-hidden="true"
+        />
+      )}
+
       <div className="space-y-3 relative">
         {layers.map((layer, i) => (
           <motion.div
             key={layer.label}
+            layout
             initial={{ opacity: 0, x: i % 2 === 0 ? 32 : -32 }}
             animate={inView ? { opacity: 1, x: 0 } : {}}
             transition={{ delay: layer.delay, duration: 0.7, ease }}
           >
             <div className={`relative rounded-2xl border ${layer.borderStyle} ${layer.bgStyle} p-6 backdrop-blur-sm overflow-hidden`}>
-              {/* Subtle glow on top layer */}
-              {i === 0 && (
-                <div className="pointer-events-none absolute -top-16 right-0 h-32 w-64 rounded-full opacity-[0.08]"
-                  style={{ background: "radial-gradient(circle, #E8254B, transparent 60%)" }} />
-              )}
+                {/* Subtle glow on top layer */}
+                {i === 0 && (
+                  <div className="pointer-events-none absolute -top-16 right-0 h-32 w-64 rounded-full opacity-[0.08]"
+                    style={{ background: "radial-gradient(circle, #E8254B, transparent 60%)" }} />
+                )}
 
               <div className="flex flex-col sm:flex-row sm:items-center gap-4">
                 {/* Layer info */}

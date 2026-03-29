@@ -20,6 +20,7 @@ import {
   users,
   refreshTokens,
   subscriptions,
+  licenses,
   userPreferences,
   connectedAccounts,
 } from "../db/index.js";
@@ -30,6 +31,8 @@ import { authRateLimit, refreshRateLimit } from "../lib/rate-limit.js";
 import { requireAuth } from "../middleware/auth.js";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
+
+const SUBSCRIPTION_PRODUCT = "tuning" as const;
 
 function generateSecureToken(): string {
   return crypto.randomBytes(40).toString("hex");
@@ -48,10 +51,27 @@ async function issueRefreshToken(userId: string): Promise<string> {
 }
 
 async function getUserSubscriptionTier(userId: string) {
+  const [activeLicense] = await db
+    .select({ id: licenses.id })
+    .from(licenses)
+    .where(
+      and(
+        eq(licenses.userId, userId),
+        eq(licenses.product, SUBSCRIPTION_PRODUCT),
+        eq(licenses.status, "active"),
+      ),
+    )
+    .orderBy(desc(licenses.createdAt))
+    .limit(1);
+
+  if (activeLicense) {
+    return { tier: "premium" as const, status: "active" as const };
+  }
+
   const [sub] = await db
     .select({ tier: subscriptions.tier, status: subscriptions.status })
     .from(subscriptions)
-    .where(eq(subscriptions.userId, userId))
+    .where(and(eq(subscriptions.userId, userId), eq(subscriptions.product, SUBSCRIPTION_PRODUCT)))
     .orderBy(desc(subscriptions.updatedAt))
     .limit(1);
   return sub ?? { tier: "free" as const, status: "active" as const };
@@ -134,7 +154,7 @@ export const authRoutes: FastifyPluginAsync = async (app) => {
       if (!newUser) throw new Error("Insert returned no row");
 
       await Promise.all([
-        tx.insert(subscriptions).values({ userId: newUser.id, tier: "free", status: "active" }),
+        tx.insert(subscriptions).values({ userId: newUser.id, product: SUBSCRIPTION_PRODUCT, tier: "free", status: "active" }),
         tx.insert(userPreferences).values({ userId: newUser.id }),
       ]);
 
@@ -549,11 +569,17 @@ export const authRoutes: FastifyPluginAsync = async (app) => {
     let isNewUser = false;
 
     if (existingUser) {
+      if (!profile.emailVerified) {
+        return reply.code(409).send({ error: "This OAuth provider did not return a verified email. Automatic account linking is not allowed." });
+      }
       if (existingUser.deletedAt) {
         return reply.code(401).send({ error: "Account has been deleted" });
       }
       userId = existingUser.id;
     } else {
+      if (normalizedEmail && !profile.emailVerified) {
+        return reply.code(400).send({ error: "A verified provider email is required to create an account with OAuth." });
+      }
       // 3. Create new account
       const [newUser] = await db
         .insert(users)
@@ -572,7 +598,7 @@ export const authRoutes: FastifyPluginAsync = async (app) => {
       isNewUser = true;
 
       await Promise.all([
-        db.insert(subscriptions).values({ userId, tier: "free", status: "active" }),
+        db.insert(subscriptions).values({ userId, product: SUBSCRIPTION_PRODUCT, tier: "free", status: "active" }),
         db.insert(userPreferences).values({ userId }),
       ]);
     }

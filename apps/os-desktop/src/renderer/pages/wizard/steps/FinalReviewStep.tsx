@@ -6,6 +6,8 @@ import { useEffect, type ElementType, type ReactNode, type ReactElement } from "
 import { motion } from "framer-motion";
 import { Shield, Package, Palette, Download } from "lucide-react";
 import { useWizardStore } from "@/stores/wizard-store";
+import { useDecisionsStore } from "@/stores/decisions-store";
+import { resolveEffectivePersonalization } from "@/lib/personalization-resolution";
 
 function ReviewSection({ icon: Icon, title, children }: {
   icon: ElementType;
@@ -25,6 +27,8 @@ function ReviewSection({ icon: Icon, title, children }: {
 
 export function FinalReviewStep() {
   const { detectedProfile, resolvedPlaybook, selectedAppIds, personalization, setStepReady } = useWizardStore();
+  const answers = useDecisionsStore((state) => state.answers);
+  const effectivePersonalization = resolveEffectivePersonalization(detectedProfile?.id, personalization, answers);
 
   useEffect(() => {
     setStepReady("final-review", Boolean(detectedProfile && resolvedPlaybook));
@@ -69,7 +73,7 @@ export function FinalReviewStep() {
         <ReviewSection icon={Download} title="App Install">
           <p className="text-[13px] text-ink">
             {selectedAppIds.length > 0
-              ? `${selectedAppIds.length} app${selectedAppIds.length !== 1 ? "s" : ""} will be installed after transformation`
+              ? `${selectedAppIds.length} app${selectedAppIds.length !== 1 ? "s" : ""} will be downloaded and installed during apply`
               : "No apps selected"}
           </p>
         </ReviewSection>
@@ -80,11 +84,11 @@ export function FinalReviewStep() {
       node: (
         <ReviewSection icon={Palette} title="Personalization">
           <div className="flex flex-wrap gap-2">
-            {personalization.darkMode       && <span className="rounded-md bg-white/[0.06] px-2 py-1 text-[11px] text-ink-secondary">Dark Mode</span>}
-            {personalization.brandAccent    && <span className="rounded-md bg-white/[0.06] px-2 py-1 text-[11px] text-ink-secondary">Brand Accent</span>}
-            {personalization.taskbarCleanup && <span className="rounded-md bg-white/[0.06] px-2 py-1 text-[11px] text-ink-secondary">Taskbar Cleanup</span>}
-            {personalization.explorerCleanup && <span className="rounded-md bg-white/[0.06] px-2 py-1 text-[11px] text-ink-secondary">Explorer Cleanup</span>}
-            {personalization.transparency   && <span className="rounded-md bg-white/[0.06] px-2 py-1 text-[11px] text-ink-secondary">Transparency</span>}
+            {effectivePersonalization.darkMode && <span className="rounded-md bg-white/[0.06] px-2 py-1 text-[11px] text-ink-secondary">Dark Mode</span>}
+            {effectivePersonalization.brandAccent && <span className="rounded-md bg-white/[0.06] px-2 py-1 text-[11px] text-ink-secondary">Brand Accent</span>}
+            {effectivePersonalization.taskbarCleanup && <span className="rounded-md bg-white/[0.06] px-2 py-1 text-[11px] text-ink-secondary">Taskbar Cleanup</span>}
+            {effectivePersonalization.explorerCleanup && <span className="rounded-md bg-white/[0.06] px-2 py-1 text-[11px] text-ink-secondary">Explorer Cleanup</span>}
+            {effectivePersonalization.transparency && <span className="rounded-md bg-white/[0.06] px-2 py-1 text-[11px] text-ink-secondary">Transparency</span>}
           </div>
         </ReviewSection>
       ),

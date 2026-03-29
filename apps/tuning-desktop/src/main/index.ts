@@ -3,7 +3,7 @@
 // All system operations go through the Rust service via JSON-RPC over stdio.
 
 import { app, BrowserWindow, ipcMain, session, shell } from "electron";
-import { existsSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawn, ChildProcess } from "node:child_process";
@@ -25,6 +25,7 @@ let isQuitting = false;
 
 let currentLicense: LicenseState | null = null;
 const CACHE_DIR = path.join(app.getPath("userData"), "license");
+const LICENSE_KEY_PATH = path.join(CACHE_DIR, "license-key.txt");
 const DEVICE_FINGERPRINT = generateDeviceFingerprint();
 const DEFAULT_API_BASE = "https://api.redcoreos.net";
 const API_BASE = process.env.REDCORE_API_URL ?? DEFAULT_API_BASE;
@@ -36,8 +37,49 @@ const API_ORIGIN = (() => {
   }
 })();
 
-async function initLicense(): Promise<LicenseState> {
-  const licenseKey = process.env.REDCORE_LICENSE_KEY ?? "";
+function freeLicenseState(): LicenseState {
+  return {
+    tier: "free",
+    status: "active",
+    expiresAt: null,
+    deviceBound: false,
+    deviceId: null,
+    lastValidatedAt: new Date().toISOString(),
+    offlineGraceDays: 7,
+    offlineDaysRemaining: 0,
+    features: [],
+  };
+}
+
+function normalizeLicenseKey(input: string): string {
+  return input.trim().toUpperCase();
+}
+
+function loadStoredLicenseKey(): string {
+  if (existsSync(LICENSE_KEY_PATH)) {
+    return normalizeLicenseKey(readFileSync(LICENSE_KEY_PATH, "utf8"));
+  }
+  return normalizeLicenseKey(process.env.REDCORE_LICENSE_KEY ?? "");
+}
+
+function persistLicenseKey(licenseKey: string): void {
+  mkdirSync(CACHE_DIR, { recursive: true });
+  writeFileSync(LICENSE_KEY_PATH, `${normalizeLicenseKey(licenseKey)}\n`, "utf8");
+}
+
+function clearStoredLicenseKey(): void {
+  if (existsSync(LICENSE_KEY_PATH)) {
+    rmSync(LICENSE_KEY_PATH);
+  }
+}
+
+async function initLicense(overrideKey?: string): Promise<LicenseState> {
+  const licenseKey = normalizeLicenseKey(overrideKey ?? loadStoredLicenseKey());
+
+  if (!licenseKey) {
+    currentLicense = freeLicenseState();
+    return currentLicense;
+  }
 
   try {
     const state = await fetchLicense({
@@ -57,17 +99,7 @@ async function initLicense(): Promise<LicenseState> {
 }
 
 function getLicense(): LicenseState {
-  return currentLicense ?? {
-    tier: "free",
-    status: "active",
-    expiresAt: null,
-    deviceBound: false,
-    deviceId: null,
-    lastValidatedAt: new Date().toISOString(),
-    offlineGraceDays: 7,
-    offlineDaysRemaining: 0,
-    features: [],
-  };
+  return currentLicense ?? freeLicenseState();
 }
 
 // ─── Rust service process management ────────────────────────────────────────
@@ -335,6 +367,34 @@ ipcMain.handle("shell:openExternal", (_event, url: string) => {
 
 // Renderer can request the current license state
 ipcMain.handle("license:get", () => getLicense());
+
+ipcMain.handle("license:activate", async (_event, rawLicenseKey: string) => {
+  const licenseKey = normalizeLicenseKey(rawLicenseKey);
+  if (!licenseKey) {
+    throw new Error("License key is required");
+  }
+
+  persistLicenseKey(licenseKey);
+  const state = await initLicense(licenseKey);
+  mainWindow?.webContents.send("service:license.changed", state);
+  try {
+    await callService("license.setTier", { tier: state.tier, status: state.status });
+  } catch {
+    // Non-fatal
+  }
+  return state;
+});
+
+ipcMain.handle("license:deactivate", async () => {
+  clearStoredLicenseKey();
+  currentLicense = freeLicenseState();
+  mainWindow?.webContents.send("service:license.changed", currentLicense);
+  try {
+    await callService("license.setTier", { tier: "free", status: "active" });
+  } catch {
+    // Non-fatal
+  }
+});
 
 // Renderer can trigger a license refresh (re-fetches from cloud)
 ipcMain.handle("license:refresh", async () => {

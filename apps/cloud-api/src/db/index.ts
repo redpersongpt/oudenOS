@@ -6,6 +6,7 @@ export {
   donations,
   fleetGroups,
   fleetMembers,
+  licenses,
   machineActivations,
   paymentHistory,
   refreshTokens,

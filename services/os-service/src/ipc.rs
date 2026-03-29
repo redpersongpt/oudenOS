@@ -659,6 +659,30 @@ async fn dispatch(
             }
         }
 
+        "appbundle.install" => {
+            let app_id = match params.get("appId").and_then(|v| v.as_str()) {
+                Some(app_id) if !app_id.trim().is_empty() => app_id,
+                _ => return RpcResponse::err(id, -3, "Missing param: appId".into()),
+            };
+
+            let playbook_dir = match resolve_playbook_dir() {
+                Some(d) => d,
+                None => {
+                    return RpcResponse::err(id, -50, "Playbook directory not found".into());
+                }
+            };
+
+            tracing::info!(app_id = app_id, "Installing selected app");
+
+            match appbundle::install(&playbook_dir, app_id) {
+                Ok(result) => RpcResponse::ok(id, result),
+                Err(e) => {
+                    tracing::error!(app_id = app_id, error = %e, "App install failed");
+                    RpcResponse::err(id, -54, format!("App install failed: {}", e))
+                }
+            }
+        }
+
         // ── Unknown method ──────────────────────────────────────────────
         other => {
             tracing::warn!(method = other, "Unknown RPC method");

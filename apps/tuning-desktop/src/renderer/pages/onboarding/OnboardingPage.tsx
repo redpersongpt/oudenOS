@@ -26,6 +26,7 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { spring, staggerContainer, staggerChild } from "@redcore/design-system";
+import { toast } from "@/components/ui/Toast";
 
 // ─── Step slide variants ──────────────────────────────────────────────────
 
@@ -161,6 +162,7 @@ export function OnboardingPage() {
   const [direction, setDirection] = useState<1 | -1>(1);
   const [selectedProfile, setSelectedProfile] = useState<ProfileId>("balanced");
   const [licenseKey, setLicenseKey] = useState("");
+  const [activatingLicense, setActivatingLicense] = useState(false);
   const [scannedItems, setScannedItems] = useState<Set<string>>(new Set());
   const [scanComplete, setScanComplete] = useState(false);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
@@ -196,6 +198,28 @@ export function OnboardingPage() {
   const goNext = () => {
     if (step < TOTAL_STEPS - 1) goTo(step + 1);
     else navigate("/dashboard", { replace: true });
+  };
+
+  const handleLicenseContinue = async () => {
+    const normalized = licenseKey.trim().toUpperCase();
+    if (!normalized) {
+      goNext();
+      return;
+    }
+
+    setActivatingLicense(true);
+    try {
+      await window.redcore.license.activate(normalized);
+      toast.success("License Activated", "Premium features are now unlocked on this machine.");
+      goNext();
+    } catch (error) {
+      toast.error(
+        "Activation Failed",
+        error instanceof Error ? error.message : "Could not activate this license key.",
+      );
+    } finally {
+      setActivatingLicense(false);
+    }
   };
 
   const goBack = () => {
@@ -700,8 +724,9 @@ export function OnboardingPage() {
                 <motion.div variants={itemVariant} className="flex flex-col gap-2.5">
                   <Button
                     size="lg"
-                    onClick={goNext}
+                    onClick={() => void handleLicenseContinue()}
                     disabled={licenseKey.length > 0 && licenseKey.length < 16}
+                    loading={activatingLicense}
                     iconPosition="right"
                     icon={<ArrowRight className="h-4 w-4" />}
                     className="w-full"

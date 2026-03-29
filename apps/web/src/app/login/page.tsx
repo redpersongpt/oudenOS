@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { signIn } from "next-auth/react";
+import { getProviders, signIn } from "next-auth/react";
 import { Navigation } from "@/components/brand/Navigation";
 import { FooterSection } from "@/components/sections/FooterSection";
 
@@ -30,21 +30,28 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [googleEnabled, setGoogleEnabled] = useState(false);
   const router = useRouter();
   const attemptedProviderRef = useRef(false);
+
+  useEffect(() => {
+    getProviders()
+      .then((providers) => setGoogleEnabled(Boolean(providers?.google)))
+      .catch(() => setGoogleEnabled(false));
+  }, []);
 
   useEffect(() => {
     const provider =
       typeof window !== "undefined"
         ? new URLSearchParams(window.location.search).get("provider")
         : null;
-    if (provider !== "google" || attemptedProviderRef.current) {
+    if (provider !== "google" || attemptedProviderRef.current || !googleEnabled) {
       return;
     }
 
     attemptedProviderRef.current = true;
     void signIn("google", { callbackUrl: "/profile" });
-  }, []);
+  }, [googleEnabled]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -133,18 +140,20 @@ export default function LoginPage() {
             <div className="flex-1 h-px bg-border" />
           </motion.div>
 
-          <motion.div {...fade(0.25)}>
-            <motion.button
-              type="button"
-              onClick={() => signIn("google", { callbackUrl: "/profile" })}
-              className="w-full h-10 rounded-lg bg-surface-card border border-border text-[13px] font-medium text-ink-secondary cursor-pointer transition-colors hover:border-border-strong inline-flex items-center justify-center gap-2.5"
-              whileHover={{ y: -1 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <GoogleIcon />
-              Continue with Google
-            </motion.button>
-          </motion.div>
+          {googleEnabled && (
+            <motion.div {...fade(0.25)}>
+              <motion.button
+                type="button"
+                onClick={() => signIn("google", { callbackUrl: "/profile" })}
+                className="w-full h-10 rounded-lg bg-surface-card border border-border text-[13px] font-medium text-ink-secondary cursor-pointer transition-colors hover:border-border-strong inline-flex items-center justify-center gap-2.5"
+                whileHover={{ y: -1 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <GoogleIcon />
+                Continue with Google
+              </motion.button>
+            </motion.div>
+          )}
 
           <motion.p {...fade(0.3)} className="mt-6 text-center text-[13px] text-ink-tertiary">
             Don&apos;t have an account?{" "}

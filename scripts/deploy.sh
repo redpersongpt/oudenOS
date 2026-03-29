@@ -22,12 +22,17 @@ if [[ -f .env ]]; then
 fi
 
 API_DATABASE_URL="${DATABASE_URL:-}"
+HEAD_SHA=""
 
 if [[ "${SKIP_GIT_PULL:-0}" == "1" ]]; then
   echo "── Skip git pull (release checkout mode) ──"
 else
   echo "── Pull latest code ──"
   git pull origin main
+fi
+
+if git rev-parse --short HEAD >/dev/null 2>&1; then
+  HEAD_SHA="$(git rev-parse --short HEAD)"
 fi
 
 echo "── Install dependencies ──"
@@ -49,12 +54,8 @@ pnpm --dir packages/db build
 
 echo "── Build web ──"
 pnpm --dir apps/web build
-
 echo "── Wire web standalone assets ──"
-mkdir -p apps/web/.next/standalone/apps/web/.next
-rm -rf apps/web/.next/standalone/apps/web/public apps/web/.next/standalone/apps/web/.next/static
-cp -R apps/web/public apps/web/.next/standalone/apps/web/public
-cp -R apps/web/.next/static apps/web/.next/standalone/apps/web/.next/static
+bash scripts/sync-web-standalone-assets.sh apps/web
 
 echo "── Build tuning-api ──"
 pnpm --dir apps/tuning-api build
@@ -70,7 +71,14 @@ DATABASE_URL="${API_DATABASE_URL}" pnpm --dir packages/db db:push
 
 if [[ "${BUILD_OS_RELEASE:-0}" == "1" ]]; then
   echo "── Build and publish latest redcore OS release ──"
-  bash scripts/build-and-publish-os-release.sh
+  SOURCE_COMMIT_SHA="${HEAD_SHA}" bash scripts/build-and-publish-os-release.sh
+elif [[ -n "${HEAD_SHA}" && "${ALLOW_STALE_OS_RELEASE:-0}" != "1" && -f /var/www/redcore-downloads/os/latest.json ]]; then
+  LIVE_SHA="$(node -e "const fs=require('fs');const p='/var/www/redcore-downloads/os/latest.json';try{const data=JSON.parse(fs.readFileSync(p,'utf8'));process.stdout.write(String(data.commit||''));}catch{process.exit(1)}")"
+  if [[ -n "${LIVE_SHA}" && "${LIVE_SHA}" != "${HEAD_SHA}" ]]; then
+    echo "Latest installer drift detected: latest.json commit ${LIVE_SHA} != deploy HEAD ${HEAD_SHA}" >&2
+    echo "Re-run with BUILD_OS_RELEASE=1 to publish a matching installer, or ALLOW_STALE_OS_RELEASE=1 to bypass." >&2
+    exit 1
+  fi
 fi
 
 echo "── Restart services ──"

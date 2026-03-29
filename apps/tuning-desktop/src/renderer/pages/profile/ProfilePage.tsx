@@ -206,6 +206,7 @@ export function ProfilePage() {
   const refreshToken = useAuthStore((s) => s.refreshToken);
   const setAuth = useAuthStore((s) => s.setAuth);
   const clearAuth = useAuthStore((s) => s.clearAuth);
+  const logout = useAuthStore((s) => s.logout);
   const setLicense = useLicenseStore((s) => s.setLicense);
   const isPremium = useLicenseStore((s) => {
     const l = s.license;
@@ -237,7 +238,7 @@ export function ProfilePage() {
         offlineDaysRemaining: 0,
         features: [],
       });
-      toast.success("Profile Refreshed", "Account and subscription state are up to date.");
+      toast.success("Profile Refreshed", "Account and license state are up to date.");
     } catch (error) {
       toast.error(
         "Refresh Failed",
@@ -248,9 +249,9 @@ export function ProfilePage() {
     }
   }
 
-  function handleSignOut() {
+  async function handleSignOut() {
     setSigningOut(true);
-    clearAuth();
+    await logout();
     navigate("/login", { replace: true });
   }
 
@@ -458,7 +459,7 @@ export function ProfilePage() {
                           <Shield className="h-3.5 w-3.5 text-ink-tertiary" />
                         </div>
                         <div>
-                          <p className="text-xs text-ink-tertiary">Subscription</p>
+                          <p className="text-xs text-ink-tertiary">License</p>
                           <p className="text-sm font-medium text-ink">
                             {isPremium ? "Premium" : "Free"}{" "}
                             {license?.status && (
@@ -477,7 +478,7 @@ export function ProfilePage() {
                         size="sm"
                         onClick={() => navigate("/subscription")}
                       >
-                        Manage subscription
+                        Manage license
                       </Button>
                     </div>
                   </CardContent>

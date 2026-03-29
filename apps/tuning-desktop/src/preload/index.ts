@@ -90,6 +90,8 @@ export interface RedcoreAPI {
   // License (resolved in main process — never calls cloud from renderer)
   license: {
     get: () => Promise<unknown>;
+    activate: (licenseKey: string) => Promise<unknown>;
+    deactivate: () => Promise<void>;
     refresh: () => Promise<unknown>;
   };
 
@@ -125,6 +127,8 @@ const api: RedcoreAPI = {
 
   license: {
     get: () => ipcRenderer.invoke("license:get"),
+    activate: (licenseKey: string) => ipcRenderer.invoke("license:activate", licenseKey),
+    deactivate: () => ipcRenderer.invoke("license:deactivate"),
     refresh: () => ipcRenderer.invoke("license:refresh"),
   },
 
