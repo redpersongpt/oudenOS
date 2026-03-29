@@ -1,7 +1,8 @@
 // ─── Playbook Strategy — Sequential Question Flow ───────────────────────────
 // ONE question per screen. Sequential navigation. Branching based on answers.
 // Oneclick workflow mapped: power plan, defender, priority sep, timer res, search
-// + existing: aggression, browser, privacy, work compat, gaming, power/battery
+// plus expanded redcore-native questions around WebView, networking, optional
+// features, audio stack cleanup, and device-manager style risk surfaces.
 
 import { useEffect, useState, useMemo, type ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -91,7 +92,7 @@ function Screen({ icon: Icon, label, title, desc, note, children }: {
 function Q1() {
   const { performance: p, setPerformance } = useDecisionsStore();
   return (
-    <Screen icon={Shield} label="Question 1 of 11" title="How aggressive should the transformation be?" desc="This determines which categories of changes are included. Conservative is always safe. Each level unlocks more powerful but riskier optimizations." note="Conservative is recommended for Work PCs. Balanced is recommended for most personal machines.">
+    <Screen icon={Shield} label="Transformation Depth" title="How aggressive should the transformation be?" desc="This determines which categories of changes are included. Conservative is always safe. Each level unlocks more powerful but riskier optimizations." note="Conservative is recommended for Work PCs. Balanced is recommended for most personal machines.">
       <Option selected={p.aggressionLevel === "safe"} onClick={() => setPerformance({ aggressionLevel: "safe" })} title="Conservative — privacy and cleanup only" desc="Removes bloatware, disables telemetry, cleans ads and suggestions. Does not touch services, CPU scheduling, or system behavior. Nothing can break." badge="Safest" badgeColor="bg-emerald-500/15 text-emerald-400" />
       <Option selected={p.aggressionLevel === "balanced"} onClick={() => setPerformance({ aggressionLevel: "balanced" })} title="Balanced — cleanup + performance tuning" desc="Everything above, plus: disables unnecessary services, tunes CPU scheduler, disables Game DVR, reduces AI features. Good for gaming PCs and personal machines." badge="Recommended" badgeColor="bg-brand-500/15 text-brand-400" />
       <Option selected={p.aggressionLevel === "aggressive"} onClick={() => setPerformance({ aggressionLevel: "aggressive" })} title="Aggressive — deep system optimization" desc="Everything above, plus: core parking disabled, timer resolution tuned, dynamic tick disabled, PCIe power management off, network latency hardened. Requires reboot." />
@@ -298,6 +299,167 @@ function QSearch() {
   );
 }
 
+function QWebView() {
+  const { browser: b, setBrowser } = useDecisionsStore();
+  return (
+    <Screen
+      icon={Globe}
+      label="WebView2 Runtime"
+      title="Should Microsoft WebView2 be preserved?"
+      desc="WebView2 is the embedded browser runtime used by Teams, Widgets, many installers, launcher UIs, and some Electron-adjacent Windows apps. Removing it cuts Microsoft web baggage, but a lot of apps quietly depend on it."
+      note="This is one of the easiest ways to break modern Windows app surfaces without realizing why. Keep it unless you are building a stripped personal machine and know your app stack."
+    >
+      <Option
+        selected={b.webviewAction === "keep"}
+        onClick={() => setBrowser({ webviewAction: "keep" })}
+        title="Keep WebView2"
+        desc="Preserve embedded browser runtimes for Teams, Office sign-in, Widgets, launchers, and installer flows."
+        badge="Recommended"
+        badgeColor="bg-brand-500/15 text-brand-400"
+      />
+      <Option
+        selected={b.webviewAction === "remove"}
+        onClick={() => setBrowser({ webviewAction: "remove" })}
+        title="Remove WebView2 where possible"
+        desc="Strip Microsoft embedded browser components aggressively. Can break Teams, Widgets, Outlook sign-in panes, launchers, and setup flows that silently rely on WebView2."
+        badge="High risk"
+        badgeColor="bg-red-500/15 text-red-400"
+        danger
+      />
+    </Screen>
+  );
+}
+
+function QNetwork() {
+  const { network: n, setNetwork } = useDecisionsStore();
+  return (
+    <Screen
+      icon={Globe}
+      label="Network Tweaks"
+      title="How far should networking tweaks go?"
+      desc="Oneclick exposes aggressive NIC and TCP changes. Some of them help competitive latency, but the wrong combination can hurt throughput, Wi-Fi stability, or VPN behavior."
+      note="For most users, the right answer is conservative network cleanup, not extreme adapter tuning."
+    >
+      <Option
+        selected={n.tweakLevel === "keep-default"}
+        onClick={() => setNetwork({ tweakLevel: "keep-default" })}
+        title="Keep network defaults"
+        desc="No adapter-level tuning. Safest option for mixed Wi-Fi, Ethernet, VPN, and office use."
+        badge="Safest"
+        badgeColor="bg-emerald-500/15 text-emerald-400"
+      />
+      <Option
+        selected={n.tweakLevel === "latency-safe"}
+        onClick={() => setNetwork({ tweakLevel: "latency-safe" })}
+        title="Latency-safe tuning"
+        desc="Apply the low-risk network changes only: background noise reduction, delivery optimization reduction, and gamer-friendly defaults without hard-forcing NIC behavior."
+        badge="Recommended"
+        badgeColor="bg-brand-500/15 text-brand-400"
+      />
+      <Option
+        selected={n.tweakLevel === "aggressive"}
+        onClick={() => setNetwork({ tweakLevel: "aggressive" })}
+        title="Aggressive adapter tuning"
+        desc="Push deeper NIC and stack behavior for minimum latency. Best reserved for wired gaming systems where you are willing to troubleshoot adapter-specific regressions."
+        badge="Advanced"
+        badgeColor="bg-amber-500/15 text-amber-400"
+      />
+    </Screen>
+  );
+}
+
+function QOptionalFeatures() {
+  const { optionalFeatures: o, setOptionalFeatures } = useDecisionsStore();
+  return (
+    <Screen
+      icon={Briefcase}
+      label="Optional Features"
+      title="Which Windows optional features must be preserved?"
+      desc="Hyper-V, WSL, and Windows Sandbox are easy collateral damage during aggressive cleanup. If you use developer tools, Android emulators, Docker, virtual machines, or lab environments, preserve them explicitly."
+      note="These answers tell redcore OS where not to be clever."
+    >
+      <Toggle label="Preserve Hyper-V / virtualization stack" desc="Keep virtualization support safe for Hyper-V, Docker Desktop, Android emulators, and VM workflows." checked={o.preserveVirtualization} onChange={(v) => setOptionalFeatures({ preserveVirtualization: v })} />
+      <Toggle label="Preserve Windows Sandbox" desc="Keep Sandbox-related Windows features untouched for disposable lab sessions and malware-safe testing." checked={o.preserveWindowsSandbox} onChange={(v) => setOptionalFeatures({ preserveWindowsSandbox: v })} />
+      <Toggle label="Preserve WSL" desc="Keep Windows Subsystem for Linux and related feature dependencies intact." checked={o.preserveWsl} onChange={(v) => setOptionalFeatures({ preserveWsl: v })} />
+    </Screen>
+  );
+}
+
+function QAudio() {
+  const { audio: a, setAudio } = useDecisionsStore();
+  return (
+    <Screen
+      icon={Cpu}
+      label="Audio Stack"
+      title="How should OEM audio software be handled?"
+      desc="Oneclick exposes an audio bloat removal path. It can remove vendor suites like Realtek enhancements, Sonic Studio, Nahimic-style extras, and other OEM audio layers. That can reduce junk, but it can also kill audio enhancements or break sound until drivers are reinstalled."
+      note="If you rely on motherboard or laptop vendor audio effects, do not go aggressive here."
+    >
+      <Option
+        selected={a.cleanupLevel === "keep-default"}
+        onClick={() => setAudio({ cleanupLevel: "keep-default" })}
+        title="Keep the current audio stack"
+        desc="Leave OEM audio services and enhancements alone. Safest for laptops and boards with custom codec packages."
+        badge="Recommended"
+        badgeColor="bg-brand-500/15 text-brand-400"
+      />
+      <Option
+        selected={a.cleanupLevel === "remove-extras"}
+        onClick={() => setAudio({ cleanupLevel: "remove-extras" })}
+        title="Remove obvious audio extras only"
+        desc="Target the obvious enhancement suites and helper apps while leaving the core audio path intact where possible."
+      />
+      <Option
+        selected={a.cleanupLevel === "aggressive"}
+        onClick={() => setAudio({ cleanupLevel: "aggressive" })}
+        title="Aggressive audio cleanup"
+        desc="Strip vendor audio background layers hard. Highest chance of requiring a manual driver reinstall afterward."
+        badge="Risky"
+        badgeColor="bg-red-500/15 text-red-400"
+        danger
+      />
+    </Screen>
+  );
+}
+
+function QDeviceManager() {
+  const { deviceManager: d, setDeviceManager } = useDecisionsStore();
+  return (
+    <Screen
+      icon={Cpu}
+      label="Device Manager"
+      title="Should deeper device-level tweaks be allowed?"
+      desc="Oneclick-style device-manager tuning usually means disabling selected power-saving behavior on USB, network, storage, and related devices. This can reduce wake latency, but it is more hardware-sensitive than normal registry or service tweaks."
+      note="Good for desktops chasing consistency. Less safe for laptops, docking setups, Bluetooth-heavy systems, and mixed-use work machines."
+    >
+      <Option
+        selected={d.tweakLevel === "off"}
+        onClick={() => setDeviceManager({ tweakLevel: "off" })}
+        title="No device-manager tweaks"
+        desc="Leave hardware-level device behavior alone."
+        badge="Safest"
+        badgeColor="bg-emerald-500/15 text-emerald-400"
+      />
+      <Option
+        selected={d.tweakLevel === "power-saving-only"}
+        onClick={() => setDeviceManager({ tweakLevel: "power-saving-only" })}
+        title="Safe power-saving cleanup"
+        desc="Only touch low-risk device power-saving behavior where it commonly affects responsiveness."
+        badge="Recommended"
+        badgeColor="bg-brand-500/15 text-brand-400"
+      />
+      <Option
+        selected={d.tweakLevel === "aggressive"}
+        onClick={() => setDeviceManager({ tweakLevel: "aggressive" })}
+        title="Aggressive hardware tuning"
+        desc="Allow deeper device-level changes intended for enthusiast systems. Highest risk of per-device regressions."
+        badge="Advanced"
+        badgeColor="bg-amber-500/15 text-amber-400"
+      />
+    </Screen>
+  );
+}
+
 // Q7 — Edge/browser (existing, renumbered)
 function QEdge() {
   const { browser: b, setBrowser } = useDecisionsStore();
@@ -380,7 +542,12 @@ function QPower() {
 
 // ─── Sequencer ──────────────────────────────────────────────────────────────
 
-interface QDef { id: string; component: () => JSX.Element; condition?: () => boolean; }
+interface QDef {
+  id: string;
+  component: () => JSX.Element;
+  condition?: () => boolean;
+  isAnswered?: () => boolean;
+}
 
 export function PlaybookStrategyStep() {
   const decisions = useDecisionsStore();
@@ -389,13 +556,14 @@ export function PlaybookStrategyStep() {
 
   const questions: QDef[] = useMemo(() => [
     // ── Core: always shown ────────────────────────────────────────────────
-    { id: "q-aggression",    component: Q1 },
-    { id: "q-power-plan",    component: QPowerPlan },
+    { id: "q-aggression",    component: Q1, isAnswered: () => decisions.performance.aggressionLevel !== null },
+    { id: "q-power-plan",    component: QPowerPlan, isAnswered: () => decisions.performance.powerPlan !== null },
 
     // ── Oneclick security — aggressive/expert only ────────────────────────
     {
       id: "q-defender",
       component: QDefender,
+      isAnswered: () => decisions.security.defenderAction !== null,
       condition: () =>
         decisions.performance.aggressionLevel === "aggressive" ||
         decisions.performance.aggressionLevel === "expert",
@@ -405,6 +573,7 @@ export function PlaybookStrategyStep() {
     {
       id: "q-priority-sep",
       component: QPrioritySep,
+      isAnswered: () => decisions.performance.prioritySeparation !== null,
       condition: () =>
         decisions.performance.aggressionLevel === "balanced" ||
         decisions.performance.aggressionLevel === "aggressive" ||
@@ -415,6 +584,7 @@ export function PlaybookStrategyStep() {
     {
       id: "q-timer-res",
       component: QTimerRes,
+      isAnswered: () => decisions.performance.timerResolution !== null,
       condition: () =>
         decisions.performance.aggressionLevel === "aggressive" ||
         decisions.performance.aggressionLevel === "expert",
@@ -424,20 +594,43 @@ export function PlaybookStrategyStep() {
     {
       id: "q-search",
       component: QSearch,
+      isAnswered: () => decisions.system.searchAction !== null,
       condition: () =>
         decisions.performance.aggressionLevel === "balanced" ||
         decisions.performance.aggressionLevel === "aggressive" ||
         decisions.performance.aggressionLevel === "expert",
     },
 
+    // ── Expanded Oneclick-style surfaces ────────────────────────────────
+    {
+      id: "q-network",
+      component: QNetwork,
+      isAnswered: () => decisions.network.tweakLevel !== null,
+      condition: () =>
+        decisions.performance.aggressionLevel === "balanced" ||
+        decisions.performance.aggressionLevel === "aggressive" ||
+        decisions.performance.aggressionLevel === "expert",
+    },
+    { id: "q-optional-features", component: QOptionalFeatures, isAnswered: () => true },
+    { id: "q-audio", component: QAudio, isAnswered: () => decisions.audio.cleanupLevel !== null },
+    {
+      id: "q-device-manager",
+      component: QDeviceManager,
+      isAnswered: () => decisions.deviceManager.tweakLevel !== null,
+      condition: () =>
+        decisions.performance.aggressionLevel === "aggressive" ||
+        decisions.performance.aggressionLevel === "expert",
+    },
+
     // ── Browser & privacy — always shown ─────────────────────────────────
-    { id: "q-edge",    component: QEdge },
-    { id: "q-privacy", component: QPrivacy },
+    { id: "q-edge",    component: QEdge, isAnswered: () => decisions.browser.edgeAction !== null },
+    { id: "q-webview", component: QWebView, isAnswered: () => decisions.browser.webviewAction !== null },
+    { id: "q-privacy", component: QPrivacy, isAnswered: () => decisions.privacy.telemetryLevel !== null },
 
     // ── Conditional: work, gaming, power ─────────────────────────────────
-    { id: "q-work",   component: QWork,   condition: () => decisions.needsWorkQuestions() || isWorkPc },
-    { id: "q-gaming", component: QGaming, condition: () => decisions.needsGamingQuestions() },
-    { id: "q-power",  component: QPower,  condition: () => decisions.needsPowerQuestions() },
+    { id: "q-work",   component: QWork, isAnswered: () => true, condition: () => decisions.needsWorkQuestions() || isWorkPc },
+    { id: "q-gaming", component: QGaming, isAnswered: () => true, condition: () => decisions.needsGamingQuestions() },
+    { id: "q-power",  component: QPower, isAnswered: () => true, condition: () => decisions.needsPowerQuestions() },
   ], [decisions, isWorkPc]);
 
   const active = questions.filter((q) => !q.condition || q.condition());
@@ -445,10 +638,12 @@ export function PlaybookStrategyStep() {
   const clamped = Math.min(idx, active.length - 1);
   const current = active[clamped];
   const Comp = current.component;
+  const currentAnswered = current.isAnswered ? current.isAnswered() : true;
+  const allAnswered = active.every((q) => (q.isAnswered ? q.isAnswered() : true));
 
   useEffect(() => {
-    setStepReady("playbook-strategy", active.length > 0 && clamped >= active.length - 1);
-  }, [active.length, clamped, setStepReady]);
+    setStepReady("playbook-strategy", active.length > 0 && allAnswered && clamped >= active.length - 1);
+  }, [active.length, allAnswered, clamped, setStepReady]);
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex flex-col h-full">
@@ -517,8 +712,8 @@ export function PlaybookStrategyStep() {
 
         <button
           onClick={() => setIdx((i) => Math.min(active.length - 1, i + 1))}
-          disabled={clamped >= active.length - 1}
-          className={`flex items-center gap-1 text-[11px] font-medium ${clamped >= active.length - 1 ? "text-ink-disabled" : "text-ink-tertiary hover:text-ink"}`}
+          disabled={clamped >= active.length - 1 || !currentAnswered}
+          className={`flex items-center gap-1 text-[11px] font-medium ${clamped >= active.length - 1 || !currentAnswered ? "text-ink-disabled" : "text-ink-tertiary hover:text-ink"}`}
         >
           Next <ChevronRight className="h-3.5 w-3.5" />
         </button>

@@ -59,6 +59,24 @@ export interface SystemDecisions {
   searchAction: "keep" | "remove" | null;
 }
 
+export interface NetworkDecisions {
+  tweakLevel: "keep-default" | "latency-safe" | "aggressive" | null;
+}
+
+export interface OptionalFeaturesDecisions {
+  preserveVirtualization: boolean;
+  preserveWindowsSandbox: boolean;
+  preserveWsl: boolean;
+}
+
+export interface AudioDecisions {
+  cleanupLevel: "keep-default" | "remove-extras" | "aggressive" | null;
+}
+
+export interface DeviceManagerDecisions {
+  tweakLevel: "off" | "power-saving-only" | "aggressive" | null;
+}
+
 export interface PowerDecisions {
   batteryImportant: boolean;
   preserveModernStandby: boolean;
@@ -118,6 +136,10 @@ interface DecisionsState {
   gaming: GamingDecisions;
   security: SecurityDecisions;
   system: SystemDecisions;
+  network: NetworkDecisions;
+  optionalFeatures: OptionalFeaturesDecisions;
+  audio: AudioDecisions;
+  deviceManager: DeviceManagerDecisions;
 
   // Completion tracking
   completedSections: string[];
@@ -137,6 +159,10 @@ interface DecisionsState {
   setGaming: (d: Partial<GamingDecisions>) => void;
   setSecurity: (d: Partial<SecurityDecisions>) => void;
   setSystem: (d: Partial<SystemDecisions>) => void;
+  setNetwork: (d: Partial<NetworkDecisions>) => void;
+  setOptionalFeatures: (d: Partial<OptionalFeaturesDecisions>) => void;
+  setAudio: (d: Partial<AudioDecisions>) => void;
+  setDeviceManager: (d: Partial<DeviceManagerDecisions>) => void;
   markSectionComplete: (section: string) => void;
 
   // Computed
@@ -162,7 +188,7 @@ const DEFAULT_WORK_COMPAT: WorkCompatDecisions = {
 };
 
 const DEFAULT_BROWSER: BrowserDecisions = {
-  edgeAction: null, webviewAction: "keep", chromeAction: null, preferredBrowser: null,
+  edgeAction: null, webviewAction: null, chromeAction: null, preferredBrowser: null,
 };
 
 const DEFAULT_PRIVACY: PrivacyDecisions = {
@@ -185,6 +211,24 @@ const DEFAULT_SECURITY: SecurityDecisions = {
 
 const DEFAULT_SYSTEM: SystemDecisions = {
   searchAction: null,
+};
+
+const DEFAULT_NETWORK: NetworkDecisions = {
+  tweakLevel: null,
+};
+
+const DEFAULT_OPTIONAL_FEATURES: OptionalFeaturesDecisions = {
+  preserveVirtualization: true,
+  preserveWindowsSandbox: true,
+  preserveWsl: true,
+};
+
+const DEFAULT_AUDIO: AudioDecisions = {
+  cleanupLevel: null,
+};
+
+const DEFAULT_DEVICE_MANAGER: DeviceManagerDecisions = {
+  tweakLevel: null,
 };
 
 const DEFAULT_POWER: PowerDecisions = {
@@ -285,6 +329,31 @@ function computeImpact(state: DecisionsState): PlaybookImpact {
     estimated += 2;
   }
 
+  if (state.network.tweakLevel === "latency-safe") {
+    estimated += 2;
+  } else if (state.network.tweakLevel === "aggressive") {
+    estimated += 4;
+    warnings.push("Aggressive network tweaks can hurt throughput or break some adapters");
+  }
+
+  if (state.optionalFeatures.preserveVirtualization || state.optionalFeatures.preserveWindowsSandbox || state.optionalFeatures.preserveWsl) {
+    preserved += 2;
+  }
+
+  if (state.audio.cleanupLevel === "remove-extras") {
+    estimated += 1;
+  } else if (state.audio.cleanupLevel === "aggressive") {
+    estimated += 2;
+    warnings.push("Aggressive audio cleanup may break OEM audio enhancements until drivers are reinstalled");
+  }
+
+  if (state.deviceManager.tweakLevel === "power-saving-only") {
+    estimated += 1;
+  } else if (state.deviceManager.tweakLevel === "aggressive") {
+    estimated += 3;
+    warnings.push("Aggressive device-manager tweaks can cause instability on some hardware");
+  }
+
   const riskLevel = state.performance.aggressionLevel === "expert" ? "expert"
     : state.performance.aggressionLevel === "aggressive" ? "aggressive"
     : state.browser.edgeAction === "remove" ? "aggressive"
@@ -312,6 +381,10 @@ export const useDecisionsStore = create<DecisionsState>((set, get) => ({
   gaming: { ...DEFAULT_GAMING },
   security: { ...DEFAULT_SECURITY },
   system: { ...DEFAULT_SYSTEM },
+  network: { ...DEFAULT_NETWORK },
+  optionalFeatures: { ...DEFAULT_OPTIONAL_FEATURES },
+  audio: { ...DEFAULT_AUDIO },
+  deviceManager: { ...DEFAULT_DEVICE_MANAGER },
   completedSections: [],
   impact: { estimatedActions: 47, estimatedBlocked: 0, estimatedPreserved: 0, rebootRequired: false, riskLevel: "mixed", warnings: [] },
 
@@ -359,6 +432,22 @@ export const useDecisionsStore = create<DecisionsState>((set, get) => ({
     const next = { ...s, system: { ...s.system, ...d } };
     return { ...next, impact: computeImpact(next) };
   }),
+  setNetwork: (d) => set((s) => {
+    const next = { ...s, network: { ...s.network, ...d } };
+    return { ...next, impact: computeImpact(next) };
+  }),
+  setOptionalFeatures: (d) => set((s) => {
+    const next = { ...s, optionalFeatures: { ...s.optionalFeatures, ...d } };
+    return { ...next, impact: computeImpact(next) };
+  }),
+  setAudio: (d) => set((s) => {
+    const next = { ...s, audio: { ...s.audio, ...d } };
+    return { ...next, impact: computeImpact(next) };
+  }),
+  setDeviceManager: (d) => set((s) => {
+    const next = { ...s, deviceManager: { ...s.deviceManager, ...d } };
+    return { ...next, impact: computeImpact(next) };
+  }),
   markSectionComplete: (section) => set((s) => ({
     completedSections: [...new Set([...s.completedSections, section])],
   })),
@@ -402,6 +491,10 @@ export const useDecisionsStore = create<DecisionsState>((set, get) => ({
     gaming: { ...DEFAULT_GAMING },
     security: { ...DEFAULT_SECURITY },
     system: { ...DEFAULT_SYSTEM },
+    network: { ...DEFAULT_NETWORK },
+    optionalFeatures: { ...DEFAULT_OPTIONAL_FEATURES },
+    audio: { ...DEFAULT_AUDIO },
+    deviceManager: { ...DEFAULT_DEVICE_MANAGER },
     completedSections: [],
     impact: { estimatedActions: 47, estimatedBlocked: 0, estimatedPreserved: 0, rebootRequired: false, riskLevel: "mixed", warnings: [] },
   }),
