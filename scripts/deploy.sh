@@ -29,7 +29,7 @@ else
 fi
 
 echo "── Install dependencies ──"
-pnpm install --frozen-lockfile
+pnpm install --frozen-lockfile --prod=false
 
 if [[ -f apps/web/.env.local ]]; then
   echo "── Load web environment ──"
