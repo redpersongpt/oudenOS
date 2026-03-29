@@ -38,7 +38,7 @@ const app = Fastify({
 
 async function start(): Promise<void> {
   // ── Validate required env vars at startup ──────────────────────────────
-  const required = ["JWT_SECRET", "DATABASE_URL"] as const;
+  const required = ["JWT_SECRET", "DATABASE_URL", "STRIPE_SECRET_KEY", "STRIPE_WEBHOOK_SECRET"] as const;
   const missing = required.filter((k) => !process.env[k]);
   if (missing.length > 0) {
     throw new Error(`Missing required env vars: ${missing.join(", ")}`);

@@ -158,7 +158,19 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
     const { id } = request.params;
 
     const [user] = await db
-      .select()
+      .select({
+        id: users.id,
+        email: users.email,
+        name: users.name,
+        role: users.role,
+        emailVerified: users.emailVerified,
+        oauthProvider: users.oauthProvider,
+        stripeCustomerId: users.stripeCustomerId,
+        isDonor: users.isDonor,
+        createdAt: users.createdAt,
+        updatedAt: users.updatedAt,
+        deletedAt: users.deletedAt,
+      })
       .from(users)
       .where(eq(users.id, id))
       .limit(1);

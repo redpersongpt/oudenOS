@@ -4,6 +4,22 @@ import Stripe from "stripe";
 import { and, desc, eq, sql } from "drizzle-orm";
 import { db, donations, users } from "../db/index.js";
 import { requireAuth } from "../middleware/auth.js";
+import { apiRateLimit } from "../lib/rate-limit.js";
+
+// Reuse same allowed-redirect-hosts logic as subscription.ts
+const allowedRedirectHosts = (process.env.ALLOWED_REDIRECT_HOSTS ?? "redcoreos.net")
+  .split(",")
+  .map((h) => h.trim())
+  .filter(Boolean);
+
+function isAllowedRedirectUrl(url: string): boolean {
+  try {
+    const { hostname } = new URL(url);
+    return allowedRedirectHosts.some((h) => hostname === h || hostname.endsWith(`.${h}`));
+  } catch {
+    return false;
+  }
+}
 
 const createSchema = z.object({
   amountCents: z.number().int().min(100).max(100_000),
@@ -11,8 +27,8 @@ const createSchema = z.object({
   displayName: z.string().max(100).optional(),
   message: z.string().max(500).optional(),
   isPublic: z.boolean().default(true),
-  successUrl: z.string().url().optional(),
-  cancelUrl: z.string().url().optional(),
+  successUrl: z.string().url().refine(isAllowedRedirectUrl, "URL must be on an allowed domain").optional(),
+  cancelUrl: z.string().url().refine(isAllowedRedirectUrl, "URL must be on an allowed domain").optional(),
 });
 
 function getStripe(): Stripe {
@@ -78,7 +94,7 @@ export const donationRoutes: FastifyPluginAsync = async (app) => {
     return reply.send({ donations: rows });
   });
 
-  app.post("/create", async (request, reply) => {
+  app.post("/create", { preHandler: apiRateLimit(10) }, async (request, reply) => {
     const parsed = createSchema.safeParse(request.body);
     if (!parsed.success) {
       return reply.code(400).send({ error: "Invalid input", details: parsed.error.flatten() });

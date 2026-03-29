@@ -6,42 +6,53 @@ import { FEATURE_GATES } from "@redcore/shared-schema/license";
 
 export type AppTier = "free" | "premium" | "expert";
 
-// Maps feature keys to the minimum tier required.
-// Entries from FEATURE_GATES (shared-schema) are the source of truth;
-// this table adds UI-only aliases and fills gaps.
+// Maps feature keys to the minimum tier required for UI display purposes.
+// MUST stay in sync with FEATURE_GATES in shared-schema/license.ts,
+// which is the enforcement source of truth. Any feature not in FEATURE_GATES
+// will not be accessible regardless of this map.
 export const FEATURE_TIER_MAP: Record<string, AppTier> = {
-  // Free
+  // Free tier (matches FEATURE_GATES)
   hardware_scan: "free",
-  basic_benchmark: "free",
+  health_overview: "free",
   basic_startup_cleanup: "free",
   basic_debloat: "free",
+  limited_recommendations: "free",
+  basic_benchmark: "free",
   bios_guidance_preview: "free",
+  tuning_plans: "free",
+  app_install_hub: "free",
+  rollback_center: "free",
+  benchmark_lab: "free",
+  machine_classification: "free",
+  intelligent_recommendations: "free",
+  speculative_mitigation_analysis: "free",
 
-  // Premium
+  // Premium tier (matches FEATURE_GATES)
   full_tuning_engine: "premium",
-  full_version_logic: "premium",
-  benchmark_lab: "premium",
-  rollback_center: "premium",
   reboot_resume: "premium",
   thermal_analysis: "premium",
   bottleneck_analysis: "premium",
-  app_install_hub: "premium",
+  guided_oc_undervolt: "premium",
+  expert_mode: "premium",
+  full_version_logic: "premium",
   config_sync: "premium",
-  auto_updates: "premium",
   cpu_parking_optimization: "premium",
+  speculative_mitigation_control: "premium",
   timer_latency_optimization: "premium",
-  tuning_plans: "premium",
+  gpu_pstate_lock: "premium",
+  storage_8dot3_optimization: "premium",
+  fault_tolerant_heap_control: "premium",
+  auto_updates: "premium",
 
-  // Expert
-  expert_mode: "expert",
-  guided_oc_undervolt: "expert",
-  speculative_mitigation_control: "expert",
-  gpu_pstate_lock: "expert",
+  // Expert tier (matches FEATURE_GATES)
+  multi_machine_sync: "expert",
+  advanced_oc_control: "expert",
+  config_export_import: "expert",
+  priority_support: "expert",
+  early_access_features: "expert",
   bios_guidance: "expert",
-  api_access: "expert",
-  storage_8dot3_optimization: "expert",
-  fault_tolerant_heap_control: "expert",
   advanced_controls: "expert",
+  api_access: "expert",
 };
 
 export interface UseTierReturn {

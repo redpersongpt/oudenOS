@@ -4,7 +4,7 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { RotateCw } from "lucide-react";
+import { RotateCw, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { useWizardStore } from "@/stores/wizard-store";
 
@@ -17,6 +17,7 @@ interface JournalState {
 export function RebootResumeStep() {
   const { resolvedPlaybook, skipStep, completeStep } = useWizardStore();
   const [resuming, setResuming] = useState(false);
+  const [rebootError, setRebootError] = useState<string | null>(null);
 
   // Check if any included action requires reboot
   const needsReboot = resolvedPlaybook?.phases.some((phase) =>
@@ -40,8 +41,16 @@ export function RebootResumeStep() {
   }
 
   const handleRestart = async () => {
-    const { serviceCall } = await import("@/lib/service");
-    await serviceCall("system.reboot", { reason: "playbook-reboot-required" });
+    setRebootError(null);
+    try {
+      const { serviceCall } = await import("@/lib/service");
+      const result = await serviceCall("system.reboot", { reason: "playbook-reboot-required" });
+      if (!result.ok) {
+        setRebootError("Reboot failed. Please restart your computer manually.");
+      }
+    } catch {
+      setRebootError("Reboot failed. Please restart your computer manually.");
+    }
   };
 
   const handleSkip = () => {
@@ -91,6 +100,13 @@ export function RebootResumeStep() {
           Some optimizations require a restart to take effect. You can restart now or continue and restart later.
         </p>
       </div>
+
+      {rebootError && (
+        <div className="flex items-center gap-2 rounded-lg border border-danger-500/30 bg-danger-500/10 px-3 py-2 text-xs text-danger-400">
+          <AlertCircle className="h-3.5 w-3.5 shrink-0" />
+          {rebootError}
+        </div>
+      )}
 
       <div className="flex gap-3">
         <Button variant="primary" size="md" onClick={handleRestart} icon={<RotateCw className="h-4 w-4" />}>

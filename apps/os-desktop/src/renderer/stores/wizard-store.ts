@@ -156,6 +156,8 @@ interface WizardState {
 
   /** Navigate to the optional donation step (bypasses lock — accessible from report). */
   gotoDonation: () => void;
+  /** Complete the donation step and navigate to handoff. */
+  completeDonation: () => void;
 
   reset: () => void;
 }
@@ -192,7 +194,7 @@ const INITIAL_STEP_READINESS: Record<WizardStepId, boolean> = {
   execution: false,
   "reboot-resume": false,
   report: true,
-  donation: false,
+  donation: true, // side-trip step — always "ready", not in STEP_ORDER
   handoff: false,
 };
 
@@ -357,20 +359,37 @@ export const useWizardStore = create<WizardState>((set, get) => ({
     set((state) => ({ personalization: { ...state.personalization, ...prefs } })),
   setDemoMode: (demo) => set({ demoMode: demo }),
 
-  // Donation step is optional — navigate directly without checking lock status.
-  // Also marks "handoff" as unlocked so the user can continue after donating.
+  // Donation step is an optional side-trip — not in STEP_ORDER.
+  // Marks the previous step (report) as completed, navigates to donation.
+  // handoff stays locked until completeDonation is called.
   gotoDonation: () =>
     set((state) => {
       const steps = state.steps.map((s) => {
         if (s.id === state.currentStep) return { ...s, status: "completed" as const };
+        return s;
+      });
+      return {
+        currentStep: "donation" as WizardStepId,
+        steps,
+        progress: computeProgress(steps),
+        canGoNext: true,
+        canGoBack: false,
+      };
+    }),
+
+  // Called when donation step is done (donated or skipped).
+  // Unlocks and navigates to handoff.
+  completeDonation: () =>
+    set((state) => {
+      const steps = state.steps.map((s) => {
         if (s.id === "handoff" && s.status === "locked") return { ...s, status: "current" as const };
         return s;
       });
       return {
-      currentStep: "donation" as WizardStepId,
-      steps,
+        currentStep: "handoff" as WizardStepId,
+        steps,
         progress: computeProgress(steps),
-        canGoNext: true,
+        canGoNext: computeCanGoNext(steps, "handoff", state.stepReadiness),
         canGoBack: false,
       };
     }),

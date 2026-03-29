@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/Button";
 import { useWizardStore } from "@/stores/wizard-store";
 
 export function DonationStep() {
-  const { completeStep } = useWizardStore();
+  const { completeDonation } = useWizardStore();
 
   const handleDonate = () => {
     const win = window as unknown as { redcore?: { shell?: { openExternal: (url: string) => void } } };
@@ -48,7 +48,7 @@ export function DonationStep() {
           Support the Project
           <ExternalLink className="ml-1 h-3 w-3 opacity-50" />
         </Button>
-        <Button variant="secondary" size="md" onClick={() => completeStep("donation")}>
+        <Button variant="secondary" size="md" onClick={completeDonation}>
           Skip
         </Button>
       </div>

@@ -148,7 +148,7 @@ export function AppSetupStep() {
           setRecommendedApps(buildMockApps());
         } else {
           setRecommendedApps([]);
-          setLoadError(result.error || "Unable to load the real app catalog.");
+          setLoadError((!result.ok && result.error) || "Unable to load the real app catalog.");
         }
       } catch {
         if (demoMode) {

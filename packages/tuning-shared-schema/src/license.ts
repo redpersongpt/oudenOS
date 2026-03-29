@@ -92,4 +92,8 @@ export const FEATURE_GATES: Record<string, SubscriptionTier> = {
   "config_export_import": "expert",
   "priority_support": "expert",
   "early_access_features": "expert",
+  "bios_guidance": "expert",
+  "advanced_controls": "expert",
+  "api_access": "expert",
+  "auto_updates": "premium",
 } as const;
