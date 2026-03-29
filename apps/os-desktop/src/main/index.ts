@@ -52,8 +52,29 @@ function startService(): void {
     return;
   }
 
+  const playbookCandidates = [
+    path.join(process.resourcesPath ?? "", "playbooks"),
+    path.resolve(app.getAppPath(), "..", "playbooks"),
+    path.resolve(__dirname, "../../../../playbooks"),
+    path.resolve(process.cwd(), "playbooks"),
+  ].filter((candidate) => candidate && existsSync(candidate));
+
+  const playbookPath = playbookCandidates[0];
+
   console.log(`[Main] Starting service: ${servicePath}`);
-  serviceProcess = spawn(servicePath, [], { stdio: ["pipe", "pipe", "pipe"] });
+  if (playbookPath) {
+    console.log(`[Main] Using playbook directory: ${playbookPath}`);
+  } else {
+    console.warn("[Main] No playbook directory candidate found before service start.");
+  }
+  serviceProcess = spawn(servicePath, [], {
+    stdio: ["pipe", "pipe", "pipe"],
+    cwd: process.resourcesPath || process.cwd(),
+    env: {
+      ...process.env,
+      ...(playbookPath ? { REDCORE_PLAYBOOK_DIR: playbookPath } : {}),
+    },
+  });
 
   // Log stderr to prevent pipe buffer deadlock and surface service errors
   serviceProcess.stderr?.on("data", (chunk: Buffer) => {
