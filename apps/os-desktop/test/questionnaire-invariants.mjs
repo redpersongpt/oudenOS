@@ -53,8 +53,33 @@ const overrideActionIds = [
 const fallbackActionIds = new Set(
   fallback.phases.flatMap((phase) => phase.actions.map((action) => action.id)),
 );
+const supportedExecutionKinds = new Set([
+  "registryChanges",
+  "serviceChanges",
+  "bcdChanges",
+  "powerChanges",
+  "powerShellCommands",
+  "packages",
+  "tasks",
+]);
 
 const missingFallbackIds = overrideActionIds.filter((id) => !fallbackActionIds.has(id));
+const nonExecutableFallbackIds = fallback.phases
+  .flatMap((phase) => phase.actions)
+  .filter((action) => !Array.isArray(action.executionKinds) || action.executionKinds.length === 0)
+  .map((action) => action.id);
+const unsupportedExecutionKinds = fallback.phases
+  .flatMap((phase) => phase.actions)
+  .flatMap((action) =>
+    (action.executionKinds ?? [])
+      .filter((kind) => !supportedExecutionKinds.has(kind))
+      .map((kind) => ({ actionId: action.id, kind })),
+  );
+const nonExecutableOverrideIds = overrideActionIds.filter((id) =>
+  fallback.phases
+    .flatMap((phase) => phase.actions)
+    .some((action) => action.id === id && (!Array.isArray(action.executionKinds) || action.executionKinds.length === 0)),
+);
 
 const requiredStrategyGuards = [
   { key: "disableRecall", pattern: /"disableRecall"[\s\S]*ctx\.windowsBuild >= 26100/ },
@@ -80,6 +105,9 @@ const visibleForbiddenCopy = forbiddenNames.flatMap((term) => {
 if (
   missingMappings.length > 0 ||
   missingFallbackIds.length > 0 ||
+  nonExecutableFallbackIds.length > 0 ||
+  unsupportedExecutionKinds.length > 0 ||
+  nonExecutableOverrideIds.length > 0 ||
   visibleForbiddenCopy.length > 0 ||
   missingStrategyGuards.length > 0 ||
   missingReviewBuildPropagation
@@ -89,6 +117,9 @@ if (
       {
         missingMappings,
         missingFallbackIds,
+        nonExecutableFallbackIds,
+        unsupportedExecutionKinds,
+        nonExecutableOverrideIds,
         forbiddenCopyMatches: visibleForbiddenCopy,
         missingStrategyGuards,
         missingReviewBuildPropagation,
@@ -107,6 +138,10 @@ console.log(
       mappedAnswers: uniqueAnswerKeys.length - 1,
       overrideActionCount: overrideActionIds.length,
       fallbackActionCount: fallbackActionIds.size,
+      executableFallbackActionCount: fallback.phases
+        .flatMap((phase) => phase.actions)
+        .filter((action) => Array.isArray(action.executionKinds) && action.executionKinds.length > 0)
+        .length,
     },
     null,
     2,

@@ -7,6 +7,9 @@ import {
 import { applyDecisionOverrides } from "../src/renderer/lib/playbook-decision-overrides.ts";
 import { buildMockResolvedPlaybook } from "../src/renderer/lib/mock-playbook.ts";
 import type { ResolvedPlaybook } from "../src/renderer/stores/wizard-store.ts";
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 type Scenario = {
   profile: string;
@@ -20,6 +23,30 @@ type QuestionAuditResult = {
   changedActionIds: string[];
   scenario: Scenario;
 };
+
+const testDir = path.dirname(fileURLToPath(import.meta.url));
+const repoRoot = path.resolve(testDir, "..", "..", "..");
+const fallback = JSON.parse(
+  fs.readFileSync(
+    path.join(repoRoot, "apps/os-desktop/src/renderer/lib/generated-playbook-fallback.json"),
+    "utf8",
+  ),
+) as {
+  phases: Array<{
+    actions: Array<{
+      id: string;
+      executionKinds?: string[];
+    }>;
+  }>;
+};
+
+const executableActionIds = new Set(
+  fallback.phases.flatMap((phase) =>
+    phase.actions
+      .filter((action) => Array.isArray(action.executionKinds) && action.executionKinds.length > 0)
+      .map((action) => action.id),
+  ),
+);
 
 const BALANCED_SCENARIO: Scenario = {
   profile: "gaming_desktop",
@@ -102,6 +129,10 @@ function auditBooleanQuestion(key: keyof QuestionnaireAnswers, scenario: Scenari
   if (changedActionIds.length === 0) {
     throw new Error(`Question '${key}' does not change any playbook action statuses in scenario ${JSON.stringify(scenario)}`);
   }
+  const nonExecutableIds = changedActionIds.filter((id) => !executableActionIds.has(id));
+  if (nonExecutableIds.length > 0) {
+    throw new Error(`Question '${key}' changes non-executable actions: ${nonExecutableIds.join(", ")}`);
+  }
 
   return { key, changedActionIds, scenario };
 }
@@ -122,6 +153,10 @@ function auditEnumQuestion<K extends keyof QuestionnaireAnswers>(
 
   if (changedActionIds.size === 0) {
     throw new Error(`Question '${key}' does not change any playbook action statuses in scenario ${JSON.stringify(scenario)}`);
+  }
+  const nonExecutableIds = [...changedActionIds].filter((id) => !executableActionIds.has(id));
+  if (nonExecutableIds.length > 0) {
+    throw new Error(`Question '${key}' changes non-executable actions: ${nonExecutableIds.join(", ")}`);
   }
 
   return { key, changedActionIds: [...changedActionIds].sort(), scenario };
