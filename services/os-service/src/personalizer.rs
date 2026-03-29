@@ -477,7 +477,7 @@ fn apply_wallpaper() -> anyhow::Result<()> {
     let script = format!(
         "Set-ItemProperty 'HKCU:\\Control Panel\\Desktop' -Name Wallpaper -Value '{}' -Force; \
          Set-ItemProperty 'HKCU:\\Control Panel\\Desktop' -Name WallpaperStyle -Value '10' -Force; \
-         RUNDLL32.EXE user32.dll,UpdatePerSettings",
+         RUNDLL32.EXE user32.dll,UpdatePerUserSystemParameters 1, True",
         wallpaper_path,
     );
     let result = powershell::execute(&script)?;
