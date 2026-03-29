@@ -669,35 +669,38 @@ async fn dispatch(
 
 // ─── Playbook directory resolution ──────────────────────────────────────────
 
-/// Resolve the playbook directory. Checks relative to binary, then cwd, then fallback.
+/// Resolve the playbook directory across packaged and dev layouts.
 fn resolve_playbook_dir() -> Option<std::path::PathBuf> {
-    // Try relative to binary location
+    let mut candidates: Vec<std::path::PathBuf> = Vec::new();
+
+    if let Ok(from_env) = std::env::var("REDCORE_PLAYBOOK_DIR") {
+        candidates.push(std::path::PathBuf::from(from_env));
+    }
+
     if let Ok(exe) = std::env::current_exe() {
         if let Some(parent) = exe.parent() {
-            let candidate = parent
-                .join("..")
-                .join("..")
-                .join("..")
-                .join("..")
-                .join("playbooks");
-            if candidate.exists() {
-                return Some(candidate);
-            }
+            candidates.push(parent.join("playbooks"));
+            candidates.push(parent.join("resources").join("playbooks"));
+            candidates.push(parent.join("..").join("resources").join("playbooks"));
+            candidates.push(parent.join("..").join("..").join("..").join("..").join("playbooks"));
         }
     }
 
-    // Try cwd/playbooks
     if let Ok(cwd) = std::env::current_dir() {
-        let candidate = cwd.join("playbooks");
-        if candidate.exists() {
-            return Some(candidate);
-        }
+        candidates.push(cwd.join("playbooks"));
+        candidates.push(cwd.join("resources").join("playbooks"));
+        candidates.push(cwd.join("..").join("playbooks"));
     }
 
-    // Last resort
-    let fallback = std::path::PathBuf::from("playbooks");
-    if fallback.exists() {
-        return Some(fallback);
+    candidates.push(std::path::PathBuf::from("playbooks"));
+
+    let default_dir = crate::playbook::default_playbook_dir();
+    candidates.push(default_dir);
+
+    for candidate in candidates {
+        if candidate.exists() {
+            return candidate.canonicalize().ok().or(Some(candidate));
+        }
     }
 
     None
