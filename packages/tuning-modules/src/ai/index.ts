@@ -1,6 +1,6 @@
 // ─── AI Feature Control Module ──────────────────────────────────────────────
 // Disables Windows AI features: Recall, Click to Do, Edge AI, Paint AI, Notepad AI.
-// Sourced from Win11Debloat feature analysis.
+// Sourced from the redcore internal AI-feature analysis set.
 
 import type { TuningActionDefinition } from "../types.js";
 

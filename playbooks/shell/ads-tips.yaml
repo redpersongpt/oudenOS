@@ -1,5 +1,5 @@
 # ─── Shell: Ads, Tips & Suggestions Removal ──────────────────────────────────
-# Comprehensive ad/suggestion/notification removal sourced from Win11Debloat.
+# Comprehensive ad/suggestion/notification removal from the redcore internal cleanup set.
 
 module: shell.ads
 name: "Ads, Tips & Suggestions Removal"

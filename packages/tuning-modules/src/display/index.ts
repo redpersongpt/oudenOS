@@ -1,5 +1,5 @@
 // ─── Display Tuning Module ──────────────────────────────────────────────────
-// Derived from PC-Tuning display-tuning and gaming-optimization skills.
+// Derived from the redcore internal display-tuning notes.
 
 import type { TuningActionDefinition } from "../types.js";
 

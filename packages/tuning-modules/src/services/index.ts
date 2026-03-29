@@ -1,5 +1,5 @@
 // ─── Service & Scheduled Task Optimization Module ───────────────────────────
-// Derived from Oneclick service cleanup patterns and PC-Tuning service guidance.
+// Derived from the redcore internal service cleanup research set.
 // Every service change is rollback-safe via the service snapshot system.
 
 import type { TuningActionDefinition } from "../types.js";

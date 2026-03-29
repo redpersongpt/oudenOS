@@ -1,5 +1,5 @@
 // ─── Storage Tuning Module ──────────────────────────────────────────────────
-// Derived from PC-Tuning storage-optimization skill.
+// Derived from the redcore internal storage-optimization notes.
 
 import type { TuningActionDefinition } from "../types.js";
 

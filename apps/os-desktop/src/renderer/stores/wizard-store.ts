@@ -39,6 +39,7 @@ export interface DetectedProfile {
   machineName: string;
   signals: string[];
   accentColor: string;
+  windowsBuild: number;
 }
 
 // ─── Playbook resolved plan ──────────────────────────────────────────────────

@@ -473,12 +473,24 @@ fn apply_wallpaper() -> anyhow::Result<()> {
     let wallpaper_path = std::env::var("LOCALAPPDATA")
         .unwrap_or_else(|_| "C:\\ProgramData".to_string());
     let wallpaper_path = format!("{}\\redcore-os\\assets\\wallpaper.png", wallpaper_path);
+    let wallpaper_path_ps = powershell::escape_ps_string(&wallpaper_path);
 
     let script = format!(
-        "Set-ItemProperty 'HKCU:\\Control Panel\\Desktop' -Name Wallpaper -Value '{}' -Force; \
+        "$wallpaper = '{}'; \
+         Set-ItemProperty 'HKCU:\\Control Panel\\Desktop' -Name Wallpaper -Value $wallpaper -Force; \
          Set-ItemProperty 'HKCU:\\Control Panel\\Desktop' -Name WallpaperStyle -Value '10' -Force; \
-         RUNDLL32.EXE user32.dll,UpdatePerUserSystemParameters 1, True",
-        wallpaper_path,
+         Add-Type -TypeDefinition @'\n\
+using System;\n\
+using System.Runtime.InteropServices;\n\
+public static class RedcoreWallpaper {{\n\
+    [DllImport(\"user32.dll\", CharSet = CharSet.Unicode, SetLastError = true)]\n\
+    public static extern bool SystemParametersInfo(int uiAction, int uiParam, string pvParam, int fWinIni);\n\
+}}\n\
+'@; \
+         if (-not [RedcoreWallpaper]::SystemParametersInfo(20, 0, $wallpaper, 3)) {{ \
+            throw 'SystemParametersInfo failed to refresh the wallpaper.'; \
+         }}",
+        wallpaper_path_ps,
     );
     let result = powershell::execute(&script)?;
     if !result.success {

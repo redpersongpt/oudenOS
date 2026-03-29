@@ -101,6 +101,12 @@ pub struct PlaybookAction {
     #[serde(rename = "serviceChanges")]
     pub service_changes: Vec<ServiceChange>,
     #[serde(default)]
+    #[serde(rename = "bcdChanges")]
+    pub bcd_changes: Vec<BcdChange>,
+    #[serde(default)]
+    #[serde(rename = "powerChanges")]
+    pub power_changes: Vec<PowerChange>,
+    #[serde(default)]
     #[serde(rename = "powerShellCommands")]
     pub powershell_commands: Vec<String>,
     #[serde(default)]
@@ -135,6 +141,21 @@ pub struct ServiceChange {
     pub name: String,
     #[serde(rename = "startupType")]
     pub startup_type: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct BcdChange {
+    pub element: String,
+    #[serde(rename = "newValue")]
+    pub new_value: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct PowerChange {
+    #[serde(rename = "settingPath")]
+    pub setting_path: String,
+    #[serde(rename = "newValue")]
+    pub new_value: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -318,6 +339,82 @@ pub fn load_playbook(playbook_dir: &Path) -> anyhow::Result<LoadedPlaybook> {
         phases,
         total_actions,
         profiles,
+    })
+}
+
+pub fn default_playbook_dir() -> PathBuf {
+    PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+        .parent().unwrap()
+        .parent().unwrap()
+        .join("playbooks")
+}
+
+pub fn find_action_definition(
+    playbook_dir: &Path,
+    action_id: &str,
+) -> anyhow::Result<Option<serde_json::Value>> {
+    let playbook = load_playbook(playbook_dir)?;
+    Ok(playbook
+        .phases
+        .iter()
+        .flat_map(|phase| phase.actions.iter())
+        .find(|action| action.id == action_id)
+        .map(playbook_action_to_execution_json))
+}
+
+pub fn playbook_action_to_execution_json(action: &PlaybookAction) -> serde_json::Value {
+    serde_json::json!({
+        "id": action.id,
+        "name": action.name,
+        "description": action.description,
+        "rationale": action.rationale,
+        "risk": action.risk,
+        "tier": action.tier,
+        "default": action.default,
+        "expertOnly": action.expert_only,
+        "requiresReboot": action.requires_reboot,
+        "reversible": action.reversible,
+        "estimatedSeconds": action.estimated_seconds,
+        "blockedProfiles": action.blocked_profiles,
+        "minWindowsBuild": action.min_windows_build,
+        "registryChanges": action.registry_changes.iter().map(|change| {
+            serde_json::json!({
+                "hive": change.hive,
+                "path": change.path,
+                "valueName": change.value_name,
+                "value": change.value,
+                "valueType": change.value_type,
+            })
+        }).collect::<Vec<_>>(),
+        "serviceChanges": action.service_changes.iter().map(|change| {
+            serde_json::json!({
+                "name": change.name,
+                "startupType": change.startup_type,
+            })
+        }).collect::<Vec<_>>(),
+        "bcdChanges": action.bcd_changes.iter().map(|change| {
+            serde_json::json!({
+                "element": change.element,
+                "newValue": change.new_value,
+            })
+        }).collect::<Vec<_>>(),
+        "powerChanges": action.power_changes.iter().map(|change| {
+            serde_json::json!({
+                "settingPath": change.setting_path,
+                "newValue": change.new_value,
+            })
+        }).collect::<Vec<_>>(),
+        "powerShellCommands": action.powershell_commands,
+        "packages": action.packages,
+        "tasks": action.tasks.iter().map(|task| {
+            serde_json::json!({
+                "name": task.name,
+                "path": task.path,
+                "action": task.action,
+            })
+        }).collect::<Vec<_>>(),
+        "tags": action.tags,
+        "warningMessage": action.warning_message,
     })
 }
 
@@ -506,6 +603,7 @@ impl ResolvedPlan {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::collections::HashMap;
     use std::path::PathBuf;
 
     fn playbook_dir() -> PathBuf {
@@ -565,5 +663,90 @@ mod tests {
 
         println!("Work PC: {} included, {} blocked",
             plan.total_included, plan.total_blocked);
+    }
+
+    #[test]
+    fn test_all_actions_have_unique_ids_and_payloads() {
+        let dir = playbook_dir();
+        if !dir.exists() { return; }
+
+        let playbook = load_playbook(&dir).unwrap();
+        let mut seen_ids: HashSet<String> = HashSet::new();
+
+        for phase in &playbook.phases {
+            for action in &phase.actions {
+                assert!(
+                    seen_ids.insert(action.id.clone()),
+                    "Duplicate playbook action id: {}",
+                    action.id
+                );
+
+                let has_payload =
+                    !action.registry_changes.is_empty() ||
+                    !action.service_changes.is_empty() ||
+                    !action.bcd_changes.is_empty() ||
+                    !action.power_changes.is_empty() ||
+                    !action.powershell_commands.is_empty() ||
+                    !action.packages.is_empty() ||
+                    !action.tasks.is_empty();
+
+                assert!(
+                    has_payload,
+                    "Playbook action '{}' has no executable payload",
+                    action.id
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn test_build_gated_actions_resolve_by_windows_build() {
+        let dir = playbook_dir();
+        if !dir.exists() { return; }
+
+        let playbook = load_playbook(&dir).unwrap();
+        let old_build = resolve_plan(&playbook, "gaming_desktop", "aggressive", Some(22631));
+        let new_build = resolve_plan(&playbook, "gaming_desktop", "aggressive", Some(26100));
+
+        let old_actions: HashMap<String, ActionStatus> = old_build
+            .phases
+            .iter()
+            .flat_map(|phase| phase.actions.iter())
+            .map(|action| (action.action.id.clone(), action.status.clone()))
+            .collect();
+
+        let new_actions: HashMap<String, ActionStatus> = new_build
+            .phases
+            .iter()
+            .flat_map(|phase| phase.actions.iter())
+            .map(|action| (action.action.id.clone(), action.status.clone()))
+            .collect();
+
+        assert_eq!(
+            old_actions.get("privacy.disable-recall"),
+            Some(&ActionStatus::BuildGated),
+            "Recall should be gated on older Windows builds",
+        );
+        assert_eq!(
+            old_actions.get("privacy.disable-click-to-do"),
+            Some(&ActionStatus::BuildGated),
+            "Click to Do should be gated on older Windows builds",
+        );
+        assert_eq!(
+            old_actions.get("shell.enable-end-task"),
+            Some(&ActionStatus::Included),
+            "End Task should be available on Windows 11 23H2 builds",
+        );
+
+        assert_eq!(
+            new_actions.get("privacy.disable-recall"),
+            Some(&ActionStatus::Included),
+            "Recall should resolve on supported Windows builds",
+        );
+        assert_eq!(
+            new_actions.get("privacy.disable-click-to-do"),
+            Some(&ActionStatus::Included),
+            "Click to Do should resolve on supported Windows builds",
+        );
     }
 }

@@ -41,15 +41,12 @@ phases:
     modules:
       - services/telemetry-services.yaml
       - services/consumer-services.yaml
-      - services/system-services.yaml
 
   - id: tasks
     name: "Scheduled Tasks"
     description: "Disable unnecessary scheduled tasks and telemetry jobs"
     modules:
       - tasks/telemetry-tasks.yaml
-      - tasks/update-tasks.yaml
-      - tasks/maintenance-tasks.yaml
 
   - id: privacy
     name: "Privacy Hardening"
@@ -59,7 +56,6 @@ phases:
       - privacy/advertising.yaml
       - privacy/activity-tracking.yaml
       - privacy/input-collection.yaml
-      - privacy/cloud-content.yaml
       - privacy/ai-features.yaml
 
   - id: performance
@@ -71,6 +67,7 @@ phases:
       - performance/gpu.yaml
       - performance/latency.yaml
       - performance/power.yaml
+      - performance/storage.yaml
 
   - id: shell
     name: "Shell & Explorer"

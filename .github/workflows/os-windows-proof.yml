@@ -19,6 +19,8 @@ jobs:
           cache: pnpm
       - name: Install workspace dependencies
         run: pnpm install --frozen-lockfile
+      - name: Questionnaire integrity audit
+        run: pnpm --dir apps/os-desktop audit:questionnaire
       - uses: dtolnay/rust-toolchain@stable
       - name: Cargo build
         working-directory: services/os-service
@@ -93,14 +95,16 @@ jobs:
           Start-Sleep -Seconds 2
 
           # ═══════════════════════════════════════════════════════════════════
-          # STEP 3: PLAN (gaming_desktop aggressive)
+          # STEP 3: PLAYBOOK RESOLVE (gaming_desktop aggressive)
           # ═══════════════════════════════════════════════════════════════════
-          Write-Output "`n=== STEP 3: PLAN (gaming_desktop/aggressive) ==="
-          $r = Send-Rpc "transform.plan" @{ profile = "gaming_desktop"; preset = "aggressive" }
+          Write-Output "`n=== STEP 3: PLAYBOOK RESOLVE (gaming_desktop/aggressive) ==="
+          $r = Send-Rpc "playbook.resolve" @{ profile = "gaming_desktop"; preset = "aggressive" }
           if ($r -and $r.result) {
-              Write-Output "  Actions: $($r.result.actionCount)"
-              Write-Output "  PASS: transform.plan (gaming_desktop)"
-          } else { Write-Output "  FAIL: transform.plan"; $allPassed = $false }
+              Write-Output "  Included: $($r.result.totalIncluded)"
+              Write-Output "  Blocked: $($r.result.totalBlocked)"
+              Write-Output "  Optional: $($r.result.totalOptional)"
+              Write-Output "  PASS: playbook.resolve (gaming_desktop)"
+          } else { Write-Output "  FAIL: playbook.resolve"; $allPassed = $false }
 
           Start-Sleep -Seconds 2
 

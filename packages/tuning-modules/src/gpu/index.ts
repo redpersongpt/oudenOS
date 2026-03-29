@@ -1,5 +1,5 @@
 // ─── GPU Tuning Module ──────────────────────────────────────────────────────
-// Derived from PC-Tuning gpu-optimization skill.
+// Derived from the redcore internal GPU-optimization notes.
 
 import type { TuningActionDefinition } from "../types.js";
 
@@ -115,7 +115,7 @@ export const gpuActions: TuningActionDefinition[] = [
     name: "Lock NVIDIA GPU to P-State 0 (Maximum Performance)",
     category: "gpu",
     description: "Disable dynamic P-State switching on NVIDIA GPUs by setting DisableDynamicPstate=1, forcing the GPU to remain at maximum clocks at all times.",
-    rationale: "NVIDIA GPUs dynamically transition between power states (P0=max, P2=intermediate, P8=idle) based on load. These transitions introduce latency spikes of 5-50ms as the GPU ramps clocks. Locking to P-State 0 eliminates transition latency at the cost of higher idle power and temperatures. This is the single highest-impact GPU latency tweak per PC-Tuning research.",
+    rationale: "NVIDIA GPUs dynamically transition between power states (P0=max, P2=intermediate, P8=idle) based on load. These transitions introduce latency spikes of 5-50ms as the GPU ramps clocks. Locking to P-State 0 eliminates transition latency at the cost of higher idle power and temperatures. This is one of the highest-impact GPU latency tweaks in the redcore lab notes.",
     tier: "premium",
     risk: "medium",
     compatibility: { minBuild: 7600 },

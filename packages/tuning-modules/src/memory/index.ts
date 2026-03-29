@@ -1,5 +1,5 @@
 // ─── Memory Tuning Module ───────────────────────────────────────────────────
-// Derived from PC-Tuning memory-optimization skill.
+// Derived from the redcore internal memory-optimization notes.
 
 import type { TuningActionDefinition } from "../types.js";
 

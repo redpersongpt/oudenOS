@@ -62,7 +62,7 @@ actions:
   - id: perf.disable-fault-tolerant-heap
     name: "Disable Fault Tolerant Heap"
     description: "Prevent Windows from auto-applying crash mitigations to applications that crash repeatedly"
-    rationale: "FTH silently adds compatibility shims to crashed apps, increasing memory usage and reducing performance. Sourced from valleyofdoom/PC-Tuning."
+    rationale: "FTH silently adds compatibility shims to crashed apps, increasing memory usage and reducing performance."
     risk: low
     tier: free
     default: true

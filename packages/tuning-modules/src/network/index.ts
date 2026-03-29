@@ -1,5 +1,5 @@
 // ─── Network Tuning Module ──────────────────────────────────────────────────
-// Derived from PC-Tuning network-optimization skill.
+// Derived from the redcore internal network-optimization notes.
 
 import type { TuningActionDefinition } from "../types.js";
 

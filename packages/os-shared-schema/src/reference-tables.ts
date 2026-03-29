@@ -1,10 +1,10 @@
 // ─── Reference Tables ───────────────────────────────────────────────────────
-// Technical reference data sourced from valleyofdoom/PC-Tuning research.
+// Technical reference data curated in the redcore internal research set.
 // Used by both apps for expert tooltips and configuration guidance.
 
 // ── Win32PrioritySeparation Valid Values ────────────────────────────────────
 // The key only reads the first 6 bits. Values above 63 recycle.
-// Source: valleyofdoom/PC-Tuning §5.1
+// Source: redcore scheduler lab note §5.1
 
 export interface PrioritySeparationEntry {
   hex: string;
@@ -31,7 +31,7 @@ export const WIN32_PRIORITY_TABLE: PrioritySeparationEntry[] = [
 // Note: Win11 24H2 changed this table
 
 // ── Timer Resolution Reference ─────────────────────────────────────────────
-// Source: valleyofdoom/PC-Tuning §10
+// Source: redcore timer lab note §10
 
 export interface TimerResolutionNote {
   topic: string;
@@ -49,7 +49,7 @@ export const TIMER_RESOLUTION_NOTES: TimerResolutionNote[] = [
 ];
 
 // ── Windows Version GPU Compatibility ──────────────────────────────────────
-// Source: valleyofdoom/PC-Tuning §2.1
+// Source: redcore GPU lab note §2.1
 
 export interface GpuCompatEntry {
   gpu: string;
