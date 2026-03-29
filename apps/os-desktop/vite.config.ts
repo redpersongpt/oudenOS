@@ -30,8 +30,6 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "src/renderer"),
-      "@redcore/shared-schema": path.resolve(__dirname, "../../packages/tuning-shared-schema/src"),
-      "@redcore/system-analyzer": path.resolve(__dirname, "../../packages/system-analyzer/src"),
     },
   },
   server: {

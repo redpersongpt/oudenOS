@@ -17,7 +17,7 @@ pub fn get_personalization_options(profile: &str) -> Value {
     match profile {
         "gaming_desktop" => serde_json::json!({
             "darkMode": true,
-            "accentColor": "#E8453C",
+            "brandAccent": true,
             "wallpaper": true,
             "taskbarCleanup": true,
             "explorerCleanup": true,
@@ -26,7 +26,7 @@ pub fn get_personalization_options(profile: &str) -> Value {
         }),
         "work_pc" => serde_json::json!({
             "darkMode": true,
-            "accentColor": "#E8453C",
+            "brandAccent": true,
             "wallpaper": true,
             "taskbarCleanup": false,
             "explorerCleanup": false,
@@ -35,7 +35,7 @@ pub fn get_personalization_options(profile: &str) -> Value {
         }),
         "low_spec_system" => serde_json::json!({
             "darkMode": true,
-            "accentColor": "#E8453C",
+            "brandAccent": true,
             "wallpaper": true,
             "taskbarCleanup": true,
             "explorerCleanup": true,
@@ -44,7 +44,7 @@ pub fn get_personalization_options(profile: &str) -> Value {
         }),
         "vm_cautious" => serde_json::json!({
             "darkMode": true,
-            "accentColor": "#E8453C",
+            "brandAccent": true,
             "wallpaper": false,
             "taskbarCleanup": false,
             "explorerCleanup": false,
@@ -53,7 +53,7 @@ pub fn get_personalization_options(profile: &str) -> Value {
         }),
         _ => serde_json::json!({
             "darkMode": true,
-            "accentColor": "#E8453C",
+            "brandAccent": true,
             "wallpaper": true,
             "taskbarCleanup": true,
             "explorerCleanup": true,
@@ -80,10 +80,10 @@ pub fn apply_personalization(
         .get("darkMode")
         .and_then(|v| v.as_bool())
         .unwrap_or_else(|| opts["darkMode"].as_bool().unwrap_or(true));
-    let accent_color = options
-        .get("accentColor")
+    let brand_accent = options
+        .get("brandAccent")
         .and_then(|v| v.as_bool())
-        .unwrap_or(true);
+        .unwrap_or_else(|| opts["brandAccent"].as_bool().unwrap_or(true));
     let wallpaper = options
         .get("wallpaper")
         .and_then(|v| v.as_bool())
@@ -124,7 +124,7 @@ pub fn apply_personalization(
     }
 
     // Accent color values
-    if accent_color {
+    if brand_accent {
         collect_registry_prev(
             &mut previous_values,
             "HKCU",
@@ -267,9 +267,9 @@ pub fn apply_personalization(
     }
 
     // Accent color
-    if accent_color {
+    if brand_accent {
         apply_and_record(
-            "accentColor",
+            "brandAccent",
             &mut results,
             &mut succeeded,
             &mut failed,
@@ -635,13 +635,14 @@ mod tests {
         assert_eq!(opts["taskbarCleanup"], true);
         assert_eq!(opts["explorerCleanup"], true);
         assert_eq!(opts["transparency"], true);
-        assert_eq!(opts["accentColor"], "#E8453C");
+        assert_eq!(opts["brandAccent"], true);
     }
 
     #[test]
     fn test_work_pc_no_cleanup() {
         let opts = get_personalization_options("work_pc");
         assert_eq!(opts["darkMode"], true);
+        assert_eq!(opts["brandAccent"], true);
         assert_eq!(opts["taskbarCleanup"], false);
         assert_eq!(opts["explorerCleanup"], false);
     }
@@ -651,12 +652,14 @@ mod tests {
         let opts = get_personalization_options("low_spec_system");
         assert_eq!(opts["transparency"], false);
         assert_eq!(opts["darkMode"], true);
+        assert_eq!(opts["brandAccent"], true);
     }
 
     #[test]
     fn test_vm_cautious_minimal() {
         let opts = get_personalization_options("vm_cautious");
         assert_eq!(opts["darkMode"], true);
+        assert_eq!(opts["brandAccent"], true);
         assert_eq!(opts["wallpaper"], false);
         assert_eq!(opts["taskbarCleanup"], false);
         assert_eq!(opts["explorerCleanup"], false);

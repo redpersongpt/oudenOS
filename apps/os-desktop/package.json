@@ -21,8 +21,6 @@
     "dist": "bash ../../scripts/sync-desktop-brand-assets.sh && electron-builder --win --x64 --publish never"
   },
   "dependencies": {
-    "@redcore/shared-schema": "workspace:*",
-    "@redcore/system-analyzer": "workspace:*",
     "framer-motion": "^11.0.0",
     "lucide-react": "^0.400.0",
     "react": "^18.3.0",
