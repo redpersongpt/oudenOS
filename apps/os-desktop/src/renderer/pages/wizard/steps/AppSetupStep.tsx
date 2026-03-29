@@ -128,10 +128,11 @@ function AppCard({ app, selected, onToggle }: {
 // ─── Component ──────────────────────────────────────────────────────────────
 
 export function AppSetupStep() {
-  const { detectedProfile, recommendedApps, selectedAppIds, setRecommendedApps, toggleApp } = useWizardStore();
+  const { detectedProfile, recommendedApps, selectedAppIds, setRecommendedApps, toggleApp, setStepReady } = useWizardStore();
   const [loading, setLoading] = useState(recommendedApps.length === 0);
 
   useEffect(() => {
+    setStepReady("app-setup", false);
     if (recommendedApps.length > 0) return;
 
     const load = async () => {
@@ -151,7 +152,11 @@ export function AppSetupStep() {
       }
     };
     load();
-  }, [detectedProfile, recommendedApps.length, setRecommendedApps]);
+  }, [detectedProfile, recommendedApps.length, setRecommendedApps, setStepReady]);
+
+  useEffect(() => {
+    setStepReady("app-setup", !loading);
+  }, [loading, setStepReady]);
 
   if (loading) {
     return (

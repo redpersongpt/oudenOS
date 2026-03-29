@@ -3,6 +3,7 @@
 // All system operations go through the Rust service via JSON-RPC over stdio.
 
 import { app, BrowserWindow, ipcMain, session, shell } from "electron";
+import { existsSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawn, ChildProcess } from "node:child_process";
@@ -183,10 +184,21 @@ function stopService(): void {
   }
 }
 
+function resolveWindowIconPath(): string | undefined {
+  const candidates = [
+    path.join(process.resourcesPath ?? "", "redcore-icon.png"),
+    path.resolve(__dirname, "../../resources/redcore-icon.png"),
+    path.resolve(app.getAppPath(), "resources/redcore-icon.png"),
+  ];
+
+  return candidates.find((candidate) => existsSync(candidate));
+}
+
 // ─── Window creation ─────────────────────────────────────────────────────────
 
 function createWindow() {
   mainWindow = new BrowserWindow({
+    icon: resolveWindowIconPath(),
     width: 1440,
     height: 900,
     minWidth: 1024,

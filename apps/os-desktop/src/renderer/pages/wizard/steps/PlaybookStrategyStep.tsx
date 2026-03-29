@@ -3,7 +3,7 @@
 // Oneclick workflow mapped: power plan, defender, priority sep, timer res, search
 // + existing: aggression, browser, privacy, work compat, gaming, power/battery
 
-import { useState, useMemo, type ReactNode } from "react";
+import { useEffect, useState, useMemo, type ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Shield, Zap, Globe, Eye, Briefcase, Gamepad2, Check,
@@ -384,7 +384,7 @@ interface QDef { id: string; component: () => JSX.Element; condition?: () => boo
 
 export function PlaybookStrategyStep() {
   const decisions = useDecisionsStore();
-  const { detectedProfile } = useWizardStore();
+  const { detectedProfile, setStepReady } = useWizardStore();
   const isWorkPc = detectedProfile?.isWorkPc ?? false;
 
   const questions: QDef[] = useMemo(() => [
@@ -445,6 +445,10 @@ export function PlaybookStrategyStep() {
   const clamped = Math.min(idx, active.length - 1);
   const current = active[clamped];
   const Comp = current.component;
+
+  useEffect(() => {
+    setStepReady("playbook-strategy", active.length > 0 && clamped >= active.length - 1);
+  }, [active.length, clamped, setStepReady]);
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex flex-col h-full">
