@@ -1,7 +1,11 @@
 import type { Metadata } from "next";
 import { Navigation } from "@/components/brand/Navigation";
 import { FooterSection } from "@/components/sections/FooterSection";
-import { REDCORE_OS_DOWNLOAD, getLatestRedcoreOsDownloadManifest } from "@/lib/downloads";
+import {
+  REDCORE_OS_DOWNLOAD,
+  getLatestRedcoreOsDownloadManifest,
+  getLatestRedcoreOsDownloadUrl,
+} from "@/lib/downloads";
 import Link from "next/link";
 
 export const metadata: Metadata = {
@@ -27,6 +31,7 @@ function formatSize(sizeBytes: number | undefined): string | null {
 
 export default async function DownloadsPage() {
   const liveManifest = await getLatestRedcoreOsDownloadManifest();
+  const downloadUrl = await getLatestRedcoreOsDownloadUrl();
   const currentChecksum = liveManifest?.sha256 ?? REDCORE_OS_DOWNLOAD.checksum;
   const currentRelease = liveManifest?.versionTag ?? liveManifest?.version ?? null;
   const currentSize = formatSize(liveManifest?.sizeBytes);
@@ -72,7 +77,7 @@ export default async function DownloadsPage() {
 
             <div className="flex flex-wrap items-center gap-4 mb-4">
               <a
-                href={REDCORE_OS_DOWNLOAD.path}
+                href={downloadUrl}
                 className="inline-flex items-center rounded-lg bg-accent px-5 py-2.5 text-[13px] font-semibold text-white transition-all hover:bg-accent-dim"
               >
                 Download redcore OS

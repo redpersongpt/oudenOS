@@ -9,7 +9,7 @@ import {
   CTAStrip,
   RelatedPages,
 } from "@/components/seo";
-import { REDCORE_OS_DOWNLOAD } from "@/lib/downloads";
+import { REDCORE_OS_DOWNLOAD, getLatestRedcoreOsDownloadUrl } from "@/lib/downloads";
 import { Shield, RotateCcw } from "lucide-react";
 import Link from "next/link";
 
@@ -37,7 +37,8 @@ export const metadata: Metadata = {
   },
 };
 
-const jsonLd = {
+function buildJsonLd(downloadUrl: string) {
+  return {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
   name: "redcore OS",
@@ -47,10 +48,13 @@ const jsonLd = {
   description:
     "Free Windows transformation tool with guided debloating, machine-aware scanning, and full rollback support.",
   url: "https://redcoreos.net/redcore-os",
-  downloadUrl: REDCORE_OS_DOWNLOAD.absoluteUrl,
-};
+    downloadUrl,
+  };
+}
 
-export default function WindowsDebloatPage() {
+export default async function WindowsDebloatPage() {
+  const downloadUrl = await getLatestRedcoreOsDownloadUrl();
+
   return (
     <>
       <Navigation />
@@ -58,7 +62,7 @@ export default function WindowsDebloatPage() {
         <article className="max-w-[740px] mx-auto">
           <script
             type="application/ld+json"
-            dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(buildJsonLd(downloadUrl)) }}
           />
 
           <PageHero
@@ -188,7 +192,7 @@ export default function WindowsDebloatPage() {
           <CTAStrip
             title="Ready to debloat safely?"
             description="redcore OS is free. Download it, run the assessment, and review the plan before applying anything."
-            primaryAction={{ label: "Download redcore OS", href: "/downloads" }}
+            primaryAction={{ label: "Download redcore OS", href: downloadUrl }}
             secondaryAction={{ label: "Windows 11 specific guide", href: "/windows-11-debloat" }}
           />
 

@@ -31,3 +31,8 @@ export async function getLatestRedcoreOsDownloadManifest(): Promise<RedcoreOsLat
     return null;
   }
 }
+
+export async function getLatestRedcoreOsDownloadUrl(): Promise<string> {
+  const manifest = await getLatestRedcoreOsDownloadManifest();
+  return manifest?.url ?? REDCORE_OS_DOWNLOAD.absoluteUrl;
+}
