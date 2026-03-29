@@ -113,7 +113,7 @@ async function start(): Promise<void> {
 
   // ── Listen ────────────────────────────────────────────────────────────────
 
-  const port = parseInt(process.env.PORT ?? "3001", 10);
+  const port = parseInt(process.env.PORT ?? "3003", 10);
   const host = process.env.HOST ?? "0.0.0.0";
 
   await app.listen({ port, host });

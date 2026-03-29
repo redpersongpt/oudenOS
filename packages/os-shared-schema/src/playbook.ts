@@ -60,15 +60,25 @@ export interface RecommendedApp {
   category: string;
   description: string;
   recommended: boolean;
+  selected: boolean;
   workSafe: boolean;
-  iconId: string;
-  sizeEstimateMb: number;
-  downloadUrl: string;
-  silentInstallArgs: string | null;
+  url?: string;
+  silentArgs?: string | null;
+}
+
+export interface RecommendedAppsResult {
+  profile: string;
+  bundle: {
+    label: string;
+    description: string;
+  } | null;
+  apps: RecommendedApp[];
+  availableProfiles: string[];
 }
 
 export interface AppBundleResolveResult {
-  apps: RecommendedApp[];
-  totalSizeMb: number;
-  estimatedMinutes: number;
+  profile: string;
+  installQueue: RecommendedApp[];
+  skipped: string[];
+  totalQueued: number;
 }

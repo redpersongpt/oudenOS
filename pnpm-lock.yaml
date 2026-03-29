@@ -126,12 +126,6 @@ importers:
 
   apps/os-desktop:
     dependencies:
-      '@redcore/shared-schema':
-        specifier: workspace:*
-        version: link:../../packages/tuning-shared-schema
-      '@redcore/system-analyzer':
-        specifier: workspace:*
-        version: link:../../packages/system-analyzer
       framer-motion:
         specifier: ^11.0.0
         version: 11.18.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
