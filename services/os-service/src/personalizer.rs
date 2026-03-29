@@ -9,6 +9,11 @@ use crate::rollback;
 use crate::powershell;
 use serde_json::Value;
 
+#[cfg(windows)]
+const REDCORE_ACCENT_BGR: u32 = 0x004B25E8;
+#[cfg(windows)]
+const REDCORE_DWM_ACCENT: u32 = 0xC44B25E8;
+
 /// Returns a JSON description of what personalization will be applied
 /// for the given device profile.
 pub fn get_personalization_options(profile: &str) -> Value {
@@ -135,8 +140,29 @@ pub fn apply_personalization(
         collect_registry_prev(
             &mut previous_values,
             "HKCU",
+            "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Accent",
+            "StartColorMenu",
+            "personalize.accentColor",
+        );
+        collect_registry_prev(
+            &mut previous_values,
+            "HKCU",
             "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize",
             "ColorPrevalence",
+            "personalize.accentColor",
+        );
+        collect_registry_prev(
+            &mut previous_values,
+            "HKCU",
+            "SOFTWARE\\Microsoft\\Windows\\DWM",
+            "ColorizationColor",
+            "personalize.accentColor",
+        );
+        collect_registry_prev(
+            &mut previous_values,
+            "HKCU",
+            "SOFTWARE\\Microsoft\\Windows\\DWM",
+            "ColorizationAfterglow",
             "personalize.accentColor",
         );
     }
@@ -330,6 +356,16 @@ pub fn apply_personalization(
         );
     }
 
+    if dark_mode || brand_accent || taskbar_cleanup || explorer_cleanup || wallpaper || transparency {
+        apply_and_record(
+            "shellRefresh",
+            &mut results,
+            &mut succeeded,
+            &mut failed,
+            refresh_shell_ui(),
+        );
+    }
+
     // ── Phase 4: Audit log ──────────────────────────────────────────────
 
     let status = if failed == 0 {
@@ -446,22 +482,63 @@ fn apply_dark_mode() -> anyhow::Result<()> {
     if !result.success {
         anyhow::bail!("Dark mode apply failed: {}", result.stderr.trim());
     }
+    verify_registry_dword(
+        "HKCU",
+        "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize",
+        "AppsUseLightTheme",
+        0,
+    )?;
+    verify_registry_dword(
+        "HKCU",
+        "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize",
+        "SystemUsesLightTheme",
+        0,
+    )?;
     tracing::info!("Dark mode enabled");
     Ok(())
 }
 
 #[cfg(windows)]
 fn apply_accent_color() -> anyhow::Result<()> {
-    // 0x003C45E8 = redcore brand red (BGR format for AccentColorMenu)
-    let script = "\
+    let script = format!(
+        "\
         Set-ItemProperty 'HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Accent' \
-            -Name AccentColorMenu -Value 0x003C45E8 -Type DWord -Force; \
+            -Name AccentColorMenu -Value {} -Type DWord -Force; \
+        Set-ItemProperty 'HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Accent' \
+            -Name StartColorMenu -Value {} -Type DWord -Force; \
         Set-ItemProperty 'HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize' \
-            -Name ColorPrevalence -Value 1 -Type DWord -Force";
-    let result = powershell::execute(script)?;
+            -Name ColorPrevalence -Value 1 -Type DWord -Force; \
+        Set-ItemProperty 'HKCU:\\SOFTWARE\\Microsoft\\Windows\\DWM' \
+            -Name ColorizationColor -Value {} -Type DWord -Force; \
+        Set-ItemProperty 'HKCU:\\SOFTWARE\\Microsoft\\Windows\\DWM' \
+            -Name ColorizationAfterglow -Value {} -Type DWord -Force",
+        REDCORE_ACCENT_BGR,
+        REDCORE_ACCENT_BGR,
+        REDCORE_DWM_ACCENT,
+        REDCORE_DWM_ACCENT,
+    );
+    let result = powershell::execute(&script)?;
     if !result.success {
         anyhow::bail!("Accent color apply failed: {}", result.stderr.trim());
     }
+    verify_registry_dword(
+        "HKCU",
+        "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Accent",
+        "AccentColorMenu",
+        REDCORE_ACCENT_BGR as i64,
+    )?;
+    verify_registry_dword(
+        "HKCU",
+        "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Accent",
+        "StartColorMenu",
+        REDCORE_ACCENT_BGR as i64,
+    )?;
+    verify_registry_dword(
+        "HKCU",
+        "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize",
+        "ColorPrevalence",
+        1,
+    )?;
     tracing::info!("Accent color set to redcore brand red");
     Ok(())
 }
@@ -496,6 +573,12 @@ public static class RedcoreWallpaper {{\n\
     if !result.success {
         anyhow::bail!("Wallpaper apply failed: {}", result.stderr.trim());
     }
+    verify_registry_string(
+        "HKCU",
+        "Control Panel\\Desktop",
+        "Wallpaper",
+        wallpaper_path.as_str(),
+    )?;
     tracing::info!(path = wallpaper_path.as_str(), "Wallpaper set");
     Ok(())
 }
@@ -512,6 +595,12 @@ fn apply_transparency(enable: bool) -> anyhow::Result<()> {
     if !result.success {
         anyhow::bail!("Transparency apply failed: {}", result.stderr.trim());
     }
+    verify_registry_dword(
+        "HKCU",
+        "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize",
+        "EnableTransparency",
+        value.into(),
+    )?;
     tracing::info!(enable = enable, "Transparency setting applied");
     Ok(())
 }
@@ -531,6 +620,30 @@ fn apply_taskbar_cleanup() -> anyhow::Result<()> {
     if !result.success {
         anyhow::bail!("Taskbar cleanup failed: {}", result.stderr.trim());
     }
+    verify_registry_dword(
+        "HKCU",
+        "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "ShowTaskViewButton",
+        0,
+    )?;
+    verify_registry_dword(
+        "HKCU",
+        "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Search",
+        "SearchboxTaskbarMode",
+        1,
+    )?;
+    verify_registry_dword(
+        "HKCU",
+        "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "TaskbarDa",
+        0,
+    )?;
+    verify_registry_dword(
+        "HKCU",
+        "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "TaskbarMn",
+        0,
+    )?;
     tracing::info!("Taskbar cleanup applied");
     Ok(())
 }
@@ -550,8 +663,100 @@ fn apply_explorer_cleanup() -> anyhow::Result<()> {
     if !result.success {
         anyhow::bail!("Explorer cleanup failed: {}", result.stderr.trim());
     }
+    verify_registry_dword(
+        "HKCU",
+        "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "HideFileExt",
+        0,
+    )?;
+    verify_registry_dword(
+        "HKCU",
+        "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "Hidden",
+        1,
+    )?;
+    verify_registry_dword(
+        "HKCU",
+        "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer",
+        "ShowRecent",
+        0,
+    )?;
+    verify_registry_dword(
+        "HKCU",
+        "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer",
+        "ShowFrequent",
+        0,
+    )?;
     tracing::info!("Explorer cleanup applied");
     Ok(())
+}
+
+#[cfg(windows)]
+fn refresh_shell_ui() -> anyhow::Result<()> {
+    let script = "\
+        Add-Type -TypeDefinition @'\n\
+using System;\n\
+using System.Runtime.InteropServices;\n\
+public static class RedcoreShellRefresh {\n\
+    [DllImport(\"user32.dll\", SetLastError = true, CharSet = CharSet.Unicode)]\n\
+    public static extern IntPtr SendMessageTimeout(IntPtr hWnd, int msg, UIntPtr wParam, string lParam, int fuFlags, int uTimeout, out UIntPtr lpdwResult);\n\
+}\n\
+'@; \
+        $result = [UIntPtr]::Zero; \
+        [void][RedcoreShellRefresh]::SendMessageTimeout([IntPtr]0xffff, 0x001A, [UIntPtr]::Zero, 'ImmersiveColorSet', 2, 5000, [ref]$result); \
+        [void][RedcoreShellRefresh]::SendMessageTimeout([IntPtr]0xffff, 0x001A, [UIntPtr]::Zero, 'WindowsThemeElement', 2, 5000, [ref]$result); \
+        Stop-Process -Name explorer -Force -ErrorAction SilentlyContinue; \
+        Start-Sleep -Milliseconds 1200; \
+        Start-Process explorer.exe";
+    let result = powershell::execute(script)?;
+    if !result.success {
+        anyhow::bail!("Shell refresh failed: {}", result.stderr.trim());
+    }
+    tracing::info!("Windows shell refreshed");
+    Ok(())
+}
+
+#[cfg(windows)]
+fn verify_registry_dword(hive: &str, path: &str, value_name: &str, expected: i64) -> anyhow::Result<()> {
+    match read_registry_value(hive, path, value_name) {
+        Some(Value::Number(value)) if value.as_i64() == Some(expected) => Ok(()),
+        Some(Value::String(value)) if value.parse::<i64>().ok() == Some(expected) => Ok(()),
+        Some(other) => anyhow::bail!(
+            "Verification failed for {}\\{}\\{}: expected {}, got {}",
+            hive,
+            path,
+            value_name,
+            expected,
+            other
+        ),
+        None => anyhow::bail!(
+            "Verification failed for {}\\{}\\{}: value missing",
+            hive,
+            path,
+            value_name
+        ),
+    }
+}
+
+#[cfg(windows)]
+fn verify_registry_string(hive: &str, path: &str, value_name: &str, expected: &str) -> anyhow::Result<()> {
+    match read_registry_value(hive, path, value_name) {
+        Some(Value::String(value)) if value.eq_ignore_ascii_case(expected) => Ok(()),
+        Some(other) => anyhow::bail!(
+            "Verification failed for {}\\{}\\{}: expected '{}', got {}",
+            hive,
+            path,
+            value_name,
+            expected,
+            other
+        ),
+        None => anyhow::bail!(
+            "Verification failed for {}\\{}\\{}: value missing",
+            hive,
+            path,
+            value_name
+        ),
+    }
 }
 
 #[cfg(windows)]
@@ -588,7 +793,7 @@ fn apply_dark_mode() -> anyhow::Result<()> {
 
 #[cfg(not(windows))]
 fn apply_accent_color() -> anyhow::Result<()> {
-    tracing::info!("[simulated] Would set accent color to redcore brand red (0x003C45E8)");
+    tracing::info!("[simulated] Would set accent color to redcore brand red (#E8254B)");
     Ok(())
 }
 
@@ -613,6 +818,12 @@ fn apply_taskbar_cleanup() -> anyhow::Result<()> {
 #[cfg(not(windows))]
 fn apply_explorer_cleanup() -> anyhow::Result<()> {
     tracing::info!("[simulated] Would clean up Explorer (show extensions, hidden files, disable recents)");
+    Ok(())
+}
+
+#[cfg(not(windows))]
+fn refresh_shell_ui() -> anyhow::Result<()> {
+    tracing::info!("[simulated] Would refresh the Windows shell UI");
     Ok(())
 }
 

@@ -128,35 +128,45 @@ function AppCard({ app, selected, onToggle }: {
 // ─── Component ──────────────────────────────────────────────────────────────
 
 export function AppSetupStep() {
-  const { detectedProfile, recommendedApps, selectedAppIds, setRecommendedApps, toggleApp, setStepReady } = useWizardStore();
+  const { detectedProfile, recommendedApps, selectedAppIds, demoMode, setRecommendedApps, toggleApp, setStepReady } = useWizardStore();
   const [loading, setLoading] = useState(recommendedApps.length === 0);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   useEffect(() => {
     setStepReady("app-setup", false);
     if (recommendedApps.length > 0) return;
 
     const load = async () => {
+      setLoadError(null);
       try {
         const { serviceCall } = await import("@/lib/service");
         const profile = detectedProfile?.id ?? "gaming_desktop";
         const result = await serviceCall<{ apps: RecommendedApp[] }>("appbundle.getRecommended", { profile });
         if (result.ok && result.data?.apps && Array.isArray(result.data.apps)) {
           setRecommendedApps(result.data.apps);
-        } else {
+        } else if (demoMode) {
           setRecommendedApps(buildMockApps());
+        } else {
+          setRecommendedApps([]);
+          setLoadError(result.error || "Unable to load the real app catalog.");
         }
       } catch {
-        setRecommendedApps(buildMockApps());
+        if (demoMode) {
+          setRecommendedApps(buildMockApps());
+        } else {
+          setRecommendedApps([]);
+          setLoadError("Unable to load the real app catalog.");
+        }
       } finally {
         setLoading(false);
       }
     };
     load();
-  }, [detectedProfile, recommendedApps.length, setRecommendedApps, setStepReady]);
+  }, [demoMode, detectedProfile, recommendedApps.length, setRecommendedApps, setStepReady]);
 
   useEffect(() => {
-    setStepReady("app-setup", !loading);
-  }, [loading, setStepReady]);
+    setStepReady("app-setup", !loading && recommendedApps.length > 0);
+  }, [loading, recommendedApps.length, setStepReady]);
 
   if (loading) {
     return (
@@ -179,6 +189,15 @@ export function AppSetupStep() {
             </div>
           </div>
         ))}
+      </div>
+    );
+  }
+
+  if (recommendedApps.length === 0) {
+    return (
+      <div className="flex h-full flex-col items-center justify-center gap-3 px-8">
+        <Package className="h-8 w-8 text-amber-400" />
+        <p className="text-sm text-ink-secondary">{loadError ?? "App catalog not available"}</p>
       </div>
     );
   }
