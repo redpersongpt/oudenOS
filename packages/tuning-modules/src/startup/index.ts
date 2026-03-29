@@ -1,5 +1,5 @@
 // ─── Startup & Background Tuning Module ─────────────────────────────────────
-// Derived from PC-Tuning registry-options.json and bloatware-removal skill.
+// Derived from the redcore internal startup optimization notes.
 
 import type { TuningActionDefinition } from "../types.js";
 

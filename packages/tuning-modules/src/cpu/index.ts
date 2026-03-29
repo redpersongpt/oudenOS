@@ -1,5 +1,5 @@
 // ─── CPU Tuning Module ──────────────────────────────────────────────────────
-// Derived from PC-Tuning cpu-optimization skill.
+// Derived from the redcore internal CPU-optimization notes.
 
 import type { TuningActionDefinition } from "../types.js";
 
@@ -136,7 +136,7 @@ export const cpuActions: TuningActionDefinition[] = [
     name: "Disable Dynamic Tick and Enable Platform Timer",
     category: "cpu",
     description: "Disable the Windows dynamic tick mechanism via BCD, forcing a fixed timer interrupt interval. Enable the platform hardware timer (HPET/TSC) as the tick source to provide the lowest possible timer jitter.",
-    rationale: "Dynamic tick (tickless kernel) allows Windows to skip timer interrupts during idle periods to save power. This creates variable timer resolution that can cause micro-stutter in latency-sensitive workloads. Disabling dynamic tick forces consistent timer interrupts. `useplatformtick` ensures the platform hardware timer (HPET or TSC) is used as the tick source instead of the synthetic timer, providing the lowest possible timer jitter. PC-Tuning research identifies this as one of the highest-impact latency tweaks alongside GlobalTimerResolutionRequests.",
+    rationale: "Dynamic tick (tickless kernel) allows Windows to skip timer interrupts during idle periods to save power. This creates variable timer resolution that can cause micro-stutter in latency-sensitive workloads. Disabling dynamic tick forces consistent timer interrupts. `useplatformtick` ensures the platform hardware timer (HPET or TSC) is used as the tick source instead of the synthetic timer, providing the lowest possible timer jitter. redcore lab testing identifies this as one of the highest-impact latency tweaks alongside GlobalTimerResolutionRequests.",
     tier: "premium",
     risk: "medium",
     compatibility: { minBuild: 9200 },

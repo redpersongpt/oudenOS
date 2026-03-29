@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Navigation } from "@/components/brand/Navigation";
 import { FooterSection } from "@/components/sections/FooterSection";
-import { REDCORE_OS_DOWNLOAD } from "@/lib/downloads";
+import { REDCORE_OS_DOWNLOAD, getLatestRedcoreOsDownloadManifest } from "@/lib/downloads";
 import Link from "next/link";
 
 export const metadata: Metadata = {
@@ -19,7 +19,18 @@ export const metadata: Metadata = {
   },
 };
 
-export default function DownloadsPage() {
+function formatSize(sizeBytes: number | undefined): string | null {
+  if (!sizeBytes || sizeBytes <= 0) return null;
+  const sizeMb = sizeBytes / (1024 * 1024);
+  return `${sizeMb.toFixed(1)} MB`;
+}
+
+export default async function DownloadsPage() {
+  const liveManifest = await getLatestRedcoreOsDownloadManifest();
+  const currentChecksum = liveManifest?.sha256 ?? REDCORE_OS_DOWNLOAD.checksum;
+  const currentRelease = liveManifest?.versionTag ?? liveManifest?.version ?? null;
+  const currentSize = formatSize(liveManifest?.sizeBytes);
+
   return (
     <>
       <Navigation />
@@ -73,6 +84,13 @@ export default function DownloadsPage() {
                 Learn more
               </Link>
             </div>
+
+            {(currentRelease || currentSize) && (
+              <p className="mb-4 text-[12px] text-ink-tertiary">
+                {currentRelease ? `Current release ${currentRelease}` : "Current release available"}
+                {currentSize ? ` · ${currentSize}` : ""}
+              </p>
+            )}
 
             <div className="border-t border-border pt-4 mt-4">
               <p className="text-ink-tertiary text-[12px] font-mono mb-2">
@@ -162,7 +180,7 @@ export default function DownloadsPage() {
                 SHA-256 Checksum — redcore-os-setup.exe
               </p>
               <code className="font-mono text-[0.72rem] text-ink-tertiary break-all select-all">
-                {REDCORE_OS_DOWNLOAD.checksum}
+                {currentChecksum}
               </code>
             </div>
             <p className="mt-3 text-ink-muted text-[12px]">

@@ -1,5 +1,5 @@
 // ─── Audio Tuning Module ────────────────────────────────────────────────────
-// Derived from PC-Tuning audio-latency skill.
+// Derived from the redcore internal audio-latency notes.
 
 import type { TuningActionDefinition } from "../types.js";
 

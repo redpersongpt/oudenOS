@@ -11,6 +11,7 @@ import type { ResolvedPlaybook, PlaybookPhase } from "@/stores/wizard-store";
 import { useDecisionsStore } from "@/stores/decisions-store";
 import { applyDecisionOverrides } from "@/lib/playbook-decision-overrides";
 import { getActionRationale, PHASE_RATIONALE, getBlockedExplanation } from "@/lib/expert-rationale";
+import { buildMockResolvedPlaybook } from "@/lib/mock-playbook";
 
 // ─── Status badge ────────────────────────────────────────────────────────────
 
@@ -171,54 +172,6 @@ function PlaybookSkeleton() {
   );
 }
 
-// ─── Mock data ───────────────────────────────────────────────────────────────
-
-function buildMockPlaybook(profile: string, preset: string): ResolvedPlaybook {
-  const blocked = profile === "work_pc";
-  return {
-    playbookName: "redcore-os-default",
-    playbookVersion: "1.0.0",
-    profile,
-    preset,
-    totalIncluded: 47,
-    totalBlocked: blocked ? 12 : 2,
-    totalOptional: 8,
-    totalExpertOnly: 3,
-    phases: [
-      { id: "cleanup", name: "Bloatware Cleanup", actions: [
-        { id: "appx.remove-consumer-bloat", name: "Remove Consumer Bloatware", description: "Candy Crush, TikTok, Solitaire, etc.", risk: "safe", status: "Included", default: true, expertOnly: false, blockedReason: null, requiresReboot: false, warningMessage: null },
-        { id: "appx.remove-xbox-apps", name: "Remove Xbox Apps", description: "Xbox Game Bar, Identity Provider", risk: "safe", status: "Included", default: true, expertOnly: false, blockedReason: null, requiresReboot: false, warningMessage: null },
-        { id: "appx.remove-edge", name: "Remove Microsoft Edge", description: "Force uninstall Edge browser", risk: "high", status: "ExpertOnly", default: false, expertOnly: true, blockedReason: null, requiresReboot: true, warningMessage: "Irreversible. Install alt browser first." },
-      ]},
-      { id: "privacy", name: "Privacy Hardening", actions: [
-        { id: "privacy.disable-telemetry", name: "Disable Telemetry", description: "Set diagnostic data to minimum", risk: "safe", status: "Included", default: true, expertOnly: false, blockedReason: null, requiresReboot: false, warningMessage: null },
-        { id: "privacy.disable-recall", name: "Disable Windows Recall", description: "Stop AI screen capture", risk: "safe", status: "Included", default: true, expertOnly: false, blockedReason: null, requiresReboot: false, warningMessage: null },
-        { id: "privacy.disable-advertising-id", name: "Disable Advertising ID", description: "Reset ad tracking identifier", risk: "safe", status: "Included", default: true, expertOnly: false, blockedReason: null, requiresReboot: false, warningMessage: null },
-        { id: "privacy.disable-location", name: "Disable Location", description: "Turn off location tracking", risk: "safe", status: blocked ? "Blocked" : "Included", default: true, expertOnly: false, blockedReason: blocked ? "Work PC: may affect VPN" : null, requiresReboot: false, warningMessage: null },
-      ]},
-      { id: "performance", name: "Performance", actions: [
-        { id: "perf.mmcss-system-responsiveness", name: "MMCSS Responsiveness", description: "Allocate more CPU to games", risk: "low", status: "Included", default: true, expertOnly: false, blockedReason: null, requiresReboot: false, warningMessage: null },
-        { id: "perf.disable-game-dvr", name: "Disable Game DVR", description: "Stop background recording", risk: "safe", status: "Included", default: true, expertOnly: false, blockedReason: null, requiresReboot: false, warningMessage: null },
-        { id: "cpu.disable-core-parking", name: "Disable Core Parking", description: "Keep all CPU cores active", risk: "medium", status: preset === "aggressive" ? "Included" : "Optional", default: false, expertOnly: false, blockedReason: null, requiresReboot: true, warningMessage: "Increases power consumption" },
-      ]},
-      { id: "shell", name: "Shell & Explorer", actions: [
-        { id: "shell.disable-copilot", name: "Disable Copilot", description: "Remove AI sidebar from taskbar", risk: "safe", status: "Included", default: true, expertOnly: false, blockedReason: null, requiresReboot: false, warningMessage: null },
-        { id: "shell.show-file-extensions", name: "Show File Extensions", description: "Always show file type", risk: "safe", status: "Included", default: true, expertOnly: false, blockedReason: null, requiresReboot: false, warningMessage: null },
-        { id: "shell.enable-end-task", name: "Enable End Task in Taskbar", description: "Show End Task when right-clicking taskbar apps on Windows 11", risk: "safe", status: "Included", default: true, expertOnly: false, blockedReason: null, requiresReboot: false, warningMessage: null },
-        { id: "shell.restore-classic-context-menu", name: "Classic Context Menu", description: "Full right-click menu", risk: "safe", status: "Included", default: true, expertOnly: false, blockedReason: null, requiresReboot: false, warningMessage: null },
-      ]},
-      { id: "startup", name: "Startup & Power", actions: [
-        { id: "startup.disable-background-apps", name: "Disable Background Apps", description: "Prevent UWP background activity", risk: "safe", status: "Included", default: true, expertOnly: false, blockedReason: null, requiresReboot: false, warningMessage: null },
-        { id: "power.disable-fast-startup", name: "Disable Fast Startup", description: "Use clean boot for stability", risk: "low", status: "Included", default: true, expertOnly: false, blockedReason: null, requiresReboot: true, warningMessage: null },
-      ]},
-    ],
-    blockedReasons: blocked ? [
-      { actionId: "services.disable-print-spooler", reason: "Work PC: printing required" },
-      { actionId: "privacy.disable-location", reason: "Work PC: may affect VPN" },
-    ] : [],
-  };
-}
-
 // ─── Component ───────────────────────────────────────────────────────────────
 
 export function PlaybookReviewStep() {
@@ -237,20 +190,22 @@ export function PlaybookReviewStep() {
 
     const load = async () => {
       const profile = detectedProfile?.id ?? "gaming_desktop";
+      const windowsBuild = detectedProfile?.windowsBuild ?? 22631;
       setLoading(true);
       try {
         const { serviceCall } = await import("@/lib/service");
         const result = await serviceCall<ResolvedPlaybook>("playbook.resolve", {
           profile,
           preset: playbookPreset,
+          windowsBuild,
         });
         if (result.ok) {
           setBasePlaybook(result.data);
         } else {
-          setBasePlaybook(buildMockPlaybook(profile, playbookPreset));
+          setBasePlaybook(buildMockResolvedPlaybook(profile, playbookPreset, windowsBuild));
         }
       } catch {
-        setBasePlaybook(buildMockPlaybook(profile, playbookPreset));
+        setBasePlaybook(buildMockResolvedPlaybook(profile, playbookPreset, windowsBuild));
       } finally {
         setLoading(false);
       }

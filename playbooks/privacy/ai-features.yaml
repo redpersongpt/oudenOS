@@ -1,5 +1,5 @@
 # ─── Privacy: AI Features ────────────────────────────────────────────────────
-# Comprehensive AI feature control sourced from Win11Debloat + original research.
+# Comprehensive AI feature control from the redcore internal research set.
 
 module: privacy.ai
 name: "AI Feature Control"

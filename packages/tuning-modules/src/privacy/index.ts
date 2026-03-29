@@ -1,5 +1,5 @@
 // ─── Privacy & Telemetry Module ─────────────────────────────────────────────
-// Derived from PC-Tuning privacy-hardening skill and registry-options.json.
+// Derived from the redcore internal privacy-hardening notes.
 
 import type { TuningActionDefinition } from "../types.js";
 

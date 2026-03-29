@@ -3,7 +3,7 @@
 // Each line is a JSON-RPC request; each response is a single JSON line.
 
 use crate::db::Database;
-use crate::{appbundle, assessor, classifier, executor, personalizer, rollback, transformer};
+use crate::{appbundle, assessor, classifier, executor, personalizer, playbook, rollback, transformer};
 use anyhow::Result;
 use serde::{Deserialize, Serialize};
 use std::time::Instant;
@@ -254,16 +254,32 @@ async fn dispatch(
             let action_data = if let Some(data) = params.get("actionData") {
                 data.clone()
             } else {
-                match transformer::get_actions(None)
-                    .into_iter()
-                    .find(|a| a.get("id").and_then(|v| v.as_str()) == Some(action_id))
-                {
-                    Some(def) => def,
-                    None => {
+                let playbook_lookup = playbook::find_action_definition(
+                    &playbook::default_playbook_dir(),
+                    action_id,
+                );
+
+                match playbook_lookup {
+                    Ok(Some(def)) => def,
+                    Ok(None) => match transformer::get_actions(None)
+                        .into_iter()
+                        .find(|a| a.get("id").and_then(|v| v.as_str()) == Some(action_id))
+                    {
+                        Some(def) => def,
+                        None => {
+                            return RpcResponse::err(
+                                id,
+                                -20,
+                                format!("Action not found: {}", action_id),
+                            );
+                        }
+                    },
+                    Err(e) => {
+                        tracing::error!(action_id = action_id, error = %e, "Playbook action lookup failed");
                         return RpcResponse::err(
                             id,
                             -20,
-                            format!("Action not found: {}", action_id),
+                            format!("Action lookup failed: {}", e),
                         );
                     }
                 }

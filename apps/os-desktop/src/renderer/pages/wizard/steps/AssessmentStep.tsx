@@ -24,6 +24,7 @@ const DEMO_PROFILE: DetectedProfile = {
   machineName: "REDCORE-PC",
   signals: ["Steam detected", "No domain join", "NVIDIA GPU", "32 GB RAM"],
   accentColor: "text-brand-400",
+  windowsBuild: 22631,
 };
 
 const PROFILE_LABELS: Record<string, string> = {
@@ -47,6 +48,16 @@ function readString(value: unknown): string | null {
 
 function readNumber(value: unknown): number | null {
   return typeof value === "number" && Number.isFinite(value) ? value : null;
+}
+
+function readInt(value: unknown): number | null {
+  const num = readNumber(value);
+  if (num !== null) return Math.trunc(num);
+  if (typeof value === "string") {
+    const parsed = Number.parseInt(value, 10);
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+  return null;
 }
 
 function readBoolean(value: unknown): boolean | null {
@@ -117,6 +128,18 @@ function deriveSignalsFromAssessment(assessment: Record<string, unknown>, isWork
   return signals.slice(0, 6);
 }
 
+function readWindowsBuild(assessmentValue: Record<string, unknown>): number {
+  const hardware = isObject(assessmentValue.hardware) ? assessmentValue.hardware : {};
+  const windows = isObject(assessmentValue.windows) ? assessmentValue.windows : {};
+
+  return (
+    readInt(hardware.windowsBuild) ??
+    readInt(assessmentValue.windowsBuild) ??
+    readInt(windows.buildNumber) ??
+    22631
+  );
+}
+
 function normalizeDetectedProfileFromService(
   assessmentValue: unknown,
   classificationValue?: unknown,
@@ -133,6 +156,7 @@ function normalizeDetectedProfileFromService(
       machineName: readString(assessmentValue.machineName) ?? "REDCORE-PC",
       signals: normalizeSignals(assessmentValue.signals),
       accentColor: readString(assessmentValue.accentColor) ?? "text-brand-400",
+      windowsBuild: readWindowsBuild(assessmentValue),
     };
   }
 
@@ -167,6 +191,7 @@ function normalizeDetectedProfileFromService(
     machineName,
     signals: Array.from(new Set(signals)).slice(0, 6),
     accentColor: "text-brand-400",
+    windowsBuild: readWindowsBuild(assessmentValue),
   };
 }
 

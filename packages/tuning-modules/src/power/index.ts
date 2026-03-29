@@ -1,5 +1,5 @@
 // ─── Power Tuning Module ────────────────────────────────────────────────────
-// Derived from PC-Tuning power-management skill.
+// Derived from the redcore internal power-management notes.
 
 import type { TuningActionDefinition } from "../types.js";
 

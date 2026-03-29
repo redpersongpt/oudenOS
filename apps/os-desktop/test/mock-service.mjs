@@ -6,9 +6,14 @@
  */
 
 import { createInterface } from "node:readline";
+import { readFileSync } from "node:fs";
 
 const rl = createInterface({ input: process.stdin });
 console.error("[Mock Service] Ready (OS mock — playbook-native)");
+
+const FALLBACK_DATA = JSON.parse(
+  readFileSync(new URL("../src/renderer/lib/generated-playbook-fallback.json", import.meta.url), "utf8"),
+);
 
 rl.on("line", (line) => {
   try {
@@ -172,73 +177,38 @@ function handleMethod(method, params) {
 // ─── Playbook builder ─────────────────────────────────────────────────────────
 
 function buildResolvedPlaybook(profile, preset) {
-  const phases = [
-    {
-      id: "cleanup", name: "Bloatware Cleanup",
-      actions: [
-        { id: "appx.remove-consumer-bloat", name: "Remove Consumer Bloatware", description: "Remove pre-installed consumer apps (Candy Crush, TikTok, etc.)", risk: "safe", status: "Included", default: true, expertOnly: false, blockedReason: null, requiresReboot: false, warningMessage: null },
-        { id: "appx.remove-xbox-apps", name: "Remove Xbox Apps", description: "Remove Xbox Game Bar, Xbox Identity Provider", risk: "safe", status: "Included", default: true, expertOnly: false, blockedReason: null, requiresReboot: false, warningMessage: null },
-      ]
-    },
-    {
-      id: "services", name: "Background Services",
-      actions: [
-        { id: "services.disable-sysmain", name: "Disable SysMain (Superfetch)", description: "Stop prefetching on SSD systems", risk: "low", status: "Included", default: true, expertOnly: false, blockedReason: null, requiresReboot: false, warningMessage: null },
-        { id: "services.disable-search-indexer", name: "Disable Windows Search Indexer", description: "Stop background file indexing", risk: "low", status: "Included", default: true, expertOnly: false, blockedReason: null, requiresReboot: false, warningMessage: null },
-        { id: "services.disable-print-spooler", name: "Disable Print Spooler", description: "Stop print service if no printers", risk: "low", status: profile === "work_pc" ? "Blocked" : "Included", default: true, expertOnly: false, blockedReason: profile === "work_pc" ? "Work PC: printing required" : null, requiresReboot: false, warningMessage: null },
-      ]
-    },
-    {
-      id: "privacy", name: "Privacy Hardening",
-      actions: [
-        { id: "privacy.disable-telemetry", name: "Set Diagnostic Data to Minimum", description: "Reduce Windows telemetry to required only", risk: "safe", status: "Included", default: true, expertOnly: false, blockedReason: null, requiresReboot: false, warningMessage: null },
-        { id: "privacy.disable-advertising-id", name: "Disable Advertising ID", description: "Reset and disable ad tracking identifier", risk: "safe", status: "Included", default: true, expertOnly: false, blockedReason: null, requiresReboot: false, warningMessage: null },
-        { id: "privacy.disable-tailored-experiences", name: "Disable Tailored Experiences", description: "Stop personalized ads from diagnostic data", risk: "safe", status: "Included", default: true, expertOnly: false, blockedReason: null, requiresReboot: false, warningMessage: null },
-        { id: "privacy.disable-location", name: "Disable Location Services", description: "Turn off location tracking", risk: "safe", status: profile === "work_pc" ? "Blocked" : "Included", default: true, expertOnly: false, blockedReason: profile === "work_pc" ? "Work PC: may affect VPN" : null, requiresReboot: false, warningMessage: null },
-      ]
-    },
-    {
-      id: "performance", name: "Performance Optimization",
-      actions: [
-        { id: "perf.mmcss-system-responsiveness", name: "MMCSS System Responsiveness", description: "Allocate more CPU to multimedia tasks", risk: "low", status: "Included", default: true, expertOnly: false, blockedReason: null, requiresReboot: false, warningMessage: null },
-        { id: "perf.disable-game-dvr", name: "Disable Game DVR", description: "Stop background game recording", risk: "safe", status: "Included", default: true, expertOnly: false, blockedReason: null, requiresReboot: false, warningMessage: null },
-        { id: "cpu.win32-priority-separation", name: "Optimize Process Priority", description: "Set foreground process priority for responsiveness", risk: "low", status: preset === "conservative" ? "Optional" : "Included", default: preset !== "conservative", expertOnly: false, blockedReason: null, requiresReboot: true, warningMessage: null },
-        { id: "cpu.disable-core-parking", name: "Disable Core Parking", description: "Keep all CPU cores active", risk: "medium", status: preset === "aggressive" ? "Included" : "Optional", default: preset === "aggressive", expertOnly: false, blockedReason: null, requiresReboot: true, warningMessage: "May increase power consumption" },
-      ]
-    },
-    {
-      id: "shell", name: "Shell & Explorer",
-      actions: [
-        { id: "shell.disable-copilot", name: "Disable Windows Copilot", description: "Remove AI assistant from taskbar", risk: "safe", status: "Included", default: true, expertOnly: false, blockedReason: null, requiresReboot: false, warningMessage: null },
-        { id: "shell.show-file-extensions", name: "Show File Extensions", description: "Always show file type extensions", risk: "safe", status: "Included", default: true, expertOnly: false, blockedReason: null, requiresReboot: false, warningMessage: null },
-        { id: "shell.enable-end-task", name: "Enable End Task in Taskbar", description: "Show End Task when right-clicking taskbar apps on Windows 11", risk: "safe", status: "Included", default: true, expertOnly: false, blockedReason: null, requiresReboot: false, warningMessage: null },
-        { id: "shell.hide-widgets-button", name: "Hide Widgets Button", description: "Remove Widgets from taskbar", risk: "safe", status: "Included", default: true, expertOnly: false, blockedReason: null, requiresReboot: false, warningMessage: null },
-        { id: "shell.restore-classic-context-menu", name: "Restore Classic Context Menu", description: "Bring back the full right-click menu", risk: "safe", status: "Included", default: true, expertOnly: false, blockedReason: null, requiresReboot: false, warningMessage: null },
-      ]
-    },
-    {
-      id: "startup-shutdown", name: "Startup & Shutdown",
-      actions: [
-        { id: "startup.disable-background-apps", name: "Disable Background Apps", description: "Prevent apps from running in background", risk: "safe", status: "Included", default: true, expertOnly: false, blockedReason: null, requiresReboot: false, warningMessage: null },
-        { id: "shutdown.decrease-shutdown-time", name: "Decrease Shutdown Time", description: "Reduce app kill timeouts", risk: "low", status: "Included", default: true, expertOnly: false, blockedReason: null, requiresReboot: false, warningMessage: null },
-        { id: "power.disable-fast-startup", name: "Disable Fast Startup", description: "Use clean boot for stability", risk: "low", status: "Included", default: true, expertOnly: false, blockedReason: null, requiresReboot: true, warningMessage: null },
-      ]
-    },
-    {
-      id: "security", name: "Security Tuning",
-      actions: [
-        { id: "security.analyze-mitigations", name: "Analyze Security Mitigations", description: "Read-only: assess current CPU mitigation state", risk: "safe", status: "Included", default: true, expertOnly: false, blockedReason: null, requiresReboot: false, warningMessage: null },
-        { id: "security.reduce-ssbd-mitigation", name: "Reduce SSBD Mitigation", description: "Disable Speculative Store Bypass for performance", risk: "high", status: "ExpertOnly", default: false, expertOnly: true, blockedReason: null, requiresReboot: true, warningMessage: "Reduces CPU security. Expert only." },
-      ]
-    },
-  ];
+  const rules = FALLBACK_DATA.profiles[profile] ?? { blockedActions: [], optionalActions: [] };
+  const normalizedPreset = preset === "expert" ? "aggressive" : preset;
+  const phases = FALLBACK_DATA.phases.map((phase) => ({
+    id: phase.id,
+    name: phase.name,
+    actions: phase.actions.map((action) => {
+      const status = buildActionStatus(action, profile, normalizedPreset, rules, 22631);
+      return {
+        id: action.id,
+        name: action.name,
+        description: action.description,
+        risk: action.risk,
+        status: status.status,
+        default: action.default,
+        expertOnly: action.expertOnly,
+        blockedReason: status.blockedReason,
+        requiresReboot: action.requiresReboot,
+        warningMessage: action.warningMessage,
+      };
+    }),
+  }));
 
-  let totalIncluded = 0, totalBlocked = 0, totalOptional = 0, totalExpertOnly = 0;
+  let totalIncluded = 0;
+  let totalBlocked = 0;
+  let totalOptional = 0;
+  let totalExpertOnly = 0;
   const blockedReasons = [];
   for (const phase of phases) {
     for (const a of phase.actions) {
       if (a.status === "Included") totalIncluded++;
       else if (a.status === "Blocked") { totalBlocked++; blockedReasons.push({ actionId: a.id, reason: a.blockedReason }); }
+      else if (a.status === "BuildGated") { totalBlocked++; blockedReasons.push({ actionId: a.id, reason: a.blockedReason }); }
       else if (a.status === "Optional") totalOptional++;
       else if (a.status === "ExpertOnly") totalExpertOnly++;
     }
@@ -255,6 +225,68 @@ function buildResolvedPlaybook(profile, preset) {
     totalExpertOnly,
     phases,
     blockedReasons,
+  };
+}
+
+function matchesBlockedPattern(pattern, actionId) {
+  return pattern.endsWith(".*")
+    ? actionId.startsWith(pattern.slice(0, -2))
+    : pattern === actionId;
+}
+
+function allowsRisk(risk, preset) {
+  if (preset === "conservative") {
+    return risk === "safe" || risk === "low";
+  }
+  if (preset === "balanced") {
+    return risk !== "high" && risk !== "extreme";
+  }
+  return true;
+}
+
+function buildActionStatus(action, profile, preset, rules, windowsBuild) {
+  const isBlockedByProfile =
+    action.blockedProfiles.includes(profile) ||
+    rules.blockedActions.some((pattern) => matchesBlockedPattern(pattern, action.id));
+
+  if (isBlockedByProfile) {
+    return {
+      status: "Blocked",
+      blockedReason: `Blocked for ${profile} profile`,
+    };
+  }
+
+  if (action.minWindowsBuild !== null && windowsBuild < action.minWindowsBuild) {
+    return {
+      status: "BuildGated",
+      blockedReason: `Requires Windows build ${action.minWindowsBuild} or later`,
+    };
+  }
+
+  if (action.expertOnly) {
+    return {
+      status: "ExpertOnly",
+      blockedReason: "Expert-only action",
+    };
+  }
+
+  if (rules.optionalActions.includes(action.id) || action.default === false) {
+    return {
+      status: "Optional",
+      blockedReason: null,
+    };
+  }
+
+  if (!allowsRisk(action.risk, preset)) {
+    return {
+      status: "Optional",
+      blockedReason: null,
+    };
+  }
+
+  return {
+    status: "Included",
+    blockedReason: null,
   };
 }
 
