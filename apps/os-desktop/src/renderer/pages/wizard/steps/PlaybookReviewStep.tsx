@@ -202,6 +202,7 @@ function buildMockPlaybook(profile: string, preset: string): ResolvedPlaybook {
       { id: "shell", name: "Shell & Explorer", actions: [
         { id: "shell.disable-copilot", name: "Disable Copilot", description: "Remove AI sidebar from taskbar", risk: "safe", status: "Included", default: true, expertOnly: false, blockedReason: null, requiresReboot: false, warningMessage: null },
         { id: "shell.show-file-extensions", name: "Show File Extensions", description: "Always show file type", risk: "safe", status: "Included", default: true, expertOnly: false, blockedReason: null, requiresReboot: false, warningMessage: null },
+        { id: "shell.enable-end-task", name: "Enable End Task in Taskbar", description: "Show End Task when right-clicking taskbar apps on Windows 11", risk: "safe", status: "Included", default: true, expertOnly: false, blockedReason: null, requiresReboot: false, warningMessage: null },
         { id: "shell.restore-classic-context-menu", name: "Classic Context Menu", description: "Full right-click menu", risk: "safe", status: "Included", default: true, expertOnly: false, blockedReason: null, requiresReboot: false, warningMessage: null },
       ]},
       { id: "startup", name: "Startup & Power", actions: [

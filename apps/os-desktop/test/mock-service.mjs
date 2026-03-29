@@ -211,6 +211,7 @@ function buildResolvedPlaybook(profile, preset) {
       actions: [
         { id: "shell.disable-copilot", name: "Disable Windows Copilot", description: "Remove AI assistant from taskbar", risk: "safe", status: "Included", default: true, expertOnly: false, blockedReason: null, requiresReboot: false, warningMessage: null },
         { id: "shell.show-file-extensions", name: "Show File Extensions", description: "Always show file type extensions", risk: "safe", status: "Included", default: true, expertOnly: false, blockedReason: null, requiresReboot: false, warningMessage: null },
+        { id: "shell.enable-end-task", name: "Enable End Task in Taskbar", description: "Show End Task when right-clicking taskbar apps on Windows 11", risk: "safe", status: "Included", default: true, expertOnly: false, blockedReason: null, requiresReboot: false, warningMessage: null },
         { id: "shell.hide-widgets-button", name: "Hide Widgets Button", description: "Remove Widgets from taskbar", risk: "safe", status: "Included", default: true, expertOnly: false, blockedReason: null, requiresReboot: false, warningMessage: null },
         { id: "shell.restore-classic-context-menu", name: "Restore Classic Context Menu", description: "Bring back the full right-click menu", risk: "safe", status: "Included", default: true, expertOnly: false, blockedReason: null, requiresReboot: false, warningMessage: null },
       ]
