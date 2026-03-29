@@ -13,8 +13,6 @@ import { contextBridge, ipcRenderer } from "electron";
 const ALLOWED_METHODS = new Set([
   // Assessment
   "assess.full",
-  "assess.health",
-  "assess.workIndicators",
   // Classification
   "classify.machine",
   // Playbook (primary transformation path)
@@ -23,10 +21,7 @@ const ALLOWED_METHODS = new Set([
   "appbundle.getRecommended",
   "appbundle.resolve",
   // Execution
-  "execute.apply",
   "execute.applyAction",
-  "execute.pause",
-  "execute.resume",
   // Personalization
   "personalize.options",
   "personalize.apply",

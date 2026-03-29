@@ -6,11 +6,10 @@
 // the keys of IpcMethods below.
 
 import type { ProfileClassification, MachineProfile } from "./profiles.js";
-import type { OSHealthAssessment } from "./transformation.js";
-import type { HardwareAssessment, WorkIndicatorAssessment } from "./assessment.js";
-import type { TransformPreset, ResolvedPlaybook, RecommendedApp, AppBundleResolveResult } from "./playbook.js";
-import type { ExecutionStartResult, ActionExecutionResult } from "./execution.js";
-import type { PersonalizationOptions, PersonalizationPreferences } from "./personalization.js";
+import type { HardwareAssessment } from "./assessment.js";
+import type { TransformPreset, ResolvedPlaybook, RecommendedAppsResult, AppBundleResolveResult } from "./playbook.js";
+import type { ActionExecutionResult } from "./execution.js";
+import type { PersonalizationPreferences } from "./personalization.js";
 import type { OsRollbackSnapshot, OsRollbackOperation, OsAuditLogEntry } from "./rollback.js";
 import type { OsJournalState } from "./journal.js";
 import type { RegistryVerifyResult } from "./verify.js";
@@ -19,10 +18,8 @@ import type { RegistryVerifyResult } from "./verify.js";
 
 export interface IpcMethods {
   // ── Assessment ────────────────────────────────────────────────────────────
-  // assess.full replaces the earlier assess.hardware + assess.workIndicators split.
+  // assess.full is the supported machine scan entrypoint.
   "assess.full": { params: {}; result: HardwareAssessment };
-  "assess.health": { params: {}; result: OSHealthAssessment };
-  "assess.workIndicators": { params: {}; result: WorkIndicatorAssessment };
 
   // ── Classification ────────────────────────────────────────────────────────
   "classify.machine": { params: { assessmentId: string }; result: ProfileClassification };
@@ -33,19 +30,19 @@ export interface IpcMethods {
   "playbook.resolve": { params: { profile: MachineProfile; preset: TransformPreset }; result: ResolvedPlaybook };
 
   // ── App bundle ────────────────────────────────────────────────────────────
-  "appbundle.getRecommended": { params: { profile: MachineProfile }; result: RecommendedApp[] };
-  "appbundle.resolve": { params: { appIds: string[] }; result: AppBundleResolveResult };
+  "appbundle.getRecommended": { params: { profile: MachineProfile }; result: RecommendedAppsResult };
+  "appbundle.resolve": { params: { profile: MachineProfile; selectedApps: string[] }; result: AppBundleResolveResult };
 
   // ── Execution ─────────────────────────────────────────────────────────────
-  "execute.apply": { params: { planId: string }; result: ExecutionStartResult };
   "execute.applyAction": { params: { actionId: string }; result: ActionExecutionResult };
-  "execute.pause": { params: {}; result: void };
-  "execute.resume": { params: {}; result: void };
 
   // ── Personalization ───────────────────────────────────────────────────────
-  "personalize.options": { params: {}; result: PersonalizationOptions };
-  "personalize.apply": { params: { preferences: PersonalizationPreferences }; result: void };
-  "personalize.revert": { params: {}; result: void };
+  "personalize.options": { params: { profile?: MachineProfile }; result: Record<string, unknown> };
+  "personalize.apply": {
+    params: { profile: MachineProfile; options: PersonalizationPreferences & Record<string, unknown> };
+    result: Record<string, unknown>;
+  };
+  "personalize.revert": { params: { snapshotId: string }; result: Record<string, unknown> };
 
   // ── Rollback ─────────────────────────────────────────────────────────────
   "rollback.list": { params: {}; result: OsRollbackSnapshot[] };
@@ -54,23 +51,22 @@ export interface IpcMethods {
 
   // ── Journal (reboot-resume) ───────────────────────────────────────────────
   "journal.state": { params: {}; result: OsJournalState | null };
-  "journal.resume": { params: {}; result: void };
-  "journal.cancel": { params: {}; result: void };
+  "journal.resume": { params: {}; result: { status: string; resumed: number } };
+  "journal.cancel": { params: {}; result: { status: string } };
 
   // ── Verification ──────────────────────────────────────────────────────────
   "verify.registryValue": { params: { hive: string; path: string; valueName: string }; result: RegistryVerifyResult };
 
   // ── System ────────────────────────────────────────────────────────────────
-  "system.status": { params: {}; result: { version: string; uptime: number; mode: "live" | "demo" } };
-  "system.reboot": { params: { reason: string }; result: void };
+  "system.status": { params: {}; result: { status: string; uptimeSeconds: number; version: string } };
+  "system.reboot": { params: { reason: string }; result: { status: string; reason: string } };
 }
 
 // ─── Push events (Rust → main → renderer) ────────────────────────────────────
 // Only events that are ACTUALLY emitted belong here.
-// Add to preload ALLOWED_CHANNELS when Rust emission is wired.
 
 export interface IpcEvents {
-  // Execution progress — emitted per action during execute.apply
+  // Execution progress — emitted per action during execute.applyAction batches
   "execute.progress": { actionId: string; status: string; percent: number; detail: string };
 
   // Scan progress — emitted during assess.full when hardware scan is running

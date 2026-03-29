@@ -133,7 +133,7 @@ os-api.redcoreos.net {
     encode gzip
 }
 
-api.redcore-tuning.com {
+api.redcoreos.net {
     reverse_proxy localhost:3003
     encode gzip
 }
@@ -206,5 +206,6 @@ echo "  1. Edit /home/ubuntu/redcoreECO/.env — set real passwords and API keys
 echo "  2. Point DNS: redcoreos.net → REDACTED_VDS_IP"
 echo "  3. Point DNS: tuning-api.redcoreos.net → REDACTED_VDS_IP"
 echo "  4. Point DNS: os-api.redcoreos.net → REDACTED_VDS_IP"
-echo "  5. Clone repo and deploy apps"
-echo "  6. CHANGE YOUR SSH PASSWORD: passwd"
+echo "  5. Point DNS: api.redcoreos.net → REDACTED_VDS_IP"
+echo "  6. Clone repo and deploy apps"
+echo "  7. CHANGE YOUR SSH PASSWORD: passwd"

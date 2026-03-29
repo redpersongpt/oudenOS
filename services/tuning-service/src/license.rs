@@ -1,7 +1,7 @@
 use crate::db::Database;
 use serde::{Deserialize, Serialize};
 
-const CLOUD_API_BASE: &str = "https://api.redcore-tuning.com";
+const CLOUD_API_BASE: &str = "https://api.redcoreos.net";
 const VALIDATE_TIMEOUT_SECS: u64 = 10;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

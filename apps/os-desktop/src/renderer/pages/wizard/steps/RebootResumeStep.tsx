@@ -8,6 +8,12 @@ import { RotateCw } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { useWizardStore } from "@/stores/wizard-store";
 
+interface JournalState {
+  requiresReboot: boolean;
+  canResume: boolean;
+  steps: { status: string }[];
+}
+
 export function RebootResumeStep() {
   const { resolvedPlaybook, skipStep, completeStep } = useWizardStore();
   const [resuming, setResuming] = useState(false);
@@ -46,8 +52,12 @@ export function RebootResumeStep() {
     setResuming(true);
     try {
       const { serviceCall } = await import("@/lib/service");
-      const result = await serviceCall<{ pendingActions?: number }>("journal.state");
-      if (result.ok && result.data?.pendingActions && result.data.pendingActions > 0) {
+      const result = await serviceCall<JournalState | null>("journal.state");
+      const canResume = result.ok && result.data && (
+        result.data.canResume ||
+        result.data.steps.some((step) => step.status === "pending" || step.status === "awaiting_reboot")
+      );
+      if (canResume) {
         await serviceCall("journal.resume");
       }
     } catch {

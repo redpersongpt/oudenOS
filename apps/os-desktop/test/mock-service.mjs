@@ -132,7 +132,7 @@ function handleMethod(method, params) {
     case "personalize.options":
       return {
         darkMode: true,
-        accentColor: "#E8453C",
+        brandAccent: true,
         taskbarCleanup: true,
         explorerCleanup: true,
         wallpaper: true,
@@ -148,7 +148,7 @@ function handleMethod(method, params) {
     // ─── Journal (reboot/resume) ──────────────────────────────────────
 
     case "journal.state":
-      return { pendingActions: 0, lastReboot: null };
+      return null;
 
     case "journal.resume":
       return { status: "complete", resumed: 0 };

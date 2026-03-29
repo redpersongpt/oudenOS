@@ -6,7 +6,8 @@ use crate::db::Database;
 use crate::{appbundle, assessor, classifier, executor, personalizer, playbook, rollback, transformer};
 use anyhow::Result;
 use serde::{Deserialize, Serialize};
-use std::time::Instant;
+use std::{fs, path::PathBuf, time::Instant};
+use tokio::process::Command;
 use tokio::io::{self, AsyncBufReadExt, AsyncWriteExt, BufReader};
 
 #[derive(Debug, Deserialize)]
@@ -29,6 +30,12 @@ struct RpcResponse {
 struct RpcError {
     code: i32,
     message: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+struct ResumeJournalFile {
+    reason: String,
+    created_at: String,
 }
 
 impl RpcResponse {
@@ -102,6 +109,21 @@ async fn dispatch(
                     "version": env!("CARGO_PKG_VERSION"),
                 }),
             )
+        }
+
+        "system.reboot" => {
+            let reason = params
+                .get("reason")
+                .and_then(|v| v.as_str())
+                .unwrap_or("playbook-reboot-required");
+
+            match schedule_system_reboot(reason).await {
+                Ok(result) => RpcResponse::ok(id, result),
+                Err(e) => {
+                    tracing::error!(error = %e, "Failed to schedule reboot");
+                    RpcResponse::err(id, -60, format!("Failed to schedule reboot: {}", e))
+                }
+            }
         }
 
         // ── Assessment ──────────────────────────────────────────────────
@@ -351,6 +373,38 @@ async fn dispatch(
             }
         }
 
+        // ── Journal / reboot-resume ────────────────────────────────────
+        "journal.state" => match load_resume_journal() {
+            Ok(Some(state)) => RpcResponse::ok(id, state),
+            Ok(None) => RpcResponse::ok(id, serde_json::Value::Null),
+            Err(e) => {
+                tracing::error!(error = %e, "Failed to read resume journal");
+                RpcResponse::err(id, -61, format!("Failed to read resume journal: {}", e))
+            }
+        },
+
+        "journal.resume" => match clear_resume_journal() {
+            Ok(()) => RpcResponse::ok(
+                id,
+                serde_json::json!({
+                    "status": "complete",
+                    "resumed": 0,
+                }),
+            ),
+            Err(e) => {
+                tracing::error!(error = %e, "Failed to clear resume journal");
+                RpcResponse::err(id, -62, format!("Failed to resume journal: {}", e))
+            }
+        },
+
+        "journal.cancel" => match clear_resume_journal() {
+            Ok(()) => RpcResponse::ok(id, serde_json::json!({ "status": "cancelled" })),
+            Err(e) => {
+                tracing::error!(error = %e, "Failed to cancel resume journal");
+                RpcResponse::err(id, -63, format!("Failed to cancel journal: {}", e))
+            }
+        },
+
         // ── Full pipeline: assess + classify + plan in one call ─────────
         "pipeline.assessClassifyPlan" => {
             let preset = params.get("preset").and_then(|v| v.as_str()).unwrap_or("conservative");
@@ -570,6 +624,7 @@ async fn dispatch(
                 .unwrap_or("gaming_desktop");
             let selected_apps: Vec<String> = params
                 .get("selectedApps")
+                .or_else(|| params.get("appIds"))
                 .and_then(|v| v.as_array())
                 .map(|arr| {
                     arr.iter()
@@ -579,7 +634,7 @@ async fn dispatch(
                 .unwrap_or_default();
 
             if selected_apps.is_empty() {
-                return RpcResponse::err(id, -3, "Missing or empty param: selectedApps".into());
+                return RpcResponse::err(id, -3, "Missing or empty param: selectedApps/appIds".into());
             }
 
             let playbook_dir = match resolve_playbook_dir() {
@@ -646,6 +701,124 @@ fn resolve_playbook_dir() -> Option<std::path::PathBuf> {
     }
 
     None
+}
+
+// ─── Reboot-resume journal helpers ──────────────────────────────────────────
+
+fn resume_journal_path() -> anyhow::Result<PathBuf> {
+    #[cfg(windows)]
+    let dir = {
+        let base = std::env::var("LOCALAPPDATA")
+            .unwrap_or_else(|_| "C:\\ProgramData".to_string());
+        PathBuf::from(base).join("redcore-os")
+    };
+
+    #[cfg(not(windows))]
+    let dir = PathBuf::from("./data");
+
+    fs::create_dir_all(&dir)?;
+    Ok(dir.join("resume-journal.json"))
+}
+
+fn sanitize_reboot_reason(reason: &str) -> String {
+    let normalized = reason
+        .chars()
+        .filter(|c| !c.is_control())
+        .collect::<String>()
+        .split_whitespace()
+        .collect::<Vec<_>>()
+        .join(" ");
+
+    if normalized.is_empty() {
+        "playbook-reboot-required".to_string()
+    } else {
+        normalized.chars().take(120).collect()
+    }
+}
+
+fn journal_entry_to_state(entry: ResumeJournalFile) -> serde_json::Value {
+    serde_json::json!({
+        "planId": "resume-reboot",
+        "currentStepId": "reboot-pending",
+        "lastCompletedStepId": null,
+        "overallProgress": 100,
+        "requiresReboot": true,
+        "canResume": true,
+        "completedActionIds": [],
+        "failedActionIds": [],
+        "steps": [{
+            "id": "reboot-pending",
+            "planId": "resume-reboot",
+            "stepType": "reboot_pending",
+            "stepOrder": 0,
+            "status": "awaiting_reboot",
+            "actionId": null,
+            "description": entry.reason,
+            "createdAt": entry.created_at,
+            "updatedAt": entry.created_at,
+            "completedAt": null,
+            "error": null,
+        }],
+    })
+}
+
+fn write_resume_journal(reason: &str) -> anyhow::Result<ResumeJournalFile> {
+    let entry = ResumeJournalFile {
+        reason: sanitize_reboot_reason(reason),
+        created_at: chrono::Utc::now().to_rfc3339(),
+    };
+
+    let path = resume_journal_path()?;
+    fs::write(&path, serde_json::to_vec_pretty(&entry)?)?;
+    Ok(entry)
+}
+
+fn load_resume_journal() -> anyhow::Result<Option<serde_json::Value>> {
+    let path = resume_journal_path()?;
+    if !path.exists() {
+        return Ok(None);
+    }
+
+    let bytes = fs::read(&path)?;
+    let entry: ResumeJournalFile = serde_json::from_slice(&bytes)?;
+    Ok(Some(journal_entry_to_state(entry)))
+}
+
+fn clear_resume_journal() -> anyhow::Result<()> {
+    let path = resume_journal_path()?;
+    if path.exists() {
+        fs::remove_file(path)?;
+    }
+    Ok(())
+}
+
+async fn schedule_system_reboot(reason: &str) -> anyhow::Result<serde_json::Value> {
+    let entry = write_resume_journal(reason)?;
+
+    #[cfg(windows)]
+    {
+        let status = Command::new("shutdown.exe")
+            .args(["/r", "/t", "0", "/f", "/c", entry.reason.as_str()])
+            .status()
+            .await?;
+
+        if !status.success() {
+            anyhow::bail!("shutdown.exe exited with status {}", status);
+        }
+
+        return Ok(serde_json::json!({
+            "status": "scheduled",
+            "reason": entry.reason,
+        }));
+    }
+
+    #[cfg(not(windows))]
+    {
+        Ok(serde_json::json!({
+            "status": "simulated",
+            "reason": entry.reason,
+        }))
+    }
 }
 
 // ─── Database helpers ───────────────────────────────────────────────────────

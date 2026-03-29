@@ -25,11 +25,15 @@ const pendingRequests = new Map<
 >();
 
 function startService(): void {
-  // Look for the Rust service binary next to the Electron app
+  const ext = process.platform === "win32" ? ".exe" : "";
+  const isDev = !!process.env.VITE_DEV_SERVER_URL || !app.isPackaged;
+
+  // Look for the Rust service binary next to the Electron app first, then local builds.
   const possiblePaths = [
-    path.join(process.resourcesPath ?? "", "redcore-os-service.exe"),
-    path.join(app.getAppPath(), "..", "service-core", "target", "release", "redcore-os-service.exe"),
-    path.join(app.getAppPath(), "..", "service-core", "target", "debug", "redcore-os-service.exe"),
+    path.join(process.resourcesPath ?? "", `redcore-os-service${ext}`),
+    path.resolve(__dirname, `../../../services/os-service/target/${isDev ? "debug" : "release"}/redcore-os-service${ext}`),
+    path.resolve(__dirname, `../../../services/os-service/target/release/redcore-os-service${ext}`),
+    path.resolve(__dirname, `../../../services/os-service/target/debug/redcore-os-service${ext}`),
   ];
 
   let servicePath: string | null = null;

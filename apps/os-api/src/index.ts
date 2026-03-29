@@ -10,7 +10,7 @@ import updateRoutes from './routes/updates.js';
 // Server
 // ---------------------------------------------------------------------------
 
-const port = Number(process.env.PORT ?? 3001);
+const port = Number(process.env.PORT ?? 3002);
 const host = process.env.HOST ?? '0.0.0.0';
 
 const app = Fastify({
@@ -30,12 +30,13 @@ const app = Fastify({
 // ---------------------------------------------------------------------------
 
 const allowedOrigins = [
+  'https://redcoreos.net',
   'http://localhost:5173',
   'http://localhost:3000',
   'app://',
 ];
 
-const extraOrigins = process.env.ALLOWED_ORIGINS;
+const extraOrigins = process.env.CORS_ORIGINS ?? process.env.ALLOWED_ORIGINS;
 if (extraOrigins) {
   allowedOrigins.push(...extraOrigins.split(',').map((o) => o.trim()));
 }
@@ -136,7 +137,7 @@ process.on('SIGTERM', () => shutdown('SIGTERM'));
 
 try {
   await app.listen({ port, host });
-  app.log.info(`redcore-OS cloud API running on http://${host}:${port}`);
+  app.log.info(`redcore OS API running on http://${host}:${port}`);
 } catch (err) {
   app.log.fatal(err);
   process.exit(1);
