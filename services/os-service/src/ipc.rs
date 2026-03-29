@@ -254,8 +254,10 @@ async fn dispatch(
             let action_data = if let Some(data) = params.get("actionData") {
                 data.clone()
             } else {
+                let playbook_dir = resolve_playbook_dir()
+                    .unwrap_or_else(playbook::default_playbook_dir);
                 let playbook_lookup = playbook::find_action_definition(
-                    &playbook::default_playbook_dir(),
+                    &playbook_dir,
                     action_id,
                 );
 
