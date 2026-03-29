@@ -9,7 +9,7 @@ import {
   CTAStrip,
   RelatedPages,
 } from "@/components/seo";
-import { REDCORE_OS_DOWNLOAD } from "@/lib/downloads";
+import { REDCORE_OS_DOWNLOAD, getLatestRedcoreOsDownloadUrl } from "@/lib/downloads";
 import { Cpu, RotateCcw, Shield } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -36,7 +36,9 @@ export const metadata: Metadata = {
   },
 };
 
-export default function WhyRedcorePage() {
+export default async function WhyRedcorePage() {
+  const downloadUrl = await getLatestRedcoreOsDownloadUrl();
+
   return (
     <>
       <Navigation />
@@ -108,7 +110,7 @@ export default function WhyRedcorePage() {
             description="Download redcore OS, run the assessment, and look at the plan it builds for your specific machine. You do not have to apply anything to see how it works. Free, no account required."
             primaryAction={{
               label: "Download redcore OS",
-              href: "/downloads",
+              href: downloadUrl,
             }}
             secondaryAction={{
               label: "Learn about redcore OS",
