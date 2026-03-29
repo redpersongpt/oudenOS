@@ -14,6 +14,13 @@ WEB_DATABASE_URL="${WEB_DATABASE_URL:-file:${APP_ROOT}/apps/web/prisma/prisma/de
 
 cd "${APP_ROOT}"
 
+if [[ -f .env ]]; then
+  echo "── Load root environment ──"
+  set -a
+  . ./.env
+  set +a
+fi
+
 if [[ "${SKIP_GIT_PULL:-0}" == "1" ]]; then
   echo "── Skip git pull (release checkout mode) ──"
 else
