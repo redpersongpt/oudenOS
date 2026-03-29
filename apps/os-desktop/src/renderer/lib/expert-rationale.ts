@@ -33,12 +33,12 @@ const RATIONALE: Record<string, ActionRationale> = {
   // Shell
   "shell.disable-copilot": { why: "Removes the Copilot AI sidebar and taskbar button. Frees RAM and eliminates background AI service." },
   "shell.show-file-extensions": { why: "Shows file type extensions in Explorer. Improves security awareness — hidden extensions can mask malware." },
+  "shell.enable-end-task": { why: "Adds the Windows 11 End Task shortcut on taskbar app right-click. Faster recovery when an app hangs without opening Task Manager." },
   "shell.restore-classic-context-menu": { why: "Restores the full right-click menu instead of the truncated Windows 11 version." },
   "shell.hide-task-view": { why: "Removes the Task View button from taskbar. The feature remains accessible via Win+Tab." },
   "shell.hide-widgets-button": { why: "Removes the Widgets button. Eliminates background news/weather data fetching." },
   "shell.disable-web-search": { why: "Removes Bing web results from Start menu search. Keystrokes no longer sent to Microsoft servers." },
   "shell.disable-edge-ads": { why: "Disables 11 Edge promotional policies — shopping assistant, recommendations, new tab ads, and telemetry." },
-  "shell.enable-end-task": { why: "Adds 'End Task' to taskbar right-click menu. Quick way to force-close unresponsive apps." },
   "shell.hide-chat-icon": { why: "Removes the Teams Chat icon from taskbar. Teams remains functional if installed." },
   "shell.disable-content-delivery": { why: "Removes 8 content delivery subscriptions — welcome tips, suggested apps, silent app installs." },
 
