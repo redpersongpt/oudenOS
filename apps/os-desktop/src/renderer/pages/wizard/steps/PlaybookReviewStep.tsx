@@ -175,10 +175,11 @@ function PlaybookSkeleton() {
 // ─── Component ───────────────────────────────────────────────────────────────
 
 export function PlaybookReviewStep() {
-  const { detectedProfile, playbookPreset, setResolvedPlaybook, setStepReady } = useWizardStore();
+  const { detectedProfile, playbookPreset, demoMode, setResolvedPlaybook, setStepReady } = useWizardStore();
   const answers = useDecisionsStore((state) => state.answers);
   const [loading, setLoading] = useState(true);
   const [basePlaybook, setBasePlaybook] = useState<ResolvedPlaybook | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   const effectivePlaybook = useMemo(() => {
     if (!basePlaybook) return null;
@@ -192,6 +193,7 @@ export function PlaybookReviewStep() {
       const profile = detectedProfile?.id ?? "gaming_desktop";
       const windowsBuild = detectedProfile?.windowsBuild ?? 22631;
       setLoading(true);
+      setLoadError(null);
       try {
         const { serviceCall } = await import("@/lib/service");
         const result = await serviceCall<ResolvedPlaybook>("playbook.resolve", {
@@ -201,17 +203,25 @@ export function PlaybookReviewStep() {
         });
         if (result.ok) {
           setBasePlaybook(result.data);
-        } else {
+        } else if (demoMode) {
           setBasePlaybook(buildMockResolvedPlaybook(profile, playbookPreset, windowsBuild));
+        } else {
+          setBasePlaybook(null);
+          setLoadError(result.error || "Unable to resolve the real playbook.");
         }
       } catch {
-        setBasePlaybook(buildMockResolvedPlaybook(profile, playbookPreset, windowsBuild));
+        if (demoMode) {
+          setBasePlaybook(buildMockResolvedPlaybook(profile, playbookPreset, windowsBuild));
+        } else {
+          setBasePlaybook(null);
+          setLoadError("Unable to resolve the real playbook.");
+        }
       } finally {
         setLoading(false);
       }
     };
     load();
-  }, [detectedProfile, playbookPreset, setStepReady]);
+  }, [demoMode, detectedProfile, playbookPreset, setStepReady]);
 
   useEffect(() => {
     if (effectivePlaybook) {
@@ -226,7 +236,7 @@ export function PlaybookReviewStep() {
     return (
       <div className="flex h-full flex-col items-center justify-center gap-3 px-8">
         <AlertTriangle className="h-8 w-8 text-amber-400" />
-        <p className="text-sm text-ink-secondary">Playbook not available</p>
+        <p className="text-sm text-ink-secondary">{loadError ?? "Playbook not available"}</p>
       </div>
     );
   }
