@@ -21,10 +21,11 @@
 
 import type { FastifyPluginAsync } from "fastify";
 import { z } from "zod";
-import { eq, and } from "drizzle-orm";
+import { eq, and, desc } from "drizzle-orm";
 import {
   db,
   users,
+  licenses,
   subscriptions,
   machineActivations,
   adminAuditLog,
@@ -44,10 +45,19 @@ const issueSchema = z.object({
   machineId: z.string().uuid(),
 });
 
-const validateSchema = z.object({
-  token: z.string().min(1),
-  machineFingerprint: z.string().min(8),
-});
+const validateSchema = z.union([
+  z.object({
+    token: z.string().min(1),
+    machineFingerprint: z.string().min(8),
+  }),
+  z.object({
+    licenseKey: z.string().min(8).max(64),
+    deviceFingerprint: z.string().min(8).max(512),
+    hostname: z.string().max(255).optional(),
+    osVersion: z.string().max(100).optional(),
+    appVersion: z.string().max(50).optional(),
+  }),
+]);
 
 const revokeParamsSchema = z.object({
   machineId: z.string().uuid(),
@@ -55,11 +65,31 @@ const revokeParamsSchema = z.object({
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
+const SUBSCRIPTION_PRODUCT = "tuning" as const;
+
 async function getActiveTier(userId: string): Promise<"free" | "premium" | "expert"> {
+  const [activeLicense] = await db
+    .select({ id: licenses.id })
+    .from(licenses)
+    .where(
+      and(
+        eq(licenses.userId, userId),
+        eq(licenses.product, SUBSCRIPTION_PRODUCT),
+        eq(licenses.status, "active"),
+      ),
+    )
+    .orderBy(desc(licenses.createdAt))
+    .limit(1);
+
+  if (activeLicense) {
+    return "premium";
+  }
+
   const [sub] = await db
     .select({ tier: subscriptions.tier, status: subscriptions.status, overrideExpiresAt: subscriptions.overrideExpiresAt, manualOverride: subscriptions.manualOverride })
     .from(subscriptions)
-    .where(eq(subscriptions.userId, userId))
+    .where(and(eq(subscriptions.userId, userId), eq(subscriptions.product, SUBSCRIPTION_PRODUCT)))
+    .orderBy(desc(subscriptions.updatedAt))
     .limit(1);
 
   if (!sub) return "free";
@@ -69,12 +99,49 @@ async function getActiveTier(userId: string): Promise<"free" | "premium" | "expe
     await db
       .update(subscriptions)
       .set({ tier: "free", status: "cancelled", manualOverride: false, updatedAt: new Date() })
-      .where(eq(subscriptions.userId, userId));
+      .where(and(eq(subscriptions.userId, userId), eq(subscriptions.product, SUBSCRIPTION_PRODUCT)));
     return "free";
   }
 
   if (sub.status !== "active" && sub.status !== "trialing") return "free";
   return sub.tier === "premium" || sub.tier === "expert" ? sub.tier : "free";
+}
+
+function buildFeatureList(tier: "free" | "premium" | "expert") {
+  const premiumFeatures = [
+    "full_tuning_engine",
+    "reboot_resume",
+    "thermal_analysis",
+    "bottleneck_analysis",
+    "guided_oc_undervolt",
+    "expert_mode",
+    "full_version_logic",
+    "config_sync",
+    "cpu_parking_optimization",
+    "speculative_mitigation_control",
+    "timer_latency_optimization",
+    "gpu_pstate_lock",
+    "storage_8dot3_optimization",
+    "fault_tolerant_heap_control",
+    "auto_updates",
+  ];
+
+  const expertFeatures = [
+    "multi_machine_sync",
+    "advanced_oc_control",
+    "config_export_import",
+    "priority_support",
+    "early_access_features",
+    "bios_guidance",
+    "advanced_controls",
+    "api_access",
+  ];
+
+  return [...premiumFeatures, ...(tier === "expert" ? expertFeatures : [])].map((feature) => ({
+    feature,
+    tier: tier === "expert" && expertFeatures.includes(feature) ? "expert" : "premium",
+    enabled: tier === "premium" || tier === "expert",
+  }));
 }
 
 // ─── Plugin ───────────────────────────────────────────────────────────────────
@@ -146,6 +213,112 @@ export const licenseRoutes: FastifyPluginAsync = async (app) => {
       return reply.code(400).send({ error: "Invalid input" });
     }
 
+    if ("licenseKey" in parse.data) {
+      const { licenseKey, deviceFingerprint, hostname, osVersion, appVersion } = parse.data;
+      const normalizedKey = licenseKey.trim().toUpperCase();
+
+      const [license] = await db
+        .select({
+          id: licenses.id,
+          userId: licenses.userId,
+          status: licenses.status,
+        })
+        .from(licenses)
+        .where(
+          and(
+            eq(licenses.licenseKey, normalizedKey),
+            eq(licenses.product, SUBSCRIPTION_PRODUCT),
+          ),
+        )
+        .limit(1);
+
+      if (!license || license.status !== "active") {
+        return reply.code(401).send({ error: "License key is invalid or inactive" });
+      }
+
+      const [user] = await db
+        .select({ id: users.id, deletedAt: users.deletedAt })
+        .from(users)
+        .where(eq(users.id, license.userId))
+        .limit(1);
+
+      if (!user || user.deletedAt) {
+        return reply.code(401).send({ error: "Account not found" });
+      }
+
+      const [existingMachine] = await db
+        .select({
+          id: machineActivations.id,
+          status: machineActivations.status,
+        })
+        .from(machineActivations)
+        .where(
+          and(
+            eq(machineActivations.userId, user.id),
+            eq(machineActivations.product, SUBSCRIPTION_PRODUCT),
+            eq(machineActivations.deviceFingerprint, deviceFingerprint),
+          ),
+        )
+        .limit(1);
+
+      let machineId = existingMachine?.id ?? null;
+
+      if (existingMachine?.status === "revoked") {
+        return reply.code(403).send({ error: "This device was revoked. Remove the old activation first." });
+      }
+
+      if (!existingMachine) {
+        const activeMachines = await db
+          .select({ id: machineActivations.id })
+          .from(machineActivations)
+          .where(
+            and(
+              eq(machineActivations.userId, user.id),
+              eq(machineActivations.product, SUBSCRIPTION_PRODUCT),
+              eq(machineActivations.status, "active"),
+            ),
+          );
+
+        if (activeMachines.length >= 1) {
+          return reply.code(403).send({ error: "Machine limit reached for this license key" });
+        }
+
+        const [machine] = await db
+          .insert(machineActivations)
+          .values({
+            userId: user.id,
+            product: SUBSCRIPTION_PRODUCT,
+            licenseId: license.id,
+            deviceFingerprint,
+            hostname,
+            osVersion,
+            appVersion,
+          })
+          .returning({ id: machineActivations.id });
+
+        machineId = machine?.id ?? null;
+
+        await db
+          .update(licenses)
+          .set({ machineId: machineId ?? undefined, activatedAt: new Date() })
+          .where(eq(licenses.id, license.id));
+      } else {
+        await db
+          .update(machineActivations)
+          .set({ lastSeenAt: new Date(), hostname: hostname ?? undefined, osVersion: osVersion ?? undefined, appVersion: appVersion ?? undefined, licenseId: license.id })
+          .where(eq(machineActivations.id, existingMachine.id));
+      }
+
+      return reply.send({
+        tier: "premium",
+        status: "active",
+        expiresAt: null,
+        deviceBound: true,
+        deviceId: machineId,
+        features: buildFeatureList("premium"),
+      });
+    }
+
     const { token, machineFingerprint } = parse.data;
 
     // 1. Cryptographic verification
@@ -198,6 +371,11 @@ export const licenseRoutes: FastifyPluginAsync = async (app) => {
     return reply.send({
       valid: true,
       tier: currentTier,
+      status: currentTier === "free" ? "expired" : "active",
+      expiresAt: null,
+      deviceBound: true,
+      deviceId: claims.machineId,
+      features: buildFeatureList(currentTier),
       machineId: claims.machineId,
       userId: claims.sub,
     });

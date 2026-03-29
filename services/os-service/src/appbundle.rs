@@ -8,9 +8,11 @@
 //   2. User toggles apps on/off
 //   3. UI calls `appbundle.resolve { profile, selectedApps }` to get install queue
 
+#[cfg(windows)]
+use crate::powershell;
 use serde::{Deserialize, Serialize};
 use std::collections::{HashMap, HashSet};
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 // ─── YAML schema types ─────────────────────────────────────────────────────
 
@@ -75,6 +77,18 @@ pub struct ResolvedApp {
     pub work_safe: bool,
     pub selected: bool,
     pub recommended: bool,
+}
+
+#[derive(Debug, Clone, Serialize)]
+pub struct InstallResult {
+    pub id: String,
+    pub name: String,
+    pub status: String,
+    #[serde(rename = "downloadedPath")]
+    pub downloaded_path: Option<String>,
+    #[serde(rename = "exitCode")]
+    pub exit_code: Option<i32>,
+    pub error: Option<String>,
 }
 
 // ─── Internal loaded state ──────────────────────────────────────────────────
@@ -251,6 +265,137 @@ pub fn resolve(
         "skipped": skipped,
         "totalQueued": install_queue.len(),
     }))
+}
+
+pub fn install(playbook_dir: &Path, app_id: &str) -> anyhow::Result<serde_json::Value> {
+    let loaded = load_bundles(playbook_dir)?;
+    let entry = match loaded.catalog.apps.get(app_id) {
+        Some(entry) => entry,
+        None => {
+            return Ok(serde_json::json!(InstallResult {
+                id: app_id.to_string(),
+                name: app_id.to_string(),
+                status: "failed".to_string(),
+                downloaded_path: None,
+                exit_code: None,
+                error: Some("Selected app not found in catalog".to_string()),
+            }));
+        }
+    };
+
+    let result = install_catalog_entry(app_id, entry)?;
+    Ok(serde_json::to_value(result)?)
+}
+
+#[cfg(windows)]
+fn install_catalog_entry(app_id: &str, entry: &CatalogEntry) -> anyhow::Result<InstallResult> {
+    let app_name = entry.name.clone();
+    let safe_url = powershell::escape_ps_string(entry.url.as_str());
+    let safe_silent_args = powershell::escape_ps_string(entry.silent_args.as_str());
+    let safe_id = powershell::escape_ps_string(app_id);
+    let download_dir = installer_cache_dir()?;
+    let safe_download_dir = powershell::escape_ps_string(download_dir.to_string_lossy().as_ref());
+
+    let script = format!(
+        "$ProgressPreference='SilentlyContinue'; \
+         [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; \
+         $uri = '{url}'; \
+         $appId = '{app_id}'; \
+         $silentArgs = '{silent_args}'; \
+         $downloadDir = '{download_dir}'; \
+         New-Item -ItemType Directory -Force -Path $downloadDir | Out-Null; \
+         $uriObject = [Uri]$uri; \
+         $ext = [System.IO.Path]::GetExtension($uriObject.AbsolutePath); \
+         if ([string]::IsNullOrWhiteSpace($ext)) {{ $ext = '.exe' }}; \
+         $downloadPath = Join-Path $downloadDir ($appId + $ext); \
+         Invoke-WebRequest -Uri $uri -OutFile $downloadPath -MaximumRedirection 5 -UseBasicParsing; \
+         if (-not (Test-Path $downloadPath)) {{ throw 'Installer download failed.' }}; \
+         $installerPath = $downloadPath; \
+         if ($ext -ieq '.zip') {{ \
+             $extractDir = Join-Path $downloadDir ($appId + '-extract'); \
+             if (Test-Path $extractDir) {{ Remove-Item -Path $extractDir -Recurse -Force }}; \
+             Expand-Archive -Path $downloadPath -DestinationPath $extractDir -Force; \
+             $candidate = Get-ChildItem -Path $extractDir -Recurse -File | \
+               Where-Object {{ $_.Extension -in @('.exe', '.msi') }} | \
+               Select-Object -First 1; \
+             if ($null -eq $candidate) {{ throw 'Archive does not contain a supported installer.' }}; \
+             $installerPath = $candidate.FullName; \
+             $ext = $candidate.Extension; \
+         }}; \
+         if ($ext -ieq '.msi') {{ \
+             $args = \"/i `\"$installerPath`\" $silentArgs\"; \
+             $proc = Start-Process -FilePath 'msiexec.exe' -ArgumentList $args -PassThru -Wait -WindowStyle Hidden; \
+         }} else {{ \
+             $proc = Start-Process -FilePath $installerPath -ArgumentList $silentArgs -PassThru -Wait -WindowStyle Hidden; \
+         }}; \
+         [PSCustomObject]@{{ \
+             downloadedPath = $downloadPath; \
+             installerPath = $installerPath; \
+             exitCode = $proc.ExitCode; \
+         }} | ConvertTo-Json -Compress",
+        url = safe_url,
+        app_id = safe_id,
+        silent_args = safe_silent_args,
+        download_dir = safe_download_dir,
+    );
+
+    let result = powershell::execute(&script)?;
+    if !result.success {
+        return Ok(InstallResult {
+            id: app_id.to_string(),
+            name: app_name,
+            status: "failed".to_string(),
+            downloaded_path: None,
+            exit_code: Some(result.exit_code),
+            error: Some(result.stderr.trim().to_string()),
+        });
+    }
+
+    let payload: serde_json::Value = serde_json::from_str(result.stdout.trim())
+        .map_err(|e| anyhow::anyhow!("Failed to parse installer result: {}", e))?;
+    let exit_code = payload.get("exitCode").and_then(|value| value.as_i64()).map(|value| value as i32);
+    let downloaded_path = payload
+        .get("downloadedPath")
+        .and_then(|value| value.as_str())
+        .map(ToOwned::to_owned);
+
+    Ok(InstallResult {
+        id: app_id.to_string(),
+        name: app_name,
+        status: if exit_code.unwrap_or(1) == 0 {
+            "installed".to_string()
+        } else {
+            "failed".to_string()
+        },
+        downloaded_path,
+        exit_code,
+        error: if exit_code.unwrap_or(1) == 0 {
+            None
+        } else {
+            Some(format!("Installer exited with code {}", exit_code.unwrap_or(-1)))
+        },
+    })
+}
+
+#[cfg(not(windows))]
+fn install_catalog_entry(app_id: &str, entry: &CatalogEntry) -> anyhow::Result<InstallResult> {
+    Ok(InstallResult {
+        id: app_id.to_string(),
+        name: entry.name.clone(),
+        status: "skipped".to_string(),
+        downloaded_path: None,
+        exit_code: None,
+        error: Some("App installation is only supported on Windows.".to_string()),
+    })
+}
+
+#[cfg(windows)]
+fn installer_cache_dir() -> anyhow::Result<PathBuf> {
+    let base = std::env::var("LOCALAPPDATA")
+        .unwrap_or_else(|_| "C:\\ProgramData".to_string());
+    let dir = PathBuf::from(base).join("redcore-os").join("downloads");
+    std::fs::create_dir_all(&dir)?;
+    Ok(dir)
 }
 
 // ─── Tests ──────────────────────────────────────────────────────────────────

@@ -12,8 +12,13 @@ import {
   type TelemetryLevel,
 } from "../src/renderer/stores/decisions-store.ts";
 import { applyDecisionOverrides } from "../src/renderer/lib/playbook-decision-overrides.ts";
+import { resolveEffectivePersonalization } from "../src/renderer/lib/personalization-resolution.ts";
 import { buildMockResolvedPlaybook } from "../src/renderer/lib/mock-playbook.ts";
-import type { ResolvedPlaybook } from "../src/renderer/stores/wizard-store.ts";
+import {
+  getProfilePersonalizationDefaults,
+  type PersonalizationPreferences,
+  type ResolvedPlaybook,
+} from "../src/renderer/stores/wizard-store.ts";
 
 export type VerificationProofStatus =
   | "fully verified on real Windows"
@@ -225,6 +230,16 @@ export interface PersonalizationVerificationReport {
   };
 }
 
+export interface BlockedActionVerificationResult {
+  actionId: string;
+  actionName: string;
+  reason: string;
+  verificationTier: VerificationTier;
+  baseline: VerificationCheckResult[];
+  afterApply: VerificationCheckResult[];
+  status: "pass" | "fail" | "partial" | "skip";
+}
+
 export interface CertificationSummary {
   startedAt: string;
   finishedAt: string;
@@ -244,6 +259,8 @@ export interface CertificationSummary {
   readbackFailCount: number;
   rollbackPassCount: number;
   rollbackFailCount: number;
+  blockedPreservationPassCount: number;
+  blockedPreservationFailCount: number;
 }
 
 type ServiceResponse = {
@@ -1673,6 +1690,35 @@ export function evaluateRollback(before: VerificationCheckResult[], after: Verif
   });
 }
 
+function evaluatePreservedState(before: VerificationCheckResult[], after: VerificationCheckResult[]): VerificationCheckResult[] {
+  const afterMap = new Map(after.map((check) => [check.target, check]));
+  return before.map((baseline) => {
+    const current = afterMap.get(baseline.target);
+    if (!current) {
+      return {
+        ...baseline,
+        actual: "<missing>",
+        status: "fail",
+        reason: "Blocked-action readback target missing after apply.",
+      };
+    }
+    const machineReadableKinds = new Set(["registry", "service", "task", "package", "bcd", "power"]);
+    if (!machineReadableKinds.has(baseline.kind)) {
+      return {
+        ...baseline,
+        actual: current.actual,
+        status: "skip",
+        reason: baseline.reason ?? "No machine-readable blocked-state assertion exists for this target.",
+      };
+    }
+    return {
+      ...baseline,
+      actual: current.actual,
+      status: current.actual === baseline.actual ? "pass" : "fail",
+    };
+  });
+}
+
 function summarizeChecks(checks: VerificationCheckResult[]): "pass" | "fail" | "partial" | "skip" {
   if (checks.length === 0) return "skip";
   const passCount = checks.filter((check) => check.status === "pass").length;
@@ -1810,6 +1856,7 @@ export async function runWindowsCertification(options: {
   actionResults: ActionRuntimeVerificationResult[];
   personalization: PersonalizationVerificationReport | null;
   blockedActions: Array<{ actionId: string; reason: string }>;
+  blockedActionResults: BlockedActionVerificationResult[];
 }> {
   if (!process.platform.startsWith("win")) {
     throw new Error("Consumer Windows certification must run on Windows.");
@@ -1836,6 +1883,7 @@ export async function runWindowsCertification(options: {
     actionId: entry.actionId,
     reason: entry.reason,
   }));
+  const blockedActionResults: BlockedActionVerificationResult[] = [];
 
   writeJson(path.join(options.outputDir, "resolved-playbook.json"), resolvedPlaybook);
   writeJson(path.join(options.outputDir, "selected-question-deltas.json"), selectedQuestionDeltas);
@@ -1846,6 +1894,13 @@ export async function runWindowsCertification(options: {
   const selectedCatalogActions = filterActionsByPriority(
     catalog.actions.filter((action) => includedIds.includes(action.actionId)),
     options.priority,
+  );
+  const blockedCatalogActions = filterActionsByPriority(
+    catalog.actions.filter((action) => blockedActions.some((entry) => entry.actionId === action.actionId)),
+    options.priority,
+  );
+  const blockedBaselines = new Map(
+    blockedCatalogActions.map((action) => [action.actionId, captureActionState(action)]),
   );
 
   const actionResults: ActionRuntimeVerificationResult[] = [];
@@ -1887,17 +1942,19 @@ export async function runWindowsCertification(options: {
     });
   }
 
+  const effectivePersonalization: PersonalizationPreferences & { wallpaper: boolean } = {
+    ...resolveEffectivePersonalization(
+      options.profile,
+      getProfilePersonalizationDefaults(options.profile),
+      answers,
+    ),
+    wallpaper: false,
+  };
+
   const personalizationBaseline = capturePersonalizationState();
   const personalizationApply = await client.call("personalize.apply", {
     profile: options.profile,
-    options: {
-      darkMode: true,
-      brandAccent: true,
-      wallpaper: false,
-      taskbarCleanup: true,
-      explorerCleanup: true,
-      transparency: true,
-    },
+    options: effectivePersonalization,
   });
   const personalizationReadback = capturePersonalizationState().map((check) => {
     if (check.kind === "shell") {
@@ -1935,6 +1992,20 @@ export async function runWindowsCertification(options: {
     delete personalizationReport.rollback.reason;
   }
 
+  for (const action of blockedCatalogActions) {
+    const baseline = blockedBaselines.get(action.actionId) ?? captureActionState(action);
+    const afterApply = evaluatePreservedState(baseline, captureActionState(action));
+    blockedActionResults.push({
+      actionId: action.actionId,
+      actionName: action.name,
+      reason: blockedActions.find((entry) => entry.actionId === action.actionId)?.reason ?? "Blocked by profile or questionnaire",
+      verificationTier: classifyVerificationTier(action),
+      baseline,
+      afterApply,
+      status: summarizeChecks(afterApply),
+    });
+  }
+
   await client.close();
 
   const summary: CertificationSummary = {
@@ -1952,17 +2023,22 @@ export async function runWindowsCertification(options: {
     selectedActionCount: actionResults.length,
     blockedActionCount: blockedActions.length,
     overallStatus: actionResults.some((entry) => entry.readbackStatus === "fail" || entry.rollback.status === "fail")
+      || blockedActionResults.some((entry) => entry.status === "fail")
       ? "fail"
       : actionResults.some((entry) => entry.readbackStatus === "partial" || entry.rollback.status === "partial")
+        || blockedActionResults.some((entry) => entry.status === "partial")
         ? "partial"
         : "pass",
     readbackPassCount: actionResults.filter((entry) => entry.readbackStatus === "pass").length,
     readbackFailCount: actionResults.filter((entry) => entry.readbackStatus === "fail").length,
     rollbackPassCount: actionResults.filter((entry) => entry.rollback.status === "pass").length,
     rollbackFailCount: actionResults.filter((entry) => entry.rollback.status === "fail").length,
+    blockedPreservationPassCount: blockedActionResults.filter((entry) => entry.status === "pass").length,
+    blockedPreservationFailCount: blockedActionResults.filter((entry) => entry.status === "fail").length,
   };
 
   writeJson(path.join(options.outputDir, "action-results.json"), actionResults);
+  writeJson(path.join(options.outputDir, "blocked-action-results.json"), blockedActionResults);
   writeJson(path.join(options.outputDir, "personalization-report.json"), personalizationReport);
   writeJson(path.join(options.outputDir, "certification-summary.json"), summary);
 
@@ -1972,5 +2048,6 @@ export async function runWindowsCertification(options: {
     actionResults,
     personalization: personalizationReport,
     blockedActions,
+    blockedActionResults,
   };
 }

@@ -2,9 +2,12 @@
 // Premium visual personalization: theme toggles with live desktop preview mockup.
 // Compact — fits 820×580 without scrolling.
 
+import { useEffect } from "react";
 import { motion } from "framer-motion";
 import { useWizardStore } from "@/stores/wizard-store";
 import type { PersonalizationPreferences } from "@/stores/wizard-store";
+import { useDecisionsStore } from "@/stores/decisions-store";
+import { resolveEffectivePersonalization } from "@/lib/personalization-resolution";
 
 // ─── Toggle card ──────────────────────────────────────────────────────────────
 
@@ -205,7 +208,15 @@ function DesktopPreview({ prefs }: { prefs: PersonalizationPreferences }) {
 
 // ─── Profile note ─────────────────────────────────────────────────────────────
 
-function ProfileNote({ isWorkPc, isLowSpec }: { isWorkPc: boolean; isLowSpec: boolean }) {
+function ProfileNote({
+  isWorkPc,
+  isLowSpec,
+  transparencyForcedOff,
+}: {
+  isWorkPc: boolean;
+  isLowSpec: boolean;
+  transparencyForcedOff: boolean;
+}) {
   if (isWorkPc) {
     return (
       <p className="text-center text-[11px] leading-snug text-ink-tertiary">
@@ -220,6 +231,13 @@ function ProfileNote({ isWorkPc, isLowSpec }: { isWorkPc: boolean; isLowSpec: bo
       </p>
     );
   }
+  if (transparencyForcedOff) {
+    return (
+      <p className="text-center text-[11px] leading-snug text-ink-tertiary">
+        Strategy lock: transparency stays disabled to honor your performance-first plan.
+      </p>
+    );
+  }
   return null;
 }
 
@@ -227,10 +245,26 @@ function ProfileNote({ isWorkPc, isLowSpec }: { isWorkPc: boolean; isLowSpec: bo
 
 export function PersonalizationStep() {
   const { personalization, setPersonalization, detectedProfile } = useWizardStore();
+  const answers = useDecisionsStore((state) => state.answers);
   const profileId = detectedProfile?.id;
 
   const isWorkPc  = detectedProfile?.isWorkPc ?? false;
   const isLowSpec = profileId === "low_spec_system" || profileId === "low_spec";
+  const transparencyForcedOff = answers.disableTransparency === true;
+
+  useEffect(() => {
+    const resolved = resolveEffectivePersonalization(profileId, personalization, answers);
+    const changed =
+      resolved.darkMode !== personalization.darkMode ||
+      resolved.brandAccent !== personalization.brandAccent ||
+      resolved.taskbarCleanup !== personalization.taskbarCleanup ||
+      resolved.explorerCleanup !== personalization.explorerCleanup ||
+      resolved.transparency !== personalization.transparency;
+
+    if (changed) {
+      setPersonalization(resolved);
+    }
+  }, [answers, personalization, profileId, setPersonalization]);
 
   const toggle = (key: keyof typeof personalization) =>
     setPersonalization({ [key]: !personalization[key] });
@@ -239,7 +273,7 @@ export function PersonalizationStep() {
   const row1 = [
     { label: "Dark Mode",     description: "Dark theme for apps and system", key: "darkMode"    as const, disabled: false },
     { label: "Brand Accent",  description: "redcore red accent color",        key: "brandAccent" as const, disabled: false },
-    { label: "Transparency",  description: "Window transparency effects",     key: "transparency" as const, disabled: isLowSpec },
+    { label: "Transparency",  description: "Window transparency effects",     key: "transparency" as const, disabled: isLowSpec || transparencyForcedOff },
   ];
   const row2 = [
     { label: "Taskbar Cleanup",  description: "Hide Task View, Widgets, Chat",   key: "taskbarCleanup"  as const, disabled: isWorkPc },
@@ -321,7 +355,11 @@ export function PersonalizationStep() {
         transition={{ delay: 0.5 }}
         className="w-full max-w-[500px]"
       >
-        <ProfileNote isWorkPc={isWorkPc} isLowSpec={isLowSpec} />
+        <ProfileNote
+          isWorkPc={isWorkPc}
+          isLowSpec={isLowSpec}
+          transparencyForcedOff={transparencyForcedOff}
+        />
       </motion.div>
     </motion.div>
   );

@@ -20,6 +20,7 @@ const ALLOWED_METHODS = new Set([
   // App bundle
   "appbundle.getRecommended",
   "appbundle.resolve",
+  "appbundle.install",
   // Execution
   "execute.applyAction",
   // Personalization

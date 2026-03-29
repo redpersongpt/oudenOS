@@ -98,21 +98,53 @@ export interface PersonalizationPreferences {
   transparency: boolean;
 }
 
-export const DEFAULT_PERSONALIZATION: PersonalizationPreferences = {
-  darkMode: true,
-  brandAccent: true,
-  taskbarCleanup: true,
-  explorerCleanup: true,
-  transparency: true,
-};
+export function getProfilePersonalizationDefaults(profileId?: string | null): PersonalizationPreferences {
+  switch (profileId) {
+    case "work_pc":
+      return {
+        darkMode: true,
+        brandAccent: true,
+        taskbarCleanup: false,
+        explorerCleanup: false,
+        transparency: true,
+      };
+    case "low_spec_system":
+    case "low_spec":
+      return {
+        darkMode: true,
+        brandAccent: true,
+        taskbarCleanup: true,
+        explorerCleanup: true,
+        transparency: false,
+      };
+    default:
+      return {
+        darkMode: true,
+        brandAccent: true,
+        taskbarCleanup: true,
+        explorerCleanup: true,
+        transparency: true,
+      };
+  }
+}
+
+export const DEFAULT_PERSONALIZATION: PersonalizationPreferences = getProfilePersonalizationDefaults(null);
 
 // ─── Execution result ────────────────────────────────────────────────────────
+
+export interface AppInstallSummary {
+  requested: number;
+  installed: number;
+  failed: number;
+}
 
 export interface ExecutionResult {
   applied: number;
   failed: number;
   skipped: number;
   preserved: number;
+  personalizationApplied: boolean;
+  appInstall: AppInstallSummary;
 }
 
 // ─── Store interface ─────────────────────────────────────────────────────────
@@ -342,7 +374,10 @@ export const useWizardStore = create<WizardState>((set, get) => ({
       };
     }),
 
-  setDetectedProfile: (profile) => set({ detectedProfile: profile }),
+  setDetectedProfile: (profile) => set({
+    detectedProfile: profile,
+    personalization: getProfilePersonalizationDefaults(profile.id),
+  }),
   setPlaybookPreset: (preset) => set({ playbookPreset: preset, resolvedPlaybook: null }),
   setResolvedPlaybook: (playbook) => set({ resolvedPlaybook: playbook }),
   setRecommendedApps: (apps) => set({

@@ -44,12 +44,12 @@ function DotGrid() {
 // ─── Pills — positioned around hex, CSS float (no React stutter) ────────────
 
 const PILLS = [
-  { label: "Debloat",            angle: 270, r: 195 },
-  { label: "Better Frame Times", angle: 336, r: 200 },
-  { label: "No Input Lag",       angle: 42,  r: 195 },
-  { label: "Privacy Hardened",   angle: 108, r: 200 },
-  { label: "Full Rollback",      angle: 174, r: 195 },
-  { label: "Work PC Safe",       angle: 222, r: 200 },
+  { label: "Debloat",            angle: 270, r: 148 },
+  { label: "Better Frame Times", angle: 336, r: 152 },
+  { label: "No Input Lag",       angle: 42,  r: 148 },
+  { label: "Privacy Hardened",   angle: 108, r: 152 },
+  { label: "Full Rollback",      angle: 174, r: 148 },
+  { label: "Work PC Safe",       angle: 222, r: 152 },
 ];
 
 function Pill({ label, angle, r, i }: { label: string; angle: number; r: number; i: number }) {
@@ -59,7 +59,7 @@ function Pill({ label, angle, r, i }: { label: string; angle: number; r: number;
 
   return (
     <motion.div
-      className="absolute left-1/2 top-1/2 pointer-events-none"
+      className="absolute left-1/2 top-1/2 pointer-events-none -translate-x-1/2 -translate-y-1/2"
       initial={{ opacity: 0, scale: 0, x: 0, y: 0 }}
       animate={{ opacity: 1, scale: 1, x, y }}
       transition={{
@@ -69,10 +69,10 @@ function Pill({ label, angle, r, i }: { label: string; angle: number; r: number;
       }}
     >
       <div
-        className="pill-float rounded-full border border-accent/15 bg-surface/90 backdrop-blur-md px-5 py-2 whitespace-nowrap shadow-lg shadow-black/20"
+        className="pill-float rounded-full border border-accent/15 bg-surface/90 backdrop-blur-md px-4 py-1.5 whitespace-nowrap shadow-lg shadow-black/20"
         style={{ animationDelay: `${i * 0.4}s` }}
       >
-        <span className="text-[11px] font-semibold tracking-wide text-ink-primary/80">
+        <span className="text-[10px] sm:text-[11px] font-semibold tracking-wide text-ink-primary/80">
           {label}
         </span>
       </div>
@@ -158,7 +158,7 @@ function HexagonMark() {
 
 function HeroVisual() {
   return (
-    <div className="relative w-[440px] h-[440px] xl:w-[480px] xl:h-[480px] flex items-center justify-center">
+    <div className="relative w-[420px] h-[420px] xl:w-[460px] xl:h-[460px] flex items-center justify-center">
       <HexagonMark />
       {PILLS.map((p, i) => <Pill key={p.label} {...p} i={i} />)}
     </div>
@@ -268,9 +268,11 @@ export function HeroSection() {
             <motion.p initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.55, duration: 0.8, ease }}
               className="mt-8 max-w-[480px] text-[1.05rem] leading-[1.8] text-ink-secondary">
-              redcore scans your hardware, builds a machine-specific plan,
-              then transforms your Windows install — guided, reversible, and
-              actually intelligent.
+              Fed up with bloated debloaters and broken scripts?
+              redcore gives Windows the clean pass it should have had.
+              <span className="block mt-3 text-[0.9rem] leading-[1.7] text-ink-tertiary">
+                We all want better FPS. Nobody wants a broken install.
+              </span>
             </motion.p>
 
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
