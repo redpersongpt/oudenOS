@@ -19,19 +19,14 @@ export default function SetupPage() {
   const [username, setUsername] = useState("");
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
+  const prefixedUsername =
+    session?.user?.email?.split("@")[0].replace(/[^a-zA-Z0-9_-]/g, "") ?? "";
 
   useEffect(() => {
     if (status === "unauthenticated") {
       router.push("/login");
     }
   }, [status, router]);
-
-  // Pre-fill with email prefix
-  useEffect(() => {
-    if (session?.user?.email && !username) {
-      setUsername(session.user.email.split("@")[0].replace(/[^a-zA-Z0-9_-]/g, ""));
-    }
-  }, [session, username]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -112,7 +107,7 @@ export default function SetupPage() {
               <input
                 id="username"
                 type="text"
-                value={username}
+                value={username || prefixedUsername}
                 onChange={(e) => setUsername(e.target.value)}
                 className="w-full h-11 px-3.5 rounded-lg bg-surface-card border border-border text-[14px] text-ink-primary placeholder:text-ink-tertiary outline-none focus:border-accent/50 transition-colors"
                 placeholder="your-username"

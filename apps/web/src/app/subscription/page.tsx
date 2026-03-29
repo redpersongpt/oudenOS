@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Navigation } from "@/components/brand/Navigation";
@@ -14,20 +13,15 @@ const fade = (delay: number) => ({
 });
 
 export default function SubscriptionPage() {
-  const [success, setSuccess] = useState(false);
+  const success =
+    typeof window !== "undefined"
+      ? new URLSearchParams(window.location.search).get("success") === "1"
+      : false;
 
-  useEffect(() => {
-    const value =
-      typeof window !== "undefined"
-        ? new URLSearchParams(window.location.search).get("success") === "1"
-        : false;
-    setSuccess(value);
-  }, []);
-
-  const title = success ? "Subscription Updated" : "Subscription Portal";
+  const title = success ? "License Updated" : "License Portal";
   const message = success
-    ? "Stripe finished successfully. Return to redcore Tuning and refresh your profile to pull the latest tier."
-    : "You can manage billing from the secure portal, then return to the desktop app.";
+    ? "Purchase completed. Return to redcore Tuning and refresh your profile to pull the latest license state."
+    : "Use this portal to manage your one-time redcore Tuning license, then return to the desktop app.";
 
   return (
     <>

@@ -2,10 +2,11 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, User, ArrowUpRight } from "lucide-react";
+import { Menu, X, User } from "lucide-react";
 import { useSession } from "next-auth/react";
+import Link from "next/link";
 import { Logo } from "@/components/brand/Logo";
-import { fadeIn, spring, duration, easing } from "@/lib/motion";
+import { fadeIn, duration, easing } from "@/lib/motion";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -97,10 +98,6 @@ function scrollToSection(sectionId: string) {
     // Not on homepage — navigate there with hash
     window.location.href = `/#${sectionId}`;
   }
-}
-
-function scrollToTop() {
-  window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
 // ─── Mobile Overlay ──────────────────────────────────────────────────────────
@@ -251,13 +248,13 @@ export function Navigation() {
         >
           <div className="mx-auto flex h-16 max-w-[1440px] items-center justify-between px-5 sm:px-6 lg:h-20 lg:px-8 2xl:px-16">
             {/* ── Logo ── */}
-            <a
+            <Link
               href="/"
               className="cursor-pointer"
               aria-label="Go to homepage"
             >
               <Logo size="md" />
-            </a>
+            </Link>
 
             {/* ── Desktop Nav ── */}
             <nav

@@ -9,7 +9,7 @@ import {
   CTAStrip,
   RelatedPages,
 } from "@/components/seo";
-import { REDCORE_OS_DOWNLOAD, getLatestRedcoreOsDownloadUrl } from "@/lib/downloads";
+import { getLatestRedcoreOsDownloadUrl } from "@/lib/downloads";
 import { Shield, RotateCcw } from "lucide-react";
 import Link from "next/link";
 
