@@ -21,6 +21,8 @@ jobs:
         run: pnpm install --frozen-lockfile
       - name: Questionnaire integrity audit
         run: pnpm --dir apps/os-desktop audit:questionnaire
+      - name: Action verification matrix audit
+        run: pnpm --dir apps/os-desktop audit:verification
       - uses: dtolnay/rust-toolchain@stable
       - name: Cargo build
         working-directory: services/os-service
@@ -28,6 +30,11 @@ jobs:
       - name: Cargo test
         working-directory: services/os-service
         run: cargo test -- --nocapture 2>&1
+      - name: Upload verification matrix artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: os-verification-matrix
+          path: artifacts/os-verification/**
 
       - name: IPC proof - full pipeline
         shell: pwsh
