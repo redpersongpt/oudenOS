@@ -10,6 +10,7 @@
 // - Dark background to prevent white flash
 
 import { app, BrowserWindow, ipcMain, session, shell } from "electron";
+import { existsSync } from "node:fs";
 import path from "node:path";
 import { spawn, type ChildProcess } from "node:child_process";
 import { createInterface } from "node:readline";
@@ -98,6 +99,16 @@ function callService(method: string, params: unknown): Promise<unknown> {
   });
 }
 
+function resolveWindowIconPath(): string | undefined {
+  const candidates = [
+    path.join(process.resourcesPath ?? "", "redcore-icon.png"),
+    path.resolve(__dirname, "../../resources/redcore-icon.png"),
+    path.resolve(app.getAppPath(), "resources/redcore-icon.png"),
+  ];
+
+  return candidates.find((candidate) => existsSync(candidate));
+}
+
 // ─── IPC handlers ───────────────────────────────────────────────────────────
 
 ipcMain.handle("service:call", async (_event, method: string, params: unknown) => {
@@ -148,7 +159,7 @@ ipcMain.handle("shell:openExternal", (_event, url: string) => {
 
 function createWindow(): BrowserWindow {
   const preloadPath = path.join(__dirname, "..", "preload", "index.js");
-  const iconPath = path.join(process.resourcesPath ?? __dirname, "redcore-icon.png");
+  const iconPath = resolveWindowIconPath();
 
   const win = new BrowserWindow({
     icon: iconPath,

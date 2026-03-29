@@ -3,8 +3,6 @@ import { motion } from "framer-motion";
 import { Check, Monitor, Package, Rocket, Server, Clock, Briefcase, Box } from "lucide-react";
 import { useWizardStore } from "@/stores/wizard-store";
 import type { DetectedProfile } from "@/stores/wizard-store";
-import { useSystemAnalysis } from "@/hooks/use-system-analysis";
-import { SystemAnalysisPanel } from "@/components/wizard/SystemAnalysisPanel";
 
 const CATEGORIES = [
   { id: "windows",  label: "Windows Version",    icon: Monitor,   desc: "Build & edition" },
@@ -28,55 +26,192 @@ const DEMO_PROFILE: DetectedProfile = {
   accentColor: "text-brand-400",
 };
 
+const PROFILE_LABELS: Record<string, string> = {
+  gaming_desktop: "Gaming Desktop",
+  budget_desktop: "Budget Desktop",
+  highend_workstation: "High-end Workstation",
+  office_laptop: "Office Laptop",
+  gaming_laptop: "Gaming Laptop",
+  low_spec_system: "Low-spec System",
+  vm_cautious: "Virtual Machine",
+  work_pc: "Work PC",
+};
+
+function isObject(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
+}
+
+function readString(value: unknown): string | null {
+  return typeof value === "string" && value.trim().length > 0 ? value : null;
+}
+
+function readNumber(value: unknown): number | null {
+  return typeof value === "number" && Number.isFinite(value) ? value : null;
+}
+
+function readBoolean(value: unknown): boolean | null {
+  return typeof value === "boolean" ? value : null;
+}
+
+function normalizeConfidence(value: unknown): number {
+  const num = readNumber(value);
+  if (num === null) return 80;
+  return num <= 1 ? Math.round(num * 100) : Math.round(num);
+}
+
+function normalizeSignals(value: unknown): string[] {
+  if (Array.isArray(value)) {
+    return value
+      .map((entry) => {
+        if (typeof entry === "string") return entry;
+        if (isObject(entry)) {
+          const factor = readString(entry.factor);
+          const detail = readString(entry.detail);
+          const indicator = readString(entry.indicator);
+          const val = readString(entry.value);
+          return factor ?? detail ?? indicator ?? val ?? null;
+        }
+        return null;
+      })
+      .filter((entry): entry is string => Boolean(entry));
+  }
+
+  if (isObject(value)) {
+    return Object.entries(value)
+      .filter(([, v]) => v !== null && v !== undefined && v !== false)
+      .map(([key, v]) => {
+        if (typeof v === "string" || typeof v === "number" || typeof v === "boolean") {
+          return `${key}: ${String(v)}`;
+        }
+        return key;
+      });
+  }
+
+  return [];
+}
+
+function deriveSignalsFromAssessment(assessment: Record<string, unknown>, isWorkPc: boolean): string[] {
+  const signals: string[] = [];
+  const hardware = isObject(assessment.hardware) ? assessment.hardware : {};
+  const workSignals = isObject(assessment.workSignals) ? assessment.workSignals : {};
+  const cpu = isObject(hardware.cpu) ? hardware.cpu : {};
+  const gpuValue = hardware.gpu;
+  const firstGpu = Array.isArray(gpuValue) ? gpuValue[0] : gpuValue;
+  const gpu = isObject(firstGpu) ? firstGpu : {};
+
+  const gpuName = readString(gpu.Name) ?? readString(gpu.name);
+  if (gpuName) signals.push(`${gpuName} detected`);
+
+  const ramGb = readNumber(hardware.ramGb);
+  if (ramGb !== null) signals.push(`${Math.round(ramGb)} GB RAM`);
+
+  const domainJoined = readBoolean(workSignals.domainJoined);
+  if (domainJoined === true) signals.push("Domain joined");
+  if (domainJoined === false) signals.push("No domain join");
+
+  const cpuCores = readNumber(cpu.NumberOfCores) ?? readNumber(cpu.cores);
+  if (cpuCores !== null) signals.push(`${Math.round(cpuCores)}-core CPU`);
+
+  if (isWorkPc) signals.push("Enterprise safeguards enabled");
+
+  return signals.slice(0, 6);
+}
+
+function normalizeDetectedProfileFromService(
+  assessmentValue: unknown,
+  classificationValue?: unknown,
+): DetectedProfile | null {
+  if (!isObject(assessmentValue)) return null;
+
+  // Backward compatibility for old mock payloads that already matched the UI type.
+  if (typeof assessmentValue.label === "string" && Array.isArray(assessmentValue.signals)) {
+    return {
+      id: readString(assessmentValue.id) ?? "gaming_desktop",
+      label: readString(assessmentValue.label) ?? "Gaming Desktop",
+      confidence: normalizeConfidence(assessmentValue.confidence),
+      isWorkPc: readBoolean(assessmentValue.isWorkPc) ?? false,
+      machineName: readString(assessmentValue.machineName) ?? "REDCORE-PC",
+      signals: normalizeSignals(assessmentValue.signals),
+      accentColor: readString(assessmentValue.accentColor) ?? "text-brand-400",
+    };
+  }
+
+  const classification = isObject(classificationValue) ? classificationValue : {};
+  const hardware = isObject(assessmentValue.hardware) ? assessmentValue.hardware : {};
+  const workIndicators = isObject(assessmentValue.workIndicators) ? assessmentValue.workIndicators : {};
+  const workSignals = isObject(assessmentValue.workSignals) ? assessmentValue.workSignals : {};
+
+  const profileId = readString(classification.primary) ?? "gaming_desktop";
+  const isWorkPc =
+    profileId === "work_pc" ||
+    readBoolean(workIndicators.isWorkPc) === true ||
+    readBoolean(workSignals.domainJoined) === true;
+
+  const machineName =
+    readString(hardware.hostname) ??
+    readString(assessmentValue.machineName) ??
+    readString(assessmentValue.hostname) ??
+    "REDCORE-PC";
+
+  const signals = [
+    ...normalizeSignals(classification.signals),
+    ...normalizeSignals(workIndicators.indicators),
+    ...deriveSignalsFromAssessment(assessmentValue, isWorkPc),
+  ];
+
+  return {
+    id: profileId,
+    label: PROFILE_LABELS[profileId] ?? profileId.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()),
+    confidence: normalizeConfidence(classification.confidence),
+    isWorkPc,
+    machineName,
+    signals: Array.from(new Set(signals)).slice(0, 6),
+    accentColor: "text-brand-400",
+  };
+}
+
 export function AssessmentStep() {
-  const { completeStep, setDetectedProfile, setDemoMode } = useWizardStore();
+  const { completeStep, setDetectedProfile, setDemoMode, setStepReady } = useWizardStore();
   const [statuses, setStatuses] = useState<Record<string, Status>>(
     Object.fromEntries(CATEGORIES.map((c) => [c.id, "idle"]))
   );
-  const [showAnalysis, setShowAnalysis] = useState(false);
   const started = useRef(false);
-  const { state: analysisState, isRunning: analysisRunning, run: runAnalysis, toggle: toggleRec } = useSystemAnalysis();
 
   useEffect(() => {
+    setStepReady("assessment", false);
     if (started.current) return;
     started.current = true;
     let aborted = false;
 
     const run = async () => {
       const { serviceCall } = await import("@/lib/service");
-      // Try real service — assess.full + hardware scan in parallel
       setStatuses(Object.fromEntries(CATEGORIES.map((c) => [c.id, "scanning"])));
-
-      const [assessResult, hardwareResult] = await Promise.allSettled([
-        serviceCall<DetectedProfile>("assess.full"),
-        serviceCall<object>("scan.hardware"),
-      ]);
+      const assessResult = await serviceCall<unknown>("assess.full");
 
       if (aborted) return;
 
-      // If assess.full succeeded, use real profile
-      if (assessResult.status === "fulfilled" && assessResult.value.ok) {
-        setStatuses(Object.fromEntries(CATEGORIES.map((c) => [c.id, "done"])));
-        setDetectedProfile(assessResult.value.data);
-        setDemoMode(false);
+      if (assessResult.ok) {
+        const assessment = assessResult.data;
+        const assessmentId = isObject(assessment) ? readString(assessment.id) : null;
+        const classifyParams = assessmentId ? { assessmentId } : { assessment };
+        const classificationResult = await serviceCall<unknown>("classify.machine", classifyParams);
+        if (aborted) return;
 
-        // Kick off system-analyzer pipeline with hardware data if available
-        if (
-          hardwareResult.status === "fulfilled" &&
-          hardwareResult.value.ok &&
-          hardwareResult.value.data &&
-          typeof hardwareResult.value.data === "object" &&
-          "cpu" in hardwareResult.value.data
-        ) {
-          setShowAnalysis(true);
-          runAnalysis(hardwareResult.value.data as Parameters<typeof runAnalysis>[0]);
+        const detectedProfile = normalizeDetectedProfileFromService(
+          assessment,
+          classificationResult.ok ? classificationResult.data : undefined,
+        );
+
+        if (detectedProfile) {
+          setStatuses(Object.fromEntries(CATEGORIES.map((c) => [c.id, "done"])));
+          setDetectedProfile(detectedProfile);
+          setDemoMode(false);
+          setTimeout(() => { if (!aborted) completeStep("assessment"); }, 800);
+          return;
         }
-
-        setTimeout(() => { if (!aborted) completeStep("assessment"); }, 800);
-        return;
       }
 
-      // Service unavailable — demo mode with simulated scan
+      // Service unavailable or malformed payload — demo mode with simulated scan
       setDemoMode(true);
       for (let i = 0; i < CATEGORIES.length; i++) {
         if (aborted) return;
@@ -95,7 +230,7 @@ export function AssessmentStep() {
 
     return () => { aborted = true; };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [setStepReady]);
 
   const done = Object.values(statuses).filter((s) => s === "done").length;
   const pct = Math.round((done / CATEGORIES.length) * 100);
@@ -167,17 +302,6 @@ export function AssessmentStep() {
           <span className="font-mono text-[10px] text-ink-disabled">{done}/{CATEGORIES.length}</span>
         </div>
       </div>
-
-      {/* System Analyzer pipeline panel — shown when hardware scan succeeds */}
-      {showAnalysis && (
-        <div className="w-full max-w-md">
-          <SystemAnalysisPanel
-            pipelineState={analysisState}
-            isRunning={analysisRunning}
-            onToggleRecommendation={toggleRec}
-          />
-        </div>
-      )}
     </motion.div>
   );
 }

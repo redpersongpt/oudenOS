@@ -27,10 +27,15 @@ function useCountUp(target: number, duration = 1100): number {
 // ── Component ────────────────────────────────────────────────────────────────
 
 export function ProfileStep() {
-  const { detectedProfile } = useWizardStore();
+  const { detectedProfile, setStepReady } = useWizardStore();
   const p = detectedProfile;
+  const signals = Array.isArray(p?.signals) ? p.signals : [];
 
   const displayConfidence = useCountUp(p?.confidence ?? 0, 1100);
+
+  useEffect(() => {
+    setStepReady("profile", Boolean(p));
+  }, [p, setStepReady]);
 
   if (!p) {
     return (
@@ -87,7 +92,7 @@ export function ProfileStep() {
 
       {/* Signal chips — staggered entrance */}
       <div className="flex flex-wrap justify-center gap-1.5">
-        {p.signals.map((s, i) => (
+        {signals.map((s, i) => (
           <motion.span
             key={s}
             initial={{ opacity: 0, scale: 0.82 }}

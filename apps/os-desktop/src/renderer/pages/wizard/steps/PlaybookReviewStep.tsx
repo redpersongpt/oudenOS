@@ -219,10 +219,11 @@ function buildMockPlaybook(profile: string, preset: string): ResolvedPlaybook {
 // ─── Component ───────────────────────────────────────────────────────────────
 
 export function PlaybookReviewStep() {
-  const { detectedProfile, playbookPreset, resolvedPlaybook, setResolvedPlaybook } = useWizardStore();
+  const { detectedProfile, playbookPreset, resolvedPlaybook, setResolvedPlaybook, setStepReady } = useWizardStore();
   const [loading, setLoading] = useState(!resolvedPlaybook);
 
   useEffect(() => {
+    setStepReady("playbook-review", false);
     if (resolvedPlaybook) return;
 
     const load = async () => {
@@ -245,7 +246,11 @@ export function PlaybookReviewStep() {
       }
     };
     load();
-  }, [detectedProfile, playbookPreset, resolvedPlaybook, setResolvedPlaybook]);
+  }, [detectedProfile, playbookPreset, resolvedPlaybook, setResolvedPlaybook, setStepReady]);
+
+  useEffect(() => {
+    setStepReady("playbook-review", !loading && Boolean(resolvedPlaybook));
+  }, [loading, resolvedPlaybook, setStepReady]);
 
   if (loading) return <PlaybookSkeleton />;
 

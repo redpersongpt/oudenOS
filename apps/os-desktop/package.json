@@ -17,7 +17,7 @@
     "build:preload": "tsc --project tsconfig.preload.json",
     "typecheck": "tsc --noEmit",
     "start": "electron dist/main/index.js",
-    "dist": "electron-builder --win --x64 --publish never"
+    "dist": "bash ../../scripts/sync-desktop-brand-assets.sh && electron-builder --win --x64 --publish never"
   },
   "dependencies": {
     "react": "^18.3.0",

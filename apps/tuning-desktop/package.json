@@ -13,7 +13,7 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "dist": "electron-builder --win --x64 --publish never"
+    "dist": "bash ../../scripts/sync-desktop-brand-assets.sh && electron-builder --win --x64 --publish never"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.0",
@@ -69,6 +69,10 @@
       {
         "from": "../../services/tuning-service/target/release/redcore-service.exe",
         "to": "redcore-service.exe"
+      },
+      {
+        "from": "resources/redcore-icon.png",
+        "to": "redcore-icon.png"
       }
     ],
     "win": {

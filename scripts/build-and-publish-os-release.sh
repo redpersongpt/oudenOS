@@ -101,6 +101,7 @@ popd >/dev/null
 
 echo "==> Building desktop app"
 pushd "$APP_DIR" >/dev/null
+bash "$ROOT_DIR/scripts/sync-desktop-brand-assets.sh"
 pnpm build
 rm -f dist/installers/"$STABLE_NAME"
 xvfb-run -a pnpm exec electron-builder --win --x64 --publish never -c.win.signAndEditExecutable=false
