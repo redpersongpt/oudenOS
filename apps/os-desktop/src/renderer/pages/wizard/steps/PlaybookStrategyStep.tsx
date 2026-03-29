@@ -1,722 +1,1094 @@
-// ─── Playbook Strategy — Sequential Question Flow ───────────────────────────
-// ONE question per screen. Sequential navigation. Branching based on answers.
-// Oneclick workflow mapped: power plan, defender, priority sep, timer res, search
-// plus expanded redcore-native questions around WebView, networking, optional
-// features, audio stack cleanup, and device-manager style risk surfaces.
+// ─── Playbook Strategy — Deep Questionnaire ─────────────────────────────────
+// One question per screen. Every answer maps to real playbook actions or real
+// preservation blocks applied in Playbook Review / Apply.
 
-import { useEffect, useState, useMemo, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import type { LucideIcon } from "lucide-react";
 import {
-  Shield, Zap, Globe, Eye, Briefcase, Gamepad2, Check,
-  ChevronRight, ChevronLeft, AlertTriangle, Info, Battery,
-  Cpu, Clock, Search,
+  AlertTriangle,
+  Battery,
+  ChevronLeft,
+  ChevronRight,
+  Clock,
+  Cpu,
+  Eye,
+  Gamepad2,
+  Globe,
+  HardDrive,
+  Info,
+  MonitorSpeaker,
+  Search,
+  Shield,
+  Sparkles,
+  Wrench,
+  Zap,
 } from "lucide-react";
-import { useDecisionsStore } from "@/stores/decisions-store";
+import {
+  useDecisionsStore,
+  type QuestionnaireAnswers,
+  type AggressionPreset,
+  type EdgeBehavior,
+  type TelemetryLevel,
+} from "@/stores/decisions-store";
 import { useWizardStore } from "@/stores/wizard-store";
 
-// ─── Shared primitives ──────────────────────────────────────────────────────
+type QuestionValue = string | boolean;
 
-function Option({ selected, onClick, title, desc, badge, badgeColor, danger }: {
-  selected: boolean; onClick: () => void; title: string; desc: string;
-  badge?: string; badgeColor?: string; danger?: boolean;
+interface QuestionOption {
+  value: QuestionValue;
+  title: string;
+  desc: string;
+  badge?: string;
+  badgeColor?: string;
+  danger?: boolean;
+}
+
+interface QuestionDefinition {
+  key: keyof QuestionnaireAnswers;
+  icon: LucideIcon;
+  label: string;
+  title: string;
+  desc: string;
+  note?: string;
+  options: QuestionOption[];
+  condition?: (answers: QuestionnaireAnswers, context: { isLaptop: boolean; isWorkPc: boolean }) => boolean;
+}
+
+function Option({
+  selected,
+  onClick,
+  title,
+  desc,
+  badge,
+  badgeColor,
+  danger,
+}: {
+  selected: boolean;
+  onClick: () => void;
+  title: string;
+  desc: string;
+  badge?: string;
+  badgeColor?: string;
+  danger?: boolean;
 }) {
   return (
-    <button onClick={onClick} className={`w-full flex items-start gap-3.5 rounded-xl border p-4 text-left transition-all ${
-      selected ? (danger ? "border-red-500/30 bg-red-500/[0.05]" : "border-brand-500/30 bg-brand-500/[0.06]")
-      : "border-white/[0.05] bg-white/[0.02] hover:border-white/[0.10]"
-    }`}>
-      <div className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full transition-colors ${
-        selected ? (danger ? "bg-red-500" : "bg-brand-500") : "border border-white/[0.15]"
-      }`}>
-        {selected && <Check className="h-3 w-3 text-white" strokeWidth={3} />}
-      </div>
-      <div className="flex-1">
-        <div className="flex items-center gap-2 flex-wrap">
-          <span className={`text-[13px] font-semibold ${selected ? "text-ink" : "text-ink-secondary"}`}>{title}</span>
-          {badge && <span className={`rounded px-1.5 py-0.5 text-[9px] font-bold uppercase ${badgeColor ?? "bg-white/[0.06] text-ink-muted"}`}>{badge}</span>}
+    <button
+      onClick={onClick}
+      className={`w-full rounded-xl border p-4 text-left transition-all ${
+        selected
+          ? danger
+            ? "border-red-500/30 bg-red-500/[0.05]"
+            : "border-brand-500/30 bg-brand-500/[0.06]"
+          : "border-white/[0.05] bg-white/[0.02] hover:border-white/[0.10]"
+      }`}
+    >
+      <div className="flex items-start gap-3.5">
+        <div
+          className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full transition-colors ${
+            selected
+              ? danger
+                ? "bg-red-500"
+                : "bg-brand-500"
+              : "border border-white/[0.15]"
+          }`}
+        >
+          {selected && <div className="h-2.5 w-2.5 rounded-full bg-white" />}
         </div>
-        <p className="mt-1 text-[11px] leading-[1.6] text-ink-tertiary">{desc}</p>
+        <div className="flex-1">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className={`text-[13px] font-semibold ${selected ? "text-ink" : "text-ink-secondary"}`}>
+              {title}
+            </span>
+            {badge && (
+              <span className={`rounded px-1.5 py-0.5 text-[9px] font-bold uppercase ${badgeColor ?? "bg-white/[0.06] text-ink-muted"}`}>
+                {badge}
+              </span>
+            )}
+          </div>
+          <p className="mt-1 text-[11px] leading-[1.6] text-ink-tertiary">{desc}</p>
+        </div>
       </div>
     </button>
   );
 }
 
-function Toggle({ label, desc, checked, onChange, warning }: {
-  label: string; desc: string; checked: boolean; onChange: (v: boolean) => void; warning?: string;
+function Screen({
+  icon: Icon,
+  label,
+  title,
+  desc,
+  note,
+  children,
+}: {
+  icon: LucideIcon;
+  label: string;
+  title: string;
+  desc: string;
+  note?: string;
+  children: ReactNode;
 }) {
   return (
-    <button onClick={() => onChange(!checked)} className="w-full flex items-start gap-3.5 rounded-xl border border-white/[0.04] hover:border-white/[0.08] p-4 text-left transition-all">
-      <div className={`mt-0.5 flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded transition-colors ${
-        checked ? "bg-brand-500" : "border border-white/[0.15]"
-      }`}>
-        {checked && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}
-      </div>
-      <div className="flex-1">
-        <div className="flex items-center gap-2">
-          <span className="text-[12px] font-semibold text-ink">{label}</span>
-          {warning && <AlertTriangle className="h-3 w-3 text-amber-400" />}
-        </div>
-        <p className="mt-0.5 text-[10px] leading-[1.6] text-ink-tertiary">{desc}</p>
-      </div>
-    </button>
-  );
-}
-
-function Screen({ icon: Icon, label, title, desc, note, children }: {
-  icon: typeof Shield; label: string; title: string; desc: string; note?: string; children: ReactNode;
-}) {
-  return (
-    <div className="flex flex-col h-full">
+    <div className="flex h-full flex-col">
       <div className="px-6 pt-5 pb-4">
-        <div className="flex items-center gap-2 mb-3">
+        <div className="mb-3 flex items-center gap-2">
           <Icon className="h-4 w-4 text-brand-400" />
           <span className="font-mono text-[10px] font-bold uppercase tracking-[0.12em] text-brand-400">{label}</span>
         </div>
-        <h2 className="text-[17px] font-bold tracking-tight text-ink leading-snug">{title}</h2>
-        <p className="mt-2 text-[11px] leading-[1.65] text-ink-secondary max-w-[500px]">{desc}</p>
+        <h2 className="text-[18px] font-bold tracking-tight text-ink leading-snug">{title}</h2>
+        <p className="mt-2 max-w-[560px] text-[11px] leading-[1.65] text-ink-secondary">{desc}</p>
         {note && (
           <div className="mt-2.5 flex items-start gap-1.5 text-[10px] text-ink-muted">
-            <Info className="h-3 w-3 mt-0.5 shrink-0" />
+            <Info className="mt-0.5 h-3 w-3 shrink-0" />
             <span className="leading-relaxed">{note}</span>
           </div>
         )}
       </div>
-      <div className="flex-1 overflow-y-auto px-6 pb-4 scrollbar-thin space-y-2">{children}</div>
+      <div className="flex-1 overflow-y-auto px-6 pb-4 scrollbar-thin space-y-2.5">{children}</div>
     </div>
   );
 }
 
-// ─── Question screens ───────────────────────────────────────────────────────
-
-// Q1 — Transformation depth
-function Q1() {
-  const { performance: p, setPerformance } = useDecisionsStore();
-  return (
-    <Screen icon={Shield} label="Transformation Depth" title="How aggressive should the transformation be?" desc="This determines which categories of changes are included. Conservative is always safe. Each level unlocks more powerful but riskier optimizations." note="Conservative is recommended for Work PCs. Balanced is recommended for most personal machines.">
-      <Option selected={p.aggressionLevel === "safe"} onClick={() => setPerformance({ aggressionLevel: "safe" })} title="Conservative — privacy and cleanup only" desc="Removes bloatware, disables telemetry, cleans ads and suggestions. Does not touch services, CPU scheduling, or system behavior. Nothing can break." badge="Safest" badgeColor="bg-emerald-500/15 text-emerald-400" />
-      <Option selected={p.aggressionLevel === "balanced"} onClick={() => setPerformance({ aggressionLevel: "balanced" })} title="Balanced — cleanup + performance tuning" desc="Everything above, plus: disables unnecessary services, tunes CPU scheduler, disables Game DVR, reduces AI features. Good for gaming PCs and personal machines." badge="Recommended" badgeColor="bg-brand-500/15 text-brand-400" />
-      <Option selected={p.aggressionLevel === "aggressive"} onClick={() => setPerformance({ aggressionLevel: "aggressive" })} title="Aggressive — deep system optimization" desc="Everything above, plus: core parking disabled, timer resolution tuned, dynamic tick disabled, PCIe power management off, network latency hardened. Requires reboot." />
-      <Option selected={p.aggressionLevel === "expert"} onClick={() => setPerformance({ aggressionLevel: "expert" })} title="Expert — full access including dangerous changes" desc="Everything above, plus: Edge removal options, HVCI/mitigation controls, deep service cleanup, Defender modification surfaces. Only for advanced users." badge="Advanced" badgeColor="bg-purple-500/15 text-purple-400" />
-    </Screen>
-  );
-}
-
-// Q2 — Power Plan (Oneclick core question)
-function QPowerPlan() {
-  const { performance: p, setPerformance } = useDecisionsStore();
-  return (
-    <Screen
-      icon={Zap}
-      label="Power Plan"
-      title="Which power plan should be activated?"
-      desc="The power plan controls CPU frequency scaling, core parking, sleep states, and USB power management. Higher performance plans keep the CPU at full speed at all times."
-      note="Ultimate Performance Idle-Off disables all CPU C-states — the CPU never sleeps. Only use this if your cooling is adequate, as temperatures will be significantly higher."
-    >
-      <Option
-        selected={p.powerPlan === "windows-balanced"}
-        onClick={() => setPerformance({ powerPlan: "windows-balanced" })}
-        title="Windows Balanced"
-        desc="Default Windows power plan. CPU scales dynamically based on workload. Recommended for laptops and machines where power draw matters."
-      />
-      <Option
-        selected={p.powerPlan === "ultimate"}
-        onClick={() => setPerformance({ powerPlan: "ultimate" })}
-        title="Ultimate Performance — Idle ON"
-        desc="Maximum CPU performance. Eliminates power-saving throttling while allowing idle states between bursts. Best for most gaming desktops — fast response with manageable temperatures."
-        badge="Recommended"
-        badgeColor="bg-brand-500/15 text-brand-400"
-      />
-      <Option
-        selected={p.powerPlan === "ultimate-idle-off"}
-        onClick={() => setPerformance({ powerPlan: "ultimate-idle-off" })}
-        title="Ultimate Performance — Idle OFF"
-        desc="Completely disables CPU C-states (idle/sleep). The CPU runs at maximum frequency 100% of the time — zero wake-up latency, lowest possible scheduler jitter, but significantly more heat."
-        badge="High heat"
-        badgeColor="bg-amber-500/15 text-amber-400"
-      />
-      {p.powerPlan === "ultimate-idle-off" && (
-        <div className="rounded-xl border border-amber-500/20 bg-amber-500/[0.04] p-4">
-          <p className="text-[11px] font-semibold text-amber-300">⚠ Thermal warning</p>
-          <p className="mt-1 text-[10px] leading-[1.6] text-amber-400/70">
-            With C-states disabled, your CPU will generate significantly more heat even when idle. Ensure your cooler is adequate before applying. Not recommended for laptops.
-          </p>
-        </div>
-      )}
-    </Screen>
-  );
-}
-
-// Q3 — Windows Defender (Oneclick security question — aggressive/expert only)
-function QDefender() {
-  const { security: s, setSecurity } = useDecisionsStore();
-  return (
-    <Screen
-      icon={Shield}
-      label="Security · Defender"
-      title="How should Windows Defender be handled?"
-      desc="Windows Defender provides real-time malware protection. Disabling it reduces background CPU and RAM usage but removes active threat detection entirely."
-      note="Keep Defender enabled on any machine used for browsing, email, or handling sensitive data. Only disable on isolated gaming rigs."
-    >
-      <Option
-        selected={s.defenderAction === "keep"}
-        onClick={() => setSecurity({ defenderAction: "keep" })}
-        title="Keep Windows Defender enabled"
-        desc="Full real-time protection. Defender runs background scans and blocks threats automatically. No change from Windows default."
-        badge="Recommended"
-        badgeColor="bg-brand-500/15 text-brand-400"
-      />
-      <Option
-        selected={s.defenderAction === "suppress"}
-        onClick={() => setSecurity({ defenderAction: "suppress" })}
-        title="Suppress — disable real-time scanning only"
-        desc="Turns off continuous file scanning and periodic background scans. Defender stays installed — you can re-enable it from Windows Security at any time."
-      />
-      <Option
-        selected={s.defenderAction === "disable"}
-        onClick={() => setSecurity({ defenderAction: "disable" })}
-        title="Disable completely via Dcontrol"
-        desc="Uses Dcontrol to disable Tamper Protection and fully shut down Defender. Requires manual re-enable through the same tool. No real-time, on-access, or scheduled protection."
-        badge="High risk"
-        badgeColor="bg-red-500/15 text-red-400"
-        danger
-      />
-      {s.defenderAction === "disable" && (
-        <div className="rounded-xl border border-red-500/20 bg-red-500/[0.04] p-4">
-          <p className="text-[11px] font-semibold text-red-400">⚠ Security risk</p>
-          <p className="mt-1 text-[10px] leading-[1.6] text-red-400/70">
-            With Defender fully disabled, malware, ransomware, and keyloggers will not be detected or blocked. Only apply this on a dedicated offline gaming machine. You accept full responsibility for security after this change.
-          </p>
-        </div>
-      )}
-    </Screen>
-  );
-}
-
-// Q4 — CPU Priority Separation (Oneclick Win32PrioritySeparation)
-function QPrioritySep() {
-  const { performance: p, setPerformance } = useDecisionsStore();
-  return (
-    <Screen
-      icon={Cpu}
-      label="CPU Scheduler"
-      title="How should Windows prioritize CPU time?"
-      desc="Win32PrioritySeparation controls how much extra CPU scheduling time the foreground process (your active game or window) receives compared to background processes."
-      note="Higher foreground boost = lower input lag and tighter frame pacing, but background tasks (streaming, downloads) get less CPU time."
-    >
-      <Option
-        selected={p.prioritySeparation === "balanced"}
-        onClick={() => setPerformance({ prioritySeparation: "balanced" })}
-        title="Balanced (26 decimal)"
-        desc="Default Windows behavior. Equal scheduling slots for foreground and background. Best for streaming, rendering, or multitasking while gaming."
-      />
-      <Option
-        selected={p.prioritySeparation === "latency"}
-        onClick={() => setPerformance({ prioritySeparation: "latency" })}
-        title="Latency mode (36 decimal)"
-        desc="Increases foreground process priority. Reduces input lag and scheduler jitter by giving your active game more CPU scheduling time. Recommended for competitive gaming."
-        badge="Recommended"
-        badgeColor="bg-brand-500/15 text-brand-400"
-      />
-      <Option
-        selected={p.prioritySeparation === "fps"}
-        onClick={() => setPerformance({ prioritySeparation: "fps" })}
-        title="FPS mode (42 decimal)"
-        desc="Maximum foreground boost. The active process dominates CPU scheduling. Highest raw FPS ceiling — at the cost of background task performance and multitasking stability."
-      />
-    </Screen>
-  );
-}
-
-// Q5 — Timer Resolution (Oneclick SetTimerResolution — aggressive/expert only)
-function QTimerRes() {
-  const { performance: p, setPerformance } = useDecisionsStore();
-  return (
-    <Screen
-      icon={Clock}
-      label="Timer Resolution"
-      title="Should the system timer resolution be locked?"
-      desc="Windows uses a variable timer (15.6ms default, 0.5ms when apps request it). Locking it to a fixed low value ensures consistent frame pacing and eliminates scheduler jitter between high and low load states."
-      note="A startup entry (SetTimerResolution.exe) is added to maintain the locked value after reboot. This only affects scheduling precision — not CPU frequency."
-    >
-      <Option
-        selected={p.timerResolution === "system"}
-        onClick={() => setPerformance({ timerResolution: "system" })}
-        title="System-managed (default)"
-        desc="Windows and applications set timer resolution dynamically. Varies between 15.6ms at idle and 0.5ms when games are running. Saves power when the system is idle."
-      />
-      <Option
-        selected={p.timerResolution === "locked-05ms"}
-        onClick={() => setPerformance({ timerResolution: "locked-05ms" })}
-        title="Locked at 0.5ms (5000μs)"
-        desc="Forces minimum timer resolution system-wide at all times. Provides the most consistent frame pacing and lowest scheduler jitter — even in menus or between rounds. Recommended for competitive FPS."
-        badge="Recommended"
-        badgeColor="bg-brand-500/15 text-brand-400"
-      />
-      <Option
-        selected={p.timerResolution === "locked-1ms"}
-        onClick={() => setPerformance({ timerResolution: "locked-1ms" })}
-        title="Locked at 1ms (10000μs)"
-        desc="A middle ground between precision and power consumption. Better consistency than system-managed, less aggressive than 0.5ms. Good for mixed gaming and productivity workloads."
-      />
-    </Screen>
-  );
-}
-
-// Q6 — Windows Search & Start Menu (Oneclick search removal)
-function QSearch() {
-  const { system: s, setSystem } = useDecisionsStore();
-  return (
-    <Screen
-      icon={Search}
-      label="Start Menu & Search"
-      title="What should happen to Windows Search?"
-      desc="Windows Search runs SearchIndexer.exe continuously to index your drive. It integrates into the Start Menu and Taskbar. Removing it eliminates constant background disk and CPU activity."
-      note="If removed, the Start Menu will no longer find files or settings by typing. The Open Shell Menu replacement can be installed in the App Setup step."
-    >
-      <Option
-        selected={s.searchAction === "keep"}
-        onClick={() => setSystem({ searchAction: "keep" })}
-        title="Keep Windows Search"
-        desc="No modification. SearchIndexer.exe continues running. Start Menu file search, settings search, and quick launch work normally."
-      />
-      <Option
-        selected={s.searchAction === "remove"}
-        onClick={() => setSystem({ searchAction: "remove" })}
-        title="Remove Windows Search"
-        desc="Disables SearchIndexer.exe and SearchHost.exe. Reduces background disk and CPU activity. Requires a restart. Open Shell Menu is recommended as a Start Menu replacement."
-        badge="Requires restart"
-        badgeColor="bg-amber-500/15 text-amber-400"
-      />
-      {s.searchAction === "remove" && (
-        <div className="rounded-xl border border-amber-500/20 bg-amber-500/[0.04] p-4">
-          <p className="text-[11px] font-semibold text-amber-300">What breaks</p>
-          <p className="mt-1 text-[10px] leading-[1.6] text-amber-400/70">
-            After removing Windows Search: Start Menu typing will not find files or apps. File Explorer search still works via the address bar. Settings and Control Panel can still be opened manually. Open Shell Menu (available in App Setup) restores a classic Start Menu experience.
-          </p>
-        </div>
-      )}
-    </Screen>
-  );
-}
-
-function QWebView() {
-  const { browser: b, setBrowser } = useDecisionsStore();
-  return (
-    <Screen
-      icon={Globe}
-      label="WebView2 Runtime"
-      title="Should Microsoft WebView2 be preserved?"
-      desc="WebView2 is the embedded browser runtime used by Teams, Widgets, many installers, launcher UIs, and some Electron-adjacent Windows apps. Removing it cuts Microsoft web baggage, but a lot of apps quietly depend on it."
-      note="This is one of the easiest ways to break modern Windows app surfaces without realizing why. Keep it unless you are building a stripped personal machine and know your app stack."
-    >
-      <Option
-        selected={b.webviewAction === "keep"}
-        onClick={() => setBrowser({ webviewAction: "keep" })}
-        title="Keep WebView2"
-        desc="Preserve embedded browser runtimes for Teams, Office sign-in, Widgets, launchers, and installer flows."
-        badge="Recommended"
-        badgeColor="bg-brand-500/15 text-brand-400"
-      />
-      <Option
-        selected={b.webviewAction === "remove"}
-        onClick={() => setBrowser({ webviewAction: "remove" })}
-        title="Remove WebView2 where possible"
-        desc="Strip Microsoft embedded browser components aggressively. Can break Teams, Widgets, Outlook sign-in panes, launchers, and setup flows that silently rely on WebView2."
-        badge="High risk"
-        badgeColor="bg-red-500/15 text-red-400"
-        danger
-      />
-    </Screen>
-  );
-}
-
-function QNetwork() {
-  const { network: n, setNetwork } = useDecisionsStore();
-  return (
-    <Screen
-      icon={Globe}
-      label="Network Tweaks"
-      title="How far should networking tweaks go?"
-      desc="Oneclick exposes aggressive NIC and TCP changes. Some of them help competitive latency, but the wrong combination can hurt throughput, Wi-Fi stability, or VPN behavior."
-      note="For most users, the right answer is conservative network cleanup, not extreme adapter tuning."
-    >
-      <Option
-        selected={n.tweakLevel === "keep-default"}
-        onClick={() => setNetwork({ tweakLevel: "keep-default" })}
-        title="Keep network defaults"
-        desc="No adapter-level tuning. Safest option for mixed Wi-Fi, Ethernet, VPN, and office use."
-        badge="Safest"
-        badgeColor="bg-emerald-500/15 text-emerald-400"
-      />
-      <Option
-        selected={n.tweakLevel === "latency-safe"}
-        onClick={() => setNetwork({ tweakLevel: "latency-safe" })}
-        title="Latency-safe tuning"
-        desc="Apply the low-risk network changes only: background noise reduction, delivery optimization reduction, and gamer-friendly defaults without hard-forcing NIC behavior."
-        badge="Recommended"
-        badgeColor="bg-brand-500/15 text-brand-400"
-      />
-      <Option
-        selected={n.tweakLevel === "aggressive"}
-        onClick={() => setNetwork({ tweakLevel: "aggressive" })}
-        title="Aggressive adapter tuning"
-        desc="Push deeper NIC and stack behavior for minimum latency. Best reserved for wired gaming systems where you are willing to troubleshoot adapter-specific regressions."
-        badge="Advanced"
-        badgeColor="bg-amber-500/15 text-amber-400"
-      />
-    </Screen>
-  );
-}
-
-function QOptionalFeatures() {
-  const { optionalFeatures: o, setOptionalFeatures } = useDecisionsStore();
-  return (
-    <Screen
-      icon={Briefcase}
-      label="Optional Features"
-      title="Which Windows optional features must be preserved?"
-      desc="Hyper-V, WSL, and Windows Sandbox are easy collateral damage during aggressive cleanup. If you use developer tools, Android emulators, Docker, virtual machines, or lab environments, preserve them explicitly."
-      note="These answers tell redcore OS where not to be clever."
-    >
-      <Toggle label="Preserve Hyper-V / virtualization stack" desc="Keep virtualization support safe for Hyper-V, Docker Desktop, Android emulators, and VM workflows." checked={o.preserveVirtualization} onChange={(v) => setOptionalFeatures({ preserveVirtualization: v })} />
-      <Toggle label="Preserve Windows Sandbox" desc="Keep Sandbox-related Windows features untouched for disposable lab sessions and malware-safe testing." checked={o.preserveWindowsSandbox} onChange={(v) => setOptionalFeatures({ preserveWindowsSandbox: v })} />
-      <Toggle label="Preserve WSL" desc="Keep Windows Subsystem for Linux and related feature dependencies intact." checked={o.preserveWsl} onChange={(v) => setOptionalFeatures({ preserveWsl: v })} />
-    </Screen>
-  );
-}
-
-function QAudio() {
-  const { audio: a, setAudio } = useDecisionsStore();
-  return (
-    <Screen
-      icon={Cpu}
-      label="Audio Stack"
-      title="How should OEM audio software be handled?"
-      desc="Oneclick exposes an audio bloat removal path. It can remove vendor suites like Realtek enhancements, Sonic Studio, Nahimic-style extras, and other OEM audio layers. That can reduce junk, but it can also kill audio enhancements or break sound until drivers are reinstalled."
-      note="If you rely on motherboard or laptop vendor audio effects, do not go aggressive here."
-    >
-      <Option
-        selected={a.cleanupLevel === "keep-default"}
-        onClick={() => setAudio({ cleanupLevel: "keep-default" })}
-        title="Keep the current audio stack"
-        desc="Leave OEM audio services and enhancements alone. Safest for laptops and boards with custom codec packages."
-        badge="Recommended"
-        badgeColor="bg-brand-500/15 text-brand-400"
-      />
-      <Option
-        selected={a.cleanupLevel === "remove-extras"}
-        onClick={() => setAudio({ cleanupLevel: "remove-extras" })}
-        title="Remove obvious audio extras only"
-        desc="Target the obvious enhancement suites and helper apps while leaving the core audio path intact where possible."
-      />
-      <Option
-        selected={a.cleanupLevel === "aggressive"}
-        onClick={() => setAudio({ cleanupLevel: "aggressive" })}
-        title="Aggressive audio cleanup"
-        desc="Strip vendor audio background layers hard. Highest chance of requiring a manual driver reinstall afterward."
-        badge="Risky"
-        badgeColor="bg-red-500/15 text-red-400"
-        danger
-      />
-    </Screen>
-  );
-}
-
-function QDeviceManager() {
-  const { deviceManager: d, setDeviceManager } = useDecisionsStore();
-  return (
-    <Screen
-      icon={Cpu}
-      label="Device Manager"
-      title="Should deeper device-level tweaks be allowed?"
-      desc="Oneclick-style device-manager tuning usually means disabling selected power-saving behavior on USB, network, storage, and related devices. This can reduce wake latency, but it is more hardware-sensitive than normal registry or service tweaks."
-      note="Good for desktops chasing consistency. Less safe for laptops, docking setups, Bluetooth-heavy systems, and mixed-use work machines."
-    >
-      <Option
-        selected={d.tweakLevel === "off"}
-        onClick={() => setDeviceManager({ tweakLevel: "off" })}
-        title="No device-manager tweaks"
-        desc="Leave hardware-level device behavior alone."
-        badge="Safest"
-        badgeColor="bg-emerald-500/15 text-emerald-400"
-      />
-      <Option
-        selected={d.tweakLevel === "power-saving-only"}
-        onClick={() => setDeviceManager({ tweakLevel: "power-saving-only" })}
-        title="Safe power-saving cleanup"
-        desc="Only touch low-risk device power-saving behavior where it commonly affects responsiveness."
-        badge="Recommended"
-        badgeColor="bg-brand-500/15 text-brand-400"
-      />
-      <Option
-        selected={d.tweakLevel === "aggressive"}
-        onClick={() => setDeviceManager({ tweakLevel: "aggressive" })}
-        title="Aggressive hardware tuning"
-        desc="Allow deeper device-level changes intended for enthusiast systems. Highest risk of per-device regressions."
-        badge="Advanced"
-        badgeColor="bg-amber-500/15 text-amber-400"
-      />
-    </Screen>
-  );
-}
-
-// Q7 — Edge/browser (existing, renumbered)
-function QEdge() {
-  const { browser: b, setBrowser } = useDecisionsStore();
-  return (
-    <Screen icon={Globe} label="Browser · Edge" title="What should happen with Microsoft Edge?" desc="Edge preloads at startup, runs background processes even when closed, and aggressively promotes itself as default browser." note="Suppression is safe and recommended. Full removal is irreversible — install an alternative browser first.">
-      <Option selected={b.edgeAction === "keep"} onClick={() => setBrowser({ edgeAction: "keep" })} title="Keep Edge unchanged" desc="No modifications. Choose this if you actively use Edge as your primary browser." />
-      <Option selected={b.edgeAction === "suppress"} onClick={() => setBrowser({ edgeAction: "suppress" })} title="Suppress background behavior" desc="Disable preloading, startup boost, background mode, and default browser nags. Edge still works when you open it. Reclaims 100–300 MB RAM." badge="Recommended" badgeColor="bg-brand-500/15 text-brand-400" />
-      <Option selected={b.edgeAction === "disable-updates"} onClick={() => setBrowser({ edgeAction: "disable-updates" })} title="Suppress + disable auto-updates" desc="Everything above, plus prevent Edge from auto-updating or reinstalling. Edge keeps working but stays on current version." />
-      <Option selected={b.edgeAction === "remove"} onClick={() => setBrowser({ edgeAction: "remove" })} title="Remove Edge completely" desc="Permanent uninstall. Cannot be undone from within Windows. Help, Feedback, and some Settings pages will fail to open web links." badge="High risk" badgeColor="bg-red-500/15 text-red-400" danger />
-      {b.edgeAction === "remove" && (
-        <div className="rounded-xl border border-red-500/20 bg-red-500/[0.04] p-4">
-          <p className="text-[11px] font-semibold text-red-400">⚠ Last warning</p>
-          <p className="mt-1 text-[10px] leading-[1.6] text-red-400/70">Edge removal is irreversible. Install Brave or another browser FIRST. WebView2-dependent apps (Teams, Widgets) may also break.</p>
-        </div>
-      )}
-    </Screen>
-  );
-}
-
-// Q8 — Privacy (existing)
-function QPrivacy() {
-  const { privacy: p, setPrivacy } = useDecisionsStore();
-  return (
-    <Screen icon={Eye} label="Privacy & AI" title="Which privacy and AI features should be disabled?" desc="Windows 11 includes Recall (screen capture AI), Copilot (AI sidebar), AI features in Paint/Notepad/Edge, telemetry services, and ad tracking." note="All of these are safe to disable with no functional impact on normal Windows use.">
-      <Toggle label="Disable Windows Recall" desc="Prevents continuous screen capture for AI-powered activity search. Recall stores a visual history of everything on screen." checked={p.disableRecall} onChange={(v) => setPrivacy({ disableRecall: v })} />
-      <Toggle label="Disable Copilot sidebar" desc="Removes the AI assistant from the taskbar. Prevents background AI service from auto-starting." checked={p.disableCopilot} onChange={(v) => setPrivacy({ disableCopilot: v })} />
-      <Toggle label="Disable AI in system apps" desc="Disables AI features in Paint (Cocreator, Image Creator), Notepad (AI rewrite), and Edge (Copilot, AI compose)." checked={p.disableAiApps} onChange={(v) => setPrivacy({ disableAiApps: v })} />
-      <Toggle label="Remove Windows suggestions and ads" desc="Start menu suggestions, lock screen tips, notification spam, sync provider ads, account nags, welcome tips." checked={p.disableSuggestionsAds} onChange={(v) => setPrivacy({ disableSuggestionsAds: v })} />
-      <Toggle label="Disable activity history and tracking" desc="Stops timeline, clipboard cloud sync, activity feed uploads, app launch tracking, and tailored experience data." checked={p.disableActivityHistory} onChange={(v) => setPrivacy({ disableActivityHistory: v })} />
-      <div className="pt-2 border-t border-white/[0.04] mt-2">
-        <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-ink-muted mb-2">Telemetry reduction depth</p>
-        <Option selected={p.telemetryLevel === "conservative"} onClick={() => setPrivacy({ telemetryLevel: "conservative" })} title="Conservative" desc="Set diagnostic data to Required level. Disable advertising ID, CEIP, and error reporting. Basic device data still collected." />
-        <div className="h-2" />
-        <Option selected={p.telemetryLevel === "aggressive"} onClick={() => setPrivacy({ telemetryLevel: "aggressive" })} title="Aggressive" desc="Disable all telemetry services (DiagTrack, dmwappushservice), SIUF feedback, speech/inking data, and Edge telemetry." />
-      </div>
-    </Screen>
-  );
-}
-
-// Q9 — Work compat (existing, conditional)
-function QWork() {
-  const { workCompat: w, setWorkCompat } = useDecisionsStore();
-  return (
-    <Screen icon={Briefcase} label="Work compatibility" title="Which business services does this machine need?" desc="Services you enable here will be preserved — they will not be disabled or removed during transformation." note="If you're unsure, keep it enabled. It's safer to preserve a dependency than to discover it's missing later.">
-      <Toggle label="Printing (Print Spooler)" desc="Required for local and network printers. The Print Spooler has been targeted by security vulnerabilities but is necessary for printing." checked={w.needsPrinting} onChange={(v) => setWorkCompat({ needsPrinting: v })} />
-      <Toggle label="Remote Desktop (RDP)" desc="Required for IT remote support and remote work sessions via Windows Remote Desktop Connection." checked={w.needsRdp} onChange={(v) => setWorkCompat({ needsRdp: v })} />
-      <Toggle label="Network file sharing (SMB)" desc="Required for mapped network drives, shared folders, and accessing files on other PCs or NAS devices." checked={w.needsSmb} onChange={(v) => setWorkCompat({ needsSmb: v })} />
-      <Toggle label="Domain / Group Policy" desc="Required for Active Directory managed environments. If your PC is joined to a company domain, keep this enabled." checked={w.needsDomainGpo} onChange={(v) => setWorkCompat({ needsDomainGpo: v })} />
-      <Toggle label="Teams / Office 365 / Outlook" desc="Preserves WebView2 runtime, Edge compatibility, and Microsoft meeting/collaboration infrastructure." checked={w.needsTeamsOffice} onChange={(v) => setWorkCompat({ needsTeamsOffice: v })} />
-      <Toggle label="Remote support tools" desc="TeamViewer, AnyDesk, Quick Assist — these need background services running to accept connections." checked={w.needsRemoteSupport} onChange={(v) => setWorkCompat({ needsRemoteSupport: v })} />
-    </Screen>
-  );
-}
-
-// Q10 — Gaming (existing, conditional)
-function QGaming() {
-  const { gaming: g, setGaming } = useDecisionsStore();
-  return (
-    <Screen icon={Gamepad2} label="Gaming & anti-cheat" title="Configure gaming-specific optimizations." desc="These settings affect overlays, anti-cheat compatibility, background recording, and fullscreen behavior." note="Anti-cheat games (Valorant, FACEIT, THE FINALS) require specific Windows features. Disabling them may cause bans.">
-      <Toggle label="Anti-cheat safe mode" desc="Only apply changes verified safe with Vanguard, FACEIT, and EAC. Keeps TPM, Secure Boot, and Memory Integrity requirements met." checked={g.antiCheatSafe} onChange={(v) => setGaming({ antiCheatSafe: v })} warning={!g.antiCheatSafe ? "Game bans possible" : undefined} />
-      <Toggle label="Competitive latency priority" desc="Enables scheduler, timer, and service changes optimized for lowest possible input latency." checked={g.competitiveGaming} onChange={(v) => setGaming({ competitiveGaming: v })} />
-      <Toggle label="Keep GPU vendor overlays" desc="Preserve ShadowPlay (Nvidia) and Adrenalin overlay (AMD) features. Disabling reduces GPU driver overhead." checked={g.preserveOverlays} onChange={(v) => setGaming({ preserveOverlays: v })} />
-      <Toggle label="Disable Game DVR" desc="Stops Windows from silently recording gameplay. Frees GPU resources and reduces frame time variance." checked={g.disableGameDvr} onChange={(v) => setGaming({ disableGameDvr: v })} />
-      <Toggle label="Disable fullscreen optimizations" desc="Forces true exclusive fullscreen instead of borderless windowed. Reduces input lag but may affect Alt+Tab." checked={g.disableFullscreenOpt} onChange={(v) => setGaming({ disableFullscreenOpt: v })} />
-    </Screen>
-  );
-}
-
-// Q11 — Power/battery (existing, conditional)
-function QPower() {
-  const { power: p, setPower } = useDecisionsStore();
-  return (
-    <Screen icon={Battery} label="Power & battery" title="How should this laptop handle power?" desc="Aggressive performance tuning increases power consumption and heat. These settings protect battery life and sleep behavior." note="If battery life matters, keep these enabled. Performance tweaks that increase power draw will be blocked.">
-      <Toggle label="Battery life is a priority" desc="Blocks aggressive CPU, GPU, and PCIe power changes that increase power consumption. Keeps core parking, ASPM, and USB selective suspend." checked={p.batteryImportant} onChange={(v) => setPower({ batteryImportant: v })} />
-      <Toggle label="Preserve Modern Standby" desc="Keeps instant wake and background sync during sleep. Disabling forces legacy S3 sleep — no background activity, but slower wake." checked={p.preserveModernStandby} onChange={(v) => setPower({ preserveModernStandby: v })} />
-      <Toggle label="Preserve Fast Startup" desc="Keeps hybrid shutdown for faster boot. Disabling ensures every boot is a clean kernel initialization — more reliable but slower." checked={p.preserveFastWake} onChange={(v) => setPower({ preserveFastWake: v })} />
-    </Screen>
-  );
-}
-
-// ─── Sequencer ──────────────────────────────────────────────────────────────
-
-interface QDef {
-  id: string;
-  component: () => JSX.Element;
-  condition?: () => boolean;
-  isAnswered?: () => boolean;
+function makeBooleanQuestion(
+  key: keyof QuestionnaireAnswers,
+  icon: LucideIcon,
+  label: string,
+  title: string,
+  desc: string,
+  yesTitle: string,
+  yesDesc: string,
+  noTitle: string,
+  noDesc: string,
+  note?: string,
+  condition?: QuestionDefinition["condition"],
+  yesBadge?: string,
+  yesBadgeColor?: string,
+  yesDanger?: boolean,
+): QuestionDefinition {
+  return {
+    key,
+    icon,
+    label,
+    title,
+    desc,
+    note,
+    condition,
+    options: [
+      { value: true, title: yesTitle, desc: yesDesc, badge: yesBadge, badgeColor: yesBadgeColor, danger: yesDanger },
+      { value: false, title: noTitle, desc: noDesc },
+    ],
+  };
 }
 
 export function PlaybookStrategyStep() {
-  const decisions = useDecisionsStore();
-  const { detectedProfile, setStepReady } = useWizardStore();
-  const isWorkPc = detectedProfile?.isWorkPc ?? false;
+  const { answers, impact, setAnswer } = useDecisionsStore();
+  const { detectedProfile, playbookPreset, setPlaybookPreset, setStepReady } = useWizardStore();
 
-  const questions: QDef[] = useMemo(() => [
-    // ── Core: always shown ────────────────────────────────────────────────
-    { id: "q-aggression",    component: Q1, isAnswered: () => decisions.performance.aggressionLevel !== null },
-    { id: "q-power-plan",    component: QPowerPlan, isAnswered: () => decisions.performance.powerPlan !== null },
+  const context = useMemo(
+    () => ({
+      isLaptop: detectedProfile?.id === "gaming_laptop" || detectedProfile?.id === "office_laptop",
+      isWorkPc: detectedProfile?.isWorkPc ?? false,
+    }),
+    [detectedProfile],
+  );
 
-    // ── Oneclick security — aggressive/expert only ────────────────────────
+  const questions = useMemo<QuestionDefinition[]>(() => [
     {
-      id: "q-defender",
-      component: QDefender,
-      isAnswered: () => decisions.security.defenderAction !== null,
-      condition: () =>
-        decisions.performance.aggressionLevel === "aggressive" ||
-        decisions.performance.aggressionLevel === "expert",
+      key: "aggressionPreset",
+      icon: Shield,
+      label: "Transformation Depth",
+      title: "How hard should redcore OS push this machine?",
+      desc: "This is the mainline preset. It decides how much of the playbook is eligible before your per-question answers start forcing things in or out.",
+      note: "Conservative is for caution. Balanced is for most tuned personal machines. Aggressive and Expert expose deeper latency/security tradeoffs.",
+      options: [
+        {
+          value: "conservative" satisfies AggressionPreset,
+          title: "Conservative",
+          desc: "Focus on cleanup, basic privacy reduction, and low-risk ergonomics. Leaves the deeper scheduler, power, and protocol questions out.",
+          badge: "Safest",
+          badgeColor: "bg-emerald-500/15 text-emerald-400",
+        },
+        {
+          value: "balanced" satisfies AggressionPreset,
+          title: "Balanced",
+          desc: "The serious default. Enables meaningful performance and privacy questions without drifting into enthusiast-only territory.",
+          badge: "Recommended",
+          badgeColor: "bg-brand-500/15 text-brand-400",
+        },
+        {
+          value: "aggressive" satisfies AggressionPreset,
+          title: "Aggressive",
+          desc: "Unlocks deeper latency, networking, and power-management questions meant for tuned personal rigs.",
+        },
+        {
+          value: "expert" satisfies AggressionPreset,
+          title: "Expert",
+          desc: "Unlocks mitigation and HVCI questions along with the highest-risk browser/network/security tradeoffs.",
+          badge: "Advanced",
+          badgeColor: "bg-purple-500/15 text-purple-400",
+        },
+      ],
     },
-
-    // ── Oneclick CPU scheduler — balanced and above ───────────────────────
+    makeBooleanQuestion(
+      "highPerformancePlan",
+      Battery,
+      "Power Plan",
+      "Activate the Windows High Performance power plan?",
+      "This forces Windows away from the default power-saving bias so the CPU stops dipping as aggressively between bursts.",
+      "Yes — use High Performance",
+      "Better responsiveness and less ramp-up delay under game and desktop load.",
+      "No — keep Windows power defaults",
+      "Safer for mixed-use or battery-conscious machines.",
+      "This is the most defensible baseline tweak from both enthusiast guides and real-world tuning work.",
+      undefined,
+      "Core",
+      "bg-brand-500/15 text-brand-400",
+    ),
+    makeBooleanQuestion(
+      "optimizeThreadPriority",
+      Cpu,
+      "CPU Scheduler",
+      "Apply foreground-biased thread priority tuning?",
+      "This maps to Win32PrioritySeparation. It pushes the active foreground workload ahead of background noise.",
+      "Yes — bias CPU time toward the active app",
+      "Useful for games and latency-sensitive foreground work.",
+      "No — keep Windows scheduler defaults",
+      "Better if you prefer untouched desktop multitasking behavior.",
+      "Oneclick exposes multiple values here; redcore OS only asks what it can actually apply today.",
+      (state) => state.aggressionPreset !== "conservative",
+      "Oneclick Core",
+      "bg-brand-500/15 text-brand-400",
+    ),
+    makeBooleanQuestion(
+      "globalTimerResolution",
+      Clock,
+      "Timer Behavior",
+      "Restore global timer-resolution requests on supported Windows builds?",
+      "This is the real Windows 11 timer question redcore OS can honestly apply: whether the system should honor global timer-resolution behavior again.",
+      "Yes — restore global timer behavior",
+      "Lets one process' timer request benefit the whole system again.",
+      "No — keep modern per-process timer behavior",
+      "More power-efficient and closer to stock Windows scheduling.",
+      "This is not the fake 0.5 ms lock many tools advertise. It is the actual GlobalTimerResolutionRequests path the playbook contains.",
+      (state) => state.aggressionPreset !== "conservative",
+      "PC-Tuning",
+      "bg-brand-500/15 text-brand-400",
+    ),
+    makeBooleanQuestion(
+      "disableIndexing",
+      HardDrive,
+      "Search Indexing",
+      "Disable Windows Search indexing?",
+      "Indexing keeps background I/O and CPU pressure around so Start and Explorer search stay fast. Turning it off trades convenience for quietness.",
+      "Yes — disable indexing",
+      "Reduces background disk churn and CPU spikes from the indexer.",
+      "No — keep indexing enabled",
+      "Better if you actively use Start or file search.",
+      "This is the measurable part of the old “search removal” culture that actually exists in the playbook.",
+      undefined,
+      "Search",
+      "bg-brand-500/15 text-brand-400",
+    ),
+    makeBooleanQuestion(
+      "stripSearchWebNoise",
+      Search,
+      "Search Web Noise",
+      "Strip web results, search highlights, history, and the oversized taskbar search box?",
+      "This cuts the Microsoft content layer around Search without pretending to fully remove SearchHost.",
+      "Yes — shrink Search to a local-only utility",
+      "Cleaner Start/Search surface with less suggestion spam and history noise.",
+      "No — keep Windows Search extras",
+      "Best if you like built-in web suggestions or richer search panels.",
+      "This is intentionally more honest than claiming complete search removal when the actual playbook applies targeted shell/search actions.",
+    ),
+    makeBooleanQuestion(
+      "keepPrinterSupport",
+      Wrench,
+      "Printing",
+      "Does this machine still need printer support?",
+      "If yes, redcore OS will preserve the Print Spooler. If no, it will cut it.",
+      "Yes — preserve printer support",
+      "Keeps the Print Spooler and avoids surprise printer breakage.",
+      "No — safe to disable printing services",
+      "Good for stripped gaming machines with no local or network printers.",
+      "This question is preservation-driven: the answer directly decides whether the spooler disable action is blocked or applied.",
+    ),
+    makeBooleanQuestion(
+      "keepRemoteAccess",
+      Globe,
+      "Remote Access",
+      "Does this machine still need RDP, remote assistance, or support tools?",
+      "If yes, redcore OS preserves remote-access related services. If no, it trims that attack surface.",
+      "Yes — preserve remote access capability",
+      "Safer for workstations, remote support, or self-hosted remote access workflows.",
+      "No — disable remote access services",
+      "Good for personal machines that should never accept inbound remote control.",
+      "This is the same class of preservation decision Oneclick users often find out too late.",
+    ),
     {
-      id: "q-priority-sep",
-      component: QPrioritySep,
-      isAnswered: () => decisions.performance.prioritySeparation !== null,
-      condition: () =>
-        decisions.performance.aggressionLevel === "balanced" ||
-        decisions.performance.aggressionLevel === "aggressive" ||
-        decisions.performance.aggressionLevel === "expert",
+      key: "edgeBehavior",
+      icon: Globe,
+      label: "Browser Surface",
+      title: "How hard should Edge background behavior be suppressed?",
+      desc: "This question stays on the honest side: preload, nags, and updates are separable; full browser removal is asked separately.",
+      note: "Suppressing Edge is usually the sweet spot. Removing Edge is a different risk class and comes later.",
+      options: [
+        {
+          value: "keep" satisfies EdgeBehavior,
+          title: "Keep Edge unchanged",
+          desc: "No preload, nag, or update suppression.",
+        },
+        {
+          value: "suppress" satisfies EdgeBehavior,
+          title: "Suppress background preload and default-browser nags",
+          desc: "Cuts startup boost and self-promotion without freezing browser updates.",
+          badge: "Recommended",
+          badgeColor: "bg-brand-500/15 text-brand-400",
+        },
+        {
+          value: "suppress-and-freeze" satisfies EdgeBehavior,
+          title: "Suppress Edge and also freeze auto-updates",
+          desc: "Adds update suppression on top of preload/nag cleanup. Highest maintenance burden short of full removal.",
+        },
+      ],
     },
-
-    // ── Oneclick timer resolution — aggressive/expert only ────────────────
+    makeBooleanQuestion(
+      "disableCopilot",
+      Sparkles,
+      "AI Surface",
+      "Disable Windows Copilot?",
+      "This removes the Copilot taskbar surface and its associated shell noise.",
+      "Yes — remove Copilot from the shell",
+      "Cleaner taskbar and less AI-first push from Windows.",
+      "No — keep Copilot available",
+      "Leave the Copilot surface intact.",
+    ),
+    makeBooleanQuestion(
+      "disableRecall",
+      Eye,
+      "Recall",
+      "Disable Windows Recall?",
+      "Recall is one of the easiest “yes” questions in the whole flow unless you explicitly want AI timeline snapshots.",
+      "Yes — disable Recall",
+      "Cuts screenshot-history style AI capture behavior entirely.",
+      "No — keep Recall available",
+      "Only sensible if you actually intend to use it.",
+    ),
+    makeBooleanQuestion(
+      "disableClickToDo",
+      Eye,
+      "Click To Do",
+      "Disable Click to Do?",
+      "This trims another Windows 11 AI shell surface that most tuned machines do not need.",
+      "Yes — disable it",
+      "Less shell clutter and fewer AI-driven hooks.",
+      "No — keep it available",
+      "Leave the new interaction surface intact.",
+    ),
+    makeBooleanQuestion(
+      "disableAiApps",
+      Sparkles,
+      "AI In Apps",
+      "Disable AI features in Edge, Paint, and Notepad?",
+      "This cuts the bundled AI surfaces in Microsoft apps rather than only the headline shell features.",
+      "Yes — disable app-level AI features",
+      "Removes AI extras from the apps most people never asked to become assistants.",
+      "No — keep those AI features",
+      "Leave the AI tooling in those apps available.",
+    ),
     {
-      id: "q-timer-res",
-      component: QTimerRes,
-      isAnswered: () => decisions.performance.timerResolution !== null,
-      condition: () =>
-        decisions.performance.aggressionLevel === "aggressive" ||
-        decisions.performance.aggressionLevel === "expert",
+      key: "telemetryLevel",
+      icon: Shield,
+      label: "Telemetry Depth",
+      title: "How far should Microsoft telemetry reduction go?",
+      desc: "This controls the real telemetry actions in the playbook rather than vague “privacy mode” marketing.",
+      note: "Aggressive adds SIUF/feedback suppression on top of the standard telemetry, CEIP, and error-reporting cuts.",
+      options: [
+        {
+          value: "keep" satisfies TelemetryLevel,
+          title: "Keep Windows telemetry behavior",
+          desc: "Do not apply telemetry-specific privacy cuts here.",
+        },
+        {
+          value: "reduce" satisfies TelemetryLevel,
+          title: "Reduce telemetry",
+          desc: "Disable telemetry, CEIP, and error reporting without going all the way into the aggressive feedback cuts.",
+          badge: "Recommended",
+          badgeColor: "bg-brand-500/15 text-brand-400",
+        },
+        {
+          value: "aggressive" satisfies TelemetryLevel,
+          title: "Aggressive telemetry reduction",
+          desc: "Adds deeper feedback suppression for users who want Microsoft’s soft collection surfaces cut harder.",
+        },
+      ],
     },
+    makeBooleanQuestion(
+      "disableClipboardHistory",
+      Eye,
+      "Clipboard History",
+      "Disable clipboard history and cross-device clipboard sync?",
+      "Useful if you want the clipboard to behave like a simple local buffer again.",
+      "Yes — disable clipboard history/sync",
+      "Cuts cloud-linked clipboard behavior and local history retention.",
+      "No — keep clipboard history",
+      "Leave clipboard convenience features enabled.",
+    ),
+    makeBooleanQuestion(
+      "disableActivityFeed",
+      Eye,
+      "Activity Feed",
+      "Disable activity feed and cloud-content style tracking?",
+      "This trims the timeline-style “what you were doing” surfaces and associated cloud content behavior.",
+      "Yes — disable it",
+      "Less behavior tracking and less cloud-fed content inside Windows.",
+      "No — keep that behavior",
+      "Leave Windows activity and cloud-content behavior intact.",
+    ),
+    makeBooleanQuestion(
+      "disableLocation",
+      Globe,
+      "Location",
+      "Disable location services and Find My Device?",
+      "A good privacy answer for desktops. A more situational one for laptops that actually use location-based workflows.",
+      "Yes — disable location-linked features",
+      "Reduces location tracking and disables Find My Device dependence.",
+      "No — keep location available",
+      "Better if you use maps, recovery, or location-aware apps.",
+    ),
+    makeBooleanQuestion(
+      "disableTailoredExperiences",
+      Eye,
+      "Personalization Tracking",
+      "Disable tailored experiences, online tips, and app-launch tracking?",
+      "This removes the “Windows learns from you” layer instead of only the obvious ad toggles.",
+      "Yes — cut that personalization layer",
+      "Less suggestion spam and less behavior-based tuning from Windows.",
+      "No — keep it",
+      "Leave Windows’ softer personalization layer intact.",
+    ),
+    makeBooleanQuestion(
+      "disableSpeechPersonalization",
+      Sparkles,
+      "Speech & Input",
+      "Disable online speech and input-personalization telemetry?",
+      "This cuts cloud speech/input collection behavior that most stripped systems do not need.",
+      "Yes — disable it",
+      "Reduces speech/input data collection and personalization layers.",
+      "No — keep it",
+      "Better if you rely on cloud speech features or dictation behavior.",
+    ),
+    makeBooleanQuestion(
+      "disableSmartScreen",
+      Shield,
+      "SmartScreen",
+      "Disable SmartScreen reputation checks?",
+      "This is a real tradeoff question. It reduces Windows friction, but it also removes one of the last browser/download guardrails people forget they were relying on.",
+      "Yes — disable SmartScreen",
+      "For stripped personal rigs where you intentionally manage trust yourself.",
+      "No — keep SmartScreen",
+      "Safer for mixed-use, browsing, and non-lab machines.",
+      "Unlike marketing privacy toggles, this one can genuinely increase risk if the machine is used casually.",
+      (state) => state.aggressionPreset === "aggressive" || state.aggressionPreset === "expert",
+      "Risky",
+      "bg-amber-500/15 text-amber-400",
+      true,
+    ),
+    makeBooleanQuestion(
+      "disableFastStartup",
+      Zap,
+      "Fast Startup",
+      "Disable Windows Fast Startup?",
+      "Fast Startup often leaves stale driver/kernel state around. Tuned systems usually benefit from clean boots.",
+      "Yes — disable Fast Startup",
+      "Cleaner shutdown/boot behavior and fewer weird resume-state driver bugs.",
+      "No — keep Fast Startup",
+      "Faster boots, but more hybrid-shutdown baggage.",
+    ),
+    makeBooleanQuestion(
+      "disableHibernation",
+      Zap,
+      "Hibernation",
+      "Disable hibernation?",
+      "For most tuned desktops this is a yes. For laptops it depends on whether you actually use hibernate.",
+      "Yes — disable hibernation",
+      "Frees disk space and keeps boot behavior cleaner.",
+      "No — keep hibernation",
+      "Leave hibernate available as a power feature.",
+    ),
+    makeBooleanQuestion(
+      "disableAudioEnhancements",
+      MonitorSpeaker,
+      "Audio Enhancements",
+      "Disable Windows audio enhancements?",
+      "PC-Tuning is right to call out that DSP/enhancement layers are often needless overhead unless you intentionally use them.",
+      "Yes — turn enhancements off",
+      "Cleaner, more predictable audio path with less vendor/DSP interference.",
+      "No — keep enhancements",
+      "Better if you rely on loudness EQ, virtual surround, or motherboard DSP effects.",
+    ),
+    makeBooleanQuestion(
+      "enableAudioExclusiveMode",
+      MonitorSpeaker,
+      "Exclusive Mode",
+      "Enable exclusive-mode audio control?",
+      "This helps users who want a cleaner low-latency audio path and are okay with apps taking exclusive control of the device.",
+      "Yes — enable exclusive mode",
+      "Better for low-latency or focused audio paths when the app supports it.",
+      "No — keep the current shared-mode behavior",
+      "Safer if you constantly juggle multiple apps using the same device.",
+    ),
+    makeBooleanQuestion(
+      "restoreClassicContextMenu",
+      Wrench,
+      "Context Menu",
+      "Restore the classic full Windows 11 context menu?",
+      "A pure usability question, but one with a real apply-side effect.",
+      "Yes — restore the classic menu",
+      "Gets rid of the compact extra-click Windows 11 context menu.",
+      "No — keep the stock menu",
+      "Leave the modern compact menu in place.",
+    ),
+    makeBooleanQuestion(
+      "enableEndTask",
+      Wrench,
+      "Taskbar End Task",
+      "Add End Task to taskbar right-click menus?",
+      "This is the exact Windows 11 usability tweak you asked for: kill hung apps straight from taskbar right-click without opening Task Manager.",
+      "Yes — add End Task",
+      "Cleaner emergency-kill path for frozen apps.",
+      "No — keep default taskbar right-click behavior",
+      "Leave the standard Windows 11 menu intact.",
+    ),
+    makeBooleanQuestion(
+      "disableBackgroundApps",
+      HardDrive,
+      "Background Apps",
+      "Disable background app execution?",
+      "This is a real resource-control question. It matters more than a lot of flashy “FPS tweaks.”",
+      "Yes — stop background app execution",
+      "Cuts silent background UWP/app activity.",
+      "No — keep background apps allowed",
+      "Better if you rely on synced app behavior or background refresh.",
+    ),
+    makeBooleanQuestion(
+      "disableAutomaticMaintenance",
+      HardDrive,
+      "Automatic Maintenance",
+      "Disable Windows automatic maintenance?",
+      "This trades background housekeeping for a quieter machine. Good for dedicated tuned PCs; less good for people who want Windows to self-maintain.",
+      "Yes — disable it",
+      "Fewer surprise background maintenance runs while idle.",
+      "No — keep it",
+      "Safer if you want Windows doing its normal housekeeping.",
+    ),
+    makeBooleanQuestion(
+      "enableGameMode",
+      Gamepad2,
+      "Game Mode",
+      "Force Game Mode on?",
+      "This is the lightweight Windows-native gaming toggle, not a magical optimization. But if you game, it still belongs in the questionnaire.",
+      "Yes — enable Game Mode",
+      "Lets Windows bias scheduling a bit more around games.",
+      "No — keep current Game Mode behavior",
+      "Leave Windows to its current default behavior.",
+    ),
+    makeBooleanQuestion(
+      "disableTransparency",
+      Eye,
+      "Transparency",
+      "Disable transparency effects?",
+      "Small tweak, but real. Cuts acrylic/blur visual noise and a bit of compositor overhead.",
+      "Yes — disable transparency",
+      "Cleaner, flatter shell with fewer translucent effects.",
+      "No — keep transparency",
+      "Leave the Windows visual style intact.",
+    ),
+    makeBooleanQuestion(
+      "aggressiveBoostMode",
+      Cpu,
+      "Boost Policy",
+      "Use aggressive processor boost mode?",
+      "This keeps the CPU pushing harder under load instead of backing off into friendlier boost policy behavior.",
+      "Yes — use aggressive boost",
+      "Higher performance bias and quicker sustained turbo behavior.",
+      "No — keep stock boost policy",
+      "Safer thermally and calmer for mixed-use machines.",
+      undefined,
+      (state) => state.aggressionPreset !== "conservative",
+    ),
+    makeBooleanQuestion(
+      "minProcessorState100",
+      Cpu,
+      "Minimum CPU State",
+      "Lock minimum processor state to 100%?",
+      "This is the “don’t dip clocks between bursts” question. It is one of the cleaner CPU responsiveness levers in the current playbook.",
+      "Yes — keep the floor at 100%",
+      "Reduces clock-drop latency between bursts.",
+      "No — allow Windows to downscale more freely",
+      "Better for thermals and general-purpose efficiency.",
+      undefined,
+      (state) => state.aggressionPreset !== "conservative",
+    ),
+    makeBooleanQuestion(
+      "disableCoreParking",
+      Cpu,
+      "Core Parking",
+      "Disable CPU core parking?",
+      "Classic enthusiast latency question. Useful on many desktop gaming systems, less sensible on weaker or office-centric machines.",
+      "Yes — unpark cores",
+      "Reduces wake-up latency when Windows suddenly needs more threads.",
+      "No — keep core parking behavior",
+      "Better for efficiency-biased or cooler-running setups.",
+      undefined,
+      (state) => state.aggressionPreset !== "conservative",
+    ),
+    makeBooleanQuestion(
+      "gamingMmcss",
+      Gamepad2,
+      "MMCSS",
+      "Apply the tuned MMCSS gaming profile?",
+      "This hardens the scheduler profile used for Games under Windows’ multimedia scheduling system.",
+      "Yes — apply the tuned gaming profile",
+      "Useful for keeping game/media threads favored over background noise.",
+      "No — keep MMCSS defaults",
+      "Leave multimedia scheduling closer to stock.",
+      undefined,
+      (state) => state.aggressionPreset !== "conservative",
+    ),
+    makeBooleanQuestion(
+      "disableMemoryCompression",
+      Cpu,
+      "Memory Compression",
+      "Disable Windows memory compression?",
+      "A sensible question on machines with enough RAM. On RAM-starved systems, the answer can be different.",
+      "Yes — disable memory compression",
+      "Less CPU spent compressing memory pages; best on healthy-RAM systems.",
+      "No — keep memory compression",
+      "Safer if you want Windows to defend capacity under pressure.",
+      undefined,
+      (state) => state.aggressionPreset !== "conservative",
+    ),
+    makeBooleanQuestion(
+      "disableHags",
+      Gamepad2,
+      "GPU Scheduling",
+      "Disable Hardware-Accelerated GPU Scheduling (HAGS)?",
+      "PC-Tuning is right that HAGS is system-specific. The point here is not blind faith, it’s making the choice explicit.",
+      "Yes — disable HAGS",
+      "Often chosen for steadier behavior on tuned systems.",
+      "No — keep HAGS at the Windows default",
+      "Leave GPU scheduling behavior untouched.",
+      undefined,
+      (state) => state.aggressionPreset !== "conservative",
+    ),
+    makeBooleanQuestion(
+      "disableGpuTelemetry",
+      Gamepad2,
+      "GPU Telemetry",
+      "Disable AMD/NVIDIA telemetry services?",
+      "Cleans out the always-on driver analytics layer without pretending the GPU driver itself is the problem.",
+      "Yes — disable GPU telemetry",
+      "Less background service noise from vendor driver stacks.",
+      "No — keep GPU telemetry services",
+      "Leave vendor analytics services in place.",
+      undefined,
+      (state) => state.aggressionPreset !== "conservative",
+    ),
+    makeBooleanQuestion(
+      "disableGameDvr",
+      Gamepad2,
+      "Game DVR",
+      "Disable Game DVR recording overhead?",
+      "This is still one of the most sensible gaming questions to ask because the action is real and the downside is clear.",
+      "Yes — disable Game DVR",
+      "Less background recording overhead and less frame-time noise.",
+      "No — keep Game DVR behavior",
+      "Keep built-in capture behavior intact.",
+      undefined,
+      (state) => state.aggressionPreset !== "conservative",
+    ),
+    makeBooleanQuestion(
+      "disableFullscreenOptimizations",
+      Gamepad2,
+      "Fullscreen Optimizations",
+      "Disable Windows fullscreen optimizations?",
+      "Useful for users chasing predictable fullscreen behavior and lower input-path weirdness.",
+      "Yes — disable them",
+      "Closer to classic exclusive-fullscreen behavior in many cases.",
+      "No — keep them enabled",
+      "Leave the Windows fullscreen layer intact.",
+      undefined,
+      (state) => state.aggressionPreset !== "conservative",
+    ),
+    makeBooleanQuestion(
+      "disableDynamicTick",
+      Clock,
+      "Dynamic Tick",
+      "Disable dynamic tick for lower timer jitter?",
+      "This is a proper enthusiast question pulled from the real playbook, not a marketing placeholder.",
+      "Yes — disable dynamic tick",
+      "Potentially tighter timing consistency on tuned desktops.",
+      "No — keep dynamic tick",
+      "Leave Windows’ idle-saving timer behavior intact.",
+      "Best reserved for aggressive or expert profiles because it is not a universal improvement on every system.",
+      (state, ctx) => !ctx.isLaptop && (state.aggressionPreset === "aggressive" || state.aggressionPreset === "expert"),
+      "Advanced",
+      "bg-amber-500/15 text-amber-400",
+    ),
+    makeBooleanQuestion(
+      "removeEdge",
+      Globe,
+      "Edge Removal",
+      "Remove the Edge browser completely?",
+      "This is where the tone changes from cleanup to irreversible system surgery.",
+      "Yes — remove Edge",
+      "Only for people who already know exactly why they want it gone and already have another browser installed.",
+      "No — keep the browser installed",
+      "Stick with suppression only.",
+      "Removing Edge is not the same thing as cleaning it up. This is one of the few questions that deserves real fear.",
+      (state) => state.aggressionPreset === "aggressive" || state.aggressionPreset === "expert",
+      "Danger",
+      "bg-red-500/15 text-red-400",
+      true,
+    ),
+    makeBooleanQuestion(
+      "preserveWebView2",
+      Globe,
+      "WebView2",
+      "Preserve WebView2 for app compatibility?",
+      "This question exists because too many debloat tools pretend WebView2 is “just Edge” and then people wonder why app surfaces start breaking.",
+      "Yes — preserve WebView2",
+      "Recommended unless you know your full app stack and are intentionally stripping embedded browser runtimes.",
+      "No — allow WebView2 removal",
+      "Only for stripped personal systems where you explicitly accept the blast radius.",
+      undefined,
+      (state) => state.aggressionPreset === "aggressive" || state.aggressionPreset === "expert",
+      "Recommended",
+      "bg-brand-500/15 text-brand-400",
+    ),
+    makeBooleanQuestion(
+      "reduceMitigations",
+      Shield,
+      "Spectre / Mitigations",
+      "Reduce speculative-execution mitigations for a potential (%5-%10) performance increase?",
+      "This is the exact kind of question that makes or breaks credibility: the performance folklore is real enough to ask about, but the security cost is real too. In our current playbook this maps to the SSBD-side mitigation reduction path.",
+      "Yes — reduce those mitigations",
+      "For dedicated personal rigs where you knowingly trade security for a possible latency/syscall win.",
+      "No — keep mitigations intact",
+      "Safer default, especially on anything used for browsing, work, or sensitive data.",
+      "PC-Tuning is right to frame this as benchmark-first, not religion-first. redcore OS asks it explicitly and only applies the real mitigation action it actually has.",
+      (state, ctx) => !ctx.isWorkPc && state.aggressionPreset === "expert",
+      "High Risk",
+      "bg-red-500/15 text-red-400",
+      true,
+    ),
+    makeBooleanQuestion(
+      "disableHvci",
+      Shield,
+      "HVCI",
+      "Disable Hypervisor-enforced Code Integrity (HVCI)?",
+      "Another expert-only security/performance tradeoff. This is not a casual checkbox.",
+      "Yes — disable HVCI",
+      "Useful only if you understand the kernel-security tradeoff and do not rely on that baseline.",
+      "No — keep HVCI enabled",
+      "Safer and friendlier for security baselines or anti-cheat requirements.",
+      "Vanguard and some hardened environments may care about this. That is exactly why the question exists.",
+      (state, ctx) => !ctx.isWorkPc && state.aggressionPreset === "expert",
+      "High Risk",
+      "bg-red-500/15 text-red-400",
+      true,
+    ),
+    makeBooleanQuestion(
+      "disableLlmnr",
+      Globe,
+      "LLMNR",
+      "Disable Link-Local Multicast Name Resolution (LLMNR)?",
+      "A sensible hardening/cleanup protocol question that many tuned systems can say yes to.",
+      "Yes — disable LLMNR",
+      "Reduces a noisy legacy name-resolution surface.",
+      "No — keep LLMNR",
+      "Leave local multicast name resolution behavior alone.",
+      undefined,
+      (state) => state.aggressionPreset === "aggressive" || state.aggressionPreset === "expert",
+    ),
+    makeBooleanQuestion(
+      "disableIpv6",
+      Globe,
+      "IPv6",
+      "Disable IPv6?",
+      "Classic tweak, often overused. redcore OS asks it directly instead of hiding it behind a vague “network tweak” checkbox.",
+      "Yes — disable IPv6",
+      "Only if you know your environment does not need it.",
+      "No — keep IPv6 enabled",
+      "Recommended for most normal networks unless you have a reason not to.",
+      undefined,
+      (state) => state.aggressionPreset === "aggressive" || state.aggressionPreset === "expert",
+    ),
+    makeBooleanQuestion(
+      "disableTeredo",
+      Globe,
+      "Teredo",
+      "Disable Teredo tunneling?",
+      "Useful if you want legacy Microsoft tunneling layers out of the way.",
+      "Yes — disable Teredo",
+      "Less tunneling cruft in the networking stack.",
+      "No — keep Teredo",
+      "Leave it untouched if you are not sure.",
+      undefined,
+      (state) => state.aggressionPreset === "aggressive" || state.aggressionPreset === "expert",
+    ),
+    makeBooleanQuestion(
+      "disableNetbios",
+      Globe,
+      "NetBIOS",
+      "Disable NetBIOS over TCP/IP?",
+      "A very PC-Tuning-style question: specific, boring, and actually consequential on the right systems.",
+      "Yes — disable NetBIOS",
+      "Good for stripped personal machines that do not rely on old SMB name resolution paths.",
+      "No — keep NetBIOS",
+      "Safer if you are not certain about your local-network dependencies.",
+      undefined,
+      (state) => state.aggressionPreset === "aggressive" || state.aggressionPreset === "expert",
+    ),
+    makeBooleanQuestion(
+      "disableNagle",
+      Globe,
+      "Nagle",
+      "Disable the Nagle algorithm for lower packet coalescing latency?",
+      "This is the kind of network question that sounds impressive and can absolutely be the wrong answer on the wrong setup.",
+      "Yes — disable Nagle",
+      "For users chasing lower send-side latency in very specific workloads.",
+      "No — keep default TCP behavior",
+      "Safer for general networking behavior.",
+      undefined,
+      (state) => state.aggressionPreset === "aggressive" || state.aggressionPreset === "expert",
+    ),
+    makeBooleanQuestion(
+      "disableNicOffloading",
+      Globe,
+      "NIC Offloading",
+      "Disable NIC offloading and switch to a low-latency adapter preset?",
+      "This applies the current playbook’s offloading, RSS queue, and autotuning decisions as a bundle.",
+      "Yes — use the low-latency NIC preset",
+      "For wired enthusiast setups where throughput tradeoffs are acceptable.",
+      "No — keep default NIC offloading behavior",
+      "Safer for mixed-use, higher-throughput, or Wi-Fi-heavy machines.",
+      undefined,
+      (state) => state.aggressionPreset === "aggressive" || state.aggressionPreset === "expert",
+      "Advanced",
+      "bg-amber-500/15 text-amber-400",
+    ),
+    makeBooleanQuestion(
+      "disableDeliveryOptimization",
+      Globe,
+      "Delivery Optimization",
+      "Disable Windows Delivery Optimization bandwidth sharing?",
+      "A good real-world question because it affects how Windows uses your bandwidth in the background.",
+      "Yes — disable it",
+      "Less background peer-distribution behavior from Windows Update.",
+      "No — keep it",
+      "Leave Windows update-sharing behavior intact.",
+      undefined,
+      (state) => state.aggressionPreset === "aggressive" || state.aggressionPreset === "expert",
+    ),
+    makeBooleanQuestion(
+      "disableUsbSelectiveSuspend",
+      Battery,
+      "USB Suspend",
+      "Disable USB selective suspend?",
+      "Useful for users chasing fewer wake-latency issues on input devices and attached hardware.",
+      "Yes — disable it",
+      "Reduces Windows’ tendency to put USB devices to sleep.",
+      "No — keep USB selective suspend",
+      "Safer for efficiency and some mobile setups.",
+      undefined,
+      (state, ctx) => !ctx.isLaptop && (state.aggressionPreset === "aggressive" || state.aggressionPreset === "expert"),
+    ),
+    makeBooleanQuestion(
+      "disablePcieLinkStatePm",
+      Battery,
+      "PCIe Link States",
+      "Disable PCIe link-state power management?",
+      "Good enthusiast question. Specific, measurable, and not something average users think to ask.",
+      "Yes — disable PCIe link-state PM",
+      "Cuts another latency source from the power stack on desktops.",
+      "No — keep PCIe power management",
+      "Leave the link-state power-saving behavior intact.",
+      undefined,
+      (state, ctx) => !ctx.isLaptop && (state.aggressionPreset === "aggressive" || state.aggressionPreset === "expert"),
+    ),
+  ], []);
 
-    // ── Oneclick search — balanced and above ─────────────────────────────
-    {
-      id: "q-search",
-      component: QSearch,
-      isAnswered: () => decisions.system.searchAction !== null,
-      condition: () =>
-        decisions.performance.aggressionLevel === "balanced" ||
-        decisions.performance.aggressionLevel === "aggressive" ||
-        decisions.performance.aggressionLevel === "expert",
-    },
+  const activeQuestions = useMemo(
+    () => questions.filter((question) => !question.condition || question.condition(answers, context)),
+    [answers, context, questions],
+  );
 
-    // ── Expanded Oneclick-style surfaces ────────────────────────────────
-    {
-      id: "q-network",
-      component: QNetwork,
-      isAnswered: () => decisions.network.tweakLevel !== null,
-      condition: () =>
-        decisions.performance.aggressionLevel === "balanced" ||
-        decisions.performance.aggressionLevel === "aggressive" ||
-        decisions.performance.aggressionLevel === "expert",
-    },
-    { id: "q-optional-features", component: QOptionalFeatures, isAnswered: () => true },
-    { id: "q-audio", component: QAudio, isAnswered: () => decisions.audio.cleanupLevel !== null },
-    {
-      id: "q-device-manager",
-      component: QDeviceManager,
-      isAnswered: () => decisions.deviceManager.tweakLevel !== null,
-      condition: () =>
-        decisions.performance.aggressionLevel === "aggressive" ||
-        decisions.performance.aggressionLevel === "expert",
-    },
-
-    // ── Browser & privacy — always shown ─────────────────────────────────
-    { id: "q-edge",    component: QEdge, isAnswered: () => decisions.browser.edgeAction !== null },
-    { id: "q-webview", component: QWebView, isAnswered: () => decisions.browser.webviewAction !== null },
-    { id: "q-privacy", component: QPrivacy, isAnswered: () => decisions.privacy.telemetryLevel !== null },
-
-    // ── Conditional: work, gaming, power ─────────────────────────────────
-    { id: "q-work",   component: QWork, isAnswered: () => true, condition: () => decisions.needsWorkQuestions() || isWorkPc },
-    { id: "q-gaming", component: QGaming, isAnswered: () => true, condition: () => decisions.needsGamingQuestions() },
-    { id: "q-power",  component: QPower, isAnswered: () => true, condition: () => decisions.needsPowerQuestions() },
-  ], [decisions, isWorkPc]);
-
-  const active = questions.filter((q) => !q.condition || q.condition());
-  const [idx, setIdx] = useState(0);
-  const clamped = Math.min(idx, active.length - 1);
-  const current = active[clamped];
-  const Comp = current.component;
-  const currentAnswered = current.isAnswered ? current.isAnswered() : true;
-  const allAnswered = active.every((q) => (q.isAnswered ? q.isAnswered() : true));
+  const [index, setIndex] = useState(0);
+  const clampedIndex = Math.min(index, Math.max(activeQuestions.length - 1, 0));
+  const current = activeQuestions[clampedIndex];
 
   useEffect(() => {
-    setStepReady("playbook-strategy", active.length > 0 && allAnswered && clamped >= active.length - 1);
-  }, [active.length, allAnswered, clamped, setStepReady]);
+    if (index > activeQuestions.length - 1) {
+      setIndex(Math.max(activeQuestions.length - 1, 0));
+    }
+  }, [activeQuestions.length, index]);
+
+  useEffect(() => {
+    const visibleKeys = new Set(activeQuestions.map((question) => question.key));
+    for (const question of questions) {
+      if (!visibleKeys.has(question.key) && answers[question.key] !== null) {
+        setAnswer(question.key, null);
+      }
+    }
+  }, [activeQuestions, answers, questions, setAnswer]);
+
+  useEffect(() => {
+    const nextPreset =
+      answers.aggressionPreset === "conservative"
+        ? "conservative"
+        : answers.aggressionPreset === "balanced"
+          ? "balanced"
+          : answers.aggressionPreset === "aggressive" || answers.aggressionPreset === "expert"
+            ? "aggressive"
+            : "balanced";
+
+    if (playbookPreset !== nextPreset) {
+      setPlaybookPreset(nextPreset);
+    }
+  }, [answers.aggressionPreset, playbookPreset, setPlaybookPreset]);
+
+  const currentAnswer = current ? answers[current.key] : null;
+  const currentAnswered = currentAnswer !== null;
+  const allAnswered = activeQuestions.every((question) => answers[question.key] !== null);
+
+  useEffect(() => {
+    setStepReady(
+      "playbook-strategy",
+      activeQuestions.length > 0 && allAnswered && clampedIndex >= activeQuestions.length - 1,
+    );
+  }, [activeQuestions.length, allAnswered, clampedIndex, setStepReady]);
+
+  if (!current) {
+    return (
+      <div className="flex h-full items-center justify-center px-8 text-sm text-ink-secondary">
+        No strategy questions available for this machine.
+      </div>
+    );
+  }
+
+  const progress = activeQuestions.length > 0 ? ((clampedIndex + 1) / activeQuestions.length) * 100 : 0;
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex flex-col h-full">
-      {/* Progress dots */}
-      <div className="flex items-center justify-center gap-1.5 py-2.5 px-6">
-        {active.map((q, i) => (
-          <button
-            key={q.id}
-            onClick={() => i < clamped && setIdx(i)}
-            className={`h-1.5 rounded-full transition-all ${
-              i === clamped
-                ? "w-7 bg-brand-500"
-                : i < clamped
-                ? "w-2 bg-brand-500/40 cursor-pointer hover:bg-brand-500/60"
-                : "w-2 bg-white/[0.08] cursor-default"
-            }`}
-          />
-        ))}
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="flex h-full flex-col"
+    >
+      <div className="border-b border-white/[0.05] px-6 py-3">
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <p className="font-mono text-[10px] font-bold uppercase tracking-[0.12em] text-brand-400">
+              Deep Strategy Review
+            </p>
+            <p className="mt-1 text-[11px] text-ink-secondary">
+              Question {clampedIndex + 1} of {activeQuestions.length}
+            </p>
+          </div>
+          <div className="min-w-[220px] max-w-[320px] flex-1">
+            <div className="h-1.5 overflow-hidden rounded-full bg-white/[0.06]">
+              <motion.div
+                animate={{ width: `${progress}%` }}
+                transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                className="h-full rounded-full bg-brand-500"
+              />
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* Content */}
       <div className="flex-1 overflow-hidden">
         <AnimatePresence mode="wait">
           <motion.div
-            key={current.id}
-            initial={{ opacity: 0, x: 50 }}
+            key={`${String(current.key)}-${clampedIndex}`}
+            initial={{ opacity: 0, x: 44 }}
             animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -50 }}
-            transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+            exit={{ opacity: 0, x: -44 }}
+            transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
             className="h-full"
           >
-            <Comp />
+            <Screen
+              icon={current.icon}
+              label={current.label}
+              title={current.title}
+              desc={current.desc}
+              note={current.note}
+            >
+              {current.options.map((option) => (
+                <Option
+                  key={`${String(current.key)}-${String(option.value)}`}
+                  selected={currentAnswer === option.value}
+                  onClick={() => setAnswer(current.key, option.value)}
+                  title={option.title}
+                  desc={option.desc}
+                  badge={option.badge}
+                  badgeColor={option.badgeColor}
+                  danger={option.danger}
+                />
+              ))}
+            </Screen>
           </motion.div>
         </AnimatePresence>
       </div>
 
-      {/* Bottom bar */}
-      <div className="shrink-0 flex items-center justify-between border-t border-white/[0.05] bg-surface-raised/60 px-5 py-2.5">
-        <button
-          onClick={() => setIdx((i) => Math.max(0, i - 1))}
-          disabled={clamped === 0}
-          className={`flex items-center gap-1 text-[11px] font-medium ${clamped === 0 ? "text-ink-disabled" : "text-ink-tertiary hover:text-ink"}`}
-        >
-          <ChevronLeft className="h-3.5 w-3.5" /> Back
-        </button>
-
-        <div className="flex items-center gap-3 text-[10px]">
-          <span className="text-ink-muted">
-            <span className="font-mono font-bold text-ink">{decisions.impact.estimatedActions}</span> actions
-          </span>
-          {decisions.impact.estimatedPreserved > 0 && (
-            <span className="text-amber-400">
-              <span className="font-mono font-bold">{decisions.impact.estimatedPreserved}</span> preserved
+      <div className="shrink-0 border-t border-white/[0.05] bg-surface-raised/60 px-5 py-2.5">
+        <div className="mb-2 flex flex-wrap items-center justify-between gap-3 text-[10px]">
+          <div className="flex flex-wrap items-center gap-3">
+            <span className="text-ink-muted">
+              <span className="font-mono font-bold text-ink">{impact.estimatedActions}</span> actions
             </span>
-          )}
-          {decisions.impact.rebootRequired && (
-            <span className="text-amber-400 text-[9px] font-semibold uppercase tracking-wider">Reboot req.</span>
-          )}
-          {decisions.impact.warnings.length > 0 && (
-            <span className="text-red-400/80 text-[9px] flex items-center gap-0.5">
+            {impact.estimatedPreserved > 0 && (
+              <span className="text-amber-400">
+                <span className="font-mono font-bold">{impact.estimatedPreserved}</span> preserved
+              </span>
+            )}
+            {impact.rebootRequired && (
+              <span className="text-amber-400 text-[9px] font-semibold uppercase tracking-wider">Reboot required</span>
+            )}
+          </div>
+          {impact.warnings.length > 0 && (
+            <span className="flex items-center gap-1 text-[9px] text-red-400/80">
               <AlertTriangle className="h-2.5 w-2.5" />
-              {decisions.impact.warnings.length} warning{decisions.impact.warnings.length > 1 ? "s" : ""}
+              {impact.warnings.length} warning{impact.warnings.length > 1 ? "s" : ""}
             </span>
           )}
         </div>
 
-        <button
-          onClick={() => setIdx((i) => Math.min(active.length - 1, i + 1))}
-          disabled={clamped >= active.length - 1 || !currentAnswered}
-          className={`flex items-center gap-1 text-[11px] font-medium ${clamped >= active.length - 1 || !currentAnswered ? "text-ink-disabled" : "text-ink-tertiary hover:text-ink"}`}
-        >
-          Next <ChevronRight className="h-3.5 w-3.5" />
-        </button>
+        <div className="flex items-center justify-between">
+          <button
+            onClick={() => setIndex((prev) => Math.max(0, prev - 1))}
+            disabled={clampedIndex === 0}
+            className={`flex items-center gap-1 text-[11px] font-medium ${
+              clampedIndex === 0 ? "text-ink-disabled" : "text-ink-tertiary hover:text-ink"
+            }`}
+          >
+            <ChevronLeft className="h-3.5 w-3.5" /> Back
+          </button>
+
+          <button
+            onClick={() => setIndex((prev) => Math.min(activeQuestions.length - 1, prev + 1))}
+            disabled={clampedIndex >= activeQuestions.length - 1 || !currentAnswered}
+            className={`flex items-center gap-1 text-[11px] font-medium ${
+              clampedIndex >= activeQuestions.length - 1 || !currentAnswered
+                ? "text-ink-disabled"
+                : "text-ink-tertiary hover:text-ink"
+            }`}
+          >
+            Next <ChevronRight className="h-3.5 w-3.5" />
+          </button>
+        </div>
       </div>
     </motion.div>
   );

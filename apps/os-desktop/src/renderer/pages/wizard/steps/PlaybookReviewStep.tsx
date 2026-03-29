@@ -2,12 +2,14 @@
 // Transformation manifest review. Shows the resolved playbook plan grouped by
 // phase with action statuses. Premium installer-grade density.
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Check, X, AlertTriangle, Lock, ChevronDown, Shield, Cpu, Eye, Info } from "lucide-react";
 import { useWizardStore } from "@/stores/wizard-store";
 import type { ResolvedPlaybook, PlaybookPhase } from "@/stores/wizard-store";
+import { useDecisionsStore } from "@/stores/decisions-store";
+import { applyDecisionOverrides } from "@/lib/playbook-decision-overrides";
 import { getActionRationale, PHASE_RATIONALE, getBlockedExplanation } from "@/lib/expert-rationale";
 
 // ─── Status badge ────────────────────────────────────────────────────────────
@@ -220,15 +222,22 @@ function buildMockPlaybook(profile: string, preset: string): ResolvedPlaybook {
 // ─── Component ───────────────────────────────────────────────────────────────
 
 export function PlaybookReviewStep() {
-  const { detectedProfile, playbookPreset, resolvedPlaybook, setResolvedPlaybook, setStepReady } = useWizardStore();
-  const [loading, setLoading] = useState(!resolvedPlaybook);
+  const { detectedProfile, playbookPreset, setResolvedPlaybook, setStepReady } = useWizardStore();
+  const answers = useDecisionsStore((state) => state.answers);
+  const [loading, setLoading] = useState(true);
+  const [basePlaybook, setBasePlaybook] = useState<ResolvedPlaybook | null>(null);
+
+  const effectivePlaybook = useMemo(() => {
+    if (!basePlaybook) return null;
+    return applyDecisionOverrides(basePlaybook, answers);
+  }, [answers, basePlaybook]);
 
   useEffect(() => {
     setStepReady("playbook-review", false);
-    if (resolvedPlaybook) return;
 
     const load = async () => {
       const profile = detectedProfile?.id ?? "gaming_desktop";
+      setLoading(true);
       try {
         const { serviceCall } = await import("@/lib/service");
         const result = await serviceCall<ResolvedPlaybook>("playbook.resolve", {
@@ -236,26 +245,29 @@ export function PlaybookReviewStep() {
           preset: playbookPreset,
         });
         if (result.ok) {
-          setResolvedPlaybook(result.data);
+          setBasePlaybook(result.data);
         } else {
-          setResolvedPlaybook(buildMockPlaybook(profile, playbookPreset));
+          setBasePlaybook(buildMockPlaybook(profile, playbookPreset));
         }
       } catch {
-        setResolvedPlaybook(buildMockPlaybook(profile, playbookPreset));
+        setBasePlaybook(buildMockPlaybook(profile, playbookPreset));
       } finally {
         setLoading(false);
       }
     };
     load();
-  }, [detectedProfile, playbookPreset, resolvedPlaybook, setResolvedPlaybook, setStepReady]);
+  }, [detectedProfile, playbookPreset, setStepReady]);
 
   useEffect(() => {
-    setStepReady("playbook-review", !loading && Boolean(resolvedPlaybook));
-  }, [loading, resolvedPlaybook, setStepReady]);
+    if (effectivePlaybook) {
+      setResolvedPlaybook(effectivePlaybook);
+    }
+    setStepReady("playbook-review", !loading && Boolean(effectivePlaybook));
+  }, [effectivePlaybook, loading, setResolvedPlaybook, setStepReady]);
 
   if (loading) return <PlaybookSkeleton />;
 
-  if (!resolvedPlaybook) {
+  if (!effectivePlaybook) {
     return (
       <div className="flex h-full flex-col items-center justify-center gap-3 px-8">
         <AlertTriangle className="h-8 w-8 text-amber-400" />
@@ -264,7 +276,7 @@ export function PlaybookReviewStep() {
     );
   }
 
-  const rebootCount = resolvedPlaybook.phases.reduce(
+  const rebootCount = effectivePlaybook.phases.reduce(
     (n, p) => n + p.actions.filter(a => a.status === "Included" && a.requiresReboot).length, 0
   );
 
@@ -293,22 +305,22 @@ export function PlaybookReviewStep() {
       <div className="mb-4 flex items-center gap-2 rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2">
         <Shield className="h-3.5 w-3.5 shrink-0 text-brand-400" />
         <span className="text-[11px] text-ink-secondary">
-          <span className="font-medium text-ink">{resolvedPlaybook.playbookName}</span>
-          {" "}v{resolvedPlaybook.playbookVersion}
+          <span className="font-medium text-ink">{effectivePlaybook.playbookName}</span>
+          {" "}v{effectivePlaybook.playbookVersion}
           {" · "}
-          <span className="text-ink">{resolvedPlaybook.profile}</span>
+          <span className="text-ink">{effectivePlaybook.profile}</span>
           {" · "}
-          <span className="text-ink">{resolvedPlaybook.preset}</span>
+          <span className="text-ink">{effectivePlaybook.preset}</span>
         </span>
       </div>
 
       {/* Stats row */}
       <div className="mb-4 grid grid-cols-4 gap-2">
         {[
-          { label: "Included", value: resolvedPlaybook.totalIncluded,   color: "text-green-400",   bg: "bg-green-500/8" },
-          { label: "Blocked",  value: resolvedPlaybook.totalBlocked,    color: "text-red-400",     bg: "bg-red-500/8" },
-          { label: "Optional", value: resolvedPlaybook.totalOptional,   color: "text-amber-400",   bg: "bg-amber-500/8" },
-          { label: "Expert",   value: resolvedPlaybook.totalExpertOnly, color: "text-purple-400",  bg: "bg-purple-500/8" },
+          { label: "Included", value: effectivePlaybook.totalIncluded,   color: "text-green-400",   bg: "bg-green-500/8" },
+          { label: "Blocked",  value: effectivePlaybook.totalBlocked,    color: "text-red-400",     bg: "bg-red-500/8" },
+          { label: "Optional", value: effectivePlaybook.totalOptional,   color: "text-amber-400",   bg: "bg-amber-500/8" },
+          { label: "Expert",   value: effectivePlaybook.totalExpertOnly, color: "text-purple-400",  bg: "bg-purple-500/8" },
         ].map(({ label, value, color, bg }, i) => (
           <motion.div
             key={label}
@@ -339,7 +351,7 @@ export function PlaybookReviewStep() {
       )}
 
       {/* Blocked reasons (Work PC) */}
-      {resolvedPlaybook.blockedReasons.length > 0 && (
+      {effectivePlaybook.blockedReasons.length > 0 && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -349,14 +361,14 @@ export function PlaybookReviewStep() {
           <p className="text-[10px] font-semibold uppercase tracking-wider text-red-400/80 mb-1">
             Blocked by profile preservation
           </p>
-          {resolvedPlaybook.blockedReasons.slice(0, 3).map((br) => (
+          {effectivePlaybook.blockedReasons.slice(0, 3).map((br) => (
             <p key={br.actionId} className="text-[11px] text-red-400/60 truncate">
               {br.actionId}: {br.reason}
             </p>
           ))}
-          {resolvedPlaybook.blockedReasons.length > 3 && (
+          {effectivePlaybook.blockedReasons.length > 3 && (
             <p className="text-[10px] text-red-400/40 mt-0.5">
-              +{resolvedPlaybook.blockedReasons.length - 3} more
+              +{effectivePlaybook.blockedReasons.length - 3} more
             </p>
           )}
         </motion.div>
@@ -364,14 +376,14 @@ export function PlaybookReviewStep() {
 
       {/* Phase list — staggered entrance */}
       <div className="space-y-1.5">
-        {resolvedPlaybook.phases.map((phase, i) => (
+        {effectivePlaybook.phases.map((phase, i) => (
           <motion.div
             key={phase.id}
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.08 + i * 0.07, duration: 0.22, ease: [0.0, 0.0, 0.2, 1.0] }}
           >
-            <PhaseSection phase={phase} defaultOpen={i === 0} profile={resolvedPlaybook.profile} />
+            <PhaseSection phase={phase} defaultOpen={i === 0} profile={effectivePlaybook.profile} />
           </motion.div>
         ))}
       </div>
