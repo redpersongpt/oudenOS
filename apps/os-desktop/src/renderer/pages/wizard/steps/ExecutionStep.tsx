@@ -193,7 +193,17 @@ export function ExecutionStep() {
       timerRef.current = setTimeout(() => completeStep("execution"), 800);
     };
 
-    exec();
+    exec().catch((err) => {
+      console.error("[ExecutionStep] Unexpected execution error:", err);
+      // Treat as complete with all failed so the wizard can still advance
+      setExecutionResult({
+        applied: 0,
+        failed: actionQueue.length,
+        skipped: 0,
+        preserved: resolvedPlaybook?.totalBlocked ?? 0,
+      });
+      setTimeout(() => completeStep("execution"), 800);
+    });
 
     return () => {
       controller.abort();
