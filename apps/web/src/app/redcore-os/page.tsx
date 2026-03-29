@@ -10,7 +10,7 @@ import {
   CTAStrip,
   RelatedPages,
 } from "@/components/seo";
-import { REDCORE_OS_DOWNLOAD } from "@/lib/downloads";
+import { REDCORE_OS_DOWNLOAD, getLatestRedcoreOsDownloadUrl } from "@/lib/downloads";
 import { RotateCcw, Monitor } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -37,7 +37,8 @@ export const metadata: Metadata = {
   },
 };
 
-const jsonLd = {
+function buildJsonLd(downloadUrl: string) {
+  return {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
   name: "redcore OS",
@@ -51,7 +52,7 @@ const jsonLd = {
   description:
     "Free Windows transformation tool with guided debloating, 8 profiles, 150+ actions, and full rollback support.",
   url: "https://redcoreos.net/redcore-os",
-  downloadUrl: REDCORE_OS_DOWNLOAD.absoluteUrl,
+    downloadUrl,
   softwareVersion: "1.0",
   featureList: [
     "Machine-aware hardware scanning",
@@ -61,9 +62,12 @@ const jsonLd = {
     "Work PC preservation",
     "Privacy hardening",
   ],
-};
+  };
+}
 
-export default function RedcoreOSPage() {
+export default async function RedcoreOSPage() {
+  const downloadUrl = await getLatestRedcoreOsDownloadUrl();
+
   return (
     <>
       <Navigation />
@@ -71,7 +75,7 @@ export default function RedcoreOSPage() {
         <article>
           <script
             type="application/ld+json"
-            dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(buildJsonLd(downloadUrl)) }}
           />
 
           <PageHero
@@ -170,7 +174,7 @@ export default function RedcoreOSPage() {
             description="Free. No account required. Scan, review, apply, rollback. Windows 10 (21H2+) and Windows 11 supported."
             primaryAction={{
               label: "Go to downloads",
-              href: "/downloads",
+              href: downloadUrl,
             }}
             secondaryAction={{
               label: "See redcore Tuning",
