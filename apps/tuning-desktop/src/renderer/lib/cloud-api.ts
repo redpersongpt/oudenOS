@@ -6,7 +6,7 @@
 const _configuredUrl: string =
   (typeof import.meta !== "undefined" && (import.meta as any).env?.VITE_API_URL) || "";
 
-if (_configuredUrl && !_configuredUrl.startsWith("https://")) {
+if (_configuredUrl && !_configuredUrl.startsWith("https://") && !_configuredUrl.startsWith("http://localhost")) {
   throw new Error(`VITE_API_URL must use HTTPS, got: ${_configuredUrl}`);
 }
 
@@ -243,7 +243,7 @@ function normalizeSubscription(
 ): SubscriptionDetails {
   return {
     tier: subscription?.tier ?? "free",
-    status: subscription?.status ?? "active",
+    status: subscription?.status ?? "expired",
     currentPeriodEnd: subscription?.currentPeriodEnd ?? null,
     cancelAtPeriodEnd: subscription?.cancelAtPeriodEnd ?? false,
     paymentMethod: subscription?.paymentMethod ?? null,

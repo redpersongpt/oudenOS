@@ -52,7 +52,7 @@ interface QuestionDefinition {
   desc: string;
   note?: string;
   options: QuestionOption[];
-  condition?: (answers: QuestionnaireAnswers, context: { isLaptop: boolean; isWorkPc: boolean }) => boolean;
+  condition?: (answers: QuestionnaireAnswers, context: { isLaptop: boolean; isWorkPc: boolean; windowsBuild: number }) => boolean;
 }
 
 function Option({
@@ -1037,7 +1037,7 @@ export function PlaybookStrategyStep() {
                 <Option
                   key={`${String(current.key)}-${String(option.value)}`}
                   selected={currentAnswer === option.value}
-                  onClick={() => setAnswer(current.key, option.value)}
+                  onClick={() => setAnswer(current.key, option.value as QuestionnaireAnswers[keyof QuestionnaireAnswers])}
                   title={option.title}
                   desc={option.desc}
                   badge={option.badge}

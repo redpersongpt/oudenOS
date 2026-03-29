@@ -53,6 +53,12 @@ async function deliverViaSendGrid(opts: EmailOptions): Promise<void> {
   }
 }
 
+// ─── HTML escaping ────────────────────────────────────────────────────────────
+
+function esc(str: string): string {
+  return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+
 // ─── Email Templates ──────────────────────────────────────────────────────────
 
 const APP = "redcore-Tuning";
@@ -87,7 +93,7 @@ function caption(text: string): string {
 }
 
 export function verifyEmailTemplate(name: string, link: string): string {
-  const greeting = name ? `Hi ${name},` : "Hi,";
+  const greeting = name ? `Hi ${esc(name)},` : "Hi,";
   return emailWrapper(
     "Verify your email",
     `<p style="color:${MUTED};margin:0 0 4px;">${greeting}</p>
@@ -98,7 +104,7 @@ export function verifyEmailTemplate(name: string, link: string): string {
 }
 
 export function resetPasswordTemplate(name: string, link: string): string {
-  const greeting = name ? `Hi ${name},` : "Hi,";
+  const greeting = name ? `Hi ${esc(name)},` : "Hi,";
   return emailWrapper(
     "Reset your password",
     `<p style="color:${MUTED};margin:0 0 4px;">${greeting}</p>
@@ -109,16 +115,16 @@ export function resetPasswordTemplate(name: string, link: string): string {
 }
 
 export function emailChangedTemplate(name: string, oldEmail: string): string {
-  const greeting = name ? `Hi ${name},` : "Hi,";
+  const greeting = name ? `Hi ${esc(name)},` : "Hi,";
   return emailWrapper(
     "Your email was changed",
     `<p style="color:${MUTED};margin:0 0 4px;">${greeting}</p>
-     <p style="color:${MUTED};margin:0;">Your ${APP} account email was changed from <strong>${oldEmail}</strong>. If this wasn't you, contact support immediately.</p>`,
+     <p style="color:${MUTED};margin:0;">Your ${APP} account email was changed from <strong>${esc(oldEmail)}</strong>. If this wasn't you, contact support immediately.</p>`,
   );
 }
 
 export function welcomeTemplate(name: string): string {
-  const greeting = name ? `Hi ${name},` : "Hi,";
+  const greeting = name ? `Hi ${esc(name)},` : "Hi,";
   return emailWrapper(
     `Welcome to ${APP}`,
     `<p style="color:${MUTED};margin:0 0 4px;">${greeting}</p>
