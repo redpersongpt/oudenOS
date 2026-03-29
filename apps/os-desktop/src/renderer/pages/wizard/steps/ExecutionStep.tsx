@@ -60,7 +60,7 @@ function TimelineItem({ action }: { action: CompletedAction }) {
 // ─── Component ───────────────────────────────────────────────────────────────
 
 export function ExecutionStep() {
-  const { detectedProfile, resolvedPlaybook, selectedAppIds, personalization, completeStep, setExecutionResult } = useWizardStore();
+  const { detectedProfile, resolvedPlaybook, selectedAppIds, personalization, demoMode, completeStep, setExecutionResult } = useWizardStore();
 
   // ── Build action queue from resolved playbook ──
   const actionQueue = useMemo<ExecutableAction[]>(() => {
@@ -116,15 +116,18 @@ export function ExecutionStep() {
         setCurrentActionId(action.id);
         setCurrentPhase(action.phase);
 
-        let status: "applied" | "failed" = "applied";
+        let status: "applied" | "failed" = "failed";
         const result = await serviceCall<Record<string, unknown>>("execute.applyAction", { actionId: action.id });
         if (result.ok) {
-          status = (result.data.status === "success" || result.data.status === "partial") ? "applied" : "failed";
-        } else {
-          // Demo mode — simulate execution
+          const rpcStatus = typeof result.data.status === "string" ? result.data.status : "failed";
+          const nestedFailures = typeof result.data.failed === "number" ? result.data.failed : 0;
+          status = rpcStatus === "success" && nestedFailures === 0 ? "applied" : "failed";
+        } else if (demoMode) {
+          // Explicit demo mode only — never fake success in the real runtime.
           await new Promise<void>((resolve) => {
             timerRef.current = setTimeout(resolve, 180 + Math.random() * 140);
           });
+          status = "applied";
         }
 
         if (controller.signal.aborted) return;
@@ -150,7 +153,14 @@ export function ExecutionStep() {
           profile: detectedProfile?.id ?? "gaming_desktop",
           options: personalization,
         });
-        if (!persResult.ok) personalizationFailed = true;
+        if (!persResult.ok) {
+          personalizationFailed = true;
+        } else {
+          const payload = persResult.data as { status?: unknown; failed?: unknown } | undefined;
+          const rpcStatus = typeof payload?.status === "string" ? payload.status : "failed";
+          const failedCount = typeof payload?.failed === "number" ? payload.failed : 0;
+          personalizationFailed = rpcStatus !== "success" || failedCount > 0;
+        }
       } catch {
         personalizationFailed = true;
       }

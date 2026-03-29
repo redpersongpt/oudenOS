@@ -26,26 +26,90 @@ type QuestionAuditResult = {
 
 const testDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(testDir, "..", "..", "..");
-const fallback = JSON.parse(
-  fs.readFileSync(
-    path.join(repoRoot, "apps/os-desktop/src/renderer/lib/generated-playbook-fallback.json"),
-    "utf8",
-  ),
-) as {
-  phases: Array<{
-    actions: Array<{
-      id: string;
-      executionKinds?: string[];
-    }>;
-  }>;
-};
+const playbookRoot = path.join(repoRoot, "playbooks");
+const supportedExecutionKinds = new Set([
+  "registryChanges",
+  "serviceChanges",
+  "bcdChanges",
+  "powerChanges",
+  "powerShellCommands",
+  "packages",
+  "tasks",
+]);
 
+function stripQuotes(value: string): string {
+  return value.replace(/^"/, "").replace(/"$/, "").replace(/^'/, "").replace(/'$/, "");
+}
+
+function parseManifest(text: string): Array<string> {
+  const lines = text.split(/\r?\n/);
+  const modules: string[] = [];
+  let inPhases = false;
+  let readingModules = false;
+
+  for (const line of lines) {
+    if (line.startsWith("phases:")) {
+      inPhases = true;
+      continue;
+    }
+    if (!inPhases) continue;
+    if (line.startsWith("profiles:")) break;
+    if (line.startsWith("    type: builtin")) {
+      readingModules = false;
+      continue;
+    }
+    if (line.startsWith("    modules:")) {
+      readingModules = true;
+      continue;
+    }
+    if (readingModules && line.startsWith("      - ")) {
+      modules.push(line.slice(8).trim());
+      continue;
+    }
+    if (readingModules && !line.startsWith("      - ")) {
+      readingModules = false;
+    }
+  }
+
+  return modules;
+}
+
+function parseModule(modulePath: string): Array<{ id: string; executionKinds: string[] }> {
+  const text = fs.readFileSync(modulePath, "utf8");
+  const marker = "\nactions:\n";
+  const actionStart = text.indexOf(marker);
+  if (actionStart === -1) return [];
+
+  const actionText = `\n${text.slice(actionStart + marker.length)}`;
+  return actionText
+    .split(/\n  - id: /)
+    .slice(1)
+    .map((chunk) => {
+      const lines = chunk.trimStart().replace(/^id: /, "").split(/\r?\n/);
+      const actionId = lines[0].trim();
+      const executionKinds = lines
+        .slice(1)
+        .map((line) => line.trim())
+        .flatMap((line) => {
+          if (!line.includes(":")) return [];
+          const key = line.split(":")[0];
+          return supportedExecutionKinds.has(key) ? [stripQuotes(key)] : [];
+        });
+      return {
+        id: actionId,
+        executionKinds: Array.from(new Set(executionKinds)),
+      };
+    });
+}
+
+const manifestText = fs.readFileSync(path.join(playbookRoot, "manifest.yaml"), "utf8");
+const sourceActions = parseManifest(manifestText).flatMap((modulePath) =>
+  parseModule(path.join(playbookRoot, modulePath)),
+);
 const executableActionIds = new Set(
-  fallback.phases.flatMap((phase) =>
-    phase.actions
-      .filter((action) => Array.isArray(action.executionKinds) && action.executionKinds.length > 0)
-      .map((action) => action.id),
-  ),
+  sourceActions
+    .filter((action) => action.executionKinds.length > 0)
+    .map((action) => action.id),
 );
 
 const BALANCED_SCENARIO: Scenario = {
