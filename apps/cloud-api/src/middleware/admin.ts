@@ -4,6 +4,8 @@
 
 import type { FastifyRequest, FastifyReply } from "fastify";
 import { verifyAccessToken } from "../lib/jwt.js";
+import { db, users } from "../db/index.js";
+import { eq } from "drizzle-orm";
 
 declare module "fastify" {
   interface FastifyRequest {
@@ -34,6 +36,17 @@ export async function requireAdmin(
 
   if (payload.role !== "admin") {
     return reply.code(403).send({ error: "Admin access required" });
+  }
+
+  // Verify the admin account still exists and has not been soft-deleted
+  const [admin] = await db
+    .select({ deletedAt: users.deletedAt })
+    .from(users)
+    .where(eq(users.id, payload.sub))
+    .limit(1);
+
+  if (!admin || admin.deletedAt) {
+    return reply.code(401).send({ error: "Account not found or has been deleted" });
   }
 
   request.userId = payload.sub;

@@ -11,6 +11,7 @@ export default defineConfig({
       "@": path.resolve(__dirname, "src/renderer"),
       "@redcore/design-system": path.resolve(__dirname, "../../packages/tuning-design-system/src"),
       "@redcore/shared-schema": path.resolve(__dirname, "../../packages/tuning-shared-schema/src"),
+      "@redcore/system-analyzer": path.resolve(__dirname, "../../packages/system-analyzer/src"),
     },
   },
   build: {

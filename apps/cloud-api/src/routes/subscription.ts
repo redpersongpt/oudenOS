@@ -13,6 +13,7 @@ import { z } from "zod";
 import { eq, and } from "drizzle-orm";
 import { db, users, subscriptions } from "../db/index.js";
 import { requireAuth } from "../middleware/auth.js";
+import { apiRateLimit } from "../lib/rate-limit.js";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY ?? "", {
   apiVersion: "2025-02-24.acacia",
@@ -173,7 +174,7 @@ export const subscriptionRoutes: FastifyPluginAsync = async (app) => {
   });
 
   // ── POST /checkout ────────────────────────────────────────────────────────
-  app.post("/checkout", { preHandler: requireAuth }, async (request, reply) => {
+  app.post("/checkout", { preHandler: [requireAuth, apiRateLimit(5)] }, async (request, reply) => {
     const parse = checkoutSchema.safeParse(request.body);
     if (!parse.success) {
       return reply.code(400).send({ error: "Invalid input", details: parse.error.flatten() });
@@ -209,7 +210,7 @@ export const subscriptionRoutes: FastifyPluginAsync = async (app) => {
   });
 
   // ── POST /portal ──────────────────────────────────────────────────────────
-  app.post("/portal", { preHandler: requireAuth }, async (request, reply) => {
+  app.post("/portal", { preHandler: [requireAuth, apiRateLimit(5)] }, async (request, reply) => {
     const [user] = await db
       .select({ stripeCustomerId: users.stripeCustomerId })
       .from(users)
@@ -230,7 +231,7 @@ export const subscriptionRoutes: FastifyPluginAsync = async (app) => {
   });
 
   // ── POST /cancel ──────────────────────────────────────────────────────────
-  app.post("/cancel", { preHandler: requireAuth }, async (request, reply) => {
+  app.post("/cancel", { preHandler: [requireAuth, apiRateLimit(5)] }, async (request, reply) => {
     const parse = cancelSchema.safeParse(request.body ?? {});
     if (!parse.success) {
       return reply.code(400).send({ error: "Invalid input" });
@@ -269,7 +270,7 @@ export const subscriptionRoutes: FastifyPluginAsync = async (app) => {
   });
 
   // ── POST /reactivate ──────────────────────────────────────────────────────
-  app.post("/reactivate", { preHandler: requireAuth }, async (request, reply) => {
+  app.post("/reactivate", { preHandler: [requireAuth, apiRateLimit(5)] }, async (request, reply) => {
     const [sub] = await db
       .select()
       .from(subscriptions)

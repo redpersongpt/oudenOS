@@ -10,8 +10,7 @@ export function openExternalUrl(url: string): void {
     window.redcore.shell.openExternal(url);
     return;
   }
-
-  if (typeof window !== "undefined") {
-    window.open(url, "_blank", "noopener,noreferrer");
-  }
+  // No fallback — window.open bypasses main-process https:// validation.
+  // If the bridge is unavailable the call is a no-op.
+  console.warn("[openExternalUrl] IPC bridge unavailable, cannot open:", url);
 }

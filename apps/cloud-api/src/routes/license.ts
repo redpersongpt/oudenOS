@@ -27,6 +27,7 @@ import {
   users,
   subscriptions,
   machineActivations,
+  adminAuditLog,
 } from "../db/index.js";
 import { requireAuth } from "../middleware/auth.js";
 import { requireAdmin } from "../middleware/admin.js";
@@ -320,6 +321,16 @@ export const licenseRoutes: FastifyPluginAsync = async (app) => {
       if (result.length === 0) {
         return reply.code(404).send({ error: "Machine not found" });
       }
+
+      await db.insert(adminAuditLog).values({
+        adminId: request.adminId,
+        action: "machine.revoke",
+        targetUserId: result[0].userId,
+        targetResourceType: "machine",
+        targetResourceId: machineId,
+        details: { machineId },
+        ipAddress: request.ip,
+      });
 
       return reply.send({ ok: true, revokedMachineId: machineId });
     },
