@@ -2,7 +2,7 @@
 // Last chance to review before applying. Shows: profile, playbook stats,
 // selected apps, personalization choices. Apply button is the primary CTA.
 
-import type { ElementType, ReactNode, ReactElement } from "react";
+import { useEffect, type ElementType, type ReactNode, type ReactElement } from "react";
 import { motion } from "framer-motion";
 import { Shield, Package, Palette, Download } from "lucide-react";
 import { useWizardStore } from "@/stores/wizard-store";
@@ -24,7 +24,11 @@ function ReviewSection({ icon: Icon, title, children }: {
 }
 
 export function FinalReviewStep() {
-  const { detectedProfile, resolvedPlaybook, selectedAppIds, personalization } = useWizardStore();
+  const { detectedProfile, resolvedPlaybook, selectedAppIds, personalization, setStepReady } = useWizardStore();
+
+  useEffect(() => {
+    setStepReady("final-review", Boolean(detectedProfile && resolvedPlaybook));
+  }, [detectedProfile, resolvedPlaybook, setStepReady]);
 
   const sections = [
     {

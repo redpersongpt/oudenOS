@@ -119,6 +119,7 @@ export interface ExecutionResult {
 interface WizardState {
   currentStep: WizardStepId;
   steps: WizardStep[];
+  stepReadiness: Record<WizardStepId, boolean>;
   demoMode: boolean;
 
   // Data
@@ -140,6 +141,7 @@ interface WizardState {
   skipStep: (step: WizardStepId) => void;
   goNext: () => void;
   goBack: () => void;
+  setStepReady: (step: WizardStepId, ready: boolean) => void;
 
   // Data setters
   setDetectedProfile: (profile: DetectedProfile) => void;
@@ -176,6 +178,22 @@ const INITIAL_STEPS: WizardStep[] = [
 ];
 
 const STEP_ORDER = INITIAL_STEPS.map((s) => s.id);
+const INITIAL_STEP_READINESS: Record<WizardStepId, boolean> = {
+  welcome: true,
+  assessment: false,
+  profile: false,
+  preservation: true,
+  "playbook-strategy": false,
+  "playbook-review": false,
+  personalization: true,
+  "app-setup": false,
+  "final-review": false,
+  execution: false,
+  "reboot-resume": false,
+  report: true,
+  donation: false,
+  handoff: false,
+};
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -184,8 +202,12 @@ function computeProgress(steps: WizardStep[]): number {
   return Math.round((done / steps.length) * 100);
 }
 
-function computeCanGoNext(_steps: WizardStep[], currentStep: WizardStepId): boolean {
-  return STEP_ORDER.indexOf(currentStep) < STEP_ORDER.length - 1;
+function computeCanGoNext(
+  _steps: WizardStep[],
+  currentStep: WizardStepId,
+  stepReadiness: Record<WizardStepId, boolean>,
+): boolean {
+  return STEP_ORDER.indexOf(currentStep) < STEP_ORDER.length - 1 && stepReadiness[currentStep] === true;
 }
 
 function computeCanGoBack(_steps: WizardStep[], currentStep: WizardStepId): boolean {
@@ -197,6 +219,7 @@ function computeCanGoBack(_steps: WizardStep[], currentStep: WizardStepId): bool
 export const useWizardStore = create<WizardState>((set, get) => ({
   currentStep: "welcome",
   steps: INITIAL_STEPS.map(s => ({ ...s })),
+  stepReadiness: { ...INITIAL_STEP_READINESS },
   demoMode: false,
   detectedProfile: null,
   playbookPreset: "balanced",
@@ -226,7 +249,7 @@ export const useWizardStore = create<WizardState>((set, get) => ({
         currentStep: stepId,
         steps,
         progress: computeProgress(steps),
-        canGoNext: computeCanGoNext(steps, stepId),
+        canGoNext: computeCanGoNext(steps, stepId, state.stepReadiness),
         canGoBack: computeCanGoBack(steps, stepId),
       };
     });
@@ -249,7 +272,7 @@ export const useWizardStore = create<WizardState>((set, get) => ({
         steps,
         currentStep: nextId ?? state.currentStep,
         progress: computeProgress(steps),
-        canGoNext: computeCanGoNext(steps, newCurrent),
+        canGoNext: computeCanGoNext(steps, newCurrent, state.stepReadiness),
         canGoBack: computeCanGoBack(steps, newCurrent),
       };
     });
@@ -272,7 +295,7 @@ export const useWizardStore = create<WizardState>((set, get) => ({
         steps,
         currentStep: nextId ?? state.currentStep,
         progress: computeProgress(steps),
-        canGoNext: computeCanGoNext(steps, newCurrent),
+        canGoNext: computeCanGoNext(steps, newCurrent, state.stepReadiness),
         canGoBack: computeCanGoBack(steps, newCurrent),
       };
     });
@@ -301,11 +324,20 @@ export const useWizardStore = create<WizardState>((set, get) => ({
         currentStep: prevId,
         steps,
         progress: computeProgress(steps),
-        canGoNext: computeCanGoNext(steps, prevId),
+        canGoNext: computeCanGoNext(steps, prevId, state.stepReadiness),
         canGoBack: computeCanGoBack(steps, prevId),
       };
     });
   },
+
+  setStepReady: (stepId, ready) =>
+    set((state) => {
+      const stepReadiness = { ...state.stepReadiness, [stepId]: ready };
+      return {
+        stepReadiness,
+        canGoNext: computeCanGoNext(state.steps, state.currentStep, stepReadiness),
+      };
+    }),
 
   setDetectedProfile: (profile) => set({ detectedProfile: profile }),
   setPlaybookPreset: (preset) => set({ playbookPreset: preset, resolvedPlaybook: null }),
@@ -334,8 +366,8 @@ export const useWizardStore = create<WizardState>((set, get) => ({
         return s;
       });
       return {
-        currentStep: "donation" as WizardStepId,
-        steps,
+      currentStep: "donation" as WizardStepId,
+      steps,
         progress: computeProgress(steps),
         canGoNext: true,
         canGoBack: false,
@@ -346,6 +378,7 @@ export const useWizardStore = create<WizardState>((set, get) => ({
     set({
       currentStep: "welcome",
       steps: INITIAL_STEPS.map(s => ({ ...s })),
+      stepReadiness: { ...INITIAL_STEP_READINESS },
       demoMode: false,
       detectedProfile: null,
       playbookPreset: "balanced",
