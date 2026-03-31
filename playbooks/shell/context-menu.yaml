@@ -1,26 +1,148 @@
-# ─── Shell: Context Menu ──────────────────────────────────────────────────────
-# Restores classic Windows right-click context menu.
+# ─── Shell: Context Menu Cleanup ──────────────────────────────────────────────
+# Context menu restoration, clutter removal, and shell extension cleanup.
 
 module: shell.context-menu
-name: "Classic Context Menu"
-description: "Restore the full classic right-click context menu on Windows 11"
+name: "Context Menu Cleanup"
+description: "Restore classic context menu, remove clutter entries, and clean shell extensions"
 category: shell
 
 actions:
   - id: shell.restore-classic-context-menu
     name: "Restore Classic Context Menu"
-    description: "Restore the full classic right-click context menu on Windows 11"
-    rationale: "Restores full right-click context menu on Win11, removing the need to click 'Show more options'"
+    description: "Restore the full classic right-click context menu on Windows 11, removing the truncated modern menu"
+    rationale: "Windows 11 hides most context menu entries behind 'Show more options'. Restoring the classic menu gives instant access to all entries without an extra click."
     risk: low
     tier: free
     default: true
     requiresReboot: true
     reversible: true
     estimatedSeconds: 2
+    minWindowsBuild: 22000
     blockedProfiles: []
     registryChanges:
       - hive: HKCU
         path: "Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a8}\\InprocServer32"
         valueName: ""
+        value: ""
+        valueType: String
+
+  - id: shell.remove-share-context
+    name: "Remove 'Share' from Context Menu"
+    description: "Remove the 'Share' shell extension from the right-click context menu"
+    rationale: "The Share context menu entry invokes the Windows Share charm. Most users never use this for file sharing and it adds visual clutter."
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKCU
+        path: "SOFTWARE\\Classes\\*\\shellex\\ContextMenuHandlers\\ModernSharing"
+        valueName: ""
+        value: ""
+        valueType: String
+
+  - id: shell.remove-give-access-to
+    name: "Remove 'Give access to' from Context Menu"
+    description: "Remove the 'Give access to' (formerly 'Share with') network sharing entry"
+    rationale: "Give access to provides quick network file sharing setup. On systems not using Windows file sharing, it is unused clutter."
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles:
+      - work_pc
+    registryChanges:
+      - hive: HKCU
+        path: "SOFTWARE\\Classes\\*\\shellex\\ContextMenuHandlers\\Sharing"
+        valueName: ""
+        value: ""
+        valueType: String
+
+  - id: shell.remove-cast-to-device
+    name: "Remove 'Cast to Device' from Context Menu"
+    description: "Remove the 'Cast to Device' / 'Play To' media streaming entry from right-click menu"
+    rationale: "Cast to Device invokes DLNA/Miracast streaming. Rarely used on desktop systems and adds context menu clutter."
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKLM
+        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Shell Extensions\\Blocked"
+        valueName: "{7AD84985-87B4-4a16-BE58-8B72A5B390F7}"
+        value: "Play To menu"
+        valueType: String
+
+  - id: shell.remove-include-in-library
+    name: "Remove 'Include in library' from Context Menu"
+    description: "Remove the 'Include in library' folder context menu entry"
+    rationale: "Windows Libraries are a legacy organizational feature that most users have replaced with pinned Quick Access folders."
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles:
+      - work_pc
+    registryChanges:
+      - hive: HKCU
+        path: "SOFTWARE\\Classes\\Folder\\shellex\\ContextMenuHandlers\\Library Location"
+        valueName: ""
+        value: ""
+        valueType: String
+
+  - id: shell.remove-troubleshoot-compatibility
+    name: "Remove 'Troubleshoot compatibility' from Context Menu"
+    description: "Remove the 'Troubleshoot compatibility' entry from .exe right-click menu"
+    rationale: "The compatibility troubleshooter is rarely useful on modern systems and adds an unnecessary entry for every executable."
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles:
+      - work_pc
+    registryChanges:
+      - hive: HKLM
+        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Shell Extensions\\Blocked"
+        valueName: "{1d27f844-3a1f-4410-85ac-14651078412d}"
+        value: "Compatibility troubleshooter"
+        valueType: String
+
+  - id: shell.remove-edit-with-paint3d
+    name: "Remove 'Edit with Paint 3D' from Context Menu"
+    description: "Remove the 'Edit with Paint 3D' context menu entry for image files"
+    rationale: "Paint 3D is deprecated and being removed from Windows. The context menu entry persists even after Paint 3D uninstallation."
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKLM
+        path: "SOFTWARE\\Classes\\SystemFileAssociations\\.bmp\\Shell\\3D Edit"
+        valueName: "ProgrammaticAccessOnly"
+        value: ""
+        valueType: String
+      - hive: HKLM
+        path: "SOFTWARE\\Classes\\SystemFileAssociations\\.jpg\\Shell\\3D Edit"
+        valueName: "ProgrammaticAccessOnly"
+        value: ""
+        valueType: String
+      - hive: HKLM
+        path: "SOFTWARE\\Classes\\SystemFileAssociations\\.png\\Shell\\3D Edit"
+        valueName: "ProgrammaticAccessOnly"
         value: ""
         valueType: String

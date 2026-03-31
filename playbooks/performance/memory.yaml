@@ -1,22 +1,143 @@
-# ─── Performance: Memory Optimization ─────────────────────────────────────────
-# Disables Windows memory compression.
+# ─── Performance: Memory Management ──────────────────────────────────────────
+# Memory subsystem tuning — NDU, prefetch, compression, working set, page file.
 
 module: performance.memory
-name: "Memory Optimization"
-description: "Disable Windows memory compression to reduce CPU overhead on systems with ample RAM"
+name: "Memory Management"
+description: "Optimize memory subsystem: NDU leak fix, prefetch, compression, svchost split, page file"
 category: performance
 
 actions:
+  - id: perf.disable-ndu
+    name: "Disable Network Data Usage Monitor (NDU)"
+    description: "Disable the NDU driver that tracks per-process network data usage and leaks non-paged pool memory over time"
+    rationale: "NDU (ndu.sys) accumulates tracking data in non-paged pool. On long-running systems, this causes a persistent memory leak measured in hundreds of MB. Microsoft has acknowledged this driver as a memory leak source."
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: true
+    reversible: true
+    estimatedSeconds: 3
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKLM
+        path: "SYSTEM\\CurrentControlSet\\Services\\Ndu"
+        valueName: Start
+        value: 4
+        valueType: DWord
+
   - id: memory.disable-compression
     name: "Disable Memory Compression"
-    description: "Disable the Windows memory compression agent that compresses in-memory pages to fit more data in RAM, trading CPU cycles for capacity"
-    rationale: "Memory compression uses CPU cycles to compress and decompress pages. On systems with ample RAM (16 GB+), the compression overhead is unnecessary and can cause micro-stutter when the compression thread competes with game threads for CPU time."
+    description: "Disable the Windows memory compression agent that compresses idle pages instead of writing to page file"
+    rationale: "Memory compression trades CPU cycles for reduced page file I/O. On systems with ample RAM (16GB+), disabling reduces CPU overhead and micro-stutter. On low-RAM systems, keep enabled."
     risk: low
-    tier: premium
+    tier: free
     default: true
     requiresReboot: true
     reversible: true
     estimatedSeconds: 5
-    blockedProfiles: []
+    blockedProfiles:
+      - low_spec_system
+      - vm_cautious
     powerShellCommands:
       - "Disable-MMAgent -MemoryCompression"
+
+  - id: perf.large-system-cache
+    name: "Optimize System Cache for Desktop"
+    description: "Set LargeSystemCache to 0 (desktop mode) to prioritize application memory over file system cache"
+    rationale: "Desktop mode ensures applications get priority access to physical memory instead of file system caching."
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: true
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles:
+      - high_end_workstation
+    registryChanges:
+      - hive: HKLM
+        path: "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management"
+        valueName: LargeSystemCache
+        value: 0
+        valueType: DWord
+
+  - id: perf.clear-page-file-on-shutdown
+    name: "Clear Page File on Shutdown"
+    description: "Zero out the page file contents on shutdown to prevent data remnants in virtual memory"
+    rationale: "The page file can contain sensitive data from application memory. Clearing adds security at the cost of slightly longer shutdown."
+    risk: safe
+    tier: free
+    default: false
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKLM
+        path: "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management"
+        valueName: ClearPageFileAtShutdown
+        value: 1
+        valueType: DWord
+
+  - id: perf.disable-prefetch
+    name: "Disable Prefetch"
+    description: "Disable Prefetch/ReadyBoot subsystem that preloads application data on boot"
+    rationale: "Prefetch creates .pf files and performs background I/O during boot. On NVMe/SSD systems, app launch is already fast enough that prefetch adds overhead without benefit."
+    risk: low
+    tier: free
+    default: true
+    requiresReboot: true
+    reversible: true
+    estimatedSeconds: 3
+    blockedProfiles:
+      - work_pc
+    registryChanges:
+      - hive: HKLM
+        path: "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management\\PrefetchParameters"
+        valueName: EnablePrefetcher
+        value: 0
+        valueType: DWord
+      - hive: HKLM
+        path: "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management\\PrefetchParameters"
+        valueName: EnableSuperfetch
+        value: 0
+        valueType: DWord
+
+  - id: perf.svchost-split-threshold
+    name: "Optimize Svchost Split Threshold"
+    description: "Raise SvcHostSplitThresholdInKB to reduce the number of svchost.exe process instances"
+    rationale: "Windows splits services into separate svchost.exe processes based on available RAM. On 8GB+ systems, this creates many small processes. Raising the threshold reduces process count and context-switch overhead."
+    risk: low
+    tier: free
+    default: true
+    requiresReboot: true
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles:
+      - vm_cautious
+    registryChanges:
+      - hive: HKLM
+        path: "SYSTEM\\CurrentControlSet\\Control"
+        valueName: SvcHostSplitThresholdInKB
+        value: 67108864
+        valueType: DWord
+
+  - id: perf.disable-page-combining
+    name: "Disable Page Combining"
+    description: "Disable memory page combining/deduplication to reduce CPU overhead"
+    rationale: "Page combining scans memory for identical pages and deduplicates them. This saves RAM but uses CPU. On systems with ample RAM, disabling removes the scan overhead."
+    risk: low
+    tier: free
+    default: false
+    expertOnly: true
+    requiresReboot: true
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles:
+      - low_spec_system
+      - vm_cautious
+    registryChanges:
+      - hive: HKLM
+        path: "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management"
+        valueName: DisablePageCombining
+        value: 1
+        valueType: DWord
