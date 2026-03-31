@@ -1187,7 +1187,12 @@ fn resolve_playbook_dir() -> Option<std::path::PathBuf> {
     None
 }
 
-// ─── Reboot-resume journal helpers ──────────────────────────────────────────
+// ─── LEGACY Reboot-resume journal helpers (JSON sidecar — DEPRECATED) ───────
+// These functions maintain the legacy resume-journal.json file.
+// The DB-backed execution ledger (ledger.rs) is now the primary truth.
+// The sidecar is kept only as a backward-compatibility fallback during
+// the transition period. New features must NOT depend on sidecar truth.
+// Target: remove once DB ledger path is proven on real Windows reboot cycles.
 
 fn resume_journal_path() -> anyhow::Result<PathBuf> {
     #[cfg(windows)]

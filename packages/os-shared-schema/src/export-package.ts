@@ -114,6 +114,7 @@ export interface OsPackageManifest {
     includesActionProvenance?: boolean;
     includesExecutionJournal?: boolean;
     includesServiceJournalState?: boolean;
+    includesExecutionLedger?: boolean;
   };
   provenance?: {
     actionCount: number;
