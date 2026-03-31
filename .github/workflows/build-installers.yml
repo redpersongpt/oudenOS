@@ -9,6 +9,9 @@ on:
       - 'apps/tuning-desktop/**'
       - 'services/os-service/**'
       - 'services/tuning-service/**'
+      - 'packages/os-shared-schema/**'
+      - 'playbooks/**'
+      - 'scripts/validate-action-parity.mjs'
       - 'scripts/build-and-publish-os-release.sh'
       - '.github/workflows/build-installers.yml'
 
@@ -20,6 +23,31 @@ env:
   RUST_BACKTRACE: 1
 
 jobs:
+  verify:
+    name: Structural Integrity
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Action parity validation
+        run: node scripts/validate-action-parity.mjs
+
+      - name: TypeScript type-check
+        run: pnpm typecheck
+
   build-rust-services:
     name: Build Rust Services (Windows)
     runs-on: windows-latest
@@ -67,7 +95,7 @@ jobs:
   build-os-installer:
     name: Package redcore OS Installer
     runs-on: windows-latest
-    needs: build-rust-services
+    needs: [verify, build-rust-services]
     steps:
       - uses: actions/checkout@v4
 
@@ -118,7 +146,7 @@ jobs:
   build-tuning-installer:
     name: Package redcore Tuning Installer
     runs-on: windows-latest
-    needs: build-rust-services
+    needs: [verify, build-rust-services]
     steps:
       - uses: actions/checkout@v4
 
