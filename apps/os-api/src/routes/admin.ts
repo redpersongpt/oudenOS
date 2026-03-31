@@ -1,7 +1,7 @@
 import type { FastifyInstance } from 'fastify';
 import { desc } from 'drizzle-orm';
 import { db } from '../db/index.js';
-import { fleetGroups } from '../db/schema.js';
+import { fleetGroups } from '../db/index.js';
 import { requireAuth } from '../middleware/auth.js';
 import { requireAdmin } from '../middleware/admin.js';
 

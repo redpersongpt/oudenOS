@@ -2,7 +2,7 @@ import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
 import { eq, and } from 'drizzle-orm';
 import { db } from '../db/index.js';
-import { subscriptions, machineActivations } from '../db/schema.js';
+import { subscriptions, machineActivations } from '../db/index.js';
 import { requireAuth } from '../middleware/auth.js';
 
 // ---------------------------------------------------------------------------

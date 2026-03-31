@@ -2,7 +2,7 @@ import type { FastifyInstance } from 'fastify';
 import Stripe from 'stripe';
 import { eq } from 'drizzle-orm';
 import { db } from '../db/index.js';
-import { subscriptions, paymentHistory, users } from '../db/schema.js';
+import { subscriptions, paymentHistory, users } from '../db/index.js';
 import { sendSubscriptionConfirmationEmail } from '../lib/email.js';
 import {
   handleDonationCheckoutCompleted,
@@ -167,7 +167,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session): Promis
   }
 
   const tier = (session.metadata?.tier ?? 'pro') as 'pro' | 'enterprise';
-  const billingPeriod = (session.metadata?.billingPeriod ?? 'monthly') as string;
+  const billingPeriod = (session.metadata?.billingPeriod ?? 'monthly') as "monthly" | "annual";
   const stripeSubId = session.subscription as string | null;
   const stripeCustomerId = session.customer as string | null;
 
@@ -271,18 +271,15 @@ async function handlePaymentSucceeded(invoice: Stripe.Invoice): Promise<void> {
 
   if (!user) return;
 
-  const lineItem = invoice.lines?.data?.[0];
-  const priceIdVal = lineItem?.price?.id;
-
   await db.insert(paymentHistory).values({
     userId: user.id,
+    product: "os",
+    type: "subscription",
     stripePaymentIntentId: invoice.payment_intent as string | null,
     stripeInvoiceId: invoice.id,
-    amount: invoice.amount_paid ?? 0,
+    amountCents: invoice.amount_paid ?? 0,
     currency: invoice.currency ?? 'usd',
     status: 'succeeded',
-    tier: priceIdVal ? tierFromPriceId(priceIdVal) : null,
-    billingPeriod: priceIdVal ? billingPeriodFromPriceId(priceIdVal) : null,
   });
 
   // Ensure subscription is active
@@ -306,9 +303,11 @@ async function handlePaymentFailed(invoice: Stripe.Invoice): Promise<void> {
 
   await db.insert(paymentHistory).values({
     userId: user.id,
+    product: "os",
+    type: "subscription",
     stripePaymentIntentId: invoice.payment_intent as string | null,
     stripeInvoiceId: invoice.id,
-    amount: invoice.amount_due ?? 0,
+    amountCents: invoice.amount_due ?? 0,
     currency: invoice.currency ?? 'usd',
     status: 'failed',
   });
