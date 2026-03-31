@@ -1,0 +1,147 @@
+# ─── Security: Update Control ─────────────────────────────────────────────────
+# Controls Windows Update behavior: disable, prevent auto-restart, defer feature updates.
+
+module: security.update-control
+name: "Windows Update Control"
+description: "Control Windows Update behavior: disable updates, prevent auto-restart, and defer feature updates"
+category: security
+
+actions:
+  - id: system.disable-windows-update
+    name: "Disable Windows Update (EXTREME RISK)"
+    description: "Completely disable the Windows Update service and all related update mechanisms. This stops ALL updates including security patches."
+    rationale: "On fully isolated benchmark machines or air-gapped gaming rigs, Windows Update background activity consumes CPU, disk I/O, and causes micro-stutter. THIS IS NOT RECOMMENDED FOR ANY INTERNET-CONNECTED SYSTEM."
+    risk: extreme
+    tier: premium
+    default: false
+    requiresReboot: true
+    reversible: true
+    estimatedSeconds: 10
+    blockedProfiles:
+      - work_pc
+    registryChanges:
+      - hive: HKLM
+        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate\\AU"
+        valueName: NoAutoUpdate
+        value: 1
+        valueType: DWord
+      - hive: HKLM
+        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate"
+        valueName: DisableWindowsUpdateAccess
+        value: 1
+        valueType: DWord
+      - hive: HKLM
+        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate"
+        valueName: DoNotConnectToWindowsUpdateInternetLocations
+        value: 1
+        valueType: DWord
+      - hive: HKLM
+        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate"
+        valueName: SetDisableUXWUAccess
+        value: 1
+        valueType: DWord
+    serviceChanges:
+      - name: wuauserv
+        startupType: Disabled
+      - name: UsoSvc
+        startupType: Disabled
+      - name: WaaSMedicSvc
+        startupType: Disabled
+
+  - id: security.disable-update-asap
+    name: "Disable Early Access Updates"
+    description: "Prevent Windows from opting in to early access / continuous innovation updates"
+    rationale: "IsContinuousInnovationOptedIn pushes preview-quality updates to production machines"
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKLM
+        path: "SOFTWARE\\Microsoft\\WindowsUpdate\\UX\\Settings"
+        valueName: IsContinuousInnovationOptedIn
+        value: 0
+        valueType: DWord
+
+  - id: security.disable-delivery-optimization
+    name: "Disable Delivery Optimization"
+    description: "Disable peer-to-peer Windows Update delivery that uses your bandwidth for other PCs"
+    rationale: "Delivery optimization uploads update data to other PCs, consuming bandwidth"
+    risk: low
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKLM
+        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\DeliveryOptimization"
+        valueName: DODownloadMode
+        value: 0
+        valueType: DWord
+
+  - id: security.disable-bitlocker-auto-encrypt
+    name: "Disable BitLocker Auto-Encryption"
+    description: "Prevent Windows from automatically enabling BitLocker device encryption"
+    rationale: "Auto-encryption can lock users out if they don't save the recovery key. Deliberate encryption is safer."
+    risk: low
+    tier: free
+    default: false
+    expertOnly: false
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKLM
+        path: "SYSTEM\\CurrentControlSet\\Control\\BitLocker"
+        valueName: PreventDeviceEncryption
+        value: 1
+        valueType: DWord
+
+  - id: system.disable-update-auto-restart
+    name: "Prevent Windows Update Auto-Restart"
+    description: "Prevent Windows Update from automatically restarting the PC when a user is logged on by setting NoAutoRebootWithLoggedOnUsers to 1"
+    rationale: "Windows Update can forcibly restart the system during active use, causing data loss in unsaved work and interrupting gaming sessions."
+    risk: low
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles:
+      - work_pc
+    registryChanges:
+      - hive: HKLM
+        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate\\AU"
+        valueName: NoAutoRebootWithLoggedOnUsers
+        value: 1
+        valueType: DWord
+
+  - id: system.defer-feature-updates
+    name: "Defer Feature Updates by 365 Days"
+    description: "Defer Windows feature updates by 365 days, allowing only security and quality updates to install while postponing major version upgrades"
+    rationale: "Feature updates (e.g., 23H2 -> 24H2) often introduce driver incompatibilities, reset settings, and cause instability. Deferring them by a year lets early adopters find and report issues first."
+    risk: medium
+    tier: free
+    default: false
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles:
+      - work_pc
+    registryChanges:
+      - hive: HKLM
+        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate"
+        valueName: DeferFeatureUpdates
+        value: 1
+        valueType: DWord
+      - hive: HKLM
+        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate"
+        valueName: DeferFeatureUpdatesPeriodInDays
+        value: 365
+        valueType: DWord

@@ -1,0 +1,9 @@
+{
+  "packageId": "redcore-os",
+  "title": "redcore OS Playbook",
+  "version": "1.0.0",
+  "manifestVersion": "1.0.0",
+  "commit": "",
+  "generatedAt": "2026-03-30T13:23:50.727Z",
+  "injectPath": "sources/$OEM$/$1/redcore/wizard"
+}

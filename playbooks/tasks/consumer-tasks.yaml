@@ -1,0 +1,127 @@
+# ─── Tasks: Consumer & Background Tasks ───────────────────────────────────────
+# Disables consumer app, maintenance, and background processing scheduled tasks.
+
+module: tasks.consumer-tasks
+name: "Consumer Background Tasks"
+description: "Disable consumer app, maintenance, and background processing scheduled tasks"
+category: tasks
+
+actions:
+  - id: tasks.disable-app-suggestion-tasks
+    name: "Disable App Suggestion & Install Tasks"
+    description: "Disable Store app auto-install, CloudContent, and pre-installed app provisioning tasks"
+    rationale: "Windows silently installs promoted apps and games through background scheduled tasks. Disabling prevents unwanted app installation."
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 4
+    blockedProfiles: []
+    tasks:
+      - name: "BackgroundDownload"
+        path: "\\Microsoft\\Windows\\WindowsUpdate\\"
+      - name: "Automatic App Update"
+        path: "\\Microsoft\\Windows\\WindowsUpdate\\"
+      - name: "Pre-staged app cleanup"
+        path: "\\Microsoft\\Windows\\AppxDeploymentClient\\"
+
+  - id: tasks.disable-defrag-tasks
+    name: "Disable Automatic Disk Defragmentation"
+    description: "Disable ScheduledDefrag — automatic disk defragmentation and optimization"
+    rationale: "SSD TRIM is handled by the storage driver, not defragmentation. On HDD systems, re-enable if needed."
+    risk: low
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles:
+      - work_pc
+    tasks:
+      - name: "ScheduledDefrag"
+        path: "\\Microsoft\\Windows\\Defrag\\"
+
+  - id: tasks.disable-dotnet-tasks
+    name: "Disable .NET Framework Tasks"
+    description: "Disable .NET NGEN and telemetry background tasks"
+    rationale: ".NET NGEN tasks pre-compile assemblies in the background. On systems with modern .NET, these legacy tasks add CPU overhead."
+    risk: low
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 3
+    blockedProfiles:
+      - work_pc
+    tasks:
+      - name: ".NET Framework NGEN v4.0.30319"
+        path: "\\Microsoft\\Windows\\.NET Framework\\"
+      - name: ".NET Framework NGEN v4.0.30319 64"
+        path: "\\Microsoft\\Windows\\.NET Framework\\"
+
+  - id: tasks.disable-maintenance-tasks
+    name: "Disable Automatic Maintenance"
+    description: "Disable automatic maintenance scheduler that wakes PC for updates"
+    rationale: "Automatic maintenance can wake the PC from sleep and cause unexpected activity. Manual maintenance is more predictable."
+    risk: low
+    tier: free
+    default: false
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 3
+    blockedProfiles:
+      - work_pc
+    tasks:
+      - name: "Regular Maintenance"
+        path: "\\Microsoft\\Windows\\TaskScheduler\\"
+      - name: "Idle Maintenance"
+        path: "\\Microsoft\\Windows\\TaskScheduler\\"
+
+  - id: tasks.disable-power-efficiency-tasks
+    name: "Disable Power Efficiency Diagnostics"
+    description: "Disable AnalyzeSystem — background power efficiency diagnostic collection"
+    rationale: "Power efficiency diagnostics consume CPU cycles to analyze energy usage patterns. Results are rarely viewed by users."
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    tasks:
+      - name: "AnalyzeSystem"
+        path: "\\Microsoft\\Windows\\Power Efficiency Diagnostics\\"
+
+  - id: tasks.disable-chkdsk-tasks
+    name: "Disable Automatic CHKDSK"
+    description: "Disable ProactiveScan — background disk health monitoring and automatic chkdsk"
+    rationale: "ProactiveScan triggers background disk scans that cause I/O contention. Modern NVMe/SSD health monitoring is handled by storage firmware."
+    risk: low
+    tier: free
+    default: false
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles:
+      - work_pc
+    tasks:
+      - name: "ProactiveScan"
+        path: "\\Microsoft\\Windows\\Chkdsk\\"
+
+  - id: tasks.disable-device-census
+    name: "Disable Device Census"
+    description: "Disable Device Census — hardware/software inventory collection for Microsoft"
+    rationale: "Device Census collects detailed hardware and software inventory data and sends it to Microsoft as part of the telemetry pipeline."
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    tasks:
+      - name: "Device"
+        path: "\\Microsoft\\Windows\\Device Information\\"
+      - name: "Device User"
+        path: "\\Microsoft\\Windows\\Device Information\\"

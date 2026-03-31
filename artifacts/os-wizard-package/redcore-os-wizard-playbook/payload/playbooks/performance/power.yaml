@@ -1,0 +1,117 @@
+# ─── Performance: Power Configuration ─────────────────────────────────────────
+# High Performance plan, disable fast startup, hibernation, USB suspend, PCIe PM.
+
+module: performance.power
+name: "Power Configuration"
+description: "Optimize power settings for maximum performance: High Performance plan, disable fast startup, hibernation, USB selective suspend, and PCIe link state PM"
+category: performance
+
+actions:
+  - id: power.high-performance-plan
+    name: "Activate High Performance Power Plan"
+    description: "Set the active power plan to Windows High Performance, preventing CPU frequency scaling and sleep transitions"
+    rationale: "The Balanced power plan dynamically scales CPU frequency and allows C-state transitions, introducing latency when the CPU must ramp up. High Performance keeps the CPU at maximum frequency."
+    risk: low
+    tier: premium
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 3
+    blockedProfiles:
+      - office_laptop
+    powerChanges:
+      - settingPath: "SCHEME_CURRENT\\SUB_PROCESSOR\\PROCTHROTTLEMIN"
+        newValue: "100"
+      - settingPath: "SCHEME_CURRENT\\SUB_PROCESSOR\\PROCTHROTTLEMAX"
+        newValue: "100"
+
+  - id: power.disable-fast-startup
+    name: "Disable Fast Startup (Hybrid Shutdown)"
+    description: "Disable Windows Fast Startup (hybrid shutdown) which hibernates the kernel session instead of performing a full shutdown"
+    rationale: "Fast Startup saves the kernel session to the hibernation file on shutdown. This causes stale driver state, prevents clean driver reinitialization, and can lead to hardware initialization issues."
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKLM
+        path: "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Power"
+        valueName: HiberbootEnabled
+        value: 0
+        valueType: DWord
+
+  - id: power.disable-hibernation
+    name: "Disable Hibernation"
+    description: "Disable Windows hibernation, which removes the hibernation file (hiberfil.sys) and frees disk space equal to approximately 75% of installed RAM"
+    rationale: "On systems with Fast Startup already disabled, hibernation provides no benefit and consumes significant disk space. Disabling it ensures a clean kernel initialization on every boot."
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 3
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKLM
+        path: "SYSTEM\\CurrentControlSet\\Control\\Power"
+        valueName: HibernateEnabled
+        value: 0
+        valueType: DWord
+
+  - id: power.disable-usb-selective-suspend
+    name: "Disable USB Selective Suspend"
+    description: "Disable USB selective suspend for both AC and DC power, preventing Windows from powering down USB devices during idle periods"
+    rationale: "USB selective suspend saves power by suspending idle USB devices, but causes input latency spikes when mice, keyboards, and controllers must wake from suspended state."
+    risk: low
+    tier: premium
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 3
+    blockedProfiles:
+      - office_laptop
+    powerChanges:
+      - settingPath: "2a737441-1930-4402-8d77-b2bebba308a3/48e6b7a6-50f5-4782-a5d4-53bb8f07e226"
+        newValue: "0"
+
+  - id: power.disable-pcie-link-state-pm
+    name: "Disable PCIe Link State Power Management"
+    description: "Disable Active State Power Management (ASPM) transitions on PCIe devices, preventing the system from placing the PCIe bus in low-power link states (L0s, L1)"
+    rationale: "PCIe ASPM transitions power down the PCIe link between the CPU and devices. Re-entering the active state adds latency (1-10 us typical, up to several ms). Disabling ASPM eliminates this class of intermittent latency spike."
+    risk: low
+    tier: premium
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 3
+    blockedProfiles:
+      - office_laptop
+    powerChanges:
+      - settingPath: "501a4d13-42af-4429-9fd1-a8218c268e20/ee12f906-d277-404b-b6da-e5fa1a576df5"
+        newValue: "0"
+
+  - id: power.disable-modern-standby
+    name: "Disable Modern Standby"
+    description: "Disable Modern Standby (S0 Low Power Idle) to force legacy S3 sleep. Prevents network activity, background updates, and battery drain during sleep."
+    rationale: "Modern Standby keeps CPU, network, and peripherals partially active during sleep. On desktops this wastes power. On laptops it drains battery. PlatformAoAcOverride=0 forces classic S3 sleep."
+    risk: medium
+    tier: free
+    default: false
+    expertOnly: false
+    requiresReboot: true
+    reversible: true
+    estimatedSeconds: 2
+    warningMessage: "Changes sleep behavior from Modern Standby to legacy S3. Instant wake and background sync will no longer work. Verify sleep works correctly after reboot."
+    blockedProfiles:
+      - office_laptop
+      - gaming_laptop
+      - low_spec_system
+    registryChanges:
+      - hive: HKLM
+        path: "SYSTEM\\CurrentControlSet\\Control\\Power"
+        valueName: PlatformAoAcOverride
+        value: 0
+        valueType: DWord

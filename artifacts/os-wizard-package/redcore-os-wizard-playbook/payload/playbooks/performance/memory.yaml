@@ -1,0 +1,22 @@
+# ─── Performance: Memory Optimization ─────────────────────────────────────────
+# Disables Windows memory compression.
+
+module: performance.memory
+name: "Memory Optimization"
+description: "Disable Windows memory compression to reduce CPU overhead on systems with ample RAM"
+category: performance
+
+actions:
+  - id: memory.disable-compression
+    name: "Disable Memory Compression"
+    description: "Disable the Windows memory compression agent that compresses in-memory pages to fit more data in RAM, trading CPU cycles for capacity"
+    rationale: "Memory compression uses CPU cycles to compress and decompress pages. On systems with ample RAM (16 GB+), the compression overhead is unnecessary and can cause micro-stutter when the compression thread competes with game threads for CPU time."
+    risk: low
+    tier: premium
+    default: true
+    requiresReboot: true
+    reversible: true
+    estimatedSeconds: 5
+    blockedProfiles: []
+    powerShellCommands:
+      - "Disable-MMAgent -MemoryCompression"

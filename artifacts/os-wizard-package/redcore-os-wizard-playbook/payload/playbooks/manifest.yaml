@@ -1,0 +1,138 @@
+# ─── redcore · OS Playbook Manifest ──────────────────────────────────────────
+# Root manifest that defines the playbook structure, load order, and metadata.
+# The Rust service reads this manifest, loads all referenced playbook modules,
+# merges them with profile overrides, and produces an executable plan.
+
+name: "redcore-os-default"
+version: "1.0.0"
+description: "Default Windows transformation playbook for redcore · OS"
+author: "redcore"
+minWindowsBuild: 19041  # Windows 10 2004+
+maxWindowsBuild: 99999
+wizardConfig: "wizard.json"
+
+# ─── Phases ──────────────────────────────────────────────────────────────────
+# Ordered execution phases. Each phase loads one or more playbook modules.
+# The wizard step rail maps directly to these phases.
+
+phases:
+  - id: assessment
+    name: "System Assessment"
+    description: "Scan hardware, software, and configuration signals"
+    type: builtin  # handled by assessor.rs, not playbook actions
+
+  - id: classification
+    name: "Machine Classification"
+    description: "Identify machine profile and preservation requirements"
+    type: builtin  # handled by classifier.rs
+
+  - id: cleanup
+    name: "Bloatware Cleanup"
+    description: "Remove pre-installed consumer apps, third-party bloatware, and optionally Edge"
+    modules:
+      - appx/consumer-bloat.yaml
+      - appx/microsoft-apps.yaml
+      - appx/gaming-apps.yaml
+      - appx/third-party-bloat.yaml
+      - appx/edge-removal.yaml
+
+  - id: services
+    name: "Background Services"
+    description: "Disable unnecessary background services"
+    modules:
+      - services/telemetry-services.yaml
+      - services/consumer-services.yaml
+
+  - id: tasks
+    name: "Scheduled Tasks"
+    description: "Disable unnecessary scheduled tasks and telemetry jobs"
+    modules:
+      - tasks/telemetry-tasks.yaml
+
+  - id: privacy
+    name: "Privacy Hardening"
+    description: "Disable telemetry, tracking, and data collection"
+    modules:
+      - privacy/telemetry.yaml
+      - privacy/advertising.yaml
+      - privacy/activity-tracking.yaml
+      - privacy/input-collection.yaml
+      - privacy/ai-features.yaml
+
+  - id: performance
+    name: "Performance Optimization"
+    description: "CPU scheduling, memory management, GPU, and latency tuning"
+    modules:
+      - performance/cpu-scheduler.yaml
+      - performance/memory.yaml
+      - performance/gpu.yaml
+      - performance/latency.yaml
+      - performance/power.yaml
+      - performance/storage.yaml
+
+  - id: shell
+    name: "Shell & Explorer"
+    description: "Taskbar cleanup, context menu, search, and QoL improvements"
+    modules:
+      - shell/taskbar.yaml
+      - shell/context-menu.yaml
+      - shell/search.yaml
+      - shell/explorer.yaml
+      - shell/ads-tips.yaml
+
+  - id: startup-shutdown
+    name: "Startup & Shutdown"
+    description: "Optimize boot, startup apps, and shutdown behavior"
+    modules:
+      - startup-shutdown/startup.yaml
+      - startup-shutdown/shutdown.yaml
+      - startup-shutdown/boot.yaml
+
+  - id: networking
+    name: "Network Security"
+    description: "Disable legacy protocols and harden network stack"
+    modules:
+      - networking/protocols.yaml
+      - networking/latency.yaml
+      - networking/security.yaml
+
+  - id: security
+    name: "Security Tuning"
+    description: "Adjust security mitigations for performance (expert-only)"
+    modules:
+      - security/mitigations.yaml
+      - security/update-control.yaml
+
+  - id: personalization
+    name: "Visual Personalization"
+    description: "Dark mode, accent color, taskbar cleanup, explorer cleanup"
+    type: builtin  # handled by personalizer.rs
+
+# ─── Profile Definitions ─────────────────────────────────────────────────────
+# Each profile can override action defaults, block actions, or add actions.
+
+profiles:
+  gaming_desktop:
+    label: "Gaming Desktop"
+    preset: aggressive
+    overrides: profiles/gaming-desktop.yaml
+
+  office_laptop:
+    label: "Office Laptop"
+    preset: balanced
+    overrides: profiles/office-laptop.yaml
+
+  work_pc:
+    label: "Work PC"
+    preset: conservative
+    overrides: profiles/work-pc.yaml
+
+  low_spec_system:
+    label: "Low-Spec System"
+    preset: balanced
+    overrides: profiles/low-spec.yaml
+
+  vm_cautious:
+    label: "Virtual Machine"
+    preset: conservative
+    overrides: profiles/vm-cautious.yaml

@@ -1,0 +1,44 @@
+# App Bundle manifest — profile-aware software recommendations
+name: "redcore-os-app-bundles"
+version: "1.0.0"
+
+bundles:
+  gaming_desktop:
+    label: "Gaming Essentials"
+    description: "Performance tools, gaming platforms, and a privacy-focused browser"
+    apps: [brave, steam, discord, riot-client, battlenet, epic-games, msi-afterburner, hwinfo, obs-studio, 7zip, everything]
+
+  budget_desktop:
+    label: "Desktop Essentials"
+    description: "Lightweight everyday tools for a clean desktop setup"
+    apps: [brave, 7zip, vlc, everything, notepadpp, discord]
+
+  highend_workstation:
+    label: "Creator & Dev Tools"
+    description: "Professional productivity, development, and monitoring tools"
+    apps: [brave, vscode, obs-studio, hwinfo, 7zip, everything, notepadpp]
+
+  office_laptop:
+    label: "Office Essentials"
+    description: "Work-safe productivity tools for business laptops"
+    apps: [brave, 7zip, vlc, everything, notepadpp]
+
+  gaming_laptop:
+    label: "Gaming Laptop Bundle"
+    description: "Gaming platforms and system monitoring for portable gaming"
+    apps: [brave, steam, discord, hwinfo, msi-afterburner, 7zip, everything]
+
+  low_spec_system:
+    label: "Lightweight Essentials"
+    description: "Minimal-footprint tools for resource-constrained systems"
+    apps: [brave, 7zip, vlc, everything]
+
+  work_pc:
+    label: "Work PC Tools"
+    description: "IT-safe productivity tools for managed work environments"
+    apps: [brave, 7zip, everything, notepadpp]
+
+  vm_cautious:
+    label: "VM Essentials"
+    description: "Minimal tools for virtual machine environments"
+    apps: [7zip, notepadpp]

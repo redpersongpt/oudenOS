@@ -183,8 +183,12 @@ export function PlaybookReviewStep() {
 
   const effectivePlaybook = useMemo(() => {
     if (!basePlaybook) return null;
-    return applyDecisionOverrides(basePlaybook, answers);
-  }, [answers, basePlaybook]);
+    return applyDecisionOverrides(basePlaybook, answers, {
+      isLaptop: detectedProfile?.id === "gaming_laptop" || detectedProfile?.id === "office_laptop",
+      isWorkPc: detectedProfile?.isWorkPc ?? false,
+      windowsBuild: detectedProfile?.windowsBuild ?? 22631,
+    });
+  }, [answers, basePlaybook, detectedProfile]);
 
   useEffect(() => {
     setStepReady("playbook-review", false);
@@ -312,6 +316,42 @@ export function PlaybookReviewStep() {
           <span className="text-[11px] text-amber-400">
             {rebootCount} action{rebootCount !== 1 ? "s" : ""} require a restart to take effect
           </span>
+        </motion.div>
+      )}
+
+      {effectivePlaybook.decisionSummary && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2 }}
+          className="mb-3 rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2.5"
+        >
+          <div className="flex flex-wrap items-center gap-2 text-[10px]">
+            <span className="rounded-md bg-white/[0.05] px-2 py-1 font-semibold uppercase tracking-wider text-ink-secondary">
+              Decision risk: {effectivePlaybook.decisionSummary.riskLevel}
+            </span>
+            {effectivePlaybook.decisionSummary.estimatedPreserved > 0 && (
+              <span className="rounded-md bg-amber-500/10 px-2 py-1 font-semibold uppercase tracking-wider text-amber-400">
+                {effectivePlaybook.decisionSummary.estimatedPreserved} preserved by your answers
+              </span>
+            )}
+            {effectivePlaybook.decisionSummary.warnings.length > 0 && (
+              <span className="rounded-md bg-red-500/10 px-2 py-1 font-semibold uppercase tracking-wider text-red-400">
+                warnings require attention
+              </span>
+            )}
+          </div>
+
+          {effectivePlaybook.decisionSummary.warnings.length > 0 && (
+            <div className="mt-2 space-y-1">
+              {effectivePlaybook.decisionSummary.warnings.map((warning) => (
+                <p key={warning} className="flex items-start gap-1.5 text-[10px] leading-relaxed text-amber-400/90">
+                  <AlertTriangle className="mt-0.5 h-3 w-3 shrink-0" />
+                  <span>{warning}</span>
+                </p>
+              ))}
+            </div>
+          )}
         </motion.div>
       )}
 

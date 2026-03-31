@@ -8,10 +8,10 @@
 import type { ProfileClassification, MachineProfile } from "./profiles.js";
 import type { HardwareAssessment } from "./assessment.js";
 import type { TransformPreset, ResolvedPlaybook, RecommendedAppsResult, AppBundleResolveResult, AppInstallResult } from "./playbook.js";
-import type { ActionExecutionResult } from "./execution.js";
+import type { ActionExecutionJournalContext, ActionExecutionResult } from "./execution.js";
 import type { PersonalizationPreferences } from "./personalization.js";
 import type { OsRollbackSnapshot, OsRollbackOperation, OsAuditLogEntry } from "./rollback.js";
-import type { OsJournalState } from "./journal.js";
+import type { OsJournalState, LedgerPackageIdentity, LedgerQueuedAction, LedgerActionResult, LedgerRemainingAction } from "./journal.js";
 import type { RegistryVerifyResult } from "./verify.js";
 
 // ─── Request / Response pairs ─────────────────────────────────────────────────
@@ -35,7 +35,10 @@ export interface IpcMethods {
   "appbundle.install": { params: { appId: string }; result: AppInstallResult };
 
   // ── Execution ─────────────────────────────────────────────────────────────
-  "execute.applyAction": { params: { actionId: string }; result: ActionExecutionResult };
+  "execute.applyAction": {
+    params: { actionId: string; journalContext?: ActionExecutionJournalContext };
+    result: ActionExecutionResult;
+  };
 
   // ── Personalization ───────────────────────────────────────────────────────
   "personalize.options": { params: { profile?: MachineProfile }; result: Record<string, unknown> };
@@ -50,17 +53,60 @@ export interface IpcMethods {
   "rollback.restore": { params: { snapshotId: string }; result: OsRollbackOperation };
   "rollback.audit": { params: { limit: number }; result: OsAuditLogEntry[] };
 
-  // ── Journal (reboot-resume) ───────────────────────────────────────────────
+  // ── Journal (reboot-resume, now DB-backed) ────────────────────────────────
   "journal.state": { params: {}; result: OsJournalState | null };
-  "journal.resume": { params: {}; result: { status: string; resumed: number } };
+  "journal.resume": {
+    params: {};
+    result: {
+      status: string;
+      resumed: number;
+      planId: string | null;
+      packageId: string | null;
+      packageRole: string | null;
+      remainingActions: LedgerRemainingAction[];
+    };
+  };
   "journal.cancel": { params: {}; result: { status: string } };
+
+  // ── Execution Ledger (DB-backed plan/queue) ──────────────────────────────
+  "ledger.createPlan": {
+    params: {
+      package: LedgerPackageIdentity;
+      profile: string;
+      preset: string;
+      actions: LedgerQueuedAction[];
+    };
+    result: { planId: string; totalActions: number; status: string };
+  };
+  "ledger.recordResult": {
+    params: {
+      planId: string;
+      result: LedgerActionResult;
+    };
+    result: { status: string };
+  };
+  "ledger.markStarted": {
+    params: { planId: string; actionId: string };
+    result: { status: string };
+  };
+  "ledger.completePlan": {
+    params: { planId: string };
+    result: { status: string };
+  };
+  "ledger.query": {
+    params: { planId?: string; includeLedger?: boolean };
+    result: OsJournalState | null;
+  };
 
   // ── Verification ──────────────────────────────────────────────────────────
   "verify.registryValue": { params: { hive: string; path: string; valueName: string }; result: RegistryVerifyResult };
 
   // ── System ────────────────────────────────────────────────────────────────
   "system.status": { params: {}; result: { status: string; uptimeSeconds: number; version: string } };
-  "system.reboot": { params: { reason: string }; result: { status: string; reason: string } };
+  "system.reboot": {
+    params: { reason: string; journalContext?: { planId: string; packageId: string; packageRole: string; packageVersion?: string | null } };
+    result: { status: string; reason: string; planId: string | null; packageId: string | null; packageRole: string | null };
+  };
 }
 
 // ─── Push events (Rust → main → renderer) ────────────────────────────────────

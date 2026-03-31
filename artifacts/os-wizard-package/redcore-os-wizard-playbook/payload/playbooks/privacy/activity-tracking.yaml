@@ -1,0 +1,111 @@
+# ─── Privacy: Activity Tracking ───────────────────────────────────────────────
+# Disables clipboard history, activity feed, cloud content, and location tracking.
+
+module: privacy.activity-tracking
+name: "Activity Tracking Reduction"
+description: "Disable Windows activity tracking, clipboard history, cloud content, and location services"
+category: privacy
+
+actions:
+  - id: privacy.disable-clipboard-history
+    name: "Disable Clipboard History & Cloud Sync"
+    description: "Disable Windows clipboard history and cross-device clipboard synchronization"
+    rationale: "Clipboard history stores copied content and can sync it across devices via Microsoft account. Disabling prevents clipboard data from being stored or cloud-transmitted."
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKLM
+        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\System"
+        valueName: AllowClipboardHistory
+        value: 0
+        valueType: DWord
+      - hive: HKLM
+        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\System"
+        valueName: AllowCrossDeviceClipboard
+        value: 0
+        valueType: DWord
+
+  - id: privacy.disable-activity-feed
+    name: "Disable Activity History & Timeline"
+    description: "Disable Windows activity feed, timeline, and activity data uploads to Microsoft"
+    rationale: "Windows Activity History tracks app usage, file opens, and browsing history. Disabling prevents local collection and cloud upload of activity data."
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKLM
+        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\System"
+        valueName: EnableActivityFeed
+        value: 0
+        valueType: DWord
+      - hive: HKLM
+        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\System"
+        valueName: PublishUserActivities
+        value: 0
+        valueType: DWord
+      - hive: HKLM
+        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\System"
+        valueName: UploadUserActivities
+        value: 0
+        valueType: DWord
+
+  - id: privacy.disable-cloud-content
+    name: "Disable Cloud Content & Suggestions"
+    description: "Disable Windows Spotlight, suggested apps, tips, and cloud-delivered content"
+    rationale: "Cloud content features download and display promotional material, consuming bandwidth and creating visual noise."
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 3
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKLM
+        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent"
+        valueName: DisableWindowsConsumerFeatures
+        value: 1
+        valueType: DWord
+      - hive: HKLM
+        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent"
+        valueName: DisableSoftLanding
+        value: 1
+        valueType: DWord
+      - hive: HKCU
+        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager"
+        valueName: SilentInstalledAppsEnabled
+        value: 0
+        valueType: DWord
+      - hive: HKCU
+        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager"
+        valueName: SystemPaneSuggestionsEnabled
+        value: 0
+        valueType: DWord
+
+  - id: privacy.disable-location
+    name: "Disable Location Services"
+    description: "Disable Windows location services to prevent location tracking"
+    rationale: "Prevents apps and Windows from accessing device location data"
+    risk: low
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 3
+    blockedProfiles:
+      - work_pc
+    registryChanges:
+      - hive: HKLM
+        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\LocationAndSensors"
+        valueName: DisableLocation
+        value: 1
+        valueType: DWord

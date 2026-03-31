@@ -1,0 +1,251 @@
+# ─── Performance: GPU Optimization ────────────────────────────────────────────
+# GPU energy driver, HAGS, NVIDIA/AMD P-state, TDR, MSI mode, telemetry, Game DVR, fullscreen, transparency.
+
+module: performance.gpu
+name: "GPU Performance Optimization"
+description: "Optimize GPU performance by disabling energy monitoring, HAGS, dynamic P-states, telemetry, Game DVR, fullscreen optimizations, and transparency"
+category: performance
+
+actions:
+  - id: perf.gpu-energy-driver-disable
+    name: "Disable GPU Energy Driver"
+    description: "Disable the GpuEnergyDrv driver that monitors GPU energy usage and causes DPC latency spikes"
+    rationale: "GpuEnergyDrv is a known source of DPC latency; disabling it improves real-time audio/video performance"
+    risk: low
+    tier: free
+    default: true
+    requiresReboot: true
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles:
+      - vm_cautious
+    registryChanges:
+      - hive: HKLM
+        path: "SYSTEM\\CurrentControlSet\\Services\\GpuEnergyDrv"
+        valueName: Start
+        value: 4
+        valueType: DWord
+
+  - id: gpu.disable-hags
+    name: "Disable Hardware-Accelerated GPU Scheduling (HAGS)"
+    description: "Disable HAGS by setting HwSchMode to 1. HAGS moves GPU scheduling from the CPU to the GPU itself, but can hurt frame time consistency on many systems."
+    rationale: "HAGS improves frame time consistency on some systems but worsens it on others. Disabling provides more predictable behavior."
+    risk: low
+    tier: premium
+    default: true
+    requiresReboot: true
+    reversible: true
+    estimatedSeconds: 3
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKLM
+        path: "SYSTEM\\CurrentControlSet\\Control\\GraphicsDrivers"
+        valueName: HwSchMode
+        value: 1
+        valueType: DWord
+
+  - id: gpu.nvidia-disable-dynamic-pstate
+    name: "Lock NVIDIA GPU to P-State 0 (Maximum Performance)"
+    description: "Disable dynamic P-State switching on NVIDIA GPUs by setting DisableDynamicPstate=1, forcing the GPU to remain at maximum clocks at all times"
+    rationale: "NVIDIA GPUs dynamically transition between power states. These transitions introduce latency spikes of 5-50ms as the GPU ramps clocks. Locking to P-State 0 eliminates transition latency."
+    risk: medium
+    tier: premium
+    default: false
+    requiresReboot: true
+    reversible: true
+    estimatedSeconds: 3
+    blockedProfiles:
+      - work_pc
+      - office_laptop
+      - vm_cautious
+    registryChanges:
+      - hive: HKLM
+        path: "SYSTEM\\CurrentControlSet\\Control\\Class\\{4d36e968-e325-11ce-bfc1-08002be10318}\\0000"
+        valueName: DisableDynamicPstate
+        value: 1
+        valueType: DWord
+
+  - id: gpu.tdr-delay
+    name: "Increase TDR Timeout to 10 Seconds"
+    description: "Increase the Timeout Detection and Recovery (TDR) delay from the default 2 seconds to 10 seconds, preventing false GPU resets during heavy load spikes"
+    rationale: "The default 2-second TDR timeout causes false GPU resets during shader compilation, heavy compute loads, or driver transitions."
+    risk: low
+    tier: premium
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKLM
+        path: "SYSTEM\\CurrentControlSet\\Control\\GraphicsDrivers"
+        valueName: TdrDelay
+        value: 10
+        valueType: DWord
+      - hive: HKLM
+        path: "SYSTEM\\CurrentControlSet\\Control\\GraphicsDrivers"
+        valueName: TdrDdiDelay
+        value: 10
+        valueType: DWord
+
+  - id: gpu.msi-mode
+    name: "Enable GPU MSI (Message Signaled Interrupts) Mode"
+    description: "Enable Message Signaled Interrupts for the GPU, replacing legacy line-based interrupts with in-band PCIe messages for lower interrupt latency"
+    rationale: "MSI mode eliminates the need for the GPU to use shared IRQ lines. MSI writes interrupt data directly to memory via PCIe, reducing DPC latency for GPU interrupts."
+    risk: medium
+    tier: premium
+    default: false
+    requiresReboot: true
+    reversible: true
+    estimatedSeconds: 3
+    blockedProfiles:
+      - vm_cautious
+    registryChanges:
+      - hive: HKLM
+        path: "SYSTEM\\CurrentControlSet\\Enum\\PCI\\<GPU Device ID>\\<Instance>\\Device Parameters\\Interrupt Management\\MessageSignaledInterruptProperties"
+        valueName: MSISupported
+        value: 1
+        valueType: DWord
+
+  - id: gpu.disable-nvidia-telemetry
+    name: "Disable Nvidia Telemetry Services"
+    description: "Disable the NvTelemetryContainer service that collects and transmits Nvidia driver usage data"
+    rationale: "Nvidia telemetry runs as a background service consuming CPU and network resources to send driver usage analytics. Disabling it eliminates this overhead."
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 3
+    blockedProfiles:
+      - vm_cautious
+    serviceChanges:
+      - name: NvTelemetryContainer
+        startupType: Disabled
+
+  - id: gpu.disable-amd-telemetry
+    name: "Disable AMD Telemetry"
+    description: "Disable the AMD External Events Utility service that collects AMD driver telemetry data"
+    rationale: "AMD telemetry runs as a background service. Disabling it removes unnecessary CPU and network overhead from driver analytics collection."
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 3
+    blockedProfiles:
+      - vm_cautious
+    serviceChanges:
+      - name: "AMD External Events Utility"
+        startupType: Disabled
+
+  - id: perf.disable-game-dvr
+    name: "Disable Game DVR"
+    description: "Disable Game DVR background recording to reduce GPU/CPU overhead during gaming"
+    rationale: "Game DVR silently records gameplay, consuming GPU resources and increasing frame times"
+    risk: medium
+    tier: free
+    default: false
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 3
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKCU
+        path: "System\\GameConfigStore"
+        valueName: GameDVR_Enabled
+        value: 0
+        valueType: DWord
+      - hive: HKLM
+        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\GameDVR"
+        valueName: AllowGameDVR
+        value: 0
+        valueType: DWord
+
+  - id: perf.disable-fullscreen-optimizations
+    name: "Disable Fullscreen Optimizations Globally"
+    description: "Disable fullscreen optimizations globally by setting FSE behavior mode, preventing Windows from using borderless windowed mode for fullscreen applications"
+    rationale: "Windows fullscreen optimizations can add input lag and cause frame pacing issues in some games by routing them through the DWM compositor instead of using exclusive fullscreen."
+    risk: low
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles:
+      - work_pc
+    registryChanges:
+      - hive: HKCU
+        path: "System\\GameConfigStore"
+        valueName: GameDVR_FSEBehaviorMode
+        value: 2
+        valueType: DWord
+
+  - id: perf.disable-transparency
+    name: "Disable Window Transparency Effects"
+    description: "Disable window transparency effects (acrylic, blur) that use GPU compositing for translucent title bars and taskbar"
+    rationale: "Transparency effects require GPU compositing passes that consume VRAM bandwidth and GPU cycles. Disabling them frees GPU resources for applications and reduces compositor latency."
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKCU
+        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize"
+        valueName: EnableTransparency
+        value: 0
+        valueType: DWord
+
+  - id: gpu.disable-nvidia-container
+    name: "Disable Nvidia Container Services"
+    description: "Disable NVDisplay.ContainerLocalSystem and NvContainerLocalSystem background services that run telemetry, overlay, and update checks."
+    rationale: "Nvidia Container services consume CPU and GPU resources for overlay rendering, telemetry collection, and driver update checks. Disabling them reduces driver overhead."
+    risk: low
+    tier: free
+    default: false
+    expertOnly: false
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 3
+    warningMessage: "GeForce Experience overlay (Alt+Z), ShadowPlay recording, and automatic driver updates will stop working. Manual driver updates via nvidia.com will still work."
+    blockedProfiles:
+      - vm_cautious
+    serviceChanges:
+      - name: NVDisplay.ContainerLocalSystem
+        startupType: Disabled
+      - name: NvContainerLocalSystem
+        startupType: Disabled
+
+  - id: gpu.disable-amd-services
+    name: "Disable AMD Background Services"
+    description: "Disable AMD Crash Defender, External Events Utility, and AUEPLauncher services that run crash monitoring, event processing, and update checks."
+    rationale: "AMD background services consume CPU resources for crash analysis and event handling. Disabling them reduces driver overhead on AMD GPU systems."
+    risk: low
+    tier: free
+    default: false
+    expertOnly: false
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 3
+    warningMessage: "AMD Adrenalin overlay, crash reporting, and automatic driver updates will stop working. Manual driver updates via amd.com will still work."
+    blockedProfiles:
+      - vm_cautious
+    registryChanges:
+      - hive: HKLM
+        path: "SYSTEM\\CurrentControlSet\\Services\\AMD Crash Defender Service"
+        valueName: Start
+        value: 4
+        valueType: DWord
+      - hive: HKLM
+        path: "SYSTEM\\CurrentControlSet\\Services\\AMD External Events Utility"
+        valueName: Start
+        value: 4
+        valueType: DWord
+      - hive: HKLM
+        path: "SYSTEM\\CurrentControlSet\\Services\\AUEPLauncher"
+        valueName: Start
+        value: 4
+        valueType: DWord

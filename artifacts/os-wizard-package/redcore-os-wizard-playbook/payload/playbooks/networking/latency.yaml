@@ -1,0 +1,88 @@
+# ─── Networking: Latency Optimization ─────────────────────────────────────────
+# Disables Nagle's algorithm and configures RSS queues.
+
+module: networking.latency
+name: "Network Latency Optimization"
+description: "Optimize network latency by disabling Nagle's algorithm and configuring RSS queues"
+category: networking
+
+actions:
+  - id: network.disable-nagle
+    name: "Disable Nagle's Algorithm (TCPNoDelay)"
+    description: "Disable Nagle's algorithm and set TCP acknowledgement frequency to 1, sending small packets immediately instead of buffering them"
+    rationale: "Nagle's algorithm buffers small TCP packets to reduce overhead, but introduces up to 200ms of delay for small game packets."
+    risk: low
+    tier: premium
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 3
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKLM
+        path: "SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters\\Interfaces\\<Interface GUID>"
+        valueName: TcpAckFrequency
+        value: 1
+        valueType: DWord
+      - hive: HKLM
+        path: "SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters\\Interfaces\\<Interface GUID>"
+        valueName: TCPNoDelay
+        value: 1
+        valueType: DWord
+
+  - id: network.rss-queues-2
+    name: "Set RSS Queues to 2"
+    description: "Configure Receive Side Scaling to use 2 RSS queues, distributing NIC interrupt processing across 2 CPU cores without over-allocating"
+    rationale: "For typical online gaming (~300 KB/s), 1-2 queues is sufficient. Over-allocating RSS queues wastes CPU resources."
+    risk: low
+    tier: premium
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 3
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKLM
+        path: "SYSTEM\\CurrentControlSet\\Control\\Class\\{4d36e972-e325-11ce-bfc1-08002be10318}\\<Adapter Index>"
+        valueName: "*NumRssQueues"
+        value: 2
+        valueType: DWord
+
+  - id: network.disable-offloading
+    name: "Disable NIC Offloading"
+    description: "Disable TCP/UDP checksum offload, Large Send Offload, flow control, and power-saving features on the active NIC. Reduces packet processing latency at the cost of higher CPU usage."
+    rationale: "NIC offloading delegates packet processing to the NIC hardware, which adds latency. For competitive gaming and low-latency workloads, CPU-side processing is faster. Not recommended for general use."
+    risk: medium
+    tier: free
+    default: false
+    expertOnly: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 5
+    blockedProfiles:
+      - work_pc
+      - office_laptop
+      - low_spec_system
+    warningMessage: "Increases CPU usage during network activity. May cause connectivity issues on some NICs. Benchmark before and after. Revert immediately if you lose network connectivity."
+    powerShellCommands:
+      - |
+        $adapter = Get-NetAdapter | Where-Object { $_.Status -eq 'Up' -and $_.InterfaceDescription -notmatch 'Virtual|Hyper-V' } | Select-Object -First 1
+        if ($adapter) {
+          $props = @('Flow Control','IPv4 Checksum Offload','TCP Checksum Offload (IPv4)','UDP Checksum Offload (IPv4)','Large Send Offload V2 (IPv4)','Large Send Offload V2 (IPv6)','Energy-Efficient Ethernet','Green Ethernet','Power Saving Mode','Wake on Magic Packet','Wake on Pattern Match')
+          foreach ($p in $props) { Set-NetAdapterAdvancedProperty -Name $adapter.Name -RegistryKeyword $null -DisplayName $p -DisplayValue 'Disabled' -ErrorAction SilentlyContinue }
+        }
+
+  - id: network.tcp-autotuning-normal
+    name: "Set TCP Auto-Tuning to Normal"
+    description: "Set TCP receive window auto-tuning level to normal for optimal throughput negotiation"
+    rationale: "Some users disable auto-tuning, which limits TCP window size. Normal is the recommended setting for modern networks."
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 3
+    blockedProfiles: []
+    powerShellCommands:
+      - "Set-NetTCPSetting -SettingName InternetCustom -AutoTuningLevelLocal Normal -ErrorAction SilentlyContinue"
+      - "Set-NetTCPSetting -SettingName Internet -AutoTuningLevelLocal Normal -ErrorAction SilentlyContinue"

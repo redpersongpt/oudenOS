@@ -8,7 +8,11 @@ SERVICE_DIR="$ROOT_DIR/services/os-service"
 RELEASE_ROOT="${RELEASE_ROOT:-/var/www/redcore-downloads/os}"
 RELEASES_DIR="$RELEASE_ROOT/releases"
 ARCHIVE_DIR="$RELEASE_ROOT/archive"
+WIZARD_RELEASE_ROOT="$RELEASE_ROOT/wizard"
+APBX_RELEASE_ROOT="$RELEASE_ROOT/apbx"
 STABLE_NAME="redcore-os-setup.exe"
+WIZARD_STABLE_NAME="redcore-os-wizard-playbook.zip"
+APBX_STABLE_NAME="redcore-os-template.apbx"
 MANIFEST_PATH="$RELEASE_ROOT/latest.json"
 MIN_BYTES="${MIN_BYTES:-20000000}"
 MIN_FREE_MB="${MIN_FREE_MB:-3072}"
@@ -33,6 +37,7 @@ need_cmd pnpm
 need_cmd node
 need_cmd sha256sum
 need_cmd stat
+need_cmd zip
 
 if ! command -v cargo >/dev/null 2>&1; then
   if [ -f "$HOME/.cargo/env" ]; then
@@ -61,7 +66,7 @@ trap cleanup EXIT
 
 check_free_space_mb
 
-mkdir -p "$RELEASES_DIR" "$ARCHIVE_DIR"
+mkdir -p "$RELEASES_DIR" "$ARCHIVE_DIR" "$WIZARD_RELEASE_ROOT" "$APBX_RELEASE_ROOT"
 
 pushd "$ROOT_DIR" >/dev/null
 
@@ -90,6 +95,14 @@ VERSION_TAG="v${VERSION}-${COMMIT_SHA}"
 RELEASE_BASENAME="redcore-os-${VERSION}-${COMMIT_SHA}.exe"
 RELEASE_PATH="$RELEASES_DIR/$RELEASE_BASENAME"
 INSTALLER_PATH="$APP_DIR/dist/installers/$STABLE_NAME"
+WIZARD_RELEASE_BASENAME="redcore-os-wizard-playbook-${VERSION}-${COMMIT_SHA}.zip"
+WIZARD_RELEASE_PATH="$WIZARD_RELEASE_ROOT/$WIZARD_RELEASE_BASENAME"
+WIZARD_BUILD_ROOT="$ROOT_DIR/artifacts/os-wizard-package"
+WIZARD_BUILD_PATH="$WIZARD_BUILD_ROOT/$WIZARD_STABLE_NAME"
+APBX_RELEASE_BASENAME="redcore-os-template-${VERSION}-${COMMIT_SHA}.apbx"
+APBX_RELEASE_PATH="$APBX_RELEASE_ROOT/$APBX_RELEASE_BASENAME"
+APBX_BUILD_ROOT="$ROOT_DIR/artifacts/os-apbx-package"
+APBX_BUILD_PATH="$APBX_BUILD_ROOT/$APBX_STABLE_NAME"
 
 echo "==> Ensuring Rust target"
 cargo --version >/dev/null
@@ -117,8 +130,31 @@ rm -f dist/installers/"$STABLE_NAME"
 xvfb-run -a pnpm exec electron-builder --win --x64 --publish never -c.win.signAndEditExecutable=false
 popd >/dev/null
 
+echo "==> Building wizard package"
+node "$ROOT_DIR/scripts/build-os-wizard-package.mjs" \
+  --version "$VERSION" \
+  --commit "$COMMIT_SHA" \
+  --out-dir "$WIZARD_BUILD_ROOT"
+
+echo "==> Building APBX template package"
+pnpm --dir "$APP_DIR" exec tsx "$ROOT_DIR/scripts/build-os-apbx-package.ts" \
+  --version "$VERSION" \
+  --commit "$COMMIT_SHA" \
+  --out-dir "$APBX_BUILD_ROOT" \
+  --package-name "$APBX_STABLE_NAME"
+
 if [ ! -f "$INSTALLER_PATH" ]; then
   echo "Installer not produced at $INSTALLER_PATH" >&2
+  exit 1
+fi
+
+if [ ! -f "$WIZARD_BUILD_PATH" ]; then
+  echo "Wizard package not produced at $WIZARD_BUILD_PATH" >&2
+  exit 1
+fi
+
+if [ ! -f "$APBX_BUILD_PATH" ]; then
+  echo "APBX package not produced at $APBX_BUILD_PATH" >&2
   exit 1
 fi
 
@@ -129,6 +165,10 @@ if [ "$SIZE_BYTES" -lt "$MIN_BYTES" ]; then
 fi
 
 SHA256="$(sha256sum "$INSTALLER_PATH" | awk '{print $1}')"
+WIZARD_SHA256="$(sha256sum "$WIZARD_BUILD_PATH" | awk '{print $1}')"
+WIZARD_SIZE_BYTES="$(stat -c '%s' "$WIZARD_BUILD_PATH")"
+APBX_SHA256="$(sha256sum "$APBX_BUILD_PATH" | awk '{print $1}')"
+APBX_SIZE_BYTES="$(stat -c '%s' "$APBX_BUILD_PATH")"
 
 if [ -f "$RELEASE_ROOT/$STABLE_NAME" ]; then
   CURRENT_SHA="$(sha256sum "$RELEASE_ROOT/$STABLE_NAME" | awk '{print $1}')"
@@ -139,6 +179,10 @@ fi
 
 cp "$INSTALLER_PATH" "$RELEASE_PATH"
 cp "$INSTALLER_PATH" "$RELEASE_ROOT/$STABLE_NAME"
+cp "$WIZARD_BUILD_PATH" "$WIZARD_RELEASE_PATH"
+cp "$WIZARD_BUILD_PATH" "$WIZARD_RELEASE_ROOT/$WIZARD_STABLE_NAME"
+cp "$APBX_BUILD_PATH" "$APBX_RELEASE_PATH"
+cp "$APBX_BUILD_PATH" "$APBX_RELEASE_ROOT/$APBX_STABLE_NAME"
 
 cat > "$MANIFEST_PATH" <<JSON
 {
@@ -153,13 +197,30 @@ cat > "$MANIFEST_PATH" <<JSON
   "sizeBytes": $SIZE_BYTES,
   "sha256": "$SHA256",
   "url": "https://redcoreos.net/downloads/os/$STABLE_NAME",
-  "releaseUrl": "https://redcoreos.net/downloads/os/releases/$RELEASE_BASENAME"
+  "releaseUrl": "https://redcoreos.net/downloads/os/releases/$RELEASE_BASENAME",
+  "wizardPackageFilename": "$WIZARD_STABLE_NAME",
+  "wizardPackageReleaseFilename": "$WIZARD_RELEASE_BASENAME",
+  "wizardPackageSizeBytes": $WIZARD_SIZE_BYTES,
+  "wizardPackageSha256": "$WIZARD_SHA256",
+  "wizardPackageUrl": "https://redcoreos.net/downloads/os/wizard/$WIZARD_STABLE_NAME",
+  "wizardPackageReleaseUrl": "https://redcoreos.net/downloads/os/wizard/$WIZARD_RELEASE_BASENAME",
+  "wizardPackageRole": "wizard-template",
+  "apbxPackageFilename": "$APBX_STABLE_NAME",
+  "apbxPackageReleaseFilename": "$APBX_RELEASE_BASENAME",
+  "apbxPackageSizeBytes": $APBX_SIZE_BYTES,
+  "apbxPackageSha256": "$APBX_SHA256",
+  "apbxPackageUrl": "https://redcoreos.net/downloads/os/apbx/$APBX_STABLE_NAME",
+  "apbxPackageReleaseUrl": "https://redcoreos.net/downloads/os/apbx/$APBX_RELEASE_BASENAME",
+  "apbxPackageRole": "wizard-template",
+  "isoInjectionScriptUrl": "https://github.com/redpersongpt/redcoreECO/blob/main/scripts/stage-os-iso-injection.ps1"
 }
 JSON
 
 echo "==> Published"
 echo "stable:   $RELEASE_ROOT/$STABLE_NAME"
 echo "release:  $RELEASE_PATH"
+echo "wizard:   $WIZARD_RELEASE_ROOT/$WIZARD_STABLE_NAME"
+echo "apbx:     $APBX_RELEASE_ROOT/$APBX_STABLE_NAME"
 echo "manifest: $MANIFEST_PATH"
 echo "sha256:   $SHA256"
 echo "size:     $SIZE_BYTES"

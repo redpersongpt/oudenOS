@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Key, Heart, LogOut, Copy, Check } from "lucide-react";
+import { Key, Heart, LogOut, Copy, Check, Lock, ChevronDown, ChevronUp } from "lucide-react";
 import { Navigation } from "@/components/brand/Navigation";
 import { FooterSection } from "@/components/sections/FooterSection";
 
@@ -48,6 +48,13 @@ export default function ProfilePage() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [licenses, setLicenses] = useState<License[]>([]);
+  const [passwordOpen, setPasswordOpen] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [passwordSuccess, setPasswordSuccess] = useState("");
+  const [passwordLoading, setPasswordLoading] = useState(false);
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -63,6 +70,51 @@ export default function ProfilePage() {
         .catch(() => {});
     }
   }, [session]);
+
+  async function handlePasswordChange(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setPasswordError("");
+    setPasswordSuccess("");
+
+    if (newPassword.length < 8) {
+      setPasswordError("New password must be at least 8 characters.");
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      setPasswordError("Passwords do not match.");
+      return;
+    }
+
+    setPasswordLoading(true);
+    try {
+      const res = await fetch("/api/auth/change-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          currentPassword,
+          newPassword,
+          confirmPassword,
+        }),
+      });
+
+      const body = await res.json().catch(() => ({ error: "Unable to change password" }));
+      if (!res.ok) {
+        setPasswordError(body.error ?? "Unable to change password");
+        return;
+      }
+
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+      setPasswordOpen(false);
+      setPasswordSuccess(body.message ?? "Password updated successfully.");
+    } catch {
+      setPasswordError("Network error. Please try again.");
+    } finally {
+      setPasswordLoading(false);
+    }
+  }
 
   if (status === "loading") {
     return (
@@ -100,6 +152,100 @@ export default function ProfilePage() {
               Sign out
             </button>
           </motion.div>
+
+          {/* Password */}
+          <motion.section {...fade(0.08)} className="mb-10">
+            <div className="flex items-center justify-between gap-3 mb-4">
+              <div className="flex items-center gap-2">
+                <Lock size={16} className="text-ink-tertiary" />
+                <h2 className="text-lg font-semibold text-ink-primary">Password</h2>
+              </div>
+              <button
+                type="button"
+                onClick={() => setPasswordOpen((value) => !value)}
+                className="inline-flex items-center gap-2 text-[13px] font-medium text-ink-secondary hover:text-ink-primary transition-colors"
+              >
+                {passwordOpen ? "Close" : "Change password"}
+                {passwordOpen ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+              </button>
+            </div>
+
+            {passwordSuccess && (
+              <p className="mb-3 text-[13px] text-emerald-400">{passwordSuccess}</p>
+            )}
+
+            {passwordOpen && (
+              <form onSubmit={handlePasswordChange} className="rounded-xl border border-border bg-surface p-6 space-y-4">
+                <p className="text-[14px] leading-6 text-ink-secondary">
+                  Update your password here. If you signed in with Google and do not have a password yet, leave current password empty.
+                </p>
+
+                {passwordError && (
+                  <p className="text-[13px] text-red-400">{passwordError}</p>
+                )}
+
+                <div>
+                  <label htmlFor="currentPassword" className="block text-[13px] font-medium text-ink-secondary mb-1.5">
+                    Current password
+                  </label>
+                  <input
+                    id="currentPassword"
+                    type="password"
+                    autoComplete="current-password"
+                    value={currentPassword}
+                    onChange={(e) => setCurrentPassword(e.target.value)}
+                    className="w-full h-11 px-3.5 rounded-lg bg-surface-card border border-border text-[14px] text-ink-primary placeholder:text-ink-tertiary outline-none focus:border-accent/50 transition-colors"
+                    placeholder="Leave blank if this account has no password yet"
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="newPassword" className="block text-[13px] font-medium text-ink-secondary mb-1.5">
+                    New password
+                  </label>
+                  <input
+                    id="newPassword"
+                    type="password"
+                    autoComplete="new-password"
+                    required
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    className="w-full h-11 px-3.5 rounded-lg bg-surface-card border border-border text-[14px] text-ink-primary placeholder:text-ink-tertiary outline-none focus:border-accent/50 transition-colors"
+                    placeholder="Create a new password"
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="confirmPassword" className="block text-[13px] font-medium text-ink-secondary mb-1.5">
+                    Confirm new password
+                  </label>
+                  <input
+                    id="confirmPassword"
+                    type="password"
+                    autoComplete="new-password"
+                    required
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    className="w-full h-11 px-3.5 rounded-lg bg-surface-card border border-border text-[14px] text-ink-primary placeholder:text-ink-tertiary outline-none focus:border-accent/50 transition-colors"
+                    placeholder="Repeat the new password"
+                  />
+                </div>
+
+                <div className="flex items-center justify-between gap-3 pt-2">
+                  <p className="text-[12px] text-ink-tertiary">
+                    Changing your password signs out other sessions.
+                  </p>
+                  <button
+                    type="submit"
+                    disabled={passwordLoading}
+                    className="inline-flex items-center justify-center h-10 px-5 rounded-lg bg-accent hover:bg-accent-dim disabled:opacity-70 text-white text-[13px] font-medium cursor-pointer transition-colors"
+                  >
+                    {passwordLoading ? "Saving..." : "Save password"}
+                  </button>
+                </div>
+              </form>
+            )}
+          </motion.section>
 
           {/* License Keys */}
           <motion.section {...fade(0.1)} className="mb-10">

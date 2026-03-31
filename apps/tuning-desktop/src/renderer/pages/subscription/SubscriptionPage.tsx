@@ -148,7 +148,7 @@ export function SubscriptionPage() {
               </div>
               <p className="mt-1 text-xs text-ink-tertiary">No account lock-in. Safe defaults stay available.</p>
             </div>
-            <Badge variant="secondary">Included</Badge>
+            <Badge variant="info">Included</Badge>
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-2xl font-bold text-ink">Free</p>

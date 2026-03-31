@@ -4,6 +4,7 @@
 // the user chose instead of a fixed preset.
 
 import { create } from "zustand";
+import { computeWizardImpact } from "@/lib/wizard-question-model";
 
 export type AggressionPreset = "conservative" | "balanced" | "aggressive" | "expert";
 export type EdgeBehavior = "keep" | "suppress" | "suppress-and-freeze";
@@ -140,119 +141,8 @@ export const DEFAULT_QUESTIONNAIRE_ANSWERS: QuestionnaireAnswers = {
   disableTransparency: null,
 };
 
-const BOOLEAN_KEYS: Array<keyof QuestionnaireAnswers> = [
-  "highPerformancePlan",
-  "aggressiveBoostMode",
-  "minProcessorState100",
-  "optimizeThreadPriority",
-  "globalTimerResolution",
-  "disableDynamicTick",
-  "disableCoreParking",
-  "gamingMmcss",
-  "disableMemoryCompression",
-  "disableHags",
-  "disableGpuTelemetry",
-  "disableGameDvr",
-  "disableFullscreenOptimizations",
-  "disableIndexing",
-  "stripSearchWebNoise",
-  "keepPrinterSupport",
-  "keepRemoteAccess",
-  "removeEdge",
-  "preserveWebView2",
-  "disableCopilot",
-  "disableRecall",
-  "disableClickToDo",
-  "disableAiApps",
-  "disableClipboardHistory",
-  "disableActivityFeed",
-  "disableLocation",
-  "disableTailoredExperiences",
-  "disableSpeechPersonalization",
-  "disableSmartScreen",
-  "reduceMitigations",
-  "disableHvci",
-  "disableLlmnr",
-  "disableIpv6",
-  "disableTeredo",
-  "disableNetbios",
-  "disableNagle",
-  "disableNicOffloading",
-  "disableDeliveryOptimization",
-  "disableFastStartup",
-  "disableHibernation",
-  "disableUsbSelectiveSuspend",
-  "disablePcieLinkStatePm",
-  "disableAudioEnhancements",
-  "enableAudioExclusiveMode",
-  "restoreClassicContextMenu",
-  "enableEndTask",
-  "disableBackgroundApps",
-  "disableAutomaticMaintenance",
-  "enableGameMode",
-  "disableTransparency",
-];
-
 function computeImpact(answers: QuestionnaireAnswers): PlaybookImpact {
-  const warnings: string[] = [];
-  let estimatedActions = 0;
-  let estimatedBlocked = 0;
-  let estimatedPreserved = 0;
-  let rebootRequired = false;
-
-  for (const key of BOOLEAN_KEYS) {
-    const value = answers[key];
-    if (value === true) estimatedActions += 1;
-    if (key === "keepPrinterSupport" && value === true) estimatedPreserved += 1;
-    if (key === "keepRemoteAccess" && value === true) estimatedPreserved += 1;
-    if (key === "preserveWebView2" && value === true) estimatedPreserved += 1;
-  }
-
-  if (answers.edgeBehavior === "suppress" || answers.edgeBehavior === "suppress-and-freeze") {
-    estimatedActions += answers.edgeBehavior === "suppress" ? 2 : 3;
-  }
-  if (answers.telemetryLevel === "reduce") estimatedActions += 3;
-  if (answers.telemetryLevel === "aggressive") estimatedActions += 4;
-  if (answers.aggressionPreset === "conservative") estimatedBlocked += 8;
-  if (answers.aggressionPreset === "balanced") estimatedBlocked += 3;
-
-  if (answers.disableDynamicTick || answers.globalTimerResolution || answers.reduceMitigations || answers.disableHvci) {
-    rebootRequired = true;
-  }
-  if (answers.removeEdge) {
-    rebootRequired = true;
-    warnings.push("Edge removal is irreversible without a manual reinstall.");
-  }
-  if (answers.preserveWebView2 === false) {
-    warnings.push("Removing WebView2 can break Teams, installer UIs, and embedded web surfaces.");
-  }
-  if (answers.reduceMitigations) {
-    warnings.push("Speculation mitigation reduction trades security for latency and syscall-heavy performance.");
-  }
-  if (answers.disableHvci) {
-    warnings.push("Disabling HVCI can break security baselines and some anti-cheat requirements.");
-  }
-  if (answers.disableIpv6 || answers.disableTeredo || answers.disableNetbios || answers.disableNagle || answers.disableNicOffloading) {
-    warnings.push("Aggressive network tuning is hardware-sensitive. Verify games, VPNs, and voice chat after apply.");
-  }
-  if (answers.disableAudioEnhancements) {
-    warnings.push("Audio enhancements off can change loudness, EQ, and motherboard vendor DSP behavior.");
-  }
-
-  const riskLevel: PlaybookImpact["riskLevel"] =
-    answers.aggressionPreset === "expert" ? "expert"
-      : answers.aggressionPreset === "aggressive" ? "aggressive"
-      : warnings.length > 0 ? "mixed"
-      : "safe";
-
-  return {
-    estimatedActions,
-    estimatedBlocked,
-    estimatedPreserved,
-    rebootRequired,
-    riskLevel,
-    warnings,
-  };
+  return computeWizardImpact(answers);
 }
 
 export const useDecisionsStore = create<DecisionsState>((set) => ({

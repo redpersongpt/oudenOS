@@ -9,11 +9,12 @@
 // - Frameless with custom title bar
 // - Dark background to prevent white flash
 
-import { app, BrowserWindow, ipcMain, session, shell } from "electron";
-import { existsSync } from "node:fs";
+import { app, BrowserWindow, dialog, ipcMain, session, shell } from "electron";
+import fs, { existsSync } from "node:fs";
 import path from "node:path";
 import { spawn, type ChildProcess } from "node:child_process";
 import { createInterface } from "node:readline";
+import { createApbxBundle, type ApbxExportState } from "./lib/apbx";
 
 // ─── Service connection ─────────────────────────────────────────────────────
 
@@ -134,6 +135,17 @@ function resolveWindowIconPath(): string | undefined {
   return candidates.find((candidate) => existsSync(candidate));
 }
 
+function resolvePlaybookDirectory(): string | null {
+  const candidates = [
+    path.join(process.resourcesPath ?? "", "playbooks"),
+    path.resolve(app.getAppPath(), "..", "playbooks"),
+    path.resolve(__dirname, "../../../../playbooks"),
+    path.resolve(process.cwd(), "playbooks"),
+  ].filter((candidate) => candidate && existsSync(candidate));
+
+  return candidates[0] ?? null;
+}
+
 // ─── IPC handlers ───────────────────────────────────────────────────────────
 
 ipcMain.handle("service:call", async (_event, method: string, params: unknown) => {
@@ -177,6 +189,64 @@ ipcMain.handle("shell:openExternal", (_event, url: string) => {
   // Only allow https URLs to prevent arbitrary protocol execution
   if (typeof url === "string" && url.startsWith("https://")) {
     return shell.openExternal(url);
+  }
+});
+
+ipcMain.handle("wizard:exportPackage", async (_event, rawState: Record<string, unknown>) => {
+  const playbookRoot = resolvePlaybookDirectory();
+  const wizardPath = playbookRoot ? path.join(playbookRoot, "wizard.json") : "";
+
+  if (!playbookRoot || !fs.existsSync(wizardPath) || !fs.existsSync(playbookRoot)) {
+    return { ok: false, error: "Wizard metadata or playbook payload is missing." };
+  }
+
+  const win = BrowserWindow.getFocusedWindow() ?? BrowserWindow.getAllWindows()[0];
+  const version = app.getVersion();
+  const commit = process.env.SOURCE_COMMIT_SHA ?? "dev";
+  const hasExecutionJournal = Array.isArray(rawState.executionJournal) && rawState.executionJournal.length > 0;
+  const defaultPath = path.join(
+    app.getPath("downloads"),
+    hasExecutionJournal
+      ? `redcore-os-executed-package-${version}-${commit}.apbx`
+      : `redcore-os-user-package-${version}-${commit}.apbx`,
+  );
+
+  const saveResult = await dialog.showSaveDialog(win ?? undefined, {
+    title: "Export redcore OS package",
+    defaultPath,
+    filters: [
+      { name: "redcore OS package", extensions: ["apbx"] },
+      { name: "ZIP archive", extensions: ["zip"] },
+    ],
+  });
+
+  if (saveResult.canceled || !saveResult.filePath) {
+    return { ok: false, cancelled: true };
+  }
+
+  try {
+    const wizardMetadata = JSON.parse(fs.readFileSync(wizardPath, "utf8"));
+    const result = createApbxBundle({
+      outputPath: saveResult.filePath,
+      wizardMetadata,
+      playbookRoot,
+      version,
+      commit,
+      state: rawState as unknown as ApbxExportState,
+      sourceRepo: wizardMetadata.git,
+    });
+
+    return {
+      ok: true,
+      path: result.outputPath,
+      sha256: result.sha256,
+      sizeBytes: result.sizeBytes,
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      error: error instanceof Error ? error.message : "Unable to export package.",
+    };
   }
 });
 
