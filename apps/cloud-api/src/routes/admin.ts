@@ -126,13 +126,13 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
         .limit(limit)
         .offset((page - 1) * limit);
 
-      // Fetch subscription tiers in one query
+      // Fetch subscription tiers in one query — scoped to tuning product
       const userIds = rows.map((u) => u.id);
       const subs = userIds.length > 0
         ? await db
-            .select({ userId: subscriptions.userId, tier: subscriptions.tier, status: subscriptions.status })
+            .select({ userId: subscriptions.userId, tier: subscriptions.tier, status: subscriptions.status, product: subscriptions.product })
             .from(subscriptions)
-            .where(inArray(subscriptions.userId, userIds))
+            .where(and(inArray(subscriptions.userId, userIds), eq(subscriptions.product, "tuning")))
         : [];
 
       const subMap = new Map(subs.map((s) => [s.userId, s]));
@@ -177,11 +177,13 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
 
     if (!user) return reply.code(404).send({ error: "User not found" });
 
-    const [sub] = await db
+    const userSubs = await db
       .select()
       .from(subscriptions)
       .where(eq(subscriptions.userId, id))
-      .limit(1);
+      .orderBy(desc(subscriptions.updatedAt));
+
+    const sub = userSubs.find((s) => s.product === "tuning") ?? userSubs[0] ?? null;
 
     const machines = await db
       .select({
@@ -226,9 +228,23 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
     const [existing] = await db.select({ id: users.id }).from(users).where(eq(users.id, id)).limit(1);
     if (!existing) return reply.code(404).send({ error: "User not found" });
 
+    // Normalize email to lowercase and check for duplicates
+    const updateData = { ...parse.data, updatedAt: new Date() };
+    if (updateData.email) {
+      updateData.email = updateData.email.toLowerCase();
+      const [duplicate] = await db
+        .select({ id: users.id })
+        .from(users)
+        .where(and(eq(users.email, updateData.email), sql`id != ${id}`))
+        .limit(1);
+      if (duplicate) {
+        return reply.code(409).send({ error: "Email already in use by another user" });
+      }
+    }
+
     const [updated] = await db
       .update(users)
-      .set({ ...parse.data, updatedAt: new Date() })
+      .set(updateData)
       .where(eq(users.id, id))
       .returning({ id: users.id, email: users.email, name: users.name, role: users.role });
 
@@ -307,7 +323,7 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
       const [existingSub] = await db
         .select({ id: subscriptions.id })
         .from(subscriptions)
-        .where(eq(subscriptions.userId, id))
+        .where(and(eq(subscriptions.userId, id), eq(subscriptions.product, "tuning")))
         .limit(1);
 
       if (existingSub) {
@@ -321,7 +337,7 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
             overrideExpiresAt,
             updatedAt: new Date(),
           })
-          .where(eq(subscriptions.userId, id));
+          .where(eq(subscriptions.id, existingSub.id));
       } else {
         await db.insert(subscriptions).values({
           userId: id,
@@ -367,14 +383,14 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
       const [existingSub] = await db
         .select({ id: subscriptions.id })
         .from(subscriptions)
-        .where(eq(subscriptions.userId, id))
+        .where(and(eq(subscriptions.userId, id), eq(subscriptions.product, "tuning")))
         .limit(1);
 
       if (existingSub) {
         await db
           .update(subscriptions)
           .set({ tier, status: "active", manualOverride: true, overrideReason: reason, overrideExpiresAt: expiresAt, updatedAt: new Date() })
-          .where(eq(subscriptions.userId, id));
+          .where(eq(subscriptions.id, existingSub.id));
       } else {
         await db.insert(subscriptions).values({
           userId: id, tier, status: "active", manualOverride: true, overrideReason: reason, overrideExpiresAt: expiresAt,

@@ -39,9 +39,11 @@ export const updateRoutes: FastifyPluginAsync = async (app) => {
 
       const clientVersion = semver.coerce(rawVersion)!.version;
 
-      // Fast path: env var overrides DB lookup
-      const envKey = channel === "beta" ? "LATEST_VERSION_BETA" : "LATEST_VERSION_STABLE";
-      const envLatest = process.env[envKey];
+      // Fast path: env var overrides DB lookup (only for stable/beta)
+      const envKey =
+        channel === "beta" ? "LATEST_VERSION_BETA" :
+        channel === "stable" ? "LATEST_VERSION_STABLE" : null;
+      const envLatest = envKey ? process.env[envKey] : undefined;
       const criticalFlag = process.env.CRITICAL_UPDATE === "1";
 
       if (envLatest && semver.valid(envLatest)) {
@@ -132,7 +134,7 @@ export const updateRoutes: FastifyPluginAsync = async (app) => {
   );
 
   // ── GET /releases/:version ────────────────────────────────────────────────
-  app.get<{ Params: { version: string } }>(
+  app.get<{ Params: { version: string }; Querystring: { channel?: string } }>(
     "/releases/:version",
     async (request, reply) => {
       const { version } = request.params;
@@ -140,15 +142,19 @@ export const updateRoutes: FastifyPluginAsync = async (app) => {
         return reply.code(400).send({ error: "Invalid version format" });
       }
 
+      const channelFilter = channelSchema.safeParse(request.query.channel);
+      const conditions = [
+        eq(appReleases.product, "tuning"),
+        eq(appReleases.version, semver.coerce(version)!.version),
+      ];
+      if (channelFilter.success) {
+        conditions.push(eq(appReleases.channel, channelFilter.data));
+      }
+
       const [release] = await db
         .select()
         .from(appReleases)
-        .where(
-          and(
-            eq(appReleases.product, "tuning"),
-            eq(appReleases.version, semver.coerce(version)!.version),
-          ),
-        )
+        .where(and(...conditions))
         .limit(1);
 
       if (!release) {
@@ -186,11 +192,11 @@ export const updateRoutes: FastifyPluginAsync = async (app) => {
     const [existing] = await db
       .select({ id: appReleases.id })
       .from(appReleases)
-      .where(and(eq(appReleases.product, "tuning"), eq(appReleases.version, version)))
+      .where(and(eq(appReleases.product, "tuning"), eq(appReleases.version, version), eq(appReleases.channel, data.channel)))
       .limit(1);
 
     if (existing) {
-      return reply.code(409).send({ error: `Release ${version} already exists` });
+      return reply.code(409).send({ error: `Release ${version} (${data.channel}) already exists` });
     }
 
     const [release] = await db
