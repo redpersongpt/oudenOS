@@ -1,10 +1,11 @@
 import type { Config } from "drizzle-kit";
 
 export default {
-  schema: "./src/db/schema.ts",
+  // Canonical schema lives in packages/db — all migrations derive from there
+  schema: "../../packages/db/src/schema.ts",
   out: "./drizzle",
   dialect: "postgresql",
   dbCredentials: {
-    url: process.env.DATABASE_URL ?? "postgres://localhost:5432/redcore_tuning",
+    url: process.env.DATABASE_URL ?? "postgres://localhost:5432/redcore",
   },
 } satisfies Config;
