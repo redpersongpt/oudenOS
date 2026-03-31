@@ -132,6 +132,25 @@ process.on('SIGINT', () => shutdown('SIGINT'));
 process.on('SIGTERM', () => shutdown('SIGTERM'));
 
 // ---------------------------------------------------------------------------
+// Database preflight
+// ---------------------------------------------------------------------------
+
+if (process.env.SKIP_PREFLIGHT !== '1') {
+  try {
+    const { preflightOrDie } = await import('@redcore/db/preflight');
+    const { db: canonicalDb } = await import('@redcore/db');
+    await preflightOrDie(canonicalDb, {
+      info: (msg: string) => app.log.info(msg),
+      error: (msg: string) => app.log.error(msg),
+      warn: (msg: string) => app.log.warn(msg),
+    });
+  } catch (err) {
+    app.log.fatal(err, 'Database preflight failed — run: pnpm db:migrate:convergence');
+    process.exit(1);
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Start
 // ---------------------------------------------------------------------------
 
