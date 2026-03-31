@@ -143,7 +143,7 @@ actions:
       - Microsoft.PowerAutomateDesktop
 
   - id: appx.remove-solitaire
-    name: "Remove Solitaire"
+    name: "Remove Solitaire lmfao"
     description: "Remove the Solitaire Collection app (Microsoft.MicrosoftSolitaireCollection)"
     rationale: "Removes ad-supported game app that runs background processes"
     risk: safe
