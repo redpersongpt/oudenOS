@@ -2,9 +2,8 @@ import type { Metadata } from "next";
 import { Navigation } from "@/components/brand/Navigation";
 import { FooterSection } from "@/components/sections/FooterSection";
 import {
-  REDCORE_OS_DOWNLOAD,
-  getLatestRedcoreOsDownloadManifest,
-  getLatestRedcoreOsDownloadUrl,
+  getRedcoreOsDownloadState,
+  formatDownloadSize,
 } from "@/lib/downloads";
 import Link from "next/link";
 
@@ -17,24 +16,14 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "Downloads | redcore",
-    description: REDCORE_OS_DOWNLOAD.executableSummary,
+    description: "Download redcore OS for free. Windows 10/11 x64 installer.",
     url: "https://redcoreos.net/downloads",
     type: "website",
   },
 };
 
-function formatSize(sizeBytes: number | undefined): string | null {
-  if (!sizeBytes || sizeBytes <= 0) return null;
-  const sizeMb = sizeBytes / (1024 * 1024);
-  return `${sizeMb.toFixed(1)} MB`;
-}
-
 export default async function DownloadsPage() {
-  const liveManifest = await getLatestRedcoreOsDownloadManifest();
-  const downloadUrl = await getLatestRedcoreOsDownloadUrl();
-  const currentChecksum = liveManifest?.sha256 ?? REDCORE_OS_DOWNLOAD.checksum;
-  const currentRelease = liveManifest?.versionTag ?? liveManifest?.version ?? null;
-  const currentSize = formatSize(liveManifest?.sizeBytes);
+  const os = await getRedcoreOsDownloadState();
 
   return (
     <>
@@ -64,9 +53,15 @@ export default async function DownloadsPage() {
                   Free Windows transformation tool
                 </p>
               </div>
-              <span className="inline-flex items-center rounded-full bg-accent/10 px-3 py-1 text-[12px] font-medium text-accent">
-                Available
-              </span>
+              {os.available ? (
+                <span className="inline-flex items-center rounded-full bg-accent/10 px-3 py-1 text-[12px] font-medium text-accent">
+                  Available
+                </span>
+              ) : (
+                <span className="inline-flex items-center rounded-full bg-amber-500/10 px-3 py-1 text-[12px] font-medium text-amber-500">
+                  Temporarily unavailable
+                </span>
+              )}
             </div>
 
             <p className="text-ink-secondary text-[14px] leading-relaxed mb-4">
@@ -76,12 +71,18 @@ export default async function DownloadsPage() {
             </p>
 
             <div className="flex flex-wrap items-center gap-4 mb-4">
-              <a
-                href={downloadUrl}
-                className="inline-flex items-center rounded-lg bg-accent px-5 py-2.5 text-[13px] font-semibold text-white transition-all hover:bg-accent-dim"
-              >
-                Download redcore OS
-              </a>
+              {os.available && os.url ? (
+                <a
+                  href={os.url}
+                  className="inline-flex items-center rounded-lg bg-accent px-5 py-2.5 text-[13px] font-semibold text-white transition-all hover:bg-accent-dim"
+                >
+                  Download redcore OS{os.version ? ` ${os.version}` : ""}
+                </a>
+              ) : (
+                <span className="inline-flex items-center rounded-lg border border-border px-5 py-2.5 text-[13px] font-medium text-ink-tertiary cursor-not-allowed">
+                  Download currently unavailable
+                </span>
+              )}
               <Link
                 href="/redcore-os"
                 className="text-[13px] text-ink-tertiary hover:text-ink-secondary transition-colors"
@@ -90,10 +91,24 @@ export default async function DownloadsPage() {
               </Link>
             </div>
 
-            {(currentRelease || currentSize) && (
+            {os.available && (os.versionTag || os.sizeBytes) && (
               <p className="mb-4 text-[12px] text-ink-tertiary">
-                {currentRelease ? `Current release ${currentRelease}` : "Current release available"}
-                {currentSize ? ` · ${currentSize}` : ""}
+                {os.versionTag ? `Release ${os.versionTag}` : ""}
+                {os.sizeBytes ? ` · ${formatDownloadSize(os.sizeBytes)}` : ""}
+                {os.commit ? ` · ${os.commit}` : ""}
+              </p>
+            )}
+
+            {!os.available && os.unavailableReason && (
+              <p className="mb-4 text-[12px] text-amber-500/80">
+                {os.unavailableReason}. Check back shortly or visit the{" "}
+                <a
+                  href="https://github.com/redpersongpt/redcoreECO/releases"
+                  className="underline hover:text-amber-400"
+                >
+                  GitHub releases
+                </a>{" "}
+                page.
               </p>
             )}
 
@@ -182,15 +197,15 @@ export default async function DownloadsPage() {
             </p>
             <div className="rounded-lg bg-surface border border-border p-4">
               <p className="font-mono text-[0.65rem] font-medium uppercase tracking-[0.12em] text-ink-muted mb-2">
-                SHA-256 Checksum — redcore-os-setup.exe
+                SHA-256 Checksum — {os.manifest?.filename ?? "redcore-os-setup.exe"}
               </p>
-              {currentChecksum ? (
+              {os.sha256 ? (
                 <code className="font-mono text-[0.72rem] text-ink-tertiary break-all select-all">
-                  {currentChecksum}
+                  {os.sha256}
                 </code>
               ) : (
                 <p className="text-[13px] text-ink-tertiary">
-                  Live checksum is temporarily unavailable. Use <code className="font-mono text-[11px]">latest.json</code> or verify after download with PowerShell.
+                  Checksum unavailable. Verify after download with PowerShell.
                 </p>
               )}
             </div>
