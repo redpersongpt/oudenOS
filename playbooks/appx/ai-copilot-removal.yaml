@@ -2,13 +2,13 @@
 # Removes Microsoft Copilot, Recall, and AI-related components.
 
 module: appx.ai-copilot-removal
-name: "AI & Copilot Removal"
-description: "Remove Microsoft Copilot, AI-powered features, and related components"
+name: "AI & Copilot Bloat Removal"
+description: "Remove Microsoft Copilot, You don't need that for gaming"
 category: appx
 
 actions:
   - id: appx.remove-copilot
-    name: "Remove Microsoft Copilot"
+    name: "Remove Microsoft BloatPilot"
     description: "Remove the Microsoft Copilot app and disable Copilot integration points"
     rationale: "Copilot maintains persistent cloud connections, collects interaction data, and adds a persistent sidebar/taskbar presence. Removing eliminates AI assistant overhead."
     risk: safe
@@ -137,8 +137,8 @@ actions:
       - Microsoft.3DBuilder
 
   - id: appx.remove-outlook-new
-    name: "Remove New Outlook"
-    description: "Remove the new Outlook for Windows app that replaces Mail & Calendar"
+    name: "Remove New Bloatlook"
+    description: "Remove the new Outlook bloat Windows app that replaces Mail & Calendar"
     rationale: "New Outlook syncs through Microsoft cloud servers, proxying email through Microsoft infrastructure even for non-Microsoft accounts. Privacy-conscious users should use desktop Outlook or Thunderbird."
     risk: low
     tier: free
