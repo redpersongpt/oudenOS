@@ -150,24 +150,6 @@ export function formatDownloadSize(sizeBytes: number | null): string | null {
   return `${mb.toFixed(1)} MB`;
 }
 
-// ─── Legacy exports (kept for backward compat during migration) ─────────────
-// Pages should migrate to getRedcoreOsDownloadState() instead.
-
-export const REDCORE_OS_DOWNLOAD = {
-  path: "/downloads/os/redcore-os-setup.exe",
-  absoluteUrl: OS_FALLBACK_URL,
-  filename: "redcore-os-setup.exe",
-  checksum: null,
-  marketingSummary: "Download the latest redcore OS build. Free, no account required.",
-  executableSummary: "Download redcore OS for free. Windows 10/11 x64 installer.",
-} as const;
-
-export async function getLatestRedcoreOsDownloadManifest(): Promise<ReleaseManifest | null> {
-  const state = await getRedcoreOsDownloadState();
-  return state.manifest;
-}
-
-export async function getLatestRedcoreOsDownloadUrl(): Promise<string> {
-  const state = await getRedcoreOsDownloadState();
-  return state.url ?? OS_FALLBACK_URL;
-}
+// Legacy REDCORE_OS_DOWNLOAD, getLatestRedcoreOsDownloadUrl, and
+// getLatestRedcoreOsDownloadManifest have been removed.
+// All download surfaces now use getRedcoreOsDownloadState() exclusively.

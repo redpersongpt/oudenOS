@@ -9,7 +9,7 @@ import {
   CTAStrip,
   RelatedPages,
 } from "@/components/seo";
-import { getLatestRedcoreOsDownloadUrl } from "@/lib/downloads";
+import { getRedcoreOsDownloadState } from "@/lib/downloads";
 import { Shield, RotateCcw } from "lucide-react";
 import Link from "next/link";
 
@@ -37,7 +37,7 @@ export const metadata: Metadata = {
   },
 };
 
-function buildJsonLd(downloadUrl: string) {
+function buildJsonLd(downloadUrl: string | null) {
   return {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
@@ -48,12 +48,13 @@ function buildJsonLd(downloadUrl: string) {
   description:
     "Free Windows transformation tool with guided debloating, machine-aware scanning, and full rollback support.",
   url: "https://redcoreos.net/redcore-os",
-    downloadUrl,
+    downloadUrl: downloadUrl ?? "https://redcoreos.net/downloads",
   };
 }
 
 export default async function WindowsDebloatPage() {
-  const downloadUrl = await getLatestRedcoreOsDownloadUrl();
+  const os = await getRedcoreOsDownloadState();
+  const downloadUrl = os.available ? os.url : null;
 
   return (
     <>
@@ -192,7 +193,7 @@ export default async function WindowsDebloatPage() {
           <CTAStrip
             title="Ready to debloat safely?"
             description="redcore OS is free. Download it, run the assessment, and review the plan before applying anything."
-            primaryAction={{ label: "Download redcore OS", href: downloadUrl }}
+            primaryAction={{ label: "Download redcore OS", href: downloadUrl ?? "/downloads" }}
             secondaryAction={{ label: "Windows 11 specific guide", href: "/windows-11-debloat" }}
           />
 
