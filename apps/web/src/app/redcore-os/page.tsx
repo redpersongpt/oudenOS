@@ -10,7 +10,7 @@ import {
   CTAStrip,
   RelatedPages,
 } from "@/components/seo";
-import { REDCORE_OS_DOWNLOAD, getLatestRedcoreOsDownloadUrl } from "@/lib/downloads";
+import { getRedcoreOsDownloadState } from "@/lib/downloads";
 import { RotateCcw, Monitor } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -37,7 +37,7 @@ export const metadata: Metadata = {
   },
 };
 
-function buildJsonLd(downloadUrl: string) {
+function buildJsonLd(downloadUrl: string | null) {
   return {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
@@ -52,7 +52,7 @@ function buildJsonLd(downloadUrl: string) {
   description:
     "Free Windows transformation tool with guided debloating, 8 profiles, 150+ actions, and full rollback support.",
   url: "https://redcoreos.net/redcore-os",
-    downloadUrl,
+    downloadUrl: downloadUrl ?? "https://redcoreos.net/downloads",
   softwareVersion: "1.0",
   featureList: [
     "Machine-aware hardware scanning",
@@ -66,7 +66,8 @@ function buildJsonLd(downloadUrl: string) {
 }
 
 export default async function RedcoreOSPage() {
-  const downloadUrl = await getLatestRedcoreOsDownloadUrl();
+  const os = await getRedcoreOsDownloadState();
+  const downloadUrl = os.available ? os.url : null;
 
   return (
     <>
@@ -174,7 +175,7 @@ export default async function RedcoreOSPage() {
             description="Free. No account required. Scan, review, apply, rollback. Windows 10 (21H2+) and Windows 11 supported."
             primaryAction={{
               label: "Go to downloads",
-              href: downloadUrl,
+              href: downloadUrl ?? "/downloads",
             }}
             secondaryAction={{
               label: "See redcore Tuning",
@@ -186,7 +187,7 @@ export default async function RedcoreOSPage() {
             pages={[
               {
                 title: "Downloads",
-                description: REDCORE_OS_DOWNLOAD.marketingSummary,
+                description: "Download the latest redcore OS build. Free, no account required.",
                 href: "/downloads",
               },
               {
