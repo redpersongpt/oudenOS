@@ -11,7 +11,30 @@ on:
         required: true
 
 jobs:
+  release-gate:
+    name: Release Gate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Run release gate
+        run: node scripts/release-gate.mjs --version ${{ github.ref_name || github.event.inputs.version }}
+
   release:
+    needs: release-gate
     runs-on: windows-latest
     timeout-minutes: 30
     permissions:

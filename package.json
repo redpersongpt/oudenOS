@@ -23,6 +23,8 @@
     "verify:full": "node scripts/validate-action-parity.mjs && pnpm typecheck",
     "smoke:os": "node scripts/smoke-test-os-service.mjs",
     "smoke:desktop": "cd apps/os-desktop && npx electron test/smoke-desktop.mjs",
+    "release:gate": "node scripts/release-gate.mjs",
+    "release:proof": "echo 'Run on Windows: powershell -File scripts/capture-windows-proof.ps1'",
     "build:os:wizard": "node scripts/build-os-wizard-package.mjs",
     "dev:cloud-api": "pnpm --filter @redcore/cloud-api dev",
     "build:cloud-api": "pnpm --filter @redcore/cloud-api build",
