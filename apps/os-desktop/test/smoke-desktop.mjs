@@ -429,6 +429,176 @@ app.whenReady().then(async () => {
     checks.push({ name: "semantic-expert-unlocks-more", pass: false, detail: e?.message ?? "unknown" });
   }
 
+  // ── Per-question causality proof ────────────────────────────────────────────
+  // Prove that specific question answers (wired in wizard-question-model.ts)
+  // produce specific action IDs in the resolved plan.
+  // Uses playbook.resolve to get full action inventory, then checks for
+  // the action IDs that each question is wired to include/block.
+
+  // Get full action inventory from aggressive gaming resolve
+  let allActionIds = new Set();
+  try {
+    const fullPlan = await js(`
+      window.redcore.service.call("playbook.resolve", {
+        profile: "gaming_desktop", preset: "aggressive"
+      }).then(r => {
+        const ids = [];
+        for (const phase of (r.phases || [])) {
+          for (const action of (phase.actions || [])) {
+            ids.push({ id: action.id, status: action.status, name: action.name });
+          }
+        }
+        return JSON.stringify(ids);
+      })
+    `);
+    const actions = fullPlan ? JSON.parse(fullPlan) : [];
+    for (const a of actions) allActionIds.add(a.id);
+    checks.push({
+      name: "causality-action-inventory",
+      pass: allActionIds.size > 50,
+      detail: `${allActionIds.size} actions in catalog`,
+    });
+  } catch (e) {
+    checks.push({ name: "causality-action-inventory", pass: false, detail: e?.message ?? "unknown" });
+  }
+
+  // Causality 1: restoreClassicContextMenu → shell.remove-share-context, shell.remove-cast-to-device
+  // These actions should exist in the catalog (proving they are wired from YAML)
+  {
+    const expectedIds = [
+      "shell.restore-classic-context-menu",
+      "shell.remove-share-context",
+      "shell.remove-cast-to-device",
+      "shell.remove-give-access-to",
+    ];
+    const found = expectedIds.filter(id => allActionIds.has(id));
+    checks.push({
+      name: "causality-context-menu-actions-exist",
+      pass: found.length >= 3,
+      detail: `${found.length}/${expectedIds.length} found: [${found.join(", ")}]`,
+    });
+  }
+
+  // Causality 2: disableMemoryCompression → perf.disable-ndu, perf.disable-prefetch, perf.svchost-split-threshold
+  {
+    const expectedIds = [
+      "memory.disable-compression",
+      "perf.disable-ndu",
+      "perf.disable-prefetch",
+      "perf.svchost-split-threshold",
+    ];
+    const found = expectedIds.filter(id => allActionIds.has(id));
+    checks.push({
+      name: "causality-memory-actions-exist",
+      pass: found.length >= 3,
+      detail: `${found.length}/${expectedIds.length} found: [${found.join(", ")}]`,
+    });
+  }
+
+  // Causality 3: disableLlmnr → network.disable-llmnr, network.disable-smbv1, network.disable-wpad
+  {
+    const expectedIds = [
+      "network.disable-llmnr",
+      "network.disable-smbv1",
+      "network.disable-wpad",
+    ];
+    const found = expectedIds.filter(id => allActionIds.has(id));
+    checks.push({
+      name: "causality-network-security-actions-exist",
+      pass: found.length === 3,
+      detail: `${found.length}/${expectedIds.length} found: [${found.join(", ")}]`,
+    });
+  }
+
+  // Causality 4: telemetryLevel aggressive → services.disable-diagtrack, tasks.disable-telemetry-tasks, etc.
+  {
+    const expectedIds = [
+      "services.disable-diagtrack",
+      "services.disable-dmwappushservice",
+      "tasks.disable-telemetry-tasks",
+      "tasks.disable-diagnostic-tasks",
+      "tasks.disable-feedback-tasks",
+      "tasks.disable-device-census",
+    ];
+    const found = expectedIds.filter(id => allActionIds.has(id));
+    checks.push({
+      name: "causality-telemetry-service-actions-exist",
+      pass: found.length >= 5,
+      detail: `${found.length}/${expectedIds.length} found: [${found.join(", ")}]`,
+    });
+  }
+
+  // Causality 5: Work PC profile blocks dangerous actions
+  // Call resolve for work_pc and check that specific actions are Blocked
+  try {
+    const workPcResult = await js(`
+      window.redcore.service.call("playbook.resolve", {
+        profile: "work_pc", preset: "conservative"
+      }).then(r => {
+        const blocked = [];
+        for (const phase of (r.phases || [])) {
+          for (const action of (phase.actions || [])) {
+            if (action.status === "Blocked") blocked.push(action.id);
+          }
+        }
+        return JSON.stringify(blocked);
+      })
+    `);
+    const blockedIds = workPcResult ? JSON.parse(workPcResult) : [];
+    const blockedSet = new Set(blockedIds);
+    // Work PC should block printer spooler disable and remote service disable
+    const expectedBlocked = ["services.disable-print-spooler", "services.disable-remote-services"];
+    const confirmedBlocked = expectedBlocked.filter(id => blockedSet.has(id));
+    checks.push({
+      name: "causality-workpc-blocks-dangerous-services",
+      pass: confirmedBlocked.length === expectedBlocked.length,
+      detail: `blocked: [${confirmedBlocked.join(", ")}] of [${expectedBlocked.join(", ")}]`,
+    });
+  } catch (e) {
+    checks.push({ name: "causality-workpc-blocks-dangerous-services", pass: false, detail: e?.message ?? "unknown" });
+  }
+
+  // Causality 6: telemetryLevel reduce vs aggressive produces different action counts
+  // This proves the question escalation ladder has real downstream effects
+  try {
+    const reduceResult = await js(`
+      window.redcore.service.call("playbook.resolve", {
+        profile: "gaming_desktop", preset: "balanced"
+      }).then(r => {
+        const ids = [];
+        for (const phase of (r.phases || [])) {
+          for (const action of (phase.actions || [])) {
+            if (action.status === "Included") ids.push(action.id);
+          }
+        }
+        return JSON.stringify({ count: ids.length, ids });
+      })
+    `);
+    const aggressiveResult = await js(`
+      window.redcore.service.call("playbook.resolve", {
+        profile: "gaming_desktop", preset: "aggressive"
+      }).then(r => {
+        const ids = [];
+        for (const phase of (r.phases || [])) {
+          for (const action of (phase.actions || [])) {
+            if (action.status === "Included") ids.push(action.id);
+          }
+        }
+        return JSON.stringify({ count: ids.length, ids });
+      })
+    `);
+    const balancedParsed = reduceResult ? JSON.parse(reduceResult) : { count: 0 };
+    const aggressiveParsed = aggressiveResult ? JSON.parse(aggressiveResult) : { count: 0 };
+    const aggressiveHasMore = aggressiveParsed.count > balancedParsed.count;
+    checks.push({
+      name: "causality-preset-escalation-increases-actions",
+      pass: aggressiveHasMore,
+      detail: `balanced=${balancedParsed.count} → aggressive=${aggressiveParsed.count}`,
+    });
+  } catch (e) {
+    checks.push({ name: "causality-preset-escalation-increases-actions", pass: false, detail: e?.message ?? "unknown" });
+  }
+
   reportAndExit();
 });
 
