@@ -25,6 +25,7 @@
     "smoke:desktop": "cd apps/os-desktop && npx electron test/smoke-desktop.mjs",
     "release:gate": "node scripts/release-gate.mjs",
     "release:proof": "echo 'Run on Windows: powershell -File scripts/capture-windows-proof.ps1'",
+    "db:migrate:convergence": "psql $DATABASE_URL -f packages/db/migrations/001_schema_convergence.sql",
     "build:os:wizard": "node scripts/build-os-wizard-package.mjs",
     "dev:cloud-api": "pnpm --filter @redcore/cloud-api dev",
     "build:cloud-api": "pnpm --filter @redcore/cloud-api build",

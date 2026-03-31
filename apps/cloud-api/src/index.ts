@@ -116,6 +116,17 @@ async function start(): Promise<void> {
   const port = parseInt(process.env.PORT ?? "3003", 10);
   const host = process.env.HOST ?? "0.0.0.0";
 
+  // ── Database preflight: fail fast on schema mismatch ──
+  if (process.env.SKIP_PREFLIGHT !== "1") {
+    const { db } = await import("@redcore/db");
+    const { preflightOrDie } = await import("@redcore/db/preflight");
+    await preflightOrDie(db, {
+      info: (msg) => app.log.info(msg),
+      error: (msg) => app.log.error(msg),
+      warn: (msg) => app.log.warn(msg),
+    });
+  }
+
   await app.listen({ port, host });
   app.log.info(`redcore Cloud API listening on ${host}:${port}`);
 }
