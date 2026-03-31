@@ -281,7 +281,8 @@ jobs:
       - name: Add known hosts
         run: ssh-keyscan -H REDACTED_VDS_IP >> ~/.ssh/known_hosts 2>/dev/null
 
-      - name: Upload OS installer to VDS
+      - name: Prepare release artifacts
+        id: prep
         run: |
           VERSION=$(node -p "require('./apps/os-desktop/package.json').version")
           SHA=$(sha256sum ./artifacts/os/redcore-os-setup.exe | awk '{print $1}')
@@ -291,6 +292,7 @@ jobs:
           BUILT_AT=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
           mkdir -p ./artifacts/os/publish
+
           cp ./artifacts/os/redcore-os-setup.exe ./artifacts/os/publish/redcore-os-setup.exe
           cp ./artifacts/os/redcore-os-setup.exe "./artifacts/os/publish/${RELEASE_NAME}"
 
@@ -311,11 +313,93 @@ jobs:
           }
           JSON
 
+          echo "VERSION=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "SHA=${SHA}" >> "$GITHUB_OUTPUT"
+          echo "SIZE=${SIZE}" >> "$GITHUB_OUTPUT"
+          echo "RELEASE_NAME=${RELEASE_NAME}" >> "$GITHUB_OUTPUT"
+
+      - name: Upload installer (before manifest)
+        run: |
           ssh -o StrictHostKeyChecking=no ubuntu@REDACTED_VDS_IP "mkdir -p /var/www/redcore-downloads/os/releases /var/www/redcore-downloads/os/archive"
           scp -o StrictHostKeyChecking=no ./artifacts/os/publish/redcore-os-setup.exe ubuntu@REDACTED_VDS_IP:/var/www/redcore-downloads/os/
-          scp -o StrictHostKeyChecking=no "./artifacts/os/publish/${RELEASE_NAME}" ubuntu@REDACTED_VDS_IP:/var/www/redcore-downloads/os/releases/
+          scp -o StrictHostKeyChecking=no "./artifacts/os/publish/${{ steps.prep.outputs.RELEASE_NAME }}" ubuntu@REDACTED_VDS_IP:/var/www/redcore-downloads/os/releases/
+
+      - name: Verify installer reachable over HTTPS
+        run: |
+          echo "Checking installer is publicly reachable..."
+
+          # Verify main installer URL returns 200 and correct size
+          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" "https://redcoreos.net/downloads/os/redcore-os-setup.exe")
+          if [ "$HTTP_CODE" != "200" ]; then
+            echo "FAIL: Installer URL returned HTTP $HTTP_CODE"
+            exit 1
+          fi
+          echo "PASS: Installer returns HTTP 200"
+
+          # Verify content-length matches expected size
+          REMOTE_SIZE=$(curl -sI "https://redcoreos.net/downloads/os/redcore-os-setup.exe" | grep -i content-length | awk '{print $2}' | tr -d '\r')
+          EXPECTED_SIZE="${{ steps.prep.outputs.SIZE }}"
+          if [ -n "$REMOTE_SIZE" ] && [ "$REMOTE_SIZE" != "$EXPECTED_SIZE" ]; then
+            echo "WARN: Size mismatch — remote=$REMOTE_SIZE expected=$EXPECTED_SIZE"
+          else
+            echo "PASS: Size matches ($REMOTE_SIZE bytes)"
+          fi
+
+          # Download and verify SHA-256
+          curl -s -o /tmp/verify-installer.exe "https://redcoreos.net/downloads/os/redcore-os-setup.exe"
+          DOWNLOAD_SHA=$(sha256sum /tmp/verify-installer.exe | awk '{print $1}')
+          EXPECTED_SHA="${{ steps.prep.outputs.SHA }}"
+          if [ "$DOWNLOAD_SHA" != "$EXPECTED_SHA" ]; then
+            echo "FAIL: SHA-256 mismatch"
+            echo "  expected: $EXPECTED_SHA"
+            echo "  got:      $DOWNLOAD_SHA"
+            exit 1
+          fi
+          echo "PASS: SHA-256 verified ($DOWNLOAD_SHA)"
+          rm -f /tmp/verify-installer.exe
+
+      - name: Publish latest.json (after installer verified)
+        run: |
           scp -o StrictHostKeyChecking=no ./artifacts/os/publish/latest.json ubuntu@REDACTED_VDS_IP:/var/www/redcore-downloads/os/
 
-      - name: Verify upload
+      - name: Verify latest.json reachable and coherent
         run: |
-          ssh -o StrictHostKeyChecking=no ubuntu@REDACTED_VDS_IP "ls -lh /var/www/redcore-downloads/os/redcore-os-setup.exe /var/www/redcore-downloads/os/latest.json && cat /var/www/redcore-downloads/os/latest.json"
+          echo "Checking latest.json is publicly reachable and coherent..."
+
+          # Fetch latest.json over HTTPS
+          HTTP_CODE=$(curl -s -o /tmp/verify-latest.json -w "%{http_code}" "https://redcoreos.net/downloads/os/latest.json")
+          if [ "$HTTP_CODE" != "200" ]; then
+            echo "FAIL: latest.json returned HTTP $HTTP_CODE"
+            exit 1
+          fi
+          echo "PASS: latest.json returns HTTP 200"
+
+          # Verify manifest fields match what we published
+          MANIFEST_VERSION=$(node -p "JSON.parse(require('fs').readFileSync('/tmp/verify-latest.json','utf8')).version")
+          MANIFEST_SHA=$(node -p "JSON.parse(require('fs').readFileSync('/tmp/verify-latest.json','utf8')).sha256")
+          MANIFEST_URL=$(node -p "JSON.parse(require('fs').readFileSync('/tmp/verify-latest.json','utf8')).url")
+
+          EXPECTED_VERSION="${{ steps.prep.outputs.VERSION }}"
+          EXPECTED_SHA="${{ steps.prep.outputs.SHA }}"
+
+          if [ "$MANIFEST_VERSION" != "$EXPECTED_VERSION" ]; then
+            echo "FAIL: Manifest version mismatch — got $MANIFEST_VERSION, expected $EXPECTED_VERSION"
+            exit 1
+          fi
+          echo "PASS: Manifest version matches ($MANIFEST_VERSION)"
+
+          if [ "$MANIFEST_SHA" != "$EXPECTED_SHA" ]; then
+            echo "FAIL: Manifest SHA mismatch — got $MANIFEST_SHA, expected $EXPECTED_SHA"
+            exit 1
+          fi
+          echo "PASS: Manifest SHA matches"
+
+          if [ "$MANIFEST_URL" != "https://redcoreos.net/downloads/os/redcore-os-setup.exe" ]; then
+            echo "FAIL: Manifest URL unexpected — $MANIFEST_URL"
+            exit 1
+          fi
+          echo "PASS: Manifest URL correct"
+
+          rm -f /tmp/verify-latest.json
+          echo ""
+          echo "Release artifact verification complete."
