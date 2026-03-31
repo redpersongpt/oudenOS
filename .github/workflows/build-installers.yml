@@ -95,6 +95,22 @@ jobs:
       - name: Run OS service smoke test
         run: node scripts/smoke-test-os-service.mjs services/os-service/target/debug/redcore-os-service.exe
 
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build Electron app (renderer + main + preload)
+        working-directory: apps/os-desktop
+        run: pnpm build
+
+      - name: Run desktop smoke test (Electron + real service)
+        working-directory: apps/os-desktop
+        run: npx electron test/smoke-desktop.mjs --service-path ../../services/os-service/target/debug/redcore-os-service.exe
+
   build-rust-services:
     name: Build Rust Services (Windows)
     if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
