@@ -10,113 +10,113 @@ interface ActionRationale {
 
 const RATIONALE: Record<string, ActionRationale> = {
   // Privacy
-  "privacy.disable-telemetry": { why: "Reduces background data transmission to Microsoft servers. Sets diagnostic data to minimum required level." },
-  "privacy.disable-recall": { why: "Prevents Windows from continuously capturing screenshots of your activity for AI search." },
-  "privacy.disable-advertising-id": { why: "Stops cross-app ad tracking. No functional impact — purely privacy improvement." },
-  "privacy.disable-click-to-do": { why: "Prevents the AI overlay from analyzing on-screen content and suggesting actions." },
-  "privacy.disable-ai-svc-autostart": { why: "Windows AI Fabric service consumes resources even when AI features aren't actively used." },
-  "privacy.disable-edge-ai": { why: "Edge sends browsing context to cloud AI services for Copilot, compose, and search features." },
-  "privacy.disable-paint-ai": { why: "Paint AI features send image data to Microsoft cloud for generative processing." },
-  "privacy.disable-notepad-ai": { why: "Notepad AI sends text content to cloud for AI-powered rewriting and generation." },
+  "privacy.disable-telemetry": { why: "Stops Windows from sending usage data to Microsoft in the background." },
+  "privacy.disable-recall": { why: "Stops Windows from taking screenshots of everything you do for AI search." },
+  "privacy.disable-advertising-id": { why: "Stops apps from tracking you for targeted ads. No downside." },
+  "privacy.disable-click-to-do": { why: "Removes the AI overlay that analyzes your screen and suggests actions." },
+  "privacy.disable-ai-svc-autostart": { why: "The AI background service uses memory even when you're not using AI features." },
+  "privacy.disable-edge-ai": { why: "Stops Edge from sending your browsing activity to cloud AI services." },
+  "privacy.disable-paint-ai": { why: "Stops Paint from sending your images to Microsoft's cloud for AI processing." },
+  "privacy.disable-notepad-ai": { why: "Stops Notepad from sending your text to the cloud for AI features." },
   "privacy.disable-location": {
-    why: "Disables location tracking used by apps and Windows features.",
+    why: "Stops Windows and apps from tracking your location.",
     profileNote: { work_pc: "May affect VPN geo-detection on managed networks." },
   },
-  "privacy.disable-input-personalization": { why: "Prevents Windows from collecting typing and inking patterns for prediction improvement." },
-  "privacy.disable-online-speech": { why: "Stops speech data from being sent to Microsoft for cloud recognition training." },
-  "privacy.disable-find-my-device": { why: "Stops continuous device location reporting to Microsoft's Find My Device service." },
+  "privacy.disable-input-personalization": { why: "Stops Windows from collecting what you type and how you write." },
+  "privacy.disable-online-speech": { why: "Stops your voice data from being sent to Microsoft." },
+  "privacy.disable-find-my-device": { why: "Stops your PC from constantly reporting its location to Microsoft." },
   "privacy.disable-smartscreen": {
-    why: "SmartScreen sends file hashes and URLs to Microsoft. Disabling removes this telemetry at the cost of download protection.",
+    why: "SmartScreen checks every file you download with Microsoft. Disabling stops this, but removes download protection.",
     profileNote: { work_pc: "Not recommended — provides protection against malicious downloads." },
   },
 
   // Shell
-  "shell.disable-copilot": { why: "Removes the Copilot AI sidebar and taskbar button. Frees RAM and eliminates background AI service." },
-  "shell.show-file-extensions": { why: "Shows file type extensions in Explorer. Improves security awareness — hidden extensions can mask malware." },
-  "shell.enable-end-task": { why: "Adds the Windows 11 End Task shortcut on taskbar app right-click. Faster recovery when an app hangs without opening Task Manager." },
-  "shell.restore-classic-context-menu": { why: "Restores the full right-click menu instead of the truncated Windows 11 version." },
-  "shell.hide-task-view": { why: "Removes the Task View button from taskbar. The feature remains accessible via Win+Tab." },
-  "shell.hide-widgets-button": { why: "Removes the Widgets button. Eliminates background news/weather data fetching." },
-  "shell.disable-web-search": { why: "Removes Bing web results from Start menu search. Keystrokes no longer sent to Microsoft servers." },
-  "shell.disable-edge-ads": { why: "Disables 11 Edge promotional policies — shopping assistant, recommendations, new tab ads, and telemetry." },
-  "shell.hide-chat-icon": { why: "Removes the Teams Chat icon from taskbar. Teams remains functional if installed." },
-  "shell.disable-content-delivery": { why: "Removes 8 content delivery subscriptions — welcome tips, suggested apps, silent app installs." },
+  "shell.disable-copilot": { why: "Removes the Copilot button and frees up memory it uses in the background." },
+  "shell.show-file-extensions": { why: "Shows file types (.exe, .pdf) in Explorer so you can spot disguised malware." },
+  "shell.enable-end-task": { why: "Lets you kill frozen apps directly from the taskbar without opening Task Manager." },
+  "shell.restore-classic-context-menu": { why: "Brings back the full right-click menu instead of the trimmed Windows 11 version." },
+  "shell.hide-task-view": { why: "Removes the Task View button. You can still use Win+Tab." },
+  "shell.hide-widgets-button": { why: "Removes the Widgets button and stops background news/weather fetching." },
+  "shell.disable-web-search": { why: "Stops Start menu from sending your searches to Bing." },
+  "shell.disable-edge-ads": { why: "Stops Edge from showing shopping suggestions, new tab ads, and promotional popups." },
+  "shell.hide-chat-icon": { why: "Removes the Teams Chat icon from the taskbar. Teams still works if installed." },
+  "shell.disable-content-delivery": { why: "Stops Windows from silently installing suggested apps and showing welcome tips." },
 
   // Performance
   "perf.mmcss-system-responsiveness": {
-    why: "Reduces background CPU reservation from 20% to 10%. More CPU available for games and active applications.",
+    why: "Gives more CPU to your games and active apps by reducing what Windows reserves for background tasks.",
     profileNote: { work_pc: "May affect background task performance during meetings." },
   },
-  "perf.disable-game-dvr": { why: "Game DVR silently records gameplay in the background, consuming GPU resources and increasing frame times." },
-  "perf.disable-fullscreen-optimizations": { why: "Windows routes fullscreen apps through the DWM compositor. Disabling allows true exclusive fullscreen with lower input lag." },
-  "perf.disable-transparency": { why: "Transparency effects (acrylic, blur) require GPU compositing passes. Disabling frees GPU resources." },
-  "perf.disable-fault-tolerant-heap": { why: "FTH silently adds compatibility shims to crashed apps, increasing memory usage. Disabling prevents this automatic intervention." },
-  "perf.disable-sticky-keys": { why: "The Shift×5 sticky keys shortcut interrupts fullscreen games with an accessibility dialog." },
-  "perf.disable-service-host-split": { why: "Groups services into fewer svchost processes, reducing memory overhead from process isolation." },
-  "perf.disable-paging-executive": { why: "Keeps kernel-mode drivers in RAM instead of allowing them to be paged to disk. Eliminates kernel page fault latency." },
-  "cpu.win32-priority-separation": { why: "Sets foreground thread quantum to 3:1 ratio. Active window threads get 3× the CPU time slice of background threads." },
+  "perf.disable-game-dvr": { why: "Stops the silent background game recording that eats GPU resources and causes frame drops." },
+  "perf.disable-fullscreen-optimizations": { why: "Gives you true fullscreen instead of Windows' compatibility layer. Lower input lag." },
+  "perf.disable-transparency": { why: "Removes the blur and see-through effects that use GPU resources." },
+  "perf.disable-fault-tolerant-heap": { why: "Stops Windows from silently patching crashed apps, which uses extra memory." },
+  "perf.disable-sticky-keys": { why: "Stops the Shift key popup from interrupting fullscreen games." },
+  "perf.disable-service-host-split": { why: "Groups background services together to use less memory." },
+  "perf.disable-paging-executive": { why: "Keeps important system code in RAM instead of swapping to disk." },
+  "cpu.win32-priority-separation": { why: "Makes the app you're using get 3x more CPU time than background apps." },
   "cpu.disable-core-parking": {
-    why: "Core parking powers down idle CPU cores. Unparking takes 1-5ms — enough to cause micro-stutter in frame-sensitive games.",
+    why: "Keeps all CPU cores awake so they respond instantly instead of taking 1-5ms to wake up.",
     profileNote: {
       office_laptop: "Not applied — increases power consumption and heat on battery.",
       gaming_laptop: "Not applied — thermal management is more critical on laptops.",
     },
   },
-  "cpu.global-timer-resolution": { why: "Restores pre-Win10 2004 global timer behavior. Without this, background processes stay at 15.625ms resolution even while a game requests 0.5ms." },
+  "cpu.global-timer-resolution": { why: "Fixes a Windows 11 change that made game timing less accurate." },
 
   // Power
-  "power.disable-fast-startup": { why: "Fast Startup creates a hybrid shutdown/hibernate state. Disabling ensures every boot is a clean kernel initialization." },
+  "power.disable-fast-startup": { why: "Makes your PC fully shut down instead of saving a snapshot. Prevents driver issues from stale state." },
   "power.disable-modern-standby": {
-    why: "Modern Standby keeps CPU and network active during sleep. Wastes power on desktops, drains battery on laptops.",
+    why: "Stops your PC from staying partially active during sleep, which wastes power and drains battery.",
     profileNote: {
       office_laptop: "Not applied — Modern Standby is important for quick wake and background sync on laptops.",
       gaming_laptop: "Not applied — changes sleep behavior which may cause issues with thermal management.",
     },
   },
-  "power.disable-hibernation": { why: "Frees disk space equal to your RAM (8-64GB). Removes hiberfil.sys and ensures clean S5 shutdown." },
+  "power.disable-hibernation": { why: "Frees disk space equal to your RAM (8-64GB) and ensures clean shutdowns." },
 
   // GPU
-  "gpu.disable-nvidia-container": { why: "Nvidia Container services run telemetry, overlay rendering, and update checks in the background. Manual driver updates via nvidia.com still work." },
-  "gpu.disable-amd-services": { why: "AMD background services run crash monitoring and event handling. Manual driver updates via amd.com still work." },
-  "gpu.disable-hags": { why: "HAGS moves GPU memory management to the GPU's own scheduler. Can reduce latency but may cause issues with older games." },
-  "gpu.tdr-delay": { why: "Extends GPU timeout detection from 2s to 10s. Prevents false 'display driver stopped responding' crashes during heavy GPU load." },
+  "gpu.disable-nvidia-container": { why: "Stops NVIDIA background services that collect data. You can still update drivers manually." },
+  "gpu.disable-amd-services": { why: "Stops AMD background services that collect data. You can still update drivers manually." },
+  "gpu.disable-hags": { why: "Lets Windows manage GPU memory instead of the GPU itself. More predictable on some systems." },
+  "gpu.tdr-delay": { why: "Gives the GPU more time before Windows thinks it crashed. Prevents false 'driver stopped responding' errors." },
 
   // AppX / Edge
-  "appx.remove-consumer-bloat": { why: "Removes pre-installed apps like Candy Crush, TikTok, and Solitaire that consume disk space and run background tasks." },
-  "appx.remove-xbox-apps": { why: "Removes Xbox Game Bar, Identity Provider, and companion apps. Reduces background services." },
-  "appx.disable-edge-updates": { why: "Prevents Edge from auto-updating and reinstalling itself. Registry policy only — does not remove Edge." },
-  "appx.disable-edge-preload": { why: "Edge preloads into memory at login even if you never open it. This reclaims 100-300MB of RAM." },
+  "appx.remove-consumer-bloat": { why: "Removes apps like Candy Crush, TikTok, and Solitaire that you didn't ask for." },
+  "appx.remove-xbox-apps": { why: "Removes Xbox Game Bar and related apps that run in the background." },
+  "appx.disable-edge-updates": { why: "Stops Edge from updating itself automatically. Does not remove Edge." },
+  "appx.disable-edge-preload": { why: "Stops Edge from loading into memory at startup, even when you never open it. Saves 100-300MB RAM." },
   "appx.remove-edge": {
-    why: "Permanently removes Microsoft Edge. Cannot be undone from within Windows. Some Windows features that open web links via Edge will fail.",
+    why: "Permanently deletes Edge. Cannot be undone. Some Windows features that need a browser will stop working.",
     antiCheatNote: "Some enterprise web apps require Edge. Verify before removing.",
   },
   "appx.remove-edge-webview": {
-    why: "WebView2 is used by Teams, Widgets, and many Electron apps. Removing it WILL break these applications.",
+    why: "WebView2 is needed by Teams, Widgets, and many apps. Removing it WILL break them.",
     profileNote: { work_pc: "NEVER remove on work PCs — Teams and enterprise apps require WebView2." },
   },
 
   // Services
-  "services.disable-sysmain": { why: "SysMain prefetches data into RAM. On SSD systems, the benefit is negligible because SSD random read is already fast." },
-  "services.disable-xbox-services": { why: "Xbox Live Auth, Game Save, and networking services run even without Xbox hardware or Game Pass." },
+  "services.disable-sysmain": { why: "Stops Windows from pre-loading apps into RAM. Not needed if you have an SSD." },
+  "services.disable-xbox-services": { why: "Stops Xbox services that run even if you don't use Xbox or Game Pass." },
   "services.disable-print-spooler": {
-    why: "The Print Spooler has been the target of critical vulnerabilities (PrintNightmare). Safe to disable if no printers are connected.",
+    why: "The print service has known security flaws. Safe to turn off if you don't use a printer.",
     profileNote: { work_pc: "Preserved — printing is required for business workflows." },
   },
 
   // Network
-  "network.disable-nagle": { why: "Nagle's algorithm buffers small packets, adding up to 200ms delay. Disabling sends game packets immediately." },
+  "network.disable-nagle": { why: "Sends game data immediately instead of waiting to bundle packets. Reduces online game delay." },
   "network.disable-offloading": {
-    why: "NIC offloading adds latency to packet processing. CPU-side processing is faster for competitive gaming.",
+    why: "Lets your CPU handle network packets directly for faster response in online games.",
     profileNote: { work_pc: "Not applied — may cause connectivity issues on managed networks." },
   },
 
   // Startup
-  "startup.disable-background-apps": { why: "Prevents UWP apps from running background tasks. Reduces CPU and memory usage from apps you're not actively using." },
-  "startup.disable-autoplay": { why: "AutoPlay/AutoRun is a security risk — malware spreads via USB drives with autorun.inf files." },
+  "startup.disable-background-apps": { why: "Stops apps from running silently when you're not using them. Saves CPU and memory." },
+  "startup.disable-autoplay": { why: "Stops USB drives from running programs automatically. Prevents a common way malware spreads." },
 
   // Security
-  "security.disable-delivery-optimization": { why: "Delivery Optimization uploads Windows Update data to other PCs, consuming your upload bandwidth." },
-  "security.disable-update-asap": { why: "Prevents Windows from opting into preview-quality 'continuous innovation' updates." },
+  "security.disable-delivery-optimization": { why: "Stops Windows from using your internet to upload updates to other people's PCs." },
+  "security.disable-update-asap": { why: "Stops Windows from opting you into early preview updates that may be less stable." },
 };
 
 export function getActionRationale(actionId: string, profile?: string): { why: string; profileWarning?: string; antiCheatNote?: string } {
@@ -132,16 +132,16 @@ export function getActionRationale(actionId: string, profile?: string): { why: s
 
 // Phase-level explanations
 export const PHASE_RATIONALE: Record<string, string> = {
-  cleanup: "Removes pre-installed bloatware and unused packages to free disk space and reduce background processes.",
-  services: "Disables background services that aren't needed for your use case. Each service's dependencies are checked before disabling.",
-  tasks: "Disables scheduled tasks that run periodic telemetry collection, update checks, and maintenance during idle periods.",
-  privacy: "Reduces data collection by disabling telemetry, advertising tracking, AI features, and input monitoring.",
-  performance: "Optimizes CPU scheduling, GPU behavior, and system responsiveness for lower latency and better frame pacing.",
-  shell: "Cleans up the taskbar, context menus, search, and Explorer for a distraction-free desktop experience.",
-  "startup-shutdown": "Reduces boot overhead by disabling background apps, auto-maintenance, and hybrid shutdown states.",
-  networking: "Optimizes network stack for lower latency — Nagle's algorithm, RSS queues, and protocol hardening.",
-  security: "Adjusts Windows Update behavior and security mitigations based on your risk tolerance and use case.",
-  personalization: "Applies visual preferences — dark mode, accent color, taskbar cleanup, and transparency settings.",
+  cleanup: "Removes apps you didn't install (Candy Crush, TikTok, etc.) to free up space and stop background activity.",
+  services: "Turns off background services your PC doesn't need. Each one is checked for dependencies first.",
+  tasks: "Stops scheduled tasks that collect data, check for updates, and run maintenance while your PC is idle.",
+  privacy: "Reduces what Microsoft knows about you by disabling tracking, ads, AI features, and data collection.",
+  performance: "Makes your CPU, GPU, and system respond faster with lower delay.",
+  shell: "Cleans up the taskbar, right-click menus, search, and Explorer for a clutter-free desktop.",
+  "startup-shutdown": "Makes your PC boot faster by stopping background apps and unnecessary startup tasks.",
+  networking: "Reduces network delay for online gaming and removes old insecure protocols.",
+  security: "Adjusts Windows Update and security settings based on how much risk you're comfortable with.",
+  personalization: "Applies your visual preferences — dark mode, colors, taskbar layout, and transparency.",
 };
 
 // Blocked reason explanations

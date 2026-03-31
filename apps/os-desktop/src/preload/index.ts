@@ -94,6 +94,11 @@ contextBridge.exposeInMainWorld("redcore", {
     openExternal: (url: string) => ipcRenderer.invoke("shell:openExternal", url),
   },
 
+  log: {
+    saveToDesktop: (content: string): Promise<{ ok: boolean; path?: string; error?: string }> =>
+      ipcRenderer.invoke("log:saveToDesktop", content),
+  },
+
   wizard: {
     exportPackage: (state: Record<string, unknown>) => {
       return ipcRenderer.invoke("wizard:exportPackage", state);

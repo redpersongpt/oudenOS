@@ -133,7 +133,7 @@ function callService(method: string, params: unknown): Promise<unknown> {
     const timer = setTimeout(() => {
       pendingRequests.delete(id);
       reject(new Error(`Timeout: ${method}`));
-    }, 120_000);
+    }, 30_000);
     pendingRequests.set(id, { resolve, reject, timer });
     serviceProcess.stdin.write(
       JSON.stringify({ id, method, params: params ?? {} }) + "\n"
@@ -207,6 +207,18 @@ ipcMain.handle("shell:openExternal", (_event, url: string) => {
   // Only allow https URLs to prevent arbitrary protocol execution
   if (typeof url === "string" && url.startsWith("https://")) {
     return shell.openExternal(url);
+  }
+});
+
+ipcMain.handle("log:saveToDesktop", async (_event, content: string) => {
+  const desktopPath = app.getPath("desktop");
+  const timestamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
+  const filePath = path.join(desktopPath, `redcore-os-log-${timestamp}.txt`);
+  try {
+    fs.writeFileSync(filePath, content, "utf8");
+    return { ok: true, path: filePath };
+  } catch (e) {
+    return { ok: false, error: e instanceof Error ? e.message : "Failed to save log" };
   }
 });
 
