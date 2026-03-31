@@ -294,8 +294,8 @@ export const cloudApi = {
       const response = await request<RawProfileResponse>("GET", "/users/me");
       return normalizeProfileResponse(response);
     },
-    logout: () =>
-      request<void>("POST", "/auth/logout"),
+    logout: (refreshToken?: string) =>
+      request<void>("POST", "/auth/logout", refreshToken ? { refreshToken } : undefined),
     refresh: (refreshToken: string) =>
       request<{ accessToken: string; refreshToken: string }>(
         "POST", "/auth/refresh", { refreshToken }

@@ -96,7 +96,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null;
 
-        const email = credentials.email as string;
+        const email = (credentials.email as string).toLowerCase().trim();
         const password = credentials.password as string;
         const action = credentials.action as string | undefined;
 
@@ -130,6 +130,20 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
+        token.iat = Math.floor(Date.now() / 1000);
+      }
+      // Invalidate JWT if password was changed after token was issued
+      if (token.id && token.iat) {
+        const dbUser = await prisma.user.findUnique({
+          where: { id: token.id as string },
+          select: { passwordChangedAt: true },
+        });
+        if (dbUser?.passwordChangedAt) {
+          const changedAtSec = Math.floor(dbUser.passwordChangedAt.getTime() / 1000);
+          if (changedAtSec > (token.iat as number)) {
+            return { ...token, id: undefined };
+          }
+        }
       }
       return token;
     },

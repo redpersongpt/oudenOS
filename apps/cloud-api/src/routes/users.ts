@@ -381,6 +381,7 @@ export const usersRoutes: FastifyPluginAsync = async (app) => {
       .where(
         and(
           eq(machineActivations.userId, request.userId),
+          eq(machineActivations.product, "tuning"),
           eq(machineActivations.status, "active"),
         ),
       )
@@ -404,6 +405,7 @@ export const usersRoutes: FastifyPluginAsync = async (app) => {
       .where(
         and(
           eq(machineActivations.userId, request.userId),
+          eq(machineActivations.product, "tuning"),
           eq(machineActivations.deviceFingerprint, machineFingerprint),
           eq(machineActivations.status, "active"),
         ),
@@ -427,6 +429,7 @@ export const usersRoutes: FastifyPluginAsync = async (app) => {
       .where(
         and(
           eq(machineActivations.userId, request.userId),
+          eq(machineActivations.product, "tuning"),
           eq(machineActivations.status, "active"),
         ),
       );
@@ -440,7 +443,7 @@ export const usersRoutes: FastifyPluginAsync = async (app) => {
 
     const [activation] = await db
       .insert(machineActivations)
-      .values({ userId: request.userId, deviceFingerprint: machineFingerprint, hostname, osVersion, appVersion })
+      .values({ userId: request.userId, product: "tuning", deviceFingerprint: machineFingerprint, hostname, osVersion, appVersion })
       .returning();
 
     return reply.code(201).send({ ok: true, activated: true, machineId: activation!.id, machine: activation });
@@ -460,6 +463,7 @@ export const usersRoutes: FastifyPluginAsync = async (app) => {
           and(
             eq(machineActivations.id, machineId),
             eq(machineActivations.userId, request.userId),
+            eq(machineActivations.product, "tuning"),
           ),
         )
         .returning({ id: machineActivations.id });

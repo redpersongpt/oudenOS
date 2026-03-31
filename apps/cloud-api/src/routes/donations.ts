@@ -108,14 +108,20 @@ export const donationRoutes: FastifyPluginAsync = async (app) => {
 
     if (authHeader?.startsWith("Bearer ")) {
       try {
-        await (requireAuth as unknown as (req: typeof request, rep: typeof reply) => Promise<void>)(request, reply);
-        userId = request.userId;
-        const [user] = await db
-          .select({ stripeCustomerId: users.stripeCustomerId })
-          .from(users)
-          .where(eq(users.id, request.userId))
-          .limit(1);
-        stripeCustomerId = user?.stripeCustomerId ?? undefined;
+        // Manually verify the token without calling requireAuth (which sends 401 on the reply)
+        const { verifyAccessToken } = await import("../lib/jwt.js");
+        const token = authHeader.slice(7);
+        const payload = await verifyAccessToken(token);
+        if (payload?.sub) {
+          (request as unknown as { userId: string }).userId = payload.sub;
+          userId = payload.sub;
+          const [user] = await db
+            .select({ stripeCustomerId: users.stripeCustomerId })
+            .from(users)
+            .where(eq(users.id, payload.sub))
+            .limit(1);
+          stripeCustomerId = user?.stripeCustomerId ?? undefined;
+        }
       } catch {
         userId = null;
       }
@@ -141,6 +147,7 @@ export const donationRoutes: FastifyPluginAsync = async (app) => {
     const donationId = donation.id;
     const baseSuccess = successUrl ?? `${appUrl}/donate/thank-you?donation_id=${donationId}`;
     const baseCancel = cancelUrl ?? `${appUrl}/donate?cancelled=true`;
+    const sessionIdSep = baseSuccess.includes("?") ? "&" : "?";
 
     const session = type === "monthly"
       ? await stripe.checkout.sessions.create({
@@ -163,7 +170,7 @@ export const donationRoutes: FastifyPluginAsync = async (app) => {
           ],
           metadata: { donationId, type, product: "os", displayName: displayName ?? "", isPublic: String(isPublic) },
           subscription_data: { metadata: { donationId, type, product: "os" } },
-          success_url: `${baseSuccess}&session_id={CHECKOUT_SESSION_ID}`,
+          success_url: `${baseSuccess}${sessionIdSep}session_id={CHECKOUT_SESSION_ID}`,
           cancel_url: baseCancel,
         })
       : await stripe.checkout.sessions.create({
@@ -184,7 +191,7 @@ export const donationRoutes: FastifyPluginAsync = async (app) => {
             },
           ],
           metadata: { donationId, type, product: "os", displayName: displayName ?? "", isPublic: String(isPublic) },
-          success_url: `${baseSuccess}&session_id={CHECKOUT_SESSION_ID}`,
+          success_url: `${baseSuccess}${sessionIdSep}session_id={CHECKOUT_SESSION_ID}`,
           cancel_url: baseCancel,
         });
 
