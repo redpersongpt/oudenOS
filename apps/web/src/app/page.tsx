@@ -1,5 +1,6 @@
 import { Navigation } from "@/components/brand/Navigation";
 import { HeroSection } from "@/components/sections/HeroSection";
+import { WizardShowcase } from "@/components/sections/WizardShowcase";
 import { EcosystemSection } from "@/components/sections/EcosystemSection";
 import { HowItWorksSection } from "@/components/sections/HowItWorksSection";
 import { PricingSection } from "@/components/sections/PricingSection";
@@ -17,6 +18,11 @@ export default function Home() {
       <main className="relative isolate">
         <LandingChrome />
         <HeroSection />
+        <SectionSeparator
+          label="See it in action"
+          note="Every step explained, nothing hidden"
+        />
+        <WizardShowcase />
         <SectionSeparator
           label="System layers"
           note="From Windows foundation to tuning stack"

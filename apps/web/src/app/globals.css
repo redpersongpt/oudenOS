@@ -164,3 +164,23 @@ body {
   animation: orbit-ccw 16s linear infinite;
   transform-origin: 130px 131px;
 }
+
+/* ─── Wizard showcase animations ─── */
+
+@keyframes executionPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(232,69,60,0); }
+  50% { box-shadow: 0 0 16px 0 rgba(232,69,60,0.15); }
+}
+
+@keyframes scanBorderGlow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(232, 69, 60, 0); }
+  50%       { box-shadow: 0 0 14px 0 rgba(232, 69, 60, 0.16); }
+}
+
+@keyframes float-slow {
+  0%, 100% { transform: perspective(1200px) rotateX(1.5deg) translateY(0); }
+  50% { transform: perspective(1200px) rotateX(1.5deg) translateY(-6px); }
+}
+.animate-float-slow {
+  animation: float-slow 6s ease-in-out infinite;
+}
