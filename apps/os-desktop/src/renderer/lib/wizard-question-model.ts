@@ -902,6 +902,42 @@ export const strategyQuestions: StrategyQuestionDefinition[] = [
     },
   ),
   makeBooleanQuestion(
+    "disableDefender",
+    "Shield",
+    "Windows Defender",
+    "Completely disable Windows Defender?",
+    "This is the most aggressive security tradeoff in the entire wizard. It removes real-time scanning, cloud protection, and sample submission. Your machine will have zero antivirus protection.",
+    "Yes — disable Defender entirely",
+    "Eliminates MsMpEng.exe overhead. Only for isolated gaming rigs that never browse or run untrusted software.",
+    "No — keep Defender active",
+    "Strongly recommended for any machine that connects to the internet or runs downloaded software.",
+    {
+      note: "This is not a casual toggle. Once disabled via Group Policy, Defender requires manual re-enablement. redcore OS makes this an explicit expert-only choice because the blast radius is real.",
+      visibility: { onlyPreset: "expert", excludeWorkPc: true },
+      yesBadge: "Extreme Risk",
+      yesBadgeColor: "bg-red-500/15 text-red-400",
+      yesDanger: true,
+    },
+  ),
+  makeBooleanQuestion(
+    "disableWindowsUpdate",
+    "Shield",
+    "Windows Update",
+    "Completely stop Windows Update?",
+    "This disables the Windows Update service, Update Orchestrator, Update Medic, Delivery Optimization, and BITS. Your system will not receive security patches, feature updates, or driver updates unless you manually re-enable these services.",
+    "Yes — stop all automatic updates",
+    "Full control over when and whether updates happen. No surprise reboots, no background downloads.",
+    "No — keep Windows Update running",
+    "Recommended for most systems. Security patches are important.",
+    {
+      note: "This bundles 5 service disables and related scheduled task cleanup. It is the honest version of what many debloat tools do silently. redcore OS makes it an explicit choice.",
+      visibility: { minPreset: "aggressive", excludeWorkPc: true },
+      yesBadge: "High Risk",
+      yesBadgeColor: "bg-red-500/15 text-red-400",
+      yesDanger: true,
+    },
+  ),
+  makeBooleanQuestion(
     "disableLlmnr",
     "Globe",
     "Legacy Protocols",
@@ -1767,6 +1803,44 @@ const QUESTION_BEHAVIORS: Record<keyof QuestionnaireAnswers, StrategyQuestionBeh
     {
       onTrue: {
         personalization: { transparency: false },
+      },
+    },
+  ),
+  disableDefender: createBooleanBehavior(
+    [
+      "security.disable-defender-realtime",
+      "security.disable-defender-cloud",
+      "security.disable-vbs",
+    ],
+    "You chose to keep Windows Defender and VBS active.",
+    {
+      onTrue: {
+        warnings: [
+          "Disabling Defender removes all real-time malware protection.",
+          "Disabling VBS may break anti-cheat systems like Vanguard.",
+        ],
+        requiresReboot: true,
+        riskLevel: "expert",
+      },
+    },
+  ),
+  disableWindowsUpdate: createBooleanBehavior(
+    [
+      "services.disable-wuauserv",
+      "services.disable-update-orchestrator-svc",
+      "services.disable-waasmedic",
+      "services.disable-bits",
+      "services.disable-delivery-optimization",
+      "tasks.disable-update-tasks",
+    ],
+    "You chose to keep Windows Update services running.",
+    {
+      onTrue: {
+        warnings: [
+          "Stopping Windows Update means no security patches will be installed automatically.",
+          "You must manually re-enable these services to receive updates.",
+        ],
+        riskLevel: "aggressive",
       },
     },
   ),
