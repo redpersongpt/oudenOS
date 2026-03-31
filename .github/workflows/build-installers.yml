@@ -57,6 +57,34 @@ jobs:
       - name: Verify (parity + typecheck)
         run: pnpm verify:full
 
+  check-rust:
+    name: Rust Check (Linux cross-check)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache Rust dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            services/os-service/target
+            services/tuning-service/target
+          key: rust-linux-check-${{ hashFiles('services/*/Cargo.toml') }}
+          restore-keys: rust-linux-check-
+
+      - name: cargo check os-service
+        working-directory: services/os-service
+        run: cargo check 2>&1
+
+      - name: cargo check tuning-service
+        working-directory: services/tuning-service
+        run: cargo check 2>&1
+
   build-rust-services:
     name: Build Rust Services (Windows)
     if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
@@ -106,7 +134,7 @@ jobs:
     name: Package redcore OS Installer
     if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     runs-on: windows-latest
-    needs: [verify, build-rust-services]
+    needs: [verify, check-rust, build-rust-services]
     steps:
       - uses: actions/checkout@v4
 
@@ -158,7 +186,7 @@ jobs:
     name: Package redcore Tuning Installer
     if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     runs-on: windows-latest
-    needs: [verify, build-rust-services]
+    needs: [verify, check-rust, build-rust-services]
     steps:
       - uses: actions/checkout@v4
 
