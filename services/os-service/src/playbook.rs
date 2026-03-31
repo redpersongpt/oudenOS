@@ -20,6 +20,9 @@ pub struct PlaybookManifest {
     pub description: String,
     #[serde(default)]
     pub author: String,
+    #[serde(default)]
+    #[serde(rename = "wizardConfig")]
+    pub wizard_config: Option<String>,
     #[serde(default = "default_min_build")]
     #[serde(rename = "minWindowsBuild")]
     pub min_windows_build: u32,

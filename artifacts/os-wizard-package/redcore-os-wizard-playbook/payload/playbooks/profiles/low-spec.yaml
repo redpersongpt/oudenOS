@@ -1,0 +1,44 @@
+# ─── Profile: Low Spec System ─────────────────────────────────────────────────
+# Lightweight tuning for low-spec systems, blocking heavy CPU actions.
+
+profile: low-spec
+name: "Low Spec System"
+description: "Lightweight profile for low-spec systems. Blocks heavy CPU actions that could cause thermal throttling or instability, while applying debloat and lightweight performance tweaks."
+preset: balanced
+
+blockedActions:
+  # CPU latency actions - too aggressive for low-spec hardware
+  - cpu.disable-dynamic-tick
+  - cpu.disable-core-parking
+  - cpu.aggressive-boost-mode
+  - cpu.min-processor-state-100
+
+modules:
+  - privacy.telemetry
+  - privacy.activity-tracking
+  - privacy.input-collection
+  - appx.consumer-bloat
+  - appx.microsoft-apps
+  - appx.gaming-apps
+  - services.telemetry-services
+  - services.consumer-services
+  - tasks.telemetry-tasks
+  - performance.gpu
+  - performance.memory
+  - performance.power
+  - performance.storage
+  - shell.context-menu
+  - shell.explorer
+  - startup-shutdown.startup
+  - startup-shutdown.boot
+  - networking.protocols
+  - networking.latency
+  - networking.security
+  - security.update-control
+
+notes:
+  - "CPU latency actions blocked to prevent thermal throttling on weak cooling"
+  - "Core parking and boost mode remain at defaults to avoid overheating"
+  - "Debloat actions prioritized to free resources on limited hardware"
+  - "Storage and service optimizations are especially beneficial on low-spec systems"
+  - "Memory compression disable is allowed since it reduces CPU overhead"

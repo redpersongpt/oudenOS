@@ -9,6 +9,7 @@ description: "Default Windows transformation playbook for redcore · OS"
 author: "redcore"
 minWindowsBuild: 19041  # Windows 10 2004+
 maxWindowsBuild: 99999
+wizardConfig: "wizard.json"
 
 # ─── Phases ──────────────────────────────────────────────────────────────────
 # Ordered execution phases. Each phase loads one or more playbook modules.
@@ -34,19 +35,22 @@ phases:
       - appx/gaming-apps.yaml
       - appx/third-party-bloat.yaml
       - appx/edge-removal.yaml
+      - appx/ai-copilot-removal.yaml
 
   - id: services
     name: "Background Services"
-    description: "Disable unnecessary background services"
+    description: "Disable unnecessary background services, update services, and system daemons"
     modules:
       - services/telemetry-services.yaml
       - services/consumer-services.yaml
+      - services/windows-update-services.yaml
 
   - id: tasks
     name: "Scheduled Tasks"
-    description: "Disable unnecessary scheduled tasks and telemetry jobs"
+    description: "Disable telemetry, consumer, maintenance, and background scheduled tasks"
     modules:
       - tasks/telemetry-tasks.yaml
+      - tasks/consumer-tasks.yaml
 
   - id: privacy
     name: "Privacy Hardening"
@@ -116,6 +120,21 @@ profiles:
     preset: aggressive
     overrides: profiles/gaming-desktop.yaml
 
+  gaming_laptop:
+    label: "Gaming Laptop"
+    preset: balanced
+    overrides: profiles/gaming-laptop.yaml
+
+  budget_desktop:
+    label: "Budget Desktop"
+    preset: aggressive
+    overrides: profiles/budget-desktop.yaml
+
+  high_end_workstation:
+    label: "High-end Workstation"
+    preset: balanced
+    overrides: profiles/high-end-workstation.yaml
+
   office_laptop:
     label: "Office Laptop"
     preset: balanced
@@ -128,7 +147,7 @@ profiles:
 
   low_spec_system:
     label: "Low-Spec System"
-    preset: balanced
+    preset: aggressive
     overrides: profiles/low-spec.yaml
 
   vm_cautious:

@@ -18,7 +18,9 @@
     "./errors": "./src/errors.ts",
     "./verify": "./src/verify.ts",
     "./ipc": "./src/ipc.ts",
-    "./actions": "./src/actions.ts"
+    "./actions": "./src/actions.ts",
+    "./wizard": "./src/wizard.ts",
+    "./export-package": "./src/export-package.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",

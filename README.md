@@ -39,6 +39,10 @@ scripts/             Consumer Windows proof, utilities
 
 Branch: `main` | Root: `apps/web` | Build: `pnpm install && pnpm build`
 
+## AME Wizard Playbook
+
+We rebuilt this repo with the same wizard/playbook flow as ReviOS: drop the relevant playbook into the AME Wizard installer, follow the prompts, and the local Rust service applies the reversible transformation plan. The `playbooks/` YAMLs now expose the same configuration hooks as the AME Wizard (version 2.0+). The docs folder contains walkthroughs, and `scripts/build-and-publish-os-release.sh` keeps the exported bundle aligned with the wizard expectation.
+
 ## Dev
 
 ```bash

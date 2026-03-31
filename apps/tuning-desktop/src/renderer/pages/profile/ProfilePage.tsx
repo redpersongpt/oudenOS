@@ -2,6 +2,7 @@ import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
+  Crown,
   User,
   Mail,
   Calendar,
@@ -30,6 +31,22 @@ const TABS = [
   { id: "danger", label: "Danger Zone" },
 ] as const;
 type TabId = (typeof TABS)[number]["id"];
+
+const PREMIUM_FEATURES = [
+  "Full tuning engine",
+  "Reboot-resume workflows",
+  "Thermal and bottleneck analysis",
+  "Advanced low-level controls",
+];
+
+const FREE_FEATURES = [
+  "Hardware scan and health overview",
+  "Safe optimization plans",
+  "Benchmark lab",
+  "Rollback center",
+  "App Install Hub",
+  "Machine intelligence",
+];
 
 // ─── Inline edit field ────────────────────────────────────────────────────────
 
@@ -301,6 +318,13 @@ export function ProfilePage() {
         year: "numeric",
       })
     : null;
+  const licenseStatusLabel = license?.status
+    ? license.status === "active"
+      ? "Active"
+      : license.status.charAt(0).toUpperCase() + license.status.slice(1)
+    : "Not validated";
+  const licenseMachineLabel = license?.deviceBound ? "Bound to this machine" : "Not bound yet";
+  const licenseAccessLabel = isPremium ? "Premium features unlocked" : "Free features only";
 
   return (
     <motion.div
@@ -389,121 +413,169 @@ export function ProfilePage() {
           </Card>
         </motion.div>
 
-        {/* Tabbed details */}
-        <motion.div variants={staggerChild} className="col-span-2">
-          <Card>
-            {/* Tab bar */}
-            <div className="flex border-b border-border px-5">
-              {TABS.map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`relative py-3 pr-5 text-xs font-medium transition-colors ${
-                    activeTab === tab.id
-                      ? "text-ink"
-                      : "text-ink-tertiary hover:text-ink-secondary"
-                  }`}
-                >
-                  {tab.id === "danger" && (
-                    <span className="mr-1.5 inline-block h-1.5 w-1.5 rounded-full bg-red-500" />
-                  )}
-                  {tab.label}
-                  {activeTab === tab.id && (
-                    <motion.div
-                      layoutId="profile-tab-indicator"
-                      className="absolute bottom-0 left-0 right-0 h-0.5 bg-brand-500"
-                      transition={{ type: "spring", stiffness: 550, damping: 32 }}
-                    />
-                  )}
-                </button>
-              ))}
-            </div>
+        <div className="col-span-2 space-y-4">
+          <motion.div variants={staggerChild}>
+            <Card className={isPremium ? "border-brand-500/30 bg-brand-500/5" : ""}>
+              <CardContent className="p-5">
+                <div className="flex flex-wrap items-start justify-between gap-4">
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <Crown className={`h-4 w-4 ${isPremium ? "text-brand-400" : "text-ink-tertiary"}`} />
+                      <p className="text-sm font-semibold text-ink">License status</p>
+                    </div>
+                    <p className="max-w-xl text-xs text-ink-tertiary">
+                      redcore Tuning uses a one-time license. redcore OS stays free.
+                    </p>
+                    <div className="flex flex-wrap gap-2 pt-1">
+                      <Badge variant={isPremium ? "premium" : "default"}>
+                        {isPremium ? "Premium active" : "Free tier"}
+                      </Badge>
+                      <Badge variant={license?.status === "active" ? "success" : "info"}>
+                        {licenseStatusLabel}
+                      </Badge>
+                    </div>
+                  </div>
 
-            <AnimatePresence mode="wait">
-              {activeTab === "account" && (
-                <motion.div
-                  key="account"
-                  initial={{ opacity: 0, y: 6 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -4 }}
-                  transition={{ duration: 0.18, ease: [0.0, 0.0, 0.2, 1.0] }}
-                >
-                  <CardContent>
-                    <div className="space-y-3">
-                      {user?.email && (
+                  <Button variant="secondary" size="sm" onClick={() => navigate("/subscription")}>
+                    Manage license
+                  </Button>
+                </div>
+
+                <div className="mt-5 grid gap-3 sm:grid-cols-3">
+                  <div className="rounded-xl border border-border bg-surface-overlay/60 p-3">
+                    <p className="text-[11px] uppercase tracking-wide text-ink-tertiary">Plan</p>
+                    <p className="mt-1 text-sm font-semibold text-ink">{isPremium ? "Premium" : "Free"}</p>
+                  </div>
+                  <div className="rounded-xl border border-border bg-surface-overlay/60 p-3">
+                    <p className="text-[11px] uppercase tracking-wide text-ink-tertiary">Machine</p>
+                    <p className="mt-1 text-sm font-semibold text-ink">{licenseMachineLabel}</p>
+                  </div>
+                  <div className="rounded-xl border border-border bg-surface-overlay/60 p-3">
+                    <p className="text-[11px] uppercase tracking-wide text-ink-tertiary">Access</p>
+                    <p className="mt-1 text-sm font-semibold text-ink">{licenseAccessLabel}</p>
+                  </div>
+                </div>
+
+                <div className="mt-5 rounded-xl border border-border bg-black/10 p-4">
+                  <p className="text-xs font-semibold text-ink">What this unlocks</p>
+                  <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                    {(isPremium ? PREMIUM_FEATURES : FREE_FEATURES.slice(0, 4)).map((feature) => (
+                      <div key={feature} className="flex items-start gap-2 text-xs text-ink-secondary">
+                        <Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-brand-400" strokeWidth={2.5} />
+                        <span>{feature}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          <motion.div variants={staggerChild}>
+            <Card>
+              {/* Tab bar */}
+              <div className="flex border-b border-border px-5">
+                {TABS.map((tab) => (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`relative py-3 pr-5 text-xs font-medium transition-colors ${
+                      activeTab === tab.id
+                        ? "text-ink"
+                        : "text-ink-tertiary hover:text-ink-secondary"
+                    }`}
+                  >
+                    {tab.id === "danger" && (
+                      <span className="mr-1.5 inline-block h-1.5 w-1.5 rounded-full bg-red-500" />
+                    )}
+                    {tab.label}
+                    {activeTab === tab.id && (
+                      <motion.div
+                        layoutId="profile-tab-indicator"
+                        className="absolute bottom-0 left-0 right-0 h-0.5 bg-brand-500"
+                        transition={{ type: "spring", stiffness: 550, damping: 32 }}
+                      />
+                    )}
+                  </button>
+                ))}
+              </div>
+
+              <AnimatePresence mode="wait">
+                {activeTab === "account" && (
+                  <motion.div
+                    key="account"
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -4 }}
+                    transition={{ duration: 0.18, ease: [0.0, 0.0, 0.2, 1.0] }}
+                  >
+                    <CardContent>
+                      <div className="space-y-3">
+                        {user?.email && (
+                          <div className="flex items-center gap-3">
+                            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-border bg-surface-overlay">
+                              <Mail className="h-3.5 w-3.5 text-ink-tertiary" />
+                            </div>
+                            <div>
+                              <p className="text-xs text-ink-tertiary">Email</p>
+                              <p className="text-sm font-medium text-ink">{user.email}</p>
+                            </div>
+                          </div>
+                        )}
+
+                        {memberSince && (
+                          <div className="flex items-center gap-3">
+                            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-border bg-surface-overlay">
+                              <Calendar className="h-3.5 w-3.5 text-ink-tertiary" />
+                            </div>
+                            <div>
+                              <p className="text-xs text-ink-tertiary">Member since</p>
+                              <p className="text-sm font-medium text-ink">{memberSince}</p>
+                            </div>
+                          </div>
+                        )}
+
                         <div className="flex items-center gap-3">
                           <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-border bg-surface-overlay">
-                            <Mail className="h-3.5 w-3.5 text-ink-tertiary" />
+                            <Shield className="h-3.5 w-3.5 text-ink-tertiary" />
                           </div>
                           <div>
-                            <p className="text-xs text-ink-tertiary">Email</p>
-                            <p className="text-sm font-medium text-ink">{user.email}</p>
+                            <p className="text-xs text-ink-tertiary">License</p>
+                            <p className="text-sm font-medium text-ink">
+                              {isPremium ? "Premium" : "Free"}{" "}
+                              {license?.status && (
+                                <span className="text-xs text-ink-tertiary">
+                                  ({license.status})
+                                </span>
+                              )}
+                            </p>
                           </div>
-                        </div>
-                      )}
-
-                      {memberSince && (
-                        <div className="flex items-center gap-3">
-                          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-border bg-surface-overlay">
-                            <Calendar className="h-3.5 w-3.5 text-ink-tertiary" />
-                          </div>
-                          <div>
-                            <p className="text-xs text-ink-tertiary">Member since</p>
-                            <p className="text-sm font-medium text-ink">{memberSince}</p>
-                          </div>
-                        </div>
-                      )}
-
-                      <div className="flex items-center gap-3">
-                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-border bg-surface-overlay">
-                          <Shield className="h-3.5 w-3.5 text-ink-tertiary" />
-                        </div>
-                        <div>
-                          <p className="text-xs text-ink-tertiary">License</p>
-                          <p className="text-sm font-medium text-ink">
-                            {isPremium ? "Premium" : "Free"}{" "}
-                            {license?.status && (
-                              <span className="text-xs text-ink-tertiary">
-                                ({license.status})
-                              </span>
-                            )}
-                          </p>
                         </div>
                       </div>
-                    </div>
+                    </CardContent>
+                  </motion.div>
+                )}
 
-                    <div className="mt-5 border-t border-border pt-4">
-                      <Button
-                        variant="secondary"
-                        size="sm"
-                        onClick={() => navigate("/subscription")}
-                      >
-                        Manage license
-                      </Button>
-                    </div>
-                  </CardContent>
-                </motion.div>
-              )}
-
-              {activeTab === "danger" && (
-                <motion.div
-                  key="danger"
-                  initial={{ opacity: 0, y: 6 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -4 }}
-                  transition={{ duration: 0.18, ease: [0.0, 0.0, 0.2, 1.0] }}
-                >
-                  <CardContent>
-                    <p className="mb-4 text-xs text-ink-tertiary">
-                      Irreversible actions. Proceed with caution.
-                    </p>
-                    <DangerZone deleting={deletingAccount} onDelete={handleDeleteAccount} />
-                  </CardContent>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </Card>
-        </motion.div>
+                {activeTab === "danger" && (
+                  <motion.div
+                    key="danger"
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -4 }}
+                    transition={{ duration: 0.18, ease: [0.0, 0.0, 0.2, 1.0] }}
+                  >
+                    <CardContent>
+                      <p className="mb-4 text-xs text-ink-tertiary">
+                        Irreversible actions. Proceed with caution.
+                      </p>
+                      <DangerZone deleting={deletingAccount} onDelete={handleDeleteAccount} />
+                    </CardContent>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </Card>
+          </motion.div>
+        </div>
       </div>
     </motion.div>
   );

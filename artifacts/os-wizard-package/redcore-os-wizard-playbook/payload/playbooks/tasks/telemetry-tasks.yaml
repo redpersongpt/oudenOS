@@ -1,0 +1,69 @@
+# ─── Tasks: Telemetry Tasks ───────────────────────────────────────────────────
+# Disables telemetry, OneDrive, and Update Orchestrator scheduled tasks.
+
+module: tasks.telemetry-tasks
+name: "Telemetry Task Disabling"
+description: "Disable telemetry, OneDrive sync, and Update Orchestrator scheduled tasks"
+category: tasks
+
+actions:
+  - id: tasks.disable-telemetry-tasks
+    name: "Disable Telemetry Tasks"
+    description: "Disable Application Experience and Customer Experience Improvement Program scheduled tasks"
+    rationale: "These tasks collect and upload diagnostic data in the background, consuming CPU and network resources"
+    risk: low
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 5
+    blockedProfiles: []
+    tasks:
+      - name: "Microsoft Compatibility Appraiser"
+        path: "\\Microsoft\\Windows\\Application Experience\\"
+      - name: "ProgramDataUpdater"
+        path: "\\Microsoft\\Windows\\Application Experience\\"
+      - name: "Consolidator"
+        path: "\\Microsoft\\Windows\\Customer Experience Improvement Program\\"
+      - name: "UsbCeip"
+        path: "\\Microsoft\\Windows\\Customer Experience Improvement Program\\"
+      - name: "KernelCeipTask"
+        path: "\\Microsoft\\Windows\\Customer Experience Improvement Program\\"
+
+  - id: tasks.disable-onedrive-tasks
+    name: "Disable OneDrive Sync Tasks"
+    description: "Disable OneDrive automatic sync scheduled tasks (blocked on work_pc profile)"
+    rationale: "OneDrive sync tasks consume bandwidth and disk I/O in the background"
+    risk: medium
+    tier: free
+    default: false
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 3
+    blockedProfiles:
+      - work_pc
+    tasks:
+      - name: "OneDrive Reporting Task"
+        path: "\\Microsoft\\Windows\\OneDrive\\"
+      - name: "OneDrive Standalone Update Task"
+        path: "\\Microsoft\\Windows\\OneDrive\\"
+
+  - id: tasks.disable-update-orchestrator
+    name: "Disable Update Orchestrator Tasks"
+    description: "Disable Windows Update Orchestrator scheduled tasks to reduce background update activity"
+    rationale: "Prevents unexpected update downloads and restarts during use"
+    risk: medium
+    tier: free
+    default: false
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 5
+    blockedProfiles:
+      - work_pc
+    tasks:
+      - name: "Schedule Scan"
+        path: "\\Microsoft\\Windows\\UpdateOrchestrator\\"
+      - name: "Schedule Scan Static Task"
+        path: "\\Microsoft\\Windows\\UpdateOrchestrator\\"
+      - name: "USO_UxBroker"
+        path: "\\Microsoft\\Windows\\UpdateOrchestrator\\"

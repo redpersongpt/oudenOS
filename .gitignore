@@ -10,6 +10,7 @@ dist/
 .next/
 target/
 *.tsbuildinfo
+artifacts/open-source/
 
 # Environment (all nested paths)
 .env

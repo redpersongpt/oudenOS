@@ -1,0 +1,39 @@
+# ─── Services: Telemetry Services ─────────────────────────────────────────────
+# Disables SysMain (Superfetch) and Sleep Study services.
+
+module: services.telemetry-services
+name: "Telemetry & Background Services"
+description: "Disable SysMain (Superfetch) and Sleep Study background services"
+category: services
+
+actions:
+  - id: services.disable-sysmain
+    name: "Disable SysMain (Superfetch)"
+    description: "Disable the SysMain service (formerly Superfetch) which preloads frequently used applications into memory"
+    rationale: "SysMain uses background I/O to preload application data into RAM. On SSD systems, the preloading offers negligible benefit. The background I/O creates disk contention and memory pressure."
+    risk: low
+    tier: premium
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 3
+    blockedProfiles:
+      - work_pc
+    serviceChanges:
+      - name: SysMain
+        startupType: Disabled
+
+  - id: perf.disable-sleep-study
+    name: "Disable Sleep Study"
+    description: "Disable the SleepStudy service that logs energy usage data during sleep/standby"
+    rationale: "Removes unnecessary background energy logging service that provides no user-facing benefit"
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 3
+    blockedProfiles: []
+    serviceChanges:
+      - name: SleepStudy
+        startupType: Disabled

@@ -112,42 +112,33 @@ function esc(str: string): string {
 // ─── Email Templates ──────────────────────────────────────────────────────────
 
 const APP = "redcore-Tuning";
-const APP_URL = process.env.APP_URL ?? "https://redcoreos.net";
 const SUPPORT_EMAIL = "support@redcoreos.net";
-const LOGO_URL = `${APP_URL.replace(/\/$/, "")}/redcore-logo.png`;
-const BRAND_COLOR = "#E8453C";
-const BG = "#08090D";
-const CARD_BG = "#11131A";
-const BORDER = "#242734";
-const TEXT = "#F4F6FA";
-const MUTED = "#C0C7D6";
-const CAPTION = "#8A93A8";
+const BRAND_COLOR = "#E8254B";
+const BG = "#1E1E22";
+const CARD_BG = "#252529";
+const BORDER = "#38383E";
+const TEXT = "#F0F0F4";
+const MUTED = "#A0A0AC";
+const CAPTION = "#6A6A76";
 
 function emailWrapper(title: string, body: string): string {
   return `<!DOCTYPE html>
 <html lang="en">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
-<body style="margin:0;padding:32px;background:${BG};font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
-  <div style="max-width:560px;margin:0 auto;">
-    <div style="padding:0 4px 16px;">
-      <a href="${APP_URL}" style="display:inline-flex;align-items:center;gap:12px;text-decoration:none;color:${TEXT};">
-        <img src="${LOGO_URL}" alt="redcore logo" width="42" height="42" style="display:block;border-radius:12px;" />
-        <div>
-          <div style="font-size:14px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:${TEXT};">${APP}</div>
-          <div style="font-size:12px;color:${CAPTION};line-height:1.4;">Transactional account mail</div>
-        </div>
-      </a>
-    </div>
-    <div style="background:linear-gradient(180deg,rgba(232,69,60,0.14),rgba(17,19,26,0.96) 32%);border-radius:24px;padding:1px;">
-      <div style="background:${CARD_BG};border-radius:23px;padding:32px;border:1px solid ${BORDER};box-shadow:0 24px 60px rgba(0,0,0,0.28);">
-        <div style="display:inline-block;margin:0 0 16px;padding:7px 12px;border:1px solid rgba(232,69,60,0.28);border-radius:999px;color:#ff98a0;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;">Secure action</div>
-        <h1 style="margin:0 0 10px;font-size:26px;line-height:1.2;font-weight:800;color:${TEXT};">${title}</h1>
+<body style="margin:0;padding:32px;background:
+  radial-gradient(circle at top left, rgba(232,37,75,0.16), transparent 34%),
+  radial-gradient(circle at top right, rgba(255,72,106,0.08), transparent 28%),
+  ${BG};font-family:'Plus Jakarta Sans',Inter,system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
+  <div style="max-width:620px;margin:0 auto;">
+    <div style="padding:0 6px 16px;font-size:14px;font-weight:800;letter-spacing:.12em;text-transform:lowercase;color:${TEXT};">redcore</div>
+    <div style="background:linear-gradient(180deg,rgba(232,37,75,0.20),rgba(44,44,49,0.96) 30%);border-radius:28px;padding:1px;">
+      <div style="background:${CARD_BG};border-radius:27px;padding:34px;border:1px solid ${BORDER};box-shadow:0 28px 80px rgba(0,0,0,0.34);">
+        <h1 style="margin:0 0 12px;font-size:24px;line-height:1.2;font-weight:800;letter-spacing:-0.03em;color:${TEXT};">${title}</h1>
         ${body}
       </div>
     </div>
-    <div style="padding:18px 6px 0;color:${CAPTION};font-size:12px;line-height:1.6;text-align:center;">
+    <div style="padding:18px 8px 0;color:${CAPTION};font-size:12px;line-height:1.6;text-align:center;">
       <div>Need help? <a href="mailto:${SUPPORT_EMAIL}" style="color:#ff98a0;text-decoration:none;">${SUPPORT_EMAIL}</a></div>
-      <div style="margin-top:4px;">redcore Security Team · ${APP_URL.replace(/^https?:\/\//, "")}</div>
     </div>
   </div>
 </body>
@@ -155,7 +146,7 @@ function emailWrapper(title: string, body: string): string {
 }
 
 function primaryButton(href: string, label: string): string {
-  return `<a href="${href}" style="display:inline-flex;align-items:center;justify-content:center;margin:22px 0 0;background:linear-gradient(180deg,#ff5f54 0%,${BRAND_COLOR} 100%);color:#fff;padding:14px 28px;border-radius:12px;text-decoration:none;font-weight:800;font-size:15px;box-shadow:0 10px 24px rgba(232,69,60,0.28);">${label}</a>`;
+  return `<a href="${href}" style="display:inline-flex;align-items:center;justify-content:center;margin:24px 0 0;background:linear-gradient(180deg,#ff6b70 0%,${BRAND_COLOR} 100%);color:#fff;padding:12px 20px;border-radius:12px;text-decoration:none;font-weight:800;font-size:14px;letter-spacing:.01em;box-shadow:0 10px 24px rgba(232,37,75,0.22);">${label}</a>`;
 }
 
 function caption(text: string): string {
@@ -163,41 +154,35 @@ function caption(text: string): string {
 }
 
 export function verifyEmailTemplate(name: string, link: string): string {
-  const greeting = name ? `Hi ${esc(name)},` : "Hi,";
   return emailWrapper(
-    "Verify your email",
-    `<p style="color:${MUTED};margin:0 0 6px;font-size:15px;line-height:1.7;">${greeting}</p>
-     <p style="color:${MUTED};margin:0;font-size:15px;line-height:1.7;">Confirm your ${APP} account to get started.</p>
-     ${primaryButton(link, "Verify Email")}
-     ${caption("Expires in 24 hours. If you didn't sign up, you can safely ignore this.")}`,
+    "Verify email",
+    `<p style="color:${MUTED};margin:0;font-size:15px;line-height:1.75;">${name ? `Hi ${esc(name)},` : "Hi,"}</p>
+     <p style="color:${MUTED};margin:10px 0 0;font-size:15px;line-height:1.75;">Use the button below to verify your email address.</p>
+     ${primaryButton(link, "Verify email")}
+     ${caption("This link expires in 24 hours. If you did not request it, you can ignore this email.")}`,
   );
 }
 
 export function resetPasswordTemplate(name: string, link: string): string {
-  const greeting = name ? `Hi ${esc(name)},` : "Hi,";
   return emailWrapper(
-    "Reset your password",
-    `<p style="color:${MUTED};margin:0 0 6px;font-size:15px;line-height:1.7;">${greeting}</p>
-     <p style="color:${MUTED};margin:0;font-size:15px;line-height:1.7;">Click below to choose a new ${APP} password.</p>
-     ${primaryButton(link, "Reset Password")}
-     ${caption("Expires in 1 hour. If you didn't request this, ignore this email — your password is unchanged.")}`,
+    "Password reset",
+    `<p style="color:${MUTED};margin:0;font-size:15px;line-height:1.75;">${name ? `Hi ${esc(name)},` : "Hi,"}</p>
+     <p style="color:${MUTED};margin:10px 0 0;font-size:15px;line-height:1.75;">Use the button below to set a new password for your redcore account.</p>
+     ${primaryButton(link, "Reset password")}
+     ${caption("This link expires in 1 hour.")}`,
   );
 }
 
 export function emailChangedTemplate(name: string, oldEmail: string): string {
-  const greeting = name ? `Hi ${esc(name)},` : "Hi,";
   return emailWrapper(
     "Your email was changed",
-    `<p style="color:${MUTED};margin:0 0 6px;font-size:15px;line-height:1.7;">${greeting}</p>
-     <p style="color:${MUTED};margin:0;font-size:15px;line-height:1.7;">Your ${APP} account email was changed from <strong>${esc(oldEmail)}</strong>. If this wasn't you, contact support immediately.</p>`,
+    `<p style="color:${MUTED};margin:0;font-size:15px;line-height:1.7;">Your account email changed from <strong>${esc(oldEmail)}</strong>. If this wasn't you, contact support immediately.</p>`,
   );
 }
 
 export function welcomeTemplate(name: string): string {
-  const greeting = name ? `Hi ${esc(name)},` : "Hi,";
   return emailWrapper(
     `Welcome to ${APP}`,
-    `<p style="color:${MUTED};margin:0 0 6px;font-size:15px;line-height:1.7;">${greeting}</p>
-     <p style="color:${MUTED};margin:0;font-size:15px;line-height:1.7;">Your account is ready. Download the app and start tuning.</p>`,
+    `<p style="color:${MUTED};margin:0;font-size:15px;line-height:1.75;">Your account is ready. Open the app and start tuning.</p>`,
   );
 }

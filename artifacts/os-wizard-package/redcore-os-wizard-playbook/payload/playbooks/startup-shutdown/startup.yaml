@@ -1,0 +1,145 @@
+# ─── Startup-Shutdown: Startup Optimization ───────────────────────────────────
+# Disables background apps, Cortana, automatic maintenance, gamebar presence, cloud notifications.
+
+module: startup-shutdown.startup
+name: "Startup Optimization"
+description: "Reduce startup overhead by disabling background apps, Cortana, automatic maintenance, GameBar presence, and cloud notifications"
+category: startup
+
+actions:
+  - id: startup.disable-background-apps
+    name: "Disable Background Apps"
+    description: "Prevent UWP apps from running in the background to reduce resource usage"
+    rationale: "Background UWP apps consume CPU, memory, and network resources even when not in use"
+    risk: low
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKCU
+        path: "Software\\Microsoft\\Windows\\CurrentVersion\\BackgroundAccessApplications"
+        valueName: GlobalUserDisabled
+        value: 1
+        valueType: DWord
+      - hive: HKCU
+        path: "Software\\Microsoft\\Windows\\CurrentVersion\\Search"
+        valueName: BackgroundAppGlobalToggle
+        value: 0
+        valueType: DWord
+
+  - id: startup.disable-cortana
+    name: "Disable Cortana Startup"
+    description: "Prevent Cortana from launching at Windows startup"
+    rationale: "Reduces startup time and background resource usage"
+    risk: low
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKLM
+        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Search"
+        valueName: AllowCortana
+        value: 0
+        valueType: DWord
+
+  - id: startup.disable-automatic-maintenance
+    name: "Disable Automatic Maintenance"
+    description: "Disable Windows Automatic Maintenance which runs scheduled tasks including disk defragmentation, Windows Update checks, and security scans during idle periods"
+    rationale: "Automatic Maintenance activates during what Windows considers idle time, but can overlap with gaming sessions, causing CPU, disk, and network spikes."
+    risk: low
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKLM
+        path: "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Schedule\\Maintenance"
+        valueName: MaintenanceDisabled
+        value: 1
+        valueType: DWord
+
+  - id: startup.disable-gamebar-presence
+    name: "Disable GameBarPresenceWriter"
+    description: "Disable the GameBarPresenceWriter background process that runs alongside every game, even when Game Bar overlay is not used"
+    rationale: "GameBarPresenceWriter is a COM-activated background process that monitors game presence for Xbox social features."
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles:
+      - vm_cautious
+    registryChanges:
+      - hive: HKLM
+        path: "SOFTWARE\\Microsoft\\WindowsRuntime\\ActivatableClassId\\Windows.Gaming.GameBar.PresenceServer.Internal.PresenceWriter"
+        valueName: ActivationType
+        value: 0
+        valueType: DWord
+
+  - id: startup.disable-autoplay
+    name: "Disable AutoPlay & AutoRun"
+    description: "Disable automatic media playback and program execution when inserting removable drives"
+    rationale: "AutoPlay/AutoRun is a security risk (malware spreads via USB) and an annoyance"
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKLM
+        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer"
+        valueName: NoDriveTypeAutoRun
+        value: 255
+        valueType: DWord
+      - hive: HKCU
+        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\AutoplayHandlers"
+        valueName: DisableAutoplay
+        value: 1
+        valueType: DWord
+
+  - id: startup.enable-game-mode
+    name: "Enable Game Mode"
+    description: "Enable Windows Game Mode to prioritize game processes and reduce background interference"
+    rationale: "Game Mode tells Windows to deprioritize background tasks and Windows Update during gameplay"
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKCU
+        path: "SOFTWARE\\Microsoft\\GameBar"
+        valueName: AutoGameModeEnabled
+        value: 1
+        valueType: DWord
+
+  - id: startup.disable-cloud-notifications
+    name: "Disable Cloud Notification Network Usage"
+    description: "Block Windows Push Notification System from making network calls to Microsoft cloud servers for notification delivery"
+    rationale: "The Windows Push Notification service (WNS) maintains persistent connections to Microsoft servers. Blocking cloud notifications eliminates this traffic while local app notifications continue to work."
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKLM
+        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\CurrentVersion\\PushNotifications"
+        valueName: NoCloudApplicationNotification
+        value: 1
+        valueType: DWord

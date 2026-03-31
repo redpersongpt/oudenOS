@@ -1,6 +1,7 @@
 import type { QuestionnaireAnswers } from "@/stores/decisions-store";
 import type { PersonalizationPreferences } from "@/stores/wizard-store";
 import { getProfilePersonalizationDefaults } from "@/stores/wizard-store";
+import { resolveQuestionnairePersonalization } from "@/lib/wizard-question-model";
 
 export function resolveEffectivePersonalization(
   profileId: string | null | undefined,
@@ -21,11 +22,5 @@ export function resolveEffectivePersonalization(
     resolved.transparency = false;
   }
 
-  if (answers.disableTransparency === true) {
-    resolved.transparency = false;
-  } else if (answers.disableTransparency === false && preferences.transparency === defaults.transparency) {
-    resolved.transparency = defaults.transparency;
-  }
-
-  return resolved;
+  return resolveQuestionnairePersonalization(resolved, defaults, answers);
 }

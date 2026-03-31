@@ -60,7 +60,7 @@ export async function POST(req: NextRequest) {
 
     void sendEmail({
       to: email,
-      subject: "Reset your redcore password",
+      subject: "Password reset",
       html: resetPasswordTemplate(user.name, buildPasswordResetUrl(rawToken)),
     }).catch((error) => {
       console.error("Failed to send password reset email", error);

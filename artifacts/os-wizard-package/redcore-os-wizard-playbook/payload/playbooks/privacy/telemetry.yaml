@@ -1,0 +1,85 @@
+# ─── Privacy: Telemetry Reduction ────────────────────────────────────────────
+# Disables Windows diagnostic data collection and telemetry services.
+
+module: privacy.telemetry
+name: "Telemetry Reduction"
+description: "Reduce diagnostic data collection to minimum levels"
+category: privacy
+
+actions:
+  - id: privacy.disable-telemetry
+    name: "Set Diagnostic Data to Minimum"
+    description: "Set Windows diagnostic data collection to Security level (minimum)"
+    rationale: "Prevents Windows from collecting usage, browsing, and app telemetry"
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKLM
+        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection"
+        valueName: AllowTelemetry
+        value: 0
+        valueType: DWord
+      - hive: HKLM
+        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\DataCollection"
+        valueName: AllowTelemetry
+        value: 0
+        valueType: DWord
+
+  - id: privacy.disable-ceip
+    name: "Disable Customer Experience Program"
+    description: "Opt out of Microsoft Customer Experience Improvement Program"
+    rationale: "CEIP collects hardware and software usage data for Microsoft product improvement"
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKLM
+        path: "SOFTWARE\\Microsoft\\SQMClient\\Windows"
+        valueName: CEIPEnable
+        value: 0
+        valueType: DWord
+
+  - id: privacy.disable-error-reporting
+    name: "Disable Windows Error Reporting"
+    description: "Disable automatic error report submission to Microsoft"
+    rationale: "Error reports can contain sensitive data including memory dumps"
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKLM
+        path: "SOFTWARE\\Microsoft\\Windows\\Windows Error Reporting"
+        valueName: Disabled
+        value: 1
+        valueType: DWord
+
+  - id: privacy.disable-advertising-id
+    name: "Disable Advertising ID"
+    description: "Reset and disable the Windows advertising identifier"
+    rationale: "Advertising ID allows cross-app ad tracking; disabling prevents personalized ads"
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKCU
+        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\AdvertisingInfo"
+        valueName: Enabled
+        value: 0
+        valueType: DWord

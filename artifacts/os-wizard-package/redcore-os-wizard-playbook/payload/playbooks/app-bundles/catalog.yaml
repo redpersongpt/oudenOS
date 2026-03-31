@@ -1,0 +1,113 @@
+# App catalog — each entry defines download source and install method
+apps:
+  steam:
+    name: "Steam"
+    category: gaming
+    description: "Game distribution platform"
+    url: "https://cdn.cloudflare.steamstatic.com/client/installer/SteamSetup.exe"
+    silentArgs: "/S"
+    workSafe: false
+
+  discord:
+    name: "Discord"
+    category: communication
+    description: "Voice and text communication"
+    url: "https://discord.com/api/downloads/distributions/app/installers/latest?channel=stable&platform=win&arch=x64"
+    silentArgs: "--silent"
+    workSafe: false
+
+  brave:
+    name: "Brave Browser"
+    category: browser
+    description: "Privacy-focused web browser"
+    url: "https://laptop-updates.brave.com/latest/winx64"
+    silentArgs: "--silent --install"
+    workSafe: true
+
+  7zip:
+    name: "7-Zip"
+    category: utility
+    description: "File archiver and compression"
+    url: "https://www.7-zip.org/a/7z2409-x64.exe"
+    silentArgs: "/S"
+    workSafe: true
+
+  vlc:
+    name: "VLC Media Player"
+    category: media
+    description: "Open-source media player"
+    url: "https://get.videolan.org/vlc/last/win64/"
+    silentArgs: "/S /L=1033"
+    workSafe: true
+
+  everything:
+    name: "Everything Search"
+    category: utility
+    description: "Instant file search"
+    url: "https://www.voidtools.com/Everything-1.4.1.1026.x64-Setup.exe"
+    silentArgs: "/S"
+    workSafe: true
+
+  notepadpp:
+    name: "Notepad++"
+    category: utility
+    description: "Advanced text editor"
+    url: "https://github.com/notepad-plus-plus/notepad-plus-plus/releases/latest/download/npp.Installer.x64.exe"
+    silentArgs: "/S"
+    workSafe: true
+
+  vscode:
+    name: "Visual Studio Code"
+    category: development
+    description: "Code editor"
+    url: "https://update.code.visualstudio.com/latest/win32-x64/stable"
+    silentArgs: "/VERYSILENT /NORESTART /MERGETASKS=!runcode"
+    workSafe: true
+
+  obs-studio:
+    name: "OBS Studio"
+    category: streaming
+    description: "Screen recording and streaming"
+    url: "https://cdn-fastly.obsproject.com/downloads/OBS-Studio-30.2.3-Windows-Installer.exe"
+    silentArgs: "/S"
+    workSafe: true
+
+  hwinfo:
+    name: "HWiNFO64"
+    category: monitoring
+    description: "Hardware monitoring and diagnostics"
+    url: "https://www.hwinfo.com/files/hwi_latest.exe"
+    silentArgs: "/VERYSILENT"
+    workSafe: true
+
+  msi-afterburner:
+    name: "MSI Afterburner"
+    category: monitoring
+    description: "GPU overclocking and monitoring"
+    url: "https://download.msi.com/uti_exe/vga/MSIAfterburnerSetup.zip"
+    silentArgs: "/S"
+    workSafe: false
+
+  riot-client:
+    name: "Riot Client"
+    category: gaming
+    description: "Valorant, League of Legends launcher"
+    url: "https://valorant.secure.dyn.riotcdn.net/channels/public/x/installer.exe"
+    silentArgs: ""
+    workSafe: false
+
+  battlenet:
+    name: "Battle.net"
+    category: gaming
+    description: "Blizzard game launcher"
+    url: "https://www.battle.net/download/getInstallerForGame?os=win&gameProgram=BATTLENET_APP"
+    silentArgs: "--lang=enUS --installpath=\"C:\\Program Files (x86)\\Battle.net\""
+    workSafe: false
+
+  epic-games:
+    name: "Epic Games Launcher"
+    category: gaming
+    description: "Epic Games store and launcher"
+    url: "https://launcher-public-service-prod06.ol.epicgames.com/launcher/api/installer/download/EpicGamesLauncherInstaller.msi"
+    silentArgs: "/quiet"
+    workSafe: false

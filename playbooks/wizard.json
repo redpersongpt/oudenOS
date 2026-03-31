@@ -1,0 +1,4651 @@
+{
+  "packageId": "redcore-os",
+  "title": "redcore OS Playbook",
+  "shortDescription": "Windows optimization playbook for redcore OS",
+  "description": "A review-first Windows optimization playbook that stages cleanup, privacy hardening, and performance tuning through a guided wizard.",
+  "details": "redcore OS scans the current install, resolves a profile-aware plan, and packages the same decisions for wizard and ISO flows.",
+  "version": "1.0",
+  "uniqueId": "2cb0ed8d-2d5b-4e74-9c0d-df83cc3ab4d4",
+  "upgradableFrom": "any",
+  "supportedBuilds": [
+    19045,
+    22631,
+    26100
+  ],
+  "requirements": [
+    "NoPendingUpdates",
+    "Internet",
+    "PluggedIn"
+  ],
+  "useKernelDriver": false,
+  "productCode": 410,
+  "git": "https://github.com/redpersongpt/redcore-OS",
+  "website": "https://redcoreos.net",
+  "donateLink": "https://redcoreos.net",
+  "supportsISO": true,
+  "iso": {
+    "disableBitLocker": true,
+    "disableHardwareRequirements": true,
+    "injectPath": "sources/$OEM$/$1/redcore/wizard"
+  },
+  "oobe": {
+    "internet": "Request",
+    "bulletPoints": [
+      {
+        "icon": "Rocket",
+        "title": "Lower Latency",
+        "description": "Stages the same timer, power, and scheduler optimizations exposed by the desktop wizard."
+      },
+      {
+        "icon": "Privacy",
+        "title": "Telemetry Control",
+        "description": "Removes the worst consumer tracking defaults without pretending every enterprise feature can disappear."
+      },
+      {
+        "icon": "Lock",
+        "title": "Rollback Ready",
+        "description": "Keeps rollback metadata so the plan can be audited and reversed instead of acting like a blind tweak pack."
+      }
+    ]
+  },
+  "desktopQuestions": [
+    {
+      "key": "aggressionPreset",
+      "icon": "Shield",
+      "label": "Transformation Depth",
+      "title": "How hard should redcore OS push this machine?",
+      "desc": "This is the mainline preset. It decides how much of the playbook is eligible before your per-question answers start forcing things in or out.",
+      "note": "Conservative is for caution. Balanced is for most tuned personal machines. Aggressive and Expert expose deeper latency/security tradeoffs.",
+      "options": [
+        {
+          "value": "conservative",
+          "title": "Conservative",
+          "desc": "Focus on cleanup, basic privacy reduction, and low-risk ergonomics. Leaves the deeper scheduler, power, and protocol questions out.",
+          "badge": "Safest",
+          "badgeColor": "bg-emerald-500/15 text-emerald-400",
+          "behavior": {
+            "value": "conservative",
+            "estimatedBlocked": 8,
+            "riskLevel": "safe"
+          }
+        },
+        {
+          "value": "balanced",
+          "title": "Balanced",
+          "desc": "The serious default. Enables meaningful performance and privacy questions without drifting into enthusiast-only territory.",
+          "badge": "Recommended",
+          "badgeColor": "bg-brand-500/15 text-brand-400",
+          "behavior": {
+            "value": "balanced",
+            "estimatedBlocked": 3,
+            "riskLevel": "mixed"
+          }
+        },
+        {
+          "value": "aggressive",
+          "title": "Aggressive",
+          "desc": "Unlocks deeper latency, networking, and power-management questions meant for tuned personal rigs.",
+          "behavior": {
+            "value": "aggressive",
+            "riskLevel": "aggressive"
+          }
+        },
+        {
+          "value": "expert",
+          "title": "Expert",
+          "desc": "Unlocks mitigation and HVCI questions along with the highest-risk browser/network/security tradeoffs.",
+          "badge": "Advanced",
+          "badgeColor": "bg-purple-500/15 text-purple-400",
+          "behavior": {
+            "value": "expert",
+            "riskLevel": "expert"
+          }
+        }
+      ]
+    },
+    {
+      "key": "highPerformancePlan",
+      "icon": "Battery",
+      "label": "Power Plan",
+      "title": "Activate the Windows High Performance power plan?",
+      "desc": "This forces Windows away from the default power-saving bias so the CPU stops dipping as aggressively between bursts.",
+      "note": "This is the most defensible baseline tweak from both enthusiast guides and real-world tuning work.",
+      "options": [
+        {
+          "value": true,
+          "title": "Yes — use High Performance",
+          "desc": "Better responsiveness and less ramp-up delay under game and desktop load.",
+          "badge": "Core",
+          "badgeColor": "bg-brand-500/15 text-brand-400",
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "power.high-performance-plan"
+            ],
+            "estimatedActions": 1
+          }
+        },
+        {
+          "value": false,
+          "title": "No — keep Windows power defaults",
+          "desc": "Safer for mixed-use or battery-conscious machines.",
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "power.high-performance-plan"
+            ],
+            "blockReason": "You chose to keep Windows balanced power behavior.",
+            "estimatedBlocked": 1
+          }
+        }
+      ]
+    },
+    {
+      "key": "optimizeThreadPriority",
+      "icon": "Cpu",
+      "label": "CPU Scheduler",
+      "title": "Apply foreground-biased thread priority tuning?",
+      "desc": "This maps to Win32PrioritySeparation. It pushes the active foreground workload ahead of background noise.",
+      "note": "redcore OS only asks this question at the level it can actually apply today.",
+      "visibility": {
+        "minPreset": "balanced"
+      },
+      "options": [
+        {
+          "value": true,
+          "title": "Yes — bias CPU time toward the active app",
+          "desc": "Useful for games and latency-sensitive foreground work.",
+          "badge": "Scheduler",
+          "badgeColor": "bg-brand-500/15 text-brand-400",
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "cpu.win32-priority-separation"
+            ],
+            "estimatedActions": 1
+          }
+        },
+        {
+          "value": false,
+          "title": "No — keep Windows scheduler defaults",
+          "desc": "Better if you prefer untouched desktop multitasking behavior.",
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "cpu.win32-priority-separation"
+            ],
+            "blockReason": "You chose to keep default Windows thread scheduling behavior.",
+            "estimatedBlocked": 1
+          }
+        }
+      ]
+    },
+    {
+      "key": "globalTimerResolution",
+      "icon": "Clock",
+      "label": "Timer Behavior",
+      "title": "Restore global timer-resolution requests on supported Windows builds?",
+      "desc": "This is the real Windows 11 timer question redcore OS can honestly apply: whether the system should honor global timer-resolution behavior again.",
+      "note": "This is not a fake fixed 0.5 ms timer lock. It applies the real GlobalTimerResolutionRequests path in the playbook.",
+      "visibility": {
+        "minPreset": "balanced"
+      },
+      "options": [
+        {
+          "value": true,
+          "title": "Yes — restore global timer behavior",
+          "desc": "Lets one process' timer request benefit the whole system again.",
+          "badge": "Latency",
+          "badgeColor": "bg-brand-500/15 text-brand-400",
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "cpu.global-timer-resolution"
+            ],
+            "estimatedActions": 1,
+            "requiresReboot": true
+          }
+        },
+        {
+          "value": false,
+          "title": "No — keep modern per-process timer behavior",
+          "desc": "More power-efficient and closer to stock Windows scheduling.",
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "cpu.global-timer-resolution"
+            ],
+            "blockReason": "You chose to keep modern per-process timer behavior.",
+            "estimatedBlocked": 1
+          }
+        }
+      ]
+    },
+    {
+      "key": "disableIndexing",
+      "icon": "HardDrive",
+      "label": "Search Indexing",
+      "title": "Disable Windows Search indexing?",
+      "desc": "Indexing keeps background I/O and CPU pressure around so Start and Explorer search stay fast. Turning it off trades convenience for quietness.",
+      "note": "This is the measurable part of the old “search removal” culture that actually exists in the playbook.",
+      "options": [
+        {
+          "value": true,
+          "title": "Yes — disable indexing",
+          "desc": "Reduces background disk churn and CPU spikes from the indexer.",
+          "badge": "Search",
+          "badgeColor": "bg-brand-500/15 text-brand-400",
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "storage.disable-indexing"
+            ],
+            "estimatedActions": 1
+          }
+        },
+        {
+          "value": false,
+          "title": "No — keep indexing enabled",
+          "desc": "Better if you actively use Start or file search.",
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "storage.disable-indexing"
+            ],
+            "blockReason": "You chose to keep Windows Search indexing enabled.",
+            "estimatedBlocked": 1
+          }
+        }
+      ]
+    },
+    {
+      "key": "stripSearchWebNoise",
+      "icon": "Search",
+      "label": "Search Web Noise",
+      "title": "Strip web results, search highlights, history, and the oversized taskbar search box?",
+      "desc": "This cuts the Microsoft content layer around Search without pretending to fully remove SearchHost.",
+      "note": "This is intentionally more honest than claiming complete search removal when the actual playbook applies targeted shell/search actions.",
+      "options": [
+        {
+          "value": true,
+          "title": "Yes — shrink Search to a local-only utility",
+          "desc": "Cleaner Start/Search surface with less suggestion spam and history noise.",
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "shell.disable-web-search",
+              "shell.disable-search-highlights",
+              "shell.disable-search-history",
+              "shell.reduce-search-box"
+            ],
+            "estimatedActions": 4
+          }
+        },
+        {
+          "value": false,
+          "title": "No — keep Windows Search extras",
+          "desc": "Best if you like built-in web suggestions or richer search panels.",
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "shell.disable-web-search",
+              "shell.disable-search-highlights",
+              "shell.disable-search-history",
+              "shell.reduce-search-box"
+            ],
+            "blockReason": "You chose to keep Windows Search web features and history behavior.",
+            "estimatedBlocked": 4
+          }
+        }
+      ]
+    },
+    {
+      "key": "keepPrinterSupport",
+      "icon": "Wrench",
+      "label": "Printing",
+      "title": "Does this machine still need printer support?",
+      "desc": "If yes, redcore OS will preserve the Print Spooler. If no, it will cut it.",
+      "note": "This question is preservation-driven: the answer directly decides whether the spooler disable action is blocked or applied.",
+      "options": [
+        {
+          "value": true,
+          "title": "Yes — preserve printer support",
+          "desc": "Keeps the Print Spooler and avoids surprise printer breakage.",
+          "behavior": {
+            "value": true,
+            "blockActions": [
+              "services.disable-print-spooler"
+            ],
+            "blockReason": "You said this machine still needs printer support.",
+            "estimatedBlocked": 1,
+            "estimatedPreserved": 1
+          }
+        },
+        {
+          "value": false,
+          "title": "No — safe to disable printing services",
+          "desc": "Good for stripped gaming machines with no local or network printers.",
+          "behavior": {
+            "value": false,
+            "includeActions": [
+              "services.disable-print-spooler"
+            ],
+            "estimatedActions": 1
+          }
+        }
+      ]
+    },
+    {
+      "key": "keepRemoteAccess",
+      "icon": "Globe",
+      "label": "Remote Access",
+      "title": "Does this machine still need RDP, remote assistance, or support tools?",
+      "desc": "If yes, redcore OS preserves remote-access related services. If no, it trims that attack surface.",
+      "note": "This is the kind of preservation decision that should be explicit before apply, not discovered after something breaks.",
+      "options": [
+        {
+          "value": true,
+          "title": "Yes — preserve remote access capability",
+          "desc": "Safer for workstations, remote support, or self-hosted remote access workflows.",
+          "behavior": {
+            "value": true,
+            "blockActions": [
+              "services.disable-remote-services"
+            ],
+            "blockReason": "You said this machine still needs remote access or remote support.",
+            "estimatedBlocked": 1,
+            "estimatedPreserved": 1
+          }
+        },
+        {
+          "value": false,
+          "title": "No — disable remote access services",
+          "desc": "Good for personal machines that should never accept inbound remote control.",
+          "behavior": {
+            "value": false,
+            "includeActions": [
+              "services.disable-remote-services"
+            ],
+            "estimatedActions": 1
+          }
+        }
+      ]
+    },
+    {
+      "key": "edgeBehavior",
+      "icon": "Globe",
+      "label": "Browser Surface",
+      "title": "How hard should Edge background behavior be suppressed?",
+      "desc": "This question stays on the honest side: preload, nags, and updates are separable; full browser removal is asked separately.",
+      "note": "Suppressing Edge is usually the sweet spot. Removing Edge is a different risk class and comes later.",
+      "options": [
+        {
+          "value": "keep",
+          "title": "Keep Edge unchanged",
+          "desc": "No preload, nag, or update suppression.",
+          "behavior": {
+            "value": "keep",
+            "blockActions": [
+              "appx.disable-edge-preload",
+              "appx.disable-edge-default-nag",
+              "appx.disable-edge-updates"
+            ],
+            "blockReason": "You chose to keep Microsoft Edge behavior unchanged.",
+            "estimatedBlocked": 3
+          }
+        },
+        {
+          "value": "suppress",
+          "title": "Suppress background preload and default-browser nags",
+          "desc": "Cuts startup boost and self-promotion without freezing browser updates.",
+          "badge": "Recommended",
+          "badgeColor": "bg-brand-500/15 text-brand-400",
+          "behavior": {
+            "value": "suppress",
+            "includeActions": [
+              "appx.disable-edge-preload",
+              "appx.disable-edge-default-nag"
+            ],
+            "blockActions": [
+              "appx.disable-edge-updates"
+            ],
+            "blockReason": "You chose not to freeze Edge updates.",
+            "estimatedActions": 2,
+            "estimatedBlocked": 1
+          }
+        },
+        {
+          "value": "suppress-and-freeze",
+          "title": "Suppress Edge and also freeze auto-updates",
+          "desc": "Adds update suppression on top of preload/nag cleanup. Highest maintenance burden short of full removal.",
+          "behavior": {
+            "value": "suppress-and-freeze",
+            "includeActions": [
+              "appx.disable-edge-preload",
+              "appx.disable-edge-default-nag",
+              "appx.disable-edge-updates"
+            ],
+            "estimatedActions": 3,
+            "riskLevel": "aggressive"
+          }
+        }
+      ]
+    },
+    {
+      "key": "disableCopilot",
+      "icon": "Sparkles",
+      "label": "AI Surface",
+      "title": "Disable Windows Copilot?",
+      "desc": "This removes the Copilot taskbar surface and its associated shell noise.",
+      "options": [
+        {
+          "value": true,
+          "title": "Yes — remove Copilot from the shell",
+          "desc": "Cleaner taskbar and less AI-first push from Windows.",
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "shell.disable-copilot"
+            ],
+            "estimatedActions": 1
+          }
+        },
+        {
+          "value": false,
+          "title": "No — keep Copilot available",
+          "desc": "Leave the Copilot surface intact.",
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "shell.disable-copilot"
+            ],
+            "blockReason": "You chose to keep Copilot available.",
+            "estimatedBlocked": 1
+          }
+        }
+      ]
+    },
+    {
+      "key": "disableRecall",
+      "icon": "Eye",
+      "label": "Recall",
+      "title": "Disable Windows Recall?",
+      "desc": "Recall is one of the easiest “yes” questions in the whole flow unless you explicitly want AI timeline snapshots.",
+      "note": "Only shown on supported Windows builds where Recall actually exists.",
+      "visibility": {
+        "minWindowsBuild": 26100
+      },
+      "options": [
+        {
+          "value": true,
+          "title": "Yes — disable Recall",
+          "desc": "Cuts screenshot-history style AI capture behavior entirely.",
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "privacy.disable-recall"
+            ],
+            "estimatedActions": 1
+          }
+        },
+        {
+          "value": false,
+          "title": "No — keep Recall available",
+          "desc": "Only sensible if you actually intend to use it.",
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "privacy.disable-recall"
+            ],
+            "blockReason": "You chose to keep Recall available.",
+            "estimatedBlocked": 1
+          }
+        }
+      ]
+    },
+    {
+      "key": "disableClickToDo",
+      "icon": "Eye",
+      "label": "Click To Do",
+      "title": "Disable Click to Do?",
+      "desc": "This trims another Windows 11 AI shell surface that most tuned machines do not need.",
+      "note": "Only shown on supported Windows builds where Click to Do is present.",
+      "visibility": {
+        "minWindowsBuild": 26100
+      },
+      "options": [
+        {
+          "value": true,
+          "title": "Yes — disable it",
+          "desc": "Less shell clutter and fewer AI-driven hooks.",
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "privacy.disable-click-to-do"
+            ],
+            "estimatedActions": 1
+          }
+        },
+        {
+          "value": false,
+          "title": "No — keep it available",
+          "desc": "Leave the new interaction surface intact.",
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "privacy.disable-click-to-do"
+            ],
+            "blockReason": "You chose to keep Click to Do available.",
+            "estimatedBlocked": 1
+          }
+        }
+      ]
+    },
+    {
+      "key": "disableAiApps",
+      "icon": "Sparkles",
+      "label": "AI In Apps",
+      "title": "Disable AI features in Edge, Paint, and Notepad?",
+      "desc": "This cuts the bundled AI surfaces in Microsoft apps rather than only the headline shell features.",
+      "options": [
+        {
+          "value": true,
+          "title": "Yes — disable app-level AI features",
+          "desc": "Removes AI extras from the apps most people never asked to become assistants.",
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "privacy.disable-edge-ai",
+              "privacy.disable-paint-ai",
+              "privacy.disable-notepad-ai"
+            ],
+            "estimatedActions": 3
+          }
+        },
+        {
+          "value": false,
+          "title": "No — keep those AI features",
+          "desc": "Leave the AI tooling in those apps available.",
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "privacy.disable-edge-ai",
+              "privacy.disable-paint-ai",
+              "privacy.disable-notepad-ai"
+            ],
+            "blockReason": "You chose to keep AI features in system apps.",
+            "estimatedBlocked": 3
+          }
+        }
+      ]
+    },
+    {
+      "key": "telemetryLevel",
+      "icon": "Shield",
+      "label": "Telemetry Depth",
+      "title": "How far should Microsoft telemetry reduction go?",
+      "desc": "This controls the real telemetry actions in the playbook rather than vague “privacy mode” marketing.",
+      "note": "Aggressive adds SIUF/feedback suppression on top of the standard telemetry, CEIP, and error-reporting cuts.",
+      "options": [
+        {
+          "value": "keep",
+          "title": "Keep Windows telemetry behavior",
+          "desc": "Do not apply telemetry-specific privacy cuts here.",
+          "behavior": {
+            "value": "keep",
+            "blockActions": [
+              "privacy.disable-telemetry",
+              "privacy.disable-ceip",
+              "privacy.disable-error-reporting",
+              "privacy.disable-siuf"
+            ],
+            "blockReason": "You chose not to reduce Microsoft telemetry in this area.",
+            "estimatedBlocked": 4
+          }
+        },
+        {
+          "value": "reduce",
+          "title": "Reduce telemetry",
+          "desc": "Disable telemetry, CEIP, and error reporting without going all the way into the aggressive feedback cuts.",
+          "badge": "Recommended",
+          "badgeColor": "bg-brand-500/15 text-brand-400",
+          "behavior": {
+            "value": "reduce",
+            "includeActions": [
+              "privacy.disable-telemetry",
+              "privacy.disable-ceip",
+              "privacy.disable-error-reporting"
+            ],
+            "blockActions": [
+              "privacy.disable-siuf"
+            ],
+            "blockReason": "You chose the lighter telemetry reduction profile.",
+            "estimatedActions": 3,
+            "estimatedBlocked": 1
+          }
+        },
+        {
+          "value": "aggressive",
+          "title": "Aggressive telemetry reduction",
+          "desc": "Adds deeper feedback suppression for users who want Microsoft’s soft collection surfaces cut harder.",
+          "behavior": {
+            "value": "aggressive",
+            "includeActions": [
+              "privacy.disable-telemetry",
+              "privacy.disable-ceip",
+              "privacy.disable-error-reporting",
+              "privacy.disable-siuf"
+            ],
+            "estimatedActions": 4,
+            "riskLevel": "aggressive"
+          }
+        }
+      ]
+    },
+    {
+      "key": "disableClipboardHistory",
+      "icon": "Eye",
+      "label": "Clipboard History",
+      "title": "Disable clipboard history and cross-device clipboard sync?",
+      "desc": "Useful if you want the clipboard to behave like a simple local buffer again.",
+      "options": [
+        {
+          "value": true,
+          "title": "Yes — disable clipboard history/sync",
+          "desc": "Cuts cloud-linked clipboard behavior and local history retention.",
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "privacy.disable-clipboard-history"
+            ],
+            "estimatedActions": 1
+          }
+        },
+        {
+          "value": false,
+          "title": "No — keep clipboard history",
+          "desc": "Leave clipboard convenience features enabled.",
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "privacy.disable-clipboard-history"
+            ],
+            "blockReason": "You chose to keep clipboard history and sync capability.",
+            "estimatedBlocked": 1
+          }
+        }
+      ]
+    },
+    {
+      "key": "disableActivityFeed",
+      "icon": "Eye",
+      "label": "Activity Feed",
+      "title": "Disable activity feed and cloud-content style tracking?",
+      "desc": "This trims the timeline-style “what you were doing” surfaces and associated cloud content behavior.",
+      "options": [
+        {
+          "value": true,
+          "title": "Yes — disable it",
+          "desc": "Less behavior tracking and less cloud-fed content inside Windows.",
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "privacy.disable-activity-feed",
+              "privacy.disable-cloud-content"
+            ],
+            "estimatedActions": 2
+          }
+        },
+        {
+          "value": false,
+          "title": "No — keep that behavior",
+          "desc": "Leave Windows activity and cloud-content behavior intact.",
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "privacy.disable-activity-feed",
+              "privacy.disable-cloud-content"
+            ],
+            "blockReason": "You chose to keep activity feed or cloud content behavior.",
+            "estimatedBlocked": 2
+          }
+        }
+      ]
+    },
+    {
+      "key": "disableLocation",
+      "icon": "Globe",
+      "label": "Location",
+      "title": "Disable location services and Find My Device?",
+      "desc": "A good privacy answer for desktops. A more situational one for laptops that actually use location-based workflows.",
+      "options": [
+        {
+          "value": true,
+          "title": "Yes — disable location-linked features",
+          "desc": "Reduces location tracking and disables Find My Device dependence.",
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "privacy.disable-location",
+              "privacy.disable-find-my-device"
+            ],
+            "estimatedActions": 2
+          }
+        },
+        {
+          "value": false,
+          "title": "No — keep location available",
+          "desc": "Better if you use maps, recovery, or location-aware apps.",
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "privacy.disable-location",
+              "privacy.disable-find-my-device"
+            ],
+            "blockReason": "You chose to keep Windows location-aware features.",
+            "estimatedBlocked": 2
+          }
+        }
+      ]
+    },
+    {
+      "key": "disableTailoredExperiences",
+      "icon": "Eye",
+      "label": "Personalization Tracking",
+      "title": "Disable tailored experiences, online tips, and app-launch tracking?",
+      "desc": "This removes the “Windows learns from you” layer instead of only the obvious ad toggles.",
+      "options": [
+        {
+          "value": true,
+          "title": "Yes — cut that personalization layer",
+          "desc": "Less suggestion spam and less behavior-based tuning from Windows.",
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "privacy.disable-tailored-experiences",
+              "privacy.disable-app-launch-tracking",
+              "privacy.disable-online-tips"
+            ],
+            "estimatedActions": 3
+          }
+        },
+        {
+          "value": false,
+          "title": "No — keep it",
+          "desc": "Leave Windows’ softer personalization layer intact.",
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "privacy.disable-tailored-experiences",
+              "privacy.disable-app-launch-tracking",
+              "privacy.disable-online-tips"
+            ],
+            "blockReason": "You chose to keep tailored experiences and app-launch personalization.",
+            "estimatedBlocked": 3
+          }
+        }
+      ]
+    },
+    {
+      "key": "disableSpeechPersonalization",
+      "icon": "Sparkles",
+      "label": "Speech & Input",
+      "title": "Disable online speech and input-personalization telemetry?",
+      "desc": "This cuts cloud speech/input collection behavior that most stripped systems do not need.",
+      "options": [
+        {
+          "value": true,
+          "title": "Yes — disable it",
+          "desc": "Reduces speech/input data collection and personalization layers.",
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "privacy.disable-online-speech",
+              "privacy.disable-input-personalization",
+              "privacy.disable-tipc"
+            ],
+            "estimatedActions": 3
+          }
+        },
+        {
+          "value": false,
+          "title": "No — keep it",
+          "desc": "Better if you rely on cloud speech features or dictation behavior.",
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "privacy.disable-online-speech",
+              "privacy.disable-input-personalization",
+              "privacy.disable-tipc"
+            ],
+            "blockReason": "You chose to keep speech and input personalization features.",
+            "estimatedBlocked": 3
+          }
+        }
+      ]
+    },
+    {
+      "key": "disableSmartScreen",
+      "icon": "Shield",
+      "label": "SmartScreen",
+      "title": "Disable SmartScreen reputation checks?",
+      "desc": "This is a real tradeoff question. It reduces Windows friction, but it also removes one of the last browser/download guardrails people forget they were relying on.",
+      "note": "Unlike marketing privacy toggles, this one can genuinely increase risk if the machine is used casually.",
+      "visibility": {
+        "minPreset": "aggressive"
+      },
+      "options": [
+        {
+          "value": true,
+          "title": "Yes — disable SmartScreen",
+          "desc": "For stripped personal rigs where you intentionally manage trust yourself.",
+          "badge": "Risky",
+          "badgeColor": "bg-amber-500/15 text-amber-400",
+          "danger": true,
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "privacy.disable-smartscreen"
+            ],
+            "estimatedActions": 1,
+            "warnings": [
+              "Disabling SmartScreen can remove a useful download and reputation safety check."
+            ],
+            "riskLevel": "aggressive"
+          }
+        },
+        {
+          "value": false,
+          "title": "No — keep SmartScreen",
+          "desc": "Safer for mixed-use, browsing, and non-lab machines.",
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "privacy.disable-smartscreen"
+            ],
+            "blockReason": "You chose to keep SmartScreen protection enabled.",
+            "estimatedBlocked": 1
+          }
+        }
+      ]
+    },
+    {
+      "key": "disableFastStartup",
+      "icon": "Zap",
+      "label": "Fast Startup",
+      "title": "Disable Windows Fast Startup?",
+      "desc": "Fast Startup often leaves stale driver/kernel state around. Tuned systems usually benefit from clean boots.",
+      "options": [
+        {
+          "value": true,
+          "title": "Yes — disable Fast Startup",
+          "desc": "Cleaner shutdown/boot behavior and fewer weird resume-state driver bugs.",
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "power.disable-fast-startup"
+            ],
+            "estimatedActions": 1
+          }
+        },
+        {
+          "value": false,
+          "title": "No — keep Fast Startup",
+          "desc": "Faster boots, but more hybrid-shutdown baggage.",
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "power.disable-fast-startup"
+            ],
+            "blockReason": "You chose to keep Fast Startup enabled.",
+            "estimatedBlocked": 1
+          }
+        }
+      ]
+    },
+    {
+      "key": "disableHibernation",
+      "icon": "Zap",
+      "label": "Hibernation",
+      "title": "Disable hibernation?",
+      "desc": "For most tuned desktops this is a yes. For laptops it depends on whether you actually use hibernate.",
+      "options": [
+        {
+          "value": true,
+          "title": "Yes — disable hibernation",
+          "desc": "Frees disk space and keeps boot behavior cleaner.",
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "power.disable-hibernation"
+            ],
+            "estimatedActions": 1
+          }
+        },
+        {
+          "value": false,
+          "title": "No — keep hibernation",
+          "desc": "Leave hibernate available as a power feature.",
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "power.disable-hibernation"
+            ],
+            "blockReason": "You chose to keep hibernation enabled.",
+            "estimatedBlocked": 1
+          }
+        }
+      ]
+    },
+    {
+      "key": "disableAudioEnhancements",
+      "icon": "MonitorSpeaker",
+      "label": "Audio Enhancements",
+      "title": "Disable Windows audio enhancements?",
+      "desc": "DSP and enhancement layers are often needless overhead unless you intentionally rely on them.",
+      "options": [
+        {
+          "value": true,
+          "title": "Yes — turn enhancements off",
+          "desc": "Cleaner, more predictable audio path with less vendor/DSP interference.",
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "audio.disable-enhancements"
+            ],
+            "estimatedActions": 1,
+            "warnings": [
+              "Audio enhancements off can change loudness, EQ, and motherboard vendor DSP behavior."
+            ],
+            "riskLevel": "mixed"
+          }
+        },
+        {
+          "value": false,
+          "title": "No — keep enhancements",
+          "desc": "Better if you rely on loudness EQ, virtual surround, or motherboard DSP effects.",
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "audio.disable-enhancements"
+            ],
+            "blockReason": "You chose to keep Windows audio enhancements enabled.",
+            "estimatedBlocked": 1
+          }
+        }
+      ]
+    },
+    {
+      "key": "enableAudioExclusiveMode",
+      "icon": "MonitorSpeaker",
+      "label": "Exclusive Mode",
+      "title": "Enable exclusive-mode audio control?",
+      "desc": "This helps users who want a cleaner low-latency audio path and are okay with apps taking exclusive control of the device.",
+      "options": [
+        {
+          "value": true,
+          "title": "Yes — enable exclusive mode",
+          "desc": "Better for low-latency or focused audio paths when the app supports it.",
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "audio.exclusive-mode"
+            ],
+            "estimatedActions": 1
+          }
+        },
+        {
+          "value": false,
+          "title": "No — keep the current shared-mode behavior",
+          "desc": "Safer if you constantly juggle multiple apps using the same device.",
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "audio.exclusive-mode"
+            ],
+            "blockReason": "You chose not to enable exclusive-mode audio control.",
+            "estimatedBlocked": 1
+          }
+        }
+      ]
+    },
+    {
+      "key": "restoreClassicContextMenu",
+      "icon": "Wrench",
+      "label": "Context Menu",
+      "title": "Restore the classic full Windows 11 context menu?",
+      "desc": "A pure usability question, but one with a real apply-side effect.",
+      "options": [
+        {
+          "value": true,
+          "title": "Yes — restore the classic menu",
+          "desc": "Gets rid of the compact extra-click Windows 11 context menu.",
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "shell.restore-classic-context-menu"
+            ],
+            "estimatedActions": 1
+          }
+        },
+        {
+          "value": false,
+          "title": "No — keep the stock menu",
+          "desc": "Leave the modern compact menu in place.",
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "shell.restore-classic-context-menu"
+            ],
+            "blockReason": "You chose to keep the default Windows 11 compact context menu.",
+            "estimatedBlocked": 1
+          }
+        }
+      ]
+    },
+    {
+      "key": "enableEndTask",
+      "icon": "Wrench",
+      "label": "Taskbar End Task",
+      "title": "Add End Task to taskbar right-click menus?",
+      "desc": "This is the exact Windows 11 usability tweak you asked for: kill hung apps straight from taskbar right-click without opening Task Manager.",
+      "note": "Only shown on Windows builds that expose the taskbar End Task toggle.",
+      "visibility": {
+        "minWindowsBuild": 22631
+      },
+      "options": [
+        {
+          "value": true,
+          "title": "Yes — add End Task",
+          "desc": "Cleaner emergency-kill path for frozen apps.",
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "shell.enable-end-task"
+            ],
+            "estimatedActions": 1
+          }
+        },
+        {
+          "value": false,
+          "title": "No — keep default taskbar right-click behavior",
+          "desc": "Leave the standard Windows 11 menu intact.",
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "shell.enable-end-task"
+            ],
+            "blockReason": "You chose to keep the default taskbar right-click behavior.",
+            "estimatedBlocked": 1
+          }
+        }
+      ]
+    },
+    {
+      "key": "disableBackgroundApps",
+      "icon": "HardDrive",
+      "label": "Background Apps",
+      "title": "Disable background app execution?",
+      "desc": "This is a real resource-control question. It matters more than a lot of flashy “FPS tweaks.”",
+      "options": [
+        {
+          "value": true,
+          "title": "Yes — stop background app execution",
+          "desc": "Cuts silent background UWP/app activity.",
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "startup.disable-background-apps"
+            ],
+            "estimatedActions": 1
+          }
+        },
+        {
+          "value": false,
+          "title": "No — keep background apps allowed",
+          "desc": "Better if you rely on synced app behavior or background refresh.",
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "startup.disable-background-apps"
+            ],
+            "blockReason": "You chose to keep background app execution enabled.",
+            "estimatedBlocked": 1
+          }
+        }
+      ]
+    },
+    {
+      "key": "disableAutomaticMaintenance",
+      "icon": "HardDrive",
+      "label": "Automatic Maintenance",
+      "title": "Disable Windows automatic maintenance?",
+      "desc": "This trades background housekeeping for a quieter machine. Good for dedicated tuned PCs; less good for people who want Windows to self-maintain.",
+      "options": [
+        {
+          "value": true,
+          "title": "Yes — disable it",
+          "desc": "Fewer surprise background maintenance runs while idle.",
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "startup.disable-automatic-maintenance"
+            ],
+            "estimatedActions": 1
+          }
+        },
+        {
+          "value": false,
+          "title": "No — keep it",
+          "desc": "Safer if you want Windows doing its normal housekeeping.",
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "startup.disable-automatic-maintenance"
+            ],
+            "blockReason": "You chose to keep Windows automatic maintenance enabled.",
+            "estimatedBlocked": 1
+          }
+        }
+      ]
+    },
+    {
+      "key": "enableGameMode",
+      "icon": "Gamepad2",
+      "label": "Game Mode",
+      "title": "Force Game Mode on?",
+      "desc": "This is the lightweight Windows-native gaming toggle, not a magical optimization. But if you game, it still belongs in the questionnaire.",
+      "options": [
+        {
+          "value": true,
+          "title": "Yes — enable Game Mode",
+          "desc": "Lets Windows bias scheduling a bit more around games.",
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "startup.enable-game-mode"
+            ],
+            "estimatedActions": 1
+          }
+        },
+        {
+          "value": false,
+          "title": "No — keep current Game Mode behavior",
+          "desc": "Leave Windows to its current default behavior.",
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "startup.enable-game-mode"
+            ],
+            "blockReason": "You chose not to force Game Mode on.",
+            "estimatedBlocked": 1
+          }
+        }
+      ]
+    },
+    {
+      "key": "disableTransparency",
+      "icon": "Eye",
+      "label": "Transparency",
+      "title": "Disable transparency effects?",
+      "desc": "Small tweak, but real. Cuts acrylic/blur visual noise and a bit of compositor overhead.",
+      "options": [
+        {
+          "value": true,
+          "title": "Yes — disable transparency",
+          "desc": "Cleaner, flatter shell with fewer translucent effects.",
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "perf.disable-transparency"
+            ],
+            "estimatedActions": 1,
+            "personalization": {
+              "transparency": false
+            }
+          }
+        },
+        {
+          "value": false,
+          "title": "No — keep transparency",
+          "desc": "Leave the Windows visual style intact.",
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "perf.disable-transparency"
+            ],
+            "blockReason": "You chose to keep Windows transparency effects enabled.",
+            "estimatedBlocked": 1
+          }
+        }
+      ]
+    },
+    {
+      "key": "aggressiveBoostMode",
+      "icon": "Cpu",
+      "label": "Boost Policy",
+      "title": "Use aggressive processor boost mode?",
+      "desc": "This keeps the CPU pushing harder under load instead of backing off into friendlier boost policy behavior.",
+      "visibility": {
+        "minPreset": "balanced"
+      },
+      "options": [
+        {
+          "value": true,
+          "title": "Yes — use aggressive boost",
+          "desc": "Higher performance bias and quicker sustained turbo behavior.",
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "cpu.aggressive-boost-mode"
+            ],
+            "estimatedActions": 1
+          }
+        },
+        {
+          "value": false,
+          "title": "No — keep stock boost policy",
+          "desc": "Safer thermally and calmer for mixed-use machines.",
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "cpu.aggressive-boost-mode"
+            ],
+            "blockReason": "You chose not to force aggressive CPU boost behavior.",
+            "estimatedBlocked": 1
+          }
+        }
+      ]
+    },
+    {
+      "key": "minProcessorState100",
+      "icon": "Cpu",
+      "label": "Minimum CPU State",
+      "title": "Lock minimum processor state to 100%?",
+      "desc": "This is the “don’t dip clocks between bursts” question. It is one of the cleaner CPU responsiveness levers in the current playbook.",
+      "visibility": {
+        "minPreset": "balanced"
+      },
+      "options": [
+        {
+          "value": true,
+          "title": "Yes — keep the floor at 100%",
+          "desc": "Reduces clock-drop latency between bursts.",
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "cpu.min-processor-state-100"
+            ],
+            "estimatedActions": 1
+          }
+        },
+        {
+          "value": false,
+          "title": "No — allow Windows to downscale more freely",
+          "desc": "Better for thermals and general-purpose efficiency.",
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "cpu.min-processor-state-100"
+            ],
+            "blockReason": "You chose not to lock minimum processor state to 100%.",
+            "estimatedBlocked": 1
+          }
+        }
+      ]
+    },
+    {
+      "key": "disableCoreParking",
+      "icon": "Cpu",
+      "label": "Core Parking",
+      "title": "Disable CPU core parking?",
+      "desc": "Classic enthusiast latency question. Useful on many desktop gaming systems, less sensible on weaker or office-centric machines.",
+      "visibility": {
+        "minPreset": "balanced"
+      },
+      "options": [
+        {
+          "value": true,
+          "title": "Yes — unpark cores",
+          "desc": "Reduces wake-up latency when Windows suddenly needs more threads.",
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "cpu.disable-core-parking"
+            ],
+            "estimatedActions": 1
+          }
+        },
+        {
+          "value": false,
+          "title": "No — keep core parking behavior",
+          "desc": "Better for efficiency-biased or cooler-running setups.",
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "cpu.disable-core-parking"
+            ],
+            "blockReason": "You chose to keep CPU core parking behavior.",
+            "estimatedBlocked": 1
+          }
+        }
+      ]
+    },
+    {
+      "key": "gamingMmcss",
+      "icon": "Gamepad2",
+      "label": "MMCSS",
+      "title": "Apply the tuned MMCSS gaming profile?",
+      "desc": "This hardens the scheduler profile used for Games under Windows’ multimedia scheduling system.",
+      "visibility": {
+        "minPreset": "balanced"
+      },
+      "options": [
+        {
+          "value": true,
+          "title": "Yes — apply the tuned gaming profile",
+          "desc": "Useful for keeping game/media threads favored over background noise.",
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "scheduler.mmcss-gaming-profile"
+            ],
+            "estimatedActions": 1
+          }
+        },
+        {
+          "value": false,
+          "title": "No — keep MMCSS defaults",
+          "desc": "Leave multimedia scheduling closer to stock.",
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "scheduler.mmcss-gaming-profile"
+            ],
+            "blockReason": "You chose not to harden the MMCSS gaming profile.",
+            "estimatedBlocked": 1
+          }
+        }
+      ]
+    },
+    {
+      "key": "disableMemoryCompression",
+      "icon": "Cpu",
+      "label": "Memory Compression",
+      "title": "Disable Windows memory compression?",
+      "desc": "A sensible question on machines with enough RAM. On RAM-starved systems, the answer can be different.",
+      "visibility": {
+        "minPreset": "balanced"
+      },
+      "options": [
+        {
+          "value": true,
+          "title": "Yes — disable memory compression",
+          "desc": "Less CPU spent compressing memory pages; best on healthy-RAM systems.",
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "memory.disable-compression"
+            ],
+            "estimatedActions": 1
+          }
+        },
+        {
+          "value": false,
+          "title": "No — keep memory compression",
+          "desc": "Safer if you want Windows to defend capacity under pressure.",
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "memory.disable-compression"
+            ],
+            "blockReason": "You chose to keep Windows memory compression enabled.",
+            "estimatedBlocked": 1
+          }
+        }
+      ]
+    },
+    {
+      "key": "disableHags",
+      "icon": "Gamepad2",
+      "label": "GPU Scheduling",
+      "title": "Disable Hardware-Accelerated GPU Scheduling (HAGS)?",
+      "desc": "HAGS is system-specific. The point here is not blind faith, it is making the choice explicit.",
+      "visibility": {
+        "minPreset": "balanced"
+      },
+      "options": [
+        {
+          "value": true,
+          "title": "Yes — disable HAGS",
+          "desc": "Often chosen for steadier behavior on tuned systems.",
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "gpu.disable-hags"
+            ],
+            "estimatedActions": 1
+          }
+        },
+        {
+          "value": false,
+          "title": "No — keep HAGS at the Windows default",
+          "desc": "Leave GPU scheduling behavior untouched.",
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "gpu.disable-hags"
+            ],
+            "blockReason": "You chose to keep HAGS at the Windows default.",
+            "estimatedBlocked": 1
+          }
+        }
+      ]
+    },
+    {
+      "key": "disableGpuTelemetry",
+      "icon": "Gamepad2",
+      "label": "GPU Telemetry",
+      "title": "Disable AMD/NVIDIA telemetry services?",
+      "desc": "Cleans out the always-on driver analytics layer without pretending the GPU driver itself is the problem.",
+      "visibility": {
+        "minPreset": "balanced"
+      },
+      "options": [
+        {
+          "value": true,
+          "title": "Yes — disable GPU telemetry",
+          "desc": "Less background service noise from vendor driver stacks.",
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "gpu.disable-nvidia-telemetry",
+              "gpu.disable-amd-telemetry"
+            ],
+            "estimatedActions": 2
+          }
+        },
+        {
+          "value": false,
+          "title": "No — keep GPU telemetry services",
+          "desc": "Leave vendor analytics services in place.",
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "gpu.disable-nvidia-telemetry",
+              "gpu.disable-amd-telemetry"
+            ],
+            "blockReason": "You chose to keep GPU driver telemetry services active.",
+            "estimatedBlocked": 2
+          }
+        }
+      ]
+    },
+    {
+      "key": "disableGameDvr",
+      "icon": "Gamepad2",
+      "label": "Game DVR",
+      "title": "Disable Game DVR recording overhead?",
+      "desc": "This is still one of the most sensible gaming questions to ask because the action is real and the downside is clear.",
+      "visibility": {
+        "minPreset": "balanced"
+      },
+      "options": [
+        {
+          "value": true,
+          "title": "Yes — disable Game DVR",
+          "desc": "Less background recording overhead and less frame-time noise.",
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "perf.disable-game-dvr"
+            ],
+            "estimatedActions": 1
+          }
+        },
+        {
+          "value": false,
+          "title": "No — keep Game DVR behavior",
+          "desc": "Keep built-in capture behavior intact.",
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "perf.disable-game-dvr"
+            ],
+            "blockReason": "You chose to keep Game DVR behavior enabled.",
+            "estimatedBlocked": 1
+          }
+        }
+      ]
+    },
+    {
+      "key": "disableFullscreenOptimizations",
+      "icon": "Gamepad2",
+      "label": "Fullscreen Optimizations",
+      "title": "Disable Windows fullscreen optimizations?",
+      "desc": "Useful for users chasing predictable fullscreen behavior and lower input-path weirdness.",
+      "visibility": {
+        "minPreset": "balanced"
+      },
+      "options": [
+        {
+          "value": true,
+          "title": "Yes — disable them",
+          "desc": "Closer to classic exclusive-fullscreen behavior in many cases.",
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "perf.disable-fullscreen-optimizations"
+            ],
+            "estimatedActions": 1
+          }
+        },
+        {
+          "value": false,
+          "title": "No — keep them enabled",
+          "desc": "Leave the Windows fullscreen layer intact.",
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "perf.disable-fullscreen-optimizations"
+            ],
+            "blockReason": "You chose to keep Windows fullscreen optimizations enabled.",
+            "estimatedBlocked": 1
+          }
+        }
+      ]
+    },
+    {
+      "key": "disableDynamicTick",
+      "icon": "Clock",
+      "label": "Dynamic Tick",
+      "title": "Disable dynamic tick for lower timer jitter?",
+      "desc": "This is a proper enthusiast question pulled from the real playbook, not a marketing placeholder.",
+      "note": "Best reserved for aggressive or expert profiles because it is not a universal improvement on every system.",
+      "visibility": {
+        "minPreset": "aggressive",
+        "excludeLaptop": true
+      },
+      "options": [
+        {
+          "value": true,
+          "title": "Yes — disable dynamic tick",
+          "desc": "Potentially tighter timing consistency on tuned desktops.",
+          "badge": "Advanced",
+          "badgeColor": "bg-amber-500/15 text-amber-400",
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "cpu.disable-dynamic-tick"
+            ],
+            "estimatedActions": 1,
+            "requiresReboot": true
+          }
+        },
+        {
+          "value": false,
+          "title": "No — keep dynamic tick",
+          "desc": "Leave Windows’ idle-saving timer behavior intact.",
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "cpu.disable-dynamic-tick"
+            ],
+            "blockReason": "You chose to keep Windows dynamic tick enabled.",
+            "estimatedBlocked": 1
+          }
+        }
+      ]
+    },
+    {
+      "key": "removeEdge",
+      "icon": "Globe",
+      "label": "Edge Removal",
+      "title": "Remove the Edge browser completely?",
+      "desc": "This is where the tone changes from cleanup to irreversible system surgery.",
+      "note": "Removing Edge is not the same thing as cleaning it up. This is one of the few questions that deserves real fear.",
+      "visibility": {
+        "minPreset": "aggressive"
+      },
+      "options": [
+        {
+          "value": true,
+          "title": "Yes — remove Edge",
+          "desc": "Only for people who already know exactly why they want it gone and already have another browser installed.",
+          "badge": "Danger",
+          "badgeColor": "bg-red-500/15 text-red-400",
+          "danger": true,
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "appx.remove-edge"
+            ],
+            "estimatedActions": 1,
+            "requiresReboot": true,
+            "warnings": [
+              "Edge removal is irreversible without a manual reinstall."
+            ],
+            "riskLevel": "aggressive"
+          }
+        },
+        {
+          "value": false,
+          "title": "No — keep the browser installed",
+          "desc": "Stick with suppression only.",
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "appx.remove-edge"
+            ],
+            "blockReason": "You chose to keep the Edge browser installed.",
+            "estimatedBlocked": 1
+          }
+        }
+      ]
+    },
+    {
+      "key": "preserveWebView2",
+      "icon": "Globe",
+      "label": "WebView2",
+      "title": "Preserve WebView2 for app compatibility?",
+      "desc": "This question exists because too many debloat tools pretend WebView2 is “just Edge” and then people wonder why app surfaces start breaking.",
+      "visibility": {
+        "minPreset": "aggressive"
+      },
+      "options": [
+        {
+          "value": true,
+          "title": "Yes — preserve WebView2",
+          "desc": "Recommended unless you know your full app stack and are intentionally stripping embedded browser runtimes.",
+          "badge": "Recommended",
+          "badgeColor": "bg-brand-500/15 text-brand-400",
+          "behavior": {
+            "value": true,
+            "blockActions": [
+              "appx.remove-edge-webview"
+            ],
+            "blockReason": "You chose to preserve WebView2 for app compatibility.",
+            "estimatedBlocked": 1,
+            "estimatedPreserved": 1
+          }
+        },
+        {
+          "value": false,
+          "title": "No — allow WebView2 removal",
+          "desc": "Only for stripped personal systems where you explicitly accept the blast radius.",
+          "behavior": {
+            "value": false,
+            "includeActions": [
+              "appx.remove-edge-webview"
+            ],
+            "estimatedActions": 1,
+            "warnings": [
+              "Removing WebView2 can break Teams, installer UIs, and embedded web surfaces."
+            ],
+            "riskLevel": "aggressive"
+          }
+        }
+      ]
+    },
+    {
+      "key": "reduceMitigations",
+      "icon": "Shield",
+      "label": "Spectre / Mitigations",
+      "title": "Reduce speculative-execution mitigations for a potential (%5-%10) performance increase?",
+      "desc": "This is the exact kind of question that makes or breaks credibility: the performance folklore is real enough to ask about, but the security cost is real too. In our current playbook this maps to the SSBD-side mitigation reduction path.",
+      "note": "This should be benchmark-first, not dogma-first. redcore OS asks it explicitly and only applies the real mitigation action it actually has.",
+      "visibility": {
+        "onlyPreset": "expert",
+        "excludeWorkPc": true
+      },
+      "options": [
+        {
+          "value": true,
+          "title": "Yes — reduce those mitigations",
+          "desc": "For dedicated personal rigs where you knowingly trade security for a possible latency/syscall win.",
+          "badge": "High Risk",
+          "badgeColor": "bg-red-500/15 text-red-400",
+          "danger": true,
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "security.reduce-ssbd-mitigation"
+            ],
+            "estimatedActions": 1,
+            "warnings": [
+              "Speculation mitigation reduction trades security for latency and syscall-heavy performance."
+            ],
+            "requiresReboot": true,
+            "riskLevel": "expert"
+          }
+        },
+        {
+          "value": false,
+          "title": "No — keep mitigations intact",
+          "desc": "Safer default, especially on anything used for browsing, work, or sensitive data.",
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "security.reduce-ssbd-mitigation"
+            ],
+            "blockReason": "You chose to keep speculative execution mitigations intact.",
+            "estimatedBlocked": 1
+          }
+        }
+      ]
+    },
+    {
+      "key": "disableHvci",
+      "icon": "Shield",
+      "label": "HVCI",
+      "title": "Disable Hypervisor-enforced Code Integrity (HVCI)?",
+      "desc": "Another expert-only security/performance tradeoff. This is not a casual checkbox.",
+      "note": "Vanguard and some hardened environments may care about this. That is exactly why the question exists.",
+      "visibility": {
+        "onlyPreset": "expert",
+        "excludeWorkPc": true
+      },
+      "options": [
+        {
+          "value": true,
+          "title": "Yes — disable HVCI",
+          "desc": "Useful only if you understand the kernel-security tradeoff and do not rely on that baseline.",
+          "badge": "High Risk",
+          "badgeColor": "bg-red-500/15 text-red-400",
+          "danger": true,
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "security.disable-hvci"
+            ],
+            "estimatedActions": 1,
+            "warnings": [
+              "Disabling HVCI can break security baselines and some anti-cheat requirements."
+            ],
+            "requiresReboot": true,
+            "riskLevel": "expert"
+          }
+        },
+        {
+          "value": false,
+          "title": "No — keep HVCI enabled",
+          "desc": "Safer and friendlier for security baselines or anti-cheat requirements.",
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "security.disable-hvci"
+            ],
+            "blockReason": "You chose to keep Hypervisor-enforced Code Integrity enabled.",
+            "estimatedBlocked": 1
+          }
+        }
+      ]
+    },
+    {
+      "key": "disableLlmnr",
+      "icon": "Globe",
+      "label": "LLMNR",
+      "title": "Disable Link-Local Multicast Name Resolution (LLMNR)?",
+      "desc": "A sensible hardening/cleanup protocol question that many tuned systems can say yes to.",
+      "visibility": {
+        "minPreset": "aggressive"
+      },
+      "options": [
+        {
+          "value": true,
+          "title": "Yes — disable LLMNR",
+          "desc": "Reduces a noisy legacy name-resolution surface.",
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "network.disable-llmnr"
+            ],
+            "estimatedActions": 1
+          }
+        },
+        {
+          "value": false,
+          "title": "No — keep LLMNR",
+          "desc": "Leave local multicast name resolution behavior alone.",
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "network.disable-llmnr"
+            ],
+            "blockReason": "You chose to keep LLMNR name resolution enabled.",
+            "estimatedBlocked": 1
+          }
+        }
+      ]
+    },
+    {
+      "key": "disableIpv6",
+      "icon": "Globe",
+      "label": "IPv6",
+      "title": "Disable IPv6?",
+      "desc": "Classic tweak, often overused. redcore OS asks it directly instead of hiding it behind a vague “network tweak” checkbox.",
+      "visibility": {
+        "minPreset": "aggressive"
+      },
+      "options": [
+        {
+          "value": true,
+          "title": "Yes — disable IPv6",
+          "desc": "Only if you know your environment does not need it.",
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "network.disable-ipv6"
+            ],
+            "estimatedActions": 1,
+            "warnings": [
+              "Aggressive network tuning is hardware-sensitive. Verify games, VPNs, and voice chat after apply."
+            ],
+            "riskLevel": "aggressive"
+          }
+        },
+        {
+          "value": false,
+          "title": "No — keep IPv6 enabled",
+          "desc": "Recommended for most normal networks unless you have a reason not to.",
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "network.disable-ipv6"
+            ],
+            "blockReason": "You chose to keep IPv6 enabled.",
+            "estimatedBlocked": 1
+          }
+        }
+      ]
+    },
+    {
+      "key": "disableTeredo",
+      "icon": "Globe",
+      "label": "Teredo",
+      "title": "Disable Teredo tunneling?",
+      "desc": "Useful if you want legacy Microsoft tunneling layers out of the way.",
+      "visibility": {
+        "minPreset": "aggressive"
+      },
+      "options": [
+        {
+          "value": true,
+          "title": "Yes — disable Teredo",
+          "desc": "Less tunneling cruft in the networking stack.",
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "network.disable-teredo"
+            ],
+            "estimatedActions": 1,
+            "warnings": [
+              "Aggressive network tuning is hardware-sensitive. Verify games, VPNs, and voice chat after apply."
+            ],
+            "riskLevel": "aggressive"
+          }
+        },
+        {
+          "value": false,
+          "title": "No — keep Teredo",
+          "desc": "Leave it untouched if you are not sure.",
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "network.disable-teredo"
+            ],
+            "blockReason": "You chose to keep Teredo tunneling enabled.",
+            "estimatedBlocked": 1
+          }
+        }
+      ]
+    },
+    {
+      "key": "disableNetbios",
+      "icon": "Globe",
+      "label": "NetBIOS",
+      "title": "Disable NetBIOS over TCP/IP?",
+      "desc": "A very specific question, but the kind that is actually consequential on the right systems.",
+      "visibility": {
+        "minPreset": "aggressive"
+      },
+      "options": [
+        {
+          "value": true,
+          "title": "Yes — disable NetBIOS",
+          "desc": "Good for stripped personal machines that do not rely on old SMB name resolution paths.",
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "network.disable-netbios"
+            ],
+            "estimatedActions": 1,
+            "warnings": [
+              "Aggressive network tuning is hardware-sensitive. Verify games, VPNs, and voice chat after apply."
+            ],
+            "riskLevel": "aggressive"
+          }
+        },
+        {
+          "value": false,
+          "title": "No — keep NetBIOS",
+          "desc": "Safer if you are not certain about your local-network dependencies.",
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "network.disable-netbios"
+            ],
+            "blockReason": "You chose to keep NetBIOS over TCP/IP enabled.",
+            "estimatedBlocked": 1
+          }
+        }
+      ]
+    },
+    {
+      "key": "disableNagle",
+      "icon": "Globe",
+      "label": "Nagle",
+      "title": "Disable the Nagle algorithm for lower packet coalescing latency?",
+      "desc": "This is the kind of network question that sounds impressive and can absolutely be the wrong answer on the wrong setup.",
+      "visibility": {
+        "minPreset": "aggressive"
+      },
+      "options": [
+        {
+          "value": true,
+          "title": "Yes — disable Nagle",
+          "desc": "For users chasing lower send-side latency in very specific workloads.",
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "network.disable-nagle"
+            ],
+            "estimatedActions": 1,
+            "warnings": [
+              "Aggressive network tuning is hardware-sensitive. Verify games, VPNs, and voice chat after apply."
+            ],
+            "riskLevel": "aggressive"
+          }
+        },
+        {
+          "value": false,
+          "title": "No — keep default TCP behavior",
+          "desc": "Safer for general networking behavior.",
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "network.disable-nagle"
+            ],
+            "blockReason": "You chose to keep the default TCP packet coalescing behavior.",
+            "estimatedBlocked": 1
+          }
+        }
+      ]
+    },
+    {
+      "key": "disableNicOffloading",
+      "icon": "Globe",
+      "label": "NIC Offloading",
+      "title": "Disable NIC offloading and switch to a low-latency adapter preset?",
+      "desc": "This applies the current playbook’s offloading, RSS queue, and autotuning decisions as a bundle.",
+      "visibility": {
+        "minPreset": "aggressive"
+      },
+      "options": [
+        {
+          "value": true,
+          "title": "Yes — use the low-latency NIC preset",
+          "desc": "For wired enthusiast setups where throughput tradeoffs are acceptable.",
+          "badge": "Advanced",
+          "badgeColor": "bg-amber-500/15 text-amber-400",
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "network.disable-offloading",
+              "network.rss-queues-2",
+              "network.tcp-autotuning-normal"
+            ],
+            "estimatedActions": 3,
+            "warnings": [
+              "Aggressive network tuning is hardware-sensitive. Verify games, VPNs, and voice chat after apply."
+            ],
+            "riskLevel": "aggressive"
+          }
+        },
+        {
+          "value": false,
+          "title": "No — keep default NIC offloading behavior",
+          "desc": "Safer for mixed-use, higher-throughput, or Wi-Fi-heavy machines.",
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "network.disable-offloading",
+              "network.rss-queues-2",
+              "network.tcp-autotuning-normal"
+            ],
+            "blockReason": "You chose to keep default NIC offloading and queue behavior.",
+            "estimatedBlocked": 3
+          }
+        }
+      ]
+    },
+    {
+      "key": "disableDeliveryOptimization",
+      "icon": "Globe",
+      "label": "Delivery Optimization",
+      "title": "Disable Windows Delivery Optimization bandwidth sharing?",
+      "desc": "A good real-world question because it affects how Windows uses your bandwidth in the background.",
+      "visibility": {
+        "minPreset": "aggressive"
+      },
+      "options": [
+        {
+          "value": true,
+          "title": "Yes — disable it",
+          "desc": "Less background peer-distribution behavior from Windows Update.",
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "security.disable-delivery-optimization"
+            ],
+            "estimatedActions": 1
+          }
+        },
+        {
+          "value": false,
+          "title": "No — keep it",
+          "desc": "Leave Windows update-sharing behavior intact.",
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "security.disable-delivery-optimization"
+            ],
+            "blockReason": "You chose to keep Delivery Optimization enabled.",
+            "estimatedBlocked": 1
+          }
+        }
+      ]
+    },
+    {
+      "key": "disableUsbSelectiveSuspend",
+      "icon": "Battery",
+      "label": "USB Suspend",
+      "title": "Disable USB selective suspend?",
+      "desc": "Useful for users chasing fewer wake-latency issues on input devices and attached hardware.",
+      "visibility": {
+        "minPreset": "aggressive",
+        "excludeLaptop": true
+      },
+      "options": [
+        {
+          "value": true,
+          "title": "Yes — disable it",
+          "desc": "Reduces Windows’ tendency to put USB devices to sleep.",
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "power.disable-usb-selective-suspend"
+            ],
+            "estimatedActions": 1
+          }
+        },
+        {
+          "value": false,
+          "title": "No — keep USB selective suspend",
+          "desc": "Safer for efficiency and some mobile setups.",
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "power.disable-usb-selective-suspend"
+            ],
+            "blockReason": "You chose to keep USB selective suspend enabled.",
+            "estimatedBlocked": 1
+          }
+        }
+      ]
+    },
+    {
+      "key": "disablePcieLinkStatePm",
+      "icon": "Battery",
+      "label": "PCIe Link States",
+      "title": "Disable PCIe link-state power management?",
+      "desc": "Good enthusiast question. Specific, measurable, and not something average users think to ask.",
+      "visibility": {
+        "minPreset": "aggressive",
+        "excludeLaptop": true
+      },
+      "options": [
+        {
+          "value": true,
+          "title": "Yes — disable PCIe link-state PM",
+          "desc": "Cuts another latency source from the power stack on desktops.",
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "power.disable-pcie-link-state-pm"
+            ],
+            "estimatedActions": 1
+          }
+        },
+        {
+          "value": false,
+          "title": "No — keep PCIe power management",
+          "desc": "Leave the link-state power-saving behavior intact.",
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "power.disable-pcie-link-state-pm"
+            ],
+            "blockReason": "You chose to keep PCIe link-state power management enabled.",
+            "estimatedBlocked": 1
+          }
+        }
+      ]
+    }
+  ],
+  "featurePages": [
+    {
+      "type": "RadioPage",
+      "description": "This is the mainline preset. It decides how much of the playbook is eligible before your per-question answers start forcing things in or out.",
+      "isRequired": true,
+      "defaultOption": "aggressionPreset__conservative",
+      "questionKey": "aggressionPreset",
+      "visibility": null,
+      "options": [
+        {
+          "text": "Conservative",
+          "name": "aggressionPreset__conservative",
+          "value": "conservative",
+          "desc": "Focus on cleanup, basic privacy reduction, and low-risk ergonomics. Leaves the deeper scheduler, power, and protocol questions out.",
+          "badge": "Safest",
+          "badgeColor": "bg-emerald-500/15 text-emerald-400",
+          "danger": false,
+          "behavior": {
+            "value": "conservative",
+            "estimatedBlocked": 8,
+            "riskLevel": "safe"
+          }
+        },
+        {
+          "text": "Balanced",
+          "name": "aggressionPreset__balanced",
+          "value": "balanced",
+          "desc": "The serious default. Enables meaningful performance and privacy questions without drifting into enthusiast-only territory.",
+          "badge": "Recommended",
+          "badgeColor": "bg-brand-500/15 text-brand-400",
+          "danger": false,
+          "behavior": {
+            "value": "balanced",
+            "estimatedBlocked": 3,
+            "riskLevel": "mixed"
+          }
+        },
+        {
+          "text": "Aggressive",
+          "name": "aggressionPreset__aggressive",
+          "value": "aggressive",
+          "desc": "Unlocks deeper latency, networking, and power-management questions meant for tuned personal rigs.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": "aggressive",
+            "riskLevel": "aggressive"
+          }
+        },
+        {
+          "text": "Expert",
+          "name": "aggressionPreset__expert",
+          "value": "expert",
+          "desc": "Unlocks mitigation and HVCI questions along with the highest-risk browser/network/security tradeoffs.",
+          "badge": "Advanced",
+          "badgeColor": "bg-purple-500/15 text-purple-400",
+          "danger": false,
+          "behavior": {
+            "value": "expert",
+            "riskLevel": "expert"
+          }
+        }
+      ]
+    },
+    {
+      "type": "RadioPage",
+      "description": "This forces Windows away from the default power-saving bias so the CPU stops dipping as aggressively between bursts.",
+      "isRequired": true,
+      "defaultOption": "highPerformancePlan__true",
+      "questionKey": "highPerformancePlan",
+      "visibility": null,
+      "options": [
+        {
+          "text": "Yes — use High Performance",
+          "name": "highPerformancePlan__true",
+          "value": true,
+          "desc": "Better responsiveness and less ramp-up delay under game and desktop load.",
+          "badge": "Core",
+          "badgeColor": "bg-brand-500/15 text-brand-400",
+          "danger": false,
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "power.high-performance-plan"
+            ],
+            "estimatedActions": 1
+          }
+        },
+        {
+          "text": "No — keep Windows power defaults",
+          "name": "highPerformancePlan__false",
+          "value": false,
+          "desc": "Safer for mixed-use or battery-conscious machines.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "power.high-performance-plan"
+            ],
+            "blockReason": "You chose to keep Windows balanced power behavior.",
+            "estimatedBlocked": 1
+          }
+        }
+      ]
+    },
+    {
+      "type": "RadioPage",
+      "description": "This maps to Win32PrioritySeparation. It pushes the active foreground workload ahead of background noise.",
+      "isRequired": true,
+      "defaultOption": "optimizeThreadPriority__true",
+      "questionKey": "optimizeThreadPriority",
+      "visibility": {
+        "minPreset": "balanced"
+      },
+      "options": [
+        {
+          "text": "Yes — bias CPU time toward the active app",
+          "name": "optimizeThreadPriority__true",
+          "value": true,
+          "desc": "Useful for games and latency-sensitive foreground work.",
+          "badge": "Scheduler",
+          "badgeColor": "bg-brand-500/15 text-brand-400",
+          "danger": false,
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "cpu.win32-priority-separation"
+            ],
+            "estimatedActions": 1
+          }
+        },
+        {
+          "text": "No — keep Windows scheduler defaults",
+          "name": "optimizeThreadPriority__false",
+          "value": false,
+          "desc": "Better if you prefer untouched desktop multitasking behavior.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "cpu.win32-priority-separation"
+            ],
+            "blockReason": "You chose to keep default Windows thread scheduling behavior.",
+            "estimatedBlocked": 1
+          }
+        }
+      ]
+    },
+    {
+      "type": "RadioPage",
+      "description": "This is the real Windows 11 timer question redcore OS can honestly apply: whether the system should honor global timer-resolution behavior again.",
+      "isRequired": true,
+      "defaultOption": "globalTimerResolution__true",
+      "questionKey": "globalTimerResolution",
+      "visibility": {
+        "minPreset": "balanced"
+      },
+      "options": [
+        {
+          "text": "Yes — restore global timer behavior",
+          "name": "globalTimerResolution__true",
+          "value": true,
+          "desc": "Lets one process' timer request benefit the whole system again.",
+          "badge": "Latency",
+          "badgeColor": "bg-brand-500/15 text-brand-400",
+          "danger": false,
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "cpu.global-timer-resolution"
+            ],
+            "estimatedActions": 1,
+            "requiresReboot": true
+          }
+        },
+        {
+          "text": "No — keep modern per-process timer behavior",
+          "name": "globalTimerResolution__false",
+          "value": false,
+          "desc": "More power-efficient and closer to stock Windows scheduling.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "cpu.global-timer-resolution"
+            ],
+            "blockReason": "You chose to keep modern per-process timer behavior.",
+            "estimatedBlocked": 1
+          }
+        }
+      ]
+    },
+    {
+      "type": "RadioPage",
+      "description": "Indexing keeps background I/O and CPU pressure around so Start and Explorer search stay fast. Turning it off trades convenience for quietness.",
+      "isRequired": true,
+      "defaultOption": "disableIndexing__true",
+      "questionKey": "disableIndexing",
+      "visibility": null,
+      "options": [
+        {
+          "text": "Yes — disable indexing",
+          "name": "disableIndexing__true",
+          "value": true,
+          "desc": "Reduces background disk churn and CPU spikes from the indexer.",
+          "badge": "Search",
+          "badgeColor": "bg-brand-500/15 text-brand-400",
+          "danger": false,
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "storage.disable-indexing"
+            ],
+            "estimatedActions": 1
+          }
+        },
+        {
+          "text": "No — keep indexing enabled",
+          "name": "disableIndexing__false",
+          "value": false,
+          "desc": "Better if you actively use Start or file search.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "storage.disable-indexing"
+            ],
+            "blockReason": "You chose to keep Windows Search indexing enabled.",
+            "estimatedBlocked": 1
+          }
+        }
+      ]
+    },
+    {
+      "type": "RadioPage",
+      "description": "This cuts the Microsoft content layer around Search without pretending to fully remove SearchHost.",
+      "isRequired": true,
+      "defaultOption": "stripSearchWebNoise__true",
+      "questionKey": "stripSearchWebNoise",
+      "visibility": null,
+      "options": [
+        {
+          "text": "Yes — shrink Search to a local-only utility",
+          "name": "stripSearchWebNoise__true",
+          "value": true,
+          "desc": "Cleaner Start/Search surface with less suggestion spam and history noise.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "shell.disable-web-search",
+              "shell.disable-search-highlights",
+              "shell.disable-search-history",
+              "shell.reduce-search-box"
+            ],
+            "estimatedActions": 4
+          }
+        },
+        {
+          "text": "No — keep Windows Search extras",
+          "name": "stripSearchWebNoise__false",
+          "value": false,
+          "desc": "Best if you like built-in web suggestions or richer search panels.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "shell.disable-web-search",
+              "shell.disable-search-highlights",
+              "shell.disable-search-history",
+              "shell.reduce-search-box"
+            ],
+            "blockReason": "You chose to keep Windows Search web features and history behavior.",
+            "estimatedBlocked": 4
+          }
+        }
+      ]
+    },
+    {
+      "type": "RadioPage",
+      "description": "If yes, redcore OS will preserve the Print Spooler. If no, it will cut it.",
+      "isRequired": true,
+      "defaultOption": "keepPrinterSupport__true",
+      "questionKey": "keepPrinterSupport",
+      "visibility": null,
+      "options": [
+        {
+          "text": "Yes — preserve printer support",
+          "name": "keepPrinterSupport__true",
+          "value": true,
+          "desc": "Keeps the Print Spooler and avoids surprise printer breakage.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": true,
+            "blockActions": [
+              "services.disable-print-spooler"
+            ],
+            "blockReason": "You said this machine still needs printer support.",
+            "estimatedBlocked": 1,
+            "estimatedPreserved": 1
+          }
+        },
+        {
+          "text": "No — safe to disable printing services",
+          "name": "keepPrinterSupport__false",
+          "value": false,
+          "desc": "Good for stripped gaming machines with no local or network printers.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": false,
+            "includeActions": [
+              "services.disable-print-spooler"
+            ],
+            "estimatedActions": 1
+          }
+        }
+      ]
+    },
+    {
+      "type": "RadioPage",
+      "description": "If yes, redcore OS preserves remote-access related services. If no, it trims that attack surface.",
+      "isRequired": true,
+      "defaultOption": "keepRemoteAccess__true",
+      "questionKey": "keepRemoteAccess",
+      "visibility": null,
+      "options": [
+        {
+          "text": "Yes — preserve remote access capability",
+          "name": "keepRemoteAccess__true",
+          "value": true,
+          "desc": "Safer for workstations, remote support, or self-hosted remote access workflows.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": true,
+            "blockActions": [
+              "services.disable-remote-services"
+            ],
+            "blockReason": "You said this machine still needs remote access or remote support.",
+            "estimatedBlocked": 1,
+            "estimatedPreserved": 1
+          }
+        },
+        {
+          "text": "No — disable remote access services",
+          "name": "keepRemoteAccess__false",
+          "value": false,
+          "desc": "Good for personal machines that should never accept inbound remote control.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": false,
+            "includeActions": [
+              "services.disable-remote-services"
+            ],
+            "estimatedActions": 1
+          }
+        }
+      ]
+    },
+    {
+      "type": "RadioPage",
+      "description": "This question stays on the honest side: preload, nags, and updates are separable; full browser removal is asked separately.",
+      "isRequired": true,
+      "defaultOption": "edgeBehavior__keep",
+      "questionKey": "edgeBehavior",
+      "visibility": null,
+      "options": [
+        {
+          "text": "Keep Edge unchanged",
+          "name": "edgeBehavior__keep",
+          "value": "keep",
+          "desc": "No preload, nag, or update suppression.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": "keep",
+            "blockActions": [
+              "appx.disable-edge-preload",
+              "appx.disable-edge-default-nag",
+              "appx.disable-edge-updates"
+            ],
+            "blockReason": "You chose to keep Microsoft Edge behavior unchanged.",
+            "estimatedBlocked": 3
+          }
+        },
+        {
+          "text": "Suppress background preload and default-browser nags",
+          "name": "edgeBehavior__suppress",
+          "value": "suppress",
+          "desc": "Cuts startup boost and self-promotion without freezing browser updates.",
+          "badge": "Recommended",
+          "badgeColor": "bg-brand-500/15 text-brand-400",
+          "danger": false,
+          "behavior": {
+            "value": "suppress",
+            "includeActions": [
+              "appx.disable-edge-preload",
+              "appx.disable-edge-default-nag"
+            ],
+            "blockActions": [
+              "appx.disable-edge-updates"
+            ],
+            "blockReason": "You chose not to freeze Edge updates.",
+            "estimatedActions": 2,
+            "estimatedBlocked": 1
+          }
+        },
+        {
+          "text": "Suppress Edge and also freeze auto-updates",
+          "name": "edgeBehavior__suppress-and-freeze",
+          "value": "suppress-and-freeze",
+          "desc": "Adds update suppression on top of preload/nag cleanup. Highest maintenance burden short of full removal.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": "suppress-and-freeze",
+            "includeActions": [
+              "appx.disable-edge-preload",
+              "appx.disable-edge-default-nag",
+              "appx.disable-edge-updates"
+            ],
+            "estimatedActions": 3,
+            "riskLevel": "aggressive"
+          }
+        }
+      ]
+    },
+    {
+      "type": "RadioPage",
+      "description": "This removes the Copilot taskbar surface and its associated shell noise.",
+      "isRequired": true,
+      "defaultOption": "disableCopilot__true",
+      "questionKey": "disableCopilot",
+      "visibility": null,
+      "options": [
+        {
+          "text": "Yes — remove Copilot from the shell",
+          "name": "disableCopilot__true",
+          "value": true,
+          "desc": "Cleaner taskbar and less AI-first push from Windows.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "shell.disable-copilot"
+            ],
+            "estimatedActions": 1
+          }
+        },
+        {
+          "text": "No — keep Copilot available",
+          "name": "disableCopilot__false",
+          "value": false,
+          "desc": "Leave the Copilot surface intact.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "shell.disable-copilot"
+            ],
+            "blockReason": "You chose to keep Copilot available.",
+            "estimatedBlocked": 1
+          }
+        }
+      ]
+    },
+    {
+      "type": "RadioPage",
+      "description": "Recall is one of the easiest “yes” questions in the whole flow unless you explicitly want AI timeline snapshots.",
+      "isRequired": true,
+      "defaultOption": "disableRecall__true",
+      "questionKey": "disableRecall",
+      "visibility": {
+        "minWindowsBuild": 26100
+      },
+      "options": [
+        {
+          "text": "Yes — disable Recall",
+          "name": "disableRecall__true",
+          "value": true,
+          "desc": "Cuts screenshot-history style AI capture behavior entirely.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "privacy.disable-recall"
+            ],
+            "estimatedActions": 1
+          }
+        },
+        {
+          "text": "No — keep Recall available",
+          "name": "disableRecall__false",
+          "value": false,
+          "desc": "Only sensible if you actually intend to use it.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "privacy.disable-recall"
+            ],
+            "blockReason": "You chose to keep Recall available.",
+            "estimatedBlocked": 1
+          }
+        }
+      ]
+    },
+    {
+      "type": "RadioPage",
+      "description": "This trims another Windows 11 AI shell surface that most tuned machines do not need.",
+      "isRequired": true,
+      "defaultOption": "disableClickToDo__true",
+      "questionKey": "disableClickToDo",
+      "visibility": {
+        "minWindowsBuild": 26100
+      },
+      "options": [
+        {
+          "text": "Yes — disable it",
+          "name": "disableClickToDo__true",
+          "value": true,
+          "desc": "Less shell clutter and fewer AI-driven hooks.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "privacy.disable-click-to-do"
+            ],
+            "estimatedActions": 1
+          }
+        },
+        {
+          "text": "No — keep it available",
+          "name": "disableClickToDo__false",
+          "value": false,
+          "desc": "Leave the new interaction surface intact.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "privacy.disable-click-to-do"
+            ],
+            "blockReason": "You chose to keep Click to Do available.",
+            "estimatedBlocked": 1
+          }
+        }
+      ]
+    },
+    {
+      "type": "RadioPage",
+      "description": "This cuts the bundled AI surfaces in Microsoft apps rather than only the headline shell features.",
+      "isRequired": true,
+      "defaultOption": "disableAiApps__true",
+      "questionKey": "disableAiApps",
+      "visibility": null,
+      "options": [
+        {
+          "text": "Yes — disable app-level AI features",
+          "name": "disableAiApps__true",
+          "value": true,
+          "desc": "Removes AI extras from the apps most people never asked to become assistants.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "privacy.disable-edge-ai",
+              "privacy.disable-paint-ai",
+              "privacy.disable-notepad-ai"
+            ],
+            "estimatedActions": 3
+          }
+        },
+        {
+          "text": "No — keep those AI features",
+          "name": "disableAiApps__false",
+          "value": false,
+          "desc": "Leave the AI tooling in those apps available.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "privacy.disable-edge-ai",
+              "privacy.disable-paint-ai",
+              "privacy.disable-notepad-ai"
+            ],
+            "blockReason": "You chose to keep AI features in system apps.",
+            "estimatedBlocked": 3
+          }
+        }
+      ]
+    },
+    {
+      "type": "RadioPage",
+      "description": "This controls the real telemetry actions in the playbook rather than vague “privacy mode” marketing.",
+      "isRequired": true,
+      "defaultOption": "telemetryLevel__keep",
+      "questionKey": "telemetryLevel",
+      "visibility": null,
+      "options": [
+        {
+          "text": "Keep Windows telemetry behavior",
+          "name": "telemetryLevel__keep",
+          "value": "keep",
+          "desc": "Do not apply telemetry-specific privacy cuts here.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": "keep",
+            "blockActions": [
+              "privacy.disable-telemetry",
+              "privacy.disable-ceip",
+              "privacy.disable-error-reporting",
+              "privacy.disable-siuf"
+            ],
+            "blockReason": "You chose not to reduce Microsoft telemetry in this area.",
+            "estimatedBlocked": 4
+          }
+        },
+        {
+          "text": "Reduce telemetry",
+          "name": "telemetryLevel__reduce",
+          "value": "reduce",
+          "desc": "Disable telemetry, CEIP, and error reporting without going all the way into the aggressive feedback cuts.",
+          "badge": "Recommended",
+          "badgeColor": "bg-brand-500/15 text-brand-400",
+          "danger": false,
+          "behavior": {
+            "value": "reduce",
+            "includeActions": [
+              "privacy.disable-telemetry",
+              "privacy.disable-ceip",
+              "privacy.disable-error-reporting"
+            ],
+            "blockActions": [
+              "privacy.disable-siuf"
+            ],
+            "blockReason": "You chose the lighter telemetry reduction profile.",
+            "estimatedActions": 3,
+            "estimatedBlocked": 1
+          }
+        },
+        {
+          "text": "Aggressive telemetry reduction",
+          "name": "telemetryLevel__aggressive",
+          "value": "aggressive",
+          "desc": "Adds deeper feedback suppression for users who want Microsoft’s soft collection surfaces cut harder.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": "aggressive",
+            "includeActions": [
+              "privacy.disable-telemetry",
+              "privacy.disable-ceip",
+              "privacy.disable-error-reporting",
+              "privacy.disable-siuf"
+            ],
+            "estimatedActions": 4,
+            "riskLevel": "aggressive"
+          }
+        }
+      ]
+    },
+    {
+      "type": "RadioPage",
+      "description": "Useful if you want the clipboard to behave like a simple local buffer again.",
+      "isRequired": true,
+      "defaultOption": "disableClipboardHistory__true",
+      "questionKey": "disableClipboardHistory",
+      "visibility": null,
+      "options": [
+        {
+          "text": "Yes — disable clipboard history/sync",
+          "name": "disableClipboardHistory__true",
+          "value": true,
+          "desc": "Cuts cloud-linked clipboard behavior and local history retention.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "privacy.disable-clipboard-history"
+            ],
+            "estimatedActions": 1
+          }
+        },
+        {
+          "text": "No — keep clipboard history",
+          "name": "disableClipboardHistory__false",
+          "value": false,
+          "desc": "Leave clipboard convenience features enabled.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "privacy.disable-clipboard-history"
+            ],
+            "blockReason": "You chose to keep clipboard history and sync capability.",
+            "estimatedBlocked": 1
+          }
+        }
+      ]
+    },
+    {
+      "type": "RadioPage",
+      "description": "This trims the timeline-style “what you were doing” surfaces and associated cloud content behavior.",
+      "isRequired": true,
+      "defaultOption": "disableActivityFeed__true",
+      "questionKey": "disableActivityFeed",
+      "visibility": null,
+      "options": [
+        {
+          "text": "Yes — disable it",
+          "name": "disableActivityFeed__true",
+          "value": true,
+          "desc": "Less behavior tracking and less cloud-fed content inside Windows.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "privacy.disable-activity-feed",
+              "privacy.disable-cloud-content"
+            ],
+            "estimatedActions": 2
+          }
+        },
+        {
+          "text": "No — keep that behavior",
+          "name": "disableActivityFeed__false",
+          "value": false,
+          "desc": "Leave Windows activity and cloud-content behavior intact.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "privacy.disable-activity-feed",
+              "privacy.disable-cloud-content"
+            ],
+            "blockReason": "You chose to keep activity feed or cloud content behavior.",
+            "estimatedBlocked": 2
+          }
+        }
+      ]
+    },
+    {
+      "type": "RadioPage",
+      "description": "A good privacy answer for desktops. A more situational one for laptops that actually use location-based workflows.",
+      "isRequired": true,
+      "defaultOption": "disableLocation__true",
+      "questionKey": "disableLocation",
+      "visibility": null,
+      "options": [
+        {
+          "text": "Yes — disable location-linked features",
+          "name": "disableLocation__true",
+          "value": true,
+          "desc": "Reduces location tracking and disables Find My Device dependence.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "privacy.disable-location",
+              "privacy.disable-find-my-device"
+            ],
+            "estimatedActions": 2
+          }
+        },
+        {
+          "text": "No — keep location available",
+          "name": "disableLocation__false",
+          "value": false,
+          "desc": "Better if you use maps, recovery, or location-aware apps.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "privacy.disable-location",
+              "privacy.disable-find-my-device"
+            ],
+            "blockReason": "You chose to keep Windows location-aware features.",
+            "estimatedBlocked": 2
+          }
+        }
+      ]
+    },
+    {
+      "type": "RadioPage",
+      "description": "This removes the “Windows learns from you” layer instead of only the obvious ad toggles.",
+      "isRequired": true,
+      "defaultOption": "disableTailoredExperiences__true",
+      "questionKey": "disableTailoredExperiences",
+      "visibility": null,
+      "options": [
+        {
+          "text": "Yes — cut that personalization layer",
+          "name": "disableTailoredExperiences__true",
+          "value": true,
+          "desc": "Less suggestion spam and less behavior-based tuning from Windows.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "privacy.disable-tailored-experiences",
+              "privacy.disable-app-launch-tracking",
+              "privacy.disable-online-tips"
+            ],
+            "estimatedActions": 3
+          }
+        },
+        {
+          "text": "No — keep it",
+          "name": "disableTailoredExperiences__false",
+          "value": false,
+          "desc": "Leave Windows’ softer personalization layer intact.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "privacy.disable-tailored-experiences",
+              "privacy.disable-app-launch-tracking",
+              "privacy.disable-online-tips"
+            ],
+            "blockReason": "You chose to keep tailored experiences and app-launch personalization.",
+            "estimatedBlocked": 3
+          }
+        }
+      ]
+    },
+    {
+      "type": "RadioPage",
+      "description": "This cuts cloud speech/input collection behavior that most stripped systems do not need.",
+      "isRequired": true,
+      "defaultOption": "disableSpeechPersonalization__true",
+      "questionKey": "disableSpeechPersonalization",
+      "visibility": null,
+      "options": [
+        {
+          "text": "Yes — disable it",
+          "name": "disableSpeechPersonalization__true",
+          "value": true,
+          "desc": "Reduces speech/input data collection and personalization layers.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "privacy.disable-online-speech",
+              "privacy.disable-input-personalization",
+              "privacy.disable-tipc"
+            ],
+            "estimatedActions": 3
+          }
+        },
+        {
+          "text": "No — keep it",
+          "name": "disableSpeechPersonalization__false",
+          "value": false,
+          "desc": "Better if you rely on cloud speech features or dictation behavior.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "privacy.disable-online-speech",
+              "privacy.disable-input-personalization",
+              "privacy.disable-tipc"
+            ],
+            "blockReason": "You chose to keep speech and input personalization features.",
+            "estimatedBlocked": 3
+          }
+        }
+      ]
+    },
+    {
+      "type": "RadioPage",
+      "description": "This is a real tradeoff question. It reduces Windows friction, but it also removes one of the last browser/download guardrails people forget they were relying on.",
+      "isRequired": true,
+      "defaultOption": "disableSmartScreen__true",
+      "questionKey": "disableSmartScreen",
+      "visibility": {
+        "minPreset": "aggressive"
+      },
+      "options": [
+        {
+          "text": "Yes — disable SmartScreen",
+          "name": "disableSmartScreen__true",
+          "value": true,
+          "desc": "For stripped personal rigs where you intentionally manage trust yourself.",
+          "badge": "Risky",
+          "badgeColor": "bg-amber-500/15 text-amber-400",
+          "danger": true,
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "privacy.disable-smartscreen"
+            ],
+            "estimatedActions": 1,
+            "warnings": [
+              "Disabling SmartScreen can remove a useful download and reputation safety check."
+            ],
+            "riskLevel": "aggressive"
+          }
+        },
+        {
+          "text": "No — keep SmartScreen",
+          "name": "disableSmartScreen__false",
+          "value": false,
+          "desc": "Safer for mixed-use, browsing, and non-lab machines.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "privacy.disable-smartscreen"
+            ],
+            "blockReason": "You chose to keep SmartScreen protection enabled.",
+            "estimatedBlocked": 1
+          }
+        }
+      ]
+    },
+    {
+      "type": "RadioPage",
+      "description": "Fast Startup often leaves stale driver/kernel state around. Tuned systems usually benefit from clean boots.",
+      "isRequired": true,
+      "defaultOption": "disableFastStartup__true",
+      "questionKey": "disableFastStartup",
+      "visibility": null,
+      "options": [
+        {
+          "text": "Yes — disable Fast Startup",
+          "name": "disableFastStartup__true",
+          "value": true,
+          "desc": "Cleaner shutdown/boot behavior and fewer weird resume-state driver bugs.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "power.disable-fast-startup"
+            ],
+            "estimatedActions": 1
+          }
+        },
+        {
+          "text": "No — keep Fast Startup",
+          "name": "disableFastStartup__false",
+          "value": false,
+          "desc": "Faster boots, but more hybrid-shutdown baggage.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "power.disable-fast-startup"
+            ],
+            "blockReason": "You chose to keep Fast Startup enabled.",
+            "estimatedBlocked": 1
+          }
+        }
+      ]
+    },
+    {
+      "type": "RadioPage",
+      "description": "For most tuned desktops this is a yes. For laptops it depends on whether you actually use hibernate.",
+      "isRequired": true,
+      "defaultOption": "disableHibernation__true",
+      "questionKey": "disableHibernation",
+      "visibility": null,
+      "options": [
+        {
+          "text": "Yes — disable hibernation",
+          "name": "disableHibernation__true",
+          "value": true,
+          "desc": "Frees disk space and keeps boot behavior cleaner.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "power.disable-hibernation"
+            ],
+            "estimatedActions": 1
+          }
+        },
+        {
+          "text": "No — keep hibernation",
+          "name": "disableHibernation__false",
+          "value": false,
+          "desc": "Leave hibernate available as a power feature.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "power.disable-hibernation"
+            ],
+            "blockReason": "You chose to keep hibernation enabled.",
+            "estimatedBlocked": 1
+          }
+        }
+      ]
+    },
+    {
+      "type": "RadioPage",
+      "description": "DSP and enhancement layers are often needless overhead unless you intentionally rely on them.",
+      "isRequired": true,
+      "defaultOption": "disableAudioEnhancements__true",
+      "questionKey": "disableAudioEnhancements",
+      "visibility": null,
+      "options": [
+        {
+          "text": "Yes — turn enhancements off",
+          "name": "disableAudioEnhancements__true",
+          "value": true,
+          "desc": "Cleaner, more predictable audio path with less vendor/DSP interference.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "audio.disable-enhancements"
+            ],
+            "estimatedActions": 1,
+            "warnings": [
+              "Audio enhancements off can change loudness, EQ, and motherboard vendor DSP behavior."
+            ],
+            "riskLevel": "mixed"
+          }
+        },
+        {
+          "text": "No — keep enhancements",
+          "name": "disableAudioEnhancements__false",
+          "value": false,
+          "desc": "Better if you rely on loudness EQ, virtual surround, or motherboard DSP effects.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "audio.disable-enhancements"
+            ],
+            "blockReason": "You chose to keep Windows audio enhancements enabled.",
+            "estimatedBlocked": 1
+          }
+        }
+      ]
+    },
+    {
+      "type": "RadioPage",
+      "description": "This helps users who want a cleaner low-latency audio path and are okay with apps taking exclusive control of the device.",
+      "isRequired": true,
+      "defaultOption": "enableAudioExclusiveMode__true",
+      "questionKey": "enableAudioExclusiveMode",
+      "visibility": null,
+      "options": [
+        {
+          "text": "Yes — enable exclusive mode",
+          "name": "enableAudioExclusiveMode__true",
+          "value": true,
+          "desc": "Better for low-latency or focused audio paths when the app supports it.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "audio.exclusive-mode"
+            ],
+            "estimatedActions": 1
+          }
+        },
+        {
+          "text": "No — keep the current shared-mode behavior",
+          "name": "enableAudioExclusiveMode__false",
+          "value": false,
+          "desc": "Safer if you constantly juggle multiple apps using the same device.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "audio.exclusive-mode"
+            ],
+            "blockReason": "You chose not to enable exclusive-mode audio control.",
+            "estimatedBlocked": 1
+          }
+        }
+      ]
+    },
+    {
+      "type": "RadioPage",
+      "description": "A pure usability question, but one with a real apply-side effect.",
+      "isRequired": true,
+      "defaultOption": "restoreClassicContextMenu__true",
+      "questionKey": "restoreClassicContextMenu",
+      "visibility": null,
+      "options": [
+        {
+          "text": "Yes — restore the classic menu",
+          "name": "restoreClassicContextMenu__true",
+          "value": true,
+          "desc": "Gets rid of the compact extra-click Windows 11 context menu.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "shell.restore-classic-context-menu"
+            ],
+            "estimatedActions": 1
+          }
+        },
+        {
+          "text": "No — keep the stock menu",
+          "name": "restoreClassicContextMenu__false",
+          "value": false,
+          "desc": "Leave the modern compact menu in place.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "shell.restore-classic-context-menu"
+            ],
+            "blockReason": "You chose to keep the default Windows 11 compact context menu.",
+            "estimatedBlocked": 1
+          }
+        }
+      ]
+    },
+    {
+      "type": "RadioPage",
+      "description": "This is the exact Windows 11 usability tweak you asked for: kill hung apps straight from taskbar right-click without opening Task Manager.",
+      "isRequired": true,
+      "defaultOption": "enableEndTask__true",
+      "questionKey": "enableEndTask",
+      "visibility": {
+        "minWindowsBuild": 22631
+      },
+      "options": [
+        {
+          "text": "Yes — add End Task",
+          "name": "enableEndTask__true",
+          "value": true,
+          "desc": "Cleaner emergency-kill path for frozen apps.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "shell.enable-end-task"
+            ],
+            "estimatedActions": 1
+          }
+        },
+        {
+          "text": "No — keep default taskbar right-click behavior",
+          "name": "enableEndTask__false",
+          "value": false,
+          "desc": "Leave the standard Windows 11 menu intact.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "shell.enable-end-task"
+            ],
+            "blockReason": "You chose to keep the default taskbar right-click behavior.",
+            "estimatedBlocked": 1
+          }
+        }
+      ]
+    },
+    {
+      "type": "RadioPage",
+      "description": "This is a real resource-control question. It matters more than a lot of flashy “FPS tweaks.”",
+      "isRequired": true,
+      "defaultOption": "disableBackgroundApps__true",
+      "questionKey": "disableBackgroundApps",
+      "visibility": null,
+      "options": [
+        {
+          "text": "Yes — stop background app execution",
+          "name": "disableBackgroundApps__true",
+          "value": true,
+          "desc": "Cuts silent background UWP/app activity.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "startup.disable-background-apps"
+            ],
+            "estimatedActions": 1
+          }
+        },
+        {
+          "text": "No — keep background apps allowed",
+          "name": "disableBackgroundApps__false",
+          "value": false,
+          "desc": "Better if you rely on synced app behavior or background refresh.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "startup.disable-background-apps"
+            ],
+            "blockReason": "You chose to keep background app execution enabled.",
+            "estimatedBlocked": 1
+          }
+        }
+      ]
+    },
+    {
+      "type": "RadioPage",
+      "description": "This trades background housekeeping for a quieter machine. Good for dedicated tuned PCs; less good for people who want Windows to self-maintain.",
+      "isRequired": true,
+      "defaultOption": "disableAutomaticMaintenance__true",
+      "questionKey": "disableAutomaticMaintenance",
+      "visibility": null,
+      "options": [
+        {
+          "text": "Yes — disable it",
+          "name": "disableAutomaticMaintenance__true",
+          "value": true,
+          "desc": "Fewer surprise background maintenance runs while idle.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "startup.disable-automatic-maintenance"
+            ],
+            "estimatedActions": 1
+          }
+        },
+        {
+          "text": "No — keep it",
+          "name": "disableAutomaticMaintenance__false",
+          "value": false,
+          "desc": "Safer if you want Windows doing its normal housekeeping.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "startup.disable-automatic-maintenance"
+            ],
+            "blockReason": "You chose to keep Windows automatic maintenance enabled.",
+            "estimatedBlocked": 1
+          }
+        }
+      ]
+    },
+    {
+      "type": "RadioPage",
+      "description": "This is the lightweight Windows-native gaming toggle, not a magical optimization. But if you game, it still belongs in the questionnaire.",
+      "isRequired": true,
+      "defaultOption": "enableGameMode__true",
+      "questionKey": "enableGameMode",
+      "visibility": null,
+      "options": [
+        {
+          "text": "Yes — enable Game Mode",
+          "name": "enableGameMode__true",
+          "value": true,
+          "desc": "Lets Windows bias scheduling a bit more around games.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "startup.enable-game-mode"
+            ],
+            "estimatedActions": 1
+          }
+        },
+        {
+          "text": "No — keep current Game Mode behavior",
+          "name": "enableGameMode__false",
+          "value": false,
+          "desc": "Leave Windows to its current default behavior.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "startup.enable-game-mode"
+            ],
+            "blockReason": "You chose not to force Game Mode on.",
+            "estimatedBlocked": 1
+          }
+        }
+      ]
+    },
+    {
+      "type": "RadioPage",
+      "description": "Small tweak, but real. Cuts acrylic/blur visual noise and a bit of compositor overhead.",
+      "isRequired": true,
+      "defaultOption": "disableTransparency__true",
+      "questionKey": "disableTransparency",
+      "visibility": null,
+      "options": [
+        {
+          "text": "Yes — disable transparency",
+          "name": "disableTransparency__true",
+          "value": true,
+          "desc": "Cleaner, flatter shell with fewer translucent effects.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "perf.disable-transparency"
+            ],
+            "estimatedActions": 1,
+            "personalization": {
+              "transparency": false
+            }
+          }
+        },
+        {
+          "text": "No — keep transparency",
+          "name": "disableTransparency__false",
+          "value": false,
+          "desc": "Leave the Windows visual style intact.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "perf.disable-transparency"
+            ],
+            "blockReason": "You chose to keep Windows transparency effects enabled.",
+            "estimatedBlocked": 1
+          }
+        }
+      ]
+    },
+    {
+      "type": "RadioPage",
+      "description": "This keeps the CPU pushing harder under load instead of backing off into friendlier boost policy behavior.",
+      "isRequired": true,
+      "defaultOption": "aggressiveBoostMode__true",
+      "questionKey": "aggressiveBoostMode",
+      "visibility": {
+        "minPreset": "balanced"
+      },
+      "options": [
+        {
+          "text": "Yes — use aggressive boost",
+          "name": "aggressiveBoostMode__true",
+          "value": true,
+          "desc": "Higher performance bias and quicker sustained turbo behavior.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "cpu.aggressive-boost-mode"
+            ],
+            "estimatedActions": 1
+          }
+        },
+        {
+          "text": "No — keep stock boost policy",
+          "name": "aggressiveBoostMode__false",
+          "value": false,
+          "desc": "Safer thermally and calmer for mixed-use machines.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "cpu.aggressive-boost-mode"
+            ],
+            "blockReason": "You chose not to force aggressive CPU boost behavior.",
+            "estimatedBlocked": 1
+          }
+        }
+      ]
+    },
+    {
+      "type": "RadioPage",
+      "description": "This is the “don’t dip clocks between bursts” question. It is one of the cleaner CPU responsiveness levers in the current playbook.",
+      "isRequired": true,
+      "defaultOption": "minProcessorState100__true",
+      "questionKey": "minProcessorState100",
+      "visibility": {
+        "minPreset": "balanced"
+      },
+      "options": [
+        {
+          "text": "Yes — keep the floor at 100%",
+          "name": "minProcessorState100__true",
+          "value": true,
+          "desc": "Reduces clock-drop latency between bursts.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "cpu.min-processor-state-100"
+            ],
+            "estimatedActions": 1
+          }
+        },
+        {
+          "text": "No — allow Windows to downscale more freely",
+          "name": "minProcessorState100__false",
+          "value": false,
+          "desc": "Better for thermals and general-purpose efficiency.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "cpu.min-processor-state-100"
+            ],
+            "blockReason": "You chose not to lock minimum processor state to 100%.",
+            "estimatedBlocked": 1
+          }
+        }
+      ]
+    },
+    {
+      "type": "RadioPage",
+      "description": "Classic enthusiast latency question. Useful on many desktop gaming systems, less sensible on weaker or office-centric machines.",
+      "isRequired": true,
+      "defaultOption": "disableCoreParking__true",
+      "questionKey": "disableCoreParking",
+      "visibility": {
+        "minPreset": "balanced"
+      },
+      "options": [
+        {
+          "text": "Yes — unpark cores",
+          "name": "disableCoreParking__true",
+          "value": true,
+          "desc": "Reduces wake-up latency when Windows suddenly needs more threads.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "cpu.disable-core-parking"
+            ],
+            "estimatedActions": 1
+          }
+        },
+        {
+          "text": "No — keep core parking behavior",
+          "name": "disableCoreParking__false",
+          "value": false,
+          "desc": "Better for efficiency-biased or cooler-running setups.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "cpu.disable-core-parking"
+            ],
+            "blockReason": "You chose to keep CPU core parking behavior.",
+            "estimatedBlocked": 1
+          }
+        }
+      ]
+    },
+    {
+      "type": "RadioPage",
+      "description": "This hardens the scheduler profile used for Games under Windows’ multimedia scheduling system.",
+      "isRequired": true,
+      "defaultOption": "gamingMmcss__true",
+      "questionKey": "gamingMmcss",
+      "visibility": {
+        "minPreset": "balanced"
+      },
+      "options": [
+        {
+          "text": "Yes — apply the tuned gaming profile",
+          "name": "gamingMmcss__true",
+          "value": true,
+          "desc": "Useful for keeping game/media threads favored over background noise.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "scheduler.mmcss-gaming-profile"
+            ],
+            "estimatedActions": 1
+          }
+        },
+        {
+          "text": "No — keep MMCSS defaults",
+          "name": "gamingMmcss__false",
+          "value": false,
+          "desc": "Leave multimedia scheduling closer to stock.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "scheduler.mmcss-gaming-profile"
+            ],
+            "blockReason": "You chose not to harden the MMCSS gaming profile.",
+            "estimatedBlocked": 1
+          }
+        }
+      ]
+    },
+    {
+      "type": "RadioPage",
+      "description": "A sensible question on machines with enough RAM. On RAM-starved systems, the answer can be different.",
+      "isRequired": true,
+      "defaultOption": "disableMemoryCompression__true",
+      "questionKey": "disableMemoryCompression",
+      "visibility": {
+        "minPreset": "balanced"
+      },
+      "options": [
+        {
+          "text": "Yes — disable memory compression",
+          "name": "disableMemoryCompression__true",
+          "value": true,
+          "desc": "Less CPU spent compressing memory pages; best on healthy-RAM systems.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "memory.disable-compression"
+            ],
+            "estimatedActions": 1
+          }
+        },
+        {
+          "text": "No — keep memory compression",
+          "name": "disableMemoryCompression__false",
+          "value": false,
+          "desc": "Safer if you want Windows to defend capacity under pressure.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "memory.disable-compression"
+            ],
+            "blockReason": "You chose to keep Windows memory compression enabled.",
+            "estimatedBlocked": 1
+          }
+        }
+      ]
+    },
+    {
+      "type": "RadioPage",
+      "description": "HAGS is system-specific. The point here is not blind faith, it is making the choice explicit.",
+      "isRequired": true,
+      "defaultOption": "disableHags__true",
+      "questionKey": "disableHags",
+      "visibility": {
+        "minPreset": "balanced"
+      },
+      "options": [
+        {
+          "text": "Yes — disable HAGS",
+          "name": "disableHags__true",
+          "value": true,
+          "desc": "Often chosen for steadier behavior on tuned systems.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "gpu.disable-hags"
+            ],
+            "estimatedActions": 1
+          }
+        },
+        {
+          "text": "No — keep HAGS at the Windows default",
+          "name": "disableHags__false",
+          "value": false,
+          "desc": "Leave GPU scheduling behavior untouched.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "gpu.disable-hags"
+            ],
+            "blockReason": "You chose to keep HAGS at the Windows default.",
+            "estimatedBlocked": 1
+          }
+        }
+      ]
+    },
+    {
+      "type": "RadioPage",
+      "description": "Cleans out the always-on driver analytics layer without pretending the GPU driver itself is the problem.",
+      "isRequired": true,
+      "defaultOption": "disableGpuTelemetry__true",
+      "questionKey": "disableGpuTelemetry",
+      "visibility": {
+        "minPreset": "balanced"
+      },
+      "options": [
+        {
+          "text": "Yes — disable GPU telemetry",
+          "name": "disableGpuTelemetry__true",
+          "value": true,
+          "desc": "Less background service noise from vendor driver stacks.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "gpu.disable-nvidia-telemetry",
+              "gpu.disable-amd-telemetry"
+            ],
+            "estimatedActions": 2
+          }
+        },
+        {
+          "text": "No — keep GPU telemetry services",
+          "name": "disableGpuTelemetry__false",
+          "value": false,
+          "desc": "Leave vendor analytics services in place.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "gpu.disable-nvidia-telemetry",
+              "gpu.disable-amd-telemetry"
+            ],
+            "blockReason": "You chose to keep GPU driver telemetry services active.",
+            "estimatedBlocked": 2
+          }
+        }
+      ]
+    },
+    {
+      "type": "RadioPage",
+      "description": "This is still one of the most sensible gaming questions to ask because the action is real and the downside is clear.",
+      "isRequired": true,
+      "defaultOption": "disableGameDvr__true",
+      "questionKey": "disableGameDvr",
+      "visibility": {
+        "minPreset": "balanced"
+      },
+      "options": [
+        {
+          "text": "Yes — disable Game DVR",
+          "name": "disableGameDvr__true",
+          "value": true,
+          "desc": "Less background recording overhead and less frame-time noise.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "perf.disable-game-dvr"
+            ],
+            "estimatedActions": 1
+          }
+        },
+        {
+          "text": "No — keep Game DVR behavior",
+          "name": "disableGameDvr__false",
+          "value": false,
+          "desc": "Keep built-in capture behavior intact.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "perf.disable-game-dvr"
+            ],
+            "blockReason": "You chose to keep Game DVR behavior enabled.",
+            "estimatedBlocked": 1
+          }
+        }
+      ]
+    },
+    {
+      "type": "RadioPage",
+      "description": "Useful for users chasing predictable fullscreen behavior and lower input-path weirdness.",
+      "isRequired": true,
+      "defaultOption": "disableFullscreenOptimizations__true",
+      "questionKey": "disableFullscreenOptimizations",
+      "visibility": {
+        "minPreset": "balanced"
+      },
+      "options": [
+        {
+          "text": "Yes — disable them",
+          "name": "disableFullscreenOptimizations__true",
+          "value": true,
+          "desc": "Closer to classic exclusive-fullscreen behavior in many cases.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "perf.disable-fullscreen-optimizations"
+            ],
+            "estimatedActions": 1
+          }
+        },
+        {
+          "text": "No — keep them enabled",
+          "name": "disableFullscreenOptimizations__false",
+          "value": false,
+          "desc": "Leave the Windows fullscreen layer intact.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "perf.disable-fullscreen-optimizations"
+            ],
+            "blockReason": "You chose to keep Windows fullscreen optimizations enabled.",
+            "estimatedBlocked": 1
+          }
+        }
+      ]
+    },
+    {
+      "type": "RadioPage",
+      "description": "This is a proper enthusiast question pulled from the real playbook, not a marketing placeholder.",
+      "isRequired": true,
+      "defaultOption": "disableDynamicTick__true",
+      "questionKey": "disableDynamicTick",
+      "visibility": {
+        "minPreset": "aggressive",
+        "excludeLaptop": true
+      },
+      "options": [
+        {
+          "text": "Yes — disable dynamic tick",
+          "name": "disableDynamicTick__true",
+          "value": true,
+          "desc": "Potentially tighter timing consistency on tuned desktops.",
+          "badge": "Advanced",
+          "badgeColor": "bg-amber-500/15 text-amber-400",
+          "danger": false,
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "cpu.disable-dynamic-tick"
+            ],
+            "estimatedActions": 1,
+            "requiresReboot": true
+          }
+        },
+        {
+          "text": "No — keep dynamic tick",
+          "name": "disableDynamicTick__false",
+          "value": false,
+          "desc": "Leave Windows’ idle-saving timer behavior intact.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "cpu.disable-dynamic-tick"
+            ],
+            "blockReason": "You chose to keep Windows dynamic tick enabled.",
+            "estimatedBlocked": 1
+          }
+        }
+      ]
+    },
+    {
+      "type": "RadioPage",
+      "description": "This is where the tone changes from cleanup to irreversible system surgery.",
+      "isRequired": true,
+      "defaultOption": "removeEdge__true",
+      "questionKey": "removeEdge",
+      "visibility": {
+        "minPreset": "aggressive"
+      },
+      "options": [
+        {
+          "text": "Yes — remove Edge",
+          "name": "removeEdge__true",
+          "value": true,
+          "desc": "Only for people who already know exactly why they want it gone and already have another browser installed.",
+          "badge": "Danger",
+          "badgeColor": "bg-red-500/15 text-red-400",
+          "danger": true,
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "appx.remove-edge"
+            ],
+            "estimatedActions": 1,
+            "requiresReboot": true,
+            "warnings": [
+              "Edge removal is irreversible without a manual reinstall."
+            ],
+            "riskLevel": "aggressive"
+          }
+        },
+        {
+          "text": "No — keep the browser installed",
+          "name": "removeEdge__false",
+          "value": false,
+          "desc": "Stick with suppression only.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "appx.remove-edge"
+            ],
+            "blockReason": "You chose to keep the Edge browser installed.",
+            "estimatedBlocked": 1
+          }
+        }
+      ]
+    },
+    {
+      "type": "RadioPage",
+      "description": "This question exists because too many debloat tools pretend WebView2 is “just Edge” and then people wonder why app surfaces start breaking.",
+      "isRequired": true,
+      "defaultOption": "preserveWebView2__true",
+      "questionKey": "preserveWebView2",
+      "visibility": {
+        "minPreset": "aggressive"
+      },
+      "options": [
+        {
+          "text": "Yes — preserve WebView2",
+          "name": "preserveWebView2__true",
+          "value": true,
+          "desc": "Recommended unless you know your full app stack and are intentionally stripping embedded browser runtimes.",
+          "badge": "Recommended",
+          "badgeColor": "bg-brand-500/15 text-brand-400",
+          "danger": false,
+          "behavior": {
+            "value": true,
+            "blockActions": [
+              "appx.remove-edge-webview"
+            ],
+            "blockReason": "You chose to preserve WebView2 for app compatibility.",
+            "estimatedBlocked": 1,
+            "estimatedPreserved": 1
+          }
+        },
+        {
+          "text": "No — allow WebView2 removal",
+          "name": "preserveWebView2__false",
+          "value": false,
+          "desc": "Only for stripped personal systems where you explicitly accept the blast radius.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": false,
+            "includeActions": [
+              "appx.remove-edge-webview"
+            ],
+            "estimatedActions": 1,
+            "warnings": [
+              "Removing WebView2 can break Teams, installer UIs, and embedded web surfaces."
+            ],
+            "riskLevel": "aggressive"
+          }
+        }
+      ]
+    },
+    {
+      "type": "RadioPage",
+      "description": "This is the exact kind of question that makes or breaks credibility: the performance folklore is real enough to ask about, but the security cost is real too. In our current playbook this maps to the SSBD-side mitigation reduction path.",
+      "isRequired": true,
+      "defaultOption": "reduceMitigations__true",
+      "questionKey": "reduceMitigations",
+      "visibility": {
+        "onlyPreset": "expert",
+        "excludeWorkPc": true
+      },
+      "options": [
+        {
+          "text": "Yes — reduce those mitigations",
+          "name": "reduceMitigations__true",
+          "value": true,
+          "desc": "For dedicated personal rigs where you knowingly trade security for a possible latency/syscall win.",
+          "badge": "High Risk",
+          "badgeColor": "bg-red-500/15 text-red-400",
+          "danger": true,
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "security.reduce-ssbd-mitigation"
+            ],
+            "estimatedActions": 1,
+            "warnings": [
+              "Speculation mitigation reduction trades security for latency and syscall-heavy performance."
+            ],
+            "requiresReboot": true,
+            "riskLevel": "expert"
+          }
+        },
+        {
+          "text": "No — keep mitigations intact",
+          "name": "reduceMitigations__false",
+          "value": false,
+          "desc": "Safer default, especially on anything used for browsing, work, or sensitive data.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "security.reduce-ssbd-mitigation"
+            ],
+            "blockReason": "You chose to keep speculative execution mitigations intact.",
+            "estimatedBlocked": 1
+          }
+        }
+      ]
+    },
+    {
+      "type": "RadioPage",
+      "description": "Another expert-only security/performance tradeoff. This is not a casual checkbox.",
+      "isRequired": true,
+      "defaultOption": "disableHvci__true",
+      "questionKey": "disableHvci",
+      "visibility": {
+        "onlyPreset": "expert",
+        "excludeWorkPc": true
+      },
+      "options": [
+        {
+          "text": "Yes — disable HVCI",
+          "name": "disableHvci__true",
+          "value": true,
+          "desc": "Useful only if you understand the kernel-security tradeoff and do not rely on that baseline.",
+          "badge": "High Risk",
+          "badgeColor": "bg-red-500/15 text-red-400",
+          "danger": true,
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "security.disable-hvci"
+            ],
+            "estimatedActions": 1,
+            "warnings": [
+              "Disabling HVCI can break security baselines and some anti-cheat requirements."
+            ],
+            "requiresReboot": true,
+            "riskLevel": "expert"
+          }
+        },
+        {
+          "text": "No — keep HVCI enabled",
+          "name": "disableHvci__false",
+          "value": false,
+          "desc": "Safer and friendlier for security baselines or anti-cheat requirements.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "security.disable-hvci"
+            ],
+            "blockReason": "You chose to keep Hypervisor-enforced Code Integrity enabled.",
+            "estimatedBlocked": 1
+          }
+        }
+      ]
+    },
+    {
+      "type": "RadioPage",
+      "description": "A sensible hardening/cleanup protocol question that many tuned systems can say yes to.",
+      "isRequired": true,
+      "defaultOption": "disableLlmnr__true",
+      "questionKey": "disableLlmnr",
+      "visibility": {
+        "minPreset": "aggressive"
+      },
+      "options": [
+        {
+          "text": "Yes — disable LLMNR",
+          "name": "disableLlmnr__true",
+          "value": true,
+          "desc": "Reduces a noisy legacy name-resolution surface.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "network.disable-llmnr"
+            ],
+            "estimatedActions": 1
+          }
+        },
+        {
+          "text": "No — keep LLMNR",
+          "name": "disableLlmnr__false",
+          "value": false,
+          "desc": "Leave local multicast name resolution behavior alone.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "network.disable-llmnr"
+            ],
+            "blockReason": "You chose to keep LLMNR name resolution enabled.",
+            "estimatedBlocked": 1
+          }
+        }
+      ]
+    },
+    {
+      "type": "RadioPage",
+      "description": "Classic tweak, often overused. redcore OS asks it directly instead of hiding it behind a vague “network tweak” checkbox.",
+      "isRequired": true,
+      "defaultOption": "disableIpv6__true",
+      "questionKey": "disableIpv6",
+      "visibility": {
+        "minPreset": "aggressive"
+      },
+      "options": [
+        {
+          "text": "Yes — disable IPv6",
+          "name": "disableIpv6__true",
+          "value": true,
+          "desc": "Only if you know your environment does not need it.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "network.disable-ipv6"
+            ],
+            "estimatedActions": 1,
+            "warnings": [
+              "Aggressive network tuning is hardware-sensitive. Verify games, VPNs, and voice chat after apply."
+            ],
+            "riskLevel": "aggressive"
+          }
+        },
+        {
+          "text": "No — keep IPv6 enabled",
+          "name": "disableIpv6__false",
+          "value": false,
+          "desc": "Recommended for most normal networks unless you have a reason not to.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "network.disable-ipv6"
+            ],
+            "blockReason": "You chose to keep IPv6 enabled.",
+            "estimatedBlocked": 1
+          }
+        }
+      ]
+    },
+    {
+      "type": "RadioPage",
+      "description": "Useful if you want legacy Microsoft tunneling layers out of the way.",
+      "isRequired": true,
+      "defaultOption": "disableTeredo__true",
+      "questionKey": "disableTeredo",
+      "visibility": {
+        "minPreset": "aggressive"
+      },
+      "options": [
+        {
+          "text": "Yes — disable Teredo",
+          "name": "disableTeredo__true",
+          "value": true,
+          "desc": "Less tunneling cruft in the networking stack.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "network.disable-teredo"
+            ],
+            "estimatedActions": 1,
+            "warnings": [
+              "Aggressive network tuning is hardware-sensitive. Verify games, VPNs, and voice chat after apply."
+            ],
+            "riskLevel": "aggressive"
+          }
+        },
+        {
+          "text": "No — keep Teredo",
+          "name": "disableTeredo__false",
+          "value": false,
+          "desc": "Leave it untouched if you are not sure.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "network.disable-teredo"
+            ],
+            "blockReason": "You chose to keep Teredo tunneling enabled.",
+            "estimatedBlocked": 1
+          }
+        }
+      ]
+    },
+    {
+      "type": "RadioPage",
+      "description": "A very specific question, but the kind that is actually consequential on the right systems.",
+      "isRequired": true,
+      "defaultOption": "disableNetbios__true",
+      "questionKey": "disableNetbios",
+      "visibility": {
+        "minPreset": "aggressive"
+      },
+      "options": [
+        {
+          "text": "Yes — disable NetBIOS",
+          "name": "disableNetbios__true",
+          "value": true,
+          "desc": "Good for stripped personal machines that do not rely on old SMB name resolution paths.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "network.disable-netbios"
+            ],
+            "estimatedActions": 1,
+            "warnings": [
+              "Aggressive network tuning is hardware-sensitive. Verify games, VPNs, and voice chat after apply."
+            ],
+            "riskLevel": "aggressive"
+          }
+        },
+        {
+          "text": "No — keep NetBIOS",
+          "name": "disableNetbios__false",
+          "value": false,
+          "desc": "Safer if you are not certain about your local-network dependencies.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "network.disable-netbios"
+            ],
+            "blockReason": "You chose to keep NetBIOS over TCP/IP enabled.",
+            "estimatedBlocked": 1
+          }
+        }
+      ]
+    },
+    {
+      "type": "RadioPage",
+      "description": "This is the kind of network question that sounds impressive and can absolutely be the wrong answer on the wrong setup.",
+      "isRequired": true,
+      "defaultOption": "disableNagle__true",
+      "questionKey": "disableNagle",
+      "visibility": {
+        "minPreset": "aggressive"
+      },
+      "options": [
+        {
+          "text": "Yes — disable Nagle",
+          "name": "disableNagle__true",
+          "value": true,
+          "desc": "For users chasing lower send-side latency in very specific workloads.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "network.disable-nagle"
+            ],
+            "estimatedActions": 1,
+            "warnings": [
+              "Aggressive network tuning is hardware-sensitive. Verify games, VPNs, and voice chat after apply."
+            ],
+            "riskLevel": "aggressive"
+          }
+        },
+        {
+          "text": "No — keep default TCP behavior",
+          "name": "disableNagle__false",
+          "value": false,
+          "desc": "Safer for general networking behavior.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "network.disable-nagle"
+            ],
+            "blockReason": "You chose to keep the default TCP packet coalescing behavior.",
+            "estimatedBlocked": 1
+          }
+        }
+      ]
+    },
+    {
+      "type": "RadioPage",
+      "description": "This applies the current playbook’s offloading, RSS queue, and autotuning decisions as a bundle.",
+      "isRequired": true,
+      "defaultOption": "disableNicOffloading__true",
+      "questionKey": "disableNicOffloading",
+      "visibility": {
+        "minPreset": "aggressive"
+      },
+      "options": [
+        {
+          "text": "Yes — use the low-latency NIC preset",
+          "name": "disableNicOffloading__true",
+          "value": true,
+          "desc": "For wired enthusiast setups where throughput tradeoffs are acceptable.",
+          "badge": "Advanced",
+          "badgeColor": "bg-amber-500/15 text-amber-400",
+          "danger": false,
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "network.disable-offloading",
+              "network.rss-queues-2",
+              "network.tcp-autotuning-normal"
+            ],
+            "estimatedActions": 3,
+            "warnings": [
+              "Aggressive network tuning is hardware-sensitive. Verify games, VPNs, and voice chat after apply."
+            ],
+            "riskLevel": "aggressive"
+          }
+        },
+        {
+          "text": "No — keep default NIC offloading behavior",
+          "name": "disableNicOffloading__false",
+          "value": false,
+          "desc": "Safer for mixed-use, higher-throughput, or Wi-Fi-heavy machines.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "network.disable-offloading",
+              "network.rss-queues-2",
+              "network.tcp-autotuning-normal"
+            ],
+            "blockReason": "You chose to keep default NIC offloading and queue behavior.",
+            "estimatedBlocked": 3
+          }
+        }
+      ]
+    },
+    {
+      "type": "RadioPage",
+      "description": "A good real-world question because it affects how Windows uses your bandwidth in the background.",
+      "isRequired": true,
+      "defaultOption": "disableDeliveryOptimization__true",
+      "questionKey": "disableDeliveryOptimization",
+      "visibility": {
+        "minPreset": "aggressive"
+      },
+      "options": [
+        {
+          "text": "Yes — disable it",
+          "name": "disableDeliveryOptimization__true",
+          "value": true,
+          "desc": "Less background peer-distribution behavior from Windows Update.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "security.disable-delivery-optimization"
+            ],
+            "estimatedActions": 1
+          }
+        },
+        {
+          "text": "No — keep it",
+          "name": "disableDeliveryOptimization__false",
+          "value": false,
+          "desc": "Leave Windows update-sharing behavior intact.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "security.disable-delivery-optimization"
+            ],
+            "blockReason": "You chose to keep Delivery Optimization enabled.",
+            "estimatedBlocked": 1
+          }
+        }
+      ]
+    },
+    {
+      "type": "RadioPage",
+      "description": "Useful for users chasing fewer wake-latency issues on input devices and attached hardware.",
+      "isRequired": true,
+      "defaultOption": "disableUsbSelectiveSuspend__true",
+      "questionKey": "disableUsbSelectiveSuspend",
+      "visibility": {
+        "minPreset": "aggressive",
+        "excludeLaptop": true
+      },
+      "options": [
+        {
+          "text": "Yes — disable it",
+          "name": "disableUsbSelectiveSuspend__true",
+          "value": true,
+          "desc": "Reduces Windows’ tendency to put USB devices to sleep.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "power.disable-usb-selective-suspend"
+            ],
+            "estimatedActions": 1
+          }
+        },
+        {
+          "text": "No — keep USB selective suspend",
+          "name": "disableUsbSelectiveSuspend__false",
+          "value": false,
+          "desc": "Safer for efficiency and some mobile setups.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "power.disable-usb-selective-suspend"
+            ],
+            "blockReason": "You chose to keep USB selective suspend enabled.",
+            "estimatedBlocked": 1
+          }
+        }
+      ]
+    },
+    {
+      "type": "RadioPage",
+      "description": "Good enthusiast question. Specific, measurable, and not something average users think to ask.",
+      "isRequired": true,
+      "defaultOption": "disablePcieLinkStatePm__true",
+      "questionKey": "disablePcieLinkStatePm",
+      "visibility": {
+        "minPreset": "aggressive",
+        "excludeLaptop": true
+      },
+      "options": [
+        {
+          "text": "Yes — disable PCIe link-state PM",
+          "name": "disablePcieLinkStatePm__true",
+          "value": true,
+          "desc": "Cuts another latency source from the power stack on desktops.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": true,
+            "includeActions": [
+              "power.disable-pcie-link-state-pm"
+            ],
+            "estimatedActions": 1
+          }
+        },
+        {
+          "text": "No — keep PCIe power management",
+          "name": "disablePcieLinkStatePm__false",
+          "value": false,
+          "desc": "Leave the link-state power-saving behavior intact.",
+          "badge": null,
+          "badgeColor": null,
+          "danger": false,
+          "behavior": {
+            "value": false,
+            "blockActions": [
+              "power.disable-pcie-link-state-pm"
+            ],
+            "blockReason": "You chose to keep PCIe link-state power management enabled.",
+            "estimatedBlocked": 1
+          }
+        }
+      ]
+    }
+  ]
+}

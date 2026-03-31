@@ -10,3 +10,5 @@ export * from "./errors.js";
 export * from "./verify.js";
 export * from "./ipc.js";
 export * from "./actions.js";
+export * from "./wizard.js";
+export * from "./export-package.js";
