@@ -10,7 +10,7 @@ import {
   CTAStrip,
   RelatedPages,
 } from "@/components/seo";
-import { REDCORE_OS_DOWNLOAD } from "@/lib/downloads";
+// Download links point to /downloads which handles release truth via getRedcoreOsDownloadState().
 import { Eye, RotateCcw } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -145,7 +145,7 @@ export default function WorkPCDebloatPage() {
             pages={[
               {
                 title: "Downloads",
-                description: REDCORE_OS_DOWNLOAD.marketingSummary,
+                description: "Download the latest redcore OS build. Free, no account required.",
                 href: "/downloads",
               },
               {
