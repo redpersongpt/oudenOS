@@ -4,7 +4,6 @@
 // Never hardcode version strings or download URLs in pages.
 
 const OS_LATEST_URL = "https://redcoreos.net/downloads/os/latest.json";
-const OS_FALLBACK_URL = "https://redcoreos.net/downloads/os/redcore-os-setup.exe";
 
 export interface ReleaseManifest {
   product: string;

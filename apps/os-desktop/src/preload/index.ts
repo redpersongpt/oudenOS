@@ -69,7 +69,7 @@ contextBridge.exposeInMainWorld("redcore", {
       }
       return ipcRenderer.invoke("service:call", method, params ?? {}) as Promise<T>;
     },
-    status: (): Promise<{ running: boolean; mode: string }> => {
+    status: (): Promise<{ running: boolean; mode: string; isAdmin: boolean; platform: string }> => {
       return ipcRenderer.invoke("service:status");
     },
   },

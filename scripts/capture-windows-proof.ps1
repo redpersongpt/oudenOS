@@ -238,6 +238,22 @@ $passed = ($checks | Where-Object { $_.pass }).Count
 $failed = ($checks | Where-Object { -not $_.pass }).Count
 $verdict = if ($failed -eq 0) { "PASS" } else { "FAIL" }
 
+# ── Build identity binding (anti-fake, anti-stale) ──
+$gitCommitSha = "unknown"
+$gitCommitShort = "unknown"
+$appVersion = "unknown"
+try {
+    $gitCommitSha = (git rev-parse HEAD 2>$null).Trim()
+    $gitCommitShort = $gitCommitSha.Substring(0, 7)
+} catch { }
+try {
+    $pkgPath = Join-Path (Get-Location) "apps\os-desktop\package.json"
+    if (Test-Path $pkgPath) {
+        $pkg = Get-Content $pkgPath -Raw | ConvertFrom-Json
+        $appVersion = $pkg.version
+    }
+} catch { }
+
 $summary = @{
     version = $version
     timestamp = $timestamp
@@ -246,9 +262,37 @@ $summary = @{
     passed = $passed
     failed = $failed
     checks = $checks
+    # Binding fields — required by evidence contract
+    gitCommitSha = $gitCommitSha
+    gitCommitShort = $gitCommitShort
+    appVersion = $appVersion
+    buildTimestamp = (Get-Date -Format o)
+    targetPlatform = "x86_64-pc-windows-msvc"
+    releaseChannel = if ($env:CI) { "ci" } else { "dev" }
+    hostName = $env:COMPUTERNAME
+    hostOS = [System.Environment]::OSVersion.VersionString
 }
 
 Save-Artifact "proof-summary" $summary
+
+# ── Seal the proof bundle (hash-chain manifest) ──
+Write-Host ""
+Write-Host "  Sealing proof bundle..."
+try {
+    $nodeExists = Get-Command node -ErrorAction SilentlyContinue
+    if ($nodeExists) {
+        $sealScript = Join-Path (Get-Location) "scripts\seal-proof-bundle.mjs"
+        if (Test-Path $sealScript) {
+            node $sealScript $OutputDir 2>&1 | ForEach-Object { Write-Host "  $_" }
+        } else {
+            Write-Host "  WARN: seal-proof-bundle.mjs not found — manifest not generated"
+        }
+    } else {
+        Write-Host "  WARN: node not found — proof-manifest.json not generated"
+    }
+} catch {
+    Write-Host "  WARN: Sealing failed: $($_.Exception.Message)"
+}
 
 Write-Host ""
 Write-Host "  $passed passed, $failed failed"

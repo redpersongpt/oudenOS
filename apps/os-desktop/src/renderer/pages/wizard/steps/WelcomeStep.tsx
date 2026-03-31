@@ -1,5 +1,6 @@
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, Shield, Cpu, Sparkles } from "lucide-react";
+import { ArrowRight, Shield, Cpu, Sparkles, AlertTriangle } from "lucide-react";
 import { LogoHero } from "@/components/brand/Logo";
 import { Button } from "@/components/ui/Button";
 import { useWizardStore } from "@/stores/wizard-store";
@@ -12,6 +13,18 @@ const FEATURES = [
 
 export function WelcomeStep() {
   const { goNext } = useWizardStore();
+  const [adminState, setAdminState] = useState<{ checked: boolean; isAdmin: boolean; platform: string }>({
+    checked: false, isAdmin: true, platform: "unknown",
+  });
+
+  useEffect(() => {
+    const win = window as unknown as { redcore?: { service?: { status: () => Promise<{ isAdmin: boolean; platform: string }> } } };
+    win.redcore?.service?.status().then((s) => {
+      setAdminState({ checked: true, isAdmin: s.isAdmin, platform: s.platform });
+    }).catch(() => {
+      setAdminState({ checked: true, isAdmin: false, platform: "unknown" });
+    });
+  }, []);
 
   return (
     <motion.div
@@ -63,11 +76,29 @@ export function WelcomeStep() {
         ))}
       </motion.div>
 
+      {/* Admin warning */}
+      {adminState.checked && !adminState.isAdmin && adminState.platform === "win32" && (
+        <motion.div
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+          className="mt-5 flex items-start gap-2 rounded-lg border border-amber-500/20 bg-amber-500/[0.06] px-4 py-2.5 max-w-sm"
+        >
+          <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-amber-400" />
+          <div>
+            <p className="text-[11px] font-semibold text-amber-300">Not running as Administrator</p>
+            <p className="mt-0.5 text-[10px] leading-relaxed text-amber-400/80">
+              System changes require administrator privileges. Right-click the app and select "Run as administrator" for full functionality.
+            </p>
+          </div>
+        </motion.div>
+      )}
+
       <motion.div
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.45 }}
-        className="mt-8"
+        className="mt-6"
       >
         <Button variant="primary" size="lg" onClick={goNext} icon={<ArrowRight className="h-4 w-4" />} iconPosition="right">
           Begin Assessment

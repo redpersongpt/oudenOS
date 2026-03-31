@@ -25,6 +25,7 @@
     "smoke:desktop": "cd apps/os-desktop && npx electron test/smoke-desktop.mjs",
     "release:gate": "node scripts/release-gate.mjs",
     "release:proof": "echo 'Run on Windows: powershell -File scripts/capture-windows-proof.ps1'",
+    "validate:proof": "node scripts/validate-proof.mjs",
     "db:check": "node scripts/db-converge.mjs check",
     "db:migrate:convergence": "node scripts/db-converge.mjs migrate",
     "db:migrate:convergence:dry": "node scripts/db-converge.mjs migrate --dry-run",
@@ -35,5 +36,8 @@
     "typecheck": "pnpm -r typecheck",
     "lint": "pnpm -r lint",
     "build": "pnpm -r build"
+  },
+  "devDependencies": {
+    "sharp": "^0.34.5"
   }
 }
