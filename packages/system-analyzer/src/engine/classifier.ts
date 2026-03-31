@@ -16,10 +16,15 @@ export function classifyProfile(analysis: SystemAnalysisResult): ProfileClassifi
   const allSignals: string[] = [];
 
   // ─── VM detection (highest priority) ──────────────────────────────────────
-  const isVM = hardware.deviceClass === "vm" || software.hasHyperV;
+  // Hyper-V enabled on bare metal (dev/WSL2) should NOT classify as VM.
+  // Only classify as VM when hardware itself reports virtual device class.
+  const isVM = hardware.deviceClass === "vm";
   if (isVM) {
     scores.vm += 0.9;
-    allSignals.push("Virtualized environment or Hyper-V detected");
+    allSignals.push("Virtualized environment detected");
+  } else if (software.hasHyperV) {
+    scores.development += 0.15;
+    allSignals.push("Hyper-V enabled (bare-metal host — not classified as VM)");
   }
 
   // ─── Laptop detection ─────────────────────────────────────────────────────

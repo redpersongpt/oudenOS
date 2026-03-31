@@ -67,15 +67,16 @@ export function analyzeWorkload({ profile, installedApps = [] }: WorkloadInput):
 
   // High RAM → workstation/dev/content
   const ramGb = profile.memory.totalMb / 1024;
-  if (ramGb >= 32) {
+  if (ramGb >= 64) {
+    scores.work += 0.25;
+    scores.development += 0.3;
+    scores.content_creation += 0.2;
+    signals.push({ type: "development", indicator: `${ramGb}GB RAM — professional workstation`, strength: "strong" });
+  } else if (ramGb >= 32) {
     scores.work += 0.15;
     scores.development += 0.2;
     scores.content_creation += 0.2;
     signals.push({ type: "development", indicator: `${ramGb}GB RAM — workstation-class memory`, strength: "medium" });
-  } else if (ramGb >= 64) {
-    scores.work += 0.25;
-    scores.development += 0.3;
-    signals.push({ type: "development", indicator: `${ramGb}GB RAM — professional workstation`, strength: "strong" });
   }
 
   // High core count → work/content
