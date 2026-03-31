@@ -11,7 +11,7 @@ import {
   connectedAccounts,
   refreshTokens,
   paymentHistory,
-} from '../db/schema.js';
+} from '../db/index.js';
 import { requireAuth } from '../middleware/auth.js';
 
 // ---------------------------------------------------------------------------

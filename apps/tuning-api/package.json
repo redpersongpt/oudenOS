@@ -15,14 +15,15 @@
     "@redcore/shared-schema": "workspace:*",
     "bcryptjs": "^2.4.3",
     "crypto-js": "^4.2.0",
-    "drizzle-orm": "^0.36.0",
+    "drizzle-orm": "^0.38.0",
     "fastify": "^5.1.0",
     "fastify-raw-body": "^4.3.0",
     "jose": "^6.2.2",
     "jsonwebtoken": "^9.0.0",
     "postgres": "^3.4.0",
     "stripe": "^17.0.0",
-    "zod": "^3.23.0"
+    "zod": "^3.23.0",
+    "@redcore/db": "workspace:*"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.0",

@@ -2,7 +2,7 @@ import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
 import { eq, desc, gte, sql, and, count } from 'drizzle-orm';
 import { db } from '../db/index.js';
-import { telemetryEvents } from '../db/schema.js';
+import { telemetryEvents } from '../db/index.js';
 import { requireAuth } from '../middleware/auth.js';
 import { requireAdmin } from '../middleware/admin.js';
 
@@ -82,8 +82,9 @@ export default async function telemetryRoutes(app: FastifyInstance): Promise<voi
 
     const rows = events.map((evt) => ({
       sessionId,
-      event: evt.event,
-      properties: evt.properties ?? null,
+      product: "os" as const,
+      eventType: evt.event,
+      metadata: evt.properties ?? null,
       optIn: true,
       clientTimestamp: evt.clientTimestamp ? new Date(evt.clientTimestamp) : null,
       appVersion: (evt.properties?.appVersion as string) ?? null,
@@ -139,8 +140,9 @@ export default async function telemetryRoutes(app: FastifyInstance): Promise<voi
 
     await db.insert(telemetryEvents).values({
       sessionId,
-      event: 'crash',
-      properties: { errorCode, errorMessage, topFrame },
+      product: "os" as const,
+      eventType: 'crash',
+      metadata: { errorCode, errorMessage, topFrame },
       optIn: true,
       appVersion,
       windowsBuild: windowsBuild ?? null,
@@ -166,28 +168,28 @@ export default async function telemetryRoutes(app: FastifyInstance): Promise<voi
       const [dau] = await db
         .select({ count: sql<number>`COUNT(DISTINCT ${telemetryEvents.sessionId})` })
         .from(telemetryEvents)
-        .where(gte(telemetryEvents.serverTimestamp, oneDayAgo));
+        .where(gte(telemetryEvents.createdAt, oneDayAgo));
 
       const [wau] = await db
         .select({ count: sql<number>`COUNT(DISTINCT ${telemetryEvents.sessionId})` })
         .from(telemetryEvents)
-        .where(gte(telemetryEvents.serverTimestamp, sevenDaysAgo));
+        .where(gte(telemetryEvents.createdAt, sevenDaysAgo));
 
       const [mau] = await db
         .select({ count: sql<number>`COUNT(DISTINCT ${telemetryEvents.sessionId})` })
         .from(telemetryEvents)
-        .where(gte(telemetryEvents.serverTimestamp, thirtyDaysAgo));
+        .where(gte(telemetryEvents.createdAt, thirtyDaysAgo));
 
       // 7-day trend (daily active sessions)
       const trend = await db
         .select({
-          date: sql<string>`DATE(${telemetryEvents.serverTimestamp})`,
+          date: sql<string>`DATE(${telemetryEvents.createdAt})`,
           sessions: sql<number>`COUNT(DISTINCT ${telemetryEvents.sessionId})`,
         })
         .from(telemetryEvents)
-        .where(gte(telemetryEvents.serverTimestamp, sevenDaysAgo))
-        .groupBy(sql`DATE(${telemetryEvents.serverTimestamp})`)
-        .orderBy(sql`DATE(${telemetryEvents.serverTimestamp})`);
+        .where(gte(telemetryEvents.createdAt, sevenDaysAgo))
+        .groupBy(sql`DATE(${telemetryEvents.createdAt})`)
+        .orderBy(sql`DATE(${telemetryEvents.createdAt})`);
 
       return reply.send({
         success: true,
@@ -210,17 +212,17 @@ export default async function telemetryRoutes(app: FastifyInstance): Promise<voi
 
       const features = await db
         .select({
-          event: telemetryEvents.event,
+          event: telemetryEvents.eventType,
           count: count(),
         })
         .from(telemetryEvents)
         .where(
           and(
-            gte(telemetryEvents.serverTimestamp, sevenDaysAgo),
-            sql`${telemetryEvents.event} NOT IN ('crash', 'session_start', 'session_end')`,
+            gte(telemetryEvents.createdAt, sevenDaysAgo),
+            sql`${telemetryEvents.eventType} NOT IN ('crash', 'session_start', 'session_end')`,
           ),
         )
-        .groupBy(telemetryEvents.event)
+        .groupBy(telemetryEvents.eventType)
         .orderBy(desc(count()))
         .limit(20);
 
@@ -237,34 +239,34 @@ export default async function telemetryRoutes(app: FastifyInstance): Promise<voi
 
       const errors = await db
         .select({
-          event: telemetryEvents.event,
+          event: telemetryEvents.eventType,
           count: count(),
         })
         .from(telemetryEvents)
         .where(
           and(
-            gte(telemetryEvents.serverTimestamp, sevenDaysAgo),
-            eq(telemetryEvents.event, 'crash'),
+            gte(telemetryEvents.createdAt, sevenDaysAgo),
+            eq(telemetryEvents.eventType, 'crash'),
           ),
         )
-        .groupBy(telemetryEvents.event)
+        .groupBy(telemetryEvents.eventType)
         .orderBy(desc(count()))
         .limit(20);
 
       // Error code distribution from crash properties
       const errorCodes = await db
         .select({
-          errorCode: sql<string>`${telemetryEvents.properties}->>'errorCode'`,
+          errorCode: sql<string>`${telemetryEvents.metadata}->>'errorCode'`,
           count: count(),
         })
         .from(telemetryEvents)
         .where(
           and(
-            gte(telemetryEvents.serverTimestamp, sevenDaysAgo),
-            eq(telemetryEvents.event, 'crash'),
+            gte(telemetryEvents.createdAt, sevenDaysAgo),
+            eq(telemetryEvents.eventType, 'crash'),
           ),
         )
-        .groupBy(sql`${telemetryEvents.properties}->>'errorCode'`)
+        .groupBy(sql`${telemetryEvents.metadata}->>'errorCode'`)
         .orderBy(desc(count()))
         .limit(20);
 
@@ -284,33 +286,33 @@ export default async function telemetryRoutes(app: FastifyInstance): Promise<voi
 
       const cpuDist = await db
         .select({
-          vendor: sql<string>`${telemetryEvents.properties}->>'cpuVendor'`,
+          vendor: sql<string>`${telemetryEvents.metadata}->>'cpuVendor'`,
           count: count(),
         })
         .from(telemetryEvents)
         .where(
           and(
-            gte(telemetryEvents.serverTimestamp, thirtyDaysAgo),
-            sql`${telemetryEvents.properties}->>'cpuVendor' IS NOT NULL`,
+            gte(telemetryEvents.createdAt, thirtyDaysAgo),
+            sql`${telemetryEvents.metadata}->>'cpuVendor' IS NOT NULL`,
           ),
         )
-        .groupBy(sql`${telemetryEvents.properties}->>'cpuVendor'`)
+        .groupBy(sql`${telemetryEvents.metadata}->>'cpuVendor'`)
         .orderBy(desc(count()))
         .limit(10);
 
       const ramDist = await db
         .select({
-          ramGb: sql<string>`${telemetryEvents.properties}->>'ramGb'`,
+          ramGb: sql<string>`${telemetryEvents.metadata}->>'ramGb'`,
           count: count(),
         })
         .from(telemetryEvents)
         .where(
           and(
-            gte(telemetryEvents.serverTimestamp, thirtyDaysAgo),
-            sql`${telemetryEvents.properties}->>'ramGb' IS NOT NULL`,
+            gte(telemetryEvents.createdAt, thirtyDaysAgo),
+            sql`${telemetryEvents.metadata}->>'ramGb' IS NOT NULL`,
           ),
         )
-        .groupBy(sql`${telemetryEvents.properties}->>'ramGb'`)
+        .groupBy(sql`${telemetryEvents.metadata}->>'ramGb'`)
         .orderBy(desc(count()))
         .limit(10);
 
@@ -322,7 +324,7 @@ export default async function telemetryRoutes(app: FastifyInstance): Promise<voi
         .from(telemetryEvents)
         .where(
           and(
-            gte(telemetryEvents.serverTimestamp, thirtyDaysAgo),
+            gte(telemetryEvents.createdAt, thirtyDaysAgo),
             sql`${telemetryEvents.windowsBuild} IS NOT NULL`,
           ),
         )
