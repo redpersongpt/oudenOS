@@ -121,9 +121,9 @@ async function start(): Promise<void> {
     const { db } = await import("@redcore/db");
     const { preflightOrDie } = await import("@redcore/db/preflight");
     await preflightOrDie(db, {
-      info: (msg) => app.log.info(msg),
-      error: (msg) => app.log.error(msg),
-      warn: (msg) => app.log.warn(msg),
+      info: (msg: string) => app.log.info(msg),
+      error: (msg: string) => app.log.error(msg),
+      warn: (msg: string) => app.log.warn(msg),
     });
   }
 
