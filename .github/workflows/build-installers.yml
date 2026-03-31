@@ -58,10 +58,15 @@ jobs:
         run: pnpm verify:full
 
   check-rust:
-    name: Rust Check (Windows cargo check)
+    name: Rust Build + Smoke (Windows)
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
 
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
@@ -76,16 +81,19 @@ jobs:
             ~/.cargo/git
             services/os-service/target
             services/tuning-service/target
-          key: rust-windows-check-${{ hashFiles('services/*/Cargo.toml') }}
-          restore-keys: rust-windows-check-
+          key: rust-windows-debug-${{ hashFiles('services/*/Cargo.toml') }}
+          restore-keys: rust-windows-debug-
 
-      - name: cargo check os-service
+      - name: Build OS service (debug)
         working-directory: services/os-service
-        run: cargo check
+        run: cargo build
 
-      - name: cargo check tuning-service
+      - name: Build Tuning service (debug)
         working-directory: services/tuning-service
-        run: cargo check
+        run: cargo build
+
+      - name: Run OS service smoke test
+        run: node scripts/smoke-test-os-service.mjs services/os-service/target/debug/redcore-os-service.exe
 
   build-rust-services:
     name: Build Rust Services (Windows)
@@ -132,33 +140,11 @@ jobs:
           path: services/tuning-service/target/release/redcore-service.exe
           retention-days: 7
 
-  smoke-test:
-    name: OS Service Smoke Test
-    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
-    runs-on: windows-latest
-    needs: [build-rust-services]
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-
-      - name: Download OS service binary
-        uses: actions/download-artifact@v4
-        with:
-          name: os-service-binary
-          path: services/os-service/target/release/
-
-      - name: Run smoke test
-        run: node scripts/smoke-test-os-service.mjs services/os-service/target/release/redcore-os-service.exe
-
   build-os-installer:
     name: Package redcore OS Installer
     if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     runs-on: windows-latest
-    needs: [verify, check-rust, build-rust-services, smoke-test]
+    needs: [verify, check-rust, build-rust-services]
     steps:
       - uses: actions/checkout@v4
 
@@ -210,7 +196,7 @@ jobs:
     name: Package redcore Tuning Installer
     if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     runs-on: windows-latest
-    needs: [verify, check-rust, build-rust-services, smoke-test]
+    needs: [verify, check-rust, build-rust-services]
     steps:
       - uses: actions/checkout@v4
 

@@ -88,6 +88,32 @@ const SMOKE_COMMANDS = [
       return null;
     },
   },
+  {
+    id: 6,
+    method: "playbook.resolve",
+    params: { profile: "gaming_desktop", preset: "balanced" },
+    validate: (result) => {
+      if (!result || typeof result !== "object") return "expected resolved playbook object";
+      if (!Array.isArray(result.phases)) return "missing phases array";
+      if (result.phases.length === 0) return "phases array is empty — playbook catalog failed to load";
+      if (typeof result.totalIncluded !== "number") return "missing totalIncluded count";
+      if (result.totalIncluded === 0) return "totalIncluded is 0 — no actions resolved";
+      return null;
+    },
+  },
+  {
+    id: 7,
+    method: "playbook.resolve",
+    params: { profile: "work_pc", preset: "conservative" },
+    validate: (result) => {
+      if (!result || typeof result !== "object") return "expected resolved playbook object";
+      if (!Array.isArray(result.phases)) return "missing phases array";
+      // Work PC should have blocked actions (print spooler, remote services)
+      const totalBlocked = typeof result.totalBlocked === "number" ? result.totalBlocked : 0;
+      if (totalBlocked === 0) return "work_pc profile has 0 blocked actions — preservation logic may be broken";
+      return null;
+    },
+  },
 ];
 
 // ─── Run ────────────────────────────────────────────────────────────────────
