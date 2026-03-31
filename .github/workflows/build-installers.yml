@@ -2,6 +2,18 @@ name: Build Windows Installers
 
 on:
   workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'apps/os-desktop/**'
+      - 'apps/tuning-desktop/**'
+      - 'services/os-service/**'
+      - 'services/tuning-service/**'
+      - 'packages/os-shared-schema/**'
+      - 'playbooks/**'
+      - 'scripts/validate-action-parity.mjs'
+      - 'scripts/build-and-publish-os-release.sh'
+      - '.github/workflows/build-installers.yml'
   push:
     branches: [main]
     paths:
@@ -42,14 +54,12 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Action parity validation
-        run: node scripts/validate-action-parity.mjs
-
-      - name: TypeScript type-check
-        run: pnpm typecheck
+      - name: Verify (parity + typecheck)
+        run: pnpm verify:full
 
   build-rust-services:
     name: Build Rust Services (Windows)
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
@@ -94,6 +104,7 @@ jobs:
 
   build-os-installer:
     name: Package redcore OS Installer
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     runs-on: windows-latest
     needs: [verify, build-rust-services]
     steps:
@@ -145,6 +156,7 @@ jobs:
 
   build-tuning-installer:
     name: Package redcore Tuning Installer
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     runs-on: windows-latest
     needs: [verify, build-rust-services]
     steps:
