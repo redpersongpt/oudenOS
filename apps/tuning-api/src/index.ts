@@ -45,10 +45,44 @@ async function start() {
   const host = process.env.HOST ?? "0.0.0.0";
 
   await app.listen({ port, host });
-  app.log.info(`Cloud API listening on ${host}:${port}`);
+  app.log.info(`Tuning API listening on ${host}:${port}`);
 }
 
+// ─── Error handling ─────────────────────────────────────────────────────────
+
+app.setErrorHandler((error, _request, reply) => {
+  const err = error as { statusCode?: number; message: string; stack?: string };
+  const statusCode = err.statusCode ?? 500;
+
+  if (statusCode >= 500) {
+    app.log.error(error);
+  }
+
+  if (process.env.NODE_ENV === "production") {
+    reply.code(statusCode).send({ error: "Internal server error" });
+  } else {
+    reply.code(statusCode).send({ error: err.message, stack: err.stack });
+  }
+});
+
+app.setNotFoundHandler((_request, reply) => {
+  reply.code(404).send({ error: "Not found" });
+});
+
+// ─── Graceful shutdown ──────────────────────────────────────────────────────
+
+async function shutdown(signal: string): Promise<void> {
+  app.log.info({ signal }, "Shutdown signal received");
+  await app.close();
+  process.exit(0);
+}
+
+process.on("SIGTERM", () => shutdown("SIGTERM"));
+process.on("SIGINT", () => shutdown("SIGINT"));
+
+// ─── Start ──────────────────────────────────────────────────────────────────
+
 start().catch((err) => {
-  console.error("Failed to start cloud API:", err);
+  console.error("Fatal: failed to start Tuning API:", err);
   process.exit(1);
 });
