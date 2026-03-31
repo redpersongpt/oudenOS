@@ -9,6 +9,7 @@ import { Check, AlertCircle } from "lucide-react";
 import { useWizardStore } from "@/stores/wizard-store";
 import type { ActionDecisionProvenance, ExecutionJournalEntry } from "@/stores/wizard-store";
 import { useDecisionsStore } from "@/stores/decisions-store";
+import { useLogStore } from "@/stores/log-store";
 import { getActionRationale } from "@/lib/expert-rationale";
 import { resolveEffectivePersonalization } from "@/lib/personalization-resolution";
 import { buildExecutionJournalContext } from "@/lib/package-journal";
@@ -26,6 +27,7 @@ interface CompletedAction {
   label: string;
   actionId: string;
   status: "applied" | "failed";
+  errorMessage?: string;
   packageSourceRef: string | null;
   provenanceRef: string | null;
 }
@@ -53,19 +55,29 @@ function TimelineItem({ action }: { action: CompletedAction }) {
           ? { duration: 0.44, ease: "easeOut" }
           : { duration: 0.18, ease: [0.0, 0.0, 0.2, 1.0] }
       }
-      className="flex items-center gap-2.5 py-1"
+      className="flex flex-col gap-0.5 py-1"
     >
-      {action.status === "applied" ? (
-        <Check className="h-3.5 w-3.5 shrink-0 text-success-400" />
-      ) : (
-        <AlertCircle className="h-3.5 w-3.5 shrink-0 text-danger-400" />
+      <div className="flex items-center gap-2.5">
+        {action.status === "applied" ? (
+          <Check className="h-3.5 w-3.5 shrink-0 text-success-400" />
+        ) : (
+          <AlertCircle className="h-3.5 w-3.5 shrink-0 text-danger-400" />
+        )}
+        <span className="text-[11px] text-ink-secondary break-words">{action.label}</span>
+        <span className={`ml-auto shrink-0 text-[10px] font-medium ${
+          action.status === "applied" ? "text-success-400/60" : "text-danger-400/60"
+        }`}>
+          {action.status}
+        </span>
+      </div>
+      {action.status === "failed" && action.errorMessage && (
+        <span
+          className="text-[9px] text-danger-400/50 pl-6 break-words"
+          title={action.errorMessage}
+        >
+          {action.errorMessage}
+        </span>
       )}
-      <span className="text-[11px] text-ink-secondary truncate">{action.label}</span>
-      <span className={`ml-auto shrink-0 text-[10px] font-medium ${
-        action.status === "applied" ? "text-success-400/60" : "text-danger-400/60"
-      }`}>
-        {action.status}
-      </span>
     </motion.div>
   );
 }
@@ -75,6 +87,7 @@ function TimelineItem({ action }: { action: CompletedAction }) {
 export function ExecutionStep() {
   const { detectedProfile, resolvedPlaybook, selectedAppIds, personalization, demoMode, completeStep, setExecutionResult, setResolvedPlaybook } = useWizardStore();
   const answers = useDecisionsStore((state) => state.answers);
+  const addLogEntry = useLogStore((state) => state.addEntry);
   const effectivePersonalization = useMemo(
     () => resolveEffectivePersonalization(detectedProfile?.id, personalization, answers),
     [answers, detectedProfile?.id, personalization],
@@ -136,6 +149,8 @@ export function ExecutionStep() {
       let operationIndex = 0;
       const journalEntries: ExecutionJournalEntry[] = [];
 
+      addLogEntry({ level: "info", category: "Execution", message: `Starting execution with ${actionQueue.length} actions, ${selectedAppIds.length} apps` });
+
       // ── Create DB-backed execution plan (service ledger) ──
       const planId = playbook.packageRefs?.planId ?? `plan-${Date.now()}`;
       try {
@@ -189,7 +204,10 @@ export function ExecutionStep() {
         // Mark started in DB ledger
         serviceCall("ledger.markStarted", { planId, actionId: action.id }).catch(() => {});
 
+        addLogEntry({ level: "info", category: "Action", message: `Starting: ${action.name}`, details: `actionId=${action.id}, phase=${action.phase}` });
+
         let status: "applied" | "failed" = "failed";
+        let errorMessage: string | null = null;
         const result = await serviceCall<Record<string, unknown>>("execute.applyAction", {
           actionId: action.id,
           journalContext: action.provenance
@@ -201,18 +219,31 @@ export function ExecutionStep() {
           const rpcStatus = typeof result.data.status === "string" ? result.data.status : "failed";
           const nestedFailures = typeof result.data.failed === "number" ? result.data.failed : 0;
           status = rpcStatus === "success" && nestedFailures === 0 ? "applied" : "failed";
+          if (status === "failed") {
+            // Extract the real error from service response
+            errorMessage =
+              (typeof result.data.error === "string" ? result.data.error : null)
+              ?? (typeof result.data.message === "string" ? result.data.message : null)
+              ?? (typeof result.data.errorMessage === "string" ? result.data.errorMessage : null)
+              ?? `Action returned status="${rpcStatus}" with ${nestedFailures} nested failure(s)`;
+          }
         } else if (demoMode) {
           // Explicit demo mode only — never fake success in the real runtime.
           await new Promise<void>((resolve) => {
             timerRef.current = setTimeout(resolve, 180 + Math.random() * 140);
           });
           status = "applied";
+        } else {
+          errorMessage = result.error ?? "Service call failed";
         }
 
         if (controller.signal.aborted) return;
         setCurrentAction(null);
         if (status === "failed") {
           localFailed++;
+          addLogEntry({ level: "error", category: "Action", message: `Failed: ${action.name}`, details: errorMessage ?? undefined });
+        } else {
+          addLogEntry({ level: "success", category: "Action", message: `Applied: ${action.name}` });
         }
 
         // Record result in DB ledger (fire-and-forget)
@@ -222,7 +253,7 @@ export function ExecutionStep() {
             actionId: action.id,
             status: status === "applied" ? "success" : "failed",
             rollbackSnapshotId: null,
-            errorMessage: status === "failed" ? "Action execution returned a failure status." : null,
+            errorMessage,
             durationMs: null,
           },
         }).catch(() => {});
@@ -232,6 +263,7 @@ export function ExecutionStep() {
           label: action.name,
           actionId: action.id,
           status,
+          errorMessage: errorMessage ?? undefined,
           packageSourceRef: action.provenance?.packageSourceRef ?? null,
           provenanceRef: action.provenance?.packageSourceRef ?? null,
         };
@@ -256,7 +288,7 @@ export function ExecutionStep() {
           resultRef: typeof resultData?.journalRef === "string"
             ? resultData.journalRef
             : `${playbook.packageRefs?.executionJournalRef ?? "state/execution-journal.json"}#/entries/${journalEntries.length}`,
-          errorMessage: status === "failed" ? "Action execution returned a failure status." : null,
+          errorMessage,
         };
         journalEntries.push(journalEntry);
         setCompleted((prev) => [...prev, completedEntry]);
@@ -272,6 +304,7 @@ export function ExecutionStep() {
       if (controller.signal.aborted) return;
 
       // ── Phase 2: Apply personalization ──
+      addLogEntry({ level: "info", category: "Personalization", message: "Applying personalization settings" });
       let personalizationFailed = false;
       let personalizationApplied = false;
       const personalizationStartedAt = new Date().toISOString();
@@ -299,6 +332,11 @@ export function ExecutionStep() {
       setCurrentAction(null);
       const personalizationFinishedAt = new Date().toISOString();
       const personalizationStatus = personalizationFailed ? "failed" : "applied";
+      addLogEntry({
+        level: personalizationFailed ? "error" : "success",
+        category: "Personalization",
+        message: personalizationFailed ? "Personalization failed" : "Personalization applied",
+      });
       journalEntries.push({
         id: "journal.personalization.apply",
         kind: "personalization",
@@ -322,6 +360,7 @@ export function ExecutionStep() {
           label: "Apply personalization",
           actionId: "personalize.apply",
           status: personalizationStatus,
+          errorMessage: personalizationFailed ? "Personalization apply failed." : undefined,
           packageSourceRef: playbook.packageRefs?.decisionSummaryRef ?? null,
           provenanceRef: null,
         },
@@ -329,6 +368,9 @@ export function ExecutionStep() {
       operationIndex += 1;
 
       // ── Phase 3: Install selected apps ──
+      if (selectedAppIds.length > 0) {
+        addLogEntry({ level: "info", category: "Apps", message: `Installing ${selectedAppIds.length} selected apps` });
+      }
       let appInstallProgress: AppInstallProgress = {
         requested: selectedAppIds.length,
         installed: 0,
@@ -356,26 +398,38 @@ export function ExecutionStep() {
               setCurrentPhase("App Setup");
 
               let status: "applied" | "failed" = "failed";
+              let appErrorMessage: string | null = null;
               const installResult = await serviceCall<{
                 status?: unknown;
                 error?: unknown;
+                message?: unknown;
                 name?: unknown;
               }>("appbundle.install", { appId: app.id });
 
               if (installResult.ok) {
                 const rpcStatus = typeof installResult.data.status === "string" ? installResult.data.status : "failed";
                 status = rpcStatus === "installed" || rpcStatus === "skipped" ? "applied" : "failed";
+                if (status === "failed") {
+                  appErrorMessage =
+                    (typeof installResult.data.error === "string" ? installResult.data.error : null)
+                    ?? (typeof installResult.data.message === "string" ? installResult.data.message : null)
+                    ?? `App install returned status="${rpcStatus}"`;
+                }
               } else if (demoMode) {
                 await new Promise<void>((resolve) => {
                   timerRef.current = setTimeout(resolve, 180 + Math.random() * 140);
                 });
                 status = "applied";
+              } else {
+                appErrorMessage = installResult.error ?? "Service call failed";
               }
 
               if (status === "applied") {
                 appInstallProgress.installed += 1;
+                addLogEntry({ level: "success", category: "Apps", message: `Installed: ${app.name}` });
               } else {
                 appInstallProgress.failed += 1;
+                addLogEntry({ level: "error", category: "Apps", message: `Failed: ${app.name}`, details: appErrorMessage ?? undefined });
               }
 
               setCurrentAction(null);
@@ -403,6 +457,7 @@ export function ExecutionStep() {
                   label: `Install ${app.name}`,
                   actionId: `app.${app.id}`,
                   status,
+                  errorMessage: appErrorMessage ?? undefined,
                   packageSourceRef: "state/selected-apps.json",
                   provenanceRef: null,
                 },
@@ -484,11 +539,19 @@ export function ExecutionStep() {
         truthSource: ledgerIsAuthoritative ? "ledger" : "local",
       });
 
+      addLogEntry({
+        level: "info",
+        category: "Execution",
+        message: `Execution complete — ${ledgerApplied} applied, ${ledgerFailed} failed, ${skipped} skipped`,
+        details: `truthSource=${ledgerIsAuthoritative ? "ledger" : "local"}`,
+      });
+
       timerRef.current = setTimeout(() => completeStep("execution"), 800);
     };
 
     exec().catch((err) => {
       console.error("[ExecutionStep] Unexpected execution error:", err);
+      addLogEntry({ level: "error", category: "Execution", message: "Unexpected execution error", details: err instanceof Error ? err.message : String(err) });
       // Treat as complete with all failed so the wizard can still advance
       setExecutionResult({
         applied: 0,
