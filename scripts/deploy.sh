@@ -10,8 +10,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 APP_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
-WEB_DATABASE_URL="${WEB_DATABASE_URL:-file:${APP_ROOT}/apps/web/prisma/prisma/dev.db}"
-DATABASE_URL="${DATABASE_URL:-${WEB_DATABASE_URL}}"
+WEB_DATABASE_URL="file:${APP_ROOT}/apps/web/prisma/prisma/dev.db"
 
 cd "${APP_ROOT}"
 
@@ -22,9 +21,7 @@ if [[ -f .env ]]; then
   set +a
 fi
 
-# Ensure DATABASE_URL is set from WEB_DATABASE_URL if not overridden by .env
-DATABASE_URL="${DATABASE_URL:-${WEB_DATABASE_URL}}"
-API_DATABASE_URL="${DATABASE_URL}"
+API_DATABASE_URL="${DATABASE_URL:-}"
 HEAD_SHA=""
 
 if [[ "${SKIP_GIT_PULL:-0}" == "1" ]]; then
