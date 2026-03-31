@@ -64,6 +64,8 @@ export interface QuestionnaireAnswers {
   disableAutomaticMaintenance: boolean | null;
   enableGameMode: boolean | null;
   disableTransparency: boolean | null;
+  disableDefender: boolean | null;
+  disableWindowsUpdate: boolean | null;
 }
 
 export interface PlaybookImpact {
@@ -139,6 +141,8 @@ export const DEFAULT_QUESTIONNAIRE_ANSWERS: QuestionnaireAnswers = {
   disableAutomaticMaintenance: null,
   enableGameMode: null,
   disableTransparency: null,
+  disableDefender: null,
+  disableWindowsUpdate: null,
 };
 
 function computeImpact(answers: QuestionnaireAnswers): PlaybookImpact {
