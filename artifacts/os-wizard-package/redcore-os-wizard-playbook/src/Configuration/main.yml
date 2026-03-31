@@ -1,0 +1,107 @@
+---
+title: "redcore OS Playbook"
+description: "A review-first Windows optimization playbook that stages cleanup, privacy hardening, and performance tuning through a guided wizard."
+privilege: Admin
+wizardMetadata:
+  packageId: "redcore-os"
+  injectPath: "sources/$OEM$/$1/redcore/wizard"
+pipeline:
+  - id: assessment
+    name: "System Assessment"
+    builtin: true
+  - id: classification
+    name: "Machine Classification"
+    builtin: true
+  - id: cleanup
+    name: "Bloatware Cleanup"
+    builtin: false
+    modules:
+      - "appx/consumer-bloat.yaml"
+      - "appx/microsoft-apps.yaml"
+      - "appx/gaming-apps.yaml"
+      - "appx/third-party-bloat.yaml"
+      - "appx/edge-removal.yaml"
+  - id: services
+    name: "Background Services"
+    builtin: false
+    modules:
+      - "services/telemetry-services.yaml"
+      - "services/consumer-services.yaml"
+  - id: tasks
+    name: "Scheduled Tasks"
+    builtin: false
+    modules:
+      - "tasks/telemetry-tasks.yaml"
+  - id: privacy
+    name: "Privacy Hardening"
+    builtin: false
+    modules:
+      - "privacy/telemetry.yaml"
+      - "privacy/advertising.yaml"
+      - "privacy/activity-tracking.yaml"
+      - "privacy/input-collection.yaml"
+      - "privacy/ai-features.yaml"
+  - id: performance
+    name: "Performance Optimization"
+    builtin: false
+    modules:
+      - "performance/cpu-scheduler.yaml"
+      - "performance/memory.yaml"
+      - "performance/gpu.yaml"
+      - "performance/latency.yaml"
+      - "performance/power.yaml"
+      - "performance/storage.yaml"
+  - id: shell
+    name: "Shell & Explorer"
+    builtin: false
+    modules:
+      - "shell/taskbar.yaml"
+      - "shell/context-menu.yaml"
+      - "shell/search.yaml"
+      - "shell/explorer.yaml"
+      - "shell/ads-tips.yaml"
+  - id: startup-shutdown
+    name: "Startup & Shutdown"
+    builtin: false
+    modules:
+      - "startup-shutdown/startup.yaml"
+      - "startup-shutdown/shutdown.yaml"
+      - "startup-shutdown/boot.yaml"
+  - id: networking
+    name: "Network Security"
+    builtin: false
+    modules:
+      - "networking/protocols.yaml"
+      - "networking/latency.yaml"
+      - "networking/security.yaml"
+  - id: security
+    name: "Security Tuning"
+    builtin: false
+    modules:
+      - "security/mitigations.yaml"
+      - "security/update-control.yaml"
+  - id: personalization
+    name: "Visual Personalization"
+    builtin: true
+profiles:
+  - id: gaming_desktop
+    label: "Gaming Desktop"
+    preset: "aggressive"
+    overrides: "profiles/gaming-desktop.yaml"
+  - id: office_laptop
+    label: "Office Laptop"
+    preset: "balanced"
+    overrides: "profiles/office-laptop.yaml"
+  - id: work_pc
+    label: "Work PC"
+    preset: "conservative"
+    overrides: "profiles/work-pc.yaml"
+  - id: low_spec_system
+    label: "Low-Spec System"
+    preset: "balanced"
+    overrides: "profiles/low-spec.yaml"
+  - id: vm_cautious
+    label: "Virtual Machine"
+    preset: "conservative"
+    overrides: "profiles/vm-cautious.yaml"
+optionMappings:

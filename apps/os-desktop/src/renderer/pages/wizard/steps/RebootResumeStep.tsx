@@ -7,17 +7,23 @@ import { motion } from "framer-motion";
 import { RotateCw, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { useWizardStore } from "@/stores/wizard-store";
+import { buildRebootJournalContext, getPendingRebootProvenanceRefs } from "@/lib/package-journal";
 
 interface JournalState {
+  planId: string;
   requiresReboot: boolean;
   canResume: boolean;
+  package: { packageId: string; packageRole: string; packageVersion: string | null } | null;
+  pendingRebootProvenanceRefs: string[];
+  currentActionProvenanceRef: string | null;
   steps: { status: string }[];
 }
 
 export function RebootResumeStep() {
-  const { resolvedPlaybook, skipStep, completeStep } = useWizardStore();
+  const { resolvedPlaybook, executionResult, detectedProfile, skipStep, completeStep } = useWizardStore();
   const [resuming, setResuming] = useState(false);
   const [rebootError, setRebootError] = useState<string | null>(null);
+  const [journalState, setJournalState] = useState<JournalState | null>(null);
 
   // Check if any included action requires reboot
   const needsReboot = resolvedPlaybook?.phases.some((phase) =>
@@ -32,6 +38,28 @@ export function RebootResumeStep() {
     }
   }, [needsReboot, skipStep]);
 
+  useEffect(() => {
+    if (!needsReboot) return;
+
+    let cancelled = false;
+    const loadJournalState = async () => {
+      try {
+        const { serviceCall } = await import("@/lib/service");
+        const result = await serviceCall<JournalState | null>("journal.state");
+        if (!cancelled && result.ok) {
+          setJournalState(result.data);
+        }
+      } catch {
+        // Renderer should keep working even when the service journal is unavailable.
+      }
+    };
+
+    loadJournalState();
+    return () => {
+      cancelled = true;
+    };
+  }, [needsReboot]);
+
   if (!needsReboot) {
     return (
       <div className="flex h-full items-center justify-center">
@@ -44,7 +72,12 @@ export function RebootResumeStep() {
     setRebootError(null);
     try {
       const { serviceCall } = await import("@/lib/service");
-      const result = await serviceCall("system.reboot", { reason: "playbook-reboot-required" });
+      const result = await serviceCall("system.reboot", {
+        reason: "playbook-reboot-required",
+        journalContext: resolvedPlaybook
+          ? buildRebootJournalContext(resolvedPlaybook, detectedProfile?.id)
+          : undefined,
+      });
       if (!result.ok) {
         setRebootError("Reboot failed. Please restart your computer manually.");
       }
@@ -99,6 +132,13 @@ export function RebootResumeStep() {
         <p className="max-w-sm text-xs text-ink-secondary">
           Some optimizations require a restart to take effect. You can restart now or continue and restart later.
         </p>
+        {resolvedPlaybook && (
+          <p className="max-w-sm text-[10px] text-ink-tertiary">
+            Resume chain: {journalState?.planId ?? buildRebootJournalContext(resolvedPlaybook, detectedProfile?.id).planId}
+            {" · "}
+            {(journalState?.pendingRebootProvenanceRefs.length ?? getPendingRebootProvenanceRefs(resolvedPlaybook, executionResult).length)} package-backed reboot refs
+          </p>
+        )}
       </div>
 
       {rebootError && (

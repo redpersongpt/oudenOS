@@ -1,0 +1,151 @@
+# ─── Performance: Latency Optimization ────────────────────────────────────────
+# CPU dynamic tick, global timer, core parking, boost mode, min processor state, MMCSS.
+
+module: performance.latency
+name: "Latency Optimization"
+description: "Optimize CPU and scheduler settings for lowest latency: dynamic tick, timer resolution, core parking, boost mode, processor state, MMCSS gaming profile"
+category: performance
+
+actions:
+  - id: cpu.disable-dynamic-tick
+    name: "Disable Dynamic Tick and Enable Platform Timer"
+    description: "Disable the Windows dynamic tick mechanism via BCD, forcing a fixed timer interrupt interval. Enable the platform hardware timer (HPET/TSC) as the tick source to provide the lowest possible timer jitter."
+    rationale: "Dynamic tick allows Windows to skip timer interrupts during idle periods to save power. This creates variable timer resolution that can cause micro-stutter in latency-sensitive workloads."
+    risk: medium
+    tier: premium
+    default: false
+    requiresReboot: true
+    reversible: true
+    estimatedSeconds: 5
+    blockedProfiles:
+      - office_laptop
+      - low_spec_system
+    bcdChanges:
+      - element: disabledynamictick
+        newValue: "yes"
+      - element: useplatformtick
+        newValue: "yes"
+
+  - id: cpu.global-timer-resolution
+    name: "Enable Global Timer Resolution Requests"
+    description: "Set the GlobalTimerResolutionRequests registry key to restore system-wide timer resolution behavior on Windows 11+"
+    rationale: "Starting with Windows 10 2004, timer resolution requests became per-process instead of global. The GlobalTimerResolutionRequests registry key (Windows 11+ / Server 2022+) restores the pre-2004 global behavior."
+    risk: low
+    tier: premium
+    default: true
+    requiresReboot: true
+    reversible: true
+    estimatedSeconds: 3
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKLM
+        path: "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\kernel"
+        valueName: GlobalTimerResolutionRequests
+        value: 1
+        valueType: DWord
+
+  - id: cpu.disable-core-parking
+    name: "Disable CPU Core Parking"
+    description: "Set minimum processor cores to 100% on AC power, preventing Windows from parking cores during low load. Parked cores introduce 1-5 ms wake latency."
+    rationale: "Core parking powers down unused cores to save energy, but causes micro-stutter when a game suddenly needs more threads and the OS must unpark them."
+    risk: low
+    tier: premium
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 3
+    blockedProfiles:
+      - office_laptop
+      - low_spec_system
+    powerChanges:
+      - settingPath: "54533251-82be-4824-96c1-47b60b740d00/0cc5b647-c1df-4637-891a-dec35c318583"
+        newValue: "100"
+
+  - id: cpu.aggressive-boost-mode
+    name: "Aggressive Processor Boost Mode"
+    description: "Set processor performance boost policy to Aggressive (mode 2). This prioritizes sustained maximum turbo frequency over power efficiency."
+    rationale: "Default boost mode may downscale frequency under sustained load to save power. Aggressive mode tells the OS to keep boosting as long as thermal and power limits allow."
+    risk: low
+    tier: premium
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 3
+    blockedProfiles:
+      - office_laptop
+      - low_spec_system
+    powerChanges:
+      - settingPath: "54533251-82be-4824-96c1-47b60b740d00/be337238-0d82-4146-a960-4f3749d470c7"
+        newValue: "2"
+
+  - id: cpu.min-processor-state-100
+    name: "Set Minimum Processor State to 100%"
+    description: "Prevent the CPU from throttling below maximum frequency. Sets both minimum and maximum processor state to 100%."
+    rationale: "When min processor state is below 100%, the CPU may reduce its frequency during brief idle moments, causing frame time spikes."
+    risk: low
+    tier: premium
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 3
+    blockedProfiles:
+      - office_laptop
+      - low_spec_system
+    powerChanges:
+      - settingPath: "54533251-82be-4824-96c1-47b60b740d00/893dee8e-2bef-41e0-89c6-b55d0929964c"
+        newValue: "100"
+      - settingPath: "54533251-82be-4824-96c1-47b60b740d00/bc5038f7-23e0-4960-96da-33abaf5935ec"
+        newValue: "100"
+
+  - id: scheduler.mmcss-gaming-profile
+    name: "MMCSS Gaming Profile - Maximum Priority"
+    description: "Configure the Multimedia Class Scheduler Service (MMCSS) Games task profile with maximum GPU priority (8), elevated CPU scheduling priority (6), High scheduling category, and a 1 ms clock rate"
+    rationale: "MMCSS manages thread priorities for multimedia applications. GPU Priority=8, Scheduling Category=High, Priority=6 places game threads above most background processes."
+    risk: low
+    tier: premium
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 5
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKLM
+        path: "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Games"
+        valueName: "GPU Priority"
+        value: 8
+        valueType: DWord
+      - hive: HKLM
+        path: "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Games"
+        valueName: Priority
+        value: 6
+        valueType: DWord
+      - hive: HKLM
+        path: "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Games"
+        valueName: "Scheduling Category"
+        value: "High"
+        valueType: String
+      - hive: HKLM
+        path: "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Games"
+        valueName: "Clock Rate"
+        value: 10000
+        valueType: DWord
+      - hive: HKLM
+        path: "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Games"
+        valueName: Affinity
+        value: 0
+        valueType: DWord
+      - hive: HKLM
+        path: "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Games"
+        valueName: "Background Only"
+        value: "False"
+        valueType: String
+      - hive: HKLM
+        path: "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile"
+        valueName: NetworkThrottlingIndex
+        value: 4294967295
+        valueType: DWord
+      - hive: HKLM
+        path: "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile"
+        valueName: SystemResponsiveness
+        value: 0
+        valueType: DWord

@@ -55,6 +55,9 @@ export interface ResolvedPlaybook {
   totalExpertOnly: number;
   phases: PlaybookPhase[];
   blockedReasons: { actionId: string; reason: string }[];
+  decisionSummary?: QuestionnaireDecisionSummary | null;
+  actionProvenance?: ActionDecisionProvenance[];
+  packageRefs?: WizardPackageRefs | null;
 }
 
 export interface PlaybookPhase {
@@ -74,6 +77,90 @@ export interface PlaybookResolvedAction {
   blockedReason: string | null;
   requiresReboot: boolean;
   warningMessage: string | null;
+}
+
+export interface QuestionnaireDecisionEffect {
+  questionKey: string;
+  questionLabel: string;
+  selectedValue: string | boolean;
+  selectedTitle: string;
+  includedActions: string[];
+  blockedActions: string[];
+  blockedReason: string | null;
+  warnings: string[];
+  requiresReboot: boolean;
+  estimatedActions: number;
+  estimatedBlocked: number;
+  estimatedPreserved: number;
+  riskLevel: "safe" | "mixed" | "aggressive" | "expert";
+  optionSourceRef?: string;
+}
+
+export interface QuestionnaireDecisionSummary {
+  estimatedActions: number;
+  estimatedBlocked: number;
+  estimatedPreserved: number;
+  rebootRequired: boolean;
+  riskLevel: "safe" | "mixed" | "aggressive" | "expert";
+  warnings: string[];
+  selectedEffects: QuestionnaireDecisionEffect[];
+}
+
+export interface WizardPackageRefs {
+  manifestRef: string;
+  wizardMetadataRef: string;
+  resolvedPlaybookRef: string;
+  decisionSummaryRef: string;
+  actionProvenanceRef: string;
+  executionJournalRef: string;
+  injectionMetadataRef: string;
+  // DB-backed ledger identity (used by ledger.createPlan)
+  planId?: string;
+  packageId?: string;
+  packageRole?: string;
+  packageVersion?: string | null;
+  packageSourceRef?: string | null;
+  sourceCommit?: string | null;
+}
+
+export interface ActionDecisionSource {
+  effect: "include" | "block";
+  questionKey: string;
+  questionLabel: string;
+  selectedValue: string | boolean;
+  selectedTitle: string;
+  blockedReason: string | null;
+  warnings: string[];
+  riskLevel: "safe" | "mixed" | "aggressive" | "expert";
+  requiresReboot: boolean;
+  estimatedPreserved: number;
+  optionSourceRef: string;
+}
+
+export interface ActionDecisionProvenance {
+  actionId: string;
+  actionName: string;
+  phaseId: string;
+  phaseName: string;
+  description: string;
+  defaultStatus: PlaybookResolvedAction["status"];
+  finalStatus: PlaybookResolvedAction["status"];
+  inclusionReason: string | null;
+  blockedReason: string | null;
+  preservedReason: string | null;
+  reasonOrigin: "base-playbook" | "user-choice" | "profile-safeguard" | "build-gate";
+  warnings: string[];
+  riskLevel: "safe" | "mixed" | "aggressive" | "expert";
+  expertOnly: boolean;
+  requiresReboot: boolean;
+  offlineApplicable: boolean;
+  imageApplicable: boolean;
+  sourceQuestionIds: string[];
+  sourceOptionValues: Array<string | boolean>;
+  sources: ActionDecisionSource[];
+  packageSourceRef: string;
+  journalRecordRefs: string[];
+  executionResultRef: string | null;
 }
 
 // ─── App bundle ──────────────────────────────────────────────────────────────
@@ -138,6 +225,24 @@ export interface AppInstallSummary {
   failed: number;
 }
 
+export interface ExecutionJournalEntry {
+  id: string;
+  kind: "playbook-action" | "personalization" | "app-install";
+  actionId: string;
+  label: string;
+  phase: string;
+  status: "applied" | "failed";
+  startedAt: string;
+  finishedAt: string;
+  durationMs: number;
+  questionKeys: string[];
+  selectedValues: Array<string | boolean>;
+  packageSourceRef: string | null;
+  provenanceRef: string | null;
+  resultRef: string;
+  errorMessage: string | null;
+}
+
 export interface ExecutionResult {
   applied: number;
   failed: number;
@@ -145,6 +250,9 @@ export interface ExecutionResult {
   preserved: number;
   personalizationApplied: boolean;
   appInstall: AppInstallSummary;
+  packageKind: "user-resolved";
+  packageRefs: WizardPackageRefs | null;
+  journal: ExecutionJournalEntry[];
 }
 
 // ─── Store interface ─────────────────────────────────────────────────────────

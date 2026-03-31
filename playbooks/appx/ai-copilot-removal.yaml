@@ -1,0 +1,153 @@
+# ─── AppX: AI & Copilot Removal ──────────────────────────────────────────────
+# Removes Microsoft Copilot, Recall, and AI-related components.
+
+module: appx.ai-copilot-removal
+name: "AI & Copilot Removal"
+description: "Remove Microsoft Copilot, AI-powered features, and related components"
+category: appx
+
+actions:
+  - id: appx.remove-copilot
+    name: "Remove Microsoft Copilot"
+    description: "Remove the Microsoft Copilot app and disable Copilot integration points"
+    rationale: "Copilot maintains persistent cloud connections, collects interaction data, and adds a persistent sidebar/taskbar presence. Removing eliminates AI assistant overhead."
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: false
+    estimatedSeconds: 10
+    blockedProfiles: []
+    packages:
+      - Microsoft.Copilot
+      - Microsoft.Windows.Ai.Copilot.Provider
+    registryChanges:
+      - hive: HKCU
+        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsCopilot"
+        valueName: TurnOffWindowsCopilot
+        value: 1
+        valueType: DWord
+      - hive: HKLM
+        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsCopilot"
+        valueName: TurnOffWindowsCopilot
+        value: 1
+        valueType: DWord
+
+  - id: appx.remove-recall
+    name: "Disable Windows Recall"
+    description: "Disable Windows Recall — AI-powered screenshot-based activity history"
+    rationale: "Recall takes periodic screenshots and indexes them with AI. Disabling prevents local screenshot collection and AI processing."
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 5
+    minWindowsBuild: 26100
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKCU
+        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsAI"
+        valueName: DisableAIDataAnalysis
+        value: 1
+        valueType: DWord
+      - hive: HKLM
+        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsAI"
+        valueName: DisableAIDataAnalysis
+        value: 1
+        valueType: DWord
+
+  - id: appx.remove-clipchamp
+    name: "Remove Clipchamp"
+    description: "Remove Microsoft's trash video editor"
+    rationale: "Pre-installed video editor that most users replace with dedicated editing software"
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: false
+    estimatedSeconds: 8
+    blockedProfiles:
+      - vm_cautious
+    packages:
+      - Clipchamp.Clipchamp
+
+  - id: appx.remove-teams-consumer
+    name: "Remove Microsoft Teams (Consumer)"
+    description: "Remove the consumer version of Microsoft Teams pre-installed in Windows 11"
+    rationale: "Consumer Teams auto-starts and runs in the background. Work PC users should install Teams separately from their org portal."
+    risk: low
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: false
+    estimatedSeconds: 10
+    blockedProfiles:
+      - work_pc
+    packages:
+      - MicrosoftTeams
+      - MSTeams
+
+  - id: appx.remove-family-safety
+    name: "Remove Microsoft Family"
+    description: "Remove Microsoft Family Safety / Family app"
+    rationale: "Family app provides parental controls. Unnecessary on personal/gaming machines."
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: false
+    estimatedSeconds: 8
+    blockedProfiles:
+      - vm_cautious
+    packages:
+      - MicrosoftCorporationII.MicrosoftFamily
+
+  - id: appx.remove-news
+    name: "Remove Microsoft News / Start"
+    description: "Remove Microsoft News and MSN news feed integration"
+    rationale: "News app provides clickbait content in Start Menu and taskbar. Removing eliminates ad-driven content delivery."
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: false
+    estimatedSeconds: 8
+    blockedProfiles:
+      - vm_cautious
+    packages:
+      - Microsoft.BingNews
+      - Microsoft.MicrosoftNews
+
+  - id: appx.remove-3d-apps
+    name: "Remove 3D Viewer & Paint 3D"
+    description: "Remove 3D Viewer, Paint 3D, and 3D Builder"
+    rationale: "3D apps are rarely used and have been deprecated in newer Windows versions"
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: false
+    estimatedSeconds: 10
+    blockedProfiles:
+      - vm_cautious
+    packages:
+      - Microsoft.Microsoft3DViewer
+      - Microsoft.MSPaint  # Paint 3D (classic Paint is separate)
+      - Microsoft.3DBuilder
+
+  - id: appx.remove-outlook-new
+    name: "Remove New Outlook"
+    description: "Remove the new Outlook for Windows app that replaces Mail & Calendar"
+    rationale: "New Outlook syncs through Microsoft cloud servers, proxying email through Microsoft infrastructure even for non-Microsoft accounts. Privacy-conscious users should use desktop Outlook or Thunderbird."
+    risk: low
+    tier: free
+    default: false
+    requiresReboot: false
+    reversible: false
+    estimatedSeconds: 8
+    blockedProfiles:
+      - work_pc
+      - office_laptop
+    packages:
+      - Microsoft.OutlookForWindows

@@ -1,0 +1,26 @@
+# ─── Profile: Gaming Laptop ───────────────────────────────────────────────────
+# Aggressive gaming optimization but preserves battery/power management,
+# WiFi services, Bluetooth, and laptop-specific hardware services.
+
+profile: gaming_laptop
+inherits: gaming_desktop
+
+block:
+  - services.disable-bluetooth-support    # Laptops use BT for controllers/headsets
+  - services.disable-geolocation          # Laptop location may be useful
+  - services.disable-map-services         # May use maps on portable device
+  - tasks.disable-defrag-tasks            # Laptop storage health matters
+
+preserve:
+  - power_management
+  - wifi_services
+  - bluetooth
+  - battery_saver
+  - adaptive_brightness
+  - airplane_mode
+
+override:
+  performance.aggressive-power:
+    default: false    # Don't disable power management on laptops
+  performance.disable-core-parking:
+    default: false    # Core parking saves battery

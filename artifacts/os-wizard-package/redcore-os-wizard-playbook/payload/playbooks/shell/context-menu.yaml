@@ -1,0 +1,26 @@
+# ─── Shell: Context Menu ──────────────────────────────────────────────────────
+# Restores classic Windows right-click context menu.
+
+module: shell.context-menu
+name: "Classic Context Menu"
+description: "Restore the full classic right-click context menu on Windows 11"
+category: shell
+
+actions:
+  - id: shell.restore-classic-context-menu
+    name: "Restore Classic Context Menu"
+    description: "Restore the full classic right-click context menu on Windows 11"
+    rationale: "Restores full right-click context menu on Win11, removing the need to click 'Show more options'"
+    risk: low
+    tier: free
+    default: true
+    requiresReboot: true
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKCU
+        path: "Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a8}\\InprocServer32"
+        valueName: ""
+        value: ""
+        valueType: String

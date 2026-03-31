@@ -1,0 +1,82 @@
+# ─── Performance: Storage Optimization ────────────────────────────────────────
+# Disables last access timestamps, 8.3 filenames, enables write caching, disables indexing.
+
+module: performance.storage
+name: "Storage Optimization"
+description: "Optimize storage performance: disable NTFS last access timestamps, 8.3 filenames, enable write caching, and disable search indexing"
+category: performance
+
+actions:
+  - id: storage.disable-last-access
+    name: "Disable NTFS Last Access Timestamp"
+    description: "Disable updating the last access timestamp on files and directories, reducing write I/O for every file read operation"
+    rationale: "By default, NTFS updates the LastAccessTime metadata on every file read. This generates substantial unnecessary write I/O for gaming workloads."
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKLM
+        path: "SYSTEM\\CurrentControlSet\\Control\\FileSystem"
+        valueName: NtfsDisableLastAccessUpdate
+        value: 2147483651
+        valueType: DWord
+
+  - id: storage.disable-8dot3-filenames
+    name: "Disable 8.3 Short Filename Creation"
+    description: "Disable creation of legacy 8.3-character (DOS-compatible) short filenames on NTFS volumes, reducing directory enumeration overhead"
+    rationale: "NTFS creates a legacy 8.3 short filename entry for every file for DOS compatibility. This doubles the number of directory entries, slowing file operations."
+    risk: low
+    tier: premium
+    default: true
+    requiresReboot: true
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKLM
+        path: "SYSTEM\\CurrentControlSet\\Control\\FileSystem"
+        valueName: NtfsDisable8dot3NameCreation
+        value: 1
+        valueType: DWord
+
+  - id: storage.enable-write-caching
+    name: "Enable Disk Write Caching"
+    description: "Enable write caching on storage devices, allowing the OS to buffer writes in RAM before flushing to disk for improved I/O throughput"
+    rationale: "Write caching allows the storage driver to acknowledge writes before they reach the physical media, dramatically improving random write performance."
+    risk: low
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 3
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKLM
+        path: "SYSTEM\\CurrentControlSet\\Enum\\SCSI\\<device>\\<instance>\\Device Parameters\\Disk"
+        valueName: UserWriteCacheSetting
+        value: 1
+        valueType: DWord
+      - hive: HKLM
+        path: "SYSTEM\\CurrentControlSet\\Enum\\SCSI\\<device>\\<instance>\\Device Parameters\\Disk"
+        valueName: CacheIsPowerProtected
+        value: 1
+        valueType: DWord
+
+  - id: storage.disable-indexing
+    name: "Disable Windows Search Indexing Service"
+    description: "Disable the Windows Search indexing service (WSearch) which continuously scans and indexes file contents in the background"
+    rationale: "The Windows Search indexer consumes disk I/O, CPU, and memory by continuously crawling files for content indexing. On gaming systems, disabling it eliminates background I/O contention."
+    risk: low
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 3
+    blockedProfiles: []
+    serviceChanges:
+      - name: WSearch
+        startupType: Disabled

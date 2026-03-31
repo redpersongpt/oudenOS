@@ -1,0 +1,310 @@
+# ─── Shell: Ads, Tips & Suggestions Removal ──────────────────────────────────
+# Comprehensive ad/suggestion/notification removal from the redcore internal cleanup set.
+
+module: shell.ads
+name: "Ads, Tips & Suggestions Removal"
+description: "Remove all Windows ads, tips, suggestions, Edge bloat, and notification spam"
+category: shell
+
+actions:
+  - id: shell.disable-web-search
+    name: "Disable Web Search in Start"
+    description: "Remove Bing web results from Windows Search"
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKCU
+        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\Explorer"
+        valueName: DisableSearchBoxSuggestions
+        value: 1
+        valueType: DWord
+
+  - id: shell.disable-lock-screen-tips
+    name: "Disable Lock Screen Tips"
+    description: "Remove tips and ads from the Windows lock screen"
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKCU
+        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager"
+        valueName: SubscribedContent-338387Enabled
+        value: 0
+        valueType: DWord
+      - hive: HKCU
+        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager"
+        valueName: RotatingLockScreenOverlayEnabled
+        value: 0
+        valueType: DWord
+
+  - id: shell.disable-start-menu-suggestions
+    name: "Disable Start Menu Suggestions"
+    description: "Remove app suggestions and recommendations from the Start menu"
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKCU
+        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager"
+        valueName: SystemPaneSuggestionsEnabled
+        value: 0
+        valueType: DWord
+      - hive: HKCU
+        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager"
+        valueName: SubscribedContent-338388Enabled
+        value: 0
+        valueType: DWord
+      - hive: HKCU
+        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced"
+        valueName: Start_IrisRecommendations
+        value: 0
+        valueType: DWord
+
+  - id: shell.disable-content-delivery
+    name: "Disable Content Delivery Subscriptions"
+    description: "Remove all Windows content delivery ads — welcome experience, tips, suggested content"
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKCU
+        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager"
+        valueName: SubscribedContent-310093Enabled
+        value: 0
+        valueType: DWord
+      - hive: HKCU
+        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager"
+        valueName: SubscribedContent-338389Enabled
+        value: 0
+        valueType: DWord
+      - hive: HKCU
+        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager"
+        valueName: SubscribedContent-338393Enabled
+        value: 0
+        valueType: DWord
+      - hive: HKCU
+        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager"
+        valueName: SubscribedContent-353694Enabled
+        value: 0
+        valueType: DWord
+      - hive: HKCU
+        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager"
+        valueName: SubscribedContent-353696Enabled
+        value: 0
+        valueType: DWord
+      - hive: HKCU
+        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager"
+        valueName: SubscribedContent-353698Enabled
+        value: 0
+        valueType: DWord
+      - hive: HKCU
+        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager"
+        valueName: SoftLandingEnabled
+        value: 0
+        valueType: DWord
+      - hive: HKCU
+        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager"
+        valueName: SilentInstalledAppsEnabled
+        value: 0
+        valueType: DWord
+
+  - id: shell.disable-account-notifications
+    name: "Disable Account Notifications"
+    description: "Remove Microsoft account and setup nag notifications"
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKCU
+        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced"
+        valueName: Start_AccountNotifications
+        value: 0
+        valueType: DWord
+      - hive: HKCU
+        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\SystemSettings\\AccountNotifications"
+        valueName: EnableAccountNotifications
+        value: 0
+        valueType: DWord
+      - hive: HKCU
+        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\UserProfileEngagement"
+        valueName: ScoobeSystemSettingEnabled
+        value: 0
+        valueType: DWord
+
+  - id: shell.disable-suggested-notifications
+    name: "Disable Suggested & Backup Notifications"
+    description: "Remove Windows toast notifications for suggestions and backup reminders"
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKCU
+        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Notifications\\Settings\\Windows.SystemToast.Suggested"
+        valueName: Enabled
+        value: 0
+        valueType: DWord
+      - hive: HKCU
+        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Notifications\\Settings\\Windows.SystemToast.BackupReminder"
+        valueName: Enabled
+        value: 0
+        valueType: DWord
+
+  - id: shell.disable-sync-provider-ads
+    name: "Disable Sync Provider Notifications"
+    description: "Remove OneDrive and sync provider ads from File Explorer"
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKCU
+        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced"
+        valueName: ShowSyncProviderNotifications
+        value: 0
+        valueType: DWord
+
+  - id: shell.disable-phone-link-suggestions
+    name: "Disable Phone Link Suggestions"
+    description: "Remove Phone Link opt-in prompts and mobility suggestions"
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKCU
+        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Mobility"
+        valueName: OptedIn
+        value: 0
+        valueType: DWord
+
+  - id: shell.disable-desktop-spotlight
+    name: "Disable Desktop Spotlight"
+    description: "Remove the Learn about this picture desktop spotlight overlay"
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKCU
+        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\HideDesktopIcons\\NewStartPanel"
+        valueName: "{2cc5ca98-6485-489a-920e-b3e88a6ccce3}"
+        value: 1
+        valueType: DWord
+
+  - id: shell.disable-edge-ads
+    name: "Disable Edge Ads & Suggestions"
+    description: "Remove ads, shopping, recommendations, and promotional content from Microsoft Edge"
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKLM
+        path: "SOFTWARE\\Policies\\Microsoft\\Edge"
+        valueName: PersonalizationReportingEnabled
+        value: 0
+        valueType: DWord
+      - hive: HKLM
+        path: "SOFTWARE\\Policies\\Microsoft\\Edge"
+        valueName: DiagnosticData
+        value: 0
+        valueType: DWord
+      - hive: HKLM
+        path: "SOFTWARE\\Policies\\Microsoft\\Edge"
+        valueName: ShowRecommendationsEnabled
+        value: 0
+        valueType: DWord
+      - hive: HKLM
+        path: "SOFTWARE\\Policies\\Microsoft\\Edge"
+        valueName: EdgeShoppingAssistantEnabled
+        value: 0
+        valueType: DWord
+      - hive: HKLM
+        path: "SOFTWARE\\Policies\\Microsoft\\Edge"
+        valueName: NewTabPageContentEnabled
+        value: 0
+        valueType: DWord
+      - hive: HKLM
+        path: "SOFTWARE\\Policies\\Microsoft\\Edge"
+        valueName: NewTabPageHideDefaultTopSites
+        value: 1
+        valueType: DWord
+      - hive: HKLM
+        path: "SOFTWARE\\Policies\\Microsoft\\Edge"
+        valueName: SpotlightExperiencesAndRecommendationsEnabled
+        value: 0
+        valueType: DWord
+      - hive: HKLM
+        path: "SOFTWARE\\Policies\\Microsoft\\Edge"
+        valueName: TabServicesEnabled
+        value: 0
+        valueType: DWord
+      - hive: HKLM
+        path: "SOFTWARE\\Policies\\Microsoft\\Edge"
+        valueName: UserFeedbackAllowed
+        value: 0
+        valueType: DWord
+      - hive: HKLM
+        path: "SOFTWARE\\Policies\\Microsoft\\Edge"
+        valueName: DefaultBrowserSettingsCampaignEnabled
+        value: 0
+        valueType: DWord
+      - hive: HKLM
+        path: "SOFTWARE\\Policies\\Microsoft\\Edge"
+        valueName: ShowAcrobatSubscriptionButton
+        value: 0
+        valueType: DWord
+
+  - id: shell.disable-settings-ads
+    name: "Disable Settings Ads"
+    description: "Remove Microsoft 365 and promotional content from Windows Settings"
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKCU
+        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced"
+        valueName: ShowSettingsHomeAds
+        value: 0
+        valueType: DWord

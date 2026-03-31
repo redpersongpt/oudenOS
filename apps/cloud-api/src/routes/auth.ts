@@ -332,7 +332,7 @@ export const authRoutes: FastifyPluginAsync = async (app) => {
       const resetLink = `${appUrl}/reset-password?token=${rawToken}`;
       sendEmail({
         to: email,
-        subject: "Reset your redcore-Tuning password",
+        subject: "Password reset",
         html: resetPasswordTemplate(user.name ?? "", resetLink),
       }).catch((err) => app.log.error({ err }, "Failed to send reset password email"));
     }

@@ -2,9 +2,9 @@
 // Last chance to review before applying. Shows: profile, playbook stats,
 // selected apps, personalization choices. Apply button is the primary CTA.
 
-import { useEffect, type ElementType, type ReactNode, type ReactElement } from "react";
+import { useEffect, useState, type ElementType, type ReactNode, type ReactElement } from "react";
 import { motion } from "framer-motion";
-import { Shield, Package, Palette, Download } from "lucide-react";
+import { Shield, Package, Palette, Download, AlertTriangle, Archive } from "lucide-react";
 import { useWizardStore } from "@/stores/wizard-store";
 import { useDecisionsStore } from "@/stores/decisions-store";
 import { resolveEffectivePersonalization } from "@/lib/personalization-resolution";
@@ -29,10 +29,58 @@ export function FinalReviewStep() {
   const { detectedProfile, resolvedPlaybook, selectedAppIds, personalization, setStepReady } = useWizardStore();
   const answers = useDecisionsStore((state) => state.answers);
   const effectivePersonalization = resolveEffectivePersonalization(detectedProfile?.id, personalization, answers);
+  const [exportState, setExportState] = useState<"idle" | "busy" | "done" | "error">("idle");
+  const [exportMessage, setExportMessage] = useState("");
 
   useEffect(() => {
     setStepReady("final-review", Boolean(detectedProfile && resolvedPlaybook));
   }, [detectedProfile, resolvedPlaybook, setStepReady]);
+
+  const handleExportPackage = async () => {
+    if (!detectedProfile || !resolvedPlaybook) return;
+
+    setExportState("busy");
+    setExportMessage("");
+
+    const api = (window as unknown as {
+      redcore?: {
+        wizard?: {
+          exportPackage?: (state: Record<string, unknown>) => Promise<Record<string, unknown>>;
+        };
+      };
+    }).redcore;
+
+    if (!api?.wizard?.exportPackage) {
+      setExportState("error");
+      setExportMessage("Export API is not available in this environment.");
+      return;
+    }
+
+    const result = await api.wizard.exportPackage({
+      detectedProfile,
+      playbookPreset: resolvedPlaybook.preset,
+      answers,
+      resolvedPlaybook,
+      decisionSummary: resolvedPlaybook.decisionSummary ?? null,
+      actionProvenance: resolvedPlaybook.actionProvenance ?? [],
+      personalization: effectivePersonalization,
+      selectedAppIds,
+    });
+
+    if (result.ok) {
+      setExportState("done");
+      setExportMessage(`Package exported${typeof result.path === "string" ? ` to ${result.path}` : ""}.`);
+      return;
+    }
+
+    if (result.cancelled) {
+      setExportState("idle");
+      return;
+    }
+
+    setExportState("error");
+    setExportMessage(typeof result.error === "string" ? result.error : "Export failed.");
+  };
 
   const sections = [
     {
@@ -63,6 +111,31 @@ export function FinalReviewStep() {
                   <p className="text-[10px] text-ink-tertiary">Phases</p>
                 </div>
               </div>
+              {resolvedPlaybook.decisionSummary && (
+                <div className="mt-3 space-y-2">
+                  <p className="text-[11px] text-ink-secondary">
+                    Decision risk: <span className="font-semibold text-ink">{resolvedPlaybook.decisionSummary.riskLevel}</span>
+                    {resolvedPlaybook.decisionSummary.estimatedPreserved > 0 && (
+                      <>
+                        {" · "}
+                        <span className="font-semibold text-ink">
+                          {resolvedPlaybook.decisionSummary.estimatedPreserved} preserved
+                        </span>
+                      </>
+                    )}
+                  </p>
+                  {resolvedPlaybook.decisionSummary.warnings.length > 0 && (
+                    <div className="space-y-1">
+                      {resolvedPlaybook.decisionSummary.warnings.slice(0, 2).map((warning) => (
+                        <p key={warning} className="flex items-start gap-1.5 text-[10px] leading-relaxed text-amber-400">
+                          <AlertTriangle className="mt-0.5 h-3 w-3 shrink-0" />
+                          <span>{warning}</span>
+                        </p>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
             </ReviewSection>
           ),
         }
@@ -109,6 +182,21 @@ export function FinalReviewStep() {
         <p className="mt-1.5 text-[13px] text-ink-secondary">
           Review your transformation plan. A rollback snapshot will be created before any changes.
         </p>
+        <div className="mt-3 flex flex-wrap items-center gap-3">
+          <button
+            onClick={handleExportPackage}
+            disabled={!detectedProfile || !resolvedPlaybook || exportState === "busy"}
+            className="inline-flex items-center gap-2 rounded-lg border border-white/[0.08] bg-white/[0.03] px-3 py-2 text-[11px] font-semibold text-ink-secondary transition-colors hover:border-white/[0.16] hover:text-ink disabled:cursor-not-allowed disabled:text-ink-disabled"
+          >
+            <Archive className="h-3.5 w-3.5" />
+            {exportState === "busy" ? "Exporting package..." : "Export APBX Package"}
+          </button>
+          {exportMessage && (
+            <p className={`text-[11px] ${exportState === "error" ? "text-red-400" : "text-ink-secondary"}`}>
+              {exportMessage}
+            </p>
+          )}
+        </div>
       </div>
 
       <div className="space-y-3">

@@ -1,0 +1,80 @@
+# ─── AppX: Consumer Bloat Removal ─────────────────────────────────────────────
+# Removes pre-installed consumer bloatware, Cortana, Office Hub, and Phone Link.
+
+module: appx.consumer-bloat
+name: "Consumer Bloat Removal"
+description: "Remove pre-installed consumer bloatware apps including Cortana, Office Hub, and Phone Link"
+category: appx
+
+actions:
+  - id: appx.remove-consumer-bloat
+    name: "Remove Consumer Bloat Apps"
+    description: "Remove pre-installed consumer apps: BingNews, BingWeather, Solitaire, People, Maps, FeedbackHub, GetHelp, Getstarted, Todos, Cortana, MixedReality, Skype"
+    rationale: "Frees disk space and removes background processes from unused pre-installed apps"
+    risk: low
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: false
+    estimatedSeconds: 15
+    blockedProfiles:
+      - vm_cautious
+    packages:
+      - Microsoft.BingNews
+      - Microsoft.BingWeather
+      - Microsoft.MicrosoftSolitaireCollection
+      - Microsoft.People
+      - Microsoft.WindowsMaps
+      - Microsoft.WindowsFeedbackHub
+      - Microsoft.GetHelp
+      - Microsoft.Getstarted
+      - Microsoft.Todos
+      - Microsoft.549981C3F5F10
+      - Microsoft.MixedReality.Portal
+      - Microsoft.SkypeApp
+
+  - id: appx.remove-cortana
+    name: "Remove Cortana App"
+    description: "Remove the Cortana UWP application"
+    rationale: "Frees resources and removes a rarely-used voice assistant"
+    risk: low
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: false
+    estimatedSeconds: 10
+    blockedProfiles:
+      - vm_cautious
+    packages:
+      - Microsoft.549981C3F5F10
+
+  - id: appx.remove-office-hub
+    name: "Remove Get Office Hub"
+    description: "Remove the 'Get Office' promotional app that advertises Office 365"
+    rationale: "Removes a pure advertising/upsell app with no functional value"
+    risk: low
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: false
+    estimatedSeconds: 8
+    blockedProfiles:
+      - vm_cautious
+    packages:
+      - Microsoft.MicrosoftOfficeHub
+
+  - id: appx.remove-your-phone
+    name: "Remove Your Phone / Phone Link"
+    description: "Remove the Your Phone / Phone Link companion app"
+    rationale: "Removes background phone sync that most users do not use"
+    risk: low
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: false
+    estimatedSeconds: 8
+    blockedProfiles:
+      - work_pc
+      - vm_cautious
+    packages:
+      - Microsoft.YourPhone

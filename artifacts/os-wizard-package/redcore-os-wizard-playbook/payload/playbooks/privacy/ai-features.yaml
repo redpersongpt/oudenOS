@@ -1,0 +1,201 @@
+# ─── Privacy: AI Features ────────────────────────────────────────────────────
+# Comprehensive AI feature control from the redcore internal research set.
+
+module: privacy.ai
+name: "AI Feature Control"
+description: "Disable Windows AI features including Copilot, Recall, Click to Do, Edge AI, Paint AI, Notepad AI"
+category: privacy
+
+actions:
+  - id: privacy.disable-recall
+    name: "Disable Windows Recall"
+    description: "Disable the Windows Recall AI feature that captures screen activity"
+    rationale: "Recall continuously screenshots your activity; disabling protects privacy"
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    minWindowsBuild: 26100
+    registryChanges:
+      - hive: HKCU
+        path: "Software\\Policies\\Microsoft\\Windows\\WindowsAI"
+        valueName: DisableAIDataAnalysis
+        value: 1
+        valueType: DWord
+      - hive: HKLM
+        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsAI"
+        valueName: DisableAIDataAnalysis
+        value: 1
+        valueType: DWord
+      - hive: HKLM
+        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsAI"
+        valueName: AllowRecallEnablement
+        value: 0
+        valueType: DWord
+      - hive: HKLM
+        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsAI"
+        valueName: TurnOffSavingSnapshots
+        value: 1
+        valueType: DWord
+
+  - id: privacy.disable-click-to-do
+    name: "Disable Click to Do"
+    description: "Disable the AI-powered Click to Do overlay feature"
+    rationale: "Click to Do uses AI to analyze on-screen content and suggest actions"
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    minWindowsBuild: 26100
+    registryChanges:
+      - hive: HKLM
+        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsAI"
+        valueName: DisableClickToDo
+        value: 1
+        valueType: DWord
+      - hive: HKCU
+        path: "Software\\Policies\\Microsoft\\Windows\\WindowsAI"
+        valueName: DisableClickToDo
+        value: 1
+        valueType: DWord
+
+  - id: privacy.disable-ai-svc-autostart
+    name: "Prevent AI Service Auto Start"
+    description: "Set Windows AI Fabric service to manual startup instead of automatic"
+    rationale: "WSAIFabricSvc starts automatically and consumes resources for AI features"
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKLM
+        path: "SYSTEM\\CurrentControlSet\\Services\\WSAIFabricSvc"
+        valueName: Start
+        value: 3
+        valueType: DWord
+
+  - id: privacy.disable-edge-ai
+    name: "Disable Edge AI Features"
+    description: "Disable Copilot integration, AI sidebar, and AI-powered features in Microsoft Edge"
+    rationale: "Edge AI features send browsing context to cloud AI services"
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKLM
+        path: "SOFTWARE\\Policies\\Microsoft\\Edge"
+        valueName: HubsSidebarEnabled
+        value: 0
+        valueType: DWord
+      - hive: HKLM
+        path: "SOFTWARE\\Policies\\Microsoft\\Edge"
+        valueName: CopilotCDPPageContext
+        value: 0
+        valueType: DWord
+      - hive: HKLM
+        path: "SOFTWARE\\Policies\\Microsoft\\Edge"
+        valueName: CopilotPageContext
+        value: 0
+        valueType: DWord
+      - hive: HKLM
+        path: "SOFTWARE\\Policies\\Microsoft\\Edge"
+        valueName: EdgeHistoryAISearchEnabled
+        value: 0
+        valueType: DWord
+      - hive: HKLM
+        path: "SOFTWARE\\Policies\\Microsoft\\Edge"
+        valueName: ComposeInlineEnabled
+        value: 0
+        valueType: DWord
+      - hive: HKLM
+        path: "SOFTWARE\\Policies\\Microsoft\\Edge"
+        valueName: NewTabPageBingChatEnabled
+        value: 0
+        valueType: DWord
+
+  - id: privacy.disable-paint-ai
+    name: "Disable Paint AI Features"
+    description: "Disable AI-powered Cocreator, Image Creator, and Generative tools in Paint"
+    rationale: "Paint AI features send image data to cloud for processing"
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKLM
+        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Paint"
+        valueName: DisableCocreator
+        value: 1
+        valueType: DWord
+      - hive: HKLM
+        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Paint"
+        valueName: DisableImageCreator
+        value: 1
+        valueType: DWord
+      - hive: HKLM
+        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Paint"
+        valueName: DisableGenerativeFill
+        value: 1
+        valueType: DWord
+      - hive: HKLM
+        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Paint"
+        valueName: DisableGenerativeErase
+        value: 1
+        valueType: DWord
+      - hive: HKLM
+        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Paint"
+        valueName: DisableRemoveBackground
+        value: 1
+        valueType: DWord
+
+  - id: privacy.disable-notepad-ai
+    name: "Disable Notepad AI Features"
+    description: "Disable AI-powered text generation and rewriting in Notepad"
+    rationale: "Notepad AI features send text content to cloud"
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKLM
+        path: "SOFTWARE\\Policies\\WindowsNotepad"
+        valueName: DisableAIFeatures
+        value: 1
+        valueType: DWord
+
+  - id: privacy.disable-smart-app-control
+    name: "Disable Smart App Control"
+    description: "Disable cloud-based app reputation checking"
+    rationale: "Smart App Control sends app execution data to Microsoft cloud"
+    risk: low
+    tier: free
+    default: true
+    requiresReboot: true
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKLM
+        path: "SYSTEM\\CurrentControlSet\\Control\\CI\\Policy"
+        valueName: VerifiedAndReputablePolicyState
+        value: 0
+        valueType: DWord

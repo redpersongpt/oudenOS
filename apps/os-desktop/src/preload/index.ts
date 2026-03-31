@@ -35,6 +35,12 @@ const ALLOWED_METHODS = new Set([
   "journal.state",
   "journal.resume",
   "journal.cancel",
+  // Execution Ledger (DB-backed)
+  "ledger.createPlan",
+  "ledger.recordResult",
+  "ledger.markStarted",
+  "ledger.completePlan",
+  "ledger.query",
   // Verification
   "verify.registryValue",
   // System
@@ -86,5 +92,11 @@ contextBridge.exposeInMainWorld("redcore", {
 
   shell: {
     openExternal: (url: string) => ipcRenderer.invoke("shell:openExternal", url),
+  },
+
+  wizard: {
+    exportPackage: (state: Record<string, unknown>) => {
+      return ipcRenderer.invoke("wizard:exportPackage", state);
+    },
   },
 });

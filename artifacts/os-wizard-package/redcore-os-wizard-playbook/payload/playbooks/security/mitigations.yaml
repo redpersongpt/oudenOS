@@ -1,0 +1,57 @@
+# ─── Security: Mitigation Control ─────────────────────────────────────────────
+# Expert-only: Reduces SSBD mitigation and disables HVCI for performance.
+
+module: security.mitigations
+name: "Security Mitigation Control"
+description: "Reduce CPU security mitigations and hypervisor code integrity for maximum performance (expert-only)"
+category: security
+
+actions:
+  - id: security.reduce-ssbd-mitigation
+    name: "Reduce Speculative Store Bypass (SSBD) Mitigation"
+    description: "Disable the SSBD mitigation via FeatureSettingsOverride registry keys. This reduces a 2-8% performance overhead on syscall-heavy workloads but exposes the system to CVE-2018-3639."
+    rationale: "SSBD mitigates Spectre Variant 4. On dedicated gaming PCs not used for sensitive operations, the 2-8% overhead may not justify the protection."
+    risk: high
+    tier: premium
+    default: false
+    expertOnly: true
+    requiresReboot: true
+    reversible: true
+    estimatedSeconds: 3
+    blockedProfiles:
+      - work_pc
+      - office_laptop
+      - vm_cautious
+    registryChanges:
+      - hive: HKLM
+        path: "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management"
+        valueName: FeatureSettingsOverride
+        value: 8
+        valueType: DWord
+      - hive: HKLM
+        path: "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management"
+        valueName: FeatureSettingsOverrideMask
+        value: 3
+        valueType: DWord
+
+  - id: security.disable-hvci
+    name: "Disable Hypervisor-enforced Code Integrity"
+    description: "Disable HVCI (Hypervisor-enforced Code Integrity) which validates kernel-mode code integrity using the hypervisor, adding overhead to every driver load and some system calls"
+    rationale: "HVCI adds hypervisor-level validation overhead to kernel operations. On dedicated gaming PCs, disabling it reduces DPC latency and improves driver performance at the cost of reduced kernel security."
+    risk: high
+    tier: free
+    default: false
+    expertOnly: true
+    requiresReboot: true
+    reversible: true
+    estimatedSeconds: 3
+    blockedProfiles:
+      - work_pc
+      - office_laptop
+      - vm_cautious
+    registryChanges:
+      - hive: HKLM
+        path: "SYSTEM\\CurrentControlSet\\Control\\DeviceGuard\\Scenarios\\HypervisorEnforcedCodeIntegrity"
+        valueName: Enabled
+        value: 0
+        valueType: DWord
