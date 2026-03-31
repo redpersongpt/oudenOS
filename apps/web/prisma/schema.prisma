@@ -12,6 +12,7 @@ model User {
   email         String    @unique
   name          String?
   passwordHash  String?
+  passwordChangedAt      DateTime?
   passwordResetToken     String?
   passwordResetExpiresAt DateTime?
   image         String?
