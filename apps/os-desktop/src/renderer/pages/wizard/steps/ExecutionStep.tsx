@@ -423,10 +423,26 @@ export function ExecutionStep() {
 
       if (controller.signal.aborted) return;
 
-      // ── Done ──
+      // ── Done: complete ledger plan, then read authoritative final state ──
+      await serviceCall("ledger.completePlan", { planId }).catch(() => {});
+
+      // Query ledger for authoritative final counts
+      const ledgerResult = await serviceCall<{
+        totalCompleted?: number;
+        totalFailed?: number;
+        totalRemaining?: number;
+        status?: string;
+        steps?: Array<{ actionId: string; status: string }>;
+      }>("ledger.query", { planId });
+
+      const ledgerApplied = ledgerResult.ok && typeof ledgerResult.data?.totalCompleted === "number"
+        ? ledgerResult.data.totalCompleted
+        : journalEntries.filter((entry) => entry.status === "applied").length;
+      const ledgerFailed = ledgerResult.ok && typeof ledgerResult.data?.totalFailed === "number"
+        ? ledgerResult.data.totalFailed
+        : journalEntries.filter((entry) => entry.status === "failed").length;
+
       const skipped = personalizationFailed ? 1 : 0;
-      const appliedCount = journalEntries.filter((entry) => entry.status === "applied").length;
-      const failedCount = journalEntries.filter((entry) => entry.status === "failed").length;
       const executionJournalRef = playbook.packageRefs?.executionJournalRef ?? "state/execution-journal.json";
       const actionProvenance = (playbook.actionProvenance ?? []).map((entry) => {
         const matchingJournalRefs = journalEntries
@@ -444,8 +460,8 @@ export function ExecutionStep() {
       };
       setResolvedPlaybook(executionAwarePlaybook);
       setExecutionResult({
-        applied: appliedCount,
-        failed: failedCount,
+        applied: ledgerApplied,
+        failed: ledgerFailed,
         skipped,
         preserved: executionAwarePlaybook.totalBlocked,
         personalizationApplied,
@@ -454,9 +470,6 @@ export function ExecutionStep() {
         packageRefs: executionAwarePlaybook.packageRefs ?? null,
         journal: journalEntries,
       });
-
-      // Complete DB ledger plan
-      serviceCall("ledger.completePlan", { planId }).catch(() => {});
 
       timerRef.current = setTimeout(() => completeStep("execution"), 800);
     };
