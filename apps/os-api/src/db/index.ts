@@ -1,6 +1,10 @@
+// ─── Database Connection ──────────────────────────────────────────────────────
+// Uses pg (node-postgres) driver with canonical schema from @redcore/db.
+// Schema ownership lives in packages/db — this file only owns the connection.
+
 import { drizzle } from 'drizzle-orm/node-postgres';
 import pg from 'pg';
-import * as schema from './schema.js';
+import * as schema from '@redcore/db/schema';
 
 const databaseUrl = process.env.DATABASE_URL;
 if (!databaseUrl) {
@@ -26,3 +30,19 @@ export async function closeDb(): Promise<void> {
 }
 
 export { pool };
+
+// Re-export schema objects for route-level imports
+export {
+  users,
+  subscriptions,
+  refreshTokens,
+  paymentHistory,
+  machineActivations,
+  connectedAccounts,
+  userPreferences,
+  telemetryEvents,
+  adminAuditLog,
+  donations,
+  fleetGroups,
+  fleetMembers,
+} from '@redcore/db/schema';

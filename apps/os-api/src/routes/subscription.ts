@@ -3,7 +3,7 @@ import { z } from 'zod';
 import Stripe from 'stripe';
 import { eq } from 'drizzle-orm';
 import { db } from '../db/index.js';
-import { users, subscriptions } from '../db/schema.js';
+import { users, subscriptions } from '../db/index.js';
 import { requireAuth } from '../middleware/auth.js';
 
 // ---------------------------------------------------------------------------

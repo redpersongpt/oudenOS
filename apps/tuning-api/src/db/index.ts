@@ -1,8 +1,10 @@
 // ─── Database Connection ──────────────────────────────────────────────────────
+// Uses postgres-js driver with canonical schema from @redcore/db.
+// Schema ownership lives in packages/db — this file only owns the connection.
 
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
-import * as schema from "./schema.js";
+import * as schema from "@redcore/db/schema";
 
 const connectionString = process.env.DATABASE_URL;
 if (!connectionString) {
@@ -14,4 +16,13 @@ const queryClient = postgres(connectionString, {
 });
 export const db = drizzle(queryClient, { schema });
 
-export * from "./schema.js";
+// Re-export schema objects for route-level imports
+export {
+  users,
+  subscriptions,
+  refreshTokens,
+  paymentHistory,
+  machineActivations,
+  connectedAccounts,
+  userPreferences,
+} from "@redcore/db/schema";

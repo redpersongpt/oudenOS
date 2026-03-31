@@ -10,7 +10,7 @@ import {
   userPreferences,
   refreshTokens,
   connectedAccounts,
-} from '../db/schema.js';
+} from '../db/index.js';
 import {
   signAccessToken,
   signRefreshToken,
