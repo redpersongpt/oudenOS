@@ -1,0 +1,53 @@
+# ─── Profile: Office Laptop ───────────────────────────────────────────────────
+# Conservative tuning for office laptops, blocking battery-draining CPU/power actions.
+
+profile: office-laptop
+name: "Office Laptop"
+description: "Battery-aware profile for office laptops. Blocks CPU/power actions that drain battery life while still applying safe privacy, debloat, and shell optimizations."
+preset: balanced
+
+blockedActions:
+  # CPU latency actions - drain battery
+  - cpu.disable-dynamic-tick
+  - cpu.disable-core-parking
+  - cpu.aggressive-boost-mode
+  - cpu.min-processor-state-100
+  # Power actions - must preserve power management
+  - power.high-performance-plan
+  - power.disable-usb-selective-suspend
+  - power.disable-pcie-link-state-pm
+  # GPU actions - not relevant for office laptops
+  - gpu.nvidia-disable-dynamic-pstate
+  # Security mitigations - must remain enabled
+  - security.reduce-ssbd-mitigation
+  - security.disable-hvci
+
+modules:
+  - privacy.telemetry
+  - privacy.activity-tracking
+  - privacy.input-collection
+  - appx.consumer-bloat
+  - appx.microsoft-apps
+  - appx.gaming-apps
+  - services.telemetry-services
+  - services.consumer-services
+  - tasks.telemetry-tasks
+  - performance.gpu
+  - performance.memory
+  - performance.power
+  - performance.storage
+  - shell.context-menu
+  - shell.explorer
+  - startup-shutdown.startup
+  - startup-shutdown.boot
+  - networking.protocols
+  - networking.latency
+  - networking.security
+  - security.update-control
+
+notes:
+  - "All CPU power-hungry actions are blocked to preserve battery life"
+  - "Power plan remains Balanced for adaptive power management"
+  - "USB/PCIe power management remains enabled for battery savings"
+  - "Security mitigations stay enabled for corporate safety"
+  - "Safe privacy and debloat actions still apply"

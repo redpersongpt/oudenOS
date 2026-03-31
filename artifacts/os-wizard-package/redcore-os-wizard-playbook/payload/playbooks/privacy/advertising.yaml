@@ -1,0 +1,61 @@
+# ─── Privacy: Advertising & Tracking ─────────────────────────────────────────
+
+module: privacy.advertising
+name: "Advertising & Tracking"
+description: "Disable ad targeting, app launch tracking, and tailored experiences"
+category: privacy
+
+actions:
+  - id: privacy.disable-app-launch-tracking
+    name: "Disable App Launch Tracking"
+    description: "Stop tracking which apps you open for Start menu personalization"
+    rationale: "Prevents Windows from building a usage profile of your app activity"
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKCU
+        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced"
+        valueName: Start_TrackProgs
+        value: 0
+        valueType: DWord
+
+  - id: privacy.disable-tailored-experiences
+    name: "Disable Tailored Experiences"
+    description: "Stop Microsoft from using diagnostic data for personalized tips and ads"
+    rationale: "Prevents Microsoft from using your data to show targeted suggestions"
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKCU
+        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Privacy"
+        valueName: TailoredExperiencesWithDiagnosticDataEnabled
+        value: 0
+        valueType: DWord
+
+  - id: privacy.disable-online-tips
+    name: "Disable Online Tips"
+    description: "Disable online tips and help content from Microsoft"
+    rationale: "Online tips send queries to Microsoft servers"
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKLM
+        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer"
+        valueName: AllowOnlineTips
+        value: 0
+        valueType: DWord

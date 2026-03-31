@@ -1,0 +1,158 @@
+# ─── AppX: Microsoft Apps Removal ─────────────────────────────────────────────
+# Removes built-in Microsoft apps that most users replace with alternatives.
+
+module: appx.microsoft-apps
+name: "Microsoft Apps Removal"
+description: "Remove built-in Microsoft apps: Mail, Camera, Alarms, Sound Recorder, Sticky Notes, Feedback Hub, Maps, Get Help, Power Automate, Solitaire"
+category: appx
+
+actions:
+  - id: appx.remove-mail-calendar
+    name: "Remove Mail and Calendar"
+    description: "Remove the built-in Mail and Calendar app (microsoft.windowscommunicationsapps)"
+    rationale: "Frees resources and removes unused inbox app; most users prefer Outlook or webmail"
+    risk: low
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: false
+    estimatedSeconds: 8
+    blockedProfiles:
+      - vm_cautious
+    packages:
+      - microsoft.windowscommunicationsapps
+
+  - id: appx.remove-camera
+    name: "Remove Windows Camera"
+    description: "Remove the built-in Windows Camera app (Microsoft.WindowsCamera)"
+    rationale: "Removes unused camera app; third-party camera apps or video call apps provide their own capture"
+    risk: low
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: false
+    estimatedSeconds: 8
+    blockedProfiles:
+      - vm_cautious
+    packages:
+      - Microsoft.WindowsCamera
+
+  - id: appx.remove-alarms
+    name: "Remove Alarms & Clock"
+    description: "Remove the built-in Alarms & Clock app (Microsoft.WindowsAlarms)"
+    rationale: "Removes rarely-used timer/alarm app to reduce bloat"
+    risk: low
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: false
+    estimatedSeconds: 8
+    blockedProfiles:
+      - vm_cautious
+    packages:
+      - Microsoft.WindowsAlarms
+
+  - id: appx.remove-sound-recorder
+    name: "Remove Sound Recorder"
+    description: "Remove the built-in Sound Recorder app (Microsoft.WindowsSoundRecorder)"
+    rationale: "Removes rarely-used audio recording app; dedicated audio software is preferred"
+    risk: low
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: false
+    estimatedSeconds: 8
+    blockedProfiles:
+      - vm_cautious
+    packages:
+      - Microsoft.WindowsSoundRecorder
+
+  - id: appx.remove-sticky-notes
+    name: "Remove Sticky Notes"
+    description: "Remove the built-in Sticky Notes app (Microsoft.MicrosoftStickyNotes)"
+    rationale: "Removes background-syncing notes app; alternatives like Notion or Obsidian preferred"
+    risk: low
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: false
+    estimatedSeconds: 8
+    blockedProfiles:
+      - vm_cautious
+    packages:
+      - Microsoft.MicrosoftStickyNotes
+
+  - id: appx.remove-feedback-hub
+    name: "Remove Feedback Hub"
+    description: "Remove the Feedback Hub app (Microsoft.WindowsFeedbackHub)"
+    rationale: "Removes telemetry feedback app that most users never open"
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: false
+    estimatedSeconds: 8
+    blockedProfiles:
+      - vm_cautious
+    packages:
+      - Microsoft.WindowsFeedbackHub
+
+  - id: appx.remove-maps
+    name: "Remove Windows Maps"
+    description: "Remove the built-in Windows Maps app (Microsoft.WindowsMaps)"
+    rationale: "Removes unused mapping app; web-based maps are preferred on desktop"
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: false
+    estimatedSeconds: 8
+    blockedProfiles:
+      - vm_cautious
+    packages:
+      - Microsoft.WindowsMaps
+
+  - id: appx.remove-get-help
+    name: "Remove Get Help"
+    description: "Remove the Get Help app (Microsoft.GetHelp)"
+    rationale: "Removes rarely-used help app; online support resources are more comprehensive"
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: false
+    estimatedSeconds: 8
+    blockedProfiles:
+      - vm_cautious
+    packages:
+      - Microsoft.GetHelp
+
+  - id: appx.remove-power-automate
+    name: "Remove Power Automate"
+    description: "Remove the Power Automate Desktop app (Microsoft.PowerAutomateDesktop)"
+    rationale: "Removes unused automation app that most home users never configure"
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: false
+    estimatedSeconds: 8
+    blockedProfiles:
+      - vm_cautious
+    packages:
+      - Microsoft.PowerAutomateDesktop
+
+  - id: appx.remove-solitaire
+    name: "Remove Solitaire"
+    description: "Remove the Solitaire Collection app (Microsoft.MicrosoftSolitaireCollection)"
+    rationale: "Removes ad-supported game app that runs background processes"
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: false
+    estimatedSeconds: 8
+    blockedProfiles:
+      - vm_cautious
+    packages:
+      - Microsoft.MicrosoftSolitaireCollection

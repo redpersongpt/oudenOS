@@ -3,7 +3,7 @@
 // Each line is a JSON-RPC request; each response is a single JSON line.
 
 use crate::db::Database;
-use crate::{appbundle, assessor, classifier, executor, personalizer, playbook, rollback, transformer};
+use crate::{appbundle, assessor, classifier, executor, ledger, personalizer, playbook, rollback, transformer};
 use anyhow::Result;
 use serde::{Deserialize, Serialize};
 use std::{fs, path::PathBuf, time::Instant};
@@ -34,8 +34,86 @@ struct RpcError {
 
 #[derive(Debug, Serialize, Deserialize)]
 struct ResumeJournalFile {
+    plan_id: String,
     reason: String,
     created_at: String,
+    updated_at: String,
+    package: Option<ResumeJournalPackage>,
+    current_action: Option<ResumeJournalAction>,
+    completed_actions: Vec<ResumeJournalAction>,
+    failed_actions: Vec<ResumeJournalAction>,
+    pending_reboot_actions: Vec<ResumeJournalAction>,
+    last_resume_at: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+struct ResumeJournalPackage {
+    plan_id: String,
+    package_id: String,
+    package_role: String,
+    package_version: Option<String>,
+    package_source_ref: Option<String>,
+    action_provenance_ref: Option<String>,
+    execution_journal_ref: Option<String>,
+    source_commit: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+struct ResumeJournalAction {
+    id: String,
+    action_id: String,
+    label: String,
+    phase: String,
+    package_source_ref: Option<String>,
+    provenance_ref: Option<String>,
+    question_keys: Vec<String>,
+    selected_values: Vec<String>,
+    requires_reboot: bool,
+    status: String,
+    result_status: Option<String>,
+    rollback_snapshot_id: Option<String>,
+    error: Option<String>,
+    created_at: String,
+    updated_at: String,
+    completed_at: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+struct RpcExecutionJournalContext {
+    package: RpcExecutionJournalPackage,
+    action: RpcExecutionJournalAction,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+struct RpcExecutionJournalPackage {
+    plan_id: String,
+    package_id: String,
+    package_role: String,
+    package_version: Option<String>,
+    package_source_ref: Option<String>,
+    action_provenance_ref: Option<String>,
+    execution_journal_ref: Option<String>,
+    source_commit: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+struct RpcExecutionJournalAction {
+    action_id: String,
+    label: String,
+    phase: String,
+    package_source_ref: Option<String>,
+    provenance_ref: Option<String>,
+    question_keys: Vec<String>,
+    selected_values: Vec<String>,
+    requires_reboot: bool,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+struct RpcRebootJournalContext {
+    plan_id: String,
+    package_id: String,
+    package_role: String,
+    package_version: Option<String>,
 }
 
 impl RpcResponse {
@@ -116,9 +194,29 @@ async fn dispatch(
                 .get("reason")
                 .and_then(|v| v.as_str())
                 .unwrap_or("playbook-reboot-required");
+            let reboot_context = params
+                .get("journalContext")
+                .cloned()
+                .and_then(|value| serde_json::from_value::<RpcRebootJournalContext>(value).ok());
 
-            match schedule_system_reboot(reason).await {
-                Ok(result) => RpcResponse::ok(id, result),
+            // Mark reboot in DB ledger if a plan exists
+            if let Some(ref ctx) = reboot_context {
+                if let Err(e) = ledger::mark_reboot_pending(db, &ctx.plan_id, reason) {
+                    tracing::error!(error = %e, "Failed to mark reboot in DB ledger");
+                }
+            }
+
+            match schedule_system_reboot(reason, reboot_context).await {
+                Ok(result) => {
+                    let detail = format!(
+                        "reboot scheduled · planId={} · packageId={} · packageRole={}",
+                        result.get("planId").and_then(|value| value.as_str()).unwrap_or("null"),
+                        result.get("packageId").and_then(|value| value.as_str()).unwrap_or("null"),
+                        result.get("packageRole").and_then(|value| value.as_str()).unwrap_or("null"),
+                    );
+                    let _ = append_audit_log(db, "journal", "reboot_scheduled", &detail, "info");
+                    RpcResponse::ok(id, result)
+                }
                 Err(e) => {
                     tracing::error!(error = %e, "Failed to schedule reboot");
                     RpcResponse::err(id, -60, format!("Failed to schedule reboot: {}", e))
@@ -310,11 +408,95 @@ async fn dispatch(
             };
 
             tracing::info!(action_id = action_id, "Applying action");
+            let journal_context = params
+                .get("journalContext")
+                .cloned()
+                .and_then(|value| serde_json::from_value::<RpcExecutionJournalContext>(value).ok());
+            let audit_context = journal_context.as_ref().map(|context| {
+                format!(
+                    "package={} role={} provenanceRef={} packageSourceRef={}",
+                    context.package.package_id,
+                    context.package.package_role,
+                    context.action.provenance_ref.as_deref().unwrap_or("null"),
+                    context.action.package_source_ref.as_deref().unwrap_or("null"),
+                )
+            });
 
-            match executor::execute_action(db, action_id, &action_data) {
-                Ok(outcome) => RpcResponse::ok(id, outcome),
+            match executor::execute_action(db, action_id, &action_data, audit_context.as_deref()) {
+                Ok(outcome) => {
+                    let result_status = outcome
+                        .get("status")
+                        .and_then(|value| value.as_str())
+                        .unwrap_or("failed");
+                    let rollback_snapshot_id = outcome
+                        .get("rollbackSnapshotId")
+                        .or_else(|| outcome.get("snapshotId"))
+                        .and_then(|value| value.as_str())
+                        .map(|value| value.to_string());
+
+                    let mut enriched_outcome = outcome.clone();
+
+                    // ── Record in DB-backed ledger (primary truth) ──
+                    if let Some(context) = journal_context.as_ref() {
+                        let plan_id = &context.package.plan_id;
+
+                        // Record result in DB ledger
+                        let ledger_result = ledger::ActionResult {
+                            action_id: action_id.to_string(),
+                            status: result_status.to_string(),
+                            rollback_snapshot_id: rollback_snapshot_id.clone(),
+                            error_message: if result_status == "failed" {
+                                Some(format!("Action {} returned failure", action_id))
+                            } else {
+                                None
+                            },
+                            duration_ms: None,
+                        };
+                        if let Err(e) = ledger::record_action_result(db, plan_id, &ledger_result) {
+                            tracing::error!(action_id = action_id, error = %e, "Failed to record in DB ledger");
+                        }
+
+                        // Also write to legacy JSON sidecar for backward compat
+                        match upsert_execution_journal(context, result_status, rollback_snapshot_id.clone(), None) {
+                            Ok(entry) => {
+                                if let Some(object) = enriched_outcome.as_object_mut() {
+                                    object.insert("packageId".to_string(), serde_json::json!(context.package.package_id));
+                                    object.insert("packageRole".to_string(), serde_json::json!(context.package.package_role));
+                                    object.insert("packageSourceRef".to_string(), serde_json::json!(context.action.package_source_ref));
+                                    object.insert("provenanceRef".to_string(), serde_json::json!(context.action.provenance_ref));
+                                    object.insert(
+                                        "journalRef".to_string(),
+                                        serde_json::json!(format!(
+                                            "{}#/{}",
+                                            context.package.execution_journal_ref.clone().unwrap_or_else(|| "state/execution-journal.json".to_string()),
+                                            context.action.action_id
+                                        )),
+                                    );
+                                    object.insert("resumePlanId".to_string(), serde_json::json!(entry.plan_id));
+                                }
+                            }
+                            Err(error) => {
+                                tracing::error!(action_id = action_id, error = %error, "Failed to persist legacy journal sidecar");
+                            }
+                        }
+                    }
+
+                    RpcResponse::ok(id, enriched_outcome)
+                }
                 Err(e) => {
                     tracing::error!(action_id = action_id, error = %e, "Action execution failed");
+
+                    // Record failure in DB ledger if context available
+                    if let Some(context) = journal_context.as_ref() {
+                        let _ = ledger::record_action_result(db, &context.package.plan_id, &ledger::ActionResult {
+                            action_id: action_id.to_string(),
+                            status: "failed".to_string(),
+                            rollback_snapshot_id: None,
+                            error_message: Some(format!("{}", e)),
+                            duration_ms: None,
+                        });
+                    }
+
                     RpcResponse::err(id, -20, format!("Action failed: {}", e))
                 }
             }
@@ -373,36 +555,191 @@ async fn dispatch(
             }
         }
 
-        // ── Journal / reboot-resume ────────────────────────────────────
-        "journal.state" => match load_resume_journal() {
-            Ok(Some(state)) => RpcResponse::ok(id, state),
-            Ok(None) => RpcResponse::ok(id, serde_json::Value::Null),
-            Err(e) => {
-                tracing::error!(error = %e, "Failed to read resume journal");
-                RpcResponse::err(id, -61, format!("Failed to read resume journal: {}", e))
+        // ── Journal / reboot-resume (DB-backed ledger, fallback to JSON sidecar) ──
+        "journal.state" => {
+            // Primary: DB-backed ledger
+            match ledger::load_active_plan(db) {
+                Ok(Some(plan)) => {
+                    match ledger::query_plan_journal_state(db, &plan.id) {
+                        Ok(state) => RpcResponse::ok(id, state),
+                        Err(e) => {
+                            tracing::error!(error = %e, "Failed to query DB ledger state");
+                            // Fallback to JSON sidecar
+                            match load_resume_journal() {
+                                Ok(Some(state)) => RpcResponse::ok(id, state),
+                                Ok(None) => RpcResponse::ok(id, serde_json::Value::Null),
+                                Err(e2) => RpcResponse::err(id, -61, format!("DB ledger failed: {}, sidecar also failed: {}", e, e2)),
+                            }
+                        }
+                    }
+                }
+                Ok(None) => {
+                    // No active DB plan — check legacy JSON sidecar
+                    match load_resume_journal() {
+                        Ok(Some(state)) => RpcResponse::ok(id, state),
+                        Ok(None) => RpcResponse::ok(id, serde_json::Value::Null),
+                        Err(e) => {
+                            tracing::error!(error = %e, "Failed to read resume journal");
+                            RpcResponse::err(id, -61, format!("Failed to read resume journal: {}", e))
+                        }
+                    }
+                }
+                Err(e) => {
+                    tracing::error!(error = %e, "Failed to query DB ledger");
+                    // Fallback
+                    match load_resume_journal() {
+                        Ok(Some(state)) => RpcResponse::ok(id, state),
+                        Ok(None) => RpcResponse::ok(id, serde_json::Value::Null),
+                        Err(e2) => RpcResponse::err(id, -61, format!("DB: {}, sidecar: {}", e, e2)),
+                    }
+                }
             }
         },
 
-        "journal.resume" => match clear_resume_journal() {
-            Ok(()) => RpcResponse::ok(
-                id,
-                serde_json::json!({
-                    "status": "complete",
-                    "resumed": 0,
-                }),
-            ),
-            Err(e) => {
-                tracing::error!(error = %e, "Failed to clear resume journal");
-                RpcResponse::err(id, -62, format!("Failed to resume journal: {}", e))
+        "journal.resume" => {
+            // Primary: DB-backed resume — loads remaining queue, returns actions for re-dispatch
+            match ledger::load_active_plan(db) {
+                Ok(Some(plan)) if plan.status == "paused_reboot" => {
+                    match ledger::resume_plan(db, &plan.id) {
+                        Ok(resume_result) => {
+                            let remaining_count = resume_result.remaining_actions.len();
+                            let package_id = resume_result.package.as_ref().map(|p| p.package_id.clone());
+                            let package_role = resume_result.package.as_ref().map(|p| p.package_role.clone());
+
+                            // Build remaining action list for renderer re-dispatch
+                            let remaining_actions: Vec<serde_json::Value> = resume_result.remaining_actions.iter().map(|entry| {
+                                serde_json::json!({
+                                    "actionId": entry.action_id,
+                                    "actionName": entry.action_name,
+                                    "phase": entry.phase,
+                                    "queuePosition": entry.queue_position,
+                                    "packageSourceRef": entry.package_source_ref,
+                                    "provenanceRef": entry.provenance_ref,
+                                    "questionKeys": serde_json::from_str::<serde_json::Value>(&entry.question_keys_json).unwrap_or(serde_json::json!([])),
+                                    "selectedValues": serde_json::from_str::<serde_json::Value>(&entry.selected_values_json).unwrap_or(serde_json::json!([])),
+                                    "requiresReboot": entry.requires_reboot,
+                                    "riskLevel": entry.risk_level,
+                                    "expertOnly": entry.expert_only,
+                                })
+                            }).collect();
+
+                            let detail = format!(
+                                "DB resume · planId={} · packageId={} · remaining={}",
+                                plan.id,
+                                package_id.clone().unwrap_or_else(|| "null".to_string()),
+                                remaining_count,
+                            );
+                            let _ = append_audit_log(db, "journal", "resume_from_db_ledger", &detail, "info");
+
+                            // Also clear legacy sidecar if it exists
+                            let _ = clear_resume_journal();
+
+                            RpcResponse::ok(
+                                id,
+                                serde_json::json!({
+                                    "status": "resumed",
+                                    "resumed": remaining_count,
+                                    "planId": plan.id,
+                                    "packageId": package_id,
+                                    "packageRole": package_role,
+                                    "remainingActions": remaining_actions,
+                                }),
+                            )
+                        }
+                        Err(e) => {
+                            tracing::error!(error = %e, "DB ledger resume failed");
+                            RpcResponse::err(id, -62, format!("DB ledger resume failed: {}", e))
+                        }
+                    }
+                }
+                Ok(Some(_plan)) => {
+                    // Plan exists but not in paused_reboot state
+                    RpcResponse::ok(id, serde_json::json!({
+                        "status": "complete",
+                        "resumed": 0,
+                        "planId": serde_json::Value::Null,
+                        "packageId": serde_json::Value::Null,
+                        "packageRole": serde_json::Value::Null,
+                        "remainingActions": [],
+                    }))
+                }
+                Ok(None) => {
+                    // No DB plan — try legacy sidecar
+                    match read_resume_journal_file() {
+                        Ok(Some(mut entry)) => {
+                            let resumed = entry.pending_reboot_actions.len();
+                            let resumed_at = chrono::Utc::now().to_rfc3339();
+                            entry.last_resume_at = Some(resumed_at.clone());
+                            entry.updated_at = resumed_at.clone();
+
+                            let resumed_actions = entry.pending_reboot_actions.clone();
+                            for action in &resumed_actions {
+                                let mut resumed_action = action.clone();
+                                resumed_action.status = "completed".to_string();
+                                resumed_action.result_status = Some("resumed".to_string());
+                                resumed_action.updated_at = resumed_at.clone();
+                                resumed_action.completed_at = Some(resumed_at.clone());
+                                entry.completed_actions.push(resumed_action);
+                            }
+                            entry.pending_reboot_actions.clear();
+                            entry.current_action = None;
+
+                            if let Err(error) = write_resume_journal_file(&entry) {
+                                tracing::error!(error = %error, "Failed to persist resumed journal state");
+                            }
+
+                            let plan_id = entry.plan_id.clone();
+                            let (package_id, package_role) = resume_package_summary(&entry);
+
+                            let detail = format!(
+                                "legacy sidecar resume · planId={} · packageId={} · resumed={}",
+                                plan_id,
+                                package_id.clone().unwrap_or_else(|| "null".to_string()),
+                                resumed,
+                            );
+                            let _ = append_audit_log(db, "journal", "resume_legacy_sidecar", &detail, "info");
+
+                            RpcResponse::ok(id, serde_json::json!({
+                                "status": "complete",
+                                "resumed": resumed,
+                                "planId": plan_id,
+                                "packageId": package_id,
+                                "packageRole": package_role,
+                                "remainingActions": [],
+                            }))
+                        }
+                        Ok(None) => RpcResponse::ok(id, serde_json::json!({
+                            "status": "complete",
+                            "resumed": 0,
+                            "planId": serde_json::Value::Null,
+                            "packageId": serde_json::Value::Null,
+                            "packageRole": serde_json::Value::Null,
+                            "remainingActions": [],
+                        })),
+                        Err(e) => RpcResponse::err(id, -62, format!("Failed to resume: {}", e)),
+                    }
+                }
+                Err(e) => {
+                    tracing::error!(error = %e, "DB ledger query failed during resume");
+                    RpcResponse::err(id, -62, format!("Resume failed: {}", e))
+                }
             }
         },
 
-        "journal.cancel" => match clear_resume_journal() {
-            Ok(()) => RpcResponse::ok(id, serde_json::json!({ "status": "cancelled" })),
-            Err(e) => {
-                tracing::error!(error = %e, "Failed to cancel resume journal");
-                RpcResponse::err(id, -63, format!("Failed to cancel journal: {}", e))
+        "journal.cancel" => {
+            // Cancel in DB ledger first, then clear legacy sidecar
+            let mut db_cancelled = false;
+            if let Ok(Some(plan)) = ledger::load_active_plan(db) {
+                if let Err(e) = ledger::cancel_plan(db, &plan.id) {
+                    tracing::error!(error = %e, "Failed to cancel DB ledger plan");
+                } else {
+                    db_cancelled = true;
+                }
             }
+            let _ = clear_resume_journal();
+            let _ = append_audit_log(db, "journal", "resume_cancelled",
+                &format!("cancelled (db={})", db_cancelled), "info");
+            RpcResponse::ok(id, serde_json::json!({ "status": "cancelled" }))
         },
 
         // ── Full pipeline: assess + classify + plan in one call ─────────
@@ -683,6 +1020,126 @@ async fn dispatch(
             }
         }
 
+        // ── Execution Ledger: DB-backed plan/queue management ────────────
+        "ledger.createPlan" => {
+            let package = match serde_json::from_value::<ledger::PackageIdentity>(
+                params.get("package").cloned().unwrap_or(serde_json::Value::Null)
+            ) {
+                Ok(p) => p,
+                Err(e) => return RpcResponse::err(id, -3, format!("Invalid package identity: {}", e)),
+            };
+            let profile = params.get("profile").and_then(|v| v.as_str()).unwrap_or("gaming_desktop");
+            let preset = params.get("preset").and_then(|v| v.as_str()).unwrap_or("balanced");
+            let actions: Vec<ledger::QueuedAction> = params.get("actions")
+                .and_then(|v| serde_json::from_value(v.clone()).ok())
+                .unwrap_or_default();
+
+            if actions.is_empty() {
+                return RpcResponse::err(id, -3, "No actions provided for execution plan".into());
+            }
+
+            match ledger::create_plan(db, &package, profile, preset, &actions) {
+                Ok(plan_id) => {
+                    let _ = append_audit_log(db, "ledger", "plan_created",
+                        &format!("planId={} actions={} package={}", plan_id, actions.len(), package.package_id), "info");
+                    RpcResponse::ok(id, serde_json::json!({
+                        "planId": plan_id,
+                        "totalActions": actions.len(),
+                        "status": "running",
+                    }))
+                }
+                Err(e) => {
+                    tracing::error!(error = %e, "Failed to create execution plan");
+                    RpcResponse::err(id, -70, format!("Failed to create plan: {}", e))
+                }
+            }
+        }
+
+        "ledger.recordResult" => {
+            let plan_id = match params.get("planId").and_then(|v| v.as_str()) {
+                Some(p) => p,
+                None => return RpcResponse::err(id, -3, "Missing param: planId".into()),
+            };
+            let result = match serde_json::from_value::<ledger::ActionResult>(
+                params.get("result").cloned().unwrap_or(serde_json::Value::Null)
+            ) {
+                Ok(r) => r,
+                Err(e) => return RpcResponse::err(id, -3, format!("Invalid action result: {}", e)),
+            };
+
+            match ledger::record_action_result(db, plan_id, &result) {
+                Ok(()) => RpcResponse::ok(id, serde_json::json!({ "status": "recorded" })),
+                Err(e) => {
+                    tracing::error!(error = %e, "Failed to record action result in ledger");
+                    RpcResponse::err(id, -71, format!("Failed to record result: {}", e))
+                }
+            }
+        }
+
+        "ledger.markStarted" => {
+            let plan_id = match params.get("planId").and_then(|v| v.as_str()) {
+                Some(p) => p,
+                None => return RpcResponse::err(id, -3, "Missing param: planId".into()),
+            };
+            let action_id = match params.get("actionId").and_then(|v| v.as_str()) {
+                Some(a) => a,
+                None => return RpcResponse::err(id, -3, "Missing param: actionId".into()),
+            };
+
+            match ledger::mark_action_started(db, plan_id, action_id) {
+                Ok(()) => RpcResponse::ok(id, serde_json::json!({ "status": "started" })),
+                Err(e) => RpcResponse::err(id, -72, format!("Failed to mark started: {}", e)),
+            }
+        }
+
+        "ledger.completePlan" => {
+            let plan_id = match params.get("planId").and_then(|v| v.as_str()) {
+                Some(p) => p,
+                None => return RpcResponse::err(id, -3, "Missing param: planId".into()),
+            };
+
+            match ledger::complete_plan(db, plan_id) {
+                Ok(()) => {
+                    let _ = clear_resume_journal(); // clean up legacy sidecar
+                    let _ = append_audit_log(db, "ledger", "plan_completed",
+                        &format!("planId={}", plan_id), "info");
+                    RpcResponse::ok(id, serde_json::json!({ "status": "completed" }))
+                }
+                Err(e) => RpcResponse::err(id, -73, format!("Failed to complete plan: {}", e)),
+            }
+        }
+
+        "ledger.query" => {
+            let plan_id = params.get("planId").and_then(|v| v.as_str());
+
+            // If planId given, query that plan. Otherwise query the active plan.
+            let target_plan_id = if let Some(pid) = plan_id {
+                pid.to_string()
+            } else {
+                match ledger::load_active_plan(db) {
+                    Ok(Some(plan)) => plan.id,
+                    Ok(None) => return RpcResponse::ok(id, serde_json::Value::Null),
+                    Err(e) => return RpcResponse::err(id, -74, format!("Failed to find active plan: {}", e)),
+                }
+            };
+
+            let include_ledger = params.get("includeLedger").and_then(|v| v.as_bool()).unwrap_or(false);
+
+            match ledger::query_plan_journal_state(db, &target_plan_id) {
+                Ok(mut state) => {
+                    if include_ledger {
+                        if let Ok(entries) = ledger::query_ledger_entries(db, &target_plan_id) {
+                            if let Some(obj) = state.as_object_mut() {
+                                obj.insert("ledgerEvents".to_string(), serde_json::json!(entries));
+                            }
+                        }
+                    }
+                    RpcResponse::ok(id, state)
+                }
+                Err(e) => RpcResponse::err(id, -74, format!("Ledger query failed: {}", e)),
+            }
+        }
+
         // ── Unknown method ──────────────────────────────────────────────
         other => {
             tracing::warn!(method = other, "Unknown RPC method");
@@ -763,44 +1220,156 @@ fn sanitize_reboot_reason(reason: &str) -> String {
     }
 }
 
-fn journal_entry_to_state(entry: ResumeJournalFile) -> serde_json::Value {
+fn sanitize_selected_values(values: &[String]) -> Vec<String> {
+    values
+        .iter()
+        .map(|value| {
+            value
+                .chars()
+                .filter(|c| !c.is_control())
+                .collect::<String>()
+                .chars()
+                .take(200)
+                .collect()
+        })
+        .collect()
+}
+
+fn package_ref_or_null(value: &Option<String>) -> serde_json::Value {
+    value
+        .as_ref()
+        .map(|entry| serde_json::json!(entry))
+        .unwrap_or(serde_json::Value::Null)
+}
+
+fn journal_action_to_state(
+    plan_id: &str,
+    package: Option<&ResumeJournalPackage>,
+    step_order: usize,
+    action: &ResumeJournalAction,
+) -> serde_json::Value {
     serde_json::json!({
-        "planId": "resume-reboot",
-        "currentStepId": "reboot-pending",
-        "lastCompletedStepId": null,
-        "overallProgress": 100,
-        "requiresReboot": true,
-        "canResume": true,
-        "completedActionIds": [],
-        "failedActionIds": [],
-        "steps": [{
-            "id": "reboot-pending",
-            "planId": "resume-reboot",
-            "stepType": "reboot_pending",
-            "stepOrder": 0,
-            "status": "awaiting_reboot",
-            "actionId": null,
-            "description": entry.reason,
-            "createdAt": entry.created_at,
-            "updatedAt": entry.created_at,
-            "completedAt": null,
-            "error": null,
-        }],
+        "id": action.id,
+        "planId": plan_id,
+        "stepType": "apply_action",
+        "stepOrder": step_order,
+        "status": action.status,
+        "actionId": action.action_id,
+        "description": action.label,
+        "createdAt": action.created_at,
+        "updatedAt": action.updated_at,
+        "completedAt": action.completed_at,
+        "error": action.error,
+        "phase": action.phase,
+        "packageId": package.map(|entry| entry.package_id.clone()),
+        "packageRole": package.map(|entry| entry.package_role.clone()),
+        "packageSourceRef": package_ref_or_null(&action.package_source_ref),
+        "provenanceRef": package_ref_or_null(&action.provenance_ref),
+        "questionKeys": action.question_keys,
+        "selectedValues": action.selected_values,
+        "rollbackSnapshotId": package_ref_or_null(&action.rollback_snapshot_id),
+        "requiresReboot": action.requires_reboot,
+        "rebootBoundary": action.requires_reboot && action.status == "awaiting_reboot",
+        "resultStatus": package_ref_or_null(&action.result_status),
     })
 }
 
-fn write_resume_journal(reason: &str) -> anyhow::Result<ResumeJournalFile> {
-    let entry = ResumeJournalFile {
-        reason: sanitize_reboot_reason(reason),
-        created_at: chrono::Utc::now().to_rfc3339(),
-    };
+fn journal_entry_to_state(entry: ResumeJournalFile) -> serde_json::Value {
+    let mut steps: Vec<serde_json::Value> = entry
+        .completed_actions
+        .iter()
+        .enumerate()
+        .map(|(index, action)| journal_action_to_state(&entry.plan_id, entry.package.as_ref(), index, action))
+        .collect();
 
-    let path = resume_journal_path()?;
-    fs::write(&path, serde_json::to_vec_pretty(&entry)?)?;
-    Ok(entry)
+    let completed_count = steps.len();
+    let failed_steps = entry.failed_actions.iter().enumerate().map(|(index, action)| {
+        journal_action_to_state(&entry.plan_id, entry.package.as_ref(), completed_count + index, action)
+    });
+    steps.extend(failed_steps);
+
+    let pending_count = steps.len();
+    let pending_steps = entry.pending_reboot_actions.iter().enumerate().map(|(index, action)| {
+        journal_action_to_state(&entry.plan_id, entry.package.as_ref(), pending_count + index, action)
+    });
+    steps.extend(pending_steps);
+
+    let current_action_id = entry.current_action.as_ref().map(|action| action.action_id.clone());
+    let current_action_provenance_ref = entry
+        .current_action
+        .as_ref()
+        .and_then(|action| action.provenance_ref.clone());
+    let current_action_package_source_ref = entry
+        .current_action
+        .as_ref()
+        .and_then(|action| action.package_source_ref.clone());
+    let current_action_question_keys = entry
+        .current_action
+        .as_ref()
+        .map(|action| action.question_keys.clone())
+        .unwrap_or_default();
+    let current_action_selected_values = entry
+        .current_action
+        .as_ref()
+        .map(|action| action.selected_values.clone())
+        .unwrap_or_default();
+    let pending_reboot_action_ids = entry
+        .pending_reboot_actions
+        .iter()
+        .map(|action| action.action_id.clone())
+        .collect::<Vec<_>>();
+    let pending_reboot_provenance_refs = entry
+        .pending_reboot_actions
+        .iter()
+        .filter_map(|action| action.provenance_ref.clone())
+        .collect::<Vec<_>>();
+    let current_step_id = entry
+        .current_action
+        .as_ref()
+        .map(|action| action.id.clone())
+        .or_else(|| entry.pending_reboot_actions.last().map(|action| action.id.clone()))
+        .or_else(|| entry.completed_actions.last().map(|action| action.id.clone()))
+        .unwrap_or_else(|| "reboot-pending".to_string());
+
+    serde_json::json!({
+        "planId": entry.plan_id,
+        "currentStepId": current_step_id,
+        "lastCompletedStepId": entry.completed_actions.last().map(|action| action.id.clone()),
+        "overallProgress": if entry.pending_reboot_actions.is_empty() { 100 } else { 95 },
+        "requiresReboot": !entry.pending_reboot_actions.is_empty(),
+        "canResume": !entry.pending_reboot_actions.is_empty(),
+        "completedActionIds": entry.completed_actions.iter().map(|action| action.action_id.clone()).collect::<Vec<_>>(),
+        "failedActionIds": entry.failed_actions.iter().map(|action| action.action_id.clone()).collect::<Vec<_>>(),
+        "package": entry.package.as_ref().map(|package| serde_json::json!({
+            "planId": package.plan_id,
+            "packageId": package.package_id,
+            "packageRole": package.package_role,
+            "packageVersion": package.package_version,
+            "packageSourceRef": package.package_source_ref,
+            "actionProvenanceRef": package.action_provenance_ref,
+            "executionJournalRef": package.execution_journal_ref,
+            "sourceCommit": package.source_commit,
+        })),
+        "currentActionId": current_action_id,
+        "currentActionProvenanceRef": current_action_provenance_ref,
+        "currentActionPackageSourceRef": current_action_package_source_ref,
+        "currentActionQuestionKeys": current_action_question_keys,
+        "currentActionSelectedValues": current_action_selected_values,
+        "pendingRebootActionIds": pending_reboot_action_ids,
+        "pendingRebootProvenanceRefs": pending_reboot_provenance_refs,
+        "remainingActionProvenanceRefs": entry.pending_reboot_actions.iter().filter_map(|action| action.provenance_ref.clone()).collect::<Vec<_>>(),
+        "lastResumeAt": entry.last_resume_at,
+        "steps": steps,
+    })
 }
 
-fn load_resume_journal() -> anyhow::Result<Option<serde_json::Value>> {
+fn write_resume_journal_file(entry: &ResumeJournalFile) -> anyhow::Result<()> {
+    let path = resume_journal_path()?;
+    fs::write(&path, serde_json::to_vec_pretty(entry)?)?;
+    Ok(())
+}
+
+fn read_resume_journal_file() -> anyhow::Result<Option<ResumeJournalFile>> {
     let path = resume_journal_path()?;
     if !path.exists() {
         return Ok(None);
@@ -808,7 +1377,139 @@ fn load_resume_journal() -> anyhow::Result<Option<serde_json::Value>> {
 
     let bytes = fs::read(&path)?;
     let entry: ResumeJournalFile = serde_json::from_slice(&bytes)?;
-    Ok(Some(journal_entry_to_state(entry)))
+    Ok(Some(entry))
+}
+
+fn write_resume_journal(reason: &str, reboot_context: Option<RpcRebootJournalContext>) -> anyhow::Result<ResumeJournalFile> {
+    let now = chrono::Utc::now().to_rfc3339();
+    let entry = ResumeJournalFile {
+        plan_id: reboot_context
+            .as_ref()
+            .map(|context| context.plan_id.clone())
+            .unwrap_or_else(|| "resume-reboot".to_string()),
+        reason: sanitize_reboot_reason(reason),
+        created_at: now.clone(),
+        updated_at: now,
+        package: reboot_context.map(|context| ResumeJournalPackage {
+            plan_id: context.plan_id,
+            package_id: context.package_id,
+            package_role: context.package_role,
+            package_version: context.package_version,
+            package_source_ref: Some("manifest.json".to_string()),
+            action_provenance_ref: Some("state/action-provenance.json".to_string()),
+            execution_journal_ref: Some("state/execution-journal.json".to_string()),
+            source_commit: None,
+        }),
+        current_action: None,
+        completed_actions: Vec::new(),
+        failed_actions: Vec::new(),
+        pending_reboot_actions: Vec::new(),
+        last_resume_at: None,
+    };
+
+    write_resume_journal_file(&entry)?;
+    Ok(entry)
+}
+
+fn upsert_execution_journal(
+    context: &RpcExecutionJournalContext,
+    result_status: &str,
+    rollback_snapshot_id: Option<String>,
+    error: Option<String>,
+) -> anyhow::Result<ResumeJournalFile> {
+    let now = chrono::Utc::now().to_rfc3339();
+    let mut entry = read_resume_journal_file()?.unwrap_or(ResumeJournalFile {
+        plan_id: context.package.plan_id.clone(),
+        reason: "playbook-reboot-required".to_string(),
+        created_at: now.clone(),
+        updated_at: now.clone(),
+        package: None,
+        current_action: None,
+        completed_actions: Vec::new(),
+        failed_actions: Vec::new(),
+        pending_reboot_actions: Vec::new(),
+        last_resume_at: None,
+    });
+
+    entry.plan_id = context.package.plan_id.clone();
+    entry.updated_at = now.clone();
+    entry.package = Some(ResumeJournalPackage {
+        plan_id: context.package.plan_id.clone(),
+        package_id: context.package.package_id.clone(),
+        package_role: context.package.package_role.clone(),
+        package_version: context.package.package_version.clone(),
+        package_source_ref: context.package.package_source_ref.clone(),
+        action_provenance_ref: context.package.action_provenance_ref.clone(),
+        execution_journal_ref: context.package.execution_journal_ref.clone(),
+        source_commit: context.package.source_commit.clone(),
+    });
+
+    let action = ResumeJournalAction {
+        id: format!("journal-{}", context.action.action_id),
+        action_id: context.action.action_id.clone(),
+        label: context.action.label.clone(),
+        phase: context.action.phase.clone(),
+        package_source_ref: context.action.package_source_ref.clone(),
+        provenance_ref: context.action.provenance_ref.clone(),
+        question_keys: context.action.question_keys.clone(),
+        selected_values: sanitize_selected_values(&context.action.selected_values),
+        requires_reboot: context.action.requires_reboot,
+        status: if context.action.requires_reboot && result_status == "success" {
+            "awaiting_reboot".to_string()
+        } else if result_status == "success" {
+            "completed".to_string()
+        } else {
+            "failed".to_string()
+        },
+        result_status: Some(result_status.to_string()),
+        rollback_snapshot_id,
+        error,
+        created_at: now.clone(),
+        updated_at: now.clone(),
+        completed_at: if context.action.requires_reboot && result_status == "success" {
+            None
+        } else {
+            Some(now.clone())
+        },
+    };
+
+    entry.completed_actions.retain(|existing| existing.action_id != action.action_id);
+    entry.failed_actions.retain(|existing| existing.action_id != action.action_id);
+    entry.pending_reboot_actions.retain(|existing| existing.action_id != action.action_id);
+
+    if action.status == "failed" {
+        entry.failed_actions.push(action.clone());
+    } else if action.status == "awaiting_reboot" {
+        entry.pending_reboot_actions.push(action.clone());
+        entry.current_action = Some(action.clone());
+    } else {
+        entry.completed_actions.push(action.clone());
+        entry.current_action = Some(action.clone());
+    }
+
+    write_resume_journal_file(&entry)?;
+    Ok(entry)
+}
+
+fn load_resume_journal() -> anyhow::Result<Option<serde_json::Value>> {
+    Ok(read_resume_journal_file()?.map(journal_entry_to_state))
+}
+
+fn append_audit_log(
+    db: &Database,
+    category: &str,
+    action: &str,
+    detail: &str,
+    severity: &str,
+) -> anyhow::Result<()> {
+    let audit_id = uuid::Uuid::new_v4().to_string();
+    let now = chrono::Utc::now().to_rfc3339();
+    db.conn().execute(
+        "INSERT INTO audit_log (id, timestamp, category, action, detail, severity)
+         VALUES (?1, ?2, ?3, ?4, ?5, ?6)",
+        rusqlite::params![audit_id, now, category, action, detail, severity],
+    )?;
+    Ok(())
 }
 
 fn clear_resume_journal() -> anyhow::Result<()> {
@@ -819,8 +1520,15 @@ fn clear_resume_journal() -> anyhow::Result<()> {
     Ok(())
 }
 
-async fn schedule_system_reboot(reason: &str) -> anyhow::Result<serde_json::Value> {
-    let entry = write_resume_journal(reason)?;
+fn resume_package_summary(entry: &ResumeJournalFile) -> (Option<String>, Option<String>) {
+    let package_id = entry.package.as_ref().map(|package| package.package_id.clone());
+    let package_role = entry.package.as_ref().map(|package| package.package_role.clone());
+    (package_id, package_role)
+}
+
+async fn schedule_system_reboot(reason: &str, reboot_context: Option<RpcRebootJournalContext>) -> anyhow::Result<serde_json::Value> {
+    let entry = write_resume_journal(reason, reboot_context)?;
+    let (package_id, package_role) = resume_package_summary(&entry);
 
     #[cfg(windows)]
     {
@@ -836,6 +1544,9 @@ async fn schedule_system_reboot(reason: &str) -> anyhow::Result<serde_json::Valu
         return Ok(serde_json::json!({
             "status": "scheduled",
             "reason": entry.reason,
+            "planId": entry.plan_id,
+            "packageId": package_id,
+            "packageRole": package_role,
         }));
     }
 
@@ -844,6 +1555,9 @@ async fn schedule_system_reboot(reason: &str) -> anyhow::Result<serde_json::Valu
         Ok(serde_json::json!({
             "status": "simulated",
             "reason": entry.reason,
+            "planId": entry.plan_id,
+            "packageId": package_id,
+            "packageRole": package_role,
         }))
     }
 }

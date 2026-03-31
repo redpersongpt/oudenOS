@@ -1,18 +1,48 @@
-# ─── Services: Telemetry Services ─────────────────────────────────────────────
-# Disables SysMain (Superfetch) and Sleep Study services.
+# ─── Services: Telemetry & Diagnostic Services ──────────────────────────────
+# Disables telemetry, diagnostic, and data-collection background services.
 
 module: services.telemetry-services
-name: "Telemetry & Background Services"
-description: "Disable SysMain (Superfetch) and Sleep Study background services"
+name: "Telemetry & Diagnostic Services"
+description: "Disable Windows telemetry, diagnostic, and data-collection background services"
 category: services
 
 actions:
+  - id: services.disable-diagtrack
+    name: "Disable Connected User Experiences (DiagTrack)"
+    description: "Disable the Connected User Experiences and Telemetry service (DiagTrack) — primary Windows telemetry pipeline"
+    rationale: "DiagTrack is the main telemetry exfiltration service. It collects diagnostic data, usage patterns, and crash reports and uploads them to Microsoft servers. This is the single highest-impact telemetry disable."
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 3
+    blockedProfiles: []
+    serviceChanges:
+      - name: DiagTrack
+        startupType: Disabled
+
+  - id: services.disable-dmwappushservice
+    name: "Disable WAP Push Message Routing"
+    description: "Disable dmwappushservice — routes telemetry data from DiagTrack to Microsoft"
+    rationale: "dmwappushservice is a secondary telemetry relay. Even with DiagTrack disabled, this service can still attempt data uploads."
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    serviceChanges:
+      - name: dmwappushservice
+        startupType: Disabled
+
   - id: services.disable-sysmain
     name: "Disable SysMain (Superfetch)"
     description: "Disable the SysMain service (formerly Superfetch) which preloads frequently used applications into memory"
-    rationale: "SysMain uses background I/O to preload application data into RAM. On SSD systems, the preloading offers negligible benefit. The background I/O creates disk contention and memory pressure."
+    rationale: "SysMain uses background I/O to preload application data into RAM. On SSD systems, the preloading offers negligible benefit while creating disk contention."
     risk: low
-    tier: premium
+    tier: free
     default: true
     requiresReboot: false
     reversible: true
@@ -23,17 +53,116 @@ actions:
       - name: SysMain
         startupType: Disabled
 
-  - id: perf.disable-sleep-study
+  - id: services.disable-sleep-study
     name: "Disable Sleep Study"
-    description: "Disable the SleepStudy service that logs energy usage data during sleep/standby"
+    description: "Disable SleepStudy service that logs energy usage data during sleep/standby"
     rationale: "Removes unnecessary background energy logging service that provides no user-facing benefit"
     risk: safe
     tier: free
     default: true
     requiresReboot: false
     reversible: true
-    estimatedSeconds: 3
+    estimatedSeconds: 2
     blockedProfiles: []
     serviceChanges:
       - name: SleepStudy
+        startupType: Disabled
+
+  - id: services.disable-diagnostic-services
+    name: "Disable Diagnostic Policy & Execution Services"
+    description: "Disable DPS, WdiServiceHost, and WdiSystemHost — background diagnostic data collectors"
+    rationale: "These services collect hardware/software diagnostic data and problem reports. They run continuously and consume CPU cycles for diagnostics most users never see."
+    risk: low
+    tier: free
+    default: true
+    requiresReboot: true
+    reversible: true
+    estimatedSeconds: 4
+    blockedProfiles:
+      - work_pc
+    serviceChanges:
+      - name: DPS
+        startupType: Disabled
+      - name: WdiServiceHost
+        startupType: Disabled
+      - name: WdiSystemHost
+        startupType: Disabled
+
+  - id: services.disable-pca-service
+    name: "Disable Program Compatibility Assistant"
+    description: "Disable PcaSvc — monitors program execution and detects compatibility issues"
+    rationale: "PCA intercepts every program launch to check compatibility. On modern systems with modern software, this adds overhead with no benefit."
+    risk: low
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles:
+      - work_pc
+    serviceChanges:
+      - name: PcaSvc
+        startupType: Disabled
+
+  - id: services.disable-tiledatamodelsvc
+    name: "Disable Tile Data Model Server"
+    description: "Disable tiledatamodelsvc — indexes Start Menu tile data"
+    rationale: "Legacy service for Live Tiles in Start Menu. With Live Tiles deprecated in Windows 11, this service is pure overhead."
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    serviceChanges:
+      - name: tiledatamodelsvc
+        startupType: Disabled
+
+  - id: services.disable-wisvc
+    name: "Disable Windows Insider Service"
+    description: "Disable wisvc — Windows Insider Program flight/preview management"
+    rationale: "Unless enrolled in Windows Insider, this service runs idle but keeps background connections for preview builds"
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    serviceChanges:
+      - name: wisvc
+        startupType: Disabled
+
+  - id: services.disable-retaildemo
+    name: "Disable Retail Demo Service"
+    description: "Disable RetailDemo — retail store demo experience management"
+    rationale: "Only used in retail store display mode. Has no function on consumer or enterprise machines."
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    serviceChanges:
+      - name: RetailDemo
+        startupType: Disabled
+
+  - id: services.disable-map-services
+    name: "Disable Map Download & Broker"
+    description: "Disable MapsBroker and lfsvc — offline map data download and geolocation"
+    rationale: "MapsBroker downloads map data in the background. lfsvc provides geolocation. Neither needed on desktop systems."
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 3
+    blockedProfiles:
+      - office_laptop
+    serviceChanges:
+      - name: MapsBroker
+        startupType: Disabled
+      - name: lfsvc
         startupType: Disabled

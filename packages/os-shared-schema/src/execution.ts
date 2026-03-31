@@ -16,6 +16,35 @@ export interface ActionExecutionResult {
   changesApplied: number;
   error: string | null;
   requiresReboot: boolean;
+  packageId?: string | null;
+  packageRole?: string | null;
+  packageSourceRef?: string | null;
+  provenanceRef?: string | null;
+  journalRef?: string | null;
+  rollbackSnapshotId?: string | null;
+}
+
+export interface ActionExecutionJournalContext {
+  package: {
+    planId: string;
+    packageId: string;
+    packageRole: "wizard-template" | "user-resolved";
+    packageVersion?: string | null;
+    packageSourceRef?: string | null;
+    actionProvenanceRef?: string | null;
+    executionJournalRef?: string | null;
+    sourceCommit?: string | null;
+  };
+  action: {
+    actionId: string;
+    label: string;
+    phase: string;
+    packageSourceRef?: string | null;
+    provenanceRef?: string | null;
+    questionKeys: string[];
+    selectedValues: string[];
+    requiresReboot: boolean;
+  };
 }
 
 export interface ExecutionStartResult {

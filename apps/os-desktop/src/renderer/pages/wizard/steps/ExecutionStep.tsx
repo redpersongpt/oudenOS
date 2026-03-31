@@ -7,9 +7,11 @@ import { useEffect, useRef, useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Check, AlertCircle } from "lucide-react";
 import { useWizardStore } from "@/stores/wizard-store";
+import type { ActionDecisionProvenance, ExecutionJournalEntry } from "@/stores/wizard-store";
 import { useDecisionsStore } from "@/stores/decisions-store";
 import { getActionRationale } from "@/lib/expert-rationale";
 import { resolveEffectivePersonalization } from "@/lib/personalization-resolution";
+import { buildExecutionJournalContext } from "@/lib/package-journal";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -17,12 +19,15 @@ interface ExecutableAction {
   id: string;
   name: string;
   phase: string;
+  provenance: ActionDecisionProvenance | null;
 }
 
 interface CompletedAction {
   label: string;
   actionId: string;
   status: "applied" | "failed";
+  packageSourceRef: string | null;
+  provenanceRef: string | null;
 }
 
 interface AppInstallProgress {
@@ -68,7 +73,7 @@ function TimelineItem({ action }: { action: CompletedAction }) {
 // ─── Component ───────────────────────────────────────────────────────────────
 
 export function ExecutionStep() {
-  const { detectedProfile, resolvedPlaybook, selectedAppIds, personalization, demoMode, completeStep, setExecutionResult } = useWizardStore();
+  const { detectedProfile, resolvedPlaybook, selectedAppIds, personalization, demoMode, completeStep, setExecutionResult, setResolvedPlaybook } = useWizardStore();
   const answers = useDecisionsStore((state) => state.answers);
   const effectivePersonalization = useMemo(
     () => resolveEffectivePersonalization(detectedProfile?.id, personalization, answers),
@@ -78,11 +83,19 @@ export function ExecutionStep() {
   // ── Build action queue from resolved playbook ──
   const actionQueue = useMemo<ExecutableAction[]>(() => {
     if (!resolvedPlaybook) return [];
+    const provenanceByAction = new Map(
+      (resolvedPlaybook.actionProvenance ?? []).map((entry) => [entry.actionId, entry] as const),
+    );
     const queue: ExecutableAction[] = [];
     for (const phase of resolvedPlaybook.phases) {
       for (const action of phase.actions) {
         if (action.status === "Included") {
-          queue.push({ id: action.id, name: action.name, phase: phase.name });
+          queue.push({
+            id: action.id,
+            name: action.name,
+            phase: phase.name,
+            provenance: provenanceByAction.get(action.id) ?? null,
+          });
         }
       }
     }
@@ -116,22 +129,74 @@ export function ExecutionStep() {
     abortRef.current = controller;
 
     const exec = async () => {
+      const playbook = resolvedPlaybook;
+      if (!playbook) return;
       const { serviceCall } = await import("@/lib/service");
       let localFailed = 0;
       let operationIndex = 0;
+      const journalEntries: ExecutionJournalEntry[] = [];
+
+      // ── Create DB-backed execution plan (service ledger) ──
+      const planId = playbook.packageRefs?.planId ?? `plan-${Date.now()}`;
+      try {
+        const ledgerActions = actionQueue.map((action, idx) => ({
+          actionId: action.id,
+          actionName: action.name,
+          phase: action.phase,
+          queuePosition: idx,
+          inclusionReason: action.provenance?.inclusionReason ?? null,
+          blockedReason: null,
+          preservedReason: null,
+          riskLevel: action.provenance?.riskLevel ?? "safe",
+          expertOnly: action.provenance?.expertOnly ?? false,
+          requiresReboot: action.provenance?.requiresReboot ?? false,
+          packageSourceRef: action.provenance?.packageSourceRef ?? null,
+          provenanceRef: action.provenance?.packageSourceRef ?? null,
+          questionKeys: action.provenance?.sourceQuestionIds ?? [],
+          selectedValues: (action.provenance?.sourceOptionValues ?? []).map(String),
+        }));
+
+        await serviceCall("ledger.createPlan", {
+          package: {
+            planId,
+            packageId: playbook.packageRefs?.packageId ?? "redcore-os",
+            packageRole: playbook.packageRefs?.packageRole ?? "user-resolved",
+            packageVersion: playbook.packageRefs?.packageVersion ?? null,
+            packageSourceRef: playbook.packageRefs?.packageSourceRef ?? null,
+            actionProvenanceRef: playbook.packageRefs?.actionProvenanceRef ?? null,
+            executionJournalRef: playbook.packageRefs?.executionJournalRef ?? null,
+            sourceCommit: playbook.packageRefs?.sourceCommit ?? null,
+          },
+          profile: detectedProfile?.id ?? "gaming_desktop",
+          preset: playbook.preset ?? "balanced",
+          actions: ledgerActions,
+        });
+      } catch (e) {
+        console.warn("[ExecutionStep] Failed to create DB ledger plan (non-fatal):", e);
+      }
 
       // ── Phase 1: Apply playbook actions ──
       for (let i = 0; i < actionQueue.length; i++) {
         if (controller.signal.aborted) return;
         const action = actionQueue[i];
+        const startedAt = new Date().toISOString();
 
         setCurrentIdx(operationIndex);
         setCurrentAction(action.name);
         setCurrentActionId(action.id);
         setCurrentPhase(action.phase);
 
+        // Mark started in DB ledger
+        serviceCall("ledger.markStarted", { planId, actionId: action.id }).catch(() => {});
+
         let status: "applied" | "failed" = "failed";
-        const result = await serviceCall<Record<string, unknown>>("execute.applyAction", { actionId: action.id });
+        const result = await serviceCall<Record<string, unknown>>("execute.applyAction", {
+          actionId: action.id,
+          journalContext: action.provenance
+            ? buildExecutionJournalContext(playbook, action.provenance, detectedProfile?.id)
+            : undefined,
+        });
+        const resultData = result.ok ? result.data : null;
         if (result.ok) {
           const rpcStatus = typeof result.data.status === "string" ? result.data.status : "failed";
           const nestedFailures = typeof result.data.failed === "number" ? result.data.failed : 0;
@@ -149,7 +214,52 @@ export function ExecutionStep() {
         if (status === "failed") {
           localFailed++;
         }
-        setCompleted((prev) => [...prev, { label: action.name, actionId: action.id, status }]);
+
+        // Record result in DB ledger (fire-and-forget)
+        serviceCall("ledger.recordResult", {
+          planId,
+          result: {
+            actionId: action.id,
+            status: status === "applied" ? "success" : "failed",
+            rollbackSnapshotId: null,
+            errorMessage: status === "failed" ? "Action execution returned a failure status." : null,
+            durationMs: null,
+          },
+        }).catch(() => {});
+
+        const finishedAt = new Date().toISOString();
+        const completedEntry: CompletedAction = {
+          label: action.name,
+          actionId: action.id,
+          status,
+          packageSourceRef: action.provenance?.packageSourceRef ?? null,
+          provenanceRef: action.provenance?.packageSourceRef ?? null,
+        };
+        const journalEntry: ExecutionJournalEntry = {
+          id: `journal.playbook.${action.id}`,
+          kind: "playbook-action",
+          actionId: action.id,
+          label: action.name,
+          phase: action.phase,
+          status,
+          startedAt,
+          finishedAt,
+          durationMs: Math.max(0, new Date(finishedAt).getTime() - new Date(startedAt).getTime()),
+          questionKeys: action.provenance?.sourceQuestionIds ?? [],
+          selectedValues: action.provenance?.sourceOptionValues ?? [],
+          packageSourceRef: typeof resultData?.packageSourceRef === "string"
+            ? resultData.packageSourceRef
+            : action.provenance?.packageSourceRef ?? null,
+          provenanceRef: typeof resultData?.provenanceRef === "string"
+            ? resultData.provenanceRef
+            : action.provenance?.packageSourceRef ?? null,
+          resultRef: typeof resultData?.journalRef === "string"
+            ? resultData.journalRef
+            : `${playbook.packageRefs?.executionJournalRef ?? "state/execution-journal.json"}#/entries/${journalEntries.length}`,
+          errorMessage: status === "failed" ? "Action execution returned a failure status." : null,
+        };
+        journalEntries.push(journalEntry);
+        setCompleted((prev) => [...prev, completedEntry]);
         operationIndex += 1;
 
         requestAnimationFrame(() => {
@@ -164,6 +274,7 @@ export function ExecutionStep() {
       // ── Phase 2: Apply personalization ──
       let personalizationFailed = false;
       let personalizationApplied = false;
+      const personalizationStartedAt = new Date().toISOString();
       try {
         setCurrentIdx(operationIndex);
         setCurrentAction("Applying personalization");
@@ -186,12 +297,33 @@ export function ExecutionStep() {
         personalizationFailed = true;
       }
       setCurrentAction(null);
+      const personalizationFinishedAt = new Date().toISOString();
+      const personalizationStatus = personalizationFailed ? "failed" : "applied";
+      journalEntries.push({
+        id: "journal.personalization.apply",
+        kind: "personalization",
+        actionId: "personalize.apply",
+        label: "Apply personalization",
+        phase: "Personalization",
+        status: personalizationStatus,
+        startedAt: personalizationStartedAt,
+        finishedAt: personalizationFinishedAt,
+        durationMs: Math.max(0, new Date(personalizationFinishedAt).getTime() - new Date(personalizationStartedAt).getTime()),
+        questionKeys: ["disableTransparency"],
+        selectedValues: [],
+        packageSourceRef: playbook.packageRefs?.decisionSummaryRef ?? null,
+        provenanceRef: null,
+        resultRef: `${playbook.packageRefs?.executionJournalRef ?? "state/execution-journal.json"}#/entries/${journalEntries.length}`,
+        errorMessage: personalizationFailed ? "Personalization apply failed." : null,
+      });
       setCompleted((prev) => [
         ...prev,
         {
           label: "Apply personalization",
           actionId: "personalize.apply",
-          status: personalizationFailed ? "failed" : "applied",
+          status: personalizationStatus,
+          packageSourceRef: playbook.packageRefs?.decisionSummaryRef ?? null,
+          provenanceRef: null,
         },
       ]);
       operationIndex += 1;
@@ -216,6 +348,7 @@ export function ExecutionStep() {
 
             for (const app of installQueue) {
               if (controller.signal.aborted) return;
+              const appStartedAt = new Date().toISOString();
 
               setCurrentIdx(operationIndex);
               setCurrentAction(`Installing ${app.name}`);
@@ -246,12 +379,32 @@ export function ExecutionStep() {
               }
 
               setCurrentAction(null);
+              const appFinishedAt = new Date().toISOString();
+              journalEntries.push({
+                id: `journal.app.${app.id}`,
+                kind: "app-install",
+                actionId: `app.${app.id}`,
+                label: `Install ${app.name}`,
+                phase: "App Setup",
+                status,
+                startedAt: appStartedAt,
+                finishedAt: appFinishedAt,
+                durationMs: Math.max(0, new Date(appFinishedAt).getTime() - new Date(appStartedAt).getTime()),
+                questionKeys: [],
+                selectedValues: [app.id],
+                packageSourceRef: "state/selected-apps.json",
+                provenanceRef: null,
+                resultRef: `${playbook.packageRefs?.executionJournalRef ?? "state/execution-journal.json"}#/entries/${journalEntries.length}`,
+                errorMessage: status === "failed" ? `App install failed for ${app.name}.` : null,
+              });
               setCompleted((prev) => [
                 ...prev,
                 {
                   label: `Install ${app.name}`,
                   actionId: `app.${app.id}`,
                   status,
+                  packageSourceRef: "state/selected-apps.json",
+                  provenanceRef: null,
                 },
               ]);
               operationIndex += 1;
@@ -272,14 +425,38 @@ export function ExecutionStep() {
 
       // ── Done ──
       const skipped = personalizationFailed ? 1 : 0;
+      const appliedCount = journalEntries.filter((entry) => entry.status === "applied").length;
+      const failedCount = journalEntries.filter((entry) => entry.status === "failed").length;
+      const executionJournalRef = playbook.packageRefs?.executionJournalRef ?? "state/execution-journal.json";
+      const actionProvenance = (playbook.actionProvenance ?? []).map((entry) => {
+        const matchingJournalRefs = journalEntries
+          .filter((journalEntry) => journalEntry.actionId === entry.actionId)
+          .map((journalEntry) => `${executionJournalRef}#/entries/${journalEntries.indexOf(journalEntry)}`);
+        return {
+          ...entry,
+          journalRecordRefs: matchingJournalRefs,
+          executionResultRef: matchingJournalRefs[0] ?? null,
+        };
+      });
+      const executionAwarePlaybook = {
+        ...playbook,
+        actionProvenance,
+      };
+      setResolvedPlaybook(executionAwarePlaybook);
       setExecutionResult({
-        applied:   actionQueue.length - localFailed,
-        failed:    localFailed,
+        applied: appliedCount,
+        failed: failedCount,
         skipped,
-        preserved: resolvedPlaybook?.totalBlocked ?? 0,
+        preserved: executionAwarePlaybook.totalBlocked,
         personalizationApplied,
         appInstall: appInstallProgress,
+        packageKind: "user-resolved",
+        packageRefs: executionAwarePlaybook.packageRefs ?? null,
+        journal: journalEntries,
       });
+
+      // Complete DB ledger plan
+      serviceCall("ledger.completePlan", { planId }).catch(() => {});
 
       timerRef.current = setTimeout(() => completeStep("execution"), 800);
     };
@@ -298,6 +475,9 @@ export function ExecutionStep() {
           installed: 0,
           failed: selectedAppIds.length,
         },
+        packageKind: "user-resolved",
+        packageRefs: resolvedPlaybook?.packageRefs ?? null,
+        journal: [],
       });
       setTimeout(() => completeStep("execution"), 800);
     });

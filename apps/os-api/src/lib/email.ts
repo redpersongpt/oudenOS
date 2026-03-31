@@ -6,6 +6,14 @@ const isDev = process.env.NODE_ENV !== 'production';
 const sendgridApiKey = process.env.SENDGRID_API_KEY;
 const fromEmail = process.env.FROM_EMAIL ?? 'noreply@redcore-os.com';
 const appUrl = process.env.APP_URL ?? 'http://localhost:5173';
+const brandColor = '#E8254B';
+const bg = '#1E1E22';
+const cardBg = '#252529';
+const border = '#38383E';
+const text = '#F0F0F4';
+const muted = '#A0A0AC';
+const caption = '#6A6A76';
+const supportEmail = 'support@redcoreos.net';
 
 // ---------------------------------------------------------------------------
 // SendGrid transport
@@ -76,14 +84,19 @@ function wrap(content: string): string {
   return `<!DOCTYPE html>
 <html>
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width"></head>
-<body style="margin:0;padding:0;background:#0a0a0a;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
-  <div style="max-width:560px;margin:40px auto;background:#141414;border:1px solid #262626;border-radius:8px;padding:40px;color:#e5e5e5;">
-    <div style="text-align:center;margin-bottom:32px;">
-      <h1 style="color:#ffffff;font-size:20px;font-weight:600;margin:0;">redcore-OS</h1>
+<body style="margin:0;padding:32px;background:
+  radial-gradient(circle at top left, rgba(232,37,75,0.16), transparent 34%),
+  radial-gradient(circle at top right, rgba(255,72,106,0.08), transparent 28%),
+  ${bg};font-family:'Plus Jakarta Sans',Inter,system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
+  <div style="max-width:620px;margin:0 auto;">
+    <div style="padding:0 6px 16px;font-size:14px;font-weight:800;letter-spacing:.12em;text-transform:lowercase;color:${text};">redcore</div>
+    <div style="background:linear-gradient(180deg,rgba(232,37,75,0.20),rgba(44,44,49,0.96) 30%);border-radius:28px;padding:1px;">
+      <div style="background:${cardBg};border-radius:27px;padding:34px;border:1px solid ${border};box-shadow:0 28px 80px rgba(0,0,0,0.34);color:${text};">
+        ${content}
+      </div>
     </div>
-    ${content}
-    <div style="margin-top:32px;padding-top:16px;border-top:1px solid #262626;text-align:center;font-size:12px;color:#737373;">
-      redcore-OS — Premium Windows Transformation
+    <div style="padding:18px 8px 0;color:${caption};font-size:12px;line-height:1.6;text-align:center;">
+      <div>Need help? <a href="mailto:${supportEmail}" style="color:#ff98a0;text-decoration:none;">${supportEmail}</a></div>
     </div>
   </div>
 </body>
@@ -103,19 +116,16 @@ export async function sendVerificationEmail(
   const verifyUrl = `${appUrl}/verify-email?token=${encodeURIComponent(token)}`;
 
   const html = wrap(`
-    <p style="color:#e5e5e5;font-size:15px;line-height:1.6;">${greeting},</p>
-    <p style="color:#d4d4d4;font-size:14px;line-height:1.6;">
-      Please verify your email address to activate your redcore-OS account.
-    </p>
-    <div style="text-align:center;margin:24px 0;">
+    <h1 style="margin:0 0 12px;font-size:24px;line-height:1.2;font-weight:800;letter-spacing:-0.03em;color:${text};">Verify your email</h1>
+    <p style="color:${muted};margin:0 0 6px;font-size:15px;line-height:1.75;">${greeting},</p>
+    <p style="color:${muted};margin:0;font-size:15px;line-height:1.75;">Use the button below to verify your account.</p>
+    <div style="text-align:left;margin:24px 0 0;">
       <a href="${verifyUrl}"
-         style="display:inline-block;background:#dc2626;color:#ffffff;text-decoration:none;padding:12px 32px;border-radius:6px;font-size:14px;font-weight:600;">
-        Verify Email
+         style="display:inline-flex;align-items:center;justify-content:center;background:linear-gradient(180deg,#ff6b70 0%,${brandColor} 100%);color:#ffffff;text-decoration:none;padding:12px 20px;border-radius:12px;font-size:14px;font-weight:800;letter-spacing:.01em;box-shadow:0 10px 24px rgba(232,37,75,0.22);">
+        Verify email
       </a>
     </div>
-    <p style="color:#737373;font-size:12px;">
-      This link expires in 24 hours. If you did not create an account, ignore this email.
-    </p>
+    <p style="color:${caption};font-size:13px;line-height:1.6;margin:18px 0 0;">This link expires in 24 hours.</p>
   `);
 
   await send(to, 'Verify your redcore-OS email', html);
@@ -130,19 +140,16 @@ export async function sendPasswordResetEmail(
   const resetUrl = `${appUrl}/reset-password?token=${encodeURIComponent(token)}`;
 
   const html = wrap(`
-    <p style="color:#e5e5e5;font-size:15px;line-height:1.6;">${greeting},</p>
-    <p style="color:#d4d4d4;font-size:14px;line-height:1.6;">
-      A password reset was requested for your redcore-OS account.
-    </p>
-    <div style="text-align:center;margin:24px 0;">
+    <h1 style="margin:0 0 12px;font-size:24px;line-height:1.2;font-weight:800;letter-spacing:-0.03em;color:${text};">Password reset</h1>
+    <p style="color:${muted};margin:0 0 6px;font-size:15px;line-height:1.75;">${greeting},</p>
+    <p style="color:${muted};margin:0;font-size:15px;line-height:1.75;">Use the button below to set a new password.</p>
+    <div style="text-align:left;margin:24px 0 0;">
       <a href="${resetUrl}"
-         style="display:inline-block;background:#dc2626;color:#ffffff;text-decoration:none;padding:12px 32px;border-radius:6px;font-size:14px;font-weight:600;">
-        Reset Password
+         style="display:inline-flex;align-items:center;justify-content:center;background:linear-gradient(180deg,#ff6b70 0%,${brandColor} 100%);color:#ffffff;text-decoration:none;padding:12px 20px;border-radius:12px;font-size:14px;font-weight:800;letter-spacing:.01em;box-shadow:0 10px 24px rgba(232,37,75,0.22);">
+        Reset password
       </a>
     </div>
-    <p style="color:#737373;font-size:12px;">
-      This link expires in 1 hour. If you did not request this, ignore this email.
-    </p>
+    <p style="color:${caption};font-size:13px;line-height:1.6;margin:18px 0 0;">This link expires in 1 hour.</p>
   `);
 
   await send(to, 'Reset your redcore-OS password', html);
@@ -155,15 +162,10 @@ export async function sendWelcomeEmail(
   const greeting = displayName ? `Welcome ${displayName}` : 'Welcome';
 
   const html = wrap(`
-    <p style="color:#e5e5e5;font-size:15px;line-height:1.6;">${greeting},</p>
-    <p style="color:#d4d4d4;font-size:14px;line-height:1.6;">
-      Your redcore-OS account is ready. You can now assess your Windows installation
-      and begin transforming it into a cleaner, faster system.
-    </p>
-    <p style="color:#d4d4d4;font-size:14px;line-height:1.6;">
-      Free tier includes a basic health assessment and 3 safe cleanup actions.
-      Upgrade to Pro for the full 150+ transformation actions.
-    </p>
+    <h1 style="margin:0 0 12px;font-size:24px;line-height:1.2;font-weight:800;letter-spacing:-0.03em;color:${text};">Welcome to redcore OS</h1>
+    <p style="color:${muted};margin:0 0 6px;font-size:15px;line-height:1.75;">${greeting},</p>
+    <p style="color:${muted};margin:0;font-size:15px;line-height:1.75;">Your account is ready. Open the app and start tuning.</p>
+    <p style="color:${muted};font-size:14px;line-height:1.7;margin:18px 0 0;">Free tier includes a basic health assessment and a few safe actions.</p>
   `);
 
   await send(to, 'Welcome to redcore-OS', html);
@@ -175,14 +177,13 @@ export async function sendSubscriptionConfirmationEmail(
   billingPeriod: string,
 ): Promise<void> {
   const html = wrap(`
-    <p style="color:#e5e5e5;font-size:15px;line-height:1.6;">Your subscription has been confirmed.</p>
-    <div style="background:#1a1a1a;border:1px solid #262626;border-radius:6px;padding:16px;margin:16px 0;">
-      <p style="color:#d4d4d4;font-size:14px;margin:4px 0;"><strong>Plan:</strong> ${tier.charAt(0).toUpperCase() + tier.slice(1)}</p>
-      <p style="color:#d4d4d4;font-size:14px;margin:4px 0;"><strong>Billing:</strong> ${billingPeriod}</p>
+    <h1 style="margin:0 0 12px;font-size:24px;line-height:1.2;font-weight:800;letter-spacing:-0.03em;color:${text};">License active</h1>
+    <p style="color:${muted};margin:0 0 6px;font-size:15px;line-height:1.75;">Your purchase is active.</p>
+    <div style="background:rgba(255,255,255,0.02);border:1px solid ${border};border-radius:16px;padding:16px;margin:16px 0 0;">
+      <p style="color:${muted};font-size:14px;margin:4px 0;"><strong style="color:${text};">Plan:</strong> ${tier.charAt(0).toUpperCase() + tier.slice(1)}</p>
+      <p style="color:${muted};font-size:14px;margin:4px 0;"><strong style="color:${text};">Billing:</strong> ${billingPeriod}</p>
     </div>
-    <p style="color:#d4d4d4;font-size:14px;line-height:1.6;">
-      You now have full access to all transformation actions. Launch redcore-OS to get started.
-    </p>
+    <p style="color:${muted};font-size:14px;line-height:1.7;margin:18px 0 0;">Open the app to access the unlocked features.</p>
   `);
 
   await send(to, `redcore-OS ${tier} subscription confirmed`, html);

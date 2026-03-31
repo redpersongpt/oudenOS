@@ -1,0 +1,93 @@
+# ─── Services: Windows Update Services ────────────────────────────────────────
+# Controls over Windows Update background services. Expert territory.
+
+module: services.windows-update-services
+name: "Windows Update Service Control"
+description: "Control Windows Update, Delivery Optimization, and BITS background services"
+category: services
+
+actions:
+  - id: services.disable-delivery-optimization
+    name: "Disable Delivery Optimization"
+    description: "Disable DoSvc — peer-to-peer update sharing and background content delivery"
+    rationale: "Delivery Optimization uses your bandwidth to upload update fragments to other PCs on the internet. Disabling prevents P2P upload traffic."
+    risk: low
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles:
+      - work_pc
+    serviceChanges:
+      - name: DoSvc
+        startupType: Disabled
+
+  - id: services.disable-wuauserv
+    name: "Disable Windows Update Service"
+    description: "Disable wuauserv — automatic Windows Update download and installation"
+    rationale: "Prevents automatic background update downloads. Updates can still be triggered manually via Settings. Expert-only: disabling may leave the system unpatched."
+    risk: high
+    tier: free
+    default: false
+    expertOnly: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 3
+    blockedProfiles:
+      - work_pc
+      - office_laptop
+    serviceChanges:
+      - name: wuauserv
+        startupType: Disabled
+
+  - id: services.disable-update-orchestrator-svc
+    name: "Disable Update Orchestrator Service"
+    description: "Disable UsoSvc — manages update scan scheduling and download orchestration"
+    rationale: "UsoSvc orchestrates update scanning, downloading, and installation scheduling. Disabling prevents automatic update activity."
+    risk: medium
+    tier: free
+    default: false
+    expertOnly: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles:
+      - work_pc
+    serviceChanges:
+      - name: UsoSvc
+        startupType: Disabled
+
+  - id: services.disable-bits
+    name: "Disable Background Intelligent Transfer"
+    description: "Disable BITS — background file transfer service used by Windows Update"
+    rationale: "BITS transfers update files in the background. Also used by some enterprise tools. Disabling prevents background bandwidth usage."
+    risk: medium
+    tier: free
+    default: false
+    expertOnly: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles:
+      - work_pc
+    serviceChanges:
+      - name: BITS
+        startupType: Disabled
+
+  - id: services.disable-waasmedic
+    name: "Disable Windows Update Medic"
+    description: "Disable WaaSMedicSvc — re-enables Windows Update components if they are disabled"
+    rationale: "WaaSMedicSvc is a 'self-healing' service that re-enables Windows Update even after you disable it. Must be disabled to make update disabling persistent."
+    risk: medium
+    tier: free
+    default: false
+    expertOnly: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles:
+      - work_pc
+    serviceChanges:
+      - name: WaaSMedicSvc
+        startupType: Disabled

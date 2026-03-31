@@ -1,5 +1,5 @@
 // ─── TierBadge ───────────────────────────────────────────────────────────────
-// Pill badge for subscription tier display.
+// Pill badge for license tier display.
 //   Free    → gray (surface-overlay)
 //   Premium → blue gradient
 //   Expert  → purple gradient

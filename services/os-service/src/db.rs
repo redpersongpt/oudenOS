@@ -112,6 +112,82 @@ impl Database {
                 ON assessments(assessed_at DESC);
             CREATE INDEX IF NOT EXISTS idx_outcomes_action
                 ON action_outcomes(action_id);
+
+            -- ── Execution Ledger (DB-backed, replaces resume-journal.json) ──
+
+            CREATE TABLE IF NOT EXISTS execution_plans (
+                id TEXT PRIMARY KEY,
+                package_id TEXT NOT NULL,
+                package_role TEXT NOT NULL,         -- 'wizard-template' | 'user-resolved'
+                package_version TEXT,
+                package_source_ref TEXT,
+                action_provenance_ref TEXT,
+                execution_journal_ref TEXT,
+                source_commit TEXT,
+                profile TEXT NOT NULL,
+                preset TEXT NOT NULL,
+                total_actions INTEGER NOT NULL DEFAULT 0,
+                status TEXT NOT NULL DEFAULT 'pending',  -- pending | running | paused_reboot | completed | failed | cancelled
+                reboot_reason TEXT,
+                created_at TEXT NOT NULL,
+                updated_at TEXT NOT NULL,
+                completed_at TEXT,
+                last_resume_at TEXT
+            );
+
+            CREATE TABLE IF NOT EXISTS execution_queue (
+                id TEXT PRIMARY KEY,
+                plan_id TEXT NOT NULL,
+                action_id TEXT NOT NULL,
+                action_name TEXT NOT NULL,
+                phase TEXT NOT NULL,
+                queue_position INTEGER NOT NULL,
+                status TEXT NOT NULL DEFAULT 'queued',  -- queued | running | completed | failed | skipped | preserved | awaiting_reboot
+                inclusion_reason TEXT,
+                blocked_reason TEXT,
+                preserved_reason TEXT,
+                risk_level TEXT NOT NULL DEFAULT 'safe',
+                expert_only INTEGER NOT NULL DEFAULT 0,
+                requires_reboot INTEGER NOT NULL DEFAULT 0,
+                package_source_ref TEXT,
+                provenance_ref TEXT,
+                question_keys TEXT NOT NULL DEFAULT '[]',     -- JSON array
+                selected_values TEXT NOT NULL DEFAULT '[]',   -- JSON array
+                rollback_snapshot_id TEXT,
+                result_status TEXT,
+                error_message TEXT,
+                duration_ms INTEGER,
+                created_at TEXT NOT NULL,
+                updated_at TEXT NOT NULL,
+                started_at TEXT,
+                completed_at TEXT,
+                FOREIGN KEY (plan_id) REFERENCES execution_plans(id)
+            );
+
+            CREATE TABLE IF NOT EXISTS execution_ledger (
+                id TEXT PRIMARY KEY,
+                plan_id TEXT NOT NULL,
+                action_id TEXT NOT NULL,
+                event_type TEXT NOT NULL,   -- enqueued | started | completed | failed | skipped | preserved | reboot_scheduled | resumed
+                status TEXT NOT NULL,
+                detail TEXT,
+                package_source_ref TEXT,
+                provenance_ref TEXT,
+                rollback_snapshot_id TEXT,
+                timestamp TEXT NOT NULL,
+                FOREIGN KEY (plan_id) REFERENCES execution_plans(id)
+            );
+
+            CREATE INDEX IF NOT EXISTS idx_exec_plan_status
+                ON execution_plans(status);
+            CREATE INDEX IF NOT EXISTS idx_exec_queue_plan
+                ON execution_queue(plan_id, queue_position);
+            CREATE INDEX IF NOT EXISTS idx_exec_queue_status
+                ON execution_queue(plan_id, status);
+            CREATE INDEX IF NOT EXISTS idx_exec_ledger_plan
+                ON execution_ledger(plan_id, timestamp);
+            CREATE INDEX IF NOT EXISTS idx_exec_ledger_action
+                ON execution_ledger(action_id);
             ",
         )?;
         Ok(())

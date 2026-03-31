@@ -15,6 +15,7 @@ pub fn execute_action(
     db: &Database,
     action_id: &str,
     action_data: &Value,
+    audit_context: Option<&str>,
 ) -> anyhow::Result<Value> {
     tracing::info!(action_id = action_id, "Executing action");
 
@@ -399,7 +400,9 @@ pub fn execute_action(
             format!(
                 "Action '{}' (type={}): {} succeeded, {} failed, status={}",
                 action_id, action_type, succeeded, failed, status
-            ),
+            ) + &audit_context
+                .map(|detail| format!(" · {}", detail))
+                .unwrap_or_default(),
             if status == "failed" { "error" } else { "info" },
         ],
     )?;
@@ -410,6 +413,7 @@ pub fn execute_action(
         "actionId": action_id,
         "actionType": action_type,
         "snapshotId": snapshot_id,
+        "rollbackSnapshotId": snapshot_id,
         "status": status,
         "succeeded": succeeded,
         "failed": failed,
