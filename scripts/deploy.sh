@@ -21,6 +21,8 @@ if [[ -f .env ]]; then
   set +a
 fi
 
+# Always override WEB_DATABASE_URL after .env load — web uses SQLite, not postgres
+WEB_DATABASE_URL="file:${APP_ROOT}/apps/web/prisma/prisma/dev.db"
 API_DATABASE_URL="${DATABASE_URL:-}"
 HEAD_SHA=""
 
