@@ -19,6 +19,7 @@ import { execSync } from "node:child_process";
 
 const ROOT = new URL("..", import.meta.url).pathname.replace(/\/$/, "");
 const PROOF_DIR = join(ROOT, "artifacts", "windows-proof");
+const REBOOT_PROOF_DIR = join(ROOT, "artifacts", "reboot-proof");
 const MAX_PROOF_AGE_DAYS = 7;
 
 const args = process.argv.slice(2);
@@ -117,7 +118,48 @@ if (!existsSync(PROOF_DIR)) {
   }
 }
 
-// ─── Check 7: No RELEASE_BLOCKER markers in codebase ────────────────────────
+// ─── Checks 7-9: Reboot/resume proof ────────────────────────────────────────
+
+if (!existsSync(REBOOT_PROOF_DIR)) {
+  check("reboot-proof-exists", false, `${REBOOT_PROOF_DIR} not found — run capture-reboot-proof.ps1 phases A+B on Windows`);
+} else {
+  const rebootDirs = readdirSync(REBOOT_PROOF_DIR, { withFileTypes: true })
+    .filter((d) => d.isDirectory())
+    .map((d) => d.name)
+    .sort()
+    .reverse();
+
+  if (rebootDirs.length === 0) {
+    check("reboot-proof-exists", false, "No reboot proof directories found");
+  } else {
+    const latestDir = join(REBOOT_PROOF_DIR, rebootDirs[0]);
+    const summaryPath = join(latestDir, "reboot-proof-summary.json");
+
+    if (!existsSync(summaryPath)) {
+      check("reboot-proof-exists", false, `${rebootDirs[0]}/reboot-proof-summary.json not found — Phase B may not have run`);
+    } else {
+      const summary = JSON.parse(readFileSync(summaryPath, "utf-8"));
+      check("reboot-proof-exists", true, `dir=${rebootDirs[0]}`);
+
+      check("reboot-proof-passed", summary.verdict === "PASS", `verdict=${summary.verdict}, ${summary.passed}/${summary.passed + summary.failed}`);
+
+      // Check required artifacts
+      const requiredRebootArtifacts = [
+        "pre-reboot-summary.json",
+        "pre-ledger-state.json",
+        "post-journal-state.json",
+        "post-resume-result.json",
+        "post-ledger-after-resume.json",
+        "reboot-proof-summary.json",
+      ];
+      const missingReboot = requiredRebootArtifacts.filter((f) => !existsSync(join(latestDir, f)));
+      check("reboot-proof-artifacts-complete", missingReboot.length === 0,
+        missingReboot.length > 0 ? `missing: ${missingReboot.join(", ")}` : `${requiredRebootArtifacts.length} artifacts`);
+    }
+  }
+}
+
+// ─── Check 10: No RELEASE_BLOCKER markers in codebase ───────────────────────
 
 try {
   const blockerOutput = execSync(
