@@ -1,12 +1,37 @@
 // ─── Report Step ──────────────────────────────────────────────────────────────
-// Transformation complete. Shows expert-grade summary of what changed and why.
+// Transformation complete. Shows expert-grade summary from service ledger truth.
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { Check, Shield, AlertTriangle, Lock, Heart, Archive } from "lucide-react";
 import { useWizardStore } from "@/stores/wizard-store";
 import { useDecisionsStore } from "@/stores/decisions-store";
 import { resolveEffectivePersonalization } from "@/lib/personalization-resolution";
+
+// Ledger query response shape (from ledger.query)
+interface LedgerStep {
+  actionId: string;
+  actionName: string;
+  phase: string;
+  status: string;
+  resultStatus: string | null;
+  errorMessage: string | null;
+  durationMs: number | null;
+  packageSourceRef: string | null;
+  provenanceRef: string | null;
+}
+
+interface LedgerQueryResult {
+  planId: string;
+  status: string;
+  totalActions: number;
+  totalCompleted: number;
+  totalFailed: number;
+  totalRemaining: number;
+  rebootReason: string | null;
+  steps: LedgerStep[];
+  ledgerEvents?: Array<{ eventType: string; actionId: string; status: string; timestamp: string }>;
+}
 
 export function ReportStep() {
   const { executionResult, resolvedPlaybook, detectedProfile, personalization, selectedAppIds, gotoDonation } = useWizardStore();
@@ -17,7 +42,28 @@ export function ReportStep() {
   );
   const [exportState, setExportState] = useState<"idle" | "busy" | "done" | "error">("idle");
   const [exportMessage, setExportMessage] = useState("");
-  const result = executionResult ?? {
+
+  // ── Primary truth: load from service ledger ──
+  const [ledgerState, setLedgerState] = useState<LedgerQueryResult | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+    const loadLedger = async () => {
+      try {
+        const { serviceCall } = await import("@/lib/service");
+        const result = await serviceCall<LedgerQueryResult | null>("ledger.query", { includeLedger: true });
+        if (!cancelled && result.ok && result.data) {
+          setLedgerState(result.data);
+        }
+      } catch {
+        // Ledger unavailable — fall back to renderer-local data
+      }
+    };
+    loadLedger();
+    return () => { cancelled = true; };
+  }, []);
+
+  // ── Derive counts: ledger-first, renderer-fallback ──
+  const rendererResult = executionResult ?? {
     applied: 0,
     failed: 0,
     skipped: 0,
@@ -25,9 +71,16 @@ export function ReportStep() {
     packageRefs: null,
     journal: [],
   };
+
+  const appliedPlaybookActions = ledgerState
+    ? ledgerState.totalCompleted
+    : rendererResult.journal.filter((entry) => entry.kind === "playbook-action" && entry.status === "applied").length;
+
+  const failedActions = ledgerState
+    ? ledgerState.totalFailed
+    : rendererResult.journal.filter((entry) => entry.status === "failed").length;
+
   const pb = resolvedPlaybook;
-  const appliedPlaybookActions = result.journal.filter((entry) => entry.kind === "playbook-action" && entry.status === "applied").length;
-  const failedActions = result.journal.filter((entry) => entry.status === "failed").length;
   const preservedActions = (pb?.actionProvenance ?? []).filter(
     (entry) => entry.finalStatus === "Blocked" || entry.finalStatus === "BuildGated",
   );
@@ -61,7 +114,12 @@ export function ReportStep() {
     }
 
     const { serviceCall } = await import("@/lib/service");
+
+    // ── Primary: get ledger truth for export ──
+    const ledgerQueryResult = await serviceCall<Record<string, unknown> | null>("ledger.query", { includeLedger: true });
+    // Fallback: legacy journal.state
     const serviceJournalResult = await serviceCall<Record<string, unknown> | null>("journal.state");
+
     const exportResult = await api.wizard.exportPackage({
       detectedProfile,
       playbookPreset: resolvedPlaybook.preset,
@@ -71,6 +129,7 @@ export function ReportStep() {
       actionProvenance: resolvedPlaybook.actionProvenance ?? [],
       executionJournal: executionResult?.journal ?? [],
       serviceJournalState: serviceJournalResult.ok ? serviceJournalResult.data : null,
+      ledgerState: ledgerQueryResult.ok ? ledgerQueryResult.data : null,
       personalization: effectivePersonalization,
       selectedAppIds,
     });
@@ -141,9 +200,9 @@ export function ReportStep() {
       {/* Stats */}
       <div className="flex gap-3">
         {[
-          { value: appliedPlaybookActions || result.applied, label: "Applied", color: "text-success-400", icon: Check },
-          { value: failedActions || result.failed, label: "Failed", color: (failedActions || result.failed) > 0 ? "text-danger-400" : "text-ink-muted", icon: AlertTriangle },
-          { value: preservedActions.length || result.preserved, label: "Preserved", color: "text-ink-secondary", icon: Shield },
+          { value: appliedPlaybookActions || rendererResult.applied, label: "Applied", color: "text-success-400", icon: Check },
+          { value: failedActions || rendererResult.failed, label: "Failed", color: (failedActions || rendererResult.failed) > 0 ? "text-danger-400" : "text-ink-muted", icon: AlertTriangle },
+          { value: preservedActions.length || rendererResult.preserved, label: "Preserved", color: "text-ink-secondary", icon: Shield },
         ].map(({ value, label, color, icon: Icon }, i) => (
           <motion.div
             key={label}
@@ -171,7 +230,7 @@ export function ReportStep() {
           <div className="flex items-start gap-2 rounded-lg bg-white/[0.02] border border-white/[0.04] px-3 py-2">
             <Check className="mt-0.5 h-3 w-3 shrink-0 text-success-400" />
             <p className="text-[10px] leading-relaxed text-ink-secondary">
-              <span className="font-semibold text-ink">{appliedPlaybookActions || pb.totalIncluded} actions</span> applied across {pb.phases.length} categories, with each action tied back to the APBX package provenance chain.
+              <span className="font-semibold text-ink">{appliedPlaybookActions || pb.totalIncluded} actions</span> applied across {pb.phases.length} categories{ledgerState ? " (verified by service execution ledger)" : ", with each action tied back to the APBX package provenance chain"}.
             </p>
           </div>
 
