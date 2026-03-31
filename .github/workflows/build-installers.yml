@@ -58,13 +58,15 @@ jobs:
         run: pnpm verify:full
 
   check-rust:
-    name: Rust Check (Linux cross-check)
-    runs-on: ubuntu-latest
+    name: Rust Check (Windows cargo check)
+    runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
 
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-pc-windows-msvc
 
       - name: Cache Rust dependencies
         uses: actions/cache@v4
@@ -74,16 +76,16 @@ jobs:
             ~/.cargo/git
             services/os-service/target
             services/tuning-service/target
-          key: rust-linux-check-${{ hashFiles('services/*/Cargo.toml') }}
-          restore-keys: rust-linux-check-
+          key: rust-windows-check-${{ hashFiles('services/*/Cargo.toml') }}
+          restore-keys: rust-windows-check-
 
       - name: cargo check os-service
         working-directory: services/os-service
-        run: cargo check 2>&1
+        run: cargo check
 
       - name: cargo check tuning-service
         working-directory: services/tuning-service
-        run: cargo check 2>&1
+        run: cargo check
 
   build-rust-services:
     name: Build Rust Services (Windows)
