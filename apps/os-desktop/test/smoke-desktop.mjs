@@ -185,6 +185,9 @@ app.whenReady().then(async () => {
   let readyToShow = false;
   win.once("ready-to-show", () => { readyToShow = true; });
 
+  // Set smoke test flag before renderer loads (enables the test bridge)
+  await win.webContents.executeJavaScript("window.__SMOKE_TEST__ = true");
+
   // Load renderer
   try {
     await win.loadFile(distIndex);
@@ -597,6 +600,190 @@ app.whenReady().then(async () => {
     });
   } catch (e) {
     checks.push({ name: "causality-preset-escalation-increases-actions", pass: false, detail: e?.message ?? "unknown" });
+  }
+
+  // ── Answer-toggle causality proof ───────────────────────────────────────────
+  // Uses the smoke test bridge (window.__smokeTest.applyQuestionnaireOverrides)
+  // to apply real questionnaire answers to a real base playbook and compare
+  // the resulting included/blocked action IDs.
+
+  // Wait for the test bridge to initialize
+  await wait(1000);
+  const hasBridge = await js(`typeof window.__smokeTest?.applyQuestionnaireOverrides === "function"`);
+
+  if (!hasBridge) {
+    checks.push({ name: "toggle-bridge-available", pass: false, detail: "smoke test bridge not loaded" });
+    reportAndExit();
+    return;
+  }
+  checks.push({ name: "toggle-bridge-available", pass: true, detail: "" });
+
+  // Get a base playbook from the service to use for override testing
+  const basePlanJson = await js(`
+    window.redcore.service.call("playbook.resolve", {
+      profile: "gaming_desktop", preset: "balanced"
+    }).then(r => JSON.stringify(r))
+  `);
+
+  if (!basePlanJson) {
+    checks.push({ name: "toggle-base-plan", pass: false, detail: "could not resolve base plan" });
+    reportAndExit();
+    return;
+  }
+  checks.push({ name: "toggle-base-plan", pass: true, detail: "" });
+
+  // Helper: apply overrides with specific answers and return action status map
+  const resolveWithAnswers = (answersObj) => js(`
+    (() => {
+      const basePlan = ${basePlanJson};
+      const answers = ${JSON.stringify(answersObj)};
+      const result = window.__smokeTest.applyQuestionnaireOverrides(basePlan, answers);
+      const statusMap = {};
+      for (const phase of (result.phases || [])) {
+        for (const action of (phase.actions || [])) {
+          statusMap[action.id] = action.status;
+        }
+      }
+      return JSON.stringify({
+        totalIncluded: result.totalIncluded,
+        totalBlocked: result.totalBlocked,
+        statusMap,
+      });
+    })()
+  `);
+
+  // Default null answers (no questions answered)
+  const nullAnswers = {
+    aggressionPreset: "balanced",
+    highPerformancePlan: null, aggressiveBoostMode: null, minProcessorState100: null,
+    optimizeThreadPriority: null, globalTimerResolution: null, disableDynamicTick: null,
+    disableCoreParking: null, gamingMmcss: null, disableMemoryCompression: null,
+    disableHags: null, disableGpuTelemetry: null, disableGameDvr: null,
+    disableFullscreenOptimizations: null, disableIndexing: null, stripSearchWebNoise: null,
+    keepPrinterSupport: null, keepRemoteAccess: null, edgeBehavior: null,
+    removeEdge: null, preserveWebView2: null, disableCopilot: null, disableRecall: null,
+    disableClickToDo: null, disableAiApps: null, telemetryLevel: null,
+    disableClipboardHistory: null, disableActivityFeed: null, disableLocation: null,
+    disableTailoredExperiences: null, disableSpeechPersonalization: null,
+    disableSmartScreen: null, reduceMitigations: null, disableHvci: null,
+    disableLlmnr: null, disableIpv6: null, disableTeredo: null, disableNetbios: null,
+    disableNagle: null, disableNicOffloading: null, disableDeliveryOptimization: null,
+    disableFastStartup: null, disableHibernation: null, disableUsbSelectiveSuspend: null,
+    disablePcieLinkStatePm: null, disableAudioEnhancements: null,
+    enableAudioExclusiveMode: null, restoreClassicContextMenu: null,
+    enableEndTask: null, disableBackgroundApps: null, disableAutomaticMaintenance: null,
+    enableGameMode: null, disableTransparency: null,
+  };
+
+  // Toggle 1: disableLlmnr false → true should include network.disable-llmnr, network.disable-smbv1, network.disable-wpad
+  try {
+    const offResult = await resolveWithAnswers({ ...nullAnswers, disableLlmnr: false });
+    const onResult = await resolveWithAnswers({ ...nullAnswers, disableLlmnr: true });
+    const off = offResult ? JSON.parse(offResult) : {};
+    const on = onResult ? JSON.parse(onResult) : {};
+
+    const targetIds = ["network.disable-llmnr", "network.disable-smbv1", "network.disable-wpad"];
+    const offStatuses = targetIds.map(id => off.statusMap?.[id]);
+    const onStatuses = targetIds.map(id => on.statusMap?.[id]);
+    const allBlocked = offStatuses.every(s => s === "Blocked");
+    const allIncluded = onStatuses.every(s => s === "Included");
+
+    checks.push({
+      name: "toggle-llmnr-false-blocks",
+      pass: allBlocked,
+      detail: `off: ${JSON.stringify(offStatuses)}`,
+    });
+    checks.push({
+      name: "toggle-llmnr-true-includes",
+      pass: allIncluded,
+      detail: `on: ${JSON.stringify(onStatuses)}`,
+    });
+  } catch (e) {
+    checks.push({ name: "toggle-llmnr-false-blocks", pass: false, detail: e?.message ?? "unknown" });
+    checks.push({ name: "toggle-llmnr-true-includes", pass: false, detail: e?.message ?? "unknown" });
+  }
+
+  // Toggle 2: restoreClassicContextMenu false → true
+  try {
+    const offResult = await resolveWithAnswers({ ...nullAnswers, restoreClassicContextMenu: false });
+    const onResult = await resolveWithAnswers({ ...nullAnswers, restoreClassicContextMenu: true });
+    const off = offResult ? JSON.parse(offResult) : {};
+    const on = onResult ? JSON.parse(onResult) : {};
+
+    const targetIds = ["shell.restore-classic-context-menu", "shell.remove-share-context", "shell.remove-cast-to-device"];
+    const offStatuses = targetIds.map(id => off.statusMap?.[id]);
+    const onStatuses = targetIds.map(id => on.statusMap?.[id]);
+
+    checks.push({
+      name: "toggle-contextmenu-false-blocks",
+      pass: offStatuses.every(s => s === "Blocked"),
+      detail: `off: ${JSON.stringify(offStatuses)}`,
+    });
+    checks.push({
+      name: "toggle-contextmenu-true-includes",
+      pass: onStatuses.every(s => s === "Included"),
+      detail: `on: ${JSON.stringify(onStatuses)}`,
+    });
+  } catch (e) {
+    checks.push({ name: "toggle-contextmenu-false-blocks", pass: false, detail: e?.message ?? "unknown" });
+    checks.push({ name: "toggle-contextmenu-true-includes", pass: false, detail: e?.message ?? "unknown" });
+  }
+
+  // Toggle 3: disableMemoryCompression false → true
+  try {
+    const offResult = await resolveWithAnswers({ ...nullAnswers, disableMemoryCompression: false });
+    const onResult = await resolveWithAnswers({ ...nullAnswers, disableMemoryCompression: true });
+    const off = offResult ? JSON.parse(offResult) : {};
+    const on = onResult ? JSON.parse(onResult) : {};
+
+    const targetIds = ["memory.disable-compression", "perf.disable-ndu", "perf.disable-prefetch"];
+    const offStatuses = targetIds.map(id => off.statusMap?.[id]);
+    const onStatuses = targetIds.map(id => on.statusMap?.[id]);
+
+    checks.push({
+      name: "toggle-memory-false-blocks",
+      pass: offStatuses.every(s => s === "Blocked"),
+      detail: `off: ${JSON.stringify(offStatuses)}`,
+    });
+    checks.push({
+      name: "toggle-memory-true-includes",
+      pass: onStatuses.every(s => s === "Included"),
+      detail: `on: ${JSON.stringify(onStatuses)}`,
+    });
+  } catch (e) {
+    checks.push({ name: "toggle-memory-false-blocks", pass: false, detail: e?.message ?? "unknown" });
+    checks.push({ name: "toggle-memory-true-includes", pass: false, detail: e?.message ?? "unknown" });
+  }
+
+  // Toggle 4: telemetryLevel reduce vs aggressive — aggressive should include MORE telemetry actions
+  try {
+    const reduceResult = await resolveWithAnswers({ ...nullAnswers, telemetryLevel: "reduce" });
+    const aggressiveResult = await resolveWithAnswers({ ...nullAnswers, telemetryLevel: "aggressive" });
+    const reduce = reduceResult ? JSON.parse(reduceResult) : {};
+    const aggressive = aggressiveResult ? JSON.parse(aggressiveResult) : {};
+
+    const reduceIncluded = reduce.totalIncluded ?? 0;
+    const aggressiveIncluded = aggressive.totalIncluded ?? 0;
+
+    // Aggressive telemetry should include services.disable-diagtrack and tasks.disable-diagnostic-tasks
+    // which "reduce" also includes, PLUS extra ones like tasks.disable-flighting-tasks, tasks.disable-speech-tasks
+    const extraAggressiveIds = ["tasks.disable-flighting-tasks", "tasks.disable-speech-tasks", "tasks.disable-cloud-content-tasks"];
+    const aggressiveHasExtras = extraAggressiveIds.filter(id => aggressive.statusMap?.[id] === "Included");
+    const reduceHasExtras = extraAggressiveIds.filter(id => reduce.statusMap?.[id] === "Included");
+
+    checks.push({
+      name: "toggle-telemetry-aggressive-wider",
+      pass: aggressiveIncluded > reduceIncluded,
+      detail: `reduce=${reduceIncluded} → aggressive=${aggressiveIncluded}`,
+    });
+    checks.push({
+      name: "toggle-telemetry-aggressive-has-extras",
+      pass: aggressiveHasExtras.length > reduceHasExtras.length,
+      detail: `aggressive-extras=${aggressiveHasExtras.length} vs reduce-extras=${reduceHasExtras.length}`,
+    });
+  } catch (e) {
+    checks.push({ name: "toggle-telemetry-aggressive-wider", pass: false, detail: e?.message ?? "unknown" });
+    checks.push({ name: "toggle-telemetry-aggressive-has-extras", pass: false, detail: e?.message ?? "unknown" });
   }
 
   reportAndExit();
