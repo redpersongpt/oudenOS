@@ -426,7 +426,7 @@ export function ExecutionStep() {
       // ── Done: complete ledger plan, then read authoritative final state ──
       await serviceCall("ledger.completePlan", { planId }).catch(() => {});
 
-      // Query ledger for authoritative final counts
+      // Query ledger for authoritative final counts — fail loud if unavailable
       const ledgerResult = await serviceCall<{
         totalCompleted?: number;
         totalFailed?: number;
@@ -435,11 +435,23 @@ export function ExecutionStep() {
         steps?: Array<{ actionId: string; status: string }>;
       }>("ledger.query", { planId });
 
-      const ledgerApplied = ledgerResult.ok && typeof ledgerResult.data?.totalCompleted === "number"
-        ? ledgerResult.data.totalCompleted
+      const ledgerIsAuthoritative = ledgerResult.ok
+        && typeof ledgerResult.data?.totalCompleted === "number"
+        && typeof ledgerResult.data?.totalFailed === "number";
+
+      if (!ledgerIsAuthoritative) {
+        console.warn(
+          "[ExecutionStep] DEGRADED: ledger.query failed or returned incomplete data. " +
+          "Final counts are from renderer-local journal, NOT service-authoritative. " +
+          `ledger.ok=${ledgerResult.ok}, planId=${planId}`
+        );
+      }
+
+      const ledgerApplied = ledgerIsAuthoritative
+        ? ledgerResult.data!.totalCompleted!
         : journalEntries.filter((entry) => entry.status === "applied").length;
-      const ledgerFailed = ledgerResult.ok && typeof ledgerResult.data?.totalFailed === "number"
-        ? ledgerResult.data.totalFailed
+      const ledgerFailed = ledgerIsAuthoritative
+        ? ledgerResult.data!.totalFailed!
         : journalEntries.filter((entry) => entry.status === "failed").length;
 
       const skipped = personalizationFailed ? 1 : 0;
@@ -469,6 +481,7 @@ export function ExecutionStep() {
         packageKind: "user-resolved",
         packageRefs: executionAwarePlaybook.packageRefs ?? null,
         journal: journalEntries,
+        truthSource: ledgerIsAuthoritative ? "ledger" : "local",
       });
 
       timerRef.current = setTimeout(() => completeStep("execution"), 800);

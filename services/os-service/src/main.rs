@@ -20,6 +20,8 @@ mod powershell;
 mod rollback;
 mod transformer;
 
+mod migrate;
+
 use anyhow::Result;
 use tracing_subscriber::{fmt, EnvFilter};
 
@@ -42,6 +44,9 @@ async fn main() -> Result<()> {
     // Initialize database
     let db = db::Database::init()?;
     tracing::info!("Database initialized at {:?}", db.path());
+
+    // One-time migration: import legacy sidecar journal into DB ledger
+    migrate::import_legacy_sidecar(&db);
 
     // Start IPC server
     ipc::serve(db).await?;

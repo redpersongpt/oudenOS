@@ -253,6 +253,8 @@ export interface ExecutionResult {
   packageKind: "user-resolved";
   packageRefs: WizardPackageRefs | null;
   journal: ExecutionJournalEntry[];
+  /** Where final counts came from. "ledger" = DB service truth, "local" = renderer journal */
+  truthSource?: "ledger" | "local";
 }
 
 // ─── Store interface ─────────────────────────────────────────────────────────
