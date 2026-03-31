@@ -1,79 +1,77 @@
 #!/usr/bin/env node
 // ─── Action Parity Validator ────────────────────────────────────────────────
-// Validates structural alignment between:
-//   1. Playbook YAML action IDs (source of truth for what actions exist)
-//   2. Wizard question model action references (what the UI can reach)
+// Enforces structural alignment between:
+//   1. Playbook YAML action IDs (what actions exist)
+//   2. Wizard question model QUESTION_BEHAVIORS (what the UI can reach)
+//   3. QuestionnaireAnswers interface keys (what answers the store holds)
+//   4. strategyQuestions array (what questions the UI shows)
 //
-// Fails on:
-//   - question model references a nonexistent playbook action ID (BROKEN)
-//   - duplicate action IDs across playbook modules (COLLISION)
+// FAILS on:
+//   - wizard behavior references a nonexistent playbook action ID
+//   - duplicate action IDs across playbook modules
+//   - QUESTION_BEHAVIORS key has no matching strategyQuestions entry
+//   - strategyQuestions entry has no matching QUESTION_BEHAVIORS key
+//   - QuestionnaireAnswers key has no matching strategyQuestions entry
 //
-// Reports:
+// REPORTS:
 //   - wizard-reachable actions
-//   - default-only actions (exist in playbook, not referenced by any question)
-//   - intentionally unmapped actions (in the exempt list)
-//   - unknown unmapped actions (not exempt — potential drift)
+//   - default-only actions
+//   - intentionally unmapped actions
 //
-// Usage: node scripts/validate-action-parity.mjs
-// Exit code 0 = pass, 1 = broken references or collisions found
+// Usage: node scripts/validate-action-parity.mjs [--quiet]
+// Exit code 0 = pass, 1 = structural violation found
+// Integrated into: pnpm verify (runs alongside typecheck)
 
-import { readFileSync, readdirSync, statSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import { join, relative } from "node:path";
 
 const ROOT = new URL("..", import.meta.url).pathname.replace(/\/$/, "");
 const PLAYBOOK_DIR = join(ROOT, "playbooks");
 const QUESTION_MODEL = join(ROOT, "apps/os-desktop/src/renderer/lib/wizard-question-model.ts");
+const DECISIONS_STORE = join(ROOT, "apps/os-desktop/src/renderer/stores/decisions-store.ts");
+const quiet = process.argv.includes("--quiet");
 
 // ─── Intentionally unmapped actions ─────────────────────────────────────────
-// These actions are playbook-default-only by design.
-// Each entry must have a reason. Add/remove as the catalog evolves.
 const INTENTIONALLY_UNMAPPED = new Map([
   ["perf.large-system-cache", "Safe default, no user decision needed"],
-  ["perf.clear-page-file-on-shutdown", "Niche security option, default:false, no question category"],
-  ["network.harden-windows-firewall-defaults", "Safe hardening default, no question needed"],
-  ["network.disable-network-location-wizard", "Minor UX cleanup, no decision surface needed"],
-  ["network.disable-mdns", "default:false, excluded from work_pc/office_laptop, niche"],
-  ["perf.disable-sleep-study", "Safe default service disable, telemetry-adjacent"],
-  ["perf.disable-memory-diagnostics", "Safe diagnostic disable, runs by default"],
+  ["perf.clear-page-file-on-shutdown", "Niche security option, default:false"],
+  ["network.harden-windows-firewall-defaults", "Safe hardening default"],
+  ["network.disable-network-location-wizard", "Minor UX cleanup"],
+  ["network.disable-mdns", "default:false, niche, excluded from work_pc"],
 ]);
 
-// ─── Step 1: Extract action IDs from playbook YAML files ────────────────────
+// ─── Helpers ────────────────────────────────────────────────────────────────
 
-function walkDir(dir) {
+function walkYaml(dir) {
   const results = [];
   for (const entry of readdirSync(dir, { withFileTypes: true })) {
     const full = join(dir, entry.name);
-    if (entry.isDirectory()) {
-      results.push(...walkDir(full));
-    } else if (entry.isFile() && entry.name.endsWith(".yaml")) {
-      results.push(full);
-    }
+    if (entry.isDirectory()) results.push(...walkYaml(full));
+    else if (entry.isFile() && entry.name.endsWith(".yaml")) results.push(full);
   }
   return results;
 }
 
-function extractYamlActionIds(yamlPath) {
-  const content = readFileSync(yamlPath, "utf-8");
-  const ids = [];
-  const regex = /^\s+- id:\s+(.+)$/gm;
-  let match;
-  while ((match = regex.exec(content)) !== null) {
-    ids.push(match[1].trim());
-  }
-  return ids;
+function fail(msg) {
+  console.log(`  FAIL  ${msg}`);
 }
 
-const yamlFiles = walkDir(PLAYBOOK_DIR).filter(
+// ─── 1. Playbook action IDs ────────────────────────────────────────────────
+
+const yamlFiles = walkYaml(PLAYBOOK_DIR).filter(
   (f) => !f.endsWith("manifest.yaml") && !f.includes("/profiles/")
 );
 
-const playbookActions = new Map(); // actionId → source file
+const playbookActions = new Map();
 const duplicates = [];
 
 for (const file of yamlFiles) {
-  const ids = extractYamlActionIds(file);
-  const rel = relative(ROOT, file);
-  for (const id of ids) {
+  const content = readFileSync(file, "utf-8");
+  const regex = /^\s+- id:\s+(.+)$/gm;
+  let match;
+  while ((match = regex.exec(content)) !== null) {
+    const id = match[1].trim();
+    const rel = relative(ROOT, file);
     if (playbookActions.has(id)) {
       duplicates.push({ id, file1: playbookActions.get(id), file2: rel });
     } else {
@@ -82,11 +80,10 @@ for (const file of yamlFiles) {
   }
 }
 
-// ─── Step 2: Extract action IDs referenced by wizard question model ─────────
+// ─── 2. Wizard QUESTION_BEHAVIORS action refs ──────────────────────────────
 
 const qmContent = readFileSync(QUESTION_MODEL, "utf-8");
 
-// Find QUESTION_BEHAVIORS block start
 const behaviorStart = qmContent.indexOf("QUESTION_BEHAVIORS");
 if (behaviorStart === -1) {
   console.error("FATAL: Cannot find QUESTION_BEHAVIORS in wizard-question-model.ts");
@@ -94,9 +91,6 @@ if (behaviorStart === -1) {
 }
 
 const behaviorText = qmContent.slice(behaviorStart);
-
-// Extract all action-ID-shaped strings from the behavior definitions
-// Pattern: lowercase word, dot, lowercase-with-hyphens
 const actionIdPattern = /["']([a-z][a-z0-9]*\.[a-z][a-z0-9-]*)["']/g;
 const wizardActionIds = new Set();
 let idMatch;
@@ -104,89 +98,137 @@ while ((idMatch = actionIdPattern.exec(behaviorText)) !== null) {
   wizardActionIds.add(idMatch[1]);
 }
 
-// ─── Step 3: Validate ───────────────────────────────────────────────────────
+// ─── 3. QuestionnaireAnswers keys ──────────────────────────────────────────
+
+const storeContent = readFileSync(DECISIONS_STORE, "utf-8");
+const ifaceStart = storeContent.indexOf("export interface QuestionnaireAnswers");
+const ifaceEnd = storeContent.indexOf("}", ifaceStart);
+const ifaceText = storeContent.slice(ifaceStart, ifaceEnd);
+const answerKeys = new Set(
+  [...ifaceText.matchAll(/^\s+(\w+):/gm)].map((m) => m[1])
+);
+
+// ─── 4. strategyQuestions keys ─────────────────────────────────────────────
+
+const qStart = qmContent.indexOf("strategyQuestions:");
+const qEnd = qmContent.indexOf("];\n", qStart);
+const qText = qmContent.slice(qStart, qEnd);
+const questionKeys = new Set([
+  ...[...qText.matchAll(/makeBooleanQuestion\(\s*"(\w+)"/g)].map((m) => m[1]),
+  ...[...qText.matchAll(/key:\s*"(\w+)"/g)].map((m) => m[1]),
+]);
+
+// ─── 5. QUESTION_BEHAVIORS top-level keys ──────────────────────────────────
+// Extract keys between QUESTION_BEHAVIORS declaration and the closing };
+// These are the first-level object keys like: disableCopilot: createBooleanBehavior(...)
+
+const behaviorBlockEnd = qmContent.indexOf("\n};", behaviorStart);
+const behaviorBlock = qmContent.slice(behaviorStart, behaviorBlockEnd);
+// Match lines like "  keyName: createBooleanBehavior(" or "  keyName: {"
+const behaviorKeyPattern = /^\s{2}(\w+):\s+(?:createBooleanBehavior|{)/gm;
+const behaviorKeys = new Set(
+  [...behaviorBlock.matchAll(behaviorKeyPattern)].map((m) => m[1])
+);
+
+// ─── Validate ───────────────────────────────────────────────────────────────
 
 let exitCode = 0;
-const brokenRefs = [];
-const wizardReachable = [];
-const defaultOnly = [];
-const intentionallyUnmapped = [];
-const unknownUnmapped = [];
+const checks = [];
 
-// Check every wizard-referenced ID exists in playbook catalog
-for (const id of wizardActionIds) {
-  if (playbookActions.has(id)) {
-    wizardReachable.push(id);
-  } else {
-    brokenRefs.push(id);
-  }
-}
-
-// Classify playbook actions by reachability
-for (const [id] of playbookActions) {
-  if (wizardActionIds.has(id)) continue; // already counted as wizard-reachable
-  if (INTENTIONALLY_UNMAPPED.has(id)) {
-    intentionallyUnmapped.push(id);
-  } else {
-    defaultOnly.push(id);
-  }
-}
-
-// ─── Step 4: Report ─────────────────────────────────────────────────────────
-
-console.log("╔═══════════════════════════════════════════════════════════╗");
-console.log("║  redcore · OS — Action Parity Validator                   ║");
-console.log("╠═══════════════════════════════════════════════════════════╣");
-console.log(`║  Playbook actions:        ${String(playbookActions.size).padStart(4)}`);
-console.log(`║  Wizard-referenced IDs:   ${String(wizardActionIds.size).padStart(4)}`);
-console.log(`║  Wizard-reachable:        ${String(wizardReachable.length).padStart(4)}`);
-console.log(`║  Default-only:            ${String(defaultOnly.length).padStart(4)}`);
-console.log(`║  Intentionally unmapped:  ${String(intentionallyUnmapped.length).padStart(4)}`);
-console.log(`║  Unknown unmapped:        ${String(defaultOnly.length - intentionallyUnmapped.length >= 0 ? defaultOnly.length : 0).padStart(4)}`);
-console.log("╠═══════════════════════════════════════════════════════════╣");
-
-// Broken references (FAIL)
+// Check 1: wizard action refs → playbook catalog
+const brokenRefs = [...wizardActionIds].filter((id) => !playbookActions.has(id));
 if (brokenRefs.length > 0) {
   exitCode = 1;
-  console.log("║  BROKEN REFERENCES (question model → nonexistent action)  ║");
   for (const id of brokenRefs.sort()) {
-    console.log(`║    ✗ ${id}`);
+    checks.push({ type: "FAIL", msg: `Broken ref: wizard references "${id}" but no playbook action exists` });
   }
-  console.log("╠═══════════════════════════════════════════════════════════╣");
 }
 
-// Duplicate IDs (FAIL)
+// Check 2: duplicate playbook IDs
 if (duplicates.length > 0) {
   exitCode = 1;
-  console.log("║  DUPLICATE ACTION IDS                                     ║");
   for (const { id, file1, file2 } of duplicates) {
-    console.log(`║    ✗ ${id}`);
-    console.log(`║      in: ${file1}`);
-    console.log(`║      in: ${file2}`);
+    checks.push({ type: "FAIL", msg: `Duplicate ID: "${id}" in ${file1} AND ${file2}` });
   }
-  console.log("╠═══════════════════════════════════════════════════════════╣");
 }
 
-// Default-only (INFO — not a failure, but visible)
-if (defaultOnly.length > 0) {
-  console.log("║  DEFAULT-ONLY (playbook actions not in question model)    ║");
+// Check 3: QUESTION_BEHAVIORS keys ↔ strategyQuestions keys
+const orphanedBehaviors = [...behaviorKeys].filter((k) => !questionKeys.has(k));
+const orphanedQuestions = [...questionKeys].filter((k) => !behaviorKeys.has(k));
+
+if (orphanedBehaviors.length > 0) {
+  exitCode = 1;
+  for (const k of orphanedBehaviors.sort()) {
+    checks.push({ type: "FAIL", msg: `Orphaned behavior: "${k}" has QUESTION_BEHAVIORS entry but no strategyQuestions definition` });
+  }
+}
+if (orphanedQuestions.length > 0) {
+  exitCode = 1;
+  for (const k of orphanedQuestions.sort()) {
+    checks.push({ type: "FAIL", msg: `Orphaned question: "${k}" has strategyQuestions definition but no QUESTION_BEHAVIORS entry` });
+  }
+}
+
+// Check 4: QuestionnaireAnswers ↔ strategyQuestions
+const answerWithoutQuestion = [...answerKeys].filter((k) => !questionKeys.has(k));
+const questionWithoutAnswer = [...questionKeys].filter((k) => !answerKeys.has(k));
+
+if (answerWithoutQuestion.length > 0) {
+  exitCode = 1;
+  for (const k of answerWithoutQuestion.sort()) {
+    checks.push({ type: "FAIL", msg: `Answer without question: "${k}" in QuestionnaireAnswers but no strategyQuestions entry` });
+  }
+}
+if (questionWithoutAnswer.length > 0) {
+  exitCode = 1;
+  for (const k of questionWithoutAnswer.sort()) {
+    checks.push({ type: "FAIL", msg: `Question without answer: "${k}" in strategyQuestions but not in QuestionnaireAnswers` });
+  }
+}
+
+// Classify reachability
+const wizardReachable = [...wizardActionIds].filter((id) => playbookActions.has(id));
+const defaultOnly = [...playbookActions.keys()].filter((id) => !wizardActionIds.has(id));
+const exempt = defaultOnly.filter((id) => INTENTIONALLY_UNMAPPED.has(id));
+const unclassified = defaultOnly.filter((id) => !INTENTIONALLY_UNMAPPED.has(id));
+
+// ─── Report ─────────────────────────────────────────────────────────────────
+
+console.log("");
+console.log("  redcore OS — Action Parity Validator");
+console.log("  ────────────────────────────────────");
+console.log(`  Playbook actions:       ${playbookActions.size}`);
+console.log(`  Wizard-referenced:      ${wizardActionIds.size}`);
+console.log(`  Wizard-reachable:       ${wizardReachable.length}`);
+console.log(`  Default-only:           ${defaultOnly.length} (${exempt.length} exempt, ${unclassified.length} unclassified)`);
+console.log(`  Answer keys:            ${answerKeys.size}`);
+console.log(`  Strategy questions:     ${questionKeys.size}`);
+console.log(`  Behavior keys:          ${behaviorKeys.size}`);
+console.log("");
+
+if (checks.length > 0) {
+  for (const { type, msg } of checks) {
+    console.log(`  ${type}  ${msg}`);
+  }
+  console.log("");
+}
+
+if (!quiet && defaultOnly.length > 0) {
+  console.log("  Default-only actions (not wizard-gated):");
   for (const id of defaultOnly.sort()) {
-    const source = playbookActions.get(id);
-    const exempt = INTENTIONALLY_UNMAPPED.has(id);
-    const marker = exempt ? "◇" : "○";
-    console.log(`║    ${marker} ${id}${exempt ? " [exempt]" : ""}`);
+    const tag = INTENTIONALLY_UNMAPPED.has(id) ? " [exempt]" : "";
+    console.log(`    ${id}${tag}`);
   }
-  console.log("╠═══════════════════════════════════════════════════════════╣");
+  console.log("");
 }
 
-// Final verdict
 if (exitCode === 0) {
-  console.log("║  RESULT: PASS                                             ║");
-  console.log("║  All wizard action references are structurally valid.      ║");
+  console.log("  RESULT: PASS");
+  console.log("  All structural parity checks passed.");
 } else {
-  console.log("║  RESULT: FAIL                                             ║");
-  console.log("║  Fix broken references or duplicates before shipping.      ║");
+  console.log("  RESULT: FAIL");
+  console.log("  Fix the violations above before shipping.");
 }
-console.log("╚═══════════════════════════════════════════════════════════╝");
+console.log("");
 
 process.exit(exitCode);
