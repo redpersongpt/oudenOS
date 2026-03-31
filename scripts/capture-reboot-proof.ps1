@@ -340,6 +340,15 @@ if ($Phase -eq "post-reboot") {
     $failed = ($allChecks | Where-Object { -not $_.pass }).Count
     $verdict = if ($failed -eq 0) { "PASS" } else { "FAIL" }
 
+    # ── Build identity binding ──
+    $gitCommitSha = "unknown"
+    $appVersion = "unknown"
+    try { $gitCommitSha = (git rev-parse HEAD 2>$null).Trim() } catch { }
+    try {
+        $pkgPath = Join-Path (Get-Location) "apps\os-desktop\package.json"
+        if (Test-Path $pkgPath) { $appVersion = (Get-Content $pkgPath -Raw | ConvertFrom-Json).version }
+    } catch { }
+
     $finalSummary = @{
         type = "reboot-resume-proof"
         verdict = $verdict
@@ -350,8 +359,27 @@ if ($Phase -eq "post-reboot") {
         preRebootChecks = $preChecks
         postRebootChecks = $script:checks
         allChecks = $allChecks
+        # Binding fields — required by evidence contract
+        gitCommitSha = $gitCommitSha
+        appVersion = $appVersion
+        targetPlatform = "x86_64-pc-windows-msvc"
+        hostName = $env:COMPUTERNAME
     }
     Save-Artifact "reboot-proof-summary" $finalSummary
+
+    # ── Seal the reboot proof bundle ──
+    Write-Host ""
+    Write-Host "  Sealing reboot proof bundle..."
+    try {
+        $sealScript = Join-Path (Get-Location) "scripts\seal-proof-bundle.mjs"
+        if ((Get-Command node -ErrorAction SilentlyContinue) -and (Test-Path $sealScript)) {
+            node $sealScript $OutputDir --reboot 2>&1 | ForEach-Object { Write-Host "  $_" }
+        } else {
+            Write-Host "  WARN: node or seal script not found — manifest not generated"
+        }
+    } catch {
+        Write-Host "  WARN: Sealing failed: $($_.Exception.Message)"
+    }
 
     Write-Host ""
     Write-Host "  Reboot/resume proof: $passed passed, $failed failed"

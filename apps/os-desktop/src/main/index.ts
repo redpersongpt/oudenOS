@@ -12,9 +12,25 @@
 import { app, BrowserWindow, dialog, ipcMain, session, shell } from "electron";
 import fs, { existsSync } from "node:fs";
 import path from "node:path";
-import { spawn, type ChildProcess } from "node:child_process";
+import { spawn, execSync, type ChildProcess } from "node:child_process";
 import { createInterface } from "node:readline";
 import { createApbxBundle, type ApbxExportState } from "./lib/apbx";
+
+// ─── Admin detection ────────────────────────────────────────────────────────
+
+let isAdmin = false;
+
+function detectAdminStatus(): boolean {
+  if (process.platform !== "win32") return false;
+  try {
+    // net session only succeeds when running as admin
+    execSync("net session", { stdio: "pipe" });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 
 // ─── Service connection ─────────────────────────────────────────────────────
 
@@ -168,6 +184,8 @@ ipcMain.handle("service:status", () => {
   return {
     running: !!serviceProcess?.stdin?.writable,
     mode: serviceProcess?.stdin?.writable ? "live" : "demo",
+    isAdmin,
+    platform: process.platform,
   };
 });
 
@@ -336,6 +354,13 @@ app.setName("redcore OS");
 
 app.whenReady().then(() => {
   const isDev = !!process.env.VITE_DEV_SERVER_URL;
+
+  // Detect admin status early
+  isAdmin = detectAdminStatus();
+  console.log(`[Main] Admin status: ${isAdmin ? "elevated" : "standard user"}`);
+  if (!isAdmin && process.platform === "win32") {
+    console.warn("[Main] Running without admin privileges. System mutations will fail.");
+  }
 
   // Set CSP — relaxed in dev to allow Vite HMR
   session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
