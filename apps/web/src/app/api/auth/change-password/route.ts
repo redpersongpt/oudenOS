@@ -60,12 +60,11 @@ export async function POST(req: NextRequest) {
     where: { id: user.id },
     data: {
       passwordHash,
+      passwordChangedAt: new Date(),
       passwordResetToken: null,
       passwordResetExpiresAt: null,
     },
   });
-
-  await prisma.session.deleteMany({ where: { userId: user.id } });
 
   return NextResponse.json({
     ok: true,

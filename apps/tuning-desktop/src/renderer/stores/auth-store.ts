@@ -192,8 +192,9 @@ export const useAuthStore = create<AuthState>()(
 
       logout: async () => {
         try {
-          // Best-effort server-side invalidation — ignore errors
-          await cloudApi.auth.logout();
+          // Best-effort server-side invalidation — send refreshToken for revocation
+          const { refreshToken } = get();
+          await cloudApi.auth.logout(refreshToken ?? undefined);
         } catch {
           // ignore
         }
