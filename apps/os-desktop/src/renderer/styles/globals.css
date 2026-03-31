@@ -17,12 +17,12 @@
     margin: 0;
     padding: 0;
     overflow: hidden;
-    user-select: none;
+    user-select: text;
     background: #1e1e22;
     color: #f0f0f4;
   }
 
-  input, textarea, [data-selectable] { user-select: text; }
+  button, [role="button"], .drag-region { user-select: none; }
   :focus { outline: none; }
   :root { color-scheme: dark; }
 }

@@ -3,9 +3,10 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { Check, Shield, AlertTriangle, Lock, Heart, Archive } from "lucide-react";
+import { Check, Shield, AlertTriangle, Lock, Heart, Archive, FileText } from "lucide-react";
 import { useWizardStore } from "@/stores/wizard-store";
 import { useDecisionsStore } from "@/stores/decisions-store";
+import { useLogStore } from "@/stores/log-store";
 import { resolveEffectivePersonalization } from "@/lib/personalization-resolution";
 
 // Ledger query response shape (from ledger.query)
@@ -42,6 +43,9 @@ export function ReportStep() {
   );
   const [exportState, setExportState] = useState<"idle" | "busy" | "done" | "error">("idle");
   const [exportMessage, setExportMessage] = useState("");
+  const [logExportState, setLogExportState] = useState<"idle" | "busy" | "done" | "error">("idle");
+  const [logExportMessage, setLogExportMessage] = useState("");
+  const exportLogAsText = useLogStore((state) => state.exportAsText);
 
   // ── Primary truth: load from service ledger ──
   const [ledgerState, setLedgerState] = useState<LedgerQueryResult | null>(null);
@@ -92,6 +96,52 @@ export function ReportStep() {
       ...(pb?.actionProvenance ?? []).flatMap((entry) => entry.warnings),
     ]),
   ).slice(0, 2);
+
+  const handleExportLog = async () => {
+    setLogExportState("busy");
+    setLogExportMessage("");
+    const text = exportLogAsText();
+
+    const api = (window as unknown as {
+      redcore?: {
+        log?: {
+          saveToDesktop?: (content: string) => Promise<{ ok: boolean; path?: string; error?: string }>;
+        };
+      };
+    }).redcore;
+
+    if (api?.log?.saveToDesktop) {
+      try {
+        const result = await api.log.saveToDesktop(text);
+        if (result.ok) {
+          setLogExportState("done");
+          setLogExportMessage(`Log saved${result.path ? ` to ${result.path}` : ""}`);
+        } else {
+          setLogExportState("error");
+          setLogExportMessage(result.error ?? "Failed to save log");
+        }
+      } catch {
+        setLogExportState("error");
+        setLogExportMessage("Failed to save log");
+      }
+    } else {
+      // Fallback: Blob download
+      try {
+        const blob = new Blob([text], { type: "text/plain" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `redcore-os-log-${new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19)}.txt`;
+        a.click();
+        URL.revokeObjectURL(url);
+        setLogExportState("done");
+        setLogExportMessage("Log downloaded");
+      } catch {
+        setLogExportState("error");
+        setLogExportMessage("Failed to download log");
+      }
+    }
+  };
 
   const handleExportCompletedPackage = async () => {
     if (!detectedProfile || !resolvedPlaybook) return;
@@ -180,18 +230,33 @@ export function ReportStep() {
         <p className="mt-1 text-[11px] text-ink-secondary">
           Your {detectedProfile?.label ?? "system"} has been optimized
         </p>
-        <div className="mt-3 flex items-center justify-center gap-3">
-          <button
-            onClick={handleExportCompletedPackage}
-            disabled={!detectedProfile || !resolvedPlaybook || exportState === "busy"}
-            className="inline-flex items-center gap-2 rounded-lg border border-white/[0.08] bg-white/[0.03] px-3 py-2 text-[11px] font-semibold text-ink-secondary transition-colors hover:border-white/[0.16] hover:text-ink disabled:cursor-not-allowed disabled:text-ink-disabled"
-          >
-            <Archive className="h-3.5 w-3.5" />
-            {exportState === "busy" ? "Exporting completed APBX..." : "Export Completed APBX"}
-          </button>
+        <div className="mt-3 flex flex-col items-center gap-2">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={handleExportCompletedPackage}
+              disabled={!detectedProfile || !resolvedPlaybook || exportState === "busy"}
+              className="inline-flex items-center gap-2 rounded-lg border border-white/[0.08] bg-white/[0.03] px-3 py-2 text-[11px] font-semibold text-ink-secondary transition-colors hover:border-white/[0.16] hover:text-ink disabled:cursor-not-allowed disabled:text-ink-disabled"
+            >
+              <Archive className="h-3.5 w-3.5" />
+              {exportState === "busy" ? "Exporting completed APBX..." : "Export Completed APBX"}
+            </button>
+            <button
+              onClick={handleExportLog}
+              disabled={logExportState === "busy"}
+              className="inline-flex items-center gap-2 rounded-lg border border-white/[0.08] bg-white/[0.03] px-3 py-2 text-[11px] font-semibold text-ink-secondary transition-colors hover:border-white/[0.16] hover:text-ink disabled:cursor-not-allowed disabled:text-ink-disabled"
+            >
+              <FileText className="h-3.5 w-3.5" />
+              {logExportState === "busy" ? "Saving..." : "Export Log"}
+            </button>
+          </div>
           {exportMessage && (
             <p className={`text-[11px] ${exportState === "error" ? "text-red-400" : "text-ink-secondary"}`}>
               {exportMessage}
+            </p>
+          )}
+          {logExportMessage && (
+            <p className={`text-[11px] ${logExportState === "error" ? "text-red-400" : "text-ink-secondary"}`}>
+              {logExportMessage}
             </p>
           )}
         </div>
