@@ -17,4 +17,5 @@ const pool = postgres(DATABASE_URL, {
 export const db = drizzle(pool, { schema });
 
 export * from "./schema.js";
+export { runPreflight, preflightOrDie } from "./preflight.js";
 export type Database = typeof db;
