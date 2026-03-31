@@ -38,18 +38,21 @@ export const metadata: Metadata = {
 };
 
 function buildJsonLd(downloadUrl: string | null) {
-  return {
-  "@context": "https://schema.org",
-  "@type": "SoftwareApplication",
-  name: "redcore OS",
-  operatingSystem: "Windows 10, Windows 11",
-  applicationCategory: "UtilitiesApplication",
-  offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
-  description:
-    "Free Windows transformation tool with guided debloating, machine-aware scanning, and full rollback support.",
-  url: "https://redcoreos.net/redcore-os",
-    downloadUrl: downloadUrl ?? "https://redcoreos.net/downloads",
+  const ld: Record<string, unknown> = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: "redcore OS",
+    operatingSystem: "Windows 10, Windows 11",
+    applicationCategory: "UtilitiesApplication",
+    offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+    description:
+      "Free Windows transformation tool with guided debloating, machine-aware scanning, and full rollback support.",
+    url: "https://redcoreos.net/redcore-os",
   };
+  if (downloadUrl) {
+    ld.downloadUrl = downloadUrl;
+  }
+  return ld;
 }
 
 export default async function WindowsDebloatPage() {

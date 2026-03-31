@@ -37,32 +37,36 @@ export const metadata: Metadata = {
   },
 };
 
-function buildJsonLd(downloadUrl: string | null) {
-  return {
-  "@context": "https://schema.org",
-  "@type": "SoftwareApplication",
-  name: "redcore OS",
-  operatingSystem: "Windows 10, Windows 11",
-  applicationCategory: "UtilitiesApplication",
-  offers: {
-    "@type": "Offer",
-    price: "0",
-    priceCurrency: "USD",
-  },
-  description:
-    "Free Windows transformation tool with guided debloating, 8 profiles, 150+ actions, and full rollback support.",
-  url: "https://redcoreos.net/redcore-os",
-    downloadUrl: downloadUrl ?? "https://redcoreos.net/downloads",
-  softwareVersion: "1.0",
-  featureList: [
-    "Machine-aware hardware scanning",
-    "8 optimization profiles",
-    "150+ system actions",
-    "Full rollback support",
-    "Work PC preservation",
-    "Privacy hardening",
-  ],
+function buildJsonLd(downloadUrl: string | null, version: string | null) {
+  const ld: Record<string, unknown> = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: "redcore OS",
+    operatingSystem: "Windows 10, Windows 11",
+    applicationCategory: "UtilitiesApplication",
+    offers: {
+      "@type": "Offer",
+      price: "0",
+      priceCurrency: "USD",
+    },
+    description:
+      "Free Windows transformation tool with guided debloating, 8 profiles, 150+ actions, and full rollback support.",
+    url: "https://redcoreos.net/redcore-os",
+    softwareVersion: version ?? "1.0",
+    featureList: [
+      "Machine-aware hardware scanning",
+      "8 optimization profiles",
+      "150+ system actions",
+      "Full rollback support",
+      "Work PC preservation",
+      "Privacy hardening",
+    ],
   };
+  // Only emit downloadUrl when a real validated artifact URL exists
+  if (downloadUrl) {
+    ld.downloadUrl = downloadUrl;
+  }
+  return ld;
 }
 
 export default async function RedcoreOSPage() {
@@ -76,7 +80,7 @@ export default async function RedcoreOSPage() {
         <article>
           <script
             type="application/ld+json"
-            dangerouslySetInnerHTML={{ __html: JSON.stringify(buildJsonLd(downloadUrl)) }}
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(buildJsonLd(downloadUrl, os.version)) }}
           />
 
           <PageHero
