@@ -22,6 +22,8 @@ export interface ApbxExportState {
   actionProvenance?: Record<string, unknown>[] | null;
   executionJournal?: Record<string, unknown>[] | null;
   serviceJournalState?: Record<string, unknown> | null;
+  /** DB-backed execution ledger state from ledger.query — authoritative when present */
+  ledgerState?: Record<string, unknown> | null;
   personalization: Record<string, unknown>;
   selectedAppIds: string[];
 }
@@ -196,6 +198,11 @@ export function createApbxBundle(options: CreateApbxBundleOptions): {
     fs.writeFileSync(path.join(stateDir, "action-provenance.json"), `${JSON.stringify(actionProvenance ?? null, null, 2)}\n`);
     fs.writeFileSync(path.join(stateDir, "execution-journal.json"), `${JSON.stringify(executionJournal ?? null, null, 2)}\n`);
     fs.writeFileSync(path.join(stateDir, "service-journal-state.json"), `${JSON.stringify(options.state.serviceJournalState ?? null, null, 2)}\n`);
+
+    // ── DB-backed execution ledger truth (authoritative when present) ──
+    if (options.state.ledgerState) {
+      fs.writeFileSync(path.join(stateDir, "execution-ledger.json"), `${JSON.stringify(options.state.ledgerState, null, 2)}\n`);
+    }
   }
 
   const filesForChecksums = listFilesRecursive(packageDir);
@@ -263,10 +270,15 @@ export function createApbxBundle(options: CreateApbxBundleOptions): {
       includesActionProvenance: Boolean(actionProvenance),
       includesExecutionJournal: Boolean(executionJournal),
       includesServiceJournalState: Boolean(options.state?.serviceJournalState),
+      includesExecutionLedger: Boolean(options.state?.ledgerState),
     },
     provenance: {
       actionCount: Array.isArray(actionProvenance) ? actionProvenance.length : 0,
       journalEntryCount: Array.isArray(executionJournal) ? executionJournal.length : 0,
+      ledgerTotalActions: typeof options.state?.ledgerState?.totalActions === "number" ? options.state.ledgerState.totalActions : null,
+      ledgerCompleted: typeof options.state?.ledgerState?.totalCompleted === "number" ? options.state.ledgerState.totalCompleted : null,
+      ledgerFailed: typeof options.state?.ledgerState?.totalFailed === "number" ? options.state.ledgerState.totalFailed : null,
+      ledgerStatus: typeof options.state?.ledgerState?.status === "string" ? options.state.ledgerState.status : null,
     },
     checksums,
   };
