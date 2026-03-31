@@ -1,0 +1,105 @@
+# ─── Security: Windows Defender Control ───────────────────────────────────────
+# Expert-only: Disable or reduce Windows Defender real-time protection.
+# This is the single most impactful security/performance tradeoff on Windows.
+
+module: security.defender-control
+name: "Windows Defender Control"
+description: "Disable or reduce Windows Defender real-time protection (expert-only, high risk)"
+category: security
+
+actions:
+  - id: security.disable-defender-realtime
+    name: "Disable Defender Real-Time Protection"
+    description: "Disable Windows Defender real-time scanning via Tamper Protection bypass. Eliminates the MsMpEng.exe background scanning overhead."
+    rationale: "Defender real-time scanning adds measurable I/O latency and CPU overhead during game loads, shader compilation, and large file operations. This is the single largest background CPU consumer on most stock Windows installs."
+    risk: high
+    tier: free
+    default: false
+    expertOnly: true
+    requiresReboot: true
+    reversible: true
+    estimatedSeconds: 5
+    blockedProfiles:
+      - work_pc
+      - office_laptop
+      - vm_cautious
+    warningMessage: "Disabling Defender removes the last real-time malware guardrail. Only appropriate for dedicated gaming PCs with no web browsing or untrusted downloads."
+    registryChanges:
+      - hive: HKLM
+        path: "SOFTWARE\\Policies\\Microsoft\\Windows Defender"
+        valueName: DisableAntiSpyware
+        value: 1
+        valueType: DWord
+      - hive: HKLM
+        path: "SOFTWARE\\Policies\\Microsoft\\Windows Defender\\Real-Time Protection"
+        valueName: DisableRealtimeMonitoring
+        value: 1
+        valueType: DWord
+      - hive: HKLM
+        path: "SOFTWARE\\Policies\\Microsoft\\Windows Defender\\Real-Time Protection"
+        valueName: DisableBehaviorMonitoring
+        value: 1
+        valueType: DWord
+      - hive: HKLM
+        path: "SOFTWARE\\Policies\\Microsoft\\Windows Defender\\Real-Time Protection"
+        valueName: DisableOnAccessProtection
+        value: 1
+        valueType: DWord
+      - hive: HKLM
+        path: "SOFTWARE\\Policies\\Microsoft\\Windows Defender\\Real-Time Protection"
+        valueName: DisableScanOnRealtimeEnable
+        value: 1
+        valueType: DWord
+
+  - id: security.disable-defender-cloud
+    name: "Disable Defender Cloud Protection"
+    description: "Disable Defender cloud-delivered protection and automatic sample submission"
+    rationale: "Cloud protection sends file hashes and suspicious samples to Microsoft servers. Disabling reduces network overhead and data exfiltration."
+    risk: medium
+    tier: free
+    default: false
+    expertOnly: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 3
+    blockedProfiles:
+      - work_pc
+    registryChanges:
+      - hive: HKLM
+        path: "SOFTWARE\\Policies\\Microsoft\\Windows Defender\\Spynet"
+        valueName: SpyNetReporting
+        value: 0
+        valueType: DWord
+      - hive: HKLM
+        path: "SOFTWARE\\Policies\\Microsoft\\Windows Defender\\Spynet"
+        valueName: SubmitSamplesConsent
+        value: 2
+        valueType: DWord
+
+  - id: security.disable-vbs
+    name: "Disable Virtualization-Based Security (VBS)"
+    description: "Disable VBS — the hypervisor layer that enables HVCI, Credential Guard, and other virtualization-backed security features"
+    rationale: "VBS adds a hypervisor layer that increases DPC latency and memory overhead. On dedicated gaming systems without enterprise security requirements, disabling VBS can reduce latency by 5-15%."
+    risk: high
+    tier: free
+    default: false
+    expertOnly: true
+    requiresReboot: true
+    reversible: true
+    estimatedSeconds: 3
+    blockedProfiles:
+      - work_pc
+      - office_laptop
+      - vm_cautious
+    warningMessage: "VBS is required for anti-cheat systems like Vanguard. Disabling may prevent some games from launching."
+    registryChanges:
+      - hive: HKLM
+        path: "SYSTEM\\CurrentControlSet\\Control\\DeviceGuard"
+        valueName: EnableVirtualizationBasedSecurity
+        value: 0
+        valueType: DWord
+      - hive: HKLM
+        path: "SYSTEM\\CurrentControlSet\\Control\\DeviceGuard\\Scenarios\\HypervisorEnforcedCodeIntegrity"
+        valueName: Enabled
+        value: 0
+        valueType: DWord

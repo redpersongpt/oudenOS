@@ -72,6 +72,7 @@ phases:
       - performance/latency.yaml
       - performance/power.yaml
       - performance/storage.yaml
+      - performance/gaming.yaml
 
   - id: shell
     name: "Shell & Explorer"
@@ -105,6 +106,7 @@ phases:
     modules:
       - security/mitigations.yaml
       - security/update-control.yaml
+      - security/defender-control.yaml
 
   - id: personalization
     name: "Visual Personalization"
