@@ -6,7 +6,7 @@ import { Layers, Shield, Briefcase, HardDrive, RefreshCw, Paintbrush } from "luc
 import { duration, easing } from "@/lib/motion";
 
 const features = [
-  { icon: Layers, title: "In-place transformation", desc: "Reshape your current Windows — no ISO, no reinstall, no data loss" },
+  { icon: Layers, title: "In-place optimization", desc: "Reshape your current Windows — no ISO, no reinstall, no data loss" },
   { icon: Shield, title: "150+ reversible actions", desc: "Staged cleanup across services, tasks, privacy, startup, and more" },
   { icon: Briefcase, title: "Work PC preservation", desc: "Print Spooler, RDP, SMB, Group Policy, VPN — automatically protected" },
   { icon: HardDrive, title: "8 machine profiles", desc: "Gaming, workstation, office, laptop, low-spec — each gets a different path" },
@@ -41,7 +41,7 @@ export function OSProductSection() {
 
             <div className="mt-6 space-y-3">
               {[
-                "In-place Windows transformation",
+                "In-place Windows optimization",
                 "All 150+ actions",
                 "8 machine profiles",
                 "Work PC preservation",
@@ -89,7 +89,7 @@ export function OSProductSection() {
                 redcore · OS
               </h2>
               <p className="mt-4 text-lg text-ink-secondary max-w-xl">
-                In-place Windows transformation. Reshape your current installation
+                In-place Windows optimization. Reshape your current installation
                 without reinstalling — guided by machine intelligence, protected by
                 rollback safety.
               </p>

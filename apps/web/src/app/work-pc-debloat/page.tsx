@@ -151,7 +151,7 @@ export default function WorkPCDebloatPage() {
               {
                 title: "redcore OS",
                 description:
-                  "Free Windows transformation tool. 8 profiles, 150+ actions, full rollback.",
+                  "Free Windows optimization tool. 8 profiles, 150+ actions, full rollback.",
                 href: "/redcore-os",
               },
               {

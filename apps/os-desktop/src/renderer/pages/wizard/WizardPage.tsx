@@ -1,5 +1,5 @@
 // ─── Wizard Page ─────────────────────────────────────────────────────────────
-// Root route for /wizard. 13-step playbook-native transformation flow.
+// Root route for /wizard. 13-step playbook-native optimization flow.
 
 import { AnimatePresence } from "framer-motion";
 import { WizardShell } from "@/components/wizard/WizardShell";

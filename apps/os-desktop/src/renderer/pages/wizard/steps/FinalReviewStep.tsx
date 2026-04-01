@@ -180,7 +180,7 @@ export function FinalReviewStep() {
           Ready to Apply
         </h1>
         <p className="mt-1.5 text-[13px] text-ink-secondary">
-          Review your transformation plan. A rollback snapshot will be created before any changes.
+          Review what redcore will change. A snapshot is saved before anything runs. A rollback snapshot will be created before any changes.
         </p>
         <div className="mt-3 flex flex-wrap items-center gap-3">
           <button

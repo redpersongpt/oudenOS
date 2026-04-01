@@ -20,7 +20,7 @@ interface ContrastRow {
 // ─── Data ────────────────────────────────────────────────────────────────────
 
 const contrastRows: ContrastRow[] = [
-  { before: "One-size-fits-all", after: "Machine-aware profiling" },
+  { before: "One-size-fits-all", after: "Hardware-based profiling" },
   { before: "No rollback safety", after: "Snapshot-backed rollback" },
   { before: "Aggressive & blind", after: "Confidence-gated actions" },
   { before: "Settings dump", after: "Guided wizard journey" },

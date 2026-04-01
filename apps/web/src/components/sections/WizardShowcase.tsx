@@ -123,7 +123,7 @@ function WelcomeContent() {
           <span className="font-normal text-ink-secondary">OS</span>
         </h3>
         <p className="mt-1.5 text-[11px] text-ink-tertiary leading-relaxed max-w-[260px]">
-          Machine-aware Windows optimization.
+          Windows optimization done right.
           <br />
           Guided, reversible, honest.
         </p>
@@ -369,7 +369,7 @@ function ReviewContent() {
       <div className="mb-3 flex items-baseline justify-between">
         <div>
           <p className="text-[10px] font-mono uppercase tracking-[0.12em] text-brand-500 font-bold">
-            Playbook Review
+            Action Review
           </p>
           <p className="mt-0.5 text-[10px] text-ink-tertiary">Review every action before it runs</p>
         </div>
@@ -564,7 +564,7 @@ function ReportContent() {
           transition={{ delay: 0.2 }}
           className="text-[15px] font-bold text-ink-primary"
         >
-          Transformation Complete
+          Done. Your PC is clean.
         </motion.h3>
         <motion.p
           initial={{ opacity: 0 }}

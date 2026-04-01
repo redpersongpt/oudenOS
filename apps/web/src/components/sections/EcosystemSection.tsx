@@ -12,7 +12,7 @@ import {
 const ease = [0.16, 1, 0.3, 1] as const;
 
 const tuningFeatures = [
-  { icon: Cpu,      title: "Machine-aware scanning",    body: "Deep hardware and software analysis before any changes." },
+  { icon: Cpu,      title: "Scans your actual hardware",    body: "Deep hardware and software analysis before any changes." },
   { icon: Layers,   title: "15+ tuning modules",        body: "CPU, GPU, memory, storage, network, display, audio, and more." },
   { icon: BarChart3,title: "Benchmark validation",       body: "Before/after performance comparison for every session." },
   { icon: RotateCcw,title: "Rollback safety",            body: "Complete snapshots before every change, one-click restore." },
@@ -21,7 +21,7 @@ const tuningFeatures = [
 ];
 
 const osFeatures = [
-  { icon: Monitor,     title: "In-place transformation", body: "Reshape your current Windows — no ISO, no reinstall, no data loss." },
+  { icon: Monitor,     title: "No reinstall needed", body: "Reshape your current Windows — no ISO, no reinstall, no data loss." },
   { icon: Shield,      title: "150+ reversible actions", body: "Staged cleanup across services, tasks, privacy, startup, and more." },
   { icon: Fingerprint, title: "Work PC preservation",    body: "Print Spooler, RDP, SMB, Group Policy, VPN — automatically protected." },
   { icon: Gauge,       title: "8 machine profiles",      body: "Gaming, workstation, office, laptop, low-spec — each gets a different path." },
@@ -68,7 +68,7 @@ function EcosystemDiagram({ inView }: { inView: boolean }) {
       badge: "Foundation",
       badgeStyle: "text-ink-muted bg-transparent border border-border/50",
       pills: ["Stock install", "Untouched data", "Your apps"],
-      desc: "Left unchanged — redcore only adds a transformation layer on top",
+      desc: "Left unchanged — redcore only changes what needs changing",
       borderStyle: "border-border/40",
       bgStyle: "bg-surface-base/60",
       delay: 0.1,
@@ -78,7 +78,7 @@ function EcosystemDiagram({ inView }: { inView: boolean }) {
       badge: "Free",
       badgeStyle: "text-ink-secondary bg-ink-muted/20 border border-border",
       pills: ["150+ actions", "8 profiles", "Privacy", "Rollback", "Work-safe"],
-      desc: "Transformation layer — debloat, profile, clean, protect",
+      desc: "redcore layer — debloat, optimize, clean, protect",
       borderStyle: "border-border",
       bgStyle: "bg-surface/80",
       delay: 0.25,
@@ -263,8 +263,8 @@ function OSSection() {
       <div className="relative mx-auto max-w-[1100px] px-6 lg:px-12">
         <SectionHeader
           label="redcore · OS"
-          title="In-place Windows transformation."
-          subtitle="Reshape your current installation without reinstalling — guided by machine intelligence, protected by rollback safety."
+          title="Fix your Windows without reinstalling."
+          subtitle="Scans your PC, shows you exactly what it'll change, and lets you undo everything."
           inView={inView}
         />
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-border rounded-2xl overflow-hidden">
@@ -318,8 +318,8 @@ function EcosystemIntro() {
             transition={{ delay: 0.2, duration: 0.7, ease }}
             className="mt-6 mx-auto max-w-[480px] text-[0.95rem] leading-[1.75] text-ink-secondary"
           >
-            OS cleans and transforms. Tuning goes deeper — hardware-level
-            optimization on top of a clean baseline. Use one or both.
+            OS kills the bloat and fixes the defaults. Tuning squeezes
+            more FPS out of your actual hardware. Use one or both.
           </motion.p>
         </div>
 
