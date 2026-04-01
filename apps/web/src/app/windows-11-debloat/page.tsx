@@ -126,7 +126,7 @@ export default function Windows11DebloatPage() {
               {
                 title: "redcore OS",
                 description:
-                  "Free Windows transformation tool. 8 profiles, 150+ actions, full rollback support.",
+                  "Free Windows optimization tool. 8 profiles, 150+ actions, full rollback support.",
                 href: "/redcore-os",
               },
               {

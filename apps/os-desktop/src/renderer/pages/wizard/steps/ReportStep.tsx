@@ -1,5 +1,5 @@
 // ─── Report Step ──────────────────────────────────────────────────────────────
-// Transformation complete. Shows expert-grade summary from service ledger truth.
+// Optimization complete. Shows expert-grade summary from service ledger truth.
 
 import { useEffect, useMemo, useState, useCallback } from "react";
 import { motion } from "framer-motion";
@@ -238,7 +238,7 @@ export function ReportStep() {
 
       {/* Title */}
       <div className="text-center">
-        <h2 className="text-[18px] font-bold text-ink">Transformation Complete</h2>
+        <h2 className="text-[18px] font-bold text-ink">All Done</h2>
         <p className="mt-1 text-[11px] text-ink-secondary">
           Your {detectedProfile?.label ?? "system"} has been optimized
         </p>

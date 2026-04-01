@@ -10,7 +10,7 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "Downloads",
   description:
-    "Download redcore OS for free. Windows 10/11 x64. In-place system transformation with guided debloating and full rollback support.",
+    "Download redcore OS for free. Windows 10/11 x64. In-place system optimization with step-by-step debloating and full rollback support.",
   alternates: {
     canonical: "https://redcoreos.net/downloads",
   },
@@ -50,7 +50,7 @@ export default async function DownloadsPage() {
                   redcore OS
                 </h2>
                 <p className="text-ink-tertiary text-[13px]">
-                  Free Windows transformation tool
+                  Free Windows optimization tool
                 </p>
               </div>
               {os.available ? (
@@ -65,7 +65,7 @@ export default async function DownloadsPage() {
             </div>
 
             <p className="text-ink-secondary text-[14px] leading-relaxed mb-4">
-              Scans your hardware, builds a machine-aware optimization plan,
+              Scans your hardware, builds a plan based on your actual hardware,
               and applies reversible changes. Handles debloating, privacy
               hardening, shell cleanup, service optimization, and more.
             </p>
@@ -133,7 +133,7 @@ export default async function DownloadsPage() {
                   redcore Tuning
                 </h2>
                 <p className="text-ink-tertiary text-[13px]">
-                  Machine-aware performance optimization — $12.99 one-time
+                  Hardware-based performance optimization — $12.99 one-time
                 </p>
               </div>
               <span className="inline-flex items-center rounded-full bg-ink-muted/20 px-3 py-1 text-[12px] font-medium text-ink-tertiary">

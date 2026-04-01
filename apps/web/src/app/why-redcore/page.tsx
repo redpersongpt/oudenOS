@@ -15,13 +15,13 @@ import { Cpu, RotateCcw, Shield } from "lucide-react";
 export const metadata: Metadata = {
   title: "Why redcore — Guided Optimization vs Blind Debloat Scripts",
   description:
-    "Why redcore is different from debloat scripts and registry hacks. Machine-aware scanning, profile-driven changes, Work-PC-safe, full rollback, validation before execution.",
+    "Why redcore is different from debloat scripts and registry hacks. Scans your hardware, changes based on your PC type, Work-PC-safe, full rollback, validation before execution.",
   keywords: [
     "guided windows optimization",
     "rollback safe optimizer",
     "safe windows debloat",
     "windows optimizer vs scripts",
-    "machine-aware windows tool",
+    "windows debloat tool",
   ],
   alternates: {
     canonical: "https://redcoreos.net/why-redcore",
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     title:
       "Why redcore — Guided Optimization vs Blind Debloat Scripts",
     description:
-      "Machine-aware, profile-driven, Work-PC-safe, rollback-capable. Why redcore is different.",
+      "Scans your PC first, adapts to what it finds, safe for work PCs, and every change is reversible.",
     url: "https://redcoreos.net/why-redcore",
     type: "article",
   },
@@ -52,7 +52,7 @@ export default async function WhyRedcorePage() {
 
           <QuickSummary
             items={[
-              "Machine-aware scanning before any changes",
+              "Scans your hardware before any changes",
               "8 profiles for different use cases (Gaming, Work PC, Dev, Privacy...)",
               "Full plan review before execution — nothing runs without approval",
               "Structured rollback for individual actions or full batch",
@@ -89,7 +89,7 @@ export default async function WhyRedcorePage() {
 
           <TrustBlock
             icon={<Cpu className="h-5 w-5" />}
-            title="Machine-aware decisions"
+            title="Hardware-based decisions"
             description="A laptop with an Intel CPU and integrated graphics gets different recommendations than a desktop with an AMD CPU and discrete NVIDIA GPU. Power throttling, timer resolution, service priorities — all adapt to your actual hardware."
           />
 
@@ -123,7 +123,7 @@ export default async function WhyRedcorePage() {
               {
                 title: "redcore OS",
                 description:
-                  "Free Windows transformation tool. 8 profiles, 150+ actions, full rollback.",
+                  "Free Windows optimization tool. 8 profiles, 150+ actions, full rollback.",
                 href: "/redcore-os",
               },
               {

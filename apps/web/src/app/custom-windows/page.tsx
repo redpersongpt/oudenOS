@@ -4,14 +4,14 @@ import { FooterSection } from "@/components/sections/FooterSection";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Custom Windows Without Reinstalling — In-Place Transformation",
+  title: "Custom Windows Without Reinstalling — In-Place Optimization",
   description:
     "Transform your current Windows installation without reinstalling. redcore OS applies changes in-place — no custom ISO, no fresh install, no lost programs.",
   keywords: [
     "custom windows",
     "custom windows 11",
     "custom windows iso alternative",
-    "windows in-place transformation",
+    "windows in-place optimization",
     "modify windows without reinstall",
   ],
   alternates: {
@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title:
-      "Custom Windows Without Reinstalling — In-Place Transformation | redcore",
+      "Custom Windows Without Reinstalling — In-Place Optimization | redcore",
     description:
       "Transform your existing Windows install. No custom ISO, no reinstall, no lost programs or settings.",
     url: "https://redcoreos.net/custom-windows",
@@ -34,7 +34,7 @@ export default function CustomWindowsPage() {
       <main className="min-h-screen pt-28 pb-20 px-6">
         <article className="max-w-[740px] mx-auto">
           <p className="font-mono text-[11px] font-medium uppercase tracking-[0.12em] text-accent mb-4">
-            In-Place Transformation
+            In-Place Optimization
           </p>
           <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-ink-primary mb-6 leading-tight">
             Custom Windows Without Reinstalling
@@ -91,7 +91,7 @@ export default function CustomWindowsPage() {
           </ul>
 
           <h2 className="text-xl font-semibold text-ink-primary mt-10 mb-4">
-            In-place transformation with redcore
+            In-place optimization with redcore
           </h2>
           <p className="text-ink-secondary text-[15px] leading-relaxed mb-4">
             <Link href="/redcore-os" className="text-accent hover:text-accent-bright transition-colors">
@@ -109,10 +109,10 @@ export default function CustomWindowsPage() {
             <li>
               <strong className="text-ink-primary">No reinstall.</strong>{" "}
               Your programs, files, drivers, and settings stay intact. The
-              transformation runs alongside your existing environment.
+              optimization runs alongside your existing environment.
             </li>
             <li>
-              <strong className="text-ink-primary">Machine-aware.</strong>{" "}
+              <strong className="text-ink-primary">Hardware-based.</strong>{" "}
               Because the tool scans your actual hardware (CPU model, GPU
               vendor, disk type, network adapters, battery status), it makes
               decisions that a pre-built ISO cannot. A laptop gets different
@@ -143,7 +143,7 @@ export default function CustomWindowsPage() {
           </p>
           <p className="text-ink-secondary text-[15px] leading-relaxed mb-4">
             For a single machine — your personal PC, your work laptop, your
-            gaming rig — an in-place transformation saves time and risk. You
+            gaming rig — an in-place optimization saves time and risk. You
             keep what works, remove what does not, and have a way back if
             anything goes wrong.
           </p>

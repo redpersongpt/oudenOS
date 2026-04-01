@@ -44,7 +44,7 @@ interface PreservedService {
 
 const stats: StatItem[] = [
   { value: "In-Place", label: "No ISO required" },
-  { value: "150", numericValue: 150, suffix: "+", label: "Transformation actions" },
+  { value: "150", numericValue: 150, suffix: "+", label: "Optimization actions" },
   { value: "8", numericValue: 8, label: "Machine profiles" },
   { value: "100", numericValue: 100, suffix: "%", label: "Reversible changes" },
 ];
@@ -66,7 +66,7 @@ const flowSteps: FlowStep[] = [
     icon: Trash2,
   },
   {
-    title: "Transformation",
+    title: "Optimization",
     description: "In-place configuration",
     icon: RefreshCw,
   },
@@ -211,7 +211,7 @@ export function OSSection() {
           ))}
         </div>
 
-        {/* ─── Transformation Flow ─── */}
+        {/* ─── Optimization Flow ─── */}
         <div ref={flowRef} className="mt-20">
           <motion.div
             variants={staggerContainer(0.1, 0.1)}
@@ -219,7 +219,7 @@ export function OSSection() {
             animate={flowInView ? "visible" : "hidden"}
             className="flex flex-wrap items-start gap-y-6 overflow-x-auto pb-2 -mx-6 px-6 lg:mx-0 lg:px-0"
             role="list"
-            aria-label="Transformation flow"
+            aria-label="Optimization flow"
           >
             {flowSteps.map((step, i) => {
               const Icon = step.icon;

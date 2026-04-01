@@ -41,7 +41,7 @@ export function FooterSection() {
           <div className="col-span-2 md:col-span-1">
             <Logo size="sm" />
             <p className="mt-4 text-[0.75rem] leading-[1.75] text-ink-muted max-w-[210px]">
-              Machine-aware Windows optimization and transformation. Built for
+              Hardware-based Windows optimization and optimization. Built for
               people who care about their hardware.
             </p>
             <div className="mt-6 rounded-2xl border border-border/80 bg-surface-elevated/50 p-4">

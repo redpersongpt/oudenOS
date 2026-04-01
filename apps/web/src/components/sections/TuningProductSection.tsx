@@ -6,7 +6,7 @@ import { Activity, Cpu, Zap, BarChart3, ShieldCheck, Settings } from "lucide-rea
 import { duration, easing } from "@/lib/motion";
 
 const features = [
-  { icon: Activity, title: "Machine-aware scanning", desc: "Deep hardware and software analysis before any changes" },
+  { icon: Activity, title: "Scans your hardware", desc: "Deep hardware and software analysis before any changes" },
   { icon: Cpu, title: "15+ tuning modules", desc: "CPU, GPU, memory, storage, network, display, audio, and more" },
   { icon: BarChart3, title: "Benchmark validation", desc: "Before/after performance comparison for every session" },
   { icon: ShieldCheck, title: "Rollback safety", desc: "Complete snapshots before every change, one-click restore" },
