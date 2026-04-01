@@ -1,0 +1,109 @@
+name: Validate Tauri Migration
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/os-desktop/src-tauri/**'
+      - 'apps/os-desktop/src/renderer/lib/platform*.ts'
+      - 'scripts/validate-tauri-bridge.mjs'
+      - '.github/workflows/validate-tauri-migration.yml'
+
+concurrency:
+  group: tauri-validation-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  RUST_BACKTRACE: 1
+
+jobs:
+  validate-tauri-windows:
+    name: Tauri Windows Validation
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-pc-windows-msvc
+
+      - name: Cache Rust (Tauri shell)
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            apps/os-desktop/src-tauri/target
+          key: tauri-windows-${{ hashFiles('apps/os-desktop/src-tauri/Cargo.toml') }}
+          restore-keys: tauri-windows-
+
+      - name: Cache Rust (OS service)
+        uses: actions/cache@v4
+        with:
+          path: services/os-service/target
+          key: rust-os-service-debug-${{ hashFiles('services/os-service/Cargo.toml') }}
+          restore-keys: rust-os-service-debug-
+
+      # ── Phase B: Tauri shell compiles ───────────────────────────────────
+      - name: "Phase B: cargo check (Tauri shell)"
+        working-directory: apps/os-desktop/src-tauri
+        run: cargo check
+
+      - name: "Phase B: cargo build (Tauri shell)"
+        working-directory: apps/os-desktop/src-tauri
+        run: cargo build
+
+      # ── Phase C: Build real service binary ──────────────────────────────
+      - name: "Phase C: Build OS service (debug)"
+        working-directory: services/os-service
+        run: cargo build
+
+      # ── Validation: Full bridge test ────────────────────────────────────
+      - name: "Validate: Tauri bridge + service integration"
+        run: |
+          node scripts/validate-tauri-bridge.mjs --service-path services/os-service/target/debug/redcore-os-service.exe
+
+      # ── TypeScript: Platform adapters compile ───────────────────────────
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: "TypeScript: platform adapters compile"
+        working-directory: apps/os-desktop
+        run: pnpm exec tsc --noEmit
+
+  validate-tauri-macos:
+    name: Tauri macOS Check (compile only)
+    runs-on: macos-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache Rust (Tauri shell)
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            apps/os-desktop/src-tauri/target
+          key: tauri-macos-${{ hashFiles('apps/os-desktop/src-tauri/Cargo.toml') }}
+          restore-keys: tauri-macos-
+
+      - name: "cargo check (macOS)"
+        working-directory: apps/os-desktop/src-tauri
+        run: cargo check
