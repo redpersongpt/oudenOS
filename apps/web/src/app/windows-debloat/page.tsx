@@ -92,7 +92,7 @@ export default async function WindowsDebloatPage() {
             Debloating is removing or disabling pre-installed software,
             background services, telemetry endpoints, and UI elements that
             consume CPU, memory, disk, and network without providing value.
-            On a stock Windows 11 install, there are 150+ background services
+            On a stock Windows 11 install, there are hundreds of background services
             running, dozens of scheduled tasks phoning home, and several
             gigabytes of apps most people never open.
           </p>

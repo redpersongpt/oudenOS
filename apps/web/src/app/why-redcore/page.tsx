@@ -82,7 +82,7 @@ export default async function WhyRedcorePage() {
                 "Every change logged with exact parameters for rollback",
                 "Full plan review with enable/skip toggles per action",
                 "Post-execution validation of services and connectivity",
-                "150+ actions categorized across 8 domains",
+                "250 actions categorized across 8 domains",
               ],
             }}
           />
@@ -123,7 +123,7 @@ export default async function WhyRedcorePage() {
               {
                 title: "redcore OS",
                 description:
-                  "Free Windows optimization tool. 8 profiles, 150+ actions, full rollback.",
+                  "Free Windows optimization tool. 8 profiles, 250 actions, full rollback.",
                 href: "/redcore-os",
               },
               {

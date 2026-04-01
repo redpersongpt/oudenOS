@@ -44,7 +44,7 @@ interface PreservedService {
 
 const stats: StatItem[] = [
   { value: "In-Place", label: "No ISO required" },
-  { value: "150", numericValue: 150, suffix: "+", label: "Optimization actions" },
+  { value: "250", numericValue: 250, label: "Optimization actions" },
   { value: "8", numericValue: 8, label: "Machine profiles" },
   { value: "100", numericValue: 100, suffix: "%", label: "Reversible changes" },
 ];
