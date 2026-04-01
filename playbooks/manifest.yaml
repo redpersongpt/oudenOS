@@ -1,5 +1,4 @@
-# ─── redcore · OS Playbook Manifest ──────────────────────────────────────────
-# Root manifest that defines the playbook structure, load order, and metadata.
+# redcore · OS Playbook Manifest
 # The Rust service reads this manifest, loads all referenced playbook modules,
 # merges them with profile overrides, and produces an executable plan.
 
@@ -11,8 +10,7 @@ minWindowsBuild: 19041  # Windows 10 2004+
 maxWindowsBuild: 99999
 wizardConfig: "wizard.json"
 
-# ─── Phases ──────────────────────────────────────────────────────────────────
-# Ordered execution phases. Each phase loads one or more playbook modules.
+# Phases
 # The wizard step rail maps directly to these phases.
 
 phases:
@@ -113,8 +111,7 @@ phases:
     description: "Dark mode, accent color, taskbar cleanup, explorer cleanup"
     type: builtin  # handled by personalizer.rs
 
-# ─── Profile Definitions ─────────────────────────────────────────────────────
-# Each profile can override action defaults, block actions, or add actions.
+# Profile Definitions
 
 profiles:
   gaming_desktop:

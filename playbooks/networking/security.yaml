@@ -1,5 +1,4 @@
-# ─── Networking: Security Hardening ───────────────────────────────────────────
-# Disable insecure protocols, harden network stack, reduce attack surface.
+# Networking: Security Hardening
 
 module: networking.security
 name: "Network Security Hardening"

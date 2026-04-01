@@ -4,6 +4,7 @@ import { ArrowLeft, ArrowRight, Check } from "lucide-react";
 import { useWizardStore } from "@/stores/wizard-store";
 import type { WizardStepId } from "@/stores/wizard-store";
 import { LogoMark } from "@/components/brand/Logo";
+import { platform } from "@/lib/platform";
 
 const LABELS: Record<WizardStepId, string> = {
   welcome: "Welcome", assessment: "Assessment", profile: "Profile",
@@ -121,14 +122,8 @@ function Bar() {
 }
 
 function TitleBar() {
-  const handleMinimize = () => {
-    const win = window as unknown as { redcore?: { window?: { minimize: () => void } } };
-    win.redcore?.window?.minimize();
-  };
-  const handleClose = () => {
-    const win = window as unknown as { redcore?: { window?: { close: () => void } } };
-    win.redcore?.window?.close();
-  };
+  const handleMinimize = () => platform().window.minimize();
+  const handleClose = () => platform().window.close();
 
   return (
     <div className="flex h-8 shrink-0 items-center justify-between px-4 bg-surface-raised/60 drag-region border-b border-white/[0.03]">

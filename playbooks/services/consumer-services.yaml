@@ -1,5 +1,4 @@
-# ─── Services: Consumer & Background Services ────────────────────────────────
-# Disables consumer-facing, gaming, media, and background services.
+# Services: Consumer & Background Services
 
 module: services.consumer-services
 name: "Consumer Service Reduction"
@@ -13,7 +12,7 @@ actions:
     rationale: "Print Spooler loads multiple DLLs and has been the target of critical security vulnerabilities (PrintNightmare CVE-2021-34527). Disabling eliminates this attack surface."
     risk: low
     tier: free
-    default: true
+    default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2

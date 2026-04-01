@@ -1,5 +1,4 @@
-# ─── Profile: Budget Desktop ──────────────────────────────────────────────────
-# Maximum resource recovery for low-budget hardware.
+# Profile: Budget Desktop
 # Aggressive service/task disabling, aggressive AppX removal.
 # Preserves core functionality.
 

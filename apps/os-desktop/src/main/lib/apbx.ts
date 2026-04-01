@@ -287,7 +287,8 @@ export function createApbxBundle(options: CreateApbxBundleOptions): {
   fs.mkdirSync(path.dirname(options.outputPath), { recursive: true });
 
   if (process.platform === "win32") {
-    const psScript = `Compress-Archive -Path "${path.join(tempRoot, packageStem)}" -DestinationPath "${options.outputPath}" -Force`;
+    const tempZipPath = options.outputPath.replace(/\.[^.]+$/, ".zip");
+    const psScript = `Compress-Archive -Path "${path.join(tempRoot, packageStem)}" -DestinationPath "${tempZipPath}" -Force`;
     const psResult = spawnSync("powershell.exe", ["-NoProfile", "-Command", psScript], {
       cwd: tempRoot,
       stdio: "pipe",
@@ -295,6 +296,9 @@ export function createApbxBundle(options: CreateApbxBundleOptions): {
     if (psResult.status !== 0) {
       const stderr = psResult.stderr?.toString().trim() ?? "";
       throw new Error(`APBX package compression failed: ${stderr || "PowerShell Compress-Archive error"}`);
+    }
+    if (tempZipPath !== options.outputPath) {
+      fs.renameSync(tempZipPath, options.outputPath);
     }
   } else {
     const zipResult = spawnSync("zip", ["-qr", options.outputPath, packageStem], {

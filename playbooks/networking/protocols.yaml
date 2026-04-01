@@ -1,5 +1,4 @@
-# ─── Networking: Protocol Optimization ────────────────────────────────────────
-# Disables IPv6 and Teredo tunneling. NetBIOS is in networking/security.yaml.
+# Networking: Protocol Optimization
 
 module: networking.protocols
 name: "Protocol Optimization"

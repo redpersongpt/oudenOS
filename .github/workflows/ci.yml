@@ -1,26 +1,32 @@
-name: CI
+name: ci
 
 on:
   push:
-    branches: [main]
   pull_request:
-    branches: [main]
 
 jobs:
-  typecheck:
+  desktop-and-service:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - run: pnpm install --dir apps/os-desktop --frozen-lockfile=false
-      - run: pnpm --dir apps/os-desktop typecheck
+          cache: pnpm
 
-  rust-check:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@stable
-      - run: cargo check --manifest-path services/os-service/Cargo.toml
+      - name: Install desktop dependencies
+        run: pnpm install --dir apps/os-desktop --frozen-lockfile=false
+
+      - name: Desktop typecheck
+        run: pnpm --dir apps/os-desktop typecheck
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Rust service check
+        run: cargo check --manifest-path services/os-service/Cargo.toml
