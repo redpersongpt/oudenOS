@@ -84,6 +84,75 @@ jobs:
         working-directory: apps/os-desktop
         run: pnpm exec tsc --noEmit
 
+  build-tauri-installer:
+    name: Tauri Installer Build (Windows)
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: windows-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-pc-windows-msvc
+
+      - name: Cache Rust
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            apps/os-desktop/src-tauri/target
+            services/os-service/target
+          key: tauri-installer-${{ hashFiles('apps/os-desktop/src-tauri/Cargo.toml', 'services/os-service/Cargo.toml') }}
+          restore-keys: tauri-installer-
+
+      - name: Build OS service (release)
+        working-directory: services/os-service
+        run: cargo build --release
+
+      - name: Build renderer
+        working-directory: apps/os-desktop
+        run: pnpm build
+
+      - name: Build Tauri installer
+        working-directory: apps/os-desktop/src-tauri
+        run: cargo tauri build --config tauri.conf.production.json
+        env:
+          TAURI_SIGNING_PRIVATE_KEY: ""
+
+      - name: Verify installer exists
+        run: |
+          $installer = Get-ChildItem -Path apps/os-desktop/src-tauri/target/release/bundle/nsis -Filter "*.exe" -ErrorAction SilentlyContinue
+          if ($installer) {
+            Write-Host "Installer: $($installer.Name) ($([math]::Round($installer.Length / 1MB, 1)) MB)"
+          } else {
+            Write-Host "ERROR: No installer found"
+            exit 1
+          }
+
+      - name: Upload Tauri installer
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tauri-os-installer
+          path: apps/os-desktop/src-tauri/target/release/bundle/nsis/*.exe
+          retention-days: 7
+
   validate-tauri-macos:
     name: Tauri macOS Check (compile only)
     runs-on: macos-latest
