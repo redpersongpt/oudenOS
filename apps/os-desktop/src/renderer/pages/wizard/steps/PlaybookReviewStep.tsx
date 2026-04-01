@@ -159,12 +159,7 @@ function PlaybookSkeleton() {
         <div className="h-6 w-52 rounded-md bg-white/[0.04] animate-pulse" />
         <div className="h-3.5 w-80 rounded bg-white/[0.03] animate-pulse" />
       </div>
-      <div className="mb-4 h-9 w-full rounded-lg bg-white/[0.03] animate-pulse" />
-      <div className="mb-4 grid grid-cols-4 gap-2">
-        {[0, 1, 2, 3].map(i => (
-          <div key={i} className="h-14 rounded-lg bg-white/[0.02] animate-pulse" style={{ animationDelay: `${i * 0.08}s` }} />
-        ))}
-      </div>
+      <div className="mb-4 h-14 w-full rounded-lg bg-white/[0.03] animate-pulse" />
       {[0, 1, 2, 3, 4].map(i => (
         <div key={i} className="mb-1.5 h-11 rounded-lg bg-white/[0.02] animate-pulse" style={{ animationDelay: `${i * 0.1}s` }} />
       ))}
@@ -268,39 +263,23 @@ export function PlaybookReviewStep() {
         </p>
       </div>
 
-      {/* Context bar */}
-      <div className="mb-4 flex items-center gap-2 rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2">
-        <Shield className="h-3.5 w-3.5 shrink-0 text-brand-400" />
-        <span className="text-[11px] text-ink-secondary">
-          <span className="font-medium text-ink">{effectivePlaybook.playbookName}</span>
-          {" "}v{effectivePlaybook.playbookVersion}
-          {" · "}
-          <span className="text-ink">{effectivePlaybook.profile}</span>
-          {" · "}
-          <span className="text-ink">{effectivePlaybook.preset}</span>
+      {/* Stats row — total big + breakdown inline */}
+      <motion.div
+        initial={{ opacity: 0, y: 6 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.22 }}
+        className="mb-4 flex items-baseline gap-3 rounded-lg border border-white/[0.06] bg-white/[0.02] px-4 py-3"
+      >
+        <span className="font-mono text-[28px] font-bold leading-none text-ink">
+          {effectivePlaybook.totalIncluded + effectivePlaybook.totalBlocked + effectivePlaybook.totalOptional + effectivePlaybook.totalExpertOnly}
         </span>
-      </div>
-
-      {/* Stats row */}
-      <div className="mb-4 grid grid-cols-4 gap-2">
-        {[
-          { label: "Included", value: effectivePlaybook.totalIncluded,   color: "text-green-400",   bg: "bg-green-500/8" },
-          { label: "Blocked",  value: effectivePlaybook.totalBlocked,    color: "text-red-400",     bg: "bg-red-500/8" },
-          { label: "Optional", value: effectivePlaybook.totalOptional,   color: "text-amber-400",   bg: "bg-amber-500/8" },
-          { label: "Expert",   value: effectivePlaybook.totalExpertOnly, color: "text-purple-400",  bg: "bg-purple-500/8" },
-        ].map(({ label, value, color, bg }, i) => (
-          <motion.div
-            key={label}
-            initial={{ opacity: 0, y: 6 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.05, duration: 0.2 }}
-            className={`rounded-lg border border-white/[0.06] ${bg} px-2.5 py-2 text-center`}
-          >
-            <p className={`text-base font-bold font-mono ${color}`}>{value}</p>
-            <p className="text-[9px] font-semibold uppercase tracking-wider text-ink-tertiary">{label}</p>
-          </motion.div>
-        ))}
-      </div>
+        <span className="text-[13px] font-semibold text-ink">changes</span>
+        <span className="ml-1 text-[11px] text-ink-tertiary">
+          {effectivePlaybook.totalBlocked > 0 && `${effectivePlaybook.totalBlocked} skipped · `}
+          {effectivePlaybook.totalOptional > 0 && `${effectivePlaybook.totalOptional} optional · `}
+          {effectivePlaybook.totalExpertOnly > 0 && `${effectivePlaybook.totalExpertOnly} expert-only`}
+        </span>
+      </motion.div>
 
       {/* Reboot notice */}
       {rebootCount > 0 && (
@@ -324,18 +303,19 @@ export function PlaybookReviewStep() {
           transition={{ delay: 0.2 }}
           className="mb-3 rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2.5"
         >
-          <div className="flex flex-wrap items-center gap-2 text-[10px]">
-            <span className="rounded-md bg-white/[0.05] px-2 py-1 font-semibold uppercase tracking-wider text-ink-secondary">
-              Decision risk: {effectivePlaybook.decisionSummary.riskLevel}
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="rounded-full bg-white/[0.06] px-2.5 py-0.5 text-[10px] font-medium text-ink-secondary">
+              {effectivePlaybook.decisionSummary.riskLevel} mode
             </span>
             {effectivePlaybook.decisionSummary.estimatedPreserved > 0 && (
-              <span className="rounded-md bg-amber-500/10 px-2 py-1 font-semibold uppercase tracking-wider text-amber-400">
-                {effectivePlaybook.decisionSummary.estimatedPreserved} preserved by your answers
+              <span className="rounded-full bg-amber-500/10 px-2.5 py-0.5 text-[10px] font-medium text-amber-400">
+                {effectivePlaybook.decisionSummary.estimatedPreserved} kept from your answers
               </span>
             )}
             {effectivePlaybook.decisionSummary.warnings.length > 0 && (
-              <span className="rounded-md bg-red-500/10 px-2 py-1 font-semibold uppercase tracking-wider text-red-400">
-                warnings require attention
+              <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/10 px-2.5 py-0.5 text-[10px] font-medium text-amber-400">
+                <AlertTriangle className="h-2.5 w-2.5 shrink-0" />
+                {effectivePlaybook.decisionSummary.warnings.length} heads up
               </span>
             )}
           </div>
@@ -359,18 +339,18 @@ export function PlaybookReviewStep() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.22 }}
-          className="mb-3 rounded-lg border border-red-500/15 bg-red-500/[0.03] px-3 py-2"
+          className="mb-3 rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2"
         >
-          <p className="text-[10px] font-semibold uppercase tracking-wider text-red-400/80 mb-1">
-            Blocked by profile preservation
+          <p className="text-[10px] font-medium text-ink-tertiary mb-1.5">
+            Skipped — not safe for your PC type
           </p>
           {effectivePlaybook.blockedReasons.slice(0, 3).map((br) => (
-            <p key={br.actionId} className="text-[11px] text-red-400/60 truncate">
-              {br.actionId}: {br.reason}
+            <p key={br.actionId} className="text-[11px] text-ink-muted truncate">
+              {br.reason}
             </p>
           ))}
           {effectivePlaybook.blockedReasons.length > 3 && (
-            <p className="text-[10px] text-red-400/40 mt-0.5">
+            <p className="text-[10px] text-ink-muted mt-0.5">
               +{effectivePlaybook.blockedReasons.length - 3} more
             </p>
           )}

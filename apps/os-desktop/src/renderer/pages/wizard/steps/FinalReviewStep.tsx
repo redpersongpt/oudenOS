@@ -180,7 +180,7 @@ export function FinalReviewStep() {
           Ready to Apply
         </h1>
         <p className="mt-1.5 text-[13px] text-ink-secondary">
-          Review what redcore will change. A snapshot is saved before anything runs. A rollback snapshot will be created before any changes.
+          Last check before we start. Everything here can be undone.
         </p>
         <div className="mt-3 flex flex-wrap items-center gap-3">
           <button
@@ -189,7 +189,7 @@ export function FinalReviewStep() {
             className="inline-flex items-center gap-2 rounded-lg border border-white/[0.08] bg-white/[0.03] px-3 py-2 text-[11px] font-semibold text-ink-secondary transition-colors hover:border-white/[0.16] hover:text-ink disabled:cursor-not-allowed disabled:text-ink-disabled"
           >
             <Archive className="h-3.5 w-3.5" />
-            {exportState === "busy" ? "Exporting package..." : "Export APBX Package"}
+            {exportState === "busy" ? "Saving..." : "Save Package"}
           </button>
           {exportMessage && (
             <p className={`text-[11px] ${exportState === "error" ? "text-red-400" : "text-ink-secondary"}`}>
@@ -219,7 +219,7 @@ export function FinalReviewStep() {
         transition={{ delay: 0.38 }}
         className="mt-4 text-center text-[11px] text-ink-tertiary"
       >
-        All changes are reversible. A snapshot is created before any modification.
+        Every change can be undone. Snapshots saved before each one.
       </motion.p>
     </motion.div>
   );

@@ -50,7 +50,7 @@ export function HandoffStep() {
       <div className="flex flex-col items-center gap-1.5 text-center">
         <h2 className="text-lg font-semibold text-ink">Your OS Is Ready</h2>
         <p className="max-w-sm text-xs text-ink-secondary">
-          redcore-OS has optimized your Windows installation. For advanced per-component tuning, continue with redcore-Tuning.
+          Your Windows is clean. Want to squeeze even more out of your hardware? Check out redcore Tuning.
         </p>
       </div>
 

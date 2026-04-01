@@ -32,9 +32,9 @@ export function DonationStep() {
       </motion.div>
 
       <div className="flex flex-col items-center gap-1.5 text-center">
-        <h2 className="text-lg font-semibold text-ink">Support redcore-OS</h2>
+        <h2 className="text-lg font-semibold text-ink">Support redcore</h2>
         <p className="max-w-sm text-xs text-ink-secondary">
-          redcore-OS is free and open source. If it helped you, consider supporting the project so we can keep improving it.
+          This is free and open source. If it actually helped your PC, consider throwing a few bucks our way.
         </p>
       </div>
 

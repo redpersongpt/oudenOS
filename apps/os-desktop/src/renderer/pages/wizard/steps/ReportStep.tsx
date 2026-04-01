@@ -243,22 +243,22 @@ export function ReportStep() {
           Your {detectedProfile?.label ?? "system"} has been optimized
         </p>
         <div className="mt-3 flex flex-col items-center gap-2">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <button
               onClick={handleExportCompletedPackage}
               disabled={!detectedProfile || !resolvedPlaybook || exportState === "busy"}
-              className="inline-flex items-center gap-2 rounded-lg border border-white/[0.08] bg-white/[0.03] px-3 py-2 text-[11px] font-semibold text-ink-secondary transition-colors hover:border-white/[0.16] hover:text-ink disabled:cursor-not-allowed disabled:text-ink-disabled"
+              className="inline-flex items-center gap-2 rounded-lg border border-white/[0.12] bg-white/[0.06] px-4 py-2 text-[11px] font-semibold text-ink transition-all hover:border-white/[0.22] hover:bg-white/[0.09] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40"
             >
-              <Archive className="h-3.5 w-3.5" />
-              {exportState === "busy" ? "Exporting completed APBX..." : "Export Completed APBX"}
+              <Archive className="h-3.5 w-3.5 shrink-0" />
+              {exportState === "busy" ? "Exporting..." : exportState === "done" ? "Exported" : "Save Report"}
             </button>
             <button
               onClick={handleExportLog}
               disabled={logExportState === "busy"}
-              className="inline-flex items-center gap-2 rounded-lg border border-white/[0.08] bg-white/[0.03] px-3 py-2 text-[11px] font-semibold text-ink-secondary transition-colors hover:border-white/[0.16] hover:text-ink disabled:cursor-not-allowed disabled:text-ink-disabled"
+              className="inline-flex items-center gap-2 rounded-lg border border-white/[0.12] bg-white/[0.06] px-4 py-2 text-[11px] font-semibold text-ink transition-all hover:border-white/[0.22] hover:bg-white/[0.09] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40"
             >
-              <FileText className="h-3.5 w-3.5" />
-              {logExportState === "busy" ? "Saving..." : "Export Log"}
+              <FileText className="h-3.5 w-3.5 shrink-0" />
+              {logExportState === "busy" ? "Saving..." : logExportState === "done" ? "Saved" : "Save Log"}
             </button>
           </div>
           {exportMessage && (
