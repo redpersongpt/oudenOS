@@ -1,3 +1,4 @@
+mod apbx;
 mod service_bridge;
 
 use service_bridge::ServiceBridge;
@@ -82,6 +83,66 @@ async fn open_external(url: String) -> Result<(), String> {
     open::that(&url).map_err(|e| e.to_string())
 }
 
+#[tauri::command]
+async fn export_package(
+    app: tauri::AppHandle,
+    state: apbx::ExportPackageRequest,
+) -> Result<serde_json::Value, String> {
+    let resource_dir = app.path().resource_dir().unwrap_or_else(|_| std::path::PathBuf::from("."));
+
+    // Find playbook root and wizard.json
+    let playbook_root = [resource_dir.join("playbooks"), std::path::PathBuf::from("../../playbooks")]
+        .into_iter()
+        .find(|p| p.is_dir());
+
+    let playbook_root = match playbook_root {
+        Some(p) => p,
+        None => return Ok(serde_json::to_value(apbx::ExportResult::err("Playbook directory not found")).unwrap()),
+    };
+
+    let wizard_json_path = playbook_root.join("wizard.json");
+    let wizard_metadata: serde_json::Value = if wizard_json_path.exists() {
+        let content = std::fs::read_to_string(&wizard_json_path).map_err(|e| e.to_string())?;
+        serde_json::from_str(&content).map_err(|e| e.to_string())?
+    } else {
+        serde_json::json!({ "title": "redcore OS Package", "packageId": "redcore-os" })
+    };
+
+    let version = wizard_metadata.get("version").and_then(|v| v.as_str()).unwrap_or("0.1.0");
+    let commit = wizard_metadata.get("commit").and_then(|v| v.as_str()).unwrap_or("unknown");
+
+    let has_journal = state.execution_journal.is_some();
+    let default_name = if has_journal {
+        format!("redcore-os-executed-package-{version}-{commit}.apbx")
+    } else {
+        format!("redcore-os-user-package-{version}-{commit}.apbx")
+    };
+
+    // Show save dialog
+    let downloads = dirs::desktop_dir()
+        .map(|d| d.parent().unwrap_or(&d).join("Downloads"))
+        .unwrap_or_else(|| std::path::PathBuf::from("."));
+    let default_path = downloads.join(&default_name);
+
+    use tauri_plugin_dialog::DialogExt;
+    let file_path = app.dialog()
+        .file()
+        .set_title("Save redcore OS Package")
+        .set_file_name(&default_name)
+        .add_filter("redcore OS Package", &["apbx", "zip"])
+        .blocking_save_file();
+
+    let output_path = match file_path {
+        Some(p) => p.as_path().map(|pp| pp.to_path_buf()).unwrap_or(default_path),
+        None => return Ok(serde_json::to_value(apbx::ExportResult::err("Export cancelled")).unwrap()),
+    };
+
+    match apbx::create_bundle(&output_path, &playbook_root, &wizard_metadata, &state, version, commit) {
+        Ok(result) => Ok(serde_json::to_value(result).unwrap()),
+        Err(e) => Ok(serde_json::to_value(apbx::ExportResult::err(e)).unwrap()),
+    }
+}
+
 // Timestamp without pulling in chrono
 fn chrono_free_timestamp() -> String {
     let now = std::time::SystemTime::now()
@@ -131,6 +192,7 @@ pub fn run() {
             service_status,
             save_log,
             open_external,
+            export_package,
         ])
         .setup(move |app| {
             let resource_dir = app

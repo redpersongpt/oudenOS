@@ -83,12 +83,10 @@ export const tauriBackend: PlatformAPI = {
   },
 
   wizard: {
-    exportPackage: async (_state: Record<string, unknown>): Promise<ExportResult> => {
-      // STUB: APBX bundle creation not yet ported to Tauri Rust backend.
-      // This will be implemented in Phase D when file I/O and dialog
-      // commands are added to the Tauri backend.
-      console.warn("[platform-tauri] exportPackage not yet implemented");
-      return { ok: false, error: "Package export not yet available in Tauri build" };
+    exportPackage: async (state: Record<string, unknown>): Promise<ExportResult> => {
+      const tauri = getTauri();
+      if (!tauri) return { ok: false, error: "Tauri runtime unavailable" };
+      return tauri.core.invoke<ExportResult>("export_package", { state });
     },
   },
 };
