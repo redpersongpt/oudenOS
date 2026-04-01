@@ -153,7 +153,7 @@ export function FooterSection() {
           </p>
           <div className="flex items-center gap-6">
             <span className="text-[0.65rem] font-mono text-ink-muted tracking-wider">
-              No subscription · 100% reversible
+              No subscription · Every change undoable
             </span>
             <a
               href="https://github.com/redpersongpt"

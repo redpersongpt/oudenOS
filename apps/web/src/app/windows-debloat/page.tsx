@@ -214,7 +214,7 @@ export default async function WindowsDebloatPage() {
               },
               {
                 title: "Why redcore",
-                description: "Scans your PC, adapts to your setup, fully reversible.",
+                description: "Scans your PC, adapts to your setup, every change undoable.",
                 href: "/why-redcore",
               },
             ]}
