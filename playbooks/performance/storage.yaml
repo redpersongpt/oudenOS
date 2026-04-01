@@ -1,5 +1,4 @@
-# ─── Performance: Storage Optimization ────────────────────────────────────────
-# Disables last access timestamps, 8.3 filenames, enables write caching, disables indexing.
+# Performance: Storage Optimization
 
 module: performance.storage
 name: "Storage Optimization"

@@ -1,5 +1,4 @@
-# ─── Tasks: Consumer & Background Tasks ───────────────────────────────────────
-# Disables consumer app, maintenance, and background processing scheduled tasks.
+# Tasks: Consumer & Background Tasks
 
 module: tasks.consumer-tasks
 name: "Consumer Background Tasks"

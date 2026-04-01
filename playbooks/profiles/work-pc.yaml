@@ -1,5 +1,4 @@
-# ─── Profile Override: Work PC ────────────────────────────────────────────────
-# Work PCs must preserve enterprise infrastructure: printing, RDP, domain,
+# Profile Override: Work PC
 # SMB, Group Policy, managed updates, and business-critical services.
 
 profile: work_pc

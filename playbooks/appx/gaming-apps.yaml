@@ -1,5 +1,4 @@
-# ─── AppX: Gaming Apps Removal ────────────────────────────────────────────────
-# Removes Widgets and Xbox companion apps.
+# AppX: Gaming Apps Removal
 
 module: appx.gaming-apps
 name: "Gaming & Widgets App Removal"
