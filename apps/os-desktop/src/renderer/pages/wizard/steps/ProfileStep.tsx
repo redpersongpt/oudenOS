@@ -42,6 +42,7 @@ export function ProfileStep() {
   const p = detectedProfile;
   const signals = Array.isArray(p?.signals) ? p.signals : [];
   const [showOverride, setShowOverride] = useState(false);
+  const [isOverridden, setIsOverridden] = useState(false);
 
   const displayConfidence = useCountUp(p?.confidence ?? 0, 1100);
 
@@ -79,7 +80,8 @@ export function ProfileStep() {
         <h2 className="mt-1 text-[20px] font-bold text-ink">{p.label}</h2>
       </div>
 
-      {/* Confidence with count-up */}
+      {/* Confidence with count-up — hidden when user overrides profile */}
+      {!isOverridden && (
       <div className="w-full max-w-xs">
         <div className="flex justify-between text-[10px]">
           <span className="text-ink-tertiary">Confidence</span>
@@ -101,6 +103,18 @@ export function ProfileStep() {
           />
         </div>
       </div>
+      )}
+
+      {/* Manual override indicator */}
+      {isOverridden && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="rounded-full bg-brand-500/10 border border-brand-500/20 px-3 py-1"
+        >
+          <span className="text-[10px] font-medium text-brand-400">Manual selection</span>
+        </motion.div>
+      )}
 
       {/* Signal chips — staggered entrance */}
       <div className="flex flex-wrap justify-center gap-1.5">
@@ -177,6 +191,7 @@ export function ProfileStep() {
                           signals: p.id === opt.id ? p.signals : [...p.signals, "Manual override"],
                         };
                         setDetectedProfile(overridden);
+                        setIsOverridden(true);
                         setShowOverride(false);
                       }}
                       className={[
