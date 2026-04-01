@@ -19,11 +19,11 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL("https://redcoreos.net"),
   title: {
-    default: "redcore — Windows Optimization & Transformation Tools",
+    default: "redcore — Windows Optimization & Optimization Tools",
     template: "%s | redcore",
   },
   description:
-    "Machine-aware Windows optimization and in-place transformation. redcore scans your hardware, builds a profile-specific plan, and applies reversible changes. Free OS transformation + $12.99 Tuning.",
+    "Hardware-based Windows optimization and in-place optimization. redcore scans your hardware, builds a profile-specific plan, and applies reversible changes. Free OS optimization + $12.99 Tuning.",
   keywords: [
     "Windows optimizer",
     "Windows debloat tool",
@@ -32,9 +32,9 @@ export const metadata: Metadata = {
     "gaming PC optimization",
     "Work PC Windows optimizer",
     "Windows cleanup tool",
-    "Windows transformation",
+    "Windows optimization",
     "rollback-safe optimizer",
-    "machine-aware optimization",
+    "hardware-based optimization",
   ],
   authors: [{ name: "redcore" }],
   creator: "redcore",
@@ -48,9 +48,9 @@ export const metadata: Metadata = {
     apple: "/apple-icon.png",
   },
   openGraph: {
-    title: "redcore — Windows Optimization & Transformation Tools",
+    title: "redcore — Windows Optimization & Optimization Tools",
     description:
-      "Scan your hardware. Build a plan. Transform your system. Free OS transformation + paid Tuning. 100% reversible.",
+      "Scan your hardware. Build a plan. Transform your system. Free OS optimization + paid Tuning. 100% reversible.",
     type: "website",
     locale: "en_US",
     siteName: "redcore",
@@ -66,9 +66,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary",
-    title: "redcore — Windows Optimization & Transformation Tools",
+    title: "redcore — Windows Optimization & Optimization Tools",
     description:
-      "Machine-aware Windows optimization. Free OS transformation + $12.99 Tuning. 100% reversible.",
+      "Hardware-based Windows optimization. Free OS optimization + $12.99 Tuning. 100% reversible.",
     images: ["/redcore-logo.png"],
   },
   robots: {
@@ -105,7 +105,7 @@ export default function RootLayout({
               url: "https://redcoreos.net",
               logo: "https://redcoreos.net/redcore-logo.png",
               description:
-                "Machine-aware Windows optimization and transformation tools.",
+                "Hardware-based Windows optimization and optimization tools.",
             }),
           }}
         />

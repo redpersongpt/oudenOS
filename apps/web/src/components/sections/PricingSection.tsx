@@ -56,15 +56,15 @@ export function PricingSection() {
                 <span className="text-[3rem] font-bold tracking-tight text-ink-primary leading-none">$0</span>
               </div>
               <p className="text-[0.78rem] text-ink-muted mb-8">
-                Full Windows transformation. No limits. No account required.
+                Full Windows optimization. No limits. No account required.
               </p>
 
               <div className="h-px bg-border mb-8" />
 
               <ul className="space-y-3.5 mb-10">
                 {[
-                  "In-place Windows transformation",
-                  "All 150+ reversible actions",
+                  "Optimize without reinstalling",
+                  "All 250+ reversible actions",
                   "8 machine profiles",
                   "Work PC preservation",
                   "Bloatware & telemetry removal",

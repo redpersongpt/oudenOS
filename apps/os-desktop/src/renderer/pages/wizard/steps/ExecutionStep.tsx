@@ -727,7 +727,7 @@ export function ExecutionStep() {
     >
       {/* Header */}
       <div className="flex flex-col items-center gap-1 text-center">
-        <h2 className="text-lg font-semibold text-ink">Applying Transformations</h2>
+        <h2 className="text-lg font-semibold text-ink">Applying Optimizations</h2>
         <p className="text-xs text-ink-secondary">Do not shut down your computer</p>
         <SpinningQuote isActive={completed.length < totalActions} />
       </div>

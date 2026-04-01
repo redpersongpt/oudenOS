@@ -29,7 +29,7 @@ const steps = [
   {
     num: "05",
     title: "Validate",
-    body: "Registry read-back, benchmark delta, transformation report. You know exactly what changed and why.",
+    body: "Registry read-back, benchmark comparison, full report. You know exactly what changed and why.",
   },
 ];
 

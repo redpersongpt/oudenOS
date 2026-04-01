@@ -124,7 +124,7 @@ export function PreservationStep() {
         className="flex items-center gap-2 text-[11px] text-ink-tertiary"
       >
         <Shield className="h-3 w-3 text-success-500/60" />
-        Your business workflows are fully protected throughout this transformation
+        Your business workflows are fully protected throughout this optimization
       </motion.div>
     </motion.div>
   );

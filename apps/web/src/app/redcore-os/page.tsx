@@ -14,22 +14,22 @@ import { getRedcoreOsDownloadState } from "@/lib/downloads";
 import { RotateCcw, Monitor } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "redcore OS — Free Windows Transformation Tool",
+  title: "redcore OS — Free Windows Optimization Tool",
   description:
-    "Free Windows transformation tool. Playbook-driven flow, 8 profiles, 150+ actions, Work PC preservation, full rollback. Scans your hardware, builds a plan, transforms your system.",
+    "Free Windows optimization tool. 250+ reversible actions, 5 profiles, Work PC safe, full rollback. Scans your hardware, builds a plan, optimizes your system.",
   keywords: [
     "redcore os",
-    "windows transformation tool",
+    "windows optimization tool",
     "free windows optimizer",
     "windows debloat tool",
-    "machine-aware windows optimization",
+    "windows optimization",
     "reversible windows changes",
   ],
   alternates: {
     canonical: "https://redcoreos.net/redcore-os",
   },
   openGraph: {
-    title: "redcore OS — Free Windows Transformation Tool",
+    title: "redcore OS — Free Windows Optimization Tool",
     description:
       "Scan your hardware, build a plan, transform your system. Free, guided, reversible.",
     url: "https://redcoreos.net/redcore-os",
@@ -50,16 +50,16 @@ function buildJsonLd(downloadUrl: string | null, version: string | null) {
       priceCurrency: "USD",
     },
     description:
-      "Free Windows transformation tool with guided debloating, 8 profiles, 150+ actions, and full rollback support.",
+      "Free Windows optimization tool with step-by-step debloating, 8 profiles, 150+ actions, and full rollback support.",
     url: "https://redcoreos.net/redcore-os",
     softwareVersion: version ?? "1.0",
     featureList: [
-      "Machine-aware hardware scanning",
-      "8 optimization profiles",
-      "150+ system actions",
-      "Full rollback support",
-      "Work PC preservation",
-      "Privacy hardening",
+      "Scans your hardware first",
+      "5 PC profiles",
+      "250+ reversible changes",
+      "Undo any change",
+      "Safe for work PCs",
+      "Kills telemetry",
     ],
   };
   // Only emit downloadUrl when a real validated artifact URL exists
@@ -85,7 +85,7 @@ export default async function RedcoreOSPage() {
 
           <PageHero
             overline="Product"
-            title="redcore OS — Free Windows Transformation Tool"
+            title="redcore OS — Free Windows Optimization Tool"
             description="redcore OS is a desktop application that scans your Windows system, builds a hardware-aware optimization plan, and applies reversible changes across privacy, performance, shell customization, and bloatware removal. It is free to use."
           />
 
@@ -93,9 +93,9 @@ export default async function RedcoreOSPage() {
             items={[
               "Free — no account, no subscription, no license key",
               "Installer-like wizard with guided step-by-step flow",
-              "Playbook-driven: 150+ categorized actions across 8 domains",
+              "250+ categorized actions across privacy, performance, gaming, network, shell",
               "8 profiles: Gaming, Work PC, Development, Privacy, Minimal, Balanced, Laptop, Server",
-              "Machine-aware hardware scanning before any changes",
+              "Hardware-based hardware scanning before any changes",
               "Full rollback support with granular undo",
               "Work PC preservation for corporate environments",
               "Not open source — proprietary, free product",
@@ -165,7 +165,7 @@ export default async function RedcoreOSPage() {
           <TrustBlock
             icon={<RotateCcw className="h-5 w-5" />}
             title="Full rollback at every level"
-            description="Every change is logged with exact registry keys, service states, and file modifications. Roll back individual actions or the entire transformation. A system restore point is created before execution begins."
+            description="Every change is logged with exact registry keys, service states, and file modifications. Roll back individual actions or the entire optimization. A system restore point is created before execution begins."
           />
 
           <TrustBlock

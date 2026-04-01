@@ -10,7 +10,7 @@ const ease = [0.16, 1, 0.3, 1] as const;
 const pages = [
   {
     title: "Windows Debloat Guide",
-    description: "Why blind scripts are risky and how guided debloating works.",
+    description: "Why blind scripts are risky and how step-by-step debloating works.",
     href: "/windows-debloat",
   },
   {
@@ -30,7 +30,7 @@ const pages = [
   },
   {
     title: "Why redcore",
-    description: "Machine-aware, profile-driven, fully reversible. What makes it different.",
+    description: "Scans your PC first, adapts to your setup, and every change is reversible.",
     href: "/why-redcore",
   },
   {

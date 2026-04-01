@@ -1,5 +1,5 @@
 // ─── Playbook Review Step ────────────────────────────────────────────────────
-// Transformation manifest review. Shows the resolved playbook plan grouped by
+// Optimization manifest review. Shows the resolved playbook plan grouped by
 // phase with action statuses. Premium installer-grade density.
 
 import { useEffect, useMemo, useState } from "react";
@@ -259,7 +259,7 @@ export function PlaybookReviewStep() {
       {/* Header */}
       <div className="mb-4">
         <h1 className="text-[20px] font-bold tracking-tight text-ink">
-          Transformation Playbook
+          Optimization Playbook
         </h1>
         <p className="mt-1 text-[12px] text-ink-secondary">
           Review what will be changed on your{" "}

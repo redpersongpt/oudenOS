@@ -13,7 +13,7 @@ type RailItem = {
 };
 
 const leftRail: RailItem[] = [
-  { label: "Machine-aware", note: "Scan before you touch", icon: Cpu },
+  { label: "Hardware-based", note: "Scan before you touch", icon: Cpu },
   { label: "Rollback", note: "Snapshots built in", icon: RotateCcw },
   { label: "Privacy", note: "Tight by default", icon: Shield },
 ];
