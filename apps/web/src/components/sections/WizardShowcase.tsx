@@ -769,7 +769,7 @@ export function WizardShowcase() {
             Download — it&apos;s free
           </a>
           <p className="text-[11px] text-ink-muted font-mono">
-            Windows 10 & 11 · Every change undoable · No subscription
+            Windows 10 & 11 · No subscription
           </p>
         </motion.div>
       </div>
