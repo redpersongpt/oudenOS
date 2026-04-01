@@ -66,6 +66,18 @@ export interface QuestionnaireAnswers {
   disableTransparency: boolean | null;
   disableDefender: boolean | null;
   disableWindowsUpdate: boolean | null;
+  disableMouseAcceleration: boolean | null;
+  disableStickyKeys: boolean | null;
+  disableFaultTolerantHeap: boolean | null;
+  disableMPOs: boolean | null;
+  disableLastAccessTime: boolean | null;
+  disableDevicePowerSaving: boolean | null;
+  legacyFlipPresentation: boolean | null;
+  disableStoreAutoUpdates: boolean | null;
+  disableAutoMaintenance: boolean | null;
+  fullDefenderDisable: boolean | null;
+  disableVulnerableDriverBlocklist: boolean | null;
+  disableCpuMitigations: boolean | null;
 }
 
 export interface PlaybookImpact {
@@ -143,6 +155,18 @@ export const DEFAULT_QUESTIONNAIRE_ANSWERS: QuestionnaireAnswers = {
   disableTransparency: null,
   disableDefender: null,
   disableWindowsUpdate: null,
+  disableMouseAcceleration: null,
+  disableStickyKeys: null,
+  disableFaultTolerantHeap: null,
+  disableMPOs: null,
+  disableLastAccessTime: null,
+  disableDevicePowerSaving: null,
+  legacyFlipPresentation: null,
+  disableStoreAutoUpdates: null,
+  disableAutoMaintenance: null,
+  fullDefenderDisable: null,
+  disableVulnerableDriverBlocklist: null,
+  disableCpuMitigations: null,
 };
 
 function computeImpact(answers: QuestionnaireAnswers): PlaybookImpact {

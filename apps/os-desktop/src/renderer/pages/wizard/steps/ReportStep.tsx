@@ -1,13 +1,15 @@
 // ─── Report Step ──────────────────────────────────────────────────────────────
 // Transformation complete. Shows expert-grade summary from service ledger truth.
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 import { motion } from "framer-motion";
 import { Check, Shield, AlertTriangle, Lock, Heart, Archive, FileText } from "lucide-react";
 import { useWizardStore } from "@/stores/wizard-store";
 import { useDecisionsStore } from "@/stores/decisions-store";
 import { useLogStore } from "@/stores/log-store";
 import { resolveEffectivePersonalization } from "@/lib/personalization-resolution";
+
+const RICKROLL_URL = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
 
 // Ledger query response shape (from ledger.query)
 interface LedgerStep {
@@ -45,6 +47,16 @@ export function ReportStep() {
   const [exportMessage, setExportMessage] = useState("");
   const [logExportState, setLogExportState] = useState<"idle" | "busy" | "done" | "error">("idle");
   const [logExportMessage, setLogExportMessage] = useState("");
+  const [footerClicks, setFooterClicks] = useState(0);
+  const handleFooterClick = useCallback(() => {
+    const next = footerClicks + 1;
+    setFooterClicks(next);
+    if (next >= 5) {
+      setFooterClicks(0);
+      const win = window as unknown as { redcore?: { shell?: { openExternal: (url: string) => void } } };
+      win.redcore?.shell?.openExternal(RICKROLL_URL);
+    }
+  }, [footerClicks]);
   const exportLogAsText = useLogStore((state) => state.exportAsText);
 
   // ── Primary truth: load from service ledger ──
@@ -346,12 +358,13 @@ export function ReportStep() {
         </motion.div>
       )}
 
-      {/* Trust footer */}
+      {/* Trust footer (easter egg: click 5 times = rickroll) */}
       <motion.p
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.45 }}
-        className="text-[10px] text-ink-muted"
+        onClick={handleFooterClick}
+        className="text-[10px] text-ink-muted cursor-default select-none"
       >
         A rollback snapshot was created before every change · Journal and report entries point back to the same APBX package truth
       </motion.p>

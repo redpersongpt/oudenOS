@@ -184,7 +184,7 @@ export function DownloadPage() {
               </div>
 
               <a
-                href="#"
+                href="https://redcoreos.net/downloads/os/redcore-os-setup.exe"
                 className="mx-auto mt-6 flex max-w-sm items-center justify-center gap-3 rounded-xl bg-brand-500 px-8 py-4 text-base font-semibold text-white shadow-xl shadow-brand-500/20 transition-all hover:bg-brand-400 hover:shadow-brand-500/30 active:scale-[0.97]"
               >
                 <WindowsLogo className="h-5 w-5" />
@@ -309,14 +309,14 @@ export function DownloadPage() {
             className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row"
           >
             <Link
-              to="#"
+              to="https://github.com/redpersongpt/redcore-OS/releases"
               className="text-sm text-neutral-500 underline underline-offset-4 transition-colors hover:text-neutral-300"
             >
               View changelog
             </Link>
             <span className="hidden text-neutral-700 sm:block">/</span>
             <Link
-              to="#"
+              to="https://github.com/redpersongpt/redcore-OS/issues"
               className="text-sm text-neutral-500 underline underline-offset-4 transition-colors hover:text-neutral-300"
             >
               Report an issue

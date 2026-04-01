@@ -134,3 +134,62 @@ actions:
         valueName: Win32PrioritySeparation
         value: 38
         valueType: DWord
+
+  - id: perf.disable-auto-maintenance
+    name: "Disable Automatic Maintenance"
+    description: "Disable Windows Automatic Maintenance scheduler"
+    rationale: "Maintenance tasks (defrag, scan, updates) run at unexpected times and consume CPU/disk. On manually maintained systems this is unnecessary overhead."
+    risk: moderate
+    tier: free
+    default: false
+    expertOnly: false
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles:
+      - work_pc
+    registryChanges:
+      - hive: HKLM
+        path: "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Schedule\\Maintenance"
+        valueName: MaintenanceDisabled
+        value: 1
+        valueType: DWord
+
+  - id: perf.disable-auto-sign-on
+    name: "Disable Auto-Restart Sign-On"
+    description: "Prevent Windows from auto-signing in after restart"
+    rationale: "Prevents unexpected auto-login behavior after updates or restarts. Security improvement."
+    risk: safe
+    tier: free
+    default: true
+    expertOnly: false
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKLM
+        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System"
+        valueName: DisableAutomaticRestartSignOn
+        value: 1
+        valueType: DWord
+
+  - id: perf.disable-store-auto-updates
+    name: "Disable Store Auto-Updates"
+    description: "Prevent Microsoft Store from automatically downloading app updates"
+    rationale: "Background app updates consume bandwidth and CPU at random times. Manual updates provide better control."
+    risk: moderate
+    tier: free
+    default: false
+    expertOnly: false
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles:
+      - work_pc
+    registryChanges:
+      - hive: HKLM
+        path: "SOFTWARE\\Policies\\Microsoft\\WindowsStore"
+        valueName: AutoDownload
+        value: 2
+        valueType: DWord

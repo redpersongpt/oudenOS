@@ -23,7 +23,7 @@ export function classifyProfile(analysis: SystemAnalysisResult): ProfileClassifi
     scores.vm += 0.9;
     allSignals.push("Virtualized environment detected");
   } else if (software.hasHyperV) {
-    scores.development += 0.15;
+    scores.work += 0.15;
     allSignals.push("Hyper-V enabled (bare-metal host — not classified as VM)");
   }
 

@@ -86,3 +86,22 @@ actions:
     powerShellCommands:
       - "Set-NetTCPSetting -SettingName InternetCustom -AutoTuningLevelLocal Normal -ErrorAction SilentlyContinue"
       - "Set-NetTCPSetting -SettingName Internet -AutoTuningLevelLocal Normal -ErrorAction SilentlyContinue"
+
+  - id: network.qos-dscp-fix
+    name: "Fix QoS DSCP Packet Tagging"
+    description: "Ensure DSCP QoS tags are correctly applied when multiple NICs are present"
+    rationale: "Without 'Do not use NLA', DSCP values may not be applied on multi-NIC systems. Setting this ensures network packet priority tagging works correctly for gaming traffic."
+    risk: safe
+    tier: free
+    default: true
+    expertOnly: false
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKLM
+        path: "SYSTEM\\CurrentControlSet\\Services\\Tcpip\\QoS"
+        valueName: "Do not use NLA"
+        value: "1"
+        valueType: String

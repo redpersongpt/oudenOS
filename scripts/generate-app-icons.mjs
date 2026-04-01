@@ -79,32 +79,66 @@ async function generatePngs() {
 }
 
 async function generateIco() {
-  // Use png-to-ico to create multi-size ICO from the PNG files
-  const requiredSizes = [16, 24, 32, 48, 64, 128, 256];
-  const pngPaths = requiredSizes.map(s => {
-    const filename = s === 256 ? "icon.png" : `icon-${s}.png`;
-    return join(OS_RESOURCES, filename);
-  });
+  const icoSizes = [16, 24, 32, 48, 64, 128, 256];
+  const pngBuffers = [];
 
-  // Check all PNGs exist
-  const { existsSync } = await import("node:fs");
-  const allExist = pngPaths.every(p => existsSync(p));
-  if (!allExist) {
-    console.log("  SKIP: ICO generation — not all PNG sizes available");
+  let sharp;
+  try {
+    sharp = (await import("sharp")).default;
+  } catch {
+    console.log("  SKIP: ICO generation — sharp not available");
     return;
   }
 
-  try {
-    const icoPath = join(OS_RESOURCES, "redcore-icon.ico");
-    execSync(`npx -y png-to-ico ${pngPaths.join(" ")} > "${icoPath}"`, {
-      cwd: ROOT,
-      stdio: ["pipe", "pipe", "pipe"],
-      shell: true,
-    });
-    console.log("  [wrote] redcore-icon.ico (multi-size)");
-  } catch (e) {
-    console.error("  FAIL: ICO generation failed:", e.message);
+  const svgBuffer = Buffer.from(ICON_SVG);
+
+  for (const size of icoSizes) {
+    const png = await sharp(svgBuffer, { density: 300 })
+      .resize(size, size)
+      .png()
+      .toBuffer();
+    pngBuffers.push({ size, data: png });
   }
+
+  // Build ICO file manually (Vista+ format: 256x256 stored as PNG inside ICO)
+  const numImages = pngBuffers.length;
+  const headerSize = 6;
+  const dirEntrySize = 16;
+  let dataOffset = headerSize + dirEntrySize * numImages;
+
+  const parts = [];
+
+  // ICO header (6 bytes)
+  const header = Buffer.alloc(6);
+  header.writeUInt16LE(0, 0);         // Reserved
+  header.writeUInt16LE(1, 2);         // Type: 1 = ICO
+  header.writeUInt16LE(numImages, 4); // Number of images
+  parts.push(header);
+
+  // Directory entries (16 bytes each)
+  for (const { size, data } of pngBuffers) {
+    const entry = Buffer.alloc(16);
+    entry.writeUInt8(size >= 256 ? 0 : size, 0); // Width (0 means 256)
+    entry.writeUInt8(size >= 256 ? 0 : size, 1); // Height (0 means 256)
+    entry.writeUInt8(0, 2);                       // Color palette
+    entry.writeUInt8(0, 3);                       // Reserved
+    entry.writeUInt16LE(1, 4);                    // Color planes
+    entry.writeUInt16LE(32, 6);                   // Bits per pixel
+    entry.writeUInt32LE(data.length, 8);          // Size of image data
+    entry.writeUInt32LE(dataOffset, 12);          // Offset to image data
+    parts.push(entry);
+    dataOffset += data.length;
+  }
+
+  // Image data (raw PNG buffers — Windows uses PNG compression for 256x256)
+  for (const { data } of pngBuffers) {
+    parts.push(data);
+  }
+
+  const icoBuffer = Buffer.concat(parts);
+  const icoPath = join(OS_RESOURCES, "redcore-icon.ico");
+  writeFileSync(icoPath, icoBuffer);
+  console.log(`  [wrote] redcore-icon.ico (${numImages} sizes, ${Math.round(icoBuffer.length / 1024)}KB)`);
 }
 
 console.log("");
