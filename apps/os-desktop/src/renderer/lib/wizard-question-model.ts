@@ -216,7 +216,7 @@ export const wizardBundleMetadata: WizardQuestionBundleMetadata = {
   requirements: ["NoPendingUpdates", "Internet", "PluggedIn"],
   useKernelDriver: false,
   productCode: 410,
-  git: "https://github.com/redpersongpt/redcore-OS",
+  git: "https://github.com/redpersongpt/redcoreOS",
   website: "https://redcoreos.net",
   donateLink: "https://redcoreos.net",
   supportsISO: true,

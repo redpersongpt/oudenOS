@@ -293,7 +293,7 @@ export function HeroSection() {
                 <Download className="h-4 w-4" />
                 Get redcore
               </motion.button>
-              <motion.a href="https://github.com/redpersongpt/redcore-OS" target="_blank" rel="noopener noreferrer"
+              <motion.a href="https://github.com/redpersongpt/redcoreOS" target="_blank" rel="noopener noreferrer"
                 className="group inline-flex items-center gap-2.5 rounded-xl border border-white/[0.08] bg-white/[0.03] px-6 py-4 text-[0.92rem] font-medium text-ink-secondary transition-all hover:border-white/[0.15] hover:bg-white/[0.06] hover:text-ink-primary cursor-pointer backdrop-blur-sm"
                 whileHover={{ scale: 1.02, y: -2 }} whileTap={{ scale: 0.98 }}>
                 <GithubIcon className="h-4 w-4" />
