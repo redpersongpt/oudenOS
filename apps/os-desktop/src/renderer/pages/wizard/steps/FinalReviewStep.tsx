@@ -8,6 +8,7 @@ import { Shield, Package, Palette, Download, AlertTriangle, Archive } from "luci
 import { useWizardStore } from "@/stores/wizard-store";
 import { useDecisionsStore } from "@/stores/decisions-store";
 import { resolveEffectivePersonalization } from "@/lib/personalization-resolution";
+import { platform } from "@/lib/platform";
 
 function ReviewSection({ icon: Icon, title, children }: {
   icon: ElementType;
@@ -42,21 +43,7 @@ export function FinalReviewStep() {
     setExportState("busy");
     setExportMessage("");
 
-    const api = (window as unknown as {
-      redcore?: {
-        wizard?: {
-          exportPackage?: (state: Record<string, unknown>) => Promise<Record<string, unknown>>;
-        };
-      };
-    }).redcore;
-
-    if (!api?.wizard?.exportPackage) {
-      setExportState("error");
-      setExportMessage("Export API is not available in this environment.");
-      return;
-    }
-
-    const result = await api.wizard.exportPackage({
+    const result = await platform().wizard.exportPackage({
       detectedProfile,
       playbookPreset: resolvedPlaybook.preset,
       answers,

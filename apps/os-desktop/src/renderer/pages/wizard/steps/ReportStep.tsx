@@ -8,6 +8,7 @@ import { useWizardStore } from "@/stores/wizard-store";
 import { useDecisionsStore } from "@/stores/decisions-store";
 import { useLogStore } from "@/stores/log-store";
 import { resolveEffectivePersonalization } from "@/lib/personalization-resolution";
+import { platform } from "@/lib/platform";
 
 const RICKROLL_URL = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
 
@@ -53,8 +54,7 @@ export function ReportStep() {
     setFooterClicks(next);
     if (next >= 5) {
       setFooterClicks(0);
-      const win = window as unknown as { redcore?: { shell?: { openExternal: (url: string) => void } } };
-      win.redcore?.shell?.openExternal(RICKROLL_URL);
+      platform().shell.openExternal(RICKROLL_URL);
     }
   }, [footerClicks]);
   const exportLogAsText = useLogStore((state) => state.exportAsText);
@@ -114,44 +114,18 @@ export function ReportStep() {
     setLogExportMessage("");
     const text = exportLogAsText();
 
-    const api = (window as unknown as {
-      redcore?: {
-        log?: {
-          saveToDesktop?: (content: string) => Promise<{ ok: boolean; path?: string; error?: string }>;
-        };
-      };
-    }).redcore;
-
-    if (api?.log?.saveToDesktop) {
-      try {
-        const result = await api.log.saveToDesktop(text);
-        if (result.ok) {
-          setLogExportState("done");
-          setLogExportMessage(`Log saved${result.path ? ` to ${result.path}` : ""}`);
-        } else {
-          setLogExportState("error");
-          setLogExportMessage(result.error ?? "Failed to save log");
-        }
-      } catch {
-        setLogExportState("error");
-        setLogExportMessage("Failed to save log");
-      }
-    } else {
-      // Fallback: Blob download
-      try {
-        const blob = new Blob([text], { type: "text/plain" });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `redcore-os-log-${new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19)}.txt`;
-        a.click();
-        URL.revokeObjectURL(url);
+    try {
+      const result = await platform().log.saveToDesktop(text);
+      if (result.ok) {
         setLogExportState("done");
-        setLogExportMessage("Log downloaded");
-      } catch {
+        setLogExportMessage(`Log saved${result.path ? ` to ${result.path}` : ""}`);
+      } else {
         setLogExportState("error");
-        setLogExportMessage("Failed to download log");
+        setLogExportMessage(result.error ?? "Failed to save log");
       }
+    } catch {
+      setLogExportState("error");
+      setLogExportMessage("Failed to save log");
     }
   };
 
@@ -161,20 +135,6 @@ export function ReportStep() {
     setExportState("busy");
     setExportMessage("");
 
-    const api = (window as unknown as {
-      redcore?: {
-        wizard?: {
-          exportPackage?: (state: Record<string, unknown>) => Promise<Record<string, unknown>>;
-        };
-      };
-    }).redcore;
-
-    if (!api?.wizard?.exportPackage) {
-      setExportState("error");
-      setExportMessage("Export API is not available in this environment.");
-      return;
-    }
-
     const { serviceCall } = await import("@/lib/service");
 
     // Primary: get ledger truth for export
@@ -182,7 +142,7 @@ export function ReportStep() {
     // Fallback: legacy journal.state
     const serviceJournalResult = await serviceCall<Record<string, unknown> | null>("journal.state");
 
-    const exportResult = await api.wizard.exportPackage({
+    const exportResult = await platform().wizard.exportPackage({
       detectedProfile,
       playbookPreset: resolvedPlaybook.preset,
       answers,

@@ -5,13 +5,13 @@ import { motion } from "framer-motion";
 import { Heart, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { useWizardStore } from "@/stores/wizard-store";
+import { platform } from "@/lib/platform";
 
 export function DonationStep() {
   const { completeDonation } = useWizardStore();
 
   const handleDonate = () => {
-    const win = window as unknown as { redcore?: { shell?: { openExternal: (url: string) => void } } };
-    win.redcore?.shell?.openExternal("https://redcoreos.net/support");
+    platform().shell.openExternal("https://redcoreos.net/support");
   };
 
   return (

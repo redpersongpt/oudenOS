@@ -4,6 +4,7 @@ import { ArrowRight, AlertTriangle } from "lucide-react";
 import { LogoHero } from "@/components/brand/Logo";
 import { Button } from "@/components/ui/Button";
 import { useWizardStore } from "@/stores/wizard-store";
+import { platform } from "@/lib/platform";
 
 const RICKROLL_URL = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
 
@@ -38,14 +39,12 @@ export function WelcomeStep() {
     setLogoClicks(next);
     if (next >= 7) {
       setLogoClicks(0);
-      const win = window as unknown as { redcore?: { shell?: { openExternal: (url: string) => void } } };
-      win.redcore?.shell?.openExternal(RICKROLL_URL);
+      platform().shell.openExternal(RICKROLL_URL);
     }
   }, [logoClicks]);
 
   useEffect(() => {
-    const win = window as unknown as { redcore?: { service?: { status: () => Promise<{ isAdmin: boolean; platform: string }> } } };
-    win.redcore?.service?.status().then((s) => {
+    platform().service.status().then((s) => {
       setAdminState({ checked: true, isAdmin: s.isAdmin, platform: s.platform });
     }).catch(() => {
       setAdminState({ checked: true, isAdmin: false, platform: "unknown" });
