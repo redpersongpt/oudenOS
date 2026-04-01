@@ -5,6 +5,7 @@ import { useState } from "react";
 import { motion, AnimatePresence, stagger, useAnimate } from "framer-motion";
 import { Heart, ExternalLink, ArrowLeft, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { platform } from "@/lib/platform";
 
 // Mock wall of fame
 
@@ -90,10 +91,7 @@ function ThankYouScreen({ amount, onBack }: { amount: number; onBack: () => void
           variant="primary"
           size="md"
           onClick={() => {
-            const win = window as unknown as {
-              redcore?: { window?: { close: () => void } };
-            };
-            win.redcore?.window?.close();
+            platform().window.close();
           }}
         >
           Close
@@ -117,12 +115,7 @@ export function DonationPage() {
   const effectiveAmount = custom ? parseFloat(custom) || 0 : selected;
 
   function handleBack() {
-    const win = window as unknown as {
-      redcore?: { shell?: { openExternal: (url: string) => void } };
-    };
-    if (win.redcore?.shell) {
-      win.redcore.shell.openExternal("https://redcoreos.net");
-    }
+    platform().shell.openExternal("https://redcoreos.net");
   }
 
   async function handleDonate() {
@@ -137,10 +130,7 @@ export function DonationPage() {
     );
 
     // Simulate async donate (open external URL)
-    const win = window as unknown as {
-      redcore?: { shell?: { openExternal: (url: string) => void } };
-    };
-    win.redcore?.shell?.openExternal(
+    platform().shell.openExternal(
       `https://redcoreos.net/donate?amount=${effectiveAmount}`,
     );
 
@@ -297,10 +287,7 @@ export function DonationPage() {
                 variant="secondary"
                 size="md"
                 onClick={() => {
-                  const win = window as unknown as {
-                    redcore?: { window?: { close: () => void } };
-                  };
-                  win.redcore?.window?.close();
+                  platform().window.close();
                 }}
               >
                 Skip

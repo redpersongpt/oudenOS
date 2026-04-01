@@ -1,7 +1,7 @@
 // Execution Step
 // Live execution screen. No bottom bar (WizardShell suppresses it).
 // Reads included actions from resolvedPlaybook, executes each via IPC.
-// Calls execute.applyAction for each action via window.redcore.service.call.
+// Calls execute.applyAction for each action via the platform service bridge.
 
 import { useEffect, useRef, useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
