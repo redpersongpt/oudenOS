@@ -121,6 +121,9 @@ jobs:
           key: tauri-installer-${{ hashFiles('apps/os-desktop/src-tauri/Cargo.toml', 'services/os-service/Cargo.toml') }}
           restore-keys: tauri-installer-
 
+      - name: Install Tauri CLI
+        run: cargo install tauri-cli --version "^2" --locked
+
       - name: Build OS service (release)
         working-directory: services/os-service
         run: cargo build --release
@@ -130,8 +133,8 @@ jobs:
         run: pnpm build
 
       - name: Build Tauri installer
-        working-directory: apps/os-desktop/src-tauri
-        run: cargo tauri build --config tauri.conf.production.json
+        working-directory: apps/os-desktop
+        run: cargo tauri build --config src-tauri/tauri.conf.production.json
         env:
           TAURI_SIGNING_PRIVATE_KEY: ""
 
