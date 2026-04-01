@@ -255,7 +255,7 @@ export function WelcomeStep() {
           transition={{ delay: 0.7 }}
           className="mt-4 text-[9px] text-ink-muted relative z-10"
         >
-          100% reversible · Snapshot before every change · Nothing leaves your machine
+          Every change undoable · Snapshot before every change · Nothing leaves your machine
         </motion.p>
       </motion.div>
 
