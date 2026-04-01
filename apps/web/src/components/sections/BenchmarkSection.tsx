@@ -6,7 +6,6 @@ import { easing, duration } from "@/lib/motion";
 import {
   Activity,
   ShieldOff,
-  MemoryStick,
   Rocket,
   Wifi,
   Settings,
@@ -39,13 +38,6 @@ const STAT_CARDS: StatCard[] = [
     suffix: "+",
     label: "Services Disabled",
     detail: "from 287 running",
-  },
-  {
-    icon: MemoryStick,
-    value: 800,
-    suffix: "MB+",
-    label: "RAM Freed",
-    detail: "idle usage reduction",
   },
   {
     icon: Rocket,
@@ -328,8 +320,7 @@ export function BenchmarkSection() {
             }}
             className="mt-5 mx-auto max-w-[480px] text-[0.88rem] leading-[1.75] text-ink-secondary"
           >
-            Tested on 10+ machines. Stock Windows vs. redcore OS, balanced
-            profile. No cherry-picked configs.
+            Tested on stock Windows 11 23H2. Balanced profile. Results vary by hardware.
           </motion.p>
         </div>
 

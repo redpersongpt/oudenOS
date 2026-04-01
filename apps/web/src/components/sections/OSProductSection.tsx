@@ -7,7 +7,7 @@ import { duration, easing } from "@/lib/motion";
 
 const features = [
   { icon: Layers, title: "In-place optimization", desc: "Reshape your current Windows — no ISO, no reinstall, no data loss" },
-  { icon: Shield, title: "150+ reversible actions", desc: "Staged cleanup across services, tasks, privacy, startup, and more" },
+  { icon: Shield, title: "250 reversible actions", desc: "Staged cleanup across services, tasks, privacy, startup, and more" },
   { icon: Briefcase, title: "Work PC preservation", desc: "Print Spooler, RDP, SMB, Group Policy, VPN — automatically protected" },
   { icon: HardDrive, title: "8 machine profiles", desc: "Gaming, workstation, office, laptop, low-spec — each gets a different path" },
   { icon: RefreshCw, title: "Full rollback", desc: "Every change creates a snapshot, every action is reversible" },
@@ -42,7 +42,7 @@ export function OSProductSection() {
             <div className="mt-6 space-y-3">
               {[
                 "In-place Windows optimization",
-                "All 150+ actions",
+                "All 250 actions",
                 "8 machine profiles",
                 "Work PC preservation",
                 "Full rollback support",

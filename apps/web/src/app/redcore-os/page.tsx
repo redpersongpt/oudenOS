@@ -16,7 +16,7 @@ import { RotateCcw, Monitor } from "lucide-react";
 export const metadata: Metadata = {
   title: "redcore OS — Free Windows Optimization Tool",
   description:
-    "Free Windows optimization tool. 250+ reversible actions, 5 profiles, Work PC safe, full rollback. Scans your hardware, builds a plan, optimizes your system.",
+    "Free Windows optimization tool. 250 reversible actions, 8 profiles, Work PC safe, full rollback. Scans your hardware, builds a plan, optimizes your system.",
   keywords: [
     "redcore os",
     "windows optimization tool",
@@ -50,13 +50,13 @@ function buildJsonLd(downloadUrl: string | null, version: string | null) {
       priceCurrency: "USD",
     },
     description:
-      "Free Windows optimization tool with step-by-step debloating, 8 profiles, 150+ actions, and full rollback support.",
+      "Free Windows optimization tool with step-by-step debloating, 8 profiles, 250 actions, and full rollback support.",
     url: "https://redcoreos.net/redcore-os",
     softwareVersion: version ?? "1.0",
     featureList: [
       "Scans your hardware first",
       "5 PC profiles",
-      "250+ reversible changes",
+      "250 reversible changes",
       "Undo any change",
       "Safe for work PCs",
       "Kills telemetry",
@@ -93,7 +93,7 @@ export default async function RedcoreOSPage() {
             items={[
               "Free — no account, no subscription, no license key",
               "Installer-like wizard with guided step-by-step flow",
-              "250+ categorized actions across privacy, performance, gaming, network, shell",
+              "250 categorized actions across privacy, performance, gaming, network, shell",
               "8 profiles: Gaming, Work PC, Development, Privacy, Minimal, Balanced, Laptop, Server",
               "Hardware-based hardware scanning before any changes",
               "Full rollback support with granular undo",
