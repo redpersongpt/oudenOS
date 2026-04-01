@@ -55,7 +55,7 @@ export function PreservationStep() {
           Preserving Business-Critical Services
         </h2>
         <p className="text-xs text-ink-secondary">
-          redcore-OS has identified your work environment and locked these services
+          These services are locked because your PC is a work machine
         </p>
       </div>
 

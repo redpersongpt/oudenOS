@@ -1,5 +1,4 @@
-# ─── Performance: CPU & Scheduler ────────────────────────────────────────────
-
+# Performance: CPU & Scheduler
 module: performance.cpu
 name: "CPU & Scheduler Tuning"
 description: "Optimize CPU scheduling, MMCSS, and thread priority"
@@ -62,7 +61,7 @@ actions:
   - id: perf.disable-fault-tolerant-heap
     name: "Disable Fault Tolerant Heap"
     description: "Prevent Windows from auto-applying crash mitigations to applications that crash repeatedly"
-    rationale: "FTH silently adds compatibility shims to crashed apps, increasing memory usage and reducing performance."
+    rationale: "FTH adds compatibility shims to repeatedly crashing apps. Minimal overhead on stable systems, safe to disable."
     risk: low
     tier: free
     default: true

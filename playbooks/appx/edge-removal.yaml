@@ -1,5 +1,4 @@
-# ─── AppX: Microsoft Edge Control ─────────────────────────────────────────────
-# Graduated Edge management: suppress → disable → remove.
+# AppX: Microsoft Edge Control
 # Each level is independent. Only the final two are destructive.
 #
 # PRODUCT POLICY:
@@ -14,8 +13,7 @@ description: "Graduated Edge management — from suppressing background activity
 category: appx
 
 actions:
-  # ── LEVEL 1: Suppress (safe, reversible, default on) ────────────────────────
-
+  # LEVEL 1: Suppress (safe, reversible, default on)
   - id: appx.disable-edge-updates
     name: "Disable Edge Auto-Updates"
     description: "Prevent Edge from auto-updating and reinstalling itself via the Microsoft Edge Update service. Registry policy only — does not remove Edge."
@@ -105,8 +103,7 @@ actions:
         value: 1
         valueType: DWord
 
-  # ── LEVEL 2: Remove Edge (destructive, expert-only) ─────────────────────────
-
+  # LEVEL 2: Remove Edge (destructive, expert-only)
   - id: appx.remove-edge
     name: "Remove Microsoft Edge"
     description: "Permanently uninstall Microsoft Edge using the setup.exe force-uninstall flag and remove AppX provisioning to prevent reinstallation. This action cannot be undone — Edge must be reinstalled from microsoft.com if needed."
@@ -146,8 +143,7 @@ actions:
           if (!(Test-Path $keyPath)) { New-Item -Path $keyPath -Force | Out-Null }
         }
 
-  # ── LEVEL 3: Remove WebView2 (extreme risk, blocked on most profiles) ──────
-
+  # LEVEL 3: Remove WebView2 (extreme risk, blocked on most profiles)
   - id: appx.remove-edge-webview
     name: "Remove Edge WebView2 Runtime"
     description: "Remove the Microsoft Edge WebView2 runtime. This is a shared system component used by many modern desktop applications for rendering web content inside their UI. Removing it WILL break applications that depend on it."

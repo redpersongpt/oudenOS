@@ -1,5 +1,4 @@
-# ─── Startup/Shutdown: Shutdown Optimization ─────────────────────────────────
-
+# Startup/Shutdown: Shutdown Optimization
 module: startup.shutdown
 name: "Shutdown Optimization"
 description: "Reduce shutdown time and auto-end hung applications"

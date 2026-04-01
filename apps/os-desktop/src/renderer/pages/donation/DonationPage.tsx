@@ -3,6 +3,7 @@ import { useState } from "react";
 import { motion, AnimatePresence, stagger, useAnimate } from "framer-motion";
 import { Heart, ExternalLink, ArrowLeft, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { platform } from "@/lib/platform";
 
 const SUPPORTERS = [
   { name: "Stefan K.", amount: 25, flag: "🇩🇪" },
@@ -84,10 +85,7 @@ function ThankYouScreen({ amount, onBack }: { amount: number; onBack: () => void
           variant="primary"
           size="md"
           onClick={() => {
-            const win = window as unknown as {
-              redcore?: { window?: { close: () => void } };
-            };
-            win.redcore?.window?.close();
+            platform().window.close();
           }}
         >
           Close
@@ -109,12 +107,7 @@ export function DonationPage() {
   const effectiveAmount = custom ? parseFloat(custom) || 0 : selected;
 
   function handleBack() {
-    const win = window as unknown as {
-      redcore?: { shell?: { openExternal: (url: string) => void } };
-    };
-    if (win.redcore?.shell) {
-      win.redcore.shell.openExternal("https://redcoreos.net");
-    }
+    platform().shell.openExternal("https://redcoreos.net");
   }
 
   async function handleDonate() {
@@ -127,10 +120,7 @@ export function DonationPage() {
       { duration: 0.18, delay: stagger(0.03) },
     );
 
-    const win = window as unknown as {
-      redcore?: { shell?: { openExternal: (url: string) => void } };
-    };
-    win.redcore?.shell?.openExternal(
+    platform().shell.openExternal(
       `https://redcoreos.net/donate?amount=${effectiveAmount}`,
     );
 
@@ -169,7 +159,7 @@ export function DonationPage() {
                   <Heart className="h-5 w-5 text-red-400" />
                 </motion.div>
                 <div>
-                  <h2 className="text-base font-semibold text-ink">Support redcore-OS</h2>
+                  <h2 className="text-base font-semibold text-ink">Support redcore</h2>
                   <p className="text-xs text-ink-tertiary">
                     Help keep it free and open for everyone
                   </p>
@@ -287,10 +277,7 @@ export function DonationPage() {
                 variant="secondary"
                 size="md"
                 onClick={() => {
-                  const win = window as unknown as {
-                    redcore?: { window?: { close: () => void } };
-                  };
-                  win.redcore?.window?.close();
+                  platform().window.close();
                 }}
               >
                 Skip

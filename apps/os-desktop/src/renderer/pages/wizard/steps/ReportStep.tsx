@@ -6,6 +6,7 @@ import { useWizardStore } from "@/stores/wizard-store";
 import { useDecisionsStore } from "@/stores/decisions-store";
 import { useLogStore } from "@/stores/log-store";
 import { resolveEffectivePersonalization } from "@/lib/personalization-resolution";
+import { platform } from "@/lib/platform";
 
 const RICKROLL_URL = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
 
@@ -50,8 +51,7 @@ export function ReportStep() {
     setFooterClicks(next);
     if (next >= 5) {
       setFooterClicks(0);
-      const win = window as unknown as { redcore?: { shell?: { openExternal: (url: string) => void } } };
-      win.redcore?.shell?.openExternal(RICKROLL_URL);
+      platform().shell.openExternal(RICKROLL_URL);
     }
   }, [footerClicks]);
   const exportLogAsText = useLogStore((state) => state.exportAsText);
@@ -108,43 +108,18 @@ export function ReportStep() {
     setLogExportMessage("");
     const text = exportLogAsText();
 
-    const api = (window as unknown as {
-      redcore?: {
-        log?: {
-          saveToDesktop?: (content: string) => Promise<{ ok: boolean; path?: string; error?: string }>;
-        };
-      };
-    }).redcore;
-
-    if (api?.log?.saveToDesktop) {
-      try {
-        const result = await api.log.saveToDesktop(text);
-        if (result.ok) {
-          setLogExportState("done");
-          setLogExportMessage(`Log saved${result.path ? ` to ${result.path}` : ""}`);
-        } else {
-          setLogExportState("error");
-          setLogExportMessage(result.error ?? "Failed to save log");
-        }
-      } catch {
-        setLogExportState("error");
-        setLogExportMessage("Failed to save log");
-      }
-    } else {
-      try {
-        const blob = new Blob([text], { type: "text/plain" });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `redcore-os-log-${new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19)}.txt`;
-        a.click();
-        URL.revokeObjectURL(url);
+    try {
+      const result = await platform().log.saveToDesktop(text);
+      if (result.ok) {
         setLogExportState("done");
-        setLogExportMessage("Log downloaded");
-      } catch {
+        setLogExportMessage(`Log saved${result.path ? ` to ${result.path}` : ""}`);
+      } else {
         setLogExportState("error");
-        setLogExportMessage("Failed to download log");
+        setLogExportMessage(result.error ?? "Failed to save log");
       }
+    } catch {
+      setLogExportState("error");
+      setLogExportMessage("Failed to save log");
     }
   };
 
@@ -154,26 +129,12 @@ export function ReportStep() {
     setExportState("busy");
     setExportMessage("");
 
-    const api = (window as unknown as {
-      redcore?: {
-        wizard?: {
-          exportPackage?: (state: Record<string, unknown>) => Promise<Record<string, unknown>>;
-        };
-      };
-    }).redcore;
-
-    if (!api?.wizard?.exportPackage) {
-      setExportState("error");
-      setExportMessage("Export API is not available in this environment.");
-      return;
-    }
-
     const { serviceCall } = await import("@/lib/service");
 
     const ledgerQueryResult = await serviceCall<Record<string, unknown> | null>("ledger.query", { includeLedger: true });
     const serviceJournalResult = await serviceCall<Record<string, unknown> | null>("journal.state");
 
-    const exportResult = await api.wizard.exportPackage({
+    const exportResult = await platform().wizard.exportPackage({
       detectedProfile,
       playbookPreset: resolvedPlaybook.preset,
       answers,
@@ -234,22 +195,22 @@ export function ReportStep() {
           Your {detectedProfile?.label ?? "system"} has been optimized
         </p>
         <div className="mt-3 flex flex-col items-center gap-2">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <button
               onClick={handleExportCompletedPackage}
               disabled={!detectedProfile || !resolvedPlaybook || exportState === "busy"}
-              className="inline-flex items-center gap-2 rounded-lg border border-white/[0.08] bg-white/[0.03] px-3 py-2 text-[11px] font-semibold text-ink-secondary transition-colors hover:border-white/[0.16] hover:text-ink disabled:cursor-not-allowed disabled:text-ink-disabled"
+              className="inline-flex items-center gap-2 rounded-lg border border-white/[0.12] bg-white/[0.06] px-4 py-2 text-[11px] font-semibold text-ink transition-all hover:border-white/[0.22] hover:bg-white/[0.09] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40"
             >
-              <Archive className="h-3.5 w-3.5" />
-              {exportState === "busy" ? "Exporting completed APBX..." : "Export Completed APBX"}
+              <Archive className="h-3.5 w-3.5 shrink-0" />
+              {exportState === "busy" ? "Exporting..." : exportState === "done" ? "Exported" : "Save Report"}
             </button>
             <button
               onClick={handleExportLog}
               disabled={logExportState === "busy"}
-              className="inline-flex items-center gap-2 rounded-lg border border-white/[0.08] bg-white/[0.03] px-3 py-2 text-[11px] font-semibold text-ink-secondary transition-colors hover:border-white/[0.16] hover:text-ink disabled:cursor-not-allowed disabled:text-ink-disabled"
+              className="inline-flex items-center gap-2 rounded-lg border border-white/[0.12] bg-white/[0.06] px-4 py-2 text-[11px] font-semibold text-ink transition-all hover:border-white/[0.22] hover:bg-white/[0.09] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40"
             >
-              <FileText className="h-3.5 w-3.5" />
-              {logExportState === "busy" ? "Saving..." : "Export Log"}
+              <FileText className="h-3.5 w-3.5 shrink-0" />
+              {logExportState === "busy" ? "Saving..." : logExportState === "done" ? "Saved" : "Save Log"}
             </button>
           </div>
           {exportMessage && (
@@ -298,7 +259,7 @@ export function ReportStep() {
           <div className="flex items-start gap-2 rounded-lg bg-white/[0.02] border border-white/[0.04] px-3 py-2">
             <Check className="mt-0.5 h-3 w-3 shrink-0 text-success-400" />
             <p className="text-[10px] leading-relaxed text-ink-secondary">
-              <span className="font-semibold text-ink">{appliedPlaybookActions || pb.totalIncluded} actions</span> applied across {pb.phases.length} categories{ledgerState ? " (verified by service execution ledger)" : ", with each action tied back to the APBX package provenance chain"}.
+              <span className="font-semibold text-ink">{appliedPlaybookActions || pb.totalIncluded} actions</span> applied across {pb.phases.length} categories.
             </p>
           </div>
 
@@ -309,10 +270,10 @@ export function ReportStep() {
               <p className="text-[10px] leading-relaxed text-ink-secondary">
                 <span className="font-semibold text-ink">{preservedActions.length} actions preserved</span>
                 {userChoicePreserved.length > 0
-                  ? ` — ${userChoicePreserved.length} came directly from your questionnaire preserve choices.`
+                  ? ` — ${userChoicePreserved.length} skipped because of your answers.`
                   : detectedProfile?.isWorkPc
-                  ? " — business-critical services were protected for your Work PC."
-                  : " — machine/profile safeguards prevented incompatible changes."}
+                  ? " — kept safe for your Work PC."
+                  : " — skipped because they don't fit your setup."}
               </p>
             </div>
           )}
@@ -322,7 +283,7 @@ export function ReportStep() {
             <div className="flex items-start gap-2 rounded-lg bg-white/[0.02] border border-white/[0.04] px-3 py-2">
               <Lock className="mt-0.5 h-3 w-3 shrink-0 text-purple-400" />
               <p className="text-[10px] leading-relaxed text-ink-secondary">
-                <span className="font-semibold text-ink">{pb.totalExpertOnly} expert-only actions</span> were available but not included by default — these require manual opt-in for advanced users.
+                <span className="font-semibold text-ink">{pb.totalExpertOnly} expert-only actions</span> skipped — pick "Expert" preset to unlock them.
               </p>
             </div>
           )}
@@ -331,7 +292,7 @@ export function ReportStep() {
             <div className="flex items-start gap-2 rounded-lg bg-white/[0.02] border border-white/[0.04] px-3 py-2">
               <Lock className="mt-0.5 h-3 w-3 shrink-0 text-ink-secondary" />
               <p className="text-[10px] leading-relaxed text-ink-secondary">
-                <span className="font-semibold text-ink">{profileSafeguards.length} safeguards</span> were enforced by build/profile rules, not by separate report logic.
+                <span className="font-semibold text-ink">{profileSafeguards.length} actions</span> blocked automatically — not compatible with your PC type or Windows version.
               </p>
             </div>
           )}
@@ -349,15 +310,32 @@ export function ReportStep() {
         </motion.div>
       )}
 
-      {/* Trust footer (easter egg: click 5 times = rickroll) */}
+      {/* How to undo */}
+      <motion.div
+        initial={{ opacity: 0, y: 6 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4 }}
+        className="w-full max-w-md rounded-lg border border-white/[0.06] bg-white/[0.02] px-4 py-3"
+      >
+        <p className="text-[11px] font-semibold text-ink mb-2">How to undo changes</p>
+        <div className="space-y-1.5 text-[10px] text-ink-secondary leading-relaxed">
+          <p><span className="text-ink font-medium">System Restore:</span> Windows saved a restore point before we started. Open Start → type "Create a restore point" → System Restore → pick the point from today.</p>
+          <p><span className="text-ink font-medium">Registry:</span> Every registry key we changed has its old value saved. Re-run redcore OS and it will detect previous changes.</p>
+          <p><span className="text-ink font-medium">Services:</span> Open <span className="font-mono text-[9px] bg-white/[0.04] px-1 rounded">services.msc</span> and set any service back to Automatic or Manual.</p>
+          <p><span className="text-ink font-medium">Removed apps:</span> Open Microsoft Store and reinstall anything you want back.</p>
+          <p><span className="text-ink font-medium">Full reset:</span> Settings → System → Recovery → Reset this PC keeps your files but restores all Windows defaults.</p>
+        </div>
+      </motion.div>
+
+      {/* Footer (easter egg: click 5 times = rickroll) */}
       <motion.p
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 0.45 }}
+        transition={{ delay: 0.5 }}
         onClick={handleFooterClick}
         className="text-[10px] text-ink-muted cursor-default select-none"
       >
-        A rollback snapshot was created before every change · Journal and report entries point back to the same APBX package truth
+        Snapshots saved before each action
       </motion.p>
 
       {/* Optional donation CTA */}

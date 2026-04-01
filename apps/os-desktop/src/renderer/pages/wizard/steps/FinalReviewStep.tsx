@@ -5,6 +5,7 @@ import { Shield, Package, Palette, Download, AlertTriangle, Archive } from "luci
 import { useWizardStore } from "@/stores/wizard-store";
 import { useDecisionsStore } from "@/stores/decisions-store";
 import { resolveEffectivePersonalization } from "@/lib/personalization-resolution";
+import { platform } from "@/lib/platform";
 
 function ReviewSection({ icon: Icon, title, children }: {
   icon: ElementType;
@@ -39,21 +40,7 @@ export function FinalReviewStep() {
     setExportState("busy");
     setExportMessage("");
 
-    const api = (window as unknown as {
-      redcore?: {
-        wizard?: {
-          exportPackage?: (state: Record<string, unknown>) => Promise<Record<string, unknown>>;
-        };
-      };
-    }).redcore;
-
-    if (!api?.wizard?.exportPackage) {
-      setExportState("error");
-      setExportMessage("Export API is not available in this environment.");
-      return;
-    }
-
-    const result = await api.wizard.exportPackage({
+    const result = await platform().wizard.exportPackage({
       detectedProfile,
       playbookPreset: resolvedPlaybook.preset,
       answers,
@@ -177,7 +164,7 @@ export function FinalReviewStep() {
           Ready to Apply
         </h1>
         <p className="mt-1.5 text-[13px] text-ink-secondary">
-          Review what redcore will change. A snapshot is saved before anything runs. A rollback snapshot will be created before any changes.
+          Last check before we start. We save a snapshot before each change.
         </p>
         <div className="mt-3 flex flex-wrap items-center gap-3">
           <button
@@ -186,7 +173,7 @@ export function FinalReviewStep() {
             className="inline-flex items-center gap-2 rounded-lg border border-white/[0.08] bg-white/[0.03] px-3 py-2 text-[11px] font-semibold text-ink-secondary transition-colors hover:border-white/[0.16] hover:text-ink disabled:cursor-not-allowed disabled:text-ink-disabled"
           >
             <Archive className="h-3.5 w-3.5" />
-            {exportState === "busy" ? "Exporting package..." : "Export APBX Package"}
+            {exportState === "busy" ? "Saving..." : "Save Package"}
           </button>
           {exportMessage && (
             <p className={`text-[11px] ${exportState === "error" ? "text-red-400" : "text-ink-secondary"}`}>
@@ -216,7 +203,7 @@ export function FinalReviewStep() {
         transition={{ delay: 0.38 }}
         className="mt-4 text-center text-[11px] text-ink-tertiary"
       >
-        All changes are reversible. A snapshot is created before any modification.
+        Snapshots saved before each action. Snapshots saved before each one.
       </motion.p>
     </motion.div>
   );

@@ -2,7 +2,7 @@
   "name": "@redcore-os/desktop",
   "version": "0.1.0",
   "private": true,
-  "description": "redcore OS — In-place Windows transformation tool. Machine-aware, guided, fully reversible.",
+  "description": "redcore OS desktop app",
   "author": {
     "name": "redcore",
     "email": "support@redcoreos.net"

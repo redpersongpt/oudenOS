@@ -2,6 +2,7 @@
 import { motion } from "framer-motion";
 import { Zap, ExternalLink, Shield, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { platform } from "@/lib/platform";
 
 const TUNING_FEATURES = [
   "Per-component CPU, GPU, and memory tuning",
@@ -13,17 +14,11 @@ const TUNING_FEATURES = [
 
 export function HandoffStep() {
   const handleOpenTuning = () => {
-    const win = window as unknown as { redcore?: { shell?: { openExternal: (url: string) => void } } };
-    if (win.redcore?.shell) {
-      win.redcore.shell.openExternal("https://redcoreos.net/redcore-tuning");
-    }
+    platform().shell.openExternal("https://redcoreos.net/redcore-tuning");
   };
 
   const handleClose = () => {
-    const win = window as unknown as {
-      redcore?: { window?: { close: () => void } };
-    };
-    win.redcore?.window?.close();
+    platform().window.close();
   };
 
   return (
@@ -48,7 +43,7 @@ export function HandoffStep() {
       <div className="flex flex-col items-center gap-1.5 text-center">
         <h2 className="text-lg font-semibold text-ink">Your OS Is Ready</h2>
         <p className="max-w-sm text-xs text-ink-secondary">
-          redcore-OS has optimized your Windows installation. For advanced per-component tuning, continue with redcore-Tuning.
+          Your Windows is clean. Want to squeeze even more out of your hardware? Check out redcore Tuning.
         </p>
       </div>
 
