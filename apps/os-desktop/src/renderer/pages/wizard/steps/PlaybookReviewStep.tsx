@@ -259,14 +259,12 @@ export function PlaybookReviewStep() {
       {/* Header */}
       <div className="mb-4">
         <h1 className="text-[20px] font-bold tracking-tight text-ink">
-          Optimization Playbook
+          What We'll Change
         </h1>
         <p className="mt-1 text-[12px] text-ink-secondary">
-          Review what will be changed on your{" "}
-          <span className="font-medium text-ink">{detectedProfile?.label ?? "machine"}</span>
-          {" "}using the{" "}
-          <span className="font-medium text-ink">{playbookPreset}</span>
-          {" "}preset.
+          Everything listed below will run on your{" "}
+          <span className="font-medium text-ink">{detectedProfile?.label ?? "PC"}</span>
+          {" "}({playbookPreset} mode). Nothing hidden.
         </p>
       </div>
 
