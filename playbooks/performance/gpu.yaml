@@ -1,5 +1,4 @@
-# ─── Performance: GPU Optimization ────────────────────────────────────────────
-# GPU energy driver, HAGS, NVIDIA/AMD P-state, TDR, MSI mode, telemetry, Game DVR, fullscreen, transparency.
+# Performance: GPU Optimization
 
 module: performance.gpu
 name: "GPU Performance Optimization"

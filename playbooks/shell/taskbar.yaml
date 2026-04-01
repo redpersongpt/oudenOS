@@ -1,5 +1,4 @@
-# ─── Shell: Taskbar Cleanup ───────────────────────────────────────────────────
-
+# Shell: Taskbar Cleanup
 module: shell.taskbar
 name: "Taskbar Cleanup"
 description: "Remove clutter from the Windows taskbar"

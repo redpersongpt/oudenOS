@@ -1,5 +1,4 @@
-# ─── AppX: Consumer Bloat Removal ─────────────────────────────────────────────
-# Removes pre-installed consumer bloatware, Cortana, Office Hub, and Phone Link.
+# AppX: Consumer Bloat Removal
 
 module: appx.consumer-bloat
 name: "Consumer Bloat Removal"

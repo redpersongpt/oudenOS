@@ -1,5 +1,4 @@
-# ─── Startup-Shutdown: Boot & Input/Audio Optimization ────────────────────────
-# Disables Game Bar, pointer acceleration, audio enhancements, and configures exclusive mode.
+# Startup-Shutdown: Boot & Input/Audio Optimization
 
 module: startup-shutdown.boot
 name: "Boot & Input/Audio Optimization"

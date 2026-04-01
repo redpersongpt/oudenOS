@@ -4,6 +4,7 @@ import { ArrowRight, AlertTriangle } from "lucide-react";
 import { LogoHero } from "@/components/brand/Logo";
 import { Button } from "@/components/ui/Button";
 import { useWizardStore } from "@/stores/wizard-store";
+import { platform } from "@/lib/platform";
 
 const RICKROLL_URL = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
 
@@ -38,14 +39,12 @@ export function WelcomeStep() {
     setLogoClicks(next);
     if (next >= 7) {
       setLogoClicks(0);
-      const win = window as unknown as { redcore?: { shell?: { openExternal: (url: string) => void } } };
-      win.redcore?.shell?.openExternal(RICKROLL_URL);
+      platform().shell.openExternal(RICKROLL_URL);
     }
   }, [logoClicks]);
 
   useEffect(() => {
-    const win = window as unknown as { redcore?: { service?: { status: () => Promise<{ isAdmin: boolean; platform: string }> } } };
-    win.redcore?.service?.status().then((s) => {
+    platform().service.status().then((s) => {
       setAdminState({ checked: true, isAdmin: s.isAdmin, platform: s.platform });
     }).catch(() => {
       setAdminState({ checked: true, isAdmin: false, platform: "unknown" });
@@ -62,7 +61,7 @@ export function WelcomeStep() {
   return (
     <div className="relative flex h-full w-full overflow-hidden">
 
-      {/* ── Left decorative sidebar ── */}
+      {/* Left decorative sidebar */}
       <div className="hidden sm:flex w-[48px] shrink-0 flex-col items-center justify-between py-6 border-r border-white/[0.04]">
         <div className="flex flex-col items-center gap-3">
           {[...Array(5)].map((_, i) => (
@@ -91,7 +90,7 @@ export function WelcomeStep() {
         </motion.p>
       </div>
 
-      {/* ── Main content area ── */}
+      {/* Main content area */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -255,11 +254,11 @@ export function WelcomeStep() {
           transition={{ delay: 0.7 }}
           className="mt-4 text-[9px] text-ink-muted relative z-10"
         >
-          100% reversible · Snapshot before every change · Nothing leaves your machine
+          Snapshot before every change · Nothing leaves your machine
         </motion.p>
       </motion.div>
 
-      {/* ── Right decorative sidebar ── */}
+      {/* Right decorative sidebar */}
       <div className="hidden sm:flex w-[48px] shrink-0 flex-col items-center justify-between py-6 border-l border-white/[0.04]">
         <motion.div
           initial={{ opacity: 0 }}

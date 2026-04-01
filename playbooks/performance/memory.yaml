@@ -1,5 +1,4 @@
-# ─── Performance: Memory Management ──────────────────────────────────────────
-# Memory subsystem tuning — NDU, prefetch, compression, working set, page file.
+# Performance: Memory Management
 
 module: performance.memory
 name: "Memory Management"

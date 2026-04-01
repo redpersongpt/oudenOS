@@ -1,5 +1,4 @@
-# ─── Privacy: Activity Tracking ───────────────────────────────────────────────
-# Disables clipboard history, activity feed, cloud content, and location tracking.
+# Privacy: Activity Tracking
 
 module: privacy.activity-tracking
 name: "Activity Tracking Reduction"
@@ -10,7 +9,7 @@ actions:
   - id: privacy.disable-clipboard-history
     name: "Disable Clipboard History & Cloud Sync"
     description: "Disable Windows clipboard history and cross-device clipboard synchronization"
-    rationale: "Clipboard history stores copied content and can sync it across devices via Microsoft account. Disabling prevents clipboard data from being stored or cloud-transmitted."
+    rationale: "Stores copied content locally and can sync it across devices via Microsoft account"
     risk: safe
     tier: free
     default: true
@@ -33,7 +32,7 @@ actions:
   - id: privacy.disable-activity-feed
     name: "Disable Activity History & Timeline"
     description: "Disable Windows activity feed, timeline, and activity data uploads to Microsoft"
-    rationale: "Windows Activity History tracks app usage, file opens, and browsing history. Disabling prevents local collection and cloud upload of activity data."
+    rationale: "Tracks app usage, file opens, and browsing history, uploads to Microsoft"
     risk: safe
     tier: free
     default: true
@@ -61,7 +60,7 @@ actions:
   - id: privacy.disable-cloud-content
     name: "Disable Cloud Content & Suggestions"
     description: "Disable Windows Spotlight, suggested apps, tips, and cloud-delivered content"
-    rationale: "Cloud content features download and display promotional material, consuming bandwidth and creating visual noise."
+    rationale: "Downloads and displays promotional content, consuming bandwidth"
     risk: safe
     tier: free
     default: true

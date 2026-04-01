@@ -1,5 +1,4 @@
-# ─── Performance: Latency Optimization ────────────────────────────────────────
-# CPU dynamic tick, global timer, core parking, boost mode, min processor state, MMCSS.
+# Performance: Latency Optimization
 
 module: performance.latency
 name: "Latency Optimization"
@@ -47,7 +46,7 @@ actions:
   - id: cpu.disable-core-parking
     name: "Disable CPU Core Parking"
     description: "Set minimum processor cores to 100% on AC power, preventing Windows from parking cores during low load. Parked cores introduce 1-5 ms wake latency."
-    rationale: "Core parking powers down unused cores to save energy, but causes micro-stutter when a game suddenly needs more threads and the OS must unpark them."
+    rationale: "Core parking idles unused cores to save power. Adds <1ms wake latency on modern CPUs. Disable for lowest possible latency."
     risk: low
     tier: premium
     default: true
@@ -81,7 +80,7 @@ actions:
   - id: cpu.min-processor-state-100
     name: "Set Minimum Processor State to 100%"
     description: "Prevent the CPU from throttling below maximum frequency. Sets both minimum and maximum processor state to 100%."
-    rationale: "When min processor state is below 100%, the CPU may reduce its frequency during brief idle moments, causing frame time spikes."
+    rationale: "Keeps CPU at max frequency even at idle. Higher power/heat but eliminates frequency scaling transitions (~1-2ms)."
     risk: low
     tier: premium
     default: true
@@ -147,5 +146,5 @@ actions:
       - hive: HKLM
         path: "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile"
         valueName: SystemResponsiveness
-        value: 0
+        value: 10
         valueType: DWord

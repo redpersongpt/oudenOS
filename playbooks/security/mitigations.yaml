@@ -1,5 +1,4 @@
-# ─── Security: Mitigation Control ─────────────────────────────────────────────
-# Expert-only: Reduces SSBD mitigation and disables HVCI for performance.
+# Security: Mitigation Control
 
 module: security.mitigations
 name: "Security Mitigation Control"
