@@ -1,8 +1,28 @@
 import { useEffect, useRef, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Check, Monitor, Package, Rocket, Server, Clock, Briefcase, Box } from "lucide-react";
 import { useWizardStore } from "@/stores/wizard-store";
 import type { DetectedProfile } from "@/stores/wizard-store";
+
+// ─── Scan phase quotes — personality during assessment ──────────────────────
+
+const SCAN_QUOTES = [
+  "reading your PC's diary...",
+  "counting how many Bing apps Microsoft snuck in...",
+  "checking if your PC needs therapy...",
+  "evaluating bloat levels... yikes...",
+  "scanning for symptoms of Windows-itis...",
+  "diagnosing your system's trust issues...",
+  "how did 287 services get in here?",
+  "your PC has... opinions...",
+  "finding all the things you didn't install...",
+  "measuring the bloat damage...",
+  "cataloging Microsoft's greatest hits...",
+  "oh wow, that's a lot of telemetry...",
+  "your startup folder is... ambitious...",
+  "discovery phase: finding what hurts...",
+  "scanning... scanning... still scanning...",
+];
 
 const CATEGORIES = [
   { id: "windows",  label: "Windows Version",    icon: Monitor,   desc: "Build & edition" },
@@ -259,6 +279,21 @@ export function AssessmentStep() {
 
   const done = Object.values(statuses).filter((s) => s === "done").length;
   const pct = Math.round((done / CATEGORIES.length) * 100);
+  const isScanning = done < CATEGORIES.length;
+
+  // Rotating scan quotes
+  const [quoteIdx, setQuoteIdx] = useState(() => Math.floor(Math.random() * SCAN_QUOTES.length));
+  useEffect(() => {
+    if (!isScanning) return;
+    const interval = setInterval(() => {
+      setQuoteIdx((prev) => {
+        let next: number;
+        do { next = Math.floor(Math.random() * SCAN_QUOTES.length); } while (next === prev && SCAN_QUOTES.length > 1);
+        return next;
+      });
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [isScanning]);
 
   return (
     <motion.div
@@ -269,8 +304,34 @@ export function AssessmentStep() {
       className="flex h-full flex-col items-center justify-center gap-5 px-8 py-6"
     >
       <div className="text-center">
-        <h2 className="text-[17px] font-bold text-ink">Assessing Your System</h2>
-        <p className="mt-1 text-[11px] text-ink-tertiary">Scanning hardware, software, and configuration</p>
+        <motion.h2
+          initial={{ opacity: 0, y: 8, filter: "blur(6px)" }}
+          animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+          transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+          className="text-[17px] font-bold text-ink"
+        >
+          {isScanning ? "Assessing Your System" : "Assessment Complete"}
+        </motion.h2>
+        <p className="mt-1 text-[11px] text-ink-tertiary">
+          {isScanning ? "Scanning hardware, software, and configuration" : "Your system profile is ready"}
+        </p>
+        {/* Scan quote */}
+        {isScanning && (
+          <div className="mt-1.5 h-4">
+            <AnimatePresence mode="wait">
+              <motion.p
+                key={quoteIdx}
+                initial={{ opacity: 0, y: 4 }}
+                animate={{ opacity: 0.45, y: 0 }}
+                exit={{ opacity: 0, y: -4 }}
+                transition={{ duration: 0.25 }}
+                className="text-[10px] italic text-ink-muted"
+              >
+                {SCAN_QUOTES[quoteIdx]}
+              </motion.p>
+            </AnimatePresence>
+          </div>
+        )}
       </div>
 
       <div className="w-full max-w-md space-y-1">
@@ -327,6 +388,19 @@ export function AssessmentStep() {
           <span className="font-mono text-[10px] text-ink-disabled">{done}/{CATEGORIES.length}</span>
         </div>
       </div>
+
+      {/* Completion flash */}
+      {done === CATEGORIES.length && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ type: "spring", stiffness: 300, damping: 18 }}
+          className="flex items-center gap-2 rounded-lg border border-success-500/20 bg-success-500/[0.06] px-4 py-2"
+        >
+          <Check className="h-3.5 w-3.5 text-success-400" />
+          <span className="text-[11px] font-medium text-success-300">System scanned — building your profile</span>
+        </motion.div>
+      )}
     </motion.div>
   );
 }

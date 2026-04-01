@@ -59,7 +59,7 @@ async function buildLicenseState(userId: string): Promise<LicenseState> {
   const [sub] = await db
     .select()
     .from(subscriptions)
-    .where(eq(subscriptions.userId, userId))
+    .where(and(eq(subscriptions.userId, userId), eq(subscriptions.product, "os")))
     .limit(1);
 
   const tier = sub?.tier ?? 'free';
@@ -71,6 +71,7 @@ async function buildLicenseState(userId: string): Promise<LicenseState> {
     .where(
       and(
         eq(machineActivations.userId, userId),
+        eq(machineActivations.product, "os"),
         eq(machineActivations.status, 'active'),
       ),
     );
@@ -129,6 +130,7 @@ export default async function licenseRoutes(app: FastifyInstance): Promise<void>
       .where(
         and(
           eq(machineActivations.userId, request.userId),
+          eq(machineActivations.product, "os"),
           eq(machineActivations.deviceFingerprint, deviceFingerprint),
           eq(machineActivations.status, 'active'),
         ),
@@ -165,7 +167,7 @@ export default async function licenseRoutes(app: FastifyInstance): Promise<void>
     const [sub] = await db
       .select()
       .from(subscriptions)
-      .where(eq(subscriptions.userId, request.userId))
+      .where(and(eq(subscriptions.userId, request.userId), eq(subscriptions.product, "os")))
       .limit(1);
 
     const tier = sub?.tier ?? 'free';
@@ -178,6 +180,7 @@ export default async function licenseRoutes(app: FastifyInstance): Promise<void>
       .where(
         and(
           eq(machineActivations.userId, request.userId),
+          eq(machineActivations.product, "os"),
           eq(machineActivations.deviceFingerprint, deviceFingerprint),
         ),
       )
@@ -206,6 +209,7 @@ export default async function licenseRoutes(app: FastifyInstance): Promise<void>
       .where(
         and(
           eq(machineActivations.userId, request.userId),
+          eq(machineActivations.product, "os"),
           eq(machineActivations.status, 'active'),
         ),
       );
@@ -224,6 +228,7 @@ export default async function licenseRoutes(app: FastifyInstance): Promise<void>
       .insert(machineActivations)
       .values({
         userId: request.userId,
+        product: "os",
         deviceFingerprint,
         hostname,
         lastSeenAt: new Date(),
@@ -258,6 +263,7 @@ export default async function licenseRoutes(app: FastifyInstance): Promise<void>
       .where(
         and(
           eq(machineActivations.userId, request.userId),
+          eq(machineActivations.product, "os"),
           eq(machineActivations.deviceFingerprint, deviceFingerprint),
           eq(machineActivations.status, 'active'),
         ),

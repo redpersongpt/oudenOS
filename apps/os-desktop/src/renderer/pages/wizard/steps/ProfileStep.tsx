@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
-import { Monitor, Briefcase } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Monitor, Briefcase, ChevronDown, Gamepad2, Laptop, Server, Cpu, AlertTriangle, Check } from "lucide-react";
 import { useWizardStore } from "@/stores/wizard-store";
+import type { DetectedProfile } from "@/stores/wizard-store";
 
 // ── Count-up hook ────────────────────────────────────────────────────────────
 
@@ -24,12 +25,23 @@ function useCountUp(target: number, duration = 1100): number {
   return v;
 }
 
+// ── Profile options for override ─────────────────────────────────────────────
+
+const PROFILE_OPTIONS = [
+  { id: "gaming_desktop", label: "Gaming Desktop", icon: Gamepad2, desc: "Aggressive performance, max FPS" },
+  { id: "office_laptop", label: "Office Laptop", icon: Laptop, desc: "Battery-safe, keep productivity tools" },
+  { id: "work_pc", label: "Work PC", icon: Briefcase, desc: "Preserve enterprise services, cautious" },
+  { id: "vm_cautious", label: "Virtual Machine", icon: Server, desc: "Skip hardware tweaks, minimal changes" },
+  { id: "low_spec_system", label: "Low Spec System", icon: Cpu, desc: "Lightweight cleanup, reduce overhead" },
+] as const;
+
 // ── Component ────────────────────────────────────────────────────────────────
 
 export function ProfileStep() {
-  const { detectedProfile, setStepReady } = useWizardStore();
+  const { detectedProfile, setDetectedProfile, setStepReady } = useWizardStore();
   const p = detectedProfile;
   const signals = Array.isArray(p?.signals) ? p.signals : [];
+  const [showOverride, setShowOverride] = useState(false);
 
   const displayConfidence = useCountUp(p?.confidence ?? 0, 1100);
 
@@ -121,6 +133,77 @@ export function ProfileStep() {
           </div>
         </motion.div>
       )}
+
+      {/* Profile override */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.5 }}
+        className="w-full max-w-xs"
+      >
+        <button
+          onClick={() => setShowOverride(!showOverride)}
+          className="flex items-center gap-1.5 mx-auto text-[10px] text-ink-muted hover:text-ink-tertiary transition-colors cursor-pointer"
+        >
+          <span>Not right? Switch profile</span>
+          <motion.div animate={{ rotate: showOverride ? 180 : 0 }} transition={{ duration: 0.2 }}>
+            <ChevronDown className="h-3 w-3" />
+          </motion.div>
+        </button>
+        <AnimatePresence>
+          {showOverride && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.2, ease: [0.0, 0.0, 0.2, 1.0] }}
+              className="overflow-hidden"
+            >
+              <div className="mt-2 flex flex-col gap-1">
+                {PROFILE_OPTIONS.map((opt) => {
+                  const Icon = opt.icon;
+                  const isActive = p.id === opt.id;
+                  return (
+                    <button
+                      key={opt.id}
+                      onClick={() => {
+                        if (isActive) return;
+                        const overridden: DetectedProfile = {
+                          ...p,
+                          id: opt.id,
+                          label: opt.label,
+                          isWorkPc: opt.id === "work_pc",
+                          confidence: p.id === opt.id ? p.confidence : 100,
+                          signals: p.id === opt.id ? p.signals : [...p.signals, "Manual override"],
+                        };
+                        setDetectedProfile(overridden);
+                        setShowOverride(false);
+                      }}
+                      className={[
+                        "flex items-center gap-2.5 rounded-lg px-3 py-2 text-left transition-all cursor-pointer",
+                        isActive
+                          ? "bg-brand-500/10 border border-brand-500/25"
+                          : "bg-white/[0.02] border border-white/[0.04] hover:bg-white/[0.04]",
+                      ].join(" ")}
+                    >
+                      <Icon className={`h-3.5 w-3.5 shrink-0 ${isActive ? "text-brand-400" : "text-ink-tertiary"}`} />
+                      <div className="flex-1 min-w-0">
+                        <p className={`text-[11px] font-medium ${isActive ? "text-brand-400" : "text-ink-secondary"}`}>{opt.label}</p>
+                        <p className="text-[9px] text-ink-muted truncate">{opt.desc}</p>
+                      </div>
+                      {isActive && <Check className="h-3 w-3 shrink-0 text-brand-400" />}
+                    </button>
+                  );
+                })}
+                <p className="mt-1 text-[9px] text-ink-muted/60 text-center flex items-center justify-center gap-1">
+                  <AlertTriangle className="h-2.5 w-2.5" />
+                  Override affects which optimizations are safe to apply
+                </p>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.div>
     </motion.div>
   );
 }

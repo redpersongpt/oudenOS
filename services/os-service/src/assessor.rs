@@ -71,8 +71,13 @@ async fn assess_windows() -> anyhow::Result<serde_json::Value> {
         "vm_detection",
         "$board = (Get-CimInstance Win32_BaseBoard).Manufacturer; \
          $model = (Get-CimInstance Win32_ComputerSystem).Model; \
-         @{ manufacturer = \"$board\"; model = \"$model\"; \
-            isVM = ($model -match 'Virtual|VMware|VirtualBox|Hyper-V|QEMU|KVM') } | ConvertTo-Json",
+         $manufacturer = (Get-CimInstance Win32_ComputerSystem).Manufacturer; \
+         $biosVendor = (Get-CimInstance Win32_BIOS).Manufacturer; \
+         $vmPatterns = 'Virtual|VMware|VirtualBox|Hyper-V|QEMU|KVM|Parallels|Xen|Bhyve|UTM|Apple Virtualization|innotek'; \
+         $mfgPatterns = 'Microsoft Corporation|VMware|innotek GmbH|Parallels|QEMU|Xen|Amazon EC2|Google'; \
+         $isVM = ($model -match $vmPatterns) -or ($manufacturer -match $mfgPatterns) -or ($model -match 'Standard PC') -or ($biosVendor -match $vmPatterns); \
+         @{ manufacturer = \"$board\"; model = \"$model\"; systemMfg = \"$manufacturer\"; \
+            biosVendor = \"$biosVendor\"; isVM = [bool]$isVM } | ConvertTo-Json",
     )?;
 
     let hardware = run_ps_json(
@@ -130,6 +135,25 @@ async fn assess_simulated() -> anyhow::Result<serde_json::Value> {
 
     let now = chrono::Utc::now().to_rfc3339();
 
+    let vm_data = if std::env::var("REDCORE_SIMULATE_VM").is_ok() {
+        tracing::info!("[simulated] REDCORE_SIMULATE_VM set — reporting as virtual machine");
+        serde_json::json!({
+            "manufacturer": "QEMU",
+            "model": "Simulated Virtual Machine",
+            "systemMfg": "QEMU",
+            "biosVendor": "QEMU",
+            "isVM": true
+        })
+    } else {
+        serde_json::json!({
+            "manufacturer": "ASUSTeK COMPUTER INC.",
+            "model": "ROG STRIX B550-F GAMING",
+            "systemMfg": "ASUSTeK COMPUTER INC.",
+            "biosVendor": "American Megatrends Inc.",
+            "isVM": false
+        })
+    };
+
     Ok(serde_json::json!({
         "windows": {
             "Caption": "Microsoft Windows 11 Pro",
@@ -180,11 +204,7 @@ async fn assess_simulated() -> anyhow::Result<serde_json::Value> {
             "smbServer": "Running",
             "groupPolicyClient": "Running"
         },
-        "vm": {
-            "manufacturer": "ASUSTeK COMPUTER INC.",
-            "model": "ROG STRIX B550-F GAMING",
-            "isVM": false
-        },
+        "vm": vm_data,
         "hardware": {
             "cpu": {
                 "Name": "AMD Ryzen 7 5800X 8-Core Processor",

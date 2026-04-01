@@ -14,6 +14,100 @@ import { getActionRationale } from "@/lib/expert-rationale";
 import { resolveEffectivePersonalization } from "@/lib/personalization-resolution";
 import { buildExecutionJournalContext } from "@/lib/package-journal";
 
+// ─── Spinning quotes — personality while you wait ─────────────────────────────
+
+const SPINNING_QUOTES = [
+  // ── Windows roasts ──
+  "petting windows gently...",
+  "convincing Cortana to retire...",
+  "teaching Windows what \"no\" means...",
+  "removing apps you never asked for...",
+  "telling Edge it's not the default...",
+  "Windows Update can't hurt you here...",
+  "deleting Candy Crush for the 47th time...",
+  "who needs Bing anyway?",
+  "making Bill Gates slightly disappointed...",
+  "solitaire had a good run lmfao...",
+  "removing BloatPilot\u2122...",
+  "remember when PCs just... worked?",
+  "one does not simply debloat Windows...",
+  "fun fact: Windows has 200+ background services...",
+  "turning off things Microsoft turned on...",
+  "Windows is basically an ad platform now...",
+  "how did 45GB become the minimum OS size...",
+  "Cortana says goodbye... finally...",
+  "uninstalling the weather widget nobody asked for...",
+  "telling OneDrive to go drive itself...",
+  "Dear Microsoft: no, I don't want to try Edge...",
+  "removing the 17th Bing integration...",
+  "Xbox Game Bar: thanks but no thanks...",
+  "disabling the \"helpful\" tips that help nobody...",
+  "Windows 11 start menu: less is more, right?",
+  "telling SmartScreen you're smart enough...",
+  "Microsoft Rewards? more like Microsoft Tax...",
+  "removing the widget panel of doom...",
+  "no Clippy, I don't need help...",
+
+  // ── Funny tech ──
+  "tweaking your package ( \u0361\u00b0 \u035c\u0296 \u0361\u00b0)",
+  "optimizing bits and bytes...",
+  "making your RAM feel appreciated...",
+  "whispering sweet nothings to your CPU...",
+  "your SSD just sighed with relief...",
+  "the registry is trembling...",
+  "your RAM called, it wants its memory back...",
+  "teaching your CPU to skip leg day...",
+  "defragmenting your soul...",
+  "your GPU just winked at us...",
+  "negotiating with the kernel...",
+  "asking the BIOS nicely...",
+  "recalibrating the flux capacitor...",
+  "feeding your CPU some red bull...",
+  "telling your cores to wake up...",
+  "your disk I/O just hit a new PR...",
+  "compiling happiness.exe...",
+  "sudo make me a sandwich...",
+  "chmod 777 /your/freedom...",
+  "rm -rf /bloat...",
+  "git commit -m \"bye bloat\"...",
+
+  // ── Personality ──
+  "im poor donate plz \ud83d\ude4f",
+  "this is what freedom feels like...",
+  "every byte counts when you're debloating...",
+  "removing digital cholesterol...",
+  "reject bloat, return to performance...",
+  "your PC is about to feel 10 years younger...",
+  "making Task Manager proud...",
+  "unfriending Microsoft telemetry...",
+  "sending Clippy into retirement...",
+  "removing digital barnacles...",
+  "if you're reading this, you're patient...",
+  "you can listen to Kanye's new album while waiting...",
+  "grab a coffee, we're cooking...",
+  "trust the process...",
+  "this PC is going to be FAST...",
+  "almost as satisfying as peeling screen protectors...",
+  "your future self will thank you...",
+  "doing what Microsoft should've done...",
+  "free your PC, free your mind...",
+  "this is cheaper than a new PC...",
+  "less bloat = less heat = less noise...",
+  "your fans are about to get quieter...",
+  "saving the planet one disabled service at a time...",
+  "you're basically a hacker now...",
+  "your PC after this: *chef's kiss*...",
+  "loading... just kidding, we're actually working...",
+  "did you know: a fresh Windows install uses 4GB RAM idle?",
+  "after this: probably 1.8GB idle RAM...",
+  "we're not deleting System32, we promise...",
+  "the FPS gods smile upon you...",
+  "debloating your load ( \u0361\u00b0 \u035c\u0296 \u0361\u00b0)",
+  "meanwhile, Edge is crying in the corner...",
+  "Satya Nadella left the chat...",
+  "plot twist: Windows was the malware all along...",
+];
+
 // ─── Types ──────────────────────────────────────────────────────────────────
 
 interface ExecutableAction {
@@ -79,6 +173,41 @@ function TimelineItem({ action }: { action: CompletedAction }) {
         </span>
       )}
     </motion.div>
+  );
+}
+
+// ─── Spinning Quote ──────────────────────────────────────────────────────────
+
+function SpinningQuote({ isActive }: { isActive: boolean }) {
+  const [idx, setIdx] = useState(() => Math.floor(Math.random() * SPINNING_QUOTES.length));
+
+  useEffect(() => {
+    if (!isActive) return;
+    const interval = setInterval(() => {
+      setIdx((prev) => {
+        let next: number;
+        do { next = Math.floor(Math.random() * SPINNING_QUOTES.length); } while (next === prev && SPINNING_QUOTES.length > 1);
+        return next;
+      });
+    }, 4000);
+    return () => clearInterval(interval);
+  }, [isActive]);
+
+  if (!isActive) return null;
+
+  return (
+    <AnimatePresence mode="wait">
+      <motion.p
+        key={idx}
+        initial={{ opacity: 0, y: 6 }}
+        animate={{ opacity: 0.5, y: 0 }}
+        exit={{ opacity: 0, y: -6 }}
+        transition={{ duration: 0.3, ease: [0.0, 0.0, 0.2, 1.0] }}
+        className="mt-1 text-[10px] italic text-ink-muted select-none"
+      >
+        {SPINNING_QUOTES[idx]}
+      </motion.p>
+    </AnimatePresence>
   );
 }
 
@@ -230,7 +359,7 @@ export function ExecutionStep() {
         } else if (demoMode) {
           // Explicit demo mode only — never fake success in the real runtime.
           await new Promise<void>((resolve) => {
-            timerRef.current = setTimeout(resolve, 180 + Math.random() * 140);
+            timerRef.current = setTimeout(resolve, 80 + Math.random() * 120);
           });
           status = "applied";
         } else {
@@ -417,7 +546,7 @@ export function ExecutionStep() {
                 }
               } else if (demoMode) {
                 await new Promise<void>((resolve) => {
-                  timerRef.current = setTimeout(resolve, 180 + Math.random() * 140);
+                  timerRef.current = setTimeout(resolve, 80 + Math.random() * 120);
                 });
                 status = "applied";
               } else {
@@ -600,6 +729,7 @@ export function ExecutionStep() {
       <div className="flex flex-col items-center gap-1 text-center">
         <h2 className="text-lg font-semibold text-ink">Applying Transformations</h2>
         <p className="text-xs text-ink-secondary">Do not shut down your computer</p>
+        <SpinningQuote isActive={completed.length < totalActions} />
       </div>
 
       {/* Current action card */}
@@ -646,10 +776,15 @@ export function ExecutionStep() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ type: "spring", stiffness: 340, damping: 16 }}
-              className="flex items-center justify-center gap-3 rounded-xl border border-success-500/25 bg-success-500/[0.06] px-5 py-3.5"
+              className="flex flex-col items-center justify-center gap-1 rounded-xl border border-success-500/25 bg-success-500/[0.06] px-5 py-3.5"
             >
-              <Check className="h-4 w-4 text-success-400" />
-              <span className="text-sm font-medium text-success-300">All actions complete</span>
+              <div className="flex items-center gap-3">
+                <Check className="h-4 w-4 text-success-400" />
+                <span className="text-sm font-medium text-success-300">All actions complete</span>
+              </div>
+              <span className="text-[10px] text-success-400/40 italic">
+                {failCount === 0 ? "debloated your load ( \u0361\u00b0 \u035c\u0296 \u0361\u00b0)" : "mostly debloated your load \ud83d\ude05"}
+              </span>
             </motion.div>
           ) : (
             <div className="h-[50px]" />

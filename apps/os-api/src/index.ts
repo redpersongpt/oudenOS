@@ -3,6 +3,7 @@ import cors from '@fastify/cors';
 import helmet from '@fastify/helmet';
 import { closeDb } from './db/index.js';
 import adminRoutes from './routes/admin.js';
+import authRoutes from './routes/auth.js';
 import licenseRoutes from './routes/license.js';
 import updateRoutes from './routes/updates.js';
 
@@ -72,6 +73,7 @@ app.get('/health', async (_request, reply) => {
 await app.register(
   async function v1Routes(v1) {
     await v1.register(adminRoutes, { prefix: '/admin' });
+    await v1.register(authRoutes, { prefix: '/auth' });
     await v1.register(licenseRoutes, { prefix: '/license' });
     await v1.register(updateRoutes, { prefix: '/updates' });
   },

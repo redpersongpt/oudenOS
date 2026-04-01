@@ -117,6 +117,51 @@ const RATIONALE: Record<string, ActionRationale> = {
   // Security
   "security.disable-delivery-optimization": { why: "Stops Windows from using your internet to upload updates to other people's PCs." },
   "security.disable-update-asap": { why: "Stops Windows from opting you into early preview updates that may be less stable." },
+
+  // PC-Tuning derived optimizations
+  "perf.disable-mouse-acceleration": { why: "Removes pointer acceleration for 1:1 mouse input. MouseSpeed=0 gives you raw sensor movement." },
+  "perf.disable-mpos": { why: "Disables Multi-Plane Overlays (OverlayTestMode=5). Fixes frame pacing issues on certain GPU/monitor combos." },
+  "perf.disable-last-access-time": { why: "Stops NTFS from writing timestamps on every file read. Reduces disk I/O." },
+  "perf.disable-device-power-saving": { why: "Prevents USB, NIC, and PCI devices from entering low-power states that add wake latency." },
+  "network.disable-nagle-algorithm": { why: "Disables TCP packet batching (TcpAckFrequency=1, TCPNoDelay=1). Reduces network round-trip time for games." },
+  "perf.disable-memory-compression": { why: "Runs Disable-MMAgent. Saves CPU overhead on 16GB+ systems where compression isn't needed." },
+  "perf.fix-ndu-memory-leak": { why: "Sets ndu.sys Start=4. Fixes the known Windows network data usage driver memory leak." },
+  "gpu.disable-mpo-dwm": { why: "Sets DWM OverlayTestMode=5. Forces classic desktop composition for more consistent frame pacing." },
+  "cpu.aggressive-boost": { why: "Keeps CPU at maximum turbo frequency under load. Trades power/heat for maximum performance." },
+  "cpu.min-processor-state-100": { why: "Sets MinProcessorState to 100%. CPU stays at full speed — no downclocking between frames." },
+
+  // PC-Tuning derived — newly added playbook actions
+  "perf.disable-gamebar-presence": { why: "Kills the GameBarPresenceWriter background process. It runs constantly but isn't needed for Game Mode." },
+  "perf.legacy-flip-presentation": { why: "Forces Hardware: Legacy Flip (true exclusive fullscreen). Bypasses DWM composition for lower input latency." },
+  "perf.disable-auto-maintenance": { why: "Stops Windows from running defrag, scans, and cleanup at random times. You maintain manually." },
+  "perf.disable-auto-sign-on": { why: "Prevents auto-login after restarts. Security improvement, no performance cost." },
+  "perf.disable-store-auto-updates": { why: "Stops Microsoft Store from downloading app updates in the background." },
+  "privacy.powershell-telemetry-optout": { why: "Sets POWERSHELL_TELEMETRY_OPTOUT=1. PowerShell sends telemetry by default — this stops it." },
+  "privacy.disable-typing-insights": { why: "Stops Windows from analyzing your typing patterns. InsightsEnabled=0." },
+  "privacy.disable-msrt": { why: "Prevents the Malicious Software Removal Tool from being delivered via Windows Update." },
+  "network.qos-dscp-fix": { why: "Fixes QoS DSCP packet tagging on multi-NIC systems. Ensures game traffic gets priority marking." },
+  "power.disable-device-power-saving": {
+    why: "Disables power saving on USB, NIC, and PCI devices. Eliminates wake-up latency.",
+    profileNote: {
+      office_laptop: "Not applied — device power saving is important for battery life.",
+    },
+  },
+  "security.full-defender-disable": {
+    why: "Nuclear option: kills all 9 Defender services + SmartScreen. Frees ~500MB RAM and removes MsMpEng.exe CPU overhead entirely.",
+    profileNote: {
+      work_pc: "NEVER disable on work PCs — enterprise compliance requires active AV.",
+    },
+    antiCheatNote: "Some anti-cheat systems (FACEIT, Vanguard) may require Defender to be running.",
+  },
+  "security.disable-vulnerable-driver-blocklist": {
+    why: "Allows blocked drivers to load. Required for RW-Everything (XHCI IMOD) and MSI Utility tools.",
+  },
+  "security.disable-cpu-mitigations": {
+    why: "Disables Spectre/Meltdown mitigations by renaming microcode DLL + registry. 2-15% perf gain on CPU-bound workloads.",
+    profileNote: {
+      work_pc: "NEVER disable on systems handling sensitive data.",
+    },
+  },
 };
 
 export function getActionRationale(actionId: string, profile?: string): { why: string; profileWarning?: string; antiCheatNote?: string } {

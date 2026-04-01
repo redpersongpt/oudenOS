@@ -183,7 +183,7 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
       .where(eq(subscriptions.userId, id))
       .orderBy(desc(subscriptions.updatedAt));
 
-    const sub = userSubs.find((s) => s.product === "tuning") ?? userSubs[0] ?? null;
+    const sub = userSubs.find((s) => s.product === "tuning") ?? null;
 
     const machines = await db
       .select({
@@ -423,7 +423,7 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
     const activeSubs = await db
       .select({ tier: subscriptions.tier, cnt: count() })
       .from(subscriptions)
-      .where(eq(subscriptions.status, "active"))
+      .where(and(eq(subscriptions.status, "active"), eq(subscriptions.product, "tuning")))
       .groupBy(subscriptions.tier);
 
     const subMap = Object.fromEntries(activeSubs.map((s) => [s.tier, Number(s.cnt)]));
@@ -436,7 +436,7 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
     const [revenueThisMonth] = await db
       .select({ total: sql<number>`coalesce(sum(amount_cents), 0)` })
       .from(paymentHistory)
-      .where(and(gte(paymentHistory.createdAt, monthStart), eq(paymentHistory.status, "succeeded")));
+      .where(and(gte(paymentHistory.createdAt, monthStart), eq(paymentHistory.status, "succeeded"), eq(paymentHistory.product, "tuning")));
 
     const [revenueLastMonth] = await db
       .select({ total: sql<number>`coalesce(sum(amount_cents), 0)` })
@@ -446,6 +446,7 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
           gte(paymentHistory.createdAt, lastMonthStart),
           sql`created_at <= ${lastMonthEnd}`,
           eq(paymentHistory.status, "succeeded"),
+          eq(paymentHistory.product, "tuning"),
         ),
       );
 
@@ -455,6 +456,7 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
       .where(
         and(
           gte(subscriptions.createdAt, monthStart),
+          eq(subscriptions.product, "tuning"),
           sql`tier != 'free'`,
         ),
       );
@@ -486,15 +488,15 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
     const [dau] = await db
       .select({ cnt: sql<number>`count(distinct session_id)` })
       .from(telemetryEvents)
-      .where(gte(telemetryEvents.createdAt, day1ago));
+      .where(and(gte(telemetryEvents.createdAt, day1ago), eq(telemetryEvents.product, "tuning")));
     const [wau] = await db
       .select({ cnt: sql<number>`count(distinct session_id)` })
       .from(telemetryEvents)
-      .where(gte(telemetryEvents.createdAt, day7ago));
+      .where(and(gte(telemetryEvents.createdAt, day7ago), eq(telemetryEvents.product, "tuning")));
     const [mau] = await db
       .select({ cnt: sql<number>`count(distinct session_id)` })
       .from(telemetryEvents)
-      .where(gte(telemetryEvents.createdAt, day30ago));
+      .where(and(gte(telemetryEvents.createdAt, day30ago), eq(telemetryEvents.product, "tuning")));
 
     return reply.send({
       dau: Number(dau?.cnt ?? 0),

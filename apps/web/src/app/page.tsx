@@ -2,6 +2,7 @@ import { Navigation } from "@/components/brand/Navigation";
 import { HeroSection } from "@/components/sections/HeroSection";
 import { WizardShowcase } from "@/components/sections/WizardShowcase";
 import { EcosystemSection } from "@/components/sections/EcosystemSection";
+import { BenchmarkSection } from "@/components/sections/BenchmarkSection";
 import { HowItWorksSection } from "@/components/sections/HowItWorksSection";
 import { PricingSection } from "@/components/sections/PricingSection";
 import { LearnMoreSection } from "@/components/sections/LearnMoreSection";
@@ -23,6 +24,11 @@ export default function Home() {
           note="Every step explained, nothing hidden"
         />
         <WizardShowcase />
+        <SectionSeparator
+          label="The difference"
+          note="Real numbers, tested on 10+ machines"
+        />
+        <BenchmarkSection />
         <SectionSeparator
           label="System layers"
           note="From Windows foundation to tuning stack"

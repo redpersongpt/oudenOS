@@ -287,12 +287,26 @@ export function createApbxBundle(options: CreateApbxBundleOptions): {
   fs.writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
 
   fs.mkdirSync(path.dirname(options.outputPath), { recursive: true });
-  const zipResult = spawnSync("zip", ["-qr", options.outputPath, packageStem], {
-    cwd: tempRoot,
-    stdio: "inherit",
-  });
-  if (zipResult.status !== 0) {
-    throw new Error("zip failed while building APBX package");
+
+  if (process.platform === "win32") {
+    // Windows: use PowerShell Compress-Archive
+    const psScript = `Compress-Archive -Path "${path.join(tempRoot, packageStem)}" -DestinationPath "${options.outputPath}" -Force`;
+    const psResult = spawnSync("powershell.exe", ["-NoProfile", "-Command", psScript], {
+      cwd: tempRoot,
+      stdio: "pipe",
+    });
+    if (psResult.status !== 0) {
+      const stderr = psResult.stderr?.toString().trim() ?? "";
+      throw new Error(`APBX package compression failed: ${stderr || "PowerShell Compress-Archive error"}`);
+    }
+  } else {
+    const zipResult = spawnSync("zip", ["-qr", options.outputPath, packageStem], {
+      cwd: tempRoot,
+      stdio: "pipe",
+    });
+    if (zipResult.status !== 0) {
+      throw new Error("zip failed while building APBX package");
+    }
   }
 
   const sha256 = hashFile(options.outputPath);
