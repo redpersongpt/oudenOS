@@ -1,4 +1,4 @@
-// ─── SystemAnalysisCard ──────────────────────────────────────────────────────
+// SystemAnalysisCard
 // Displays one analyzer's result with an animated gauge and status badges.
 
 import { motion } from "framer-motion";
@@ -11,7 +11,7 @@ import type {
   SecurityAnalysis,
 } from "../types.js";
 
-// ─── Animated Gauge ───────────────────────────────────────────────────────────
+// Animated Gauge
 
 interface GaugeProps {
   value: number; // 0-100
@@ -56,7 +56,7 @@ function CircularGauge({ value, color = "#E8254B", size = 48 }: GaugeProps) {
   );
 }
 
-// ─── Score color helper ────────────────────────────────────────────────────────
+// Score color helper
 
 function scoreColor(score: number): string {
   if (score >= 75) return "#4ade80";
@@ -70,7 +70,7 @@ function scoreBadge(score: number): { label: string; className: string } {
   return { label: "Needs work", className: "bg-red-500/10 text-red-400 border-red-500/20" };
 }
 
-// ─── Shared Row ───────────────────────────────────────────────────────────────
+// Shared Row
 
 function DetailRow({ label, value, highlight }: { label: string; value: string; highlight?: boolean }) {
   return (
@@ -92,7 +92,7 @@ function NoteItem({ note }: { note: string }) {
   );
 }
 
-// ─── Hardware Card ────────────────────────────────────────────────────────────
+// Hardware Card
 
 interface HardwareAnalysisCardProps {
   analysis: HardwareAnalysis;
@@ -162,7 +162,7 @@ export function HardwareAnalysisCard({ analysis, delay = 0 }: HardwareAnalysisCa
   );
 }
 
-// ─── Software Card ────────────────────────────────────────────────────────────
+// Software Card
 
 export function SoftwareAnalysisCard({ analysis, delay = 0 }: { analysis: SoftwareAnalysis; delay?: number }) {
   return (
@@ -201,7 +201,7 @@ export function SoftwareAnalysisCard({ analysis, delay = 0 }: { analysis: Softwa
   );
 }
 
-// ─── Workload Card ────────────────────────────────────────────────────────────
+// Workload Card
 
 const WORKLOAD_COLORS: Record<string, string> = {
   gaming: "text-brand-400",
@@ -249,7 +249,7 @@ export function WorkloadAnalysisCard({ analysis, delay = 0 }: { analysis: Worklo
   );
 }
 
-// ─── Thermal Card ─────────────────────────────────────────────────────────────
+// Thermal Card
 
 const THERMAL_COLORS: Record<string, string> = {
   cool: "text-green-400",
@@ -309,7 +309,7 @@ export function ThermalAnalysisCard({ analysis, delay = 0 }: { analysis: Thermal
   );
 }
 
-// ─── Network Card ─────────────────────────────────────────────────────────────
+// Network Card
 
 export function NetworkAnalysisCard({ analysis, delay = 0 }: { analysis: NetworkAnalysis; delay?: number }) {
   const qualityColors: Record<string, string> = {
@@ -356,7 +356,7 @@ export function NetworkAnalysisCard({ analysis, delay = 0 }: { analysis: Network
   );
 }
 
-// ─── Security Card ────────────────────────────────────────────────────────────
+// Security Card
 
 export function SecurityAnalysisCard({ analysis, delay = 0 }: { analysis: SecurityAnalysis; delay?: number }) {
   const postureColors: Record<string, string> = {

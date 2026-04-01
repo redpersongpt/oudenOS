@@ -199,7 +199,7 @@ export function createApbxBundle(options: CreateApbxBundleOptions): {
     fs.writeFileSync(path.join(stateDir, "execution-journal.json"), `${JSON.stringify(executionJournal ?? null, null, 2)}\n`);
     fs.writeFileSync(path.join(stateDir, "service-journal-state.json"), `${JSON.stringify(options.state.serviceJournalState ?? null, null, 2)}\n`);
 
-    // ── DB-backed execution ledger truth (authoritative when present) ──
+    // DB-backed execution ledger truth (authoritative when present)
     if (options.state.ledgerState) {
       fs.writeFileSync(path.join(stateDir, "execution-ledger.json"), `${JSON.stringify(options.state.ledgerState, null, 2)}\n`);
     }

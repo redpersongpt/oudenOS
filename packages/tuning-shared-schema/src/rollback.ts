@@ -1,4 +1,4 @@
-// ─── Rollback & Restore Schemas ─────────────────────────────────────────────
+// Rollback & Restore Schemas
 
 import type { ActionChange } from "./tuning.js";
 

@@ -1,4 +1,4 @@
-// ─── Unified Database Connection ─────────────────────────────────────────────
+// Unified Database Connection
 // Single PostgreSQL instance shared across web, tuning-api, and os-api.
 
 import { drizzle } from "drizzle-orm/postgres-js";

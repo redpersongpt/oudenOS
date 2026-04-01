@@ -1,4 +1,4 @@
-// ─── Typography System ──────────────────────────────────────────────────────
+// Typography System
 // Plus Jakarta Sans for UI (unified with eco-site). JetBrains Mono for code/metrics.
 
 export const fontFamily = {

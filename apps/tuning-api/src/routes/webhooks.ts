@@ -1,4 +1,4 @@
-// ─── Stripe Webhook Handler ───────────────────────────────────────────────────
+// Stripe Webhook Handler
 
 import type { FastifyPluginAsync } from "fastify";
 import Stripe from "stripe";

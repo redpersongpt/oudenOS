@@ -15,7 +15,7 @@ import {
   easing,
 } from "@/lib/motion";
 
-// ─── Types ───────────────────────────────────────────────────────────────────
+// Types
 
 interface WizardStep {
   label: string;
@@ -33,7 +33,7 @@ interface PhilosophyItem {
   description: string;
 }
 
-// ─── Data ────────────────────────────────────────────────────────────────────
+// Data
 
 const steps: WizardStep[] = [
   { label: "SCAN", status: "completed" },
@@ -57,7 +57,7 @@ const philosophy: PhilosophyItem[] = [
   { title: "Rollback Ready", description: "One click to restore." },
 ];
 
-// ─── Risk badge styles ──────────────────────────────────────────────────────
+// Risk badge styles
 
 const riskConfig: Record<ActionItem["risk"], { text: string; bg: string }> = {
   SAFE: { text: "text-brand-400", bg: "bg-brand-500/10" },
@@ -65,7 +65,7 @@ const riskConfig: Record<ActionItem["risk"], { text: string; bg: string }> = {
   MEDIUM: { text: "text-brand-400", bg: "bg-brand-500/10" },
 };
 
-// ─── Sub-components ─────────────────────────────────────────────────────────
+// Sub-components
 
 function StepCircle({ step, index }: { step: WizardStep; index: number }) {
   const isCompleted = step.status === "completed";
@@ -249,7 +249,7 @@ function WizardWindow() {
   );
 }
 
-// ─── Main Component ─────────────────────────────────────────────────────────
+// Main Component
 
 export function WizardSection() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -265,7 +265,7 @@ export function WizardSection() {
       <div className="section-divide" aria-hidden="true" />
 
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
-        {/* ─── Header ─── */}
+        {/* Header */}
         <motion.div
           variants={staggerContainer(0.1, 0)}
           initial="hidden"
@@ -282,12 +282,12 @@ export function WizardSection() {
           </motion.h2>
         </motion.div>
 
-        {/* ─── Wizard Mock UI ─── */}
+        {/* Wizard Mock UI */}
         <div className="mt-16">
           <WizardWindow />
         </div>
 
-        {/* ─── Philosophy Row ─── */}
+        {/* Philosophy Row */}
         <motion.div
           variants={staggerContainer(0.1, 0.4)}
           initial="hidden"

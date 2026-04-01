@@ -1,4 +1,4 @@
-// ─── Playbook Review Step ────────────────────────────────────────────────────
+// Playbook Review Step
 // Optimization manifest review. Shows the resolved playbook plan grouped by
 // phase with action statuses. Premium installer-grade density.
 
@@ -13,7 +13,7 @@ import { applyDecisionOverrides } from "@/lib/playbook-decision-overrides";
 import { getActionRationale, PHASE_RATIONALE, getBlockedExplanation } from "@/lib/expert-rationale";
 import { buildMockResolvedPlaybook } from "@/lib/mock-playbook";
 
-// ─── Status badge ────────────────────────────────────────────────────────────
+// Status badge
 
 function StatusBadge({ status }: { status: string }) {
   const styles: Record<string, string> = {
@@ -37,7 +37,7 @@ function StatusBadge({ status }: { status: string }) {
   );
 }
 
-// ─── Phase section ───────────────────────────────────────────────────────────
+// Phase section
 
 function PhaseSection({ phase, defaultOpen, profile }: { phase: PlaybookPhase; defaultOpen: boolean; profile: string }) {
   const [open, setOpen] = useState(defaultOpen);
@@ -150,7 +150,7 @@ function PhaseSection({ phase, defaultOpen, profile }: { phase: PlaybookPhase; d
   );
 }
 
-// ─── Skeleton loader ──────────────────────────────────────────────────────────
+// Skeleton loader
 
 function PlaybookSkeleton() {
   return (
@@ -167,7 +167,7 @@ function PlaybookSkeleton() {
   );
 }
 
-// ─── Component ───────────────────────────────────────────────────────────────
+// Component
 
 export function PlaybookReviewStep() {
   const { detectedProfile, playbookPreset, demoMode, setResolvedPlaybook, setStepReady } = useWizardStore();

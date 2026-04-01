@@ -25,7 +25,7 @@ import { Button } from "@/components/ui/Button";
 import { useDeviceStore } from "@/stores/device-store";
 import { serviceCall } from "@/lib/api";
 
-// ─── Health score derivation ─────────────────────────────────────────────────
+// Health score derivation
 
 function deriveHealthScore(
   profile: NonNullable<ReturnType<typeof useDeviceStore.getState>["profile"]>,
@@ -58,7 +58,7 @@ function healthArcColor(score: number): string {
   return "#E8254B";
 }
 
-// ─── Health Gauge SVG ─────────────────────────────────────────────────────────
+// Health Gauge SVG
 
 const ARC_LENGTH = 235.62;
 
@@ -128,7 +128,7 @@ function HealthGauge({ score }: HealthGaugeProps) {
   );
 }
 
-// ─── Opportunity card ─────────────────────────────────────────────────────────
+// Opportunity card
 
 interface OpportunityCardProps {
   icon: ElementType;
@@ -184,7 +184,7 @@ function OpportunityCard({
   );
 }
 
-// ─── Heat bar ─────────────────────────────────────────────────────────────────
+// Heat bar
 
 interface HeatBarProps {
   value: number | null;
@@ -224,7 +224,7 @@ function HeatBar({ value, max, label }: HeatBarProps) {
   );
 }
 
-// ─── Page ─────────────────────────────────────────────────────────────────────
+// Page
 
 export function DashboardPage() {
   const navigate = useNavigate();
@@ -324,7 +324,7 @@ export function DashboardPage() {
       animate="visible"
       className="space-y-5"
     >
-      {/* ── Machine Identity Hero ── */}
+      {/* Machine Identity Hero */}
       <motion.div variants={staggerChild}>
         <div className="flex items-center justify-between">
           <div>
@@ -350,7 +350,7 @@ export function DashboardPage() {
         </div>
       </motion.div>
 
-      {/* ── Row 1: Health Gauge + Quick Metrics ── */}
+      {/* Row 1: Health Gauge + Quick Metrics */}
       <motion.div
         variants={staggerChild}
         className="grid grid-cols-4 gap-4"
@@ -452,7 +452,7 @@ export function DashboardPage() {
         />
       </motion.div>
 
-      {/* ── Row 2: Opportunities (2-col) + System/Thermal (1-col) ── */}
+      {/* Row 2: Opportunities (2-col) + System/Thermal (1-col) */}
       <div className="grid grid-cols-3 gap-4">
         {/* Optimization Opportunities */}
         <motion.div variants={staggerChild} className="col-span-2">
@@ -638,7 +638,7 @@ export function DashboardPage() {
         </motion.div>
       </div>
 
-      {/* ── Row 3: Activity Timeline ── */}
+      {/* Row 3: Activity Timeline */}
       <motion.div variants={staggerChild}>
         <Card>
           <CardHeader>

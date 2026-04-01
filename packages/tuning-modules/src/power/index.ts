@@ -1,4 +1,4 @@
-// ─── Power Tuning Module ────────────────────────────────────────────────────
+// Power Tuning Module
 // Derived from the redcore internal power-management notes.
 
 import type { TuningActionDefinition } from "../types.js";

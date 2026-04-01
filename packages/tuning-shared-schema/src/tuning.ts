@@ -1,4 +1,4 @@
-// ─── Tuning Action & Plan Schemas ───────────────────────────────────────────
+// Tuning Action & Plan Schemas
 // The core contract for the adaptive tuning engine.
 
 

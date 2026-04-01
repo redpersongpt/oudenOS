@@ -1,4 +1,4 @@
-// ─── Thermal Analyzer ────────────────────────────────────────────────────────
+// Thermal Analyzer
 // Evaluates CPU/GPU temperatures, throttling state, and thermal risk.
 
 import type { DeviceProfile } from "@redcore/shared-schema/device";

@@ -4,7 +4,7 @@ import { Check, Monitor, Package, Rocket, Server, Clock, Briefcase, Box } from "
 import { useWizardStore } from "@/stores/wizard-store";
 import type { DetectedProfile } from "@/stores/wizard-store";
 
-// ─── Scan phase quotes — personality during assessment ──────────────────────
+// Scan phase quotes — personality during assessment
 
 const SCAN_QUOTES = [
   "reading your PC's diary...",

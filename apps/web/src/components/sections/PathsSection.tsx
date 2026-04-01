@@ -18,7 +18,7 @@ import {
   easing,
 } from "@/lib/motion";
 
-// ─── Types ───────────────────────────────────────────────────────────────────
+// Types
 
 interface PathItem {
   label: string;
@@ -34,7 +34,7 @@ interface PathCard {
   items: PathItem[];
 }
 
-// ─── Data ────────────────────────────────────────────────────────────────────
+// Data
 
 const pathCards: PathCard[] = [
   {
@@ -84,7 +84,7 @@ const pathCards: PathCard[] = [
   },
 ];
 
-// ─── Stagger variant for cards ──────────────────────────────────────────────
+// Stagger variant for cards
 
 const cardStagger = {
   hidden: { opacity: 0, y: 32 },
@@ -99,7 +99,7 @@ const cardStagger = {
   }),
 };
 
-// ─── Sub-component ──────────────────────────────────────────────────────────
+// Sub-component
 
 function PathCardComponent({ card, index }: { card: PathCard; index: number }) {
   const Icon = card.icon;
@@ -153,7 +153,7 @@ function PathCardComponent({ card, index }: { card: PathCard; index: number }) {
   );
 }
 
-// ─── Main Component ─────────────────────────────────────────────────────────
+// Main Component
 
 export function PathsSection() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -169,7 +169,7 @@ export function PathsSection() {
       <div className="section-divide" aria-hidden="true" />
 
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
-        {/* ─── Header ─── */}
+        {/* Header */}
         <motion.div
           variants={staggerContainer(0.1, 0)}
           initial="hidden"
@@ -186,14 +186,14 @@ export function PathsSection() {
           </motion.h2>
         </motion.div>
 
-        {/* ─── Path Cards ─── */}
+        {/* Path Cards */}
         <div className="mt-16 grid grid-cols-1 lg:grid-cols-3 gap-8">
           {pathCards.map((card, i) => (
             <PathCardComponent key={card.title} card={card} index={i} />
           ))}
         </div>
 
-        {/* ─── Trust Line ─── */}
+        {/* Trust Line */}
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}

@@ -1,4 +1,4 @@
-// ─── Auth State Store ────────────────────────────────────────────────────────
+// Auth State Store
 // Persisted JWT auth store with high-level login/register/logout actions.
 //
 // NOTE on "encrypted" storage: tokens are base64-encoded to protect against
@@ -19,7 +19,7 @@ import type { UserProfile } from "@/lib/cloud-api";
 import { useLicenseStore } from "@/stores/license-store";
 import type { LicenseState } from "@redcore/shared-schema/license";
 
-// ─── Obfuscated storage adapter ───────────────────────────────────────────────
+// Obfuscated storage adapter
 // Wraps localStorage with base64 encode/decode. Not cryptographic — use
 // Electron safeStorage via IPC for real encryption in production.
 
@@ -39,7 +39,7 @@ const obfuscatedStorage = createJSONStorage(() => ({
   removeItem: (key: string) => localStorage.removeItem(key),
 }));
 
-// ─── Types ────────────────────────────────────────────────────────────────────
+// Types
 
 interface AuthState {
   // Persisted data
@@ -81,22 +81,22 @@ function buildLicenseState(user: UserProfile | null): LicenseState | null {
   };
 }
 
-// ─── Store ────────────────────────────────────────────────────────────────────
+// Store
 
 export const useAuthStore = create<AuthState>()(
   persist(
     (set, get) => ({
-      // ── Persisted ──────────────────────────────────────────────────────────
+      // Persisted
       user: null,
       accessToken: null,
       refreshToken: null,
       isAuthenticated: false,
 
-      // ── Ephemeral ──────────────────────────────────────────────────────────
+      // Ephemeral
       loading: false,
       error: null,
 
-      // ── Low-level primitives ───────────────────────────────────────────────
+      // Low-level primitives
 
       setAuth: (user, accessToken, refreshToken) => {
         setApiTokens(accessToken, refreshToken);
@@ -126,7 +126,7 @@ export const useAuthStore = create<AuthState>()(
 
       clearError: () => set({ error: null }),
 
-      // ── High-level actions ─────────────────────────────────────────────────
+      // High-level actions
 
       initialize: () => {
         // Wire API client callbacks for token refresh + auth errors
@@ -232,7 +232,7 @@ export const useAuthStore = create<AuthState>()(
   ),
 );
 
-// ─── App init helper ──────────────────────────────────────────────────────────
+// App init helper
 // Called once in App.tsx useEffect — wires API callbacks to store.
 
 export function initAuthClient() {

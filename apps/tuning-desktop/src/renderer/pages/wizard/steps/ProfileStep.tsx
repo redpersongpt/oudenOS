@@ -1,4 +1,4 @@
-// ─── Profile Step ─────────────────────────────────────────────────────────────
+// Profile Step
 // Reveals the AI-classified machine archetype with emblem, confidence ring,
 // signal breakdown, strategy summary, and any warning notes.
 
@@ -17,7 +17,7 @@ import {
   accentText,
 } from "@/pages/intelligence/components";
 
-// ─── Strategy focus points per archetype ─────────────────────────────────────
+// Strategy focus points per archetype
 // Surfaced as bullet points in the "What we will focus on" section.
 
 const ARCHETYPE_STRATEGY: Record<string, string[]> = {
@@ -65,7 +65,7 @@ const ARCHETYPE_STRATEGY: Record<string, string[]> = {
   ],
 };
 
-// ─── Dark skeleton block ──────────────────────────────────────────────────────
+// Dark skeleton block
 
 function DarkSkeleton({ className = "" }: { className?: string }) {
   return (
@@ -77,7 +77,7 @@ function DarkSkeleton({ className = "" }: { className?: string }) {
   );
 }
 
-// ─── Loading skeleton ─────────────────────────────────────────────────────────
+// Loading skeleton
 
 function ProfileSkeleton() {
   return (
@@ -94,7 +94,7 @@ function ProfileSkeleton() {
   );
 }
 
-// ─── Profile Step ─────────────────────────────────────────────────────────────
+// Profile Step
 
 export function ProfileStep() {
   const classification = useIntelligenceStore((s) => s.classification);

@@ -1,4 +1,4 @@
-// ─── License Client ─────────────────────────────────────────────────────────
+// License Client
 // Client-side license validation: fetch from cloud, validate offline,
 // and maintain a 7-day encrypted grace period cache.
 //
@@ -12,7 +12,7 @@ import * as path from "node:path";
 
 export { FEATURE_GATES } from "@redcore/shared-schema/license";
 
-// ─── Types ────────────────────────────────────────────────────────────────────
+// Types
 
 export interface FetchLicenseOptions {
   apiBaseUrl: string;
@@ -35,7 +35,7 @@ export const GRACE_PERIOD_DAYS = 7;
 const GRACE_DAYS = GRACE_PERIOD_DAYS;
 const REVALIDATE_AFTER_SECS = 86400; // 24 hours
 
-// ─── Public API ───────────────────────────────────────────────────────────────
+// Public API
 
 /**
  * Fetch current license state.
@@ -183,7 +183,7 @@ export function generateDeviceFingerprint(): string {
     .slice(0, 40);
 }
 
-// ─── Cloud validation ─────────────────────────────────────────────────────────
+// Cloud validation
 
 interface CloudLicenseResponse {
   tier: string;
@@ -234,7 +234,7 @@ async function validateRemote(
   }
 }
 
-// ─── Cache helpers ────────────────────────────────────────────────────────────
+// Cache helpers
 
 function deriveCacheKey(deviceFingerprint: string): Buffer {
   // Derive AES-256 key from device fingerprint + app salt

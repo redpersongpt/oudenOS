@@ -1,4 +1,4 @@
-// ─── In-process Rate Limiter ─────────────────────────────────────────────────
+// In-process Rate Limiter
 // Sliding-window rate limit keyed by IP. Good for single-instance dev/small
 // deployments. Replace with Redis-backed store for multi-instance production.
 

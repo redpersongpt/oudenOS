@@ -1,4 +1,4 @@
-// ─── Gaming Optimizations Module ─────────────────────────────────────────────
+// Gaming Optimizations Module
 // Windows Game Mode and gaming-specific OS behavior optimizations.
 
 import type { TuningActionDefinition } from "../types.js";

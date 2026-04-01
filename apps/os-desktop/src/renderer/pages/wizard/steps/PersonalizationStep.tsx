@@ -1,4 +1,4 @@
-// ─── Personalization Step ─────────────────────────────────────────────────────
+// Personalization Step
 // Premium visual personalization: theme toggles with live desktop preview mockup.
 // Compact — fits 820×580 without scrolling.
 
@@ -9,7 +9,7 @@ import type { PersonalizationPreferences } from "@/stores/wizard-store";
 import { useDecisionsStore } from "@/stores/decisions-store";
 import { resolveEffectivePersonalization } from "@/lib/personalization-resolution";
 
-// ─── Toggle card ──────────────────────────────────────────────────────────────
+// Toggle card
 
 interface ToggleCardProps {
   label: string;
@@ -58,7 +58,7 @@ function ToggleCard({ label, description, checked, disabled = false, onChange }:
   );
 }
 
-// ─── Desktop preview mockup ───────────────────────────────────────────────────
+// Desktop preview mockup
 
 function DesktopPreview({ prefs }: { prefs: PersonalizationPreferences }) {
   const wallpaperBg = prefs.darkMode
@@ -206,7 +206,7 @@ function DesktopPreview({ prefs }: { prefs: PersonalizationPreferences }) {
   );
 }
 
-// ─── Profile note ─────────────────────────────────────────────────────────────
+// Profile note
 
 function ProfileNote({
   isWorkPc,
@@ -241,7 +241,7 @@ function ProfileNote({
   return null;
 }
 
-// ─── Component ────────────────────────────────────────────────────────────────
+// Component
 
 export function PersonalizationStep() {
   const { personalization, setPersonalization, detectedProfile } = useWizardStore();

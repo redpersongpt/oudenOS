@@ -1,4 +1,4 @@
-// ─── Profile Classifier ──────────────────────────────────────────────────────
+// Profile Classifier
 // Classifies a system into a primary SystemProfile from analysis results.
 
 import type { SystemAnalysisResult, ProfileClassification, SystemProfile } from "../types.js";
@@ -15,7 +15,7 @@ export function classifyProfile(analysis: SystemAnalysisResult): ProfileClassifi
   };
   const allSignals: string[] = [];
 
-  // ─── VM detection (highest priority) ──────────────────────────────────────
+  // VM detection (highest priority)
   // Hyper-V enabled on bare metal (dev/WSL2) should NOT classify as VM.
   // Only classify as VM when hardware itself reports virtual device class.
   const isVM = hardware.deviceClass === "vm";
@@ -27,7 +27,7 @@ export function classifyProfile(analysis: SystemAnalysisResult): ProfileClassifi
     allSignals.push("Hyper-V enabled (bare-metal host — not classified as VM)");
   }
 
-  // ─── Laptop detection ─────────────────────────────────────────────────────
+  // Laptop detection
   const isLaptop = hardware.hasBattery || hardware.deviceClass === "laptop";
   if (isLaptop) {
     scores.laptop += 0.7;
@@ -40,7 +40,7 @@ export function classifyProfile(analysis: SystemAnalysisResult): ProfileClassifi
     }
   }
 
-  // ─── Budget detection ─────────────────────────────────────────────────────
+  // Budget detection
   const isBudget =
     hardware.cpu.tier === "entry" &&
     (hardware.gpu.tier === "entry" || !hardware.gpu.hasDiscreteGpu) &&
@@ -52,7 +52,7 @@ export function classifyProfile(analysis: SystemAnalysisResult): ProfileClassifi
     allSignals.push("Entry-tier CPU + GPU + limited RAM — budget classification");
   }
 
-  // ─── High-end workstation ─────────────────────────────────────────────────
+  // High-end workstation
   const isHighEnd =
     hardware.cpu.tier === "flagship" &&
     hardware.ram.totalGb >= 32 &&
@@ -67,7 +67,7 @@ export function classifyProfile(analysis: SystemAnalysisResult): ProfileClassifi
     }
   }
 
-  // ─── Gaming desktop ────────────────────────────────────────────────────────
+  // Gaming desktop
   if (!isLaptop && workload.isGamer) {
     scores.gaming += 0.5;
     allSignals.push("Gaming workload signals detected");
@@ -80,7 +80,7 @@ export function classifyProfile(analysis: SystemAnalysisResult): ProfileClassifi
     scores.gaming += 0.05;
   }
 
-  // ─── Work desktop ──────────────────────────────────────────────────────────
+  // Work desktop
   if (workload.isEnterprise) {
     scores.work += 0.6;
     allSignals.push("Enterprise Windows edition detected");
@@ -90,14 +90,14 @@ export function classifyProfile(analysis: SystemAnalysisResult): ProfileClassifi
     allSignals.push("Work-oriented signals: office apps, productivity tools");
   }
 
-  // ─── Thermal context adjustments ─────────────────────────────────────────
+  // Thermal context adjustments
   if (thermal.isThrottling) {
     // Throttling system — conservative profile
     scores.budget += 0.1;
     allSignals.push("Active thermal throttling — conservative tuning recommended");
   }
 
-  // ─── Resolve final classification ─────────────────────────────────────────
+  // Resolve final classification
   const ranked = (Object.entries(scores) as Array<[SystemProfile, number]>)
     .sort(([, a], [, b]) => b - a);
 

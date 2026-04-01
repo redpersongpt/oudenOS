@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-// ─── Types ───────────────────────────────────────────────────────────────────
+// Types
 
 interface TrustBlockProps {
   icon?: ReactNode;
@@ -8,7 +8,7 @@ interface TrustBlockProps {
   description: string;
 }
 
-// ─── Component ───────────────────────────────────────────────────────────────
+// Component
 
 export function TrustBlock({ icon, title, description }: TrustBlockProps) {
   return (

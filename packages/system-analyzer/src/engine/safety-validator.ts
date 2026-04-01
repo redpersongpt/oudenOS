@@ -1,4 +1,4 @@
-// ─── Safety Validator ────────────────────────────────────────────────────────
+// Safety Validator
 // Pre-apply compatibility and safety checks for the recommendation plan.
 
 import type {
@@ -16,7 +16,7 @@ export function validateSafety(
 
   const enabled = recommendations.filter((r) => r.isEnabled);
 
-  // ─── Hard blockers ────────────────────────────────────────────────────────
+  // Hard blockers
 
   // Drive health check before storage ops
   const storageRecs = enabled.filter((r) => r.category === "storage");
@@ -49,7 +49,7 @@ export function validateSafety(
     }
   }
 
-  // ─── Warnings ─────────────────────────────────────────────────────────────
+  // Warnings
 
   // XMP on DDR5 — potential instability
   const xmpRec = enabled.find((r) => r.id === "memory.enable-xmp");

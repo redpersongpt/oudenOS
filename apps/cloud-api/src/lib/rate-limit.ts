@@ -1,4 +1,4 @@
-// ─── In-process Rate Limiter ──────────────────────────────────────────────────
+// In-process Rate Limiter
 // Fixed-window rate limiting keyed by IP (or custom key).
 // For multi-instance deployments, replace the Map store with a Redis backend
 // via @fastify/rate-limit + @fastify/redis.

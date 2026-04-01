@@ -1,11 +1,11 @@
-// ─── Advanced System Controls Module ─────────────────────────────────────────
+// Advanced System Controls Module
 // Windows Update, Defender, and Edge management actions.
 // High-risk actions are gated to premium tier and carry extensive warnings.
 
 import type { TuningActionDefinition } from "../types.js";
 
 export const systemControlsActions: TuningActionDefinition[] = [
-  // ── Windows Update Controls (Safe / Free Tier) ─────────────────────────────
+  // Windows Update Controls (Safe / Free Tier)
 
   {
     id: "system.defer-feature-updates",
@@ -145,7 +145,7 @@ export const systemControlsActions: TuningActionDefinition[] = [
     tags: ["windows-update", "drivers", "stability"],
   },
 
-  // ── Windows Update Controls (Expert / Premium / High Risk) ─────────────────
+  // Windows Update Controls (Expert / Premium / High Risk)
 
   {
     id: "system.disable-windows-update",
@@ -223,7 +223,7 @@ export const systemControlsActions: TuningActionDefinition[] = [
     tags: ["windows-update", "expert", "extreme-risk", "benchmark"],
   },
 
-  // ── Defender Controls (Safe / Free) ────────────────────────────────────────
+  // Defender Controls (Safe / Free)
 
   {
     id: "system.defender-add-game-exclusions",
@@ -320,7 +320,7 @@ export const systemControlsActions: TuningActionDefinition[] = [
     tags: ["defender", "privacy", "safe"],
   },
 
-  // ── Browser Cleanup (Safe / Free) ──────────────────────────────────────────
+  // Browser Cleanup (Safe / Free)
 
   {
     id: "system.disable-edge-startup",

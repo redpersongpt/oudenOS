@@ -1,4 +1,4 @@
-// ─── Handoff Step ────────────────────────────────────────────────────────────
+// Handoff Step
 // Final step: handoff to redcore-Tuning for advanced per-component optimization.
 
 import { motion } from "framer-motion";

@@ -1,4 +1,4 @@
-// ─── Preload Script ─────────────────────────────────────────────────────────
+// Preload Script
 // Exposes a safe, typed API to the renderer via contextBridge.
 // The renderer NEVER has direct access to Node.js or Electron APIs.
 //
@@ -7,7 +7,7 @@
 
 import { contextBridge, ipcRenderer } from "electron";
 
-// ─── IPC Allowlists ─────────────────────────────────────────────────────────
+// IPC Allowlists
 // These MUST match the keys of IpcMethods and IpcEvents in shared-schema/ipc.ts.
 // If a new IPC method or event is added, it must be added here too.
 
@@ -67,7 +67,7 @@ const ALLOWED_EVENTS: ReadonlySet<string> = new Set([
   "service:service.error",
 ]);
 
-// ─── API Definition ─────────────────────────────────────────────────────────
+// API Definition
 
 export interface RedcoreAPI {
   // Window controls

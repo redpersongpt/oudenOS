@@ -1,4 +1,4 @@
-// ─── redcore-Tuning Cloud API ───────────────────────────────────────────────
+// redcore-Tuning Cloud API
 // Handles: accounts, auth, subscription licensing, device binding,
 // anonymized telemetry, update metadata, crash reporting.
 //
@@ -48,7 +48,7 @@ async function start() {
   app.log.info(`Tuning API listening on ${host}:${port}`);
 }
 
-// ─── Error handling ─────────────────────────────────────────────────────────
+// Error handling
 
 app.setErrorHandler((error, _request, reply) => {
   const err = error as { statusCode?: number; message: string; stack?: string };
@@ -69,7 +69,7 @@ app.setNotFoundHandler((_request, reply) => {
   reply.code(404).send({ error: "Not found" });
 });
 
-// ─── Graceful shutdown ──────────────────────────────────────────────────────
+// Graceful shutdown
 
 async function shutdown(signal: string): Promise<void> {
   app.log.info({ signal }, "Shutdown signal received");
@@ -80,7 +80,7 @@ async function shutdown(signal: string): Promise<void> {
 process.on("SIGTERM", () => shutdown("SIGTERM"));
 process.on("SIGINT", () => shutdown("SIGINT"));
 
-// ─── Start ──────────────────────────────────────────────────────────────────
+// Start
 
 start().catch((err) => {
   console.error("Fatal: failed to start Tuning API:", err);

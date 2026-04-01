@@ -1,11 +1,11 @@
-// ─── OS Hardware Assessment ──────────────────────────────────────────────────
+// OS Hardware Assessment
 // Lightweight hardware summary focused on OS transformation planning.
 // Distinct from tuning's DeviceProfile — covers classification signals,
 // work PC detection, and OS health rather than deep hardware specs.
 
 import type { WorkIndicator, PreservationFlag } from "./profiles.js";
 
-// ─── Hardware snapshot ───────────────────────────────────────────────────────
+// Hardware snapshot
 
 export type OsDeviceClass = "desktop" | "laptop" | "workstation" | "handheld" | "vm" | "unknown";
 export type OsCpuVendor = "intel" | "amd" | "qualcomm" | "unknown";
@@ -32,7 +32,7 @@ export interface OsHardwareSnapshot {
   scannedAt: string;            // ISO 8601
 }
 
-// ─── Work indicator assessment ───────────────────────────────────────────────
+// Work indicator assessment
 
 export interface WorkIndicatorAssessment {
   scannedAt: string;
@@ -41,7 +41,7 @@ export interface WorkIndicatorAssessment {
   preservationFlags: PreservationFlag[];
 }
 
-// ─── Full assessment result ───────────────────────────────────────────────────
+// Full assessment result
 // Returned by assess.full — used as input to classify.machine.
 
 export interface HardwareAssessment {

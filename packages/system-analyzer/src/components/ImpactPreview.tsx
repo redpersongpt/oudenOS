@@ -1,4 +1,4 @@
-// ─── ImpactPreview ───────────────────────────────────────────────────────────
+// ImpactPreview
 // Displays estimated before/after comparison per optimization category.
 
 import { motion } from "framer-motion";
@@ -42,7 +42,7 @@ const CONFIDENCE_COLORS: Record<string, string> = {
   low:    "text-ink-muted",
 };
 
-// ─── Impact Bar ───────────────────────────────────────────────────────────────
+// Impact Bar
 
 interface ImpactBarProps {
   percent: number;
@@ -72,7 +72,7 @@ function ImpactBar({ percent, confidence, delay }: ImpactBarProps) {
   );
 }
 
-// ─── Impact Card ──────────────────────────────────────────────────────────────
+// Impact Card
 
 interface ImpactCardProps {
   estimate: ImpactEstimate;
@@ -131,7 +131,7 @@ function ImpactCard({ estimate, index }: ImpactCardProps) {
   );
 }
 
-// ─── Main ImpactPreview ───────────────────────────────────────────────────────
+// Main ImpactPreview
 
 interface ImpactPreviewProps {
   estimates: ImpactEstimate[];

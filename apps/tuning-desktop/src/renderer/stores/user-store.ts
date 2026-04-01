@@ -1,4 +1,4 @@
-// ─── User Store ───────────────────────────────────────────────────────────────
+// User Store
 // Thin wrapper around auth-store + cloudApi for profile/subscription data.
 
 import { create } from "zustand";

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
-// ─── Types ───────────────────────────────────────────────────────────────────
+// Types
 
 interface RelatedPage {
   title: string;
@@ -13,7 +13,7 @@ interface RelatedPagesProps {
   pages: RelatedPage[];
 }
 
-// ─── Component ───────────────────────────────────────────────────────────────
+// Component
 
 export function RelatedPages({ pages }: RelatedPagesProps) {
   return (

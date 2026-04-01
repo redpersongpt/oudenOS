@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/Button";
 import { useAuthStore } from "@/stores/auth-store";
 import { LOGIN_URL, openExternalUrl } from "@/lib/external-links";
 
-// ─── Motion variants ──────────────────────────────────────────────────────────
+// Motion variants
 
 const pageVariants = {
   hidden: { opacity: 0, y: 20, scale: 0.98 },
@@ -35,7 +35,7 @@ const fadeUp = {
   },
 };
 
-// ─── SVG brand icons ──────────────────────────────────────────────────────────
+// SVG brand icons
 
 function GoogleIcon() {
   return (
@@ -60,7 +60,7 @@ function GoogleIcon() {
   );
 }
 
-// ─── Component ────────────────────────────────────────────────────────────────
+// Component
 
 export function LoginPage() {
   const navigate = useNavigate();
@@ -110,7 +110,7 @@ export function LoginPage() {
         className="no-drag relative z-10 w-full max-w-[400px] px-5"
       >
         <motion.div variants={stagger} initial="hidden" animate="visible">
-          {/* ── Brand ─────────────────────────────────────────────────────── */}
+          {/* Brand */}
           <motion.div variants={fadeUp} className="mb-8 flex flex-col items-center gap-3">
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-500 shadow-[0_0_28px_rgba(232,37,75,0.38)]">
               <Zap className="h-6 w-6 text-white" strokeWidth={2.5} />
@@ -123,7 +123,7 @@ export function LoginPage() {
             </div>
           </motion.div>
 
-          {/* ── Card ──────────────────────────────────────────────────────── */}
+          {/* Card */}
           <motion.div
             variants={fadeUp}
             className="rounded-2xl border border-white/[0.05] bg-neutral-900 p-6 shadow-[0_12px_48px_rgba(0,0,0,0.55)]"
@@ -295,7 +295,7 @@ export function LoginPage() {
   );
 }
 
-// ─── OAuth button ─────────────────────────────────────────────────────────────
+// OAuth button
 
 interface OAuthButtonProps {
   onClick: () => void;

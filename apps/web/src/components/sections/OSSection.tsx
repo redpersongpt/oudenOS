@@ -21,7 +21,7 @@ import {
 } from "@/lib/motion";
 import { AnimatedCounter } from "@/components/ui/AnimatedCounter";
 
-// ─── Types ───────────────────────────────────────────────────────────────────
+// Types
 
 interface StatItem {
   value: string;
@@ -40,7 +40,7 @@ interface PreservedService {
   label: string;
 }
 
-// ─── Data ────────────────────────────────────────────────────────────────────
+// Data
 
 const stats: StatItem[] = [
   { value: "In-Place", label: "No ISO required" },
@@ -86,7 +86,7 @@ const preservedServices: PreservedService[] = [
   { label: "DNS Client" },
 ];
 
-// ─── Stat Block ──────────────────────────────────────────────────────────────
+// Stat Block
 
 function StatBlock({
   stat,
@@ -126,7 +126,7 @@ function StatBlock({
   );
 }
 
-// ─── Main Component ──────────────────────────────────────────────────────────
+// Main Component
 
 export function OSSection() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -154,7 +154,7 @@ export function OSSection() {
       <div className="section-divide" aria-hidden="true" />
 
       <div className="mx-auto max-w-7xl px-6 py-28 md:py-36 lg:px-8 lg:py-44">
-        {/* ─── Header ─── */}
+        {/* Header */}
         <motion.div
           variants={staggerContainer(0.1, 0)}
           initial="hidden"
@@ -186,7 +186,7 @@ export function OSSection() {
           </motion.p>
         </motion.div>
 
-        {/* ─── Key Metrics Row ─── */}
+        {/* Key Metrics Row */}
         <div
           ref={statsRef}
           className="mt-12 flex flex-wrap items-start justify-between gap-y-8"
@@ -211,7 +211,7 @@ export function OSSection() {
           ))}
         </div>
 
-        {/* ─── Optimization Flow ─── */}
+        {/* Optimization Flow */}
         <div ref={flowRef} className="mt-20">
           <motion.div
             variants={staggerContainer(0.1, 0.1)}
@@ -264,7 +264,7 @@ export function OSSection() {
           </motion.div>
         </div>
 
-        {/* ─── Work PC Preservation ─── */}
+        {/* Work PC Preservation */}
         <motion.div
           ref={calloutRef}
           initial={{ opacity: 0, y: 24 }}

@@ -1,4 +1,4 @@
-// ─── Expert Rationale — visible product intelligence ────────────────────────
+// Expert Rationale — visible product intelligence
 // Maps action IDs to human-readable "why" explanations.
 // Used by PlaybookReview, Execution, and Report steps.
 

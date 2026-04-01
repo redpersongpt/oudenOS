@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-// ─── Types ───────────────────────────────────────────────────────────────────
+// Types
 
 type BadgeVariant = "default" | "brand" | "success" | "warning";
 
@@ -10,7 +10,7 @@ interface BadgeProps {
   className?: string;
 }
 
-// ─── Style Maps ──────────────────────────────────────────────────────────────
+// Style Maps
 
 const variantStyles: Record<BadgeVariant, string> = {
   default: "bg-surface-overlay text-ink-tertiary border border-border-default",
@@ -19,7 +19,7 @@ const variantStyles: Record<BadgeVariant, string> = {
   warning: "bg-amber-950/40 text-amber-400 border border-amber-900/30",
 };
 
-// ─── Component ───────────────────────────────────────────────────────────────
+// Component
 
 export function Badge({
   variant = "default",

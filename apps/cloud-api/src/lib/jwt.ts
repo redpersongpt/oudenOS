@@ -1,4 +1,4 @@
-// ─── JWT Utilities (jose) ─────────────────────────────────────────────────────
+// JWT Utilities (jose)
 // Access tokens:  HS256, 15-minute TTL — server-side only.
 // Refresh tokens: random bytes (not JWT), SHA-256 hash stored in DB.
 // License tokens: HS256 (default) or RS256 when RSA key pair is configured.
@@ -18,7 +18,7 @@ const ISSUER = "redcore-cloud-api";
 const AUDIENCE_ACCESS = "redcore-app";
 const AUDIENCE_LICENSE = "redcore-license";
 
-// ─── Key helpers ──────────────────────────────────────────────────────────────
+// Key helpers
 
 function getHmacSecret(): Uint8Array {
   const secret = process.env.JWT_SECRET;
@@ -64,7 +64,7 @@ async function getLicenseVerifyKey(): Promise<{ key: KeyLike | Uint8Array; alg: 
   return { key: getHmacSecret(), alg: "HS256" };
 }
 
-// ─── Access Tokens ────────────────────────────────────────────────────────────
+// Access Tokens
 
 export interface AccessTokenPayload {
   sub: string;   // userId
@@ -97,7 +97,7 @@ export async function verifyAccessToken(token: string): Promise<AccessTokenPaylo
   return { sub, role };
 }
 
-// ─── License Tokens ───────────────────────────────────────────────────────────
+// License Tokens
 
 export interface LicenseTokenPayload {
   sub: string;             // userId

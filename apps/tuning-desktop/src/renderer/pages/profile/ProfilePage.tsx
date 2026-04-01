@@ -24,7 +24,7 @@ import { useAuthStore } from "@/stores/auth-store";
 import { useLicenseStore } from "@/stores/license-store";
 import { cloudApi } from "@/lib/cloud-api";
 
-// ─── Tabs ─────────────────────────────────────────────────────────────────────
+// Tabs
 
 const TABS = [
   { id: "account", label: "Account" },
@@ -48,7 +48,7 @@ const FREE_FEATURES = [
   "Machine intelligence",
 ];
 
-// ─── Inline edit field ────────────────────────────────────────────────────────
+// Inline edit field
 
 function InlineEditName({
   value,
@@ -123,7 +123,7 @@ function InlineEditName({
   );
 }
 
-// ─── Danger zone ──────────────────────────────────────────────────────────────
+// Danger zone
 
 function DangerZone({
   deleting,
@@ -214,7 +214,7 @@ function DangerZone({
   );
 }
 
-// ─── Main component ───────────────────────────────────────────────────────────
+// Main component
 
 export function ProfilePage() {
   const navigate = useNavigate();

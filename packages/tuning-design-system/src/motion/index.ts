@@ -1,10 +1,10 @@
-// ─── Motion System ──────────────────────────────────────────────────────────
+// Motion System
 // Framer Motion presets for premium, intentional animation.
 // Every animation communicates: trust, precision, momentum, polish.
 
 import type { Transition, Variants } from "framer-motion";
 
-// ─── Timing curves ──────────────────────────────────────────────────────────
+// Timing curves
 
 export const easing = {
   // Default — smooth and premium
@@ -19,7 +19,7 @@ export const easing = {
   overshoot:  [0.34, 1.56, 0.64, 1.0] as const,
 } as const;
 
-// ─── Duration tokens ────────────────────────────────────────────────────────
+// Duration tokens
 
 export const duration = {
   instant: 0.08,
@@ -31,7 +31,7 @@ export const duration = {
   hero:    1.1,
 } as const;
 
-// ─── Spring presets ─────────────────────────────────────────────────────────
+// Spring presets
 // Named after feel, not physics. Use consistently across the app.
 
 export const spring = {
@@ -65,7 +65,7 @@ export const spring = {
   },
 } as const;
 
-// ─── Transition presets ─────────────────────────────────────────────────────
+// Transition presets
 
 export const transition = {
   default:  { duration: duration.normal,  ease: easing.default }    satisfies Transition,
@@ -76,7 +76,7 @@ export const transition = {
   spring:   spring.smooth                                            satisfies Transition,
 } as const;
 
-// ─── Page transition ─────────────────────────────────────────────────────────
+// Page transition
 // Subtle — content slides 6px up on enter, 4px up on exit.
 // The subdued motion respects the user's focus.
 
@@ -97,7 +97,7 @@ export const pageTransition: Variants = {
   },
 };
 
-// ─── Fade ────────────────────────────────────────────────────────────────────
+// Fade
 
 export const fadeIn: Variants = {
   hidden:  { opacity: 0 },
@@ -105,7 +105,7 @@ export const fadeIn: Variants = {
   exit:    { opacity: 0, transition: transition.exit },
 };
 
-// ─── Slide up + fade — standard content reveal ───────────────────────────────
+// Slide up + fade — standard content reveal
 
 export const slideUp: Variants = {
   hidden:  { opacity: 0, y: 12 },
@@ -113,7 +113,7 @@ export const slideUp: Variants = {
   exit:    { opacity: 0, y: -6, transition: transition.exit },
 };
 
-// ─── Slide in from left — sidebar / panel entrance ───────────────────────────
+// Slide in from left — sidebar / panel entrance
 
 export const slideInLeft: Variants = {
   hidden:  { opacity: 0, x: -20 },
@@ -121,7 +121,7 @@ export const slideInLeft: Variants = {
   exit:    { opacity: 0, x: -20, transition: transition.exit },
 };
 
-// ─── Scale up — modal / dialog spring entrance ───────────────────────────────
+// Scale up — modal / dialog spring entrance
 // Slight scale (0.96 → 1) with fade, spring physics for natural deceleration.
 
 export const scaleUp: Variants = {
@@ -130,7 +130,7 @@ export const scaleUp: Variants = {
   exit:    { opacity: 0, scale: 0.97, transition: { duration: duration.fast, ease: easing.exit } },
 };
 
-// ─── Modal spring ─────────────────────────────────────────────────────────────
+// Modal spring
 // Rises from slight below-center with spring physics.
 // Use this for all dialog / modal entrances.
 
@@ -154,7 +154,7 @@ export const modalSpring: Variants = {
   },
 };
 
-// ─── Modal backdrop ───────────────────────────────────────────────────────────
+// Modal backdrop
 
 export const backdropFade: Variants = {
   hidden:  { opacity: 0 },
@@ -162,7 +162,7 @@ export const backdropFade: Variants = {
   exit:    { opacity: 0, transition: { duration: duration.fast,   ease: easing.exit } },
 };
 
-// ─── Toast slide-in ──────────────────────────────────────────────────────────
+// Toast slide-in
 // Slides in from bottom-right, slight bounce to signal arrival.
 
 export const toastSlide: Variants = {
@@ -185,7 +185,7 @@ export const toastSlide: Variants = {
   },
 };
 
-// ─── Stagger container + children ────────────────────────────────────────────
+// Stagger container + children
 // Standard list / grid reveal. Children enter with 60ms stagger.
 
 export const staggerContainer: Variants = {
@@ -201,7 +201,7 @@ export const staggerChild: Variants = {
   visible: { opacity: 1, y: 0,  transition: { ...transition.enter } },
 };
 
-// ─── Card stagger ─────────────────────────────────────────────────────────────
+// Card stagger
 // Tighter stagger for card grids (40ms). Cards rise from slight below.
 
 export const cardStaggerContainer: Variants = {
@@ -222,7 +222,7 @@ export const cardStaggerItem: Variants = {
   },
 };
 
-// ─── Card hover lift ─────────────────────────────────────────────────────────
+// Card hover lift
 // Subtle elevation on hover — 2px upward + deeper shadow.
 
 export const cardHover = {
@@ -237,7 +237,7 @@ export const cardHover = {
   },
 } as const;
 
-// ─── Button press ─────────────────────────────────────────────────────────────
+// Button press
 // Scale down on press, spring back. Used in Button component.
 
 export const buttonPress = {
@@ -245,7 +245,7 @@ export const buttonPress = {
   transition: spring.snappy,
 } as const;
 
-// ─── Tab underline slide ─────────────────────────────────────────────────────
+// Tab underline slide
 // Use with layoutId="tab-underline" for animated indicator.
 // See: <motion.div layoutId="tab-underline" transition={tabUnderlineTransition} />
 
@@ -253,7 +253,7 @@ export const tabUnderlineTransition: Transition = {
   ...spring.snappy,
 };
 
-// ─── Hover lift (generic) ────────────────────────────────────────────────────
+// Hover lift (generic)
 // Reusable hover effect for any elevated element.
 
 export const hoverLift = {
@@ -261,7 +261,7 @@ export const hoverLift = {
   hover: { y: -2, transition: spring.snappy },
 } as const;
 
-// ─── Progress bar fill ───────────────────────────────────────────────────────
+// Progress bar fill
 // Custom variant — pass percentage as custom prop.
 
 export const progressFill: Variants = {
@@ -273,7 +273,7 @@ export const progressFill: Variants = {
   }),
 };
 
-// ─── Number count-up ─────────────────────────────────────────────────────────
+// Number count-up
 // Pair with useMotionValue + animate() for metric count-ups.
 
 export const countUpTransition = {
@@ -296,7 +296,7 @@ export const shimmer = {
   },
 } as const;
 
-// ─── Wizard step transitions ────────────────────────────────────────────────
+// Wizard step transitions
 // Premium horizontal slide for wizard step changes.
 // Direction: 1 = forward (slide left), -1 = backward (slide right)
 
@@ -328,7 +328,7 @@ export const wizardStep = (direction: 1 | -1 = 1): Variants => ({
   },
 });
 
-// ─── Wizard section reveal ──────────────────────────────────────────────────
+// Wizard section reveal
 // For content sections within a wizard step — rises up with opacity.
 
 export const wizardSection: Variants = {
@@ -353,7 +353,7 @@ export const wizardSectionChild: Variants = {
   },
 };
 
-// ─── Pulse glow — for active/current indicators ─────────────────────────────
+// Pulse glow — for active/current indicators
 
 export const pulseGlow: Variants = {
   animate: {
@@ -367,7 +367,7 @@ export const pulseGlow: Variants = {
   },
 };
 
-// ─── Success celebration ────────────────────────────────────────────────────
+// Success celebration
 // Scale-in with bounce for completion states.
 
 export const successReveal: Variants = {
@@ -382,7 +382,7 @@ export const successReveal: Variants = {
   },
 };
 
-// ─── Progress bar spring ────────────────────────────────────────────────────
+// Progress bar spring
 // Animated width with spring physics.
 
 export const progressSpring = (percent: number) => ({
@@ -393,7 +393,7 @@ export const progressSpring = (percent: number) => ({
   },
 });
 
-// ─── Execution pulse — for live operation indicators ────────────────────────
+// Execution pulse — for live operation indicators
 
 export const executionPulse: Variants = {
   animate: {
@@ -410,7 +410,7 @@ export const executionPulse: Variants = {
   },
 };
 
-// ─── Timeline item enter ────────────────────────────────────────────────────
+// Timeline item enter
 // For execution timeline items appearing one by one.
 
 export const timelineItem: Variants = {

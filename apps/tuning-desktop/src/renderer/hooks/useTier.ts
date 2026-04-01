@@ -1,4 +1,4 @@
-// ─── useTier ─────────────────────────────────────────────────────────────────
+// useTier
 // Convenience hook that surfaces tier/feature-gate logic from the license store.
 
 import { useLicenseStore } from "@/stores/license-store";

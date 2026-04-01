@@ -1,4 +1,4 @@
-// ─── Risk Assessor ───────────────────────────────────────────────────────────
+// Risk Assessor
 // Evaluates per-category risk based on system analysis and recommendations.
 
 import type {
@@ -61,7 +61,7 @@ export function assessRisks(
       }
     }
 
-    // ─── Category-specific risk factors ──────────────────────────────────────
+    // Category-specific risk factors
 
     if (category === "security") {
       factors.push({

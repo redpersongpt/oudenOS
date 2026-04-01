@@ -1,4 +1,4 @@
-// ─── Admin Middleware ──────────────────────────────────────────────────────────
+// Admin Middleware
 // Validates Bearer JWT and enforces role === "admin".
 // Attaches adminId and adminEmail to the request for audit logging.
 

@@ -4,7 +4,7 @@ import { Monitor, Briefcase, ChevronDown, Gamepad2, Laptop, Server, Cpu, AlertTr
 import { useWizardStore } from "@/stores/wizard-store";
 import type { DetectedProfile } from "@/stores/wizard-store";
 
-// ── Count-up hook ────────────────────────────────────────────────────────────
+// Count-up hook
 
 function useCountUp(target: number, duration = 1100): number {
   const [v, setV] = useState(0);
@@ -25,7 +25,7 @@ function useCountUp(target: number, duration = 1100): number {
   return v;
 }
 
-// ── Profile options for override ─────────────────────────────────────────────
+// Profile options for override
 
 const PROFILE_OPTIONS = [
   { id: "gaming_desktop", label: "Gaming Desktop", icon: Gamepad2, desc: "Aggressive performance, max FPS" },
@@ -35,7 +35,7 @@ const PROFILE_OPTIONS = [
   { id: "low_spec_system", label: "Low Spec System", icon: Cpu, desc: "Lightweight cleanup, reduce overhead" },
 ] as const;
 
-// ── Component ────────────────────────────────────────────────────────────────
+// Component
 
 export function ProfileStep() {
   const { detectedProfile, setDetectedProfile, setStepReady } = useWizardStore();

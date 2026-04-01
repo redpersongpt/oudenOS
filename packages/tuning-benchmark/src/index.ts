@@ -1,4 +1,4 @@
-// ─── Benchmark Runners ──────────────────────────────────────────────────────
+// Benchmark Runners
 // Wrappers for benchmark/stress/telemetry providers.
 // Each runner implements a common interface and is invoked by the Rust service.
 

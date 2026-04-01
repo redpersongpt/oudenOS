@@ -1,11 +1,11 @@
-// ─── App Hub Step ─────────────────────────────────────────────────────────────
+// App Hub Step
 // Compact grid with real app logos. Fits viewport. No scrolling.
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Check } from "lucide-react";
 
-// ─── App catalog with real logo URLs ─────────────────────────────────────────
+// App catalog with real logo URLs
 
 interface AppDef {
   id: string;
@@ -49,7 +49,7 @@ const TABS = [
   { id: "tools",    label: "Tools" },
 ];
 
-// ─── Fallback initial for broken images ──────────────────────────────────────
+// Fallback initial for broken images
 
 function AppIcon({ src, name }: { src: string; name: string }) {
   const [failed, setFailed] = useState(false);
@@ -70,7 +70,7 @@ function AppIcon({ src, name }: { src: string; name: string }) {
   );
 }
 
-// ─── Component ───────────────────────────────────────────────────────────────
+// Component
 
 export function AppHubStep() {
   const [selected, setSelected] = useState<Set<string>>(new Set(["brave", "7zip", "discord", "steam"]));

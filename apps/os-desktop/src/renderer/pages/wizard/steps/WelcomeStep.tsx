@@ -62,7 +62,7 @@ export function WelcomeStep() {
   return (
     <div className="relative flex h-full w-full overflow-hidden">
 
-      {/* ── Left decorative sidebar ── */}
+      {/* Left decorative sidebar */}
       <div className="hidden sm:flex w-[48px] shrink-0 flex-col items-center justify-between py-6 border-r border-white/[0.04]">
         <div className="flex flex-col items-center gap-3">
           {[...Array(5)].map((_, i) => (
@@ -91,7 +91,7 @@ export function WelcomeStep() {
         </motion.p>
       </div>
 
-      {/* ── Main content area ── */}
+      {/* Main content area */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -259,7 +259,7 @@ export function WelcomeStep() {
         </motion.p>
       </motion.div>
 
-      {/* ── Right decorative sidebar ── */}
+      {/* Right decorative sidebar */}
       <div className="hidden sm:flex w-[48px] shrink-0 flex-col items-center justify-between py-6 border-l border-white/[0.04]">
         <motion.div
           initial={{ opacity: 0 }}

@@ -1,4 +1,4 @@
-// ─── Summary Step ─────────────────────────────────────────────────────────────
+// Summary Step
 // Final review before BIOS guidance and execution.
 // Grouped action list, risk summary, plan stats.
 
@@ -23,7 +23,7 @@ import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import type { TuningCategory, RiskLevel } from "@redcore/shared-schema/tuning";
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// Helpers
 
 const RISK_ORDER: RiskLevel[] = ["safe", "low", "medium", "high", "extreme"];
 
@@ -43,7 +43,7 @@ const CATEGORY_LABELS: Record<TuningCategory, string> = {
   thermal: "Thermal", drivers: "Drivers", debloat: "Debloat", security: "Security",
 };
 
-// ─── Stat card ────────────────────────────────────────────────────────────────
+// Stat card
 
 function StatCard({ icon: Icon, label, value, sub }: {
   icon: React.ElementType;
@@ -66,7 +66,7 @@ function StatCard({ icon: Icon, label, value, sub }: {
   );
 }
 
-// ─── Category group row ───────────────────────────────────────────────────────
+// Category group row
 
 function CategoryGroup({ category, actions }: {
   category: TuningCategory;
@@ -119,7 +119,7 @@ function CategoryGroup({ category, actions }: {
   );
 }
 
-// ─── Component ────────────────────────────────────────────────────────────────
+// Component
 
 export function SummaryStep() {
   const { goNext, skipStep, currentStep } = useWizardStore();

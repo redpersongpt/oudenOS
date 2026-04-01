@@ -1,4 +1,4 @@
-// ─── Subscription Routes ───────────────────────────────────────────────────────
+// Subscription Routes
 // GET  /plans                 — public pricing list
 // GET  /status                — authenticated user's subscription status
 // POST /checkout              — create Stripe checkout session
@@ -30,7 +30,7 @@ const PRICES = {
   expert_annual: process.env.STRIPE_PRICE_EXPERT_ANNUAL ?? "",
 } as const;
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// Helpers
 
 // Restrict redirect URLs to allowed domains to prevent post-payment phishing.
 // ALLOWED_REDIRECT_HOSTS is a comma-separated list (e.g. "redcoreos.net").
@@ -48,7 +48,7 @@ function isAllowedRedirectUrl(url: string): boolean {
   }
 }
 
-// ─── Schemas ──────────────────────────────────────────────────────────────────
+// Schemas
 
 const checkoutSchema = z.object({
   tier: z.enum(["premium", "expert"]),
@@ -61,7 +61,7 @@ const cancelSchema = z.object({
   immediately: z.boolean().default(false),
 });
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// Helpers
 
 async function getOrCreateStripeCustomer(userId: string): Promise<string> {
   const [user] = await db
@@ -87,10 +87,10 @@ async function getOrCreateStripeCustomer(userId: string): Promise<string> {
   return customer.id;
 }
 
-// ─── Plugin ───────────────────────────────────────────────────────────────────
+// Plugin
 
 export const subscriptionRoutes: FastifyPluginAsync = async (app) => {
-  // ── GET /plans ────────────────────────────────────────────────────────────
+  // GET /plans
   app.get("/plans", async (_request, reply) => {
     return reply.send({
       plans: [
@@ -142,7 +142,7 @@ export const subscriptionRoutes: FastifyPluginAsync = async (app) => {
     });
   });
 
-  // ── GET /status ───────────────────────────────────────────────────────────
+  // GET /status
   app.get("/status", { preHandler: requireAuth }, async (request, reply) => {
     const [sub] = await db
       .select({
@@ -176,7 +176,7 @@ export const subscriptionRoutes: FastifyPluginAsync = async (app) => {
     return reply.send({ subscription: sub, tier: sub.tier, status: sub.status });
   });
 
-  // ── POST /checkout ────────────────────────────────────────────────────────
+  // POST /checkout
   app.post("/checkout", { preHandler: [requireAuth, apiRateLimit(5)] }, async (request, reply) => {
     const parse = checkoutSchema.safeParse(request.body);
     if (!parse.success) {
@@ -212,7 +212,7 @@ export const subscriptionRoutes: FastifyPluginAsync = async (app) => {
     return reply.send({ checkoutUrl: session.url, sessionId: session.id });
   });
 
-  // ── POST /portal ──────────────────────────────────────────────────────────
+  // POST /portal
   app.post("/portal", { preHandler: [requireAuth, apiRateLimit(5)] }, async (request, reply) => {
     const [user] = await db
       .select({ stripeCustomerId: users.stripeCustomerId })
@@ -233,7 +233,7 @@ export const subscriptionRoutes: FastifyPluginAsync = async (app) => {
     return reply.send({ portalUrl: session.url });
   });
 
-  // ── POST /cancel ──────────────────────────────────────────────────────────
+  // POST /cancel
   app.post("/cancel", { preHandler: [requireAuth, apiRateLimit(5)] }, async (request, reply) => {
     const parse = cancelSchema.safeParse(request.body ?? {});
     if (!parse.success) {
@@ -273,7 +273,7 @@ export const subscriptionRoutes: FastifyPluginAsync = async (app) => {
     return reply.send({ ok: true, cancelledImmediately: parse.data.immediately });
   });
 
-  // ── POST /reactivate ──────────────────────────────────────────────────────
+  // POST /reactivate
   app.post("/reactivate", { preHandler: [requireAuth, apiRateLimit(5)] }, async (request, reply) => {
     const [sub] = await db
       .select()
@@ -298,7 +298,7 @@ export const subscriptionRoutes: FastifyPluginAsync = async (app) => {
     return reply.send({ ok: true });
   });
 
-  // ── GET /invoices ─────────────────────────────────────────────────────────
+  // GET /invoices
   app.get("/invoices", { preHandler: requireAuth }, async (request, reply) => {
     const [user] = await db
       .select({ stripeCustomerId: users.stripeCustomerId })

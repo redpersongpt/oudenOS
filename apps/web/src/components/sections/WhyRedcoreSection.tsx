@@ -10,14 +10,14 @@ import {
   easing,
 } from "@/lib/motion";
 
-// ─── Types ───────────────────────────────────────────────────────────────────
+// Types
 
 interface ContrastRow {
   before: string;
   after: string;
 }
 
-// ─── Data ────────────────────────────────────────────────────────────────────
+// Data
 
 const contrastRows: ContrastRow[] = [
   { before: "One-size-fits-all", after: "Hardware-based profiling" },
@@ -26,7 +26,7 @@ const contrastRows: ContrastRow[] = [
   { before: "Settings dump", after: "Guided wizard journey" },
 ];
 
-// ─── Contrast Bar ────────────────────────────────────────────────────────────
+// Contrast Bar
 
 function ContrastBar({ row, index }: { row: ContrastRow; index: number }) {
   return (
@@ -73,7 +73,7 @@ function ContrastBar({ row, index }: { row: ContrastRow; index: number }) {
   );
 }
 
-// ─── Component ───────────────────────────────────────────────────────────────
+// Component
 
 export function WhyRedcoreSection() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -89,7 +89,7 @@ export function WhyRedcoreSection() {
       <div className="section-divide" aria-hidden="true" />
 
       <div className="mx-auto max-w-7xl px-6 py-28 md:py-36 lg:px-8 lg:py-44">
-        {/* ─── Two-column asymmetric layout ─── */}
+        {/* Two-column asymmetric layout */}
         <div className="grid grid-cols-1 gap-16 lg:grid-cols-[40fr_60fr] lg:gap-20 items-start">
           {/* Left column — editorial */}
           <motion.div
@@ -136,7 +136,7 @@ export function WhyRedcoreSection() {
           </div>
         </div>
 
-        {/* ─── Closing statement ─── */}
+        {/* Closing statement */}
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}

@@ -1,4 +1,4 @@
-// ─── Network Tuning Module ──────────────────────────────────────────────────
+// Network Tuning Module
 // Derived from the redcore internal network-optimization notes.
 
 import type { TuningActionDefinition } from "../types.js";

@@ -1,8 +1,8 @@
-// ─── Reference Tables ───────────────────────────────────────────────────────
+// Reference Tables
 // Technical reference data curated in the redcore internal research set.
 // Used by both apps for expert tooltips and configuration guidance.
 
-// ── Win32PrioritySeparation Valid Values ────────────────────────────────────
+// Win32PrioritySeparation Valid Values
 // The key only reads the first 6 bits. Values above 63 recycle.
 // Source: redcore scheduler lab note §5.1
 
@@ -30,7 +30,7 @@ export const WIN32_PRIORITY_TABLE: PrioritySeparationEntry[] = [
 // Windows default: 0x2 (decimal 2) = Short, Variable, 3:1 ratio
 // Note: Win11 24H2 changed this table
 
-// ── Timer Resolution Reference ─────────────────────────────────────────────
+// Timer Resolution Reference
 // Source: redcore timer lab note §10
 
 export interface TimerResolutionNote {
@@ -48,7 +48,7 @@ export const TIMER_RESOLUTION_NOTES: TimerResolutionNote[] = [
   { topic: "Recommendation", detail: "Use RTSS hybrid-wait for frame limiting. Compare against micro-adjusted global resolution for latency." },
 ];
 
-// ── Windows Version GPU Compatibility ──────────────────────────────────────
+// Windows Version GPU Compatibility
 // Source: redcore GPU lab note §2.1
 
 export interface GpuCompatEntry {
@@ -63,7 +63,7 @@ export const GPU_COMPAT_TABLE: GpuCompatEntry[] = [
   { gpu: "NVIDIA RTX 40 series", minWindows: "Win10 1803+" },
 ];
 
-// ── Windows Build Feature Notes ────────────────────────────────────────────
+// Windows Build Feature Notes
 
 export interface BuildFeatureNote {
   build: string;
@@ -80,7 +80,7 @@ export const BUILD_FEATURE_NOTES: BuildFeatureNote[] = [
   { build: "Win11 24H2", feature: "Win32PrioritySeparation table changed" },
 ];
 
-// ── MMCSS Gaming Profile Reference ─────────────────────────────────────────
+// MMCSS Gaming Profile Reference
 
 export const MMCSS_GAMING_PROFILE = {
   path: "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Games",
@@ -98,7 +98,7 @@ export const MMCSS_GAMING_PROFILE = {
   },
 };
 
-// ── Service Dependency Warning ─────────────────────────────────────────────
+// Service Dependency Warning
 
 export const SERVICE_SAFETY_RULES = [
   "ALWAYS run 'sc EnumDepend <service>' before disabling to check for dependent services",

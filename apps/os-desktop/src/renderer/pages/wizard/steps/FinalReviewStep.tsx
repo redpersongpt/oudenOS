@@ -1,4 +1,4 @@
-// ─── Final Review Step ───────────────────────────────────────────────────────
+// Final Review Step
 // Last chance to review before applying. Shows: profile, playbook stats,
 // selected apps, personalization choices. Apply button is the primary CTA.
 

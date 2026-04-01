@@ -1,4 +1,4 @@
-// ─── Machine & Workload Profiles ─────────────────────────────────────────────
+// Machine & Workload Profiles
 
 export type MachineProfile =
   | "gaming_desktop"
@@ -26,7 +26,7 @@ export interface ProfileSignal {
   favoredProfile: MachineProfile;
 }
 
-// ─── Work PC Detection ──────────────────────────────────────────────────────
+// Work PC Detection
 
 export interface WorkIndicator {
   type: "domain_joined" | "group_policy" | "managed_updates" | "vpn_detected"
@@ -36,7 +36,7 @@ export interface WorkIndicator {
   detail: string;
 }
 
-// ─── Preservation Flags ─────────────────────────────────────────────────────
+// Preservation Flags
 // Work PC safety: these are services/features that MUST NOT be disabled.
 
 export type PreservationFlag =

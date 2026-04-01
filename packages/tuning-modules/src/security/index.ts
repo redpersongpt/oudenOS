@@ -1,4 +1,4 @@
-// ─── Security & Mitigation Module ───────────────────────────────────────────
+// Security & Mitigation Module
 // Speculative execution mitigation analysis and expert-only controls.
 // NEVER recommend mitigation reduction in normal presets.
 

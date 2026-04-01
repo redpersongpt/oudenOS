@@ -1,10 +1,10 @@
-// ─── Wizard Store ─────────────────────────────────────────────────────────────
+// Wizard Store
 // Manages the 15-step optimization wizard flow state.
 // Categories group steps visually in the left rail.
 
 import { create } from "zustand";
 
-// ─── Step IDs ─────────────────────────────────────────────────────────────────
+// Step IDs
 
 export type WizardStepId =
   | "welcome"
@@ -30,7 +30,7 @@ export type WizardCategory =
   | "advanced"
   | "execute";
 
-// ─── Step shape ───────────────────────────────────────────────────────────────
+// Step shape
 
 export interface WizardStep {
   id: WizardStepId;
@@ -40,7 +40,7 @@ export interface WizardStep {
   category: WizardCategory;
 }
 
-// ─── Store interface ──────────────────────────────────────────────────────────
+// Store interface
 
 interface WizardState {
   currentStep: WizardStepId;
@@ -69,7 +69,7 @@ interface WizardState {
   reset: () => void;
 }
 
-// ─── Ordered step definitions ─────────────────────────────────────────────────
+// Ordered step definitions
 
 const INITIAL_STEPS: WizardStep[] = [
   // discover
@@ -186,7 +186,7 @@ const INITIAL_STEPS: WizardStep[] = [
 
 const STEP_ORDER = INITIAL_STEPS.map((s) => s.id);
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// Helpers
 
 function computeProgress(steps: WizardStep[]): number {
   const completed = steps.filter((s) => s.status === "completed" || s.status === "skipped").length;
@@ -203,7 +203,7 @@ function computeCanGoBack(_steps: WizardStep[], currentStep: WizardStepId): bool
   return idx > 0;
 }
 
-// ─── Store ────────────────────────────────────────────────────────────────────
+// Store
 
 export const useWizardStore = create<WizardState>((set, get) => ({
   currentStep: "welcome",
@@ -346,7 +346,7 @@ export const useWizardStore = create<WizardState>((set, get) => ({
     }),
 }));
 
-// ─── Selector helpers ─────────────────────────────────────────────────────────
+// Selector helpers
 
 export const CATEGORY_LABELS: Record<WizardCategory, string> = {
   discover: "Discover",

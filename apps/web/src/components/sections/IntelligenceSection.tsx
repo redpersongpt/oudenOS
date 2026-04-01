@@ -25,7 +25,7 @@ import {
   easing,
 } from "@/lib/motion";
 
-// ─── Types ───────────────────────────────────────────────────────────────────
+// Types
 
 interface SignalCard {
   icon: LucideIcon;
@@ -43,7 +43,7 @@ interface MachineProfile {
   signals: string[];
 }
 
-// ─── Data ────────────────────────────────────────────────────────────────────
+// Data
 
 const signalCards: SignalCard[] = [
   { icon: Cpu, title: "CPU", reads: "Architecture, cores, frequency" },
@@ -139,7 +139,7 @@ const profiles: MachineProfile[] = [
   },
 ];
 
-// ─── Animation Variants ─────────────────────────────────────────────────────
+// Animation Variants
 
 const profileDetailVariants = {
   enter: { opacity: 0, y: 20, filter: "blur(6px)" },
@@ -157,7 +157,7 @@ const profileDetailVariants = {
   },
 };
 
-// ─── Sub-components ─────────────────────────────────────────────────────────
+// Sub-components
 
 function SignalCardItem({ card }: { card: SignalCard }) {
   const Icon = card.icon;
@@ -284,7 +284,7 @@ function ProfileDetailPanel({ profile }: { profile: MachineProfile }) {
   );
 }
 
-// ─── Main Component ─────────────────────────────────────────────────────────
+// Main Component
 
 export function IntelligenceSection() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -326,7 +326,7 @@ export function IntelligenceSection() {
       <div className="section-divide" aria-hidden="true" />
 
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
-        {/* ─── Header ─── */}
+        {/* Header */}
         <motion.div
           variants={staggerContainer(0.1, 0)}
           initial="hidden"
@@ -343,7 +343,7 @@ export function IntelligenceSection() {
           </motion.h2>
         </motion.div>
 
-        {/* ─── Signal Grid ─── */}
+        {/* Signal Grid */}
         <motion.div
           variants={staggerContainer(0.05, 0.3)}
           initial="hidden"
@@ -359,7 +359,7 @@ export function IntelligenceSection() {
           ))}
         </motion.div>
 
-        {/* ─── Profile Showcase ─── */}
+        {/* Profile Showcase */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}

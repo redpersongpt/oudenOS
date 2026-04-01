@@ -28,7 +28,7 @@ import { ProgressBar } from "@/components/ui/ProgressBar";
 import { spring, staggerContainer, staggerChild } from "@redcore/design-system";
 import { toast } from "@/components/ui/Toast";
 
-// ─── Step slide variants ──────────────────────────────────────────────────
+// Step slide variants
 
 function stepVariants(direction: 1 | -1): Variants {
   return {
@@ -58,7 +58,7 @@ const itemVariant: Variants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.25 } },
 };
 
-// ─── Profile options ──────────────────────────────────────────────────────
+// Profile options
 
 const profiles = [
   {
@@ -89,7 +89,7 @@ const profiles = [
 
 type ProfileId = (typeof profiles)[number]["id"];
 
-// ─── Scan items ───────────────────────────────────────────────────────────
+// Scan items
 
 const scanItems = [
   { id: "cpu", label: "CPU & Scheduler", icon: Cpu, delay: 400 },
@@ -100,7 +100,7 @@ const scanItems = [
   { id: "thermal", label: "Thermal Profile", icon: Thermometer, delay: 2900 },
 ];
 
-// ─── Safety feature rows ──────────────────────────────────────────────────
+// Safety feature rows
 
 const safetyFeatures = [
   {
@@ -141,7 +141,7 @@ const PRO_FEATURES = [
   "Priority support",
 ];
 
-// ─── Constants ────────────────────────────────────────────────────────────
+// Constants
 
 const TOTAL_STEPS = 6;
 
@@ -154,7 +154,7 @@ const STEP_LABELS = [
   "Ready",
 ];
 
-// ─── Main component ───────────────────────────────────────────────────────
+// Main component
 
 export function OnboardingPage() {
   const navigate = useNavigate();
@@ -230,7 +230,7 @@ export function OnboardingPage() {
 
   return (
     <div className="flex h-screen w-screen overflow-hidden bg-[#0D0D10]">
-      {/* ── Left panel (fixed) ─────────────────────────────────── */}
+      {/* Left panel (fixed) */}
       <div className="hidden w-[340px] shrink-0 flex-col justify-between p-10 lg:flex">
         {/* Brand */}
         <motion.div
@@ -319,7 +319,7 @@ export function OnboardingPage() {
         </motion.div>
       </div>
 
-      {/* ── Right panel (animated) ─────────────────────────────── */}
+      {/* Right panel (animated) */}
       <div className="relative flex flex-1 flex-col items-center justify-center overflow-hidden bg-surface px-8 md:px-16">
         <AnimatePresence mode="wait" custom={direction}>
           <motion.div
@@ -331,7 +331,7 @@ export function OnboardingPage() {
             exit="exit"
             className="w-full max-w-lg"
           >
-            {/* ── Step 0: Welcome ── */}
+            {/* Step 0: Welcome */}
             {step === 0 && (
               <motion.div
                 variants={staggerContainer}
@@ -380,7 +380,7 @@ export function OnboardingPage() {
               </motion.div>
             )}
 
-            {/* ── Step 1: System Scan ── */}
+            {/* Step 1: System Scan */}
             {step === 1 && (
               <motion.div
                 variants={staggerContainer}
@@ -482,7 +482,7 @@ export function OnboardingPage() {
               </motion.div>
             )}
 
-            {/* ── Step 2: Profile Selection ── */}
+            {/* Step 2: Profile Selection */}
             {step === 2 && (
               <motion.div
                 variants={staggerContainer}
@@ -590,7 +590,7 @@ export function OnboardingPage() {
               </motion.div>
             )}
 
-            {/* ── Step 3: Safety Explanation ── */}
+            {/* Step 3: Safety Explanation */}
             {step === 3 && (
               <div className="space-y-6">
                 <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-green-500/10 border border-green-500/20">
@@ -639,7 +639,7 @@ export function OnboardingPage() {
               </div>
             )}
 
-            {/* ── Step 4: License / Account ── */}
+            {/* Step 4: License / Account */}
             {step === 4 && (
               <motion.div
                 variants={staggerContainer}
@@ -747,7 +747,7 @@ export function OnboardingPage() {
               </motion.div>
             )}
 
-            {/* ── Step 5: Ready ── */}
+            {/* Step 5: Ready */}
             {step === 5 && (
               <motion.div
                 variants={staggerContainer}

@@ -1,4 +1,4 @@
-// ─── Execution Step ───────────────────────────────────────────────────────────
+// Execution Step
 // Live execution screen. No bottom bar (WizardShell suppresses it).
 // Reads included actions from resolvedPlaybook, executes each via IPC.
 // Calls execute.applyAction for each action via window.redcore.service.call.
@@ -14,10 +14,10 @@ import { getActionRationale } from "@/lib/expert-rationale";
 import { resolveEffectivePersonalization } from "@/lib/personalization-resolution";
 import { buildExecutionJournalContext } from "@/lib/package-journal";
 
-// ─── Spinning quotes — personality while you wait ─────────────────────────────
+// Spinning quotes — personality while you wait
 
 const SPINNING_QUOTES = [
-  // ── Windows roasts ──
+  // Windows roasts
   "petting windows gently...",
   "convincing Cortana to retire...",
   "teaching Windows what \"no\" means...",
@@ -48,7 +48,7 @@ const SPINNING_QUOTES = [
   "removing the widget panel of doom...",
   "no Clippy, I don't need help...",
 
-  // ── Funny tech ──
+  // Funny tech
   "tweaking your package ( \u0361\u00b0 \u035c\u0296 \u0361\u00b0)",
   "optimizing bits and bytes...",
   "making your RAM feel appreciated...",
@@ -71,7 +71,7 @@ const SPINNING_QUOTES = [
   "rm -rf /bloat...",
   "git commit -m \"bye bloat\"...",
 
-  // ── Personality ──
+  // Personality
   "im poor donate plz \ud83d\ude4f",
   "this is what freedom feels like...",
   "every byte counts when you're debloating...",
@@ -108,7 +108,7 @@ const SPINNING_QUOTES = [
   "plot twist: Windows was the malware all along...",
 ];
 
-// ─── Types ──────────────────────────────────────────────────────────────────
+// Types
 
 interface ExecutableAction {
   id: string;
@@ -132,7 +132,7 @@ interface AppInstallProgress {
   failed: number;
 }
 
-// ─── Timeline item ────────────────────────────────────────────────────────────
+// Timeline item
 
 function TimelineItem({ action }: { action: CompletedAction }) {
   const failed = action.status === "failed";
@@ -176,7 +176,7 @@ function TimelineItem({ action }: { action: CompletedAction }) {
   );
 }
 
-// ─── Spinning Quote ──────────────────────────────────────────────────────────
+// Spinning Quote
 
 function SpinningQuote({ isActive }: { isActive: boolean }) {
   const [idx, setIdx] = useState(() => Math.floor(Math.random() * SPINNING_QUOTES.length));
@@ -211,7 +211,7 @@ function SpinningQuote({ isActive }: { isActive: boolean }) {
   );
 }
 
-// ─── Component ───────────────────────────────────────────────────────────────
+// Component
 
 export function ExecutionStep() {
   const { detectedProfile, resolvedPlaybook, selectedAppIds, personalization, demoMode, completeStep, setExecutionResult, setResolvedPlaybook } = useWizardStore();
@@ -222,7 +222,7 @@ export function ExecutionStep() {
     [answers, detectedProfile?.id, personalization],
   );
 
-  // ── Build action queue from resolved playbook ──
+  // Build action queue from resolved playbook
   const actionQueue = useMemo<ExecutableAction[]>(() => {
     if (!resolvedPlaybook) return [];
     const provenanceByAction = new Map(
@@ -280,7 +280,7 @@ export function ExecutionStep() {
 
       addLogEntry({ level: "info", category: "Execution", message: `Starting execution with ${actionQueue.length} actions, ${selectedAppIds.length} apps` });
 
-      // ── Create DB-backed execution plan (service ledger) ──
+      // Create DB-backed execution plan (service ledger)
       const planId = playbook.packageRefs?.planId ?? `plan-${Date.now()}`;
       try {
         const ledgerActions = actionQueue.map((action, idx) => ({
@@ -319,7 +319,7 @@ export function ExecutionStep() {
         console.warn("[ExecutionStep] Failed to create DB ledger plan (non-fatal):", e);
       }
 
-      // ── Phase 1: Apply playbook actions ──
+      // Phase 1: Apply playbook actions
       for (let i = 0; i < actionQueue.length; i++) {
         if (controller.signal.aborted) return;
         const action = actionQueue[i];
@@ -432,7 +432,7 @@ export function ExecutionStep() {
 
       if (controller.signal.aborted) return;
 
-      // ── Phase 2: Apply personalization ──
+      // Phase 2: Apply personalization
       addLogEntry({ level: "info", category: "Personalization", message: "Applying personalization settings" });
       let personalizationFailed = false;
       let personalizationApplied = false;
@@ -496,7 +496,7 @@ export function ExecutionStep() {
       ]);
       operationIndex += 1;
 
-      // ── Phase 3: Install selected apps ──
+      // Phase 3: Install selected apps
       if (selectedAppIds.length > 0) {
         addLogEntry({ level: "info", category: "Apps", message: `Installing ${selectedAppIds.length} selected apps` });
       }
@@ -607,7 +607,7 @@ export function ExecutionStep() {
 
       if (controller.signal.aborted) return;
 
-      // ── Done: complete ledger plan, then read authoritative final state ──
+      // Done: complete ledger plan, then read authoritative final state
       await serviceCall("ledger.completePlan", { planId }).catch(() => {});
 
       // Query ledger for authoritative final counts — fail loud if unavailable

@@ -1,7 +1,7 @@
-// ─── System Analyzer Types ───────────────────────────────────────────────────
+// System Analyzer Types
 // Core type definitions for the multi-step analysis and recommendation pipeline.
 
-// ─── Hardware Analysis ───────────────────────────────────────────────────────
+// Hardware Analysis
 
 export type HardwareTier = "entry" | "mid" | "high" | "flagship";
 
@@ -67,7 +67,7 @@ export interface HardwareAnalysis {
   summaryNotes: string[];
 }
 
-// ─── Software Analysis ───────────────────────────────────────────────────────
+// Software Analysis
 
 export interface WindowsAnalysis {
   version: string;
@@ -94,7 +94,7 @@ export interface SoftwareAnalysis {
   notes: string[];
 }
 
-// ─── Workload Analysis ───────────────────────────────────────────────────────
+// Workload Analysis
 
 export type WorkloadType = "gaming" | "work" | "development" | "content_creation" | "general";
 
@@ -115,7 +115,7 @@ export interface WorkloadAnalysis {
   installedApps?: string[]; // optional — passed in if available
 }
 
-// ─── Thermal Analysis ────────────────────────────────────────────────────────
+// Thermal Analysis
 
 export type ThermalRating = "cool" | "warm" | "hot" | "critical" | "unknown";
 
@@ -132,7 +132,7 @@ export interface ThermalAnalysis {
   notes: string[];
 }
 
-// ─── Network Analysis ────────────────────────────────────────────────────────
+// Network Analysis
 
 export type ConnectionQuality = "excellent" | "good" | "fair" | "poor" | "unknown";
 
@@ -147,7 +147,7 @@ export interface NetworkAnalysis {
   notes: string[];
 }
 
-// ─── Security Analysis ───────────────────────────────────────────────────────
+// Security Analysis
 
 export type SecurityPosture = "hardened" | "standard" | "minimal" | "exposed";
 
@@ -167,7 +167,7 @@ export interface SecurityAnalysis {
   notes: string[];
 }
 
-// ─── Aggregate System Analysis ───────────────────────────────────────────────
+// Aggregate System Analysis
 
 export interface SystemAnalysisResult {
   hardware: HardwareAnalysis;
@@ -179,7 +179,7 @@ export interface SystemAnalysisResult {
   analyzedAt: string;
 }
 
-// ─── Profile Classification ──────────────────────────────────────────────────
+// Profile Classification
 
 export type SystemProfile =
   | "gaming"
@@ -196,7 +196,7 @@ export interface ProfileClassification {
   signals: string[];
 }
 
-// ─── Recommendation Types ─────────────────────────────────────────────────────
+// Recommendation Types
 
 export type RiskLevel = "safe" | "low" | "medium" | "high";
 
@@ -229,7 +229,7 @@ export interface Recommendation {
   tags: string[];
 }
 
-// ─── Risk Assessment ─────────────────────────────────────────────────────────
+// Risk Assessment
 
 export interface RiskFactor {
   factor: string;
@@ -245,7 +245,7 @@ export interface RiskAssessment {
   riskyCount: number;
 }
 
-// ─── Impact Estimation ───────────────────────────────────────────────────────
+// Impact Estimation
 
 export interface ImpactEstimate {
   category: OptimizationCategory;
@@ -256,7 +256,7 @@ export interface ImpactEstimate {
   afterDesc: string;
 }
 
-// ─── Safety Validation ───────────────────────────────────────────────────────
+// Safety Validation
 
 export interface SafetyCheck {
   passed: boolean;
@@ -265,7 +265,7 @@ export interface SafetyCheck {
   checkedAt: string;
 }
 
-// ─── Pipeline State ──────────────────────────────────────────────────────────
+// Pipeline State
 
 export type AnalysisStep =
   | "scan"

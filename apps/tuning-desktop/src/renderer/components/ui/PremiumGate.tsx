@@ -1,4 +1,4 @@
-// ─── Premium Gate ────────────────────────────────────────────────────────────
+// Premium Gate
 // Aspirational premium gating. Each locked feature gets specific value copy
 // that explains what the user gains — not a generic "upgrade to unlock" wall.
 //

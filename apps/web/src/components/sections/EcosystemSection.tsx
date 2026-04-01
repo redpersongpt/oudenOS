@@ -29,7 +29,7 @@ const osFeatures = [
   { icon: Paintbrush,  title: "Visual personalization",   body: "Optional dark mode, accent system, taskbar, and Explorer cleanup." },
 ];
 
-// ─── Feature Card ─────────────────────────────────────────────────────────────
+// Feature Card
 
 function FeatureCard({ icon: Icon, title, body, delay, inView }: {
   icon: typeof Cpu;
@@ -59,7 +59,7 @@ function FeatureCard({ icon: Icon, title, body, delay, inView }: {
   );
 }
 
-// ─── Ecosystem Diagram ────────────────────────────────────────────────────────
+// Ecosystem Diagram
 
 function EcosystemDiagram({ inView }: { inView: boolean }) {
   const layers = [
@@ -187,7 +187,7 @@ function EcosystemDiagram({ inView }: { inView: boolean }) {
   );
 }
 
-// ─── Section Header ───────────────────────────────────────────────────────────
+// Section Header
 
 function SectionHeader({ label, title, subtitle, inView, delay = 0 }: {
   label: string;
@@ -221,7 +221,7 @@ function SectionHeader({ label, title, subtitle, inView, delay = 0 }: {
   );
 }
 
-// ─── Tuning Section ───────────────────────────────────────────────────────────
+// Tuning Section
 
 function TuningSection() {
   const ref = useRef(null);
@@ -249,7 +249,7 @@ function TuningSection() {
   );
 }
 
-// ─── OS Section ───────────────────────────────────────────────────────────────
+// OS Section
 
 function OSSection() {
   const ref = useRef(null);
@@ -277,7 +277,7 @@ function OSSection() {
   );
 }
 
-// ─── Ecosystem Intro ──────────────────────────────────────────────────────────
+// Ecosystem Intro
 
 function EcosystemIntro() {
   const ref = useRef(null);
@@ -330,7 +330,7 @@ function EcosystemIntro() {
   );
 }
 
-// ─── Export ───────────────────────────────────────────────────────────────────
+// Export
 
 export function EcosystemSection() {
   return (

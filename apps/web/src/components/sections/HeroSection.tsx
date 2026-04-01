@@ -22,7 +22,7 @@ function scrollTo(id: string) {
   }
 }
 
-// ─── Dot Grid Background ────────────────────────────────────────────────────
+// Dot Grid Background
 
 function DotGrid() {
   return (
@@ -49,7 +49,7 @@ function DotGrid() {
   );
 }
 
-// ─── Pills — positioned around hex, CSS float (no React stutter) ────────────
+// Pills — positioned around hex, CSS float (no React stutter)
 
 const PILLS = [
   { label: "Debloat",            angle: 270, r: 148 },
@@ -88,7 +88,7 @@ function Pill({ label, angle, r, i }: { label: string; angle: number; r: number;
   );
 }
 
-// ─── Hexagon ─────────────────────────────────────────────────────────────────
+// Hexagon
 
 function HexagonMark() {
   return (
@@ -173,7 +173,7 @@ function HeroVisual() {
   );
 }
 
-// ─── Hero Section ────────────────────────────────────────────────────────────
+// Hero Section
 
 export function HeroSection() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -240,7 +240,7 @@ export function HeroSection() {
       <div className="relative z-10 mx-auto w-full max-w-[1440px] px-6 sm:px-8 lg:px-16 2xl:px-24">
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-8 lg:gap-16 items-center min-h-[85vh]">
 
-          {/* ── Left: text ── */}
+          {/* Left: text */}
           <motion.div
             className="pt-20 lg:pt-0"
             style={{ y: contentY, opacity: contentOpacity }}
@@ -314,7 +314,7 @@ export function HeroSection() {
             </motion.div>
           </motion.div>
 
-          {/* ── Right: visual ── */}
+          {/* Right: visual */}
           <motion.div
             className="hidden lg:flex items-center justify-center"
             style={{ y: visualY, opacity: visualOpacity }}

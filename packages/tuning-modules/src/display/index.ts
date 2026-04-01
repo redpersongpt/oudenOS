@@ -1,4 +1,4 @@
-// ─── Display Tuning Module ──────────────────────────────────────────────────
+// Display Tuning Module
 // Derived from the redcore internal display-tuning notes.
 
 import type { TuningActionDefinition } from "../types.js";

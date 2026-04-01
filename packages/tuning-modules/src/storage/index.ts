@@ -1,4 +1,4 @@
-// ─── Storage Tuning Module ──────────────────────────────────────────────────
+// Storage Tuning Module
 // Derived from the redcore internal storage-optimization notes.
 
 import type { TuningActionDefinition } from "../types.js";

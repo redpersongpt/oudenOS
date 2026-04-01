@@ -39,7 +39,7 @@ const mockLicense = {
 
 type LogLevel = "Error" | "Warn" | "Info" | "Debug";
 
-// ─── Toggle switch ─────────────────────────────────────────────────────────
+// Toggle switch
 function ToggleSwitch({
   enabled,
   onToggle,
@@ -65,7 +65,7 @@ function ToggleSwitch({
   );
 }
 
-// ─── Settings row ──────────────────────────────────────────────────────────
+// Settings row
 function SettingRow({
   label,
   description,
@@ -86,7 +86,7 @@ function SettingRow({
   );
 }
 
-// ─── Info row ──────────────────────────────────────────────────────────────
+// Info row
 function InfoRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex items-center justify-between py-2 first:pt-0">
@@ -113,11 +113,11 @@ export function SettingsPage() {
   const toggle = (id: string) =>
     setToggles((prev) => ({ ...prev, [id]: !prev[id] }));
 
-  // ── Section content ───────────────────────────────────────────────────────
+  // Section content
   const renderSection = (): React.ReactNode => {
     switch (activeSection) {
 
-      // ── Account ─────────────────────────────────────────────────────────
+      // Account
       case "account":
         return (
           <div className="space-y-4">
@@ -151,7 +151,7 @@ export function SettingsPage() {
           </div>
         );
 
-      // ── License ──────────────────────────────────────────────────────────
+      // License
       case "license":
         return (
           <div className="space-y-4">
@@ -187,7 +187,7 @@ export function SettingsPage() {
           </div>
         );
 
-      // ── Preferences ──────────────────────────────────────────────────────
+      // Preferences
       case "preferences":
         return (
           <div className="space-y-5">
@@ -270,7 +270,7 @@ export function SettingsPage() {
           </div>
         );
 
-      // ── Expert ───────────────────────────────────────────────────────────
+      // Expert
       case "expert":
         return (
           <div className="space-y-4">
@@ -318,7 +318,7 @@ export function SettingsPage() {
           </div>
         );
 
-      // ── About ────────────────────────────────────────────────────────────
+      // About
       case "about":
         return (
           <div className="space-y-4">
@@ -365,7 +365,7 @@ export function SettingsPage() {
       animate="visible"
       className="space-y-5"
     >
-      {/* ── Header ── */}
+      {/* Header */}
       <motion.div variants={staggerChild}>
         <Card>
           <div className="flex items-center gap-3 px-5 py-4">
@@ -383,7 +383,7 @@ export function SettingsPage() {
       </motion.div>
 
       <div className="grid grid-cols-4 gap-4">
-        {/* ── Section nav ── */}
+        {/* Section nav */}
         <motion.div variants={staggerChild} className="col-span-1">
           <Card>
             <CardContent>
@@ -431,7 +431,7 @@ export function SettingsPage() {
           </Card>
         </motion.div>
 
-        {/* ── Section content with AnimatePresence ── */}
+        {/* Section content with AnimatePresence */}
         <motion.div variants={staggerChild} className="col-span-3">
           <AnimatePresence mode="wait">
             <motion.div

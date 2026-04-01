@@ -1,4 +1,4 @@
-// ─── Database Connection ──────────────────────────────────────────────────────
+// Database Connection
 // Uses postgres-js driver with canonical schema from @redcore/db.
 // Schema ownership lives in packages/db — this file only owns the connection.
 

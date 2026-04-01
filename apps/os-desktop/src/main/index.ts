@@ -1,4 +1,4 @@
-// ─── redcore · OS — Electron Main Process ───────────────────────────────────
+// redcore · OS — Electron Main Process
 // Production shell for the OS transformation wizard.
 // Compact installer-style window. Communicates with Rust service via stdio.
 //
@@ -16,7 +16,7 @@ import { spawn, execSync, type ChildProcess } from "node:child_process";
 import { createInterface } from "node:readline";
 import { createApbxBundle, type ApbxExportState } from "./lib/apbx";
 
-// ─── Admin detection ────────────────────────────────────────────────────────
+// Admin detection
 
 let isAdmin = false;
 
@@ -32,7 +32,7 @@ function detectAdminStatus(): boolean {
 }
 
 
-// ─── Service connection ─────────────────────────────────────────────────────
+// Service connection
 
 let serviceProcess: ChildProcess | null = null;
 let requestId = 0;
@@ -162,7 +162,7 @@ function resolvePlaybookDirectory(): string | null {
   return candidates[0] ?? null;
 }
 
-// ─── IPC handlers ───────────────────────────────────────────────────────────
+// IPC handlers
 
 ipcMain.handle("service:call", async (_event, method: string, params: unknown) => {
   if (!serviceProcess?.stdin?.writable) {
@@ -280,7 +280,7 @@ ipcMain.handle("wizard:exportPackage", async (_event, rawState: Record<string, u
   }
 });
 
-// ─── Window creation ────────────────────────────────────────────────────────
+// Window creation
 
 function createWindow(): BrowserWindow {
   const preloadPath = path.join(__dirname, "..", "preload", "index.js");
@@ -288,7 +288,7 @@ function createWindow(): BrowserWindow {
 
   const win = new BrowserWindow({
     icon: iconPath,
-    // ── Installer proportions — compact and contained ──
+    // Installer proportions — compact and contained
     width: 820,
     height: 580,
     minWidth: 720,
@@ -296,17 +296,17 @@ function createWindow(): BrowserWindow {
     maxWidth: 1024,
     maxHeight: 720,
 
-    // ── Centered, not maximized ──
+    // Centered, not maximized
     center: true,
     resizable: true,
     maximizable: false, // Installers don't maximize
 
-    // ── Frameless with custom title bar ──
+    // Frameless with custom title bar
     frame: false,
     titleBarStyle: "hidden",
     titleBarOverlay: false,
 
-    // ── Dark background prevents white flash ──
+    // Dark background prevents white flash
     backgroundColor: "#1e1e22",
     show: false, // Show after ready-to-show
 
@@ -355,7 +355,7 @@ function createWindow(): BrowserWindow {
   return win;
 }
 
-// ─── App lifecycle ──────────────────────────────────────────────────────────
+// App lifecycle
 
 // Remove Electron from user-agent string
 app.userAgentFallback = app.userAgentFallback

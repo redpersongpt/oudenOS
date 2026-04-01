@@ -1,4 +1,4 @@
-// ─── Tuning Plan Store ───────────────────────────────────────────────────────
+// Tuning Plan Store
 
 import { create } from "zustand";
 import type { TuningPlan } from "@redcore/shared-schema/tuning";

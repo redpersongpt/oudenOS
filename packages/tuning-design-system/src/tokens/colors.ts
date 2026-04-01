@@ -1,9 +1,9 @@
-// ─── redcore-Tuning Color System ────────────────────────────────────────────
+// redcore-Tuning Color System
 // Premium dark-first palette matching redperson brand banner.
 // Pink-red accent, warm charcoal surfaces, precise hierarchy.
 
 export const colors = {
-  // ─── Brand Red ──────────────────────────────────────────────────────────
+  // Brand Red
   red: {
     50: "#FFF5F7",
     100: "#FFE3E8",
@@ -18,7 +18,7 @@ export const colors = {
     950: "#34070F",
   },
 
-  // ─── Dark surfaces ───────────────────────────────────────────────────────
+  // Dark surfaces
   dark: {
     950: "#1a1a1e",   // deepest background
     900: "#1e1e22",   // primary bg
@@ -30,7 +30,7 @@ export const colors = {
     borderStrong: "#48484f",
   },
 
-  // ─── Ink (text on dark) ─────────────────────────────────────────────────
+  // Ink (text on dark)
   ink: {
     primary: "#f0f0f4",
     secondary: "#a0a0ac",
@@ -38,7 +38,7 @@ export const colors = {
     inverse: "#1e1e22",
   },
 
-  // ─── Success ────────────────────────────────────────────────────────────
+  // Success
   green: {
     50: "#F0FDF4",
     100: "#DCFCE7",
@@ -53,7 +53,7 @@ export const colors = {
     muted: "#2A7A4A",
   },
 
-  // ─── Warning ────────────────────────────────────────────────────────────
+  // Warning
   amber: {
     50: "#FFFBEB",
     100: "#FEF3C7",
@@ -68,7 +68,7 @@ export const colors = {
     muted: "#8A5A00",
   },
 
-  // ─── Info / Accent Blue ─────────────────────────────────────────────────
+  // Info / Accent Blue
   blue: {
     50: "#EFF6FF",
     100: "#DBEAFE",
@@ -83,7 +83,7 @@ export const colors = {
     muted: "#2A4A8A",
   },
 
-  // ─── Neutral (warm gray) ────────────────────────────────────────────────
+  // Neutral (warm gray)
   neutral: {
     0: "#FFFFFF",
     25: "#FAFAF9",
@@ -101,7 +101,7 @@ export const colors = {
     950: "#1A1917",
   },
 
-  // ─── Semantic aliases ───────────────────────────────────────────────────
+  // Semantic aliases
   semantic: {
     background: "#1e1e22",
     surface: "#252529",

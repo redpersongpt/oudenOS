@@ -1,4 +1,4 @@
-// ─── Telemetry Routes ──────────────────────────────────────────────────────────
+// Telemetry Routes
 // Opt-in only. No PII stored. Session ID is a random UUID per app session.
 //
 // POST /events              — batch event ingestion → writes to DB
@@ -16,7 +16,7 @@ import { db, telemetryEvents } from "../db/index.js";
 import { requireAdmin } from "../middleware/admin.js";
 import { telemetryRateLimit } from "../lib/rate-limit.js";
 
-// ─── Event schema ─────────────────────────────────────────────────────────────
+// Event schema
 
 const TelemetryEventSchema = z.object({
   event: z.string().max(64),
@@ -60,10 +60,10 @@ const CrashSchema = z.object({
   topFrame: z.string().max(200).optional(),
 });
 
-// ─── Plugin ───────────────────────────────────────────────────────────────────
+// Plugin
 
 export const telemetryRoutes: FastifyPluginAsync = async (app) => {
-  // ── POST /events ─────────────────────────────────────────────────────────
+  // POST /events
   app.post("/events", { preHandler: telemetryRateLimit() }, async (request, reply) => {
     const parsed = BatchSchema.safeParse(request.body);
     if (!parsed.success) {
@@ -98,7 +98,7 @@ export const telemetryRoutes: FastifyPluginAsync = async (app) => {
     });
   });
 
-  // ── POST /opt-out ─────────────────────────────────────────────────────────
+  // POST /opt-out
   app.post("/opt-out", { preHandler: telemetryRateLimit() }, async (request, reply) => {
     const parsed = z.object({ sessionId: z.string().uuid() }).safeParse(request.body);
     if (!parsed.success) return reply.code(400).send({ error: "Invalid body" });
@@ -111,7 +111,7 @@ export const telemetryRoutes: FastifyPluginAsync = async (app) => {
     return reply.send({ purged: result.length });
   });
 
-  // ── POST /crash ───────────────────────────────────────────────────────────
+  // POST /crash
   app.post("/crash", { preHandler: telemetryRateLimit(5) }, async (request, reply) => {
     const parsed = CrashSchema.safeParse(request.body);
     if (!parsed.success) return reply.code(400).send({ error: "Invalid crash report" });
@@ -131,7 +131,7 @@ export const telemetryRoutes: FastifyPluginAsync = async (app) => {
     return reply.send({ accepted: true });
   });
 
-  // ── GET /analytics/overview ───────────────────────────────────────────────
+  // GET /analytics/overview
   app.get("/analytics/overview", { preHandler: requireAdmin }, async (_request, reply) => {
     const now = new Date();
     const day1ago = new Date(now.getTime() - 1 * 24 * 60 * 60 * 1000);
@@ -164,7 +164,7 @@ export const telemetryRoutes: FastifyPluginAsync = async (app) => {
     });
   });
 
-  // ── GET /analytics/features ────────────────────────────────────────────────
+  // GET /analytics/features
   app.get("/analytics/features", { preHandler: requireAdmin }, async (_request, reply) => {
     const rows = await db
       .select({
@@ -188,7 +188,7 @@ export const telemetryRoutes: FastifyPluginAsync = async (app) => {
     });
   });
 
-  // ── GET /analytics/errors ─────────────────────────────────────────────────
+  // GET /analytics/errors
   app.get("/analytics/errors", { preHandler: requireAdmin }, async (_request, reply) => {
     const day30ago = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
 
@@ -227,7 +227,7 @@ export const telemetryRoutes: FastifyPluginAsync = async (app) => {
     });
   });
 
-  // ── GET /analytics/hardware ───────────────────────────────────────────────
+  // GET /analytics/hardware
   app.get("/analytics/hardware", { preHandler: requireAdmin }, async (_request, reply) => {
     const cpuRows = await db
       .select({

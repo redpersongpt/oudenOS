@@ -1,4 +1,4 @@
-// ─── Reboot / Resume Step ────────────────────────────────────────────────────
+// Reboot / Resume Step
 // If any executed action requires reboot, shows restart prompt.
 // On resume, loads remainingActions from DB ledger and re-dispatches them.
 
@@ -114,7 +114,7 @@ export function RebootResumeStep() {
     completeStep("reboot-resume");
   };
 
-  // ── True resume: load remaining actions from DB ledger and re-dispatch ──
+  // True resume: load remaining actions from DB ledger and re-dispatch
   const handleResume = async () => {
     setResumePhase("resuming");
     const controller = new AbortController();
@@ -140,7 +140,7 @@ export function RebootResumeStep() {
         return;
       }
 
-      // ── Re-dispatch remaining actions through execute.applyAction ──
+      // Re-dispatch remaining actions through execute.applyAction
       setResumePhase("executing");
       setResumeProgress({ completed: 0, total: remainingActions.length, failed: 0 });
 

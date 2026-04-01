@@ -1,10 +1,10 @@
-// ─── redcore-OS Transformation Actions ───────────────────────────────────────
+// redcore-OS Transformation Actions
 // Deeper than redcore-Tuning: AppX removal, task management, feature cleanup.
 // Every action is profile-aware and respects Work PC preservation flags.
 
 import type { TransformAction } from "./transformation.js";
 
-// ─── AppX Bloatware Removal ─────────────────────────────────────────────────
+// AppX Bloatware Removal
 
 export const APPX_REMOVAL_ACTIONS: TransformAction[] = [
   {
@@ -113,7 +113,7 @@ export const APPX_REMOVAL_ACTIONS: TransformAction[] = [
   },
 ];
 
-// ─── Scheduled Task Cleanup ─────────────────────────────────────────────────
+// Scheduled Task Cleanup
 
 export const TASK_CLEANUP_ACTIONS: TransformAction[] = [
   {
@@ -211,7 +211,7 @@ export const TASK_CLEANUP_ACTIONS: TransformAction[] = [
   },
 ];
 
-// ─── Work PC Preservation Actions ───────────────────────────────────────────
+// Work PC Preservation Actions
 
 export const WORK_PC_PRESERVATION: TransformAction[] = [
   {

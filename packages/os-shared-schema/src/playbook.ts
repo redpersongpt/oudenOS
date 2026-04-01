@@ -1,4 +1,4 @@
-// ─── Playbook Resolution Types ───────────────────────────────────────────────
+// Playbook Resolution Types
 // The playbook-native transformation flow: resolve a profile + preset into
 // a structured plan with phases and per-action metadata.
 
@@ -6,7 +6,7 @@ import type { MachineProfile } from "./profiles.js";
 
 export type TransformPreset = "conservative" | "balanced" | "aggressive" | "custom";
 
-// ─── Resolved playbook ───────────────────────────────────────────────────────
+// Resolved playbook
 
 export interface ResolvedPlaybook {
   playbookName: string;
@@ -52,7 +52,7 @@ export interface PlaybookResolvedAction {
   tags: string[];
 }
 
-// ─── App bundle ──────────────────────────────────────────────────────────────
+// App bundle
 
 export interface RecommendedApp {
   id: string;

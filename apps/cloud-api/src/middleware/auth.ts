@@ -1,4 +1,4 @@
-// ─── Auth Middleware ───────────────────────────────────────────────────────────
+// Auth Middleware
 // Validates Bearer JWT access tokens using jose.
 // Attaches userId and role to the request object.
 

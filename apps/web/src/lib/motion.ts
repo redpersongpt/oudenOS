@@ -1,6 +1,6 @@
 import type { Variants, Transition } from "framer-motion";
 
-// ─── Easing Curves ───
+// Easing Curves
 export const easing = {
   default: [0.25, 0.1, 0.25, 1.0] as [number, number, number, number],
   enter: [0.0, 0.0, 0.2, 1.0] as [number, number, number, number],
@@ -8,7 +8,7 @@ export const easing = {
   emphasized: [0.2, 0.0, 0.0, 1.0] as [number, number, number, number],
 };
 
-// ─── Duration Tokens ───
+// Duration Tokens
 export const duration = {
   fast: 0.15,
   normal: 0.3,
@@ -18,7 +18,7 @@ export const duration = {
   hero: 1.4,
 };
 
-// ─── Spring Presets ───
+// Spring Presets
 export const spring = {
   snappy: { type: "spring" as const, stiffness: 550, damping: 32, mass: 1 },
   smooth: { type: "spring" as const, stiffness: 280, damping: 28, mass: 1 },
@@ -26,7 +26,7 @@ export const spring = {
   bounce: { type: "spring" as const, stiffness: 340, damping: 16, mass: 1 },
 };
 
-// ─── Transition Presets ───
+// Transition Presets
 export const transition = {
   default: { duration: duration.normal, ease: easing.default } satisfies Transition,
   fast: { duration: duration.fast, ease: easing.default } satisfies Transition,
@@ -35,31 +35,31 @@ export const transition = {
   exit: { duration: duration.fast, ease: easing.exit } satisfies Transition,
 };
 
-// ─── Fade In ───
+// Fade In
 export const fadeIn: Variants = {
   hidden: { opacity: 0 },
   visible: { opacity: 1, transition: transition.default },
 };
 
-// ─── Slide Up ───
+// Slide Up
 export const slideUp: Variants = {
   hidden: { opacity: 0, y: 40 },
   visible: { opacity: 1, y: 0, transition: { duration: duration.slow, ease: easing.enter } },
 };
 
-// ─── Slide Up Subtle ───
+// Slide Up Subtle
 export const slideUpSubtle: Variants = {
   hidden: { opacity: 0, y: 20 },
   visible: { opacity: 1, y: 0, transition: { duration: duration.normal, ease: easing.enter } },
 };
 
-// ─── Scale In ───
+// Scale In
 export const scaleIn: Variants = {
   hidden: { opacity: 0, scale: 0.92 },
   visible: { opacity: 1, scale: 1, transition: spring.smooth },
 };
 
-// ─── Stagger Container ───
+// Stagger Container
 export const staggerContainer = (staggerMs = 0.08, delayMs = 0.1): Variants => ({
   hidden: { opacity: 0 },
   visible: {
@@ -68,7 +68,7 @@ export const staggerContainer = (staggerMs = 0.08, delayMs = 0.1): Variants => (
   },
 });
 
-// ─── Stagger Child ───
+// Stagger Child
 export const staggerChild: Variants = {
   hidden: { opacity: 0, y: 24 },
   visible: {
@@ -78,19 +78,19 @@ export const staggerChild: Variants = {
   },
 };
 
-// ─── Card Hover ───
+// Card Hover
 export const cardHover = {
   rest: { y: 0, transition: spring.snappy },
   hover: { y: -4, transition: spring.snappy },
 };
 
-// ─── Button Press ───
+// Button Press
 export const buttonPress = {
   whileTap: { scale: 0.97 },
   transition: spring.snappy,
 };
 
-// ─── Hero Text Reveal ───
+// Hero Text Reveal
 export const heroTextReveal: Variants = {
   hidden: { opacity: 0, y: 60, filter: "blur(8px)" },
   visible: {
@@ -101,13 +101,13 @@ export const heroTextReveal: Variants = {
   },
 };
 
-// ─── Count Up ───
+// Count Up
 export const countUpTransition = {
   duration: duration.hero,
   ease: easing.emphasized,
 };
 
-// ─── Parallax Layer (for scroll offset) ───
+// Parallax Layer (for scroll offset)
 export const parallaxOffset = (offset: number): Variants => ({
   hidden: { y: offset },
   visible: { y: 0, transition: { duration: duration.hero, ease: easing.emphasized } },

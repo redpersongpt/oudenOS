@@ -1,10 +1,10 @@
-// ─── Auth Middleware ─────────────────────────────────────────────────────────
+// Auth Middleware
 // Fastify preHandler for tuning-api and os-api.
 // Validates Bearer token using shared auth-core.
 
 import { verifyAccessToken } from "./tokens.js";
 
-// ─── Fastify Types (minimal, avoids fastify dependency) ─────────────────────
+// Fastify Types (minimal, avoids fastify dependency)
 
 interface FastifyRequest {
   headers: Record<string, string | string[] | undefined>;
@@ -17,7 +17,7 @@ interface FastifyReply {
   send: (payload: unknown) => void;
 }
 
-// ─── requireAuth ────────────────────────────────────────────────────────────
+// requireAuth
 
 export async function requireAuth(
   request: FastifyRequest,
@@ -54,7 +54,7 @@ export async function requireAuth(
   }
 }
 
-// ─── requireAdmin ───────────────────────────────────────────────────────────
+// requireAdmin
 
 export async function requireAdmin(
   request: FastifyRequest,

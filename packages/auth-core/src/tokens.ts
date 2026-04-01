@@ -1,4 +1,4 @@
-// ─── JWT Token Operations ────────────────────────────────────────────────────
+// JWT Token Operations
 // Shared across web, tuning-api, and os-api. Uses jose (modern JWT library).
 // All services must set the same JWT_SECRET env var.
 
@@ -19,7 +19,7 @@ function getSecret(): Uint8Array {
   return new TextEncoder().encode(secret);
 }
 
-// ─── Sign ───────────────────────────────────────────────────────────────────
+// Sign
 
 export async function signAccessToken(
   userId: string,
@@ -44,7 +44,7 @@ export async function signRefreshToken(userId: string): Promise<string> {
     .sign(getSecret());
 }
 
-// ─── Verify ─────────────────────────────────────────────────────────────────
+// Verify
 
 export async function verifyAccessToken(
   token: string,

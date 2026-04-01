@@ -1,4 +1,4 @@
-// ─── CPU Tuning Module ──────────────────────────────────────────────────────
+// CPU Tuning Module
 // Derived from the redcore internal CPU-optimization notes.
 
 import type { TuningActionDefinition } from "../types.js";

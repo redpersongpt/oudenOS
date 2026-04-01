@@ -1,4 +1,4 @@
-// ─── Subscription Routes ──────────────────────────────────────────────────────
+// Subscription Routes
 
 import type { FastifyPluginAsync } from "fastify";
 import Stripe from "stripe";
@@ -55,7 +55,7 @@ async function getOrCreateStripeCustomer(userId: string): Promise<string> {
 }
 
 export const subscriptionRoutes: FastifyPluginAsync = async (app) => {
-  // ── GET /plans ────────────────────────────────────────────────────────────
+  // GET /plans
   app.get("/plans", async (_request, reply) => {
     return reply.send({
       plans: [
@@ -87,7 +87,7 @@ export const subscriptionRoutes: FastifyPluginAsync = async (app) => {
     });
   });
 
-  // ── GET /status ───────────────────────────────────────────────────────────
+  // GET /status
   app.get("/status", { preHandler: requireAuth }, async (request, reply) => {
     const [sub] = await db
       .select()
@@ -109,7 +109,7 @@ export const subscriptionRoutes: FastifyPluginAsync = async (app) => {
     });
   });
 
-  // ── POST /checkout ────────────────────────────────────────────────────────
+  // POST /checkout
   app.post("/checkout", { preHandler: requireAuth }, async (request, reply) => {
     const parse = checkoutSchema.safeParse(request.body);
     if (!parse.success) {
@@ -140,7 +140,7 @@ export const subscriptionRoutes: FastifyPluginAsync = async (app) => {
     return reply.send({ checkoutUrl: session.url, sessionId: session.id });
   });
 
-  // ── POST /portal ──────────────────────────────────────────────────────────
+  // POST /portal
   app.post("/portal", { preHandler: requireAuth }, async (request, reply) => {
     const [user] = await db
       .select({ stripeCustomerId: users.stripeCustomerId })
@@ -160,7 +160,7 @@ export const subscriptionRoutes: FastifyPluginAsync = async (app) => {
     return reply.send({ portalUrl: session.url });
   });
 
-  // ── POST /cancel ──────────────────────────────────────────────────────────
+  // POST /cancel
   app.post("/cancel", { preHandler: requireAuth }, async (request, reply) => {
     const parse = cancelSchema.safeParse(request.body ?? {});
     if (!parse.success) {
@@ -196,7 +196,7 @@ export const subscriptionRoutes: FastifyPluginAsync = async (app) => {
     return reply.send({ ok: true, cancelAtPeriodEnd: parse.data.atPeriodEnd });
   });
 
-  // ── POST /reactivate ──────────────────────────────────────────────────────
+  // POST /reactivate
   app.post("/reactivate", { preHandler: requireAuth }, async (request, reply) => {
     const [sub] = await db
       .select()
@@ -224,7 +224,7 @@ export const subscriptionRoutes: FastifyPluginAsync = async (app) => {
     return reply.send({ ok: true });
   });
 
-  // ── GET /invoices ─────────────────────────────────────────────────────────
+  // GET /invoices
   app.get("/invoices", { preHandler: requireAuth }, async (request, reply) => {
     const [user] = await db
       .select({ stripeCustomerId: users.stripeCustomerId })

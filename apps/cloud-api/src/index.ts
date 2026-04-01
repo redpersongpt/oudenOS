@@ -1,4 +1,4 @@
-// ─── redcore-Tuning Cloud API ──────────────────────────────────────────────────
+// redcore-Tuning Cloud API
 // Responsibilities:
 //   accounts · auth · subscriptions · licensing · device binding
 //   anonymized telemetry · update metadata
@@ -20,7 +20,7 @@ import { updateRoutes } from "./routes/updates.js";
 import { adminRoutes } from "./routes/admin.js";
 import { donationRoutes } from "./routes/donations.js";
 
-// ─── Server setup ─────────────────────────────────────────────────────────────
+// Server setup
 
 const app = Fastify({
   logger: {
@@ -34,17 +34,17 @@ const app = Fastify({
   trustProxy: 1,
 });
 
-// ─── Bootstrap ────────────────────────────────────────────────────────────────
+// Bootstrap
 
 async function start(): Promise<void> {
-  // ── Validate required env vars at startup ──────────────────────────────
+  // Validate required env vars at startup
   const required = ["JWT_SECRET", "DATABASE_URL", "STRIPE_SECRET_KEY", "STRIPE_WEBHOOK_SECRET"] as const;
   const missing = required.filter((k) => !process.env[k]);
   if (missing.length > 0) {
     throw new Error(`Missing required env vars: ${missing.join(", ")}`);
   }
 
-  // ── Plugins ───────────────────────────────────────────────────────────────
+  // Plugins
 
   // Raw body — must be registered before any routes that need it (Stripe webhooks)
   await app.register(rawBody, {
@@ -68,7 +68,7 @@ async function start(): Promise<void> {
     maxAge: 86400,
   });
 
-  // ── Routes ────────────────────────────────────────────────────────────────
+  // Routes
 
   await app.register(authRoutes,         { prefix: "/v1/auth" });
   await app.register(usersRoutes,        { prefix: "/v1/users" });
@@ -80,7 +80,7 @@ async function start(): Promise<void> {
   await app.register(adminRoutes,        { prefix: "/v1/admin" });
   await app.register(donationRoutes,     { prefix: "/v1/donations" });
 
-  // ── Health check ──────────────────────────────────────────────────────────
+  // Health check
 
   app.get("/health", async () => ({
     status: "ok",
@@ -89,13 +89,13 @@ async function start(): Promise<void> {
     uptime: process.uptime(),
   }));
 
-  // ── Global 404 ────────────────────────────────────────────────────────────
+  // Global 404
 
   app.setNotFoundHandler((_request, reply) => {
     reply.code(404).send({ error: "Not found" });
   });
 
-  // ── Global error handler ──────────────────────────────────────────────────
+  // Global error handler
 
   app.setErrorHandler((error: { statusCode?: number; message: string; stack?: string }, request, reply) => {
     app.log.error({ err: error, url: request.url, method: request.method }, "Unhandled error");
@@ -111,12 +111,12 @@ async function start(): Promise<void> {
     }
   });
 
-  // ── Listen ────────────────────────────────────────────────────────────────
+  // Listen
 
   const port = parseInt(process.env.PORT ?? "3003", 10);
   const host = process.env.HOST ?? "0.0.0.0";
 
-  // ── Database preflight: fail fast on schema mismatch ──
+  // Database preflight: fail fast on schema mismatch
   if (process.env.SKIP_PREFLIGHT !== "1") {
     const { db } = await import("@redcore/db");
     const { preflightOrDie } = await import("@redcore/db/preflight");
@@ -131,7 +131,7 @@ async function start(): Promise<void> {
   app.log.info(`redcore Cloud API listening on ${host}:${port}`);
 }
 
-// ─── Graceful shutdown ────────────────────────────────────────────────────────
+// Graceful shutdown
 
 async function shutdown(signal: string): Promise<void> {
   app.log.info({ signal }, "Shutdown signal received");
@@ -142,7 +142,7 @@ async function shutdown(signal: string): Promise<void> {
 process.on("SIGTERM", () => shutdown("SIGTERM"));
 process.on("SIGINT",  () => shutdown("SIGINT"));
 
-// ─── Start ────────────────────────────────────────────────────────────────────
+// Start
 
 start().catch((err) => {
   console.error("Fatal: failed to start Cloud API:", err);

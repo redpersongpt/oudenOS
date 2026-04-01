@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { TriangleAlert } from "lucide-react";
 
-// ─── DangerZone ───────────────────────────────────────────────────────────────
+// DangerZone
 // Visual container for destructive or high-risk operations.
 // Amber border + subtle amber fill signals "proceed with caution".
 //
@@ -95,7 +95,7 @@ export function DangerZone({
   );
 }
 
-// ─── DangerZoneDivider ────────────────────────────────────────────────────────
+// DangerZoneDivider
 // Horizontal separator inside a DangerZone with optional label.
 
 export function DangerZoneDivider({ label }: { label?: string }) {

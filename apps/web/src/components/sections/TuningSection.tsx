@@ -23,7 +23,7 @@ import {
   easing,
 } from "@/lib/motion";
 
-// ─── Types ───────────────────────────────────────────────────────────────────
+// Types
 
 interface TuningStep {
   number: number;
@@ -38,7 +38,7 @@ interface TuningModule {
   icon: LucideIcon;
 }
 
-// ─── Data ────────────────────────────────────────────────────────────────────
+// Data
 
 const tuningSteps: TuningStep[] = [
   {
@@ -112,7 +112,7 @@ const tuningModules: TuningModule[] = [
   },
 ];
 
-// ─── Timeline Step ───────────────────────────────────────────────────────────
+// Timeline Step
 
 function StepNode({
   step,
@@ -195,7 +195,7 @@ function StepNode({
   );
 }
 
-// ─── Module Card ─────────────────────────────────────────────────────────────
+// Module Card
 
 function ModuleCard({ module }: { module: TuningModule }) {
   const Icon = module.icon;
@@ -222,7 +222,7 @@ function ModuleCard({ module }: { module: TuningModule }) {
   );
 }
 
-// ─── Main Component ──────────────────────────────────────────────────────────
+// Main Component
 
 export function TuningSection() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -253,7 +253,7 @@ export function TuningSection() {
       <div className="section-divide" aria-hidden="true" />
 
       <div className="mx-auto max-w-7xl px-6 py-28 md:py-36 lg:px-8 lg:py-44">
-        {/* ─── Header ─── */}
+        {/* Header */}
         <motion.div
           variants={staggerContainer(0.1, 0)}
           initial="hidden"
@@ -276,7 +276,7 @@ export function TuningSection() {
           </motion.p>
         </motion.div>
 
-        {/* ─── Tuning Journey — horizontal timeline ─── */}
+        {/* Tuning Journey — horizontal timeline */}
         <div ref={timelineRef} className="mt-16">
           {/* Desktop: horizontal grid */}
           <div className="hidden lg:grid lg:grid-cols-6 lg:gap-6">
@@ -334,7 +334,7 @@ export function TuningSection() {
           </div>
         </div>
 
-        {/* ─── Module Grid ─── */}
+        {/* Module Grid */}
         <motion.div
           ref={modulesRef}
           variants={staggerContainer(0.06, 0.1)}
@@ -351,7 +351,7 @@ export function TuningSection() {
           ))}
         </motion.div>
 
-        {/* ─── BIOS Guidance Callout ─── */}
+        {/* BIOS Guidance Callout */}
         <motion.div
           ref={biosRef}
           initial={{ opacity: 0, y: 24 }}

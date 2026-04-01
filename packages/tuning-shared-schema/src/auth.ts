@@ -1,10 +1,10 @@
-// ─── Auth & SaaS Types ────────────────────────────────────────────────────────
+// Auth & SaaS Types
 // Shared request/response shapes for the cloud auth + subscription API.
 // Used by both the main process (IPC handlers) and renderer (cloud-api client).
 
 import type { SubscriptionTier, SubscriptionStatus } from "./license.js";
 
-// ─── User ─────────────────────────────────────────────────────────────────────
+// User
 
 export interface UserProfile {
   id: string;
@@ -15,7 +15,7 @@ export interface UserProfile {
   createdAt: string;
 }
 
-// ─── Auth requests / responses ────────────────────────────────────────────────
+// Auth requests / responses
 
 export interface AuthLoginRequest {
   email: string;
@@ -43,7 +43,7 @@ export interface AuthRefreshResponse {
   refreshToken: string;
 }
 
-// ─── Subscription ─────────────────────────────────────────────────────────────
+// Subscription
 
 export interface SubscriptionDetails {
   tier: SubscriptionTier;
@@ -61,7 +61,7 @@ export interface LicenseActivateResponse {
   success: boolean;
 }
 
-// ─── IPC envelope ─────────────────────────────────────────────────────────────
+// IPC envelope
 // All auth IPC handlers return this shape so the renderer can check errors
 // without parsing status codes.
 

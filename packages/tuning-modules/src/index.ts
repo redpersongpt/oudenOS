@@ -1,4 +1,4 @@
-// ─── Tuning Module Registry ─────────────────────────────────────────────────
+// Tuning Module Registry
 // Each module defines tuning actions for a specific domain.
 // Actions are consumed by the Rust planner/executor via JSON serialization.
 

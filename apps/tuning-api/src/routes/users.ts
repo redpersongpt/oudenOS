@@ -1,4 +1,4 @@
-// ─── User Management Routes ───────────────────────────────────────────────────
+// User Management Routes
 
 import type { FastifyPluginAsync } from "fastify";
 import bcrypt from "bcryptjs";
@@ -58,7 +58,7 @@ const machineActivationSchema = z.object({
 });
 
 export const usersRoutes: FastifyPluginAsync = async (app) => {
-  // ── GET /me ───────────────────────────────────────────────────────────────
+  // GET /me
   app.get("/me", { preHandler: requireAuth }, async (request, reply) => {
     const [user] = await db
       .select({
@@ -106,7 +106,7 @@ export const usersRoutes: FastifyPluginAsync = async (app) => {
     });
   });
 
-  // ── PATCH /me ─────────────────────────────────────────────────────────────
+  // PATCH /me
   app.patch("/me", { preHandler: requireAuth }, async (request, reply) => {
     const parse = updateProfileSchema.safeParse(request.body);
     if (!parse.success) {
@@ -121,7 +121,7 @@ export const usersRoutes: FastifyPluginAsync = async (app) => {
     return reply.send({ user: updated });
   });
 
-  // ── POST /me/email ────────────────────────────────────────────────────────
+  // POST /me/email
   app.post("/me/email", { preHandler: requireAuth }, async (request, reply) => {
     const parse = changeEmailSchema.safeParse(request.body);
     if (!parse.success) {
@@ -166,7 +166,7 @@ export const usersRoutes: FastifyPluginAsync = async (app) => {
     return reply.send({ ok: true, message: "Email updated. Please verify your new email address." });
   });
 
-  // ── POST /me/password ─────────────────────────────────────────────────────
+  // POST /me/password
   app.post("/me/password", { preHandler: requireAuth }, async (request, reply) => {
     const parse = changePasswordSchema.safeParse(request.body);
     if (!parse.success) {
@@ -194,7 +194,7 @@ export const usersRoutes: FastifyPluginAsync = async (app) => {
     return reply.send({ ok: true });
   });
 
-  // ── POST /me/avatar ───────────────────────────────────────────────────────
+  // POST /me/avatar
   // In production this would upload to S3/R2 and store the CDN URL.
   // Here we accept a base64 data URL and store it directly (demo only).
   app.post("/me/avatar", { preHandler: requireAuth }, async (request, reply) => {
@@ -216,7 +216,7 @@ export const usersRoutes: FastifyPluginAsync = async (app) => {
     return reply.send({ avatarUrl: parse.data.dataUrl });
   });
 
-  // ── GET /me/machines ──────────────────────────────────────────────────────
+  // GET /me/machines
   app.get("/me/machines", { preHandler: requireAuth }, async (request, reply) => {
     const machines = await db
       .select({
@@ -234,7 +234,7 @@ export const usersRoutes: FastifyPluginAsync = async (app) => {
     return reply.send({ machines });
   });
 
-  // ── POST /me/machines ─────────────────────────────────────────────────────
+  // POST /me/machines
   app.post("/me/machines", { preHandler: requireAuth }, async (request, reply) => {
     const parse = machineActivationSchema.safeParse(request.body);
     if (!parse.success) {
@@ -293,7 +293,7 @@ export const usersRoutes: FastifyPluginAsync = async (app) => {
     return reply.code(201).send({ ok: true, activated: true, machine: activation });
   });
 
-  // ── DELETE /me/machines/:machineId ────────────────────────────────────────
+  // DELETE /me/machines/:machineId
   app.delete("/me/machines/:machineId", { preHandler: requireAuth }, async (request, reply) => {
     const { machineId } = request.params as { machineId: string };
     await db
@@ -308,7 +308,7 @@ export const usersRoutes: FastifyPluginAsync = async (app) => {
     return reply.send({ ok: true });
   });
 
-  // ── GET /me/connected-accounts ────────────────────────────────────────────
+  // GET /me/connected-accounts
   app.get("/me/connected-accounts", { preHandler: requireAuth }, async (request, reply) => {
     const accounts = await db
       .select({
@@ -323,7 +323,7 @@ export const usersRoutes: FastifyPluginAsync = async (app) => {
     return reply.send({ accounts });
   });
 
-  // ── POST /me/connected-accounts ───────────────────────────────────────────
+  // POST /me/connected-accounts
   app.post("/me/connected-accounts", { preHandler: requireAuth }, async (request, reply) => {
     const parse = oauthLinkSchema.safeParse(request.body);
     if (!parse.success) {
@@ -355,7 +355,7 @@ export const usersRoutes: FastifyPluginAsync = async (app) => {
     return reply.code(201).send({ account });
   });
 
-  // ── DELETE /me/connected-accounts/:provider ───────────────────────────────
+  // DELETE /me/connected-accounts/:provider
   app.delete("/me/connected-accounts/:provider", { preHandler: requireAuth }, async (request, reply) => {
     const { provider } = request.params as { provider: string };
     if (provider !== "google" && provider !== "apple") {
@@ -372,7 +372,7 @@ export const usersRoutes: FastifyPluginAsync = async (app) => {
     return reply.send({ ok: true });
   });
 
-  // ── PATCH /me/preferences ─────────────────────────────────────────────────
+  // PATCH /me/preferences
   app.patch("/me/preferences", { preHandler: requireAuth }, async (request, reply) => {
     const parse = preferencesSchema.safeParse(request.body);
     if (!parse.success) {
@@ -401,7 +401,7 @@ export const usersRoutes: FastifyPluginAsync = async (app) => {
     }
   });
 
-  // ── GET /me/export ────────────────────────────────────────────────────────
+  // GET /me/export
   app.get("/me/export", { preHandler: requireAuth }, async (request, reply) => {
     const [user] = await db
       .select({ id: users.id, email: users.email, displayName: users.displayName, createdAt: users.createdAt })
@@ -444,7 +444,7 @@ export const usersRoutes: FastifyPluginAsync = async (app) => {
     });
   });
 
-  // ── DELETE /me ────────────────────────────────────────────────────────────
+  // DELETE /me
   app.delete("/me", { preHandler: requireAuth }, async (request, reply) => {
     const body = request.body as { password?: string; confirmation?: string } | null;
     if (body?.confirmation !== "DELETE MY ACCOUNT") {

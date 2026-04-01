@@ -145,7 +145,7 @@ export function RollbackCenterPage() {
         animate="visible"
         className="space-y-5"
       >
-        {/* ── Header ── */}
+        {/* Header */}
         <motion.div variants={staggerChild}>
           <Card>
             <div className="flex items-center justify-between px-5 py-4">
@@ -181,7 +181,7 @@ export function RollbackCenterPage() {
           </Card>
         </motion.div>
 
-        {/* ── Loading ── */}
+        {/* Loading */}
         {loading && (
           <motion.div variants={staggerChild}>
             <Card>
@@ -193,7 +193,7 @@ export function RollbackCenterPage() {
           </motion.div>
         )}
 
-        {/* ── Empty ── */}
+        {/* Empty */}
         {!loading && snapshots.length === 0 && (
           <motion.div variants={staggerChild}>
             <Card>
@@ -220,7 +220,7 @@ export function RollbackCenterPage() {
           </motion.div>
         )}
 
-        {/* ── Main layout: timeline + detail ── */}
+        {/* Main layout: timeline + detail */}
         {!loading && snapshots.length > 0 && (
           <div className="grid grid-cols-3 gap-4">
             {/* Timeline column */}
@@ -356,7 +356,7 @@ export function RollbackCenterPage() {
             {/* Detail column */}
             <motion.div variants={staggerChild} className="col-span-2">
               <AnimatePresence mode="wait">
-                {/* ── Restore progress overlay ── */}
+                {/* Restore progress overlay */}
                 {isRestoring ? (
                   <motion.div
                     key="restoring"

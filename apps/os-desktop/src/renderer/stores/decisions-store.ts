@@ -1,4 +1,4 @@
-// ─── Questionnaire Decisions Store ──────────────────────────────────────────
+// Questionnaire Decisions Store
 // Stores the expanded playbook strategy answers. These answers are later
 // projected onto the resolved playbook so the Apply step executes exactly what
 // the user chose instead of a fixed preset.

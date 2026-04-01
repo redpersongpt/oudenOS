@@ -1,4 +1,4 @@
-// ─── Admin Routes ──────────────────────────────────────────────────────────────
+// Admin Routes
 // All routes require admin JWT.
 // Every mutating action is recorded in admin_audit_log.
 //
@@ -29,7 +29,7 @@ import {
 } from "../db/index.js";
 import { requireAdmin } from "../middleware/admin.js";
 
-// ─── Schemas ──────────────────────────────────────────────────────────────────
+// Schemas
 
 const updateUserSchema = z.object({
   name: z.string().min(1).max(100).optional(),
@@ -50,7 +50,7 @@ const giftPremiumSchema = z.object({
   reason: z.string().min(1),
 });
 
-// ─── Audit helper ─────────────────────────────────────────────────────────────
+// Audit helper
 
 async function audit(opts: {
   adminId: string;
@@ -72,13 +72,13 @@ async function audit(opts: {
   });
 }
 
-// ─── Plugin ───────────────────────────────────────────────────────────────────
+// Plugin
 
 export const adminRoutes: FastifyPluginAsync = async (app) => {
   // All admin routes require admin JWT
   app.addHook("preHandler", requireAdmin);
 
-  // ── GET /users ────────────────────────────────────────────────────────────
+  // GET /users
   app.get<{ Querystring: { page?: string; limit?: string; search?: string; role?: string } }>(
     "/users",
     async (request, reply) => {
@@ -153,7 +153,7 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
     },
   );
 
-  // ── GET /users/:id ────────────────────────────────────────────────────────
+  // GET /users/:id
   app.get<{ Params: { id: string } }>("/users/:id", async (request, reply) => {
     const { id } = request.params;
 
@@ -214,7 +214,7 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
     return reply.send({ user, subscription: sub ?? null, machines, recentPayments });
   });
 
-  // ── PATCH /users/:id ──────────────────────────────────────────────────────
+  // PATCH /users/:id
   app.patch<{ Params: { id: string }; Body: unknown }>("/users/:id", async (request, reply) => {
     const parse = updateUserSchema.safeParse(request.body);
     if (!parse.success) {
@@ -261,7 +261,7 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
     return reply.send({ user: updated });
   });
 
-  // ── DELETE /users/:id ─────────────────────────────────────────────────────
+  // DELETE /users/:id
   app.delete<{ Params: { id: string } }>("/users/:id", async (request, reply) => {
     const { id } = request.params;
 
@@ -301,7 +301,7 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
     return reply.send({ ok: true, deletedUserId: id });
   });
 
-  // ── POST /users/:id/subscription ─────────────────────────────────────────
+  // POST /users/:id/subscription
   app.post<{ Params: { id: string }; Body: unknown }>(
     "/users/:id/subscription",
     async (request, reply) => {
@@ -363,7 +363,7 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
     },
   );
 
-  // ── POST /users/:id/gift-premium ──────────────────────────────────────────
+  // POST /users/:id/gift-premium
   app.post<{ Params: { id: string }; Body: unknown }>(
     "/users/:id/gift-premium",
     async (request, reply) => {
@@ -411,7 +411,7 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
     },
   );
 
-  // ── GET /stats/revenue ────────────────────────────────────────────────────
+  // GET /stats/revenue
   app.get("/stats/revenue", async (_request, reply) => {
     const now = new Date();
     const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -477,7 +477,7 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
     });
   });
 
-  // ── GET /stats/telemetry ──────────────────────────────────────────────────
+  // GET /stats/telemetry
   app.get("/stats/telemetry", async (_request, reply) => {
     // Delegate to telemetry analytics aggregations
     const now = new Date();
@@ -506,7 +506,7 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
     });
   });
 
-  // ── GET /machines ─────────────────────────────────────────────────────────
+  // GET /machines
   app.get<{ Querystring: { userId?: string; status?: string; page?: string } }>(
     "/machines",
     async (request, reply) => {
@@ -557,7 +557,7 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
     },
   );
 
-  // ── DELETE /machines/:id ──────────────────────────────────────────────────
+  // DELETE /machines/:id
   app.delete<{ Params: { id: string } }>("/machines/:id", async (request, reply) => {
     const { id } = request.params;
 
@@ -587,7 +587,7 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
     return reply.send({ ok: true, revokedMachineId: id });
   });
 
-  // ── GET /fleet-groups ─────────────────────────────────────────────────────
+  // GET /fleet-groups
   app.get("/fleet-groups", async (_request, reply) => {
     const groups = await db
       .select()
@@ -598,7 +598,7 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
     return reply.send({ fleetGroups: groups });
   });
 
-  // ── GET /audit-log ────────────────────────────────────────────────────────
+  // GET /audit-log
   app.get<{
     Querystring: {
       page?: string;

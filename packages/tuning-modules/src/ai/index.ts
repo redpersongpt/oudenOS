@@ -1,4 +1,4 @@
-// ─── AI Feature Control Module ──────────────────────────────────────────────
+// AI Feature Control Module
 // Disables Windows AI features: Recall, Click to Do, Edge AI, Paint AI, Notepad AI.
 // Sourced from the redcore internal AI-feature analysis set.
 

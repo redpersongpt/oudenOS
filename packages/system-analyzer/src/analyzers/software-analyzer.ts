@@ -1,4 +1,4 @@
-// ─── Software Analyzer ───────────────────────────────────────────────────────
+// Software Analyzer
 // Analyzes Windows version, services, startup items, and config state.
 
 import type { DeviceProfile } from "@redcore/shared-schema/device";

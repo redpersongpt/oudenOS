@@ -1,4 +1,4 @@
-// ─── IPC Contract ────────────────────────────────────────────────────────────
+// IPC Contract
 // Source of truth for all communication between UI and Rust service.
 // The renderer NEVER talks to the service directly — always through main.
 //
@@ -14,33 +14,33 @@ import type { OsRollbackSnapshot, OsRollbackOperation, OsAuditLogEntry } from ".
 import type { OsJournalState, LedgerPackageIdentity, LedgerQueuedAction, LedgerActionResult, LedgerRemainingAction } from "./journal.js";
 import type { RegistryVerifyResult } from "./verify.js";
 
-// ─── Request / Response pairs ─────────────────────────────────────────────────
+// Request / Response pairs
 
 export interface IpcMethods {
-  // ── Assessment ────────────────────────────────────────────────────────────
+  // Assessment
   // assess.full is the supported machine scan entrypoint.
   "assess.full": { params: {}; result: HardwareAssessment };
 
-  // ── Classification ────────────────────────────────────────────────────────
+  // Classification
   "classify.machine": { params: { assessmentId: string }; result: ProfileClassification };
 
-  // ── Playbook (primary transformation path) ────────────────────────────────
+  // Playbook (primary transformation path)
   // playbook.resolve takes the user-confirmed profile + preset and returns
   // a fully resolved plan with per-action status (Included/Blocked/Optional…).
   "playbook.resolve": { params: { profile: MachineProfile; preset: TransformPreset }; result: ResolvedPlaybook };
 
-  // ── App bundle ────────────────────────────────────────────────────────────
+  // App bundle
   "appbundle.getRecommended": { params: { profile: MachineProfile }; result: RecommendedAppsResult };
   "appbundle.resolve": { params: { profile: MachineProfile; selectedApps: string[] }; result: AppBundleResolveResult };
   "appbundle.install": { params: { appId: string }; result: AppInstallResult };
 
-  // ── Execution ─────────────────────────────────────────────────────────────
+  // Execution
   "execute.applyAction": {
     params: { actionId: string; journalContext?: ActionExecutionJournalContext };
     result: ActionExecutionResult;
   };
 
-  // ── Personalization ───────────────────────────────────────────────────────
+  // Personalization
   "personalize.options": { params: { profile?: MachineProfile }; result: Record<string, unknown> };
   "personalize.apply": {
     params: { profile: MachineProfile; options: PersonalizationPreferences & Record<string, unknown> };
@@ -48,12 +48,12 @@ export interface IpcMethods {
   };
   "personalize.revert": { params: { snapshotId: string }; result: Record<string, unknown> };
 
-  // ── Rollback ─────────────────────────────────────────────────────────────
+  // Rollback
   "rollback.list": { params: {}; result: OsRollbackSnapshot[] };
   "rollback.restore": { params: { snapshotId: string }; result: OsRollbackOperation };
   "rollback.audit": { params: { limit: number }; result: OsAuditLogEntry[] };
 
-  // ── Journal (reboot-resume, now DB-backed) ────────────────────────────────
+  // Journal (reboot-resume, now DB-backed)
   "journal.state": { params: {}; result: OsJournalState | null };
   "journal.resume": {
     params: {};
@@ -68,7 +68,7 @@ export interface IpcMethods {
   };
   "journal.cancel": { params: {}; result: { status: string } };
 
-  // ── Execution Ledger (DB-backed plan/queue) ──────────────────────────────
+  // Execution Ledger (DB-backed plan/queue)
   "ledger.createPlan": {
     params: {
       package: LedgerPackageIdentity;
@@ -98,10 +98,10 @@ export interface IpcMethods {
     result: OsJournalState | null;
   };
 
-  // ── Verification ──────────────────────────────────────────────────────────
+  // Verification
   "verify.registryValue": { params: { hive: string; path: string; valueName: string }; result: RegistryVerifyResult };
 
-  // ── System ────────────────────────────────────────────────────────────────
+  // System
   "system.status": { params: {}; result: { status: string; uptimeSeconds: number; version: string } };
   "system.reboot": {
     params: { reason: string; journalContext?: { planId: string; packageId: string; packageRole: string; packageVersion?: string | null } };
@@ -109,7 +109,7 @@ export interface IpcMethods {
   };
 }
 
-// ─── Push events (Rust → main → renderer) ────────────────────────────────────
+// Push events (Rust → main → renderer)
 // Only events that are ACTUALLY emitted belong here.
 
 export interface IpcEvents {

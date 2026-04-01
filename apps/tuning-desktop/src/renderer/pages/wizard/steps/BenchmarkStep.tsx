@@ -1,4 +1,4 @@
-// ─── Benchmark Step ───────────────────────────────────────────────────────────
+// Benchmark Step
 // Baseline performance measurement before optimization.
 // Runs system benchmark and displays metric cards.
 
@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import type { BenchmarkResult } from "@redcore/shared-schema/benchmark";
 
-// ─── Metric display config ────────────────────────────────────────────────────
+// Metric display config
 
 interface MetricDisplay {
   key: string;
@@ -39,7 +39,7 @@ const RUNNING_LABELS = [
   "Aggregating results...",
 ];
 
-// ─── Pulsing orbit animation ──────────────────────────────────────────────────
+// Pulsing orbit animation
 
 function BenchmarkOrb() {
   return (
@@ -68,7 +68,7 @@ function BenchmarkOrb() {
   );
 }
 
-// ─── Component ────────────────────────────────────────────────────────────────
+// Component
 
 type BenchState = "idle" | "running" | "complete";
 

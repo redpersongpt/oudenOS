@@ -1,4 +1,4 @@
-// ─── Execution Step ───────────────────────────────────────────────────────────
+// Execution Step
 // Live mission control — applies actions, streams progress, shows timeline.
 
 import { useState, useEffect, useRef } from "react";
@@ -14,7 +14,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import type { ActionOutcome } from "@redcore/shared-schema/tuning";
 
-// ─── Types ────────────────────────────────────────────────────────────────────
+// Types
 
 interface CompletedEntry {
   id: string;
@@ -23,7 +23,7 @@ interface CompletedEntry {
   outcome: ActionOutcome;
 }
 
-// ─── Log item ─────────────────────────────────────────────────────────────────
+// Log item
 
 const LOG_COLOR = {
   info:    "text-ink-secondary",
@@ -32,7 +32,7 @@ const LOG_COLOR = {
   error:   "text-brand-400",
 } as const;
 
-// ─── Outcome icon ─────────────────────────────────────────────────────────────
+// Outcome icon
 
 function OutcomeIcon({ status }: { status: ActionOutcome["status"] }) {
   if (status === "success")     return <CheckCircle2 className="h-4 w-4 text-green-400 shrink-0" strokeWidth={1.5} />;
@@ -40,7 +40,7 @@ function OutcomeIcon({ status }: { status: ActionOutcome["status"] }) {
   return <AlertCircle className="h-4 w-4 text-amber-400 shrink-0" strokeWidth={1.5} />;
 }
 
-// ─── Success celebration ──────────────────────────────────────────────────────
+// Success celebration
 
 function SuccessState({ total, failed, onContinue }: {
   total: number;
@@ -93,7 +93,7 @@ function SuccessState({ total, failed, onContinue }: {
   );
 }
 
-// ─── Component ────────────────────────────────────────────────────────────────
+// Component
 
 export function ExecutionStep() {
   const { goNext, selectedActions } = useWizardStore();
