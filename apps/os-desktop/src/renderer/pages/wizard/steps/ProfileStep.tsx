@@ -173,7 +173,7 @@ export function ProfileStep() {
                           id: opt.id,
                           label: opt.label,
                           isWorkPc: opt.id === "work_pc",
-                          confidence: p.id === opt.id ? p.confidence : 100,
+                          confidence: p.confidence,
                           signals: p.id === opt.id ? p.signals : [...p.signals, "Manual override"],
                         };
                         setDetectedProfile(overridden);

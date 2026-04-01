@@ -307,7 +307,7 @@ export function ReportStep() {
           <div className="flex items-start gap-2 rounded-lg bg-white/[0.02] border border-white/[0.04] px-3 py-2">
             <Check className="mt-0.5 h-3 w-3 shrink-0 text-success-400" />
             <p className="text-[10px] leading-relaxed text-ink-secondary">
-              <span className="font-semibold text-ink">{appliedPlaybookActions || pb.totalIncluded} actions</span> applied across {pb.phases.length} categories{ledgerState ? " (verified by service execution ledger)" : ", with each action tied back to the APBX package provenance chain"}.
+              <span className="font-semibold text-ink">{appliedPlaybookActions || pb.totalIncluded} actions</span> applied across {pb.phases.length} categories.
             </p>
           </div>
 
@@ -318,10 +318,10 @@ export function ReportStep() {
               <p className="text-[10px] leading-relaxed text-ink-secondary">
                 <span className="font-semibold text-ink">{preservedActions.length} actions preserved</span>
                 {userChoicePreserved.length > 0
-                  ? ` — ${userChoicePreserved.length} came directly from your questionnaire preserve choices.`
+                  ? ` — ${userChoicePreserved.length} skipped because of your answers.`
                   : detectedProfile?.isWorkPc
-                  ? " — business-critical services were protected for your Work PC."
-                  : " — machine/profile safeguards prevented incompatible changes."}
+                  ? " — kept safe for your Work PC."
+                  : " — skipped because they don't fit your setup."}
               </p>
             </div>
           )}
@@ -331,7 +331,7 @@ export function ReportStep() {
             <div className="flex items-start gap-2 rounded-lg bg-white/[0.02] border border-white/[0.04] px-3 py-2">
               <Lock className="mt-0.5 h-3 w-3 shrink-0 text-purple-400" />
               <p className="text-[10px] leading-relaxed text-ink-secondary">
-                <span className="font-semibold text-ink">{pb.totalExpertOnly} expert-only actions</span> were available but not included by default — these require manual opt-in for advanced users.
+                <span className="font-semibold text-ink">{pb.totalExpertOnly} expert-only actions</span> skipped — pick "Expert" preset to unlock them.
               </p>
             </div>
           )}
@@ -340,7 +340,7 @@ export function ReportStep() {
             <div className="flex items-start gap-2 rounded-lg bg-white/[0.02] border border-white/[0.04] px-3 py-2">
               <Lock className="mt-0.5 h-3 w-3 shrink-0 text-ink-secondary" />
               <p className="text-[10px] leading-relaxed text-ink-secondary">
-                <span className="font-semibold text-ink">{profileSafeguards.length} safeguards</span> were enforced by build/profile rules, not by separate report logic.
+                <span className="font-semibold text-ink">{profileSafeguards.length} actions</span> blocked automatically — not compatible with your PC type or Windows version.
               </p>
             </div>
           )}
@@ -366,7 +366,7 @@ export function ReportStep() {
         onClick={handleFooterClick}
         className="text-[10px] text-ink-muted cursor-default select-none"
       >
-        A rollback snapshot was created before every change · Journal and report entries point back to the same APBX package truth
+        Every change can be undone · Snapshots saved before each action
       </motion.p>
 
       {/* Optional donation CTA */}
