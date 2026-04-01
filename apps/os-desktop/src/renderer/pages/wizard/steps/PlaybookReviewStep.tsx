@@ -12,6 +12,213 @@ import { useDecisionsStore } from "@/stores/decisions-store";
 import { applyDecisionOverrides } from "@/lib/playbook-decision-overrides";
 import { getActionRationale, PHASE_RATIONALE, getBlockedExplanation } from "@/lib/expert-rationale";
 import { buildMockResolvedPlaybook } from "@/lib/mock-playbook";
+import technicalDetails from "@/lib/generated-technical-details.json";
+
+// ---------------------------------------------------------------------------
+// Technical details types & helpers
+// ---------------------------------------------------------------------------
+
+interface RegistryChange {
+  hive: string;
+  path: string;
+  valueName: string;
+  value: string | number;
+  valueType?: string;
+}
+
+interface ServiceChange {
+  name: string;
+  startupType: string;
+}
+
+interface FileRename {
+  source: string;
+  target: string;
+  requiresTrustedInstaller?: boolean;
+  cpuVendor?: string;
+}
+
+interface BcdChange {
+  element: string;
+  newValue: string;
+}
+
+interface PowerChange {
+  settingPath: string;
+  newValue?: string;
+  value?: string;
+  scope?: string;
+}
+
+interface ActionTechnicalDetails {
+  registryChanges?: RegistryChange[];
+  serviceChanges?: ServiceChange[];
+  packages?: string[];
+  fileRenames?: FileRename[];
+  bcdChanges?: BcdChange[];
+  powerChanges?: PowerChange[];
+}
+
+const techLookup = technicalDetails as Record<string, ActionTechnicalDetails>;
+
+const TEMPLATE_RE = /<[^>]+>/;
+
+// ---------------------------------------------------------------------------
+// TechnicalDetails — expandable per-action panel
+// ---------------------------------------------------------------------------
+
+function TechnicalDetails({ actionId }: { actionId: string }) {
+  const [expanded, setExpanded] = useState(false);
+  const details = techLookup[actionId];
+
+  if (!details) {
+    return (
+      <button
+        onClick={() => setExpanded(!expanded)}
+        className="mt-1 inline-flex items-center gap-1 text-[9px] text-ink-muted/60 hover:text-ink-muted transition-colors"
+      >
+        <ChevronDown className={`h-2.5 w-2.5 transition-transform ${expanded ? "rotate-180" : ""}`} />
+        Technical Details
+        {expanded && (
+          <span className="ml-1 text-ink-muted/40">-- not available for this action</span>
+        )}
+      </button>
+    );
+  }
+
+  return (
+    <div className="mt-1">
+      <button
+        onClick={() => setExpanded(!expanded)}
+        className="inline-flex items-center gap-1 text-[9px] text-ink-muted/60 hover:text-ink-muted transition-colors"
+      >
+        <ChevronDown className={`h-2.5 w-2.5 transition-transform duration-150 ${expanded ? "rotate-180" : ""}`} />
+        Technical Details
+      </button>
+
+      <AnimatePresence initial={false}>
+        {expanded && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.18, ease: [0.4, 0, 0.2, 1] }}
+            className="overflow-hidden"
+          >
+            <div className="mt-1 rounded border border-white/[0.04] bg-white/[0.02] px-3 py-2 font-mono text-[9px] leading-relaxed text-ink-muted/80 space-y-2">
+              {/* Registry Changes */}
+              {details.registryChanges && details.registryChanges.length > 0 && (
+                <div>
+                  <p className="text-[9px] font-semibold text-ink-tertiary mb-0.5">Registry</p>
+                  {details.registryChanges.map((rc, i) => {
+                    const fullPath = `${rc.hive}\\${rc.path}`;
+                    const hasTemplate = TEMPLATE_RE.test(fullPath) || TEMPLATE_RE.test(String(rc.value));
+                    return (
+                      <div key={i} className="ml-2">
+                        <p className="text-ink-muted/60 truncate" title={fullPath}>{fullPath}</p>
+                        <p className="ml-2">
+                          {rc.valueName} = {String(rc.value)}
+                          {rc.valueType ? ` (${rc.valueType})` : ""}
+                        </p>
+                        {hasTemplate && (
+                          <p className="ml-2 text-[8px] text-amber-400/50 italic">Resolved at runtime</p>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
+              {/* Service Changes */}
+              {details.serviceChanges && details.serviceChanges.length > 0 && (
+                <div>
+                  <p className="text-[9px] font-semibold text-ink-tertiary mb-0.5">Services</p>
+                  {details.serviceChanges.map((sc, i) => (
+                    <p key={i} className="ml-2">
+                      {sc.name} → {sc.startupType}
+                    </p>
+                  ))}
+                </div>
+              )}
+
+              {/* Packages */}
+              {details.packages && details.packages.length > 0 && (
+                <div>
+                  <p className="text-[9px] font-semibold text-ink-tertiary mb-0.5">Packages</p>
+                  {details.packages.map((pkg, i) => (
+                    <p key={i} className="ml-2">{pkg}</p>
+                  ))}
+                </div>
+              )}
+
+              {/* BCD Changes */}
+              {details.bcdChanges && details.bcdChanges.length > 0 && (
+                <div>
+                  <p className="text-[9px] font-semibold text-ink-tertiary mb-0.5">Boot Configuration</p>
+                  {details.bcdChanges.map((bc, i) => (
+                    <p key={i} className="ml-2">
+                      {bc.element} = {bc.newValue}
+                    </p>
+                  ))}
+                </div>
+              )}
+
+              {/* Power Changes */}
+              {details.powerChanges && details.powerChanges.length > 0 && (
+                <div>
+                  <p className="text-[9px] font-semibold text-ink-tertiary mb-0.5">Power Settings</p>
+                  {details.powerChanges.map((pc, i) => (
+                    <p key={i} className="ml-2 truncate" title={pc.settingPath}>
+                      {pc.settingPath} = {pc.newValue ?? pc.value ?? ""}
+                      {pc.scope ? ` (${pc.scope})` : ""}
+                    </p>
+                  ))}
+                </div>
+              )}
+
+              {/* File Renames */}
+              {details.fileRenames && details.fileRenames.length > 0 && (
+                <div>
+                  <p className="text-[9px] font-semibold text-ink-tertiary mb-0.5">File Renames</p>
+                  {details.fileRenames.map((fr, i) => (
+                    <div key={i} className="ml-2">
+                      <p className="truncate" title={fr.source}>{fr.source}</p>
+                      <p className="ml-2 truncate" title={fr.target}>→ {fr.target}</p>
+                      {fr.cpuVendor && (
+                        <p className="ml-2 text-[8px] text-amber-400/50 italic">{fr.cpuVendor} only</p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+// Risk dot
+
+const riskDot: Record<string, string> = {
+  safe:   "bg-green-400",
+  low:    "bg-yellow-400",
+  medium: "bg-amber-400",
+  high:   "bg-red-400",
+};
+
+function RiskDot({ risk }: { risk?: string }) {
+  if (!risk) return null;
+  const color = riskDot[risk.toLowerCase()] ?? "bg-neutral-400";
+  return (
+    <span
+      className={`inline-block h-1.5 w-1.5 shrink-0 rounded-full ${color}`}
+      title={`Risk: ${risk}`}
+      aria-label={`Risk level: ${risk}`}
+    />
+  );
+}
 
 // Status badge
 
@@ -103,6 +310,7 @@ function PhaseSection({ phase, defaultOpen, profile }: { phase: PlaybookPhase; d
                       <div className="flex items-center justify-between">
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center gap-2">
+                            <RiskDot risk={action.risk} />
                             <p className="text-[11px] font-semibold text-ink truncate">{action.name}</p>
                             {action.requiresReboot && (
                               <span className="shrink-0 rounded bg-amber-500/10 px-1 py-0.5 text-[8px] font-bold uppercase text-amber-400">
@@ -138,6 +346,7 @@ function PhaseSection({ phase, defaultOpen, profile }: { phase: PlaybookPhase; d
                           {blockedNote}
                         </p>
                       )}
+                      <TechnicalDetails actionId={action.id} />
                     </div>
                   );
                 })}
