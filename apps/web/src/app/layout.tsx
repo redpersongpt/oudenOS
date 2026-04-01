@@ -50,7 +50,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "redcore — Windows Optimization & Optimization Tools",
     description:
-      "Scan your hardware. Build a plan. Transform your system. Free OS optimization + paid Tuning. Every change undoable.",
+      "Scan your hardware. Build a plan. Transform your system. Free OS optimization + paid Tuning",
     type: "website",
     locale: "en_US",
     siteName: "redcore",
@@ -68,7 +68,7 @@ export const metadata: Metadata = {
     card: "summary",
     title: "redcore — Windows Optimization & Optimization Tools",
     description:
-      "Hardware-based Windows optimization. Free OS optimization + $12.99 Tuning. Every change undoable.",
+      "Hardware-based Windows optimization. Free OS optimization + $12.99 Tuning",
     images: ["/redcore-logo.png"],
   },
   robots: {

@@ -383,7 +383,7 @@ export function ReportStep() {
         onClick={handleFooterClick}
         className="text-[10px] text-ink-muted cursor-default select-none"
       >
-        Every change can be undone
+        Snapshots saved before each action
       </motion.p>
 
       {/* Optional donation CTA */}
