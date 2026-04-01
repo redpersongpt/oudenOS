@@ -15,10 +15,11 @@
 // Exit code 0 = pass, 1 = failure
 
 import { spawn, execSync } from "node:child_process";
-import { resolve, join } from "node:path";
+import { resolve, join, dirname } from "node:path";
 import { existsSync, readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 
-const ROOT = resolve(new URL("..", import.meta.url).pathname.replace(/\/$/, ""));
+const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const TAURI_DIR = join(ROOT, "apps", "os-desktop", "src-tauri");
 
 // Parse args
