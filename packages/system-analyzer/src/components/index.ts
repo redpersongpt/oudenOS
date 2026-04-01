@@ -1,4 +1,4 @@
-// ─── System Analyzer Components ──────────────────────────────────────────────
+// System Analyzer Components
 // UI components for the system analysis pipeline.
 
 export {

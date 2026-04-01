@@ -1,4 +1,4 @@
-// ─── Tailwind CSS Preset ────────────────────────────────────────────────────
+// Tailwind CSS Preset
 // Import this in apps/desktop/tailwind.config.ts
 
 import type { Config } from "tailwindcss";

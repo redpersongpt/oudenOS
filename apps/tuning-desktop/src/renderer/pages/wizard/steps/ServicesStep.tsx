@@ -1,4 +1,4 @@
-// ─── Services Step ─────────────────────────────────────────────────────────────
+// Services Step
 // Background Service Reduction — disable unnecessary Windows services.
 
 import { useState } from "react";
@@ -7,7 +7,7 @@ import { Lock, Server } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
 import type { RiskLevel } from "@redcore/shared-schema/tuning";
 
-// ─── Service definitions ──────────────────────────────────────────────────────
+// Service definitions
 
 type Impact = "low" | "medium";
 
@@ -81,7 +81,7 @@ const SERVICES: ServiceDef[] = [
   },
 ];
 
-// ─── Impact badge ─────────────────────────────────────────────────────────────
+// Impact badge
 
 const impactStyles: Record<Impact, string> = {
   low: "bg-blue-900/20 text-blue-400 border-blue-800/50",
@@ -96,7 +96,7 @@ const riskLabel: Record<RiskLevel, string> = {
   extreme: "Extreme",
 };
 
-// ─── Service card ─────────────────────────────────────────────────────────────
+// Service card
 
 function ServiceCard({
   service,
@@ -178,7 +178,7 @@ function ServiceCard({
   );
 }
 
-// ─── Step ─────────────────────────────────────────────────────────────────────
+// Step
 
 function buildDefault(): Set<string> {
   return new Set(SERVICES.filter((s) => s.defaultSelected).map((s) => s.id));

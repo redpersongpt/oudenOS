@@ -1,4 +1,4 @@
-// ─── Benchmark & Measurement Schemas ────────────────────────────────────────
+// Benchmark & Measurement Schemas
 
 export type BenchmarkType =
   | "cpu_responsiveness"

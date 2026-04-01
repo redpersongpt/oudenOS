@@ -33,7 +33,7 @@ export function PricingSection() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-[880px] mx-auto">
 
-          {/* ── redcore OS — FREE ── */}
+          {/* redcore OS — FREE */}
           <motion.div
             initial={{ opacity: 0, y: 32 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}
@@ -99,7 +99,7 @@ export function PricingSection() {
             </div>
           </motion.div>
 
-          {/* ── redcore Tuning — $12.99 — HERO CARD ── */}
+          {/* redcore Tuning — $12.99 — HERO CARD */}
           <motion.div
             initial={{ opacity: 0, y: 32 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}

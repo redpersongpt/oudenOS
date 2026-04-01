@@ -1,4 +1,4 @@
-// ─── Impact Estimator ────────────────────────────────────────────────────────
+// Impact Estimator
 // Estimates the potential performance improvement per optimization category.
 
 import type {

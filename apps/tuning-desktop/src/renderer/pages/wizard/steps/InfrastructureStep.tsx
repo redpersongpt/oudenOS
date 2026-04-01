@@ -1,4 +1,4 @@
-// ─── Infrastructure Step ──────────────────────────────────────────────────────
+// Infrastructure Step
 // Memory / Storage / Network / Display / Audio subsystem tuning.
 // Tab-based section switching with animated underline indicator.
 
@@ -11,7 +11,7 @@ import {
 import { Badge } from "@/components/ui/Badge";
 import type { RiskLevel } from "@redcore/shared-schema/tuning";
 
-// ─── Action data ──────────────────────────────────────────────────────────────
+// Action data
 
 interface InfraAction {
   id: string;
@@ -165,7 +165,7 @@ const AUDIO: InfraAction[] = [
   },
 ];
 
-// ─── Tab definitions ──────────────────────────────────────────────────────────
+// Tab definitions
 
 type TabId = "memory" | "storage" | "network" | "display" | "audio";
 
@@ -177,13 +177,13 @@ const TABS: { id: TabId; label: string; actions: InfraAction[] }[] = [
   { id: "audio",   label: "Audio",   actions: AUDIO    },
 ];
 
-// ─── Risk label ───────────────────────────────────────────────────────────────
+// Risk label
 
 const riskLabel: Record<RiskLevel, string> = {
   safe: "Safe", low: "Low", medium: "Medium", high: "High", extreme: "Extreme",
 };
 
-// ─── Action row ───────────────────────────────────────────────────────────────
+// Action row
 
 function ActionRow({
   action,
@@ -230,7 +230,7 @@ function ActionRow({
   );
 }
 
-// ─── Step ─────────────────────────────────────────────────────────────────────
+// Step
 
 const ALL_ACTIONS = [...MEMORY, ...STORAGE, ...NETWORK, ...DISPLAY, ...AUDIO];
 

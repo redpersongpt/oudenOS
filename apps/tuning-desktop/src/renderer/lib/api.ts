@@ -1,4 +1,4 @@
-// ─── Service API Client ─────────────────────────────────────────────────────
+// Service API Client
 // Typed wrapper around the preload bridge to the Rust service.
 
 import type { RedcoreAPI } from "../../preload/index";

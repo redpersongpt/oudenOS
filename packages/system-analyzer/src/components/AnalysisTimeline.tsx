@@ -1,11 +1,11 @@
-// ─── AnalysisTimeline ────────────────────────────────────────────────────────
+// AnalysisTimeline
 // Shows the multi-step analysis pipeline progress with animated step states.
 
 import { motion, AnimatePresence } from "framer-motion";
 import type { AnalysisStep, StepStatus, AnalysisPipelineState } from "../types.js";
 import { ANALYSIS_STEPS } from "../types.js";
 
-// ─── Step icons ───────────────────────────────────────────────────────────────
+// Step icons
 
 function CheckIcon() {
   return (
@@ -30,7 +30,7 @@ function SpinnerIcon() {
   );
 }
 
-// ─── Step node styles ─────────────────────────────────────────────────────────
+// Step node styles
 
 function StepNode({ status, isLast }: { status: StepStatus; isLast: boolean }) {
   return (
@@ -69,7 +69,7 @@ function StepNode({ status, isLast }: { status: StepStatus; isLast: boolean }) {
   );
 }
 
-// ─── Step row ─────────────────────────────────────────────────────────────────
+// Step row
 
 interface StepRowProps {
   step: typeof ANALYSIS_STEPS[number];
@@ -141,7 +141,7 @@ function StepRow({ step, status, isLast, index }: StepRowProps) {
   );
 }
 
-// ─── Progress bar ─────────────────────────────────────────────────────────────
+// Progress bar
 
 function PipelineProgress({ statuses }: { statuses: Record<AnalysisStep, StepStatus> }) {
   const total = ANALYSIS_STEPS.length;
@@ -167,7 +167,7 @@ function PipelineProgress({ statuses }: { statuses: Record<AnalysisStep, StepSta
   );
 }
 
-// ─── Main AnalysisTimeline ────────────────────────────────────────────────────
+// Main AnalysisTimeline
 
 interface AnalysisTimelineProps {
   state: Pick<AnalysisPipelineState, "stepStatuses" | "error" | "completedAt" | "profile">;

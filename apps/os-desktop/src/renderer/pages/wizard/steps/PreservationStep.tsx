@@ -1,4 +1,4 @@
-// ─── Preservation Step ────────────────────────────────────────────────────────
+// Preservation Step
 // Work PC ONLY. Shows preserved services and blocked actions.
 // Auto-advances immediately for non-work profiles.
 
@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 import { Check, Shield, XCircle, Briefcase } from "lucide-react";
 import { useWizardStore } from "@/stores/wizard-store";
 
-// ─── Data ─────────────────────────────────────────────────────────────────────
+// Data
 
 const PRESERVED_SERVICES = [
   { id: "spooler",  label: "Print Spooler",     detail: "Required for local and network printing"       },
@@ -24,7 +24,7 @@ const BLOCKED_ACTIONS = [
   "Strip domain trust certificates",
 ];
 
-// ─── Component ───────────────────────────────────────────────────────────────
+// Component
 
 export function PreservationStep() {
   const { detectedProfile, skipStep } = useWizardStore();

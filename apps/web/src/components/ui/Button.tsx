@@ -5,7 +5,7 @@ import Link from "next/link";
 import * as React from "react";
 import { spring } from "@/lib/motion";
 
-// ─── Types ───────────────────────────────────────────────────────────────────
+// Types
 
 type ButtonVariant = "primary" | "secondary" | "ghost";
 type ButtonSize = "sm" | "md" | "lg";
@@ -23,7 +23,7 @@ interface ButtonProps {
   "aria-label"?: string;
 }
 
-// ─── Style Maps ──────────────────────────────────────────────────────────────
+// Style Maps
 
 const variantStyles: Record<ButtonVariant, string> = {
   primary: "btn-primary text-white font-semibold",
@@ -42,7 +42,7 @@ const sizeStyles: Record<ButtonSize, string> = {
   lg: "h-[52px] px-8 text-[15px] rounded-lg gap-2.5",
 };
 
-// ─── Component ───────────────────────────────────────────────────────────────
+// Component
 
 export function Button({
   variant = "primary",

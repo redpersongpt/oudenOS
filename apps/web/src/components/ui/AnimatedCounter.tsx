@@ -9,7 +9,7 @@ import {
 } from "framer-motion";
 import { easing } from "@/lib/motion";
 
-// ─── Types ───────────────────────────────────────────────────────────────────
+// Types
 
 interface AnimatedCounterProps {
   value: number;
@@ -18,7 +18,7 @@ interface AnimatedCounterProps {
   className?: string;
 }
 
-// ─── Component ───────────────────────────────────────────────────────────────
+// Component
 
 export function AnimatedCounter({
   value,

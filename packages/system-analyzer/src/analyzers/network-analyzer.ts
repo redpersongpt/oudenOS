@@ -1,4 +1,4 @@
-// ─── Network Analyzer ────────────────────────────────────────────────────────
+// Network Analyzer
 // Evaluates network adapter type, speed, RSS configuration, and quality.
 
 import type { DeviceProfile } from "@redcore/shared-schema/device";

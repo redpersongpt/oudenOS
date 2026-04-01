@@ -1,4 +1,4 @@
-// ─── Intelligence Page Sub-components ────────────────────────────────────────
+// Intelligence Page Sub-components
 // Split out to keep IntelligencePage.tsx lean.
 
 import { motion } from "framer-motion";
@@ -13,7 +13,7 @@ import type {
 } from "@redcore/shared-schema/device-intelligence";
 import { ARCHETYPE_META } from "@redcore/shared-schema/device-intelligence";
 
-// ─── Archetype accent color → Tailwind class map ─────────────────────────────
+// Archetype accent color → Tailwind class map
 
 const accentBar: Record<string, string> = {
   red:    "bg-red-500",
@@ -65,7 +65,7 @@ const ARCHETYPE_ORDER: MachineArchetype[] = [
   "vm_cautious",
 ];
 
-// ─── Premium Archetype Emblem ────────────────────────────────────────────────
+// Premium Archetype Emblem
 // Each archetype gets a shield-shaped SVG emblem with its accent color.
 // The emblem uses layered geometry: outer shield, inner glyph, subtle glow.
 // This replaces basic icon usage for the hero card visual identity.
@@ -138,7 +138,7 @@ export function ArchetypeEmblem({ archetype, accentColor, size = 64 }: Archetype
   );
 }
 
-// ─── Confidence Ring ──────────────────────────────────────────────────────────
+// Confidence Ring
 
 const RING = 2 * Math.PI * 26; // circumference for r=26
 
@@ -193,7 +193,7 @@ export function ConfidenceRing({ confidence, accentColor }: ConfidenceRingProps)
   );
 }
 
-// ─── Hero Archetype Card ──────────────────────────────────────────────────────
+// Hero Archetype Card
 
 interface HeroCardProps {
   meta: typeof ARCHETYPE_META[MachineArchetype];
@@ -236,7 +236,7 @@ export function HeroCard({ meta, confidence, archetype }: HeroCardProps & { arch
   );
 }
 
-// ─── Signal Card ─────────────────────────────────────────────────────────────
+// Signal Card
 
 interface SignalCardProps {
   signal: ClassificationSignal;
@@ -270,7 +270,7 @@ export function SignalCard({ signal, archetypeMeta }: SignalCardProps) {
   );
 }
 
-// ─── Score Bar Row ────────────────────────────────────────────────────────────
+// Score Bar Row
 
 interface ScoreBarProps {
   score: number;
@@ -309,7 +309,7 @@ export function ScoreBar({ label, score, isPrimary, accentColor }: ScoreBarProps
   );
 }
 
-// ─── Score Breakdown ──────────────────────────────────────────────────────────
+// Score Breakdown
 
 interface ScoreBreakdownProps {
   classification: MachineClassification;
@@ -333,7 +333,7 @@ export function ScoreBreakdown({ classification, archetypeMeta, allMeta }: Score
   );
 }
 
-// ─── Recommendation Card ──────────────────────────────────────────────────────
+// Recommendation Card
 
 const confidenceBadgeVariant = (c: string): "success" | "warning" | "default" => {
   if (c === "high")    return "success";
@@ -408,7 +408,7 @@ export function RecommendationCard({ rec, compact = false }: RecommendationCardP
   );
 }
 
-// ─── Profile export helpers ───────────────────────────────────────────────────
+// Profile export helpers
 
 export { ARCHETYPE_ORDER, accentBar, accentText, accentBorder };
 export type { IntelligentTuningProfile, MachineClassification };

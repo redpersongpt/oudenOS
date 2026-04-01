@@ -1,4 +1,4 @@
-// ─── User Routes ──────────────────────────────────────────────────────────────
+// User Routes
 // GET    /me                            — full profile
 // PATCH  /me                            — update name
 // POST   /me/email                      — change email (requires password)
@@ -98,7 +98,7 @@ async function getTuningEntitlement(userId: string) {
   };
 }
 
-// ─── Schemas ──────────────────────────────────────────────────────────────────
+// Schemas
 
 const updateProfileSchema = z.object({
   name: z.string().min(1).max(100).optional(),
@@ -148,10 +148,10 @@ const deleteAccountSchema = z.object({
   idToken: z.string().min(1).optional(),
 });
 
-// ─── Plugin ───────────────────────────────────────────────────────────────────
+// Plugin
 
 export const usersRoutes: FastifyPluginAsync = async (app) => {
-  // ── GET /me ──────────────────────────────────────────────────────────────
+  // GET /me
   app.get("/me", { preHandler: requireAuth }, async (request, reply) => {
     const [user] = await db
       .select({
@@ -195,7 +195,7 @@ export const usersRoutes: FastifyPluginAsync = async (app) => {
     });
   });
 
-  // ── PATCH /me ─────────────────────────────────────────────────────────────
+  // PATCH /me
   app.patch("/me", { preHandler: requireAuth }, async (request, reply) => {
     const parse = updateProfileSchema.safeParse(request.body);
     if (!parse.success) {
@@ -214,7 +214,7 @@ export const usersRoutes: FastifyPluginAsync = async (app) => {
     return reply.send({ user: updated });
   });
 
-  // ── POST /me/email ────────────────────────────────────────────────────────
+  // POST /me/email
   app.post("/me/email", { preHandler: [requireAuth, authRateLimit(5)] }, async (request, reply) => {
     const parse = changeEmailSchema.safeParse(request.body);
     if (!parse.success) {
@@ -278,7 +278,7 @@ export const usersRoutes: FastifyPluginAsync = async (app) => {
     return reply.send({ ok: true, message: "Email updated. Please verify your new email address." });
   });
 
-  // ── POST /me/password ─────────────────────────────────────────────────────
+  // POST /me/password
   app.post("/me/password", { preHandler: [requireAuth, authRateLimit(5)] }, async (request, reply) => {
     const parse = changePasswordSchema.safeParse(request.body);
     if (!parse.success) {
@@ -313,7 +313,7 @@ export const usersRoutes: FastifyPluginAsync = async (app) => {
     return reply.send({ ok: true });
   });
 
-  // ── POST /me/avatar ───────────────────────────────────────────────────────
+  // POST /me/avatar
   // Accepts base64 data URL. In production, upload to S3/R2 and store CDN URL.
   app.post("/me/avatar", { preHandler: requireAuth }, async (request, reply) => {
     const parse = avatarSchema.safeParse(request.body);
@@ -334,7 +334,7 @@ export const usersRoutes: FastifyPluginAsync = async (app) => {
     return reply.send({ avatarUrl: parse.data.dataUrl });
   });
 
-  // ── PATCH /me/preferences ─────────────────────────────────────────────────
+  // PATCH /me/preferences
   app.patch("/me/preferences", { preHandler: requireAuth }, async (request, reply) => {
     const parse = preferencesSchema.safeParse(request.body);
     if (!parse.success) {
@@ -364,7 +364,7 @@ export const usersRoutes: FastifyPluginAsync = async (app) => {
     return reply.send({ preferences: result });
   });
 
-  // ── GET /me/machines ──────────────────────────────────────────────────────
+  // GET /me/machines
   app.get("/me/machines", { preHandler: requireAuth }, async (request, reply) => {
     const machines = await db
       .select({
@@ -390,7 +390,7 @@ export const usersRoutes: FastifyPluginAsync = async (app) => {
     return reply.send({ machines });
   });
 
-  // ── POST /me/machines ─────────────────────────────────────────────────────
+  // POST /me/machines
   app.post("/me/machines", { preHandler: requireAuth }, async (request, reply) => {
     const parse = registerMachineSchema.safeParse(request.body);
     if (!parse.success) {
@@ -449,7 +449,7 @@ export const usersRoutes: FastifyPluginAsync = async (app) => {
     return reply.code(201).send({ ok: true, activated: true, machineId: activation!.id, machine: activation });
   });
 
-  // ── DELETE /me/machines/:machineId ────────────────────────────────────────
+  // DELETE /me/machines/:machineId
   app.delete<{ Params: { machineId: string } }>(
     "/me/machines/:machineId",
     { preHandler: requireAuth },
@@ -476,7 +476,7 @@ export const usersRoutes: FastifyPluginAsync = async (app) => {
     },
   );
 
-  // ── GET /me/payment-history ───────────────────────────────────────────────
+  // GET /me/payment-history
   app.get("/me/payment-history", { preHandler: requireAuth }, async (request, reply) => {
     const payments = await db
       .select({
@@ -496,7 +496,7 @@ export const usersRoutes: FastifyPluginAsync = async (app) => {
     return reply.send({ payments });
   });
 
-  // ── GET /me/connected-accounts ────────────────────────────────────────────
+  // GET /me/connected-accounts
   app.get("/me/connected-accounts", { preHandler: requireAuth }, async (request, reply) => {
     const accounts = await db
       .select({
@@ -511,7 +511,7 @@ export const usersRoutes: FastifyPluginAsync = async (app) => {
     return reply.send({ accounts });
   });
 
-  // ── POST /me/connected-accounts ───────────────────────────────────────────
+  // POST /me/connected-accounts
   app.post("/me/connected-accounts", { preHandler: requireAuth }, async (request, reply) => {
     const parse = linkAccountSchema.safeParse(request.body);
     if (!parse.success) {
@@ -579,7 +579,7 @@ export const usersRoutes: FastifyPluginAsync = async (app) => {
     return reply.code(201).send({ account });
   });
 
-  // ── DELETE /me/connected-accounts/:provider ───────────────────────────────
+  // DELETE /me/connected-accounts/:provider
   app.delete<{ Params: { provider: string } }>(
     "/me/connected-accounts/:provider",
     { preHandler: requireAuth },
@@ -628,7 +628,7 @@ export const usersRoutes: FastifyPluginAsync = async (app) => {
     },
   );
 
-  // ── GET /me/export ────────────────────────────────────────────────────────
+  // GET /me/export
   app.get("/me/export", { preHandler: requireAuth }, async (request, reply) => {
     const [user] = await db
       .select({ id: users.id, email: users.email, name: users.name, createdAt: users.createdAt })
@@ -664,7 +664,7 @@ export const usersRoutes: FastifyPluginAsync = async (app) => {
     });
   });
 
-  // ── DELETE /me ────────────────────────────────────────────────────────────
+  // DELETE /me
   app.delete("/me", { preHandler: [requireAuth, authRateLimit(3)] }, async (request, reply) => {
     const parse = deleteAccountSchema.safeParse(request.body);
     if (!parse.success) {

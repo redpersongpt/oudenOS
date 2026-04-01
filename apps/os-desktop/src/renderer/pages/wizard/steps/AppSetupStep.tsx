@@ -1,4 +1,4 @@
-// ─── App Setup Step ──────────────────────────────────────────────────────────
+// App Setup Step
 // Comprehensive software installer with categories, icons, and descriptions.
 
 import { useEffect, useState } from "react";
@@ -7,7 +7,7 @@ import { Download, Check, Globe, Wrench, Gamepad2, MessageCircle, Monitor, Code,
 import { useWizardStore } from "@/stores/wizard-store";
 import type { RecommendedApp } from "@/stores/wizard-store";
 
-// ─── Category config ────────────────────────────────────────────────────────
+// Category config
 
 const CATEGORIES: Record<string, { label: string; icon: typeof Globe; desc: string }> = {
   browser:       { label: "Browsers",          icon: Globe,         desc: "Web browsers to replace Edge" },
@@ -24,7 +24,7 @@ const CATEGORIES: Record<string, { label: string; icon: typeof Globe; desc: stri
 
 const CATEGORY_ORDER = ["browser", "utility", "runtime", "gaming", "communication", "development", "monitoring", "media", "music", "streaming"];
 
-// ─── Full app catalog (mock) ────────────────────────────────────────────────
+// Full app catalog (mock)
 
 function buildMockApps(): RecommendedApp[] {
   return [
@@ -86,7 +86,7 @@ function buildMockApps(): RecommendedApp[] {
   ];
 }
 
-// ─── App Card ───────────────────────────────────────────────────────────────
+// App Card
 
 function AppCard({ app, selected, onToggle }: {
   app: RecommendedApp;
@@ -125,7 +125,7 @@ function AppCard({ app, selected, onToggle }: {
   );
 }
 
-// ─── Component ──────────────────────────────────────────────────────────────
+// Component
 
 export function AppSetupStep() {
   const { detectedProfile, recommendedApps, selectedAppIds, demoMode, setRecommendedApps, toggleApp, setStepReady } = useWizardStore();

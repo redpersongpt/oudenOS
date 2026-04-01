@@ -23,7 +23,7 @@ const CTA: Partial<Record<WizardStepId, string>> = {
 
 const NO_BAR = new Set<WizardStepId>(["execution", "reboot-resume", "donation", "handoff"]);
 
-// ── Rail ────────────────────────────────────────────────────────────────────
+// Rail
 
 function Rail() {
   const { currentStep, steps } = useWizardStore();
@@ -76,7 +76,7 @@ function Rail() {
   );
 }
 
-// ── Bar ─────────────────────────────────────────────────────────────────────
+// Bar
 
 function Bar() {
   const { currentStep, progress, canGoBack, canGoNext, goBack, goNext } = useWizardStore();
@@ -124,7 +124,7 @@ function Bar() {
   );
 }
 
-// ── Title ───────────────────────────────────────────────────────────────────
+// Title
 
 function TitleBar() {
   const handleMinimize = () => {
@@ -161,7 +161,7 @@ function TitleBar() {
   );
 }
 
-// ── Shell ───────────────────────────────────────────────────────────────────
+// Shell
 
 export function WizardShell({ children }: { children: ReactNode }) {
   const { currentStep } = useWizardStore();

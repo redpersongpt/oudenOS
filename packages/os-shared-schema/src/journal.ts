@@ -1,4 +1,4 @@
-// ─── Reboot-Resume Journal ────────────────────────────────────────────────────
+// Reboot-Resume Journal
 // Survives app closure, system restart, crash, and UAC interruption.
 // Stored in SQLite by the Rust service. Read by the UI on launch to
 // detect an in-progress transformation and offer to resume.
@@ -85,7 +85,7 @@ export interface OsJournalState {
   ledgerEvents?: LedgerEvent[];
 }
 
-// ─── Execution Ledger Types (DB-backed) ───────────────────────────────────
+// Execution Ledger Types (DB-backed)
 
 export interface LedgerPackageIdentity {
   planId: string;

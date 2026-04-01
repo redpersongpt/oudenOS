@@ -1,4 +1,4 @@
-// ─── Memory Tuning Module ───────────────────────────────────────────────────
+// Memory Tuning Module
 // Derived from the redcore internal memory-optimization notes.
 
 import type { TuningActionDefinition } from "../types.js";

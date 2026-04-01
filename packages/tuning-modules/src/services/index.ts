@@ -1,4 +1,4 @@
-// ─── Service & Scheduled Task Optimization Module ───────────────────────────
+// Service & Scheduled Task Optimization Module
 // Derived from the redcore internal service cleanup research set.
 // Every service change is rollback-safe via the service snapshot system.
 

@@ -1,4 +1,4 @@
-// ─── Electron Main Process ──────────────────────────────────────────────────
+// Electron Main Process
 // Spawns and manages the Rust service binary.
 // All system operations go through the Rust service via JSON-RPC over stdio.
 
@@ -21,7 +21,7 @@ const isDev = process.env.NODE_ENV === "development";
 let mainWindow: BrowserWindow | null = null;
 let isQuitting = false;
 
-// ─── License state ───────────────────────────────────────────────────────────
+// License state
 
 let currentLicense: LicenseState | null = null;
 const CACHE_DIR = path.join(app.getPath("userData"), "license");
@@ -102,7 +102,7 @@ function getLicense(): LicenseState {
   return currentLicense ?? freeLicenseState();
 }
 
-// ─── Rust service process management ────────────────────────────────────────
+// Rust service process management
 
 let serviceProcess: ChildProcess | null = null;
 let requestId = 0;
@@ -234,7 +234,7 @@ function resolveWindowIconPath(): string | undefined {
   return candidates.find((candidate) => existsSync(candidate));
 }
 
-// ─── Window creation ─────────────────────────────────────────────────────────
+// Window creation
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -309,7 +309,7 @@ function createWindow() {
   });
 }
 
-// ─── Window control IPC ──────────────────────────────────────────────────────
+// Window control IPC
 
 ipcMain.on("window:minimize", () => mainWindow?.minimize());
 ipcMain.on("window:maximize", () => {
@@ -321,7 +321,7 @@ ipcMain.on("window:maximize", () => {
 });
 ipcMain.on("window:close", () => mainWindow?.close());
 
-// ─── Service IPC bridge ──────────────────────────────────────────────────────
+// Service IPC bridge
 
 // Allowlist of methods the renderer is permitted to call on the Rust service.
 // This is the main-process enforcement layer — preload also validates, but
@@ -354,7 +354,7 @@ ipcMain.handle("service:call", async (_event, method: string, params: unknown) =
   }
 });
 
-// ─── Shell IPC ───────────────────────────────────────────────────────────────
+// Shell IPC
 
 ipcMain.handle("shell:openExternal", (_event, url: string) => {
   // Only allow https:// URLs — prevent arbitrary protocol execution
@@ -363,7 +363,7 @@ ipcMain.handle("shell:openExternal", (_event, url: string) => {
   }
 });
 
-// ─── License IPC ─────────────────────────────────────────────────────────────
+// License IPC
 
 // Renderer can request the current license state
 ipcMain.handle("license:get", () => getLicense());
@@ -404,7 +404,7 @@ ipcMain.handle("license:refresh", async () => {
   return state;
 });
 
-// ─── App lifecycle ────────────────────────────────────────────────────────────
+// App lifecycle
 
 const LICENSE_REFRESH_INTERVAL_MS = 60 * 60 * 1000; // 1 hour
 

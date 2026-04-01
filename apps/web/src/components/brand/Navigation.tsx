@@ -8,14 +8,14 @@ import Link from "next/link";
 import { Logo } from "@/components/brand/Logo";
 import { fadeIn, duration, easing } from "@/lib/motion";
 
-// ─── Types ───────────────────────────────────────────────────────────────────
+// Types
 
 interface NavLink {
   label: string;
   sectionId: string;
 }
 
-// ─── Constants ───────────────────────────────────────────────────────────────
+// Constants
 
 const NAV_LINKS: NavLink[] = [
   { label: "Products", sectionId: "products" },
@@ -31,7 +31,7 @@ const SECTION_IDS = NAV_LINKS.map((l) => l.sectionId);
 const SCROLL_THRESHOLD = 40;
 const NAV_OFFSET = 80;
 
-// ─── Scroll Hook ─────────────────────────────────────────────────────────────
+// Scroll Hook
 
 function useScrolled(threshold: number) {
   const [scrolled, setScrolled] = useState(false);
@@ -49,7 +49,7 @@ function useScrolled(threshold: number) {
   return scrolled;
 }
 
-// ─── Active Section Hook (IntersectionObserver) ──────────────────────────────
+// Active Section Hook (IntersectionObserver)
 
 function useActiveSection(sectionIds: string[]) {
   const [activeId, setActiveId] = useState("");
@@ -87,7 +87,7 @@ function useActiveSection(sectionIds: string[]) {
   return activeId;
 }
 
-// ─── Smooth Scroll ───────────────────────────────────────────────────────────
+// Smooth Scroll
 
 function scrollToSection(sectionId: string) {
   const el = document.getElementById(sectionId);
@@ -100,7 +100,7 @@ function scrollToSection(sectionId: string) {
   }
 }
 
-// ─── Mobile Overlay ──────────────────────────────────────────────────────────
+// Mobile Overlay
 
 function MobileOverlay({
   isOpen,
@@ -203,7 +203,7 @@ function MobileOverlay({
   );
 }
 
-// ─── Component ───────────────────────────────────────────────────────────────
+// Component
 
 export function Navigation() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -247,7 +247,7 @@ export function Navigation() {
           ].join(" ")}
         >
           <div className="mx-auto flex h-16 max-w-[1440px] items-center justify-between px-5 sm:px-6 lg:h-20 lg:px-8 2xl:px-16">
-            {/* ── Logo ── */}
+            {/* Logo */}
             <Link
               href="/"
               className="cursor-pointer"
@@ -256,7 +256,7 @@ export function Navigation() {
               <Logo size="md" />
             </Link>
 
-            {/* ── Desktop Nav ── */}
+            {/* Desktop Nav */}
             <nav
               className="hidden items-center gap-8 lg:flex"
               role="navigation"
@@ -287,7 +287,7 @@ export function Navigation() {
               ))}
             </nav>
 
-            {/* ── Right Side ── */}
+            {/* Right Side */}
             <div className="flex items-center gap-4">
               {session?.user ? (
                 /* Logged in — Profile button */
@@ -316,7 +316,7 @@ export function Navigation() {
                 </>
               )}
 
-              {/* ── Mobile Hamburger ── */}
+              {/* Mobile Hamburger */}
               <button
                 onClick={() => setMobileOpen((prev) => !prev)}
                 className="relative z-50 inline-flex items-center justify-center rounded-lg p-2 text-ink-secondary transition-colors duration-200 hover:text-ink-primary lg:hidden"
@@ -340,7 +340,7 @@ export function Navigation() {
         </div>
       </motion.header>
 
-      {/* ── Full-Screen Mobile Overlay ── */}
+      {/* Full-Screen Mobile Overlay */}
       <MobileOverlay
         isOpen={mobileOpen}
         onClose={closeMobile}

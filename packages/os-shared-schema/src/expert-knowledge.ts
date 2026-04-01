@@ -1,4 +1,4 @@
-// ─── Expert Knowledge Base ──────────────────────────────────────────────────
+// Expert Knowledge Base
 // Curated from the redcore internal Windows optimization research set.
 // Used by both redcore-Tuning and redcore-OS for tooltips, rationales, and
 // expert explanations throughout the UI.
@@ -18,7 +18,7 @@ export interface ExpertNote {
 
 export const EXPERT_KNOWLEDGE: Record<string, Record<string, ExpertNote>> = {
 
-  // ── BIOS / HARDWARE ──────────────────────────────────────────────────────
+  // BIOS / HARDWARE
 
   bios: {
     rebar: {
@@ -75,7 +75,7 @@ export const EXPERT_KNOWLEDGE: Record<string, Record<string, ExpertNote>> = {
     },
   },
 
-  // ── CPU / SCHEDULING ─────────────────────────────────────────────────────
+  // CPU / SCHEDULING
 
   cpu: {
     win32PrioritySeparation: {
@@ -132,7 +132,7 @@ export const EXPERT_KNOWLEDGE: Record<string, Record<string, ExpertNote>> = {
     },
   },
 
-  // ── GPU ───────────────────────────────────────────────────────────────────
+  // GPU
 
   gpu: {
     hags: {
@@ -180,7 +180,7 @@ export const EXPERT_KNOWLEDGE: Record<string, Record<string, ExpertNote>> = {
     },
   },
 
-  // ── NETWORK ──────────────────────────────────────────────────────────────
+  // NETWORK
 
   network: {
     nagle: {
@@ -215,7 +215,7 @@ export const EXPERT_KNOWLEDGE: Record<string, Record<string, ExpertNote>> = {
     },
   },
 
-  // ── POWER ────────────────────────────────────────────────────────────────
+  // POWER
 
   power: {
     fastStartup: {
@@ -243,7 +243,7 @@ export const EXPERT_KNOWLEDGE: Record<string, Record<string, ExpertNote>> = {
     },
   },
 
-  // ── SERVICES ─────────────────────────────────────────────────────────────
+  // SERVICES
 
   services: {
     sysmain: {
@@ -269,7 +269,7 @@ export const EXPERT_KNOWLEDGE: Record<string, Record<string, ExpertNote>> = {
     },
   },
 
-  // ── SECURITY / MITIGATIONS ───────────────────────────────────────────────
+  // SECURITY / MITIGATIONS
 
   security: {
     hvci: {
@@ -290,7 +290,7 @@ export const EXPERT_KNOWLEDGE: Record<string, Record<string, ExpertNote>> = {
     },
   },
 
-  // ── DISPLAY / INPUT ──────────────────────────────────────────────────────
+  // DISPLAY / INPUT
 
   display: {
     pointerAcceleration: {
@@ -316,7 +316,7 @@ export const EXPERT_KNOWLEDGE: Record<string, Record<string, ExpertNote>> = {
     },
   },
 
-  // ── AUDIO ────────────────────────────────────────────────────────────────
+  // AUDIO
 
   audio: {
     enhancements: {
@@ -335,7 +335,7 @@ export const EXPERT_KNOWLEDGE: Record<string, Record<string, ExpertNote>> = {
     },
   },
 
-  // ── STORAGE ──────────────────────────────────────────────────────────────
+  // STORAGE
 
   storage: {
     eightDotThree: {
@@ -354,7 +354,7 @@ export const EXPERT_KNOWLEDGE: Record<string, Record<string, ExpertNote>> = {
     },
   },
 
-  // ── EDGE / BROWSER ───────────────────────────────────────────────────────
+  // EDGE / BROWSER
 
   edge: {
     suppress: {
@@ -382,7 +382,7 @@ export const EXPERT_KNOWLEDGE: Record<string, Record<string, ExpertNote>> = {
     },
   },
 
-  // ── PRIVACY / AI ─────────────────────────────────────────────────────────
+  // PRIVACY / AI
 
   privacy: {
     recall: {

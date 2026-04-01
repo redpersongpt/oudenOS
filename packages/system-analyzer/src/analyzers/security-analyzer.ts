@@ -1,4 +1,4 @@
-// ─── Security Analyzer ───────────────────────────────────────────────────────
+// Security Analyzer
 // Analyzes Windows security posture, VBS/HVCI impact, and firewall config.
 
 import type { DeviceProfile } from "@redcore/shared-schema/device";

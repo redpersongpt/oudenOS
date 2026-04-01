@@ -1,4 +1,4 @@
-// ─── Welcome Step ─────────────────────────────────────────────────────────────
+// Welcome Step
 // The product's first impression. Must communicate:
 // 1. What this is (precision performance optimizer)
 // 2. Why it's trustworthy (reversible, guided, intelligent)

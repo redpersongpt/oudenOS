@@ -106,7 +106,7 @@ const categories: Array<{ id: BenchmarkCategory | "all"; label: string }> = [
 
 const trendDates = ["Mar 19", "Mar 20", "Mar 21", "Mar 22", "Mar 23"];
 
-// ─── Count-up number animation ───────────────────────────────────────────────
+// Count-up number animation
 function CountUp({ to, decimals = 0 }: { to: number; decimals?: number }) {
   const ref = useRef<HTMLSpanElement>(null);
   useEffect(() => {
@@ -159,7 +159,7 @@ export function BenchmarkLabPage() {
       return { benchmark: b, before, after, delta, pct, improved };
     });
 
-  // ─── Benchmark runner ──────────────────────────────────────────────────────
+  // Benchmark runner
   const runBenchmark = useCallback(async (id: string): Promise<void> => {
     const bench = benchmarks.find((b) => b.id === id);
     if (!bench) return;
@@ -207,7 +207,7 @@ export function BenchmarkLabPage() {
     setRunningAll(false);
   };
 
-  // ─── ECharts: Before/After delta bar chart ────────────────────────────────
+  // ECharts: Before/After delta bar chart
   const comparisonChartOption = {
     backgroundColor: "transparent",
     grid: { left: "1%", right: "10%", top: "4%", bottom: "4%", containLabel: true },
@@ -258,7 +258,7 @@ export function BenchmarkLabPage() {
     ],
   };
 
-  // ─── ECharts: Historical trend line chart ─────────────────────────────────
+  // ECharts: Historical trend line chart
   const trendChartOption = {
     backgroundColor: "transparent",
     grid: { left: "4%", right: "4%", top: "20%", bottom: "14%", containLabel: true },
@@ -341,7 +341,7 @@ export function BenchmarkLabPage() {
         animate="visible"
         className="space-y-5"
       >
-        {/* ── Header ── */}
+        {/* Header */}
         <motion.div variants={staggerChild}>
           <Card>
             <div className="flex items-center justify-between px-5 py-4">
@@ -413,7 +413,7 @@ export function BenchmarkLabPage() {
           </Card>
         </motion.div>
 
-        {/* ── Category tabs ── */}
+        {/* Category tabs */}
         <motion.div variants={staggerChild}>
           <div className="flex gap-1 rounded-xl bg-surface-overlay border border-border p-1">
             {categories.map((cat) => (
@@ -441,7 +441,7 @@ export function BenchmarkLabPage() {
           </div>
         </motion.div>
 
-        {/* ── Benchmark cards ── */}
+        {/* Benchmark cards */}
         <motion.div variants={staggerChild} className="grid grid-cols-2 gap-3">
           <AnimatePresence mode="popLayout">
             {filtered.map((bench) => {
@@ -566,7 +566,7 @@ export function BenchmarkLabPage() {
           </AnimatePresence>
         </motion.div>
 
-        {/* ── Before / After comparison chart ── */}
+        {/* Before / After comparison chart */}
         {comparisons.length > 0 && (
           <motion.div variants={staggerChild}>
             <Card>
@@ -603,7 +603,7 @@ export function BenchmarkLabPage() {
           </motion.div>
         )}
 
-        {/* ── Historical trends (collapsible) ── */}
+        {/* Historical trends (collapsible) */}
         <motion.div variants={staggerChild}>
           <Card>
             <CardHeader className="pb-4">
@@ -647,7 +647,7 @@ export function BenchmarkLabPage() {
           </Card>
         </motion.div>
 
-        {/* ── Results history ── */}
+        {/* Results history */}
         <motion.div variants={staggerChild}>
           <Card>
             <CardHeader>

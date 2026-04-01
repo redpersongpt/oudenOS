@@ -1,4 +1,4 @@
-// ─── Report Step ──────────────────────────────────────────────────────────────
+// Report Step
 // Optimization complete. Shows expert-grade summary from service ledger truth.
 
 import { useEffect, useMemo, useState, useCallback } from "react";
@@ -59,7 +59,7 @@ export function ReportStep() {
   }, [footerClicks]);
   const exportLogAsText = useLogStore((state) => state.exportAsText);
 
-  // ── Primary truth: load from service ledger ──
+  // Primary truth: load from service ledger
   const [ledgerState, setLedgerState] = useState<LedgerQueryResult | null>(null);
   useEffect(() => {
     let cancelled = false;
@@ -78,7 +78,7 @@ export function ReportStep() {
     return () => { cancelled = true; };
   }, []);
 
-  // ── Derive counts: ledger-first, renderer-fallback ──
+  // Derive counts: ledger-first, renderer-fallback
   const rendererResult = executionResult ?? {
     applied: 0,
     failed: 0,
@@ -177,7 +177,7 @@ export function ReportStep() {
 
     const { serviceCall } = await import("@/lib/service");
 
-    // ── Primary: get ledger truth for export ──
+    // Primary: get ledger truth for export
     const ledgerQueryResult = await serviceCall<Record<string, unknown> | null>("ledger.query", { includeLedger: true });
     // Fallback: legacy journal.state
     const serviceJournalResult = await serviceCall<Record<string, unknown> | null>("journal.state");

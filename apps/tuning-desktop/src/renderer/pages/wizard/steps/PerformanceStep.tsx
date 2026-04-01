@@ -1,4 +1,4 @@
-// ─── Performance Step ─────────────────────────────────────────────────────────
+// Performance Step
 // CPU / Power / Timer / Scheduler tuning. Machine-archetype aware intro.
 
 import { useState } from "react";
@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/Badge";
 import { useIntelligenceStore } from "@/stores/intelligence-store";
 import type { RiskLevel } from "@redcore/shared-schema/tuning";
 
-// ─── Action definitions ───────────────────────────────────────────────────────
+// Action definitions
 
 interface PerfAction {
   id: string;
@@ -137,7 +137,7 @@ const POWER_ACTIONS: PerfAction[] = [
   },
 ];
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// Helpers
 
 const riskLabel: Record<RiskLevel, string> = {
   safe: "Safe", low: "Low", medium: "Medium", high: "High", extreme: "Extreme",
@@ -153,7 +153,7 @@ const ARCHETYPE_LABELS: Record<string, string> = {
   vm_cautious: "Virtual Machine",
 };
 
-// ─── Action row ───────────────────────────────────────────────────────────────
+// Action row
 
 function ActionRow({
   action,
@@ -206,7 +206,7 @@ function ActionRow({
   );
 }
 
-// ─── Section block ────────────────────────────────────────────────────────────
+// Section block
 
 function SectionBlock({
   label,
@@ -243,7 +243,7 @@ function SectionBlock({
   );
 }
 
-// ─── Step ─────────────────────────────────────────────────────────────────────
+// Step
 
 const ALL_ACTIONS = [...CPU_ACTIONS, ...TIMER_ACTIONS, ...POWER_ACTIONS];
 

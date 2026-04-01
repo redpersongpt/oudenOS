@@ -1,4 +1,4 @@
-// ─── redcore Tuning Logo — matches website theme ─────────────────────────────
+// redcore Tuning Logo — matches website theme
 
 import { motion } from "framer-motion";
 

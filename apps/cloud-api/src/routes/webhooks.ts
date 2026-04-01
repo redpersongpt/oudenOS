@@ -1,4 +1,4 @@
-// ─── Stripe Webhook Handler ────────────────────────────────────────────────────
+// Stripe Webhook Handler
 // POST /stripe  — receives and processes Stripe events
 //
 // Handled events:
@@ -24,7 +24,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY ?? "", {
 const WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET ?? "";
 const SUBSCRIPTION_PRODUCT = "tuning" as const;
 
-// ─── Status mapping ───────────────────────────────────────────────────────────
+// Status mapping
 
 function mapStripeStatus(
   s: Stripe.Subscription.Status,
@@ -57,7 +57,7 @@ function billingPeriodFromPriceId(priceId: string): "monthly" | "annual" {
   return annualPrices.includes(priceId) ? "annual" : "monthly";
 }
 
-// ─── Event handlers ───────────────────────────────────────────────────────────
+// Event handlers
 
 async function handleCheckoutCompleted(session: Stripe.Checkout.Session): Promise<void> {
   if (session.metadata?.["donationId"]) {
@@ -281,7 +281,7 @@ async function handleInvoiceFailed(invoice: Stripe.Invoice): Promise<void> {
   }
 }
 
-// ─── Plugin ───────────────────────────────────────────────────────────────────
+// Plugin
 
 export const webhookRoutes: FastifyPluginAsync = async (app) => {
   // Raw body is required for Stripe signature verification.

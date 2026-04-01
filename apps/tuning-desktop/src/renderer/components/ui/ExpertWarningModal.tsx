@@ -4,7 +4,7 @@ import { useEffect, useCallback } from "react";
 import { backdropFade, modalSpring } from "@redcore/design-system";
 import { Button } from "./Button";
 
-// ─── ExpertWarningModal ───────────────────────────────────────────────────────
+// ExpertWarningModal
 // Confirmation modal for high-risk operations (registry edits, driver tweaks,
 // system-level changes). Forces the user to read the consequences before acting.
 //

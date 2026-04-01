@@ -1,4 +1,4 @@
-// ─── OAuth Token Verification ────────────────────────────────────────────────
+// OAuth Token Verification
 // Verifies id_tokens from Google and Apple using their public JWKS endpoints.
 // Uses `jose` for standards-compliant JWKS + JWT verification.
 

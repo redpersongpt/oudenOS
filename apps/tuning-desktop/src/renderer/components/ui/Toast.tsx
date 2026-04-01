@@ -1,4 +1,4 @@
-// ─── Toast Notifications ──────────────────────────────────────────────────────
+// Toast Notifications
 
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -13,7 +13,7 @@ interface Toast {
   message?: string;
 }
 
-// ─── Global singleton state ───────────────────────────────────────────────────
+// Global singleton state
 
 type ToastListener = (toasts: Toast[]) => void;
 let toasts: Toast[] = [];
@@ -53,7 +53,7 @@ export const toast = {
   },
 };
 
-// ─── Toast Provider (mount once in AppLayout or App) ─────────────────────────
+// Toast Provider (mount once in AppLayout or App)
 
 export function ToastProvider() {
   const [items, setItems] = useState<Toast[]>([]);

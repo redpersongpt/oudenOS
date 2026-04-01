@@ -1,4 +1,4 @@
-// ─── GPU Tuning Module ──────────────────────────────────────────────────────
+// GPU Tuning Module
 // Derived from the redcore internal GPU-optimization notes.
 
 import type { TuningActionDefinition } from "../types.js";

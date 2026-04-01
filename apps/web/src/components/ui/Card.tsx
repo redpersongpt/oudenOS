@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import * as React from "react";
 import { spring } from "@/lib/motion";
 
-// ─── Types ───────────────────────────────────────────────────────────────────
+// Types
 
 type CardVariant = "default" | "glass";
 
@@ -16,14 +16,14 @@ interface CardProps {
   variant?: CardVariant;
 }
 
-// ─── Style Maps ──────────────────────────────────────────────────────────────
+// Style Maps
 
 const variantStyles: Record<CardVariant, string> = {
   default: "premium-card rounded-lg",
   glass: "glass-card rounded-lg",
 };
 
-// ─── Component ───────────────────────────────────────────────────────────────
+// Component
 
 export function Card({
   children,

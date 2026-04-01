@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-// ─── Types ───────────────────────────────────────────────────────────────────
+// Types
 
 interface SectionWrapperProps {
   children: ReactNode;
@@ -10,7 +10,7 @@ interface SectionWrapperProps {
   narrow?: boolean;
 }
 
-// ─── Component ───────────────────────────────────────────────────────────────
+// Component
 
 export function SectionWrapper({
   children,

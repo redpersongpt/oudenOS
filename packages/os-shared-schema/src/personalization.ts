@@ -1,4 +1,4 @@
-// ─── Personalization Types ────────────────────────────────────────────────────
+// Personalization Types
 // UI / shell personalization options applied after the transformation plan.
 
 export type PersonalizationCategory = "appearance" | "taskbar" | "explorer" | "privacy";

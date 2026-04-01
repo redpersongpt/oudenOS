@@ -67,7 +67,7 @@ export function CardContent({
   return <div className={`px-5 pb-5 ${className}`}>{children}</div>;
 }
 
-// ─── CardGrid — staggered card entrance ──────────────────────────────────────
+// CardGrid — staggered card entrance
 // Wrap a grid of <Card> elements in this for the stagger entrance animation.
 
 interface CardGridProps {

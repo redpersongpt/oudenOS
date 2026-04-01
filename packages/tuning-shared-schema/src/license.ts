@@ -1,4 +1,4 @@
-// ─── License & Subscription Schemas ─────────────────────────────────────────
+// License & Subscription Schemas
 
 export type SubscriptionTier = "free" | "premium" | "expert";
 export type SubscriptionStatus =
@@ -50,7 +50,7 @@ export interface UserAccount {
 
 // Features gated by tier
 export const FEATURE_GATES: Record<string, SubscriptionTier> = {
-  // ── Free tier ──────────────────────────────────────────────────
+  // Free tier
   // Generous free tier: scan, plan, apply safe actions, benchmark,
   // app hub, rollback, intelligence. Premium gates advanced/risky tweaks.
   "hardware_scan": "free",
@@ -68,7 +68,7 @@ export const FEATURE_GATES: Record<string, SubscriptionTier> = {
   "intelligent_recommendations": "free",
   "speculative_mitigation_analysis": "free",
 
-  // ── Premium tier ──────────────────────────────────────────────
+  // Premium tier
   // Premium unlocks: advanced tuning, reboot-resume, thermal deep
   // analysis, GPU/CPU low-level tweaks, expert mode.
   "full_tuning_engine": "premium",

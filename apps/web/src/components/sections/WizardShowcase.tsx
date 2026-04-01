@@ -21,7 +21,7 @@ import {
 } from "lucide-react";
 import { easing, duration } from "@/lib/motion";
 
-// ─── Types ──────────────────────────────────────────────────────────────────
+// Types
 
 interface ShowcaseStep {
   id: string;
@@ -30,7 +30,7 @@ interface ShowcaseStep {
   duration: number; // ms to show before auto-advancing
 }
 
-// ─── Step definitions ───────────────────────────────────────────────────────
+// Step definitions
 
 const STEPS: ShowcaseStep[] = [
   { id: "welcome", label: "Welcome", icon: Sparkles, duration: 3000 },
@@ -42,7 +42,7 @@ const STEPS: ShowcaseStep[] = [
   { id: "report", label: "Report", icon: Check, duration: 3500 },
 ];
 
-// ─── Logo mark (matches desktop app exactly) ───────────────────────────────
+// Logo mark (matches desktop app exactly)
 
 function LogoMark({ size = 20 }: { size?: number }) {
   return (
@@ -55,7 +55,7 @@ function LogoMark({ size = 20 }: { size?: number }) {
   );
 }
 
-// ─── Step rail (left sidebar) ───────────────────────────────────────────────
+// Step rail (left sidebar)
 
 function StepRail({ activeIndex }: { activeIndex: number }) {
   return (
@@ -98,7 +98,7 @@ function StepRail({ activeIndex }: { activeIndex: number }) {
   );
 }
 
-// ─── Step 1: Welcome ────────────────────────────────────────────────────────
+// Step 1: Welcome
 
 function WelcomeContent() {
   return (
@@ -141,7 +141,7 @@ function WelcomeContent() {
   );
 }
 
-// ─── Step 2: Assessment (animated scan) ─────────────────────────────────────
+// Step 2: Assessment (animated scan)
 
 const SCAN_CATEGORIES = [
   { icon: Monitor, label: "Windows version", result: "Windows 11 23H2 (22631)" },
@@ -220,7 +220,7 @@ function AssessmentContent() {
   );
 }
 
-// ─── Step 3: Profile ────────────────────────────────────────────────────────
+// Step 3: Profile
 
 function ProfileContent() {
   return (
@@ -280,7 +280,7 @@ function ProfileContent() {
   );
 }
 
-// ─── Step 4: Strategy ───────────────────────────────────────────────────────
+// Step 4: Strategy
 
 function StrategyContent() {
   const [selected, setSelected] = useState<number | null>(null);
@@ -351,7 +351,7 @@ function StrategyContent() {
   );
 }
 
-// ─── Step 5: Review ─────────────────────────────────────────────────────────
+// Step 5: Review
 
 const REVIEW_ACTIONS = [
   { name: "Disable telemetry", phase: "Privacy", status: "included" as const },
@@ -411,7 +411,7 @@ function ReviewContent() {
   );
 }
 
-// ─── Step 6: Execution ──────────────────────────────────────────────────────
+// Step 6: Execution
 
 const EXEC_ACTIONS = [
   "Disable telemetry services",
@@ -536,7 +536,7 @@ function ExecutionContent() {
   );
 }
 
-// ─── Step 7: Report ─────────────────────────────────────────────────────────
+// Step 7: Report
 
 function ReportContent() {
   return (
@@ -609,7 +609,7 @@ function ReportContent() {
   );
 }
 
-// ─── Step content router ────────────────────────────────────────────────────
+// Step content router
 
 function StepContent({ stepId }: { stepId: string }) {
   switch (stepId) {
@@ -624,7 +624,7 @@ function StepContent({ stepId }: { stepId: string }) {
   }
 }
 
-// ─── Main showcase ──────────────────────────────────────────────────────────
+// Main showcase
 
 export function WizardShowcase() {
   const sectionRef = useRef<HTMLElement>(null);

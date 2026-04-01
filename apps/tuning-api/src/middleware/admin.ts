@@ -1,4 +1,4 @@
-// ─── Admin Middleware ─────────────────────────────────────────────────────────
+// Admin Middleware
 // Validates that the request is from an authenticated admin.
 // Admin role is encoded in the JWT claims as `role: "admin"`.
 

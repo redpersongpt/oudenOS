@@ -1,4 +1,4 @@
-// ─── Telemetry Routes ─────────────────────────────────────────────────────────
+// Telemetry Routes
 // Opt-in only. All events are anonymized — no PII is accepted or stored.
 // Batch ingestion with offline queue support (returns accepted:true immediately).
 // Analytics endpoints are admin-only.
@@ -7,7 +7,7 @@ import type { FastifyPluginAsync } from "fastify";
 import { z } from "zod";
 import { requireAdmin } from "../middleware/admin.js";
 
-// ─── Event schema ─────────────────────────────────────────────────────────────
+// Event schema
 
 const TelemetryEventSchema = z.object({
   event: z.string().max(64),
@@ -54,7 +54,7 @@ type TelemetryEvent = z.infer<typeof TelemetryEventSchema> & {
   sessionId: string;
 };
 
-// ─── In-memory event store (replace with ClickHouse / TimescaleDB / pg) ──────
+// In-memory event store (replace with ClickHouse / TimescaleDB / pg)
 
 const eventStore: TelemetryEvent[] = [];
 const MAX_STORE = 100_000;
@@ -70,10 +70,10 @@ function ingestEvents(sessionId: string, events: z.infer<typeof TelemetryEventSc
   }
 }
 
-// ─── Routes ───────────────────────────────────────────────────────────────────
+// Routes
 
 export const telemetryRoutes: FastifyPluginAsync = async (app) => {
-  // ── POST /telemetry/events ────────────────────────────────────────────────
+  // POST /telemetry/events
   // Batch ingestion. Clients may call this while online or flush an offline queue.
   // Returns accepted:true immediately (fire-and-forget on server side).
   app.post<{ Body: unknown }>("/events", async (request, reply) => {
@@ -99,7 +99,7 @@ export const telemetryRoutes: FastifyPluginAsync = async (app) => {
     };
   });
 
-  // ── POST /telemetry/opt-out ───────────────────────────────────────────────
+  // POST /telemetry/opt-out
   // Purge any stored events for the given session.
   app.post<{ Body: unknown }>("/opt-out", async (request, reply) => {
     const parsed = z.object({ sessionId: z.string().uuid() }).safeParse(request.body);
@@ -116,7 +116,7 @@ export const telemetryRoutes: FastifyPluginAsync = async (app) => {
     return { purged };
   });
 
-  // ── POST /telemetry/crash ─────────────────────────────────────────────────
+  // POST /telemetry/crash
   // Accept crash reports (opt-in only, anonymized).
   app.post<{ Body: unknown }>("/crash", async (request, reply) => {
     const parsed = z
@@ -142,7 +142,7 @@ export const telemetryRoutes: FastifyPluginAsync = async (app) => {
     return { accepted: true };
   });
 
-  // ── Admin analytics (all require admin JWT) ───────────────────────────────
+  // Admin analytics (all require admin JWT)
 
   // GET /telemetry/analytics/overview — DAU/WAU/MAU + retention
   app.get("/analytics/overview", { preHandler: requireAdmin }, async () => {

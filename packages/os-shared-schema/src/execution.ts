@@ -1,4 +1,4 @@
-// ─── Execution Result Types ───────────────────────────────────────────────────
+// Execution Result Types
 // Returned by execute.apply and execute.applyAction.
 
 export type ActionExecutionStatus =

@@ -1,4 +1,4 @@
-// ─── Shared Auth Types ──────────────────────────────────────────────────────
+// Shared Auth Types
 
 export interface AccessTokenPayload {
   sub: string;

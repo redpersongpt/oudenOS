@@ -3,7 +3,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { WizardPage } from "./pages/wizard/WizardPage";
 import { DonationPage } from "./pages/donation/DonationPage";
 
-// ─── Error Boundary ──────────────────────────────────────────────────────────
+// Error Boundary
 // Catches unhandled renderer crashes and shows recovery UI instead of black screen
 
 interface ErrorState {
@@ -65,7 +65,7 @@ class ErrorBoundary extends Component<{ children: ReactNode }, ErrorState> {
   }
 }
 
-// ─── App ─────────────────────────────────────────────────────────────────────
+// App
 
 export function App() {
   return (

@@ -1,4 +1,4 @@
-// ─── TierGate (tier/) ────────────────────────────────────────────────────────
+// TierGate (tier/)
 // Dark-theme feature gate. Three display modes:
 //   replace  — replaces children entirely with the upgrade prompt (default)
 //   blur     — blurs children and overlays a lock panel
@@ -27,7 +27,7 @@ interface TierGateProps {
   requiredTier?: AppTier;
 }
 
-// ─── Tier display metadata ─────────────────────────────────────────────────
+// Tier display metadata
 
 const TIER_META: Record<AppTier, { label: string; color: string; icon: ReactNode }> = {
   free: {
@@ -53,7 +53,7 @@ const TIER_GLOW: Record<AppTier, string> = {
   expert: "border-violet-500/20 bg-violet-500/5",
 };
 
-// ─── Feature label map ─────────────────────────────────────────────────────
+// Feature label map
 
 const FEATURE_LABELS: Record<string, string> = {
   full_tuning_engine: "Full Tuning Engine",
@@ -75,7 +75,7 @@ const FEATURE_LABELS: Record<string, string> = {
   advanced_controls: "Advanced Controls",
 };
 
-// ─── Component ─────────────────────────────────────────────────────────────
+// Component
 
 export function TierGate({
   feature,
@@ -125,7 +125,7 @@ export function TierGate({
   return <InlinePrompt featureLabel={featureLabel} requiredTier={requiredTier} />;
 }
 
-// ─── Sub-components ────────────────────────────────────────────────────────
+// Sub-components
 
 function LockOverlay({
   featureLabel,

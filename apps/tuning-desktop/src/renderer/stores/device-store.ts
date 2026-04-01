@@ -1,4 +1,4 @@
-// ─── Device Profile Store ───────────────────────────────────────────────────
+// Device Profile Store
 
 import { create } from "zustand";
 import type { DeviceProfile } from "@redcore/shared-schema/device";

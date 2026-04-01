@@ -6,7 +6,7 @@ import { Palette, Paintbrush, LayoutGrid, FolderOpen } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { staggerContainer, staggerChild } from "@/lib/motion";
 
-// ─── Types ───────────────────────────────────────────────────────────────────
+// Types
 
 interface PersonalizationFeature {
   title: string;
@@ -14,7 +14,7 @@ interface PersonalizationFeature {
   icon: LucideIcon;
 }
 
-// ─── Data ────────────────────────────────────────────────────────────────────
+// Data
 
 const features: PersonalizationFeature[] = [
   {
@@ -29,7 +29,7 @@ const features: PersonalizationFeature[] = [
   },
   {
     title: "Taskbar Cleanup",
-    description: "Streamlined taskbar with reduced noise.",
+    description: "Clean taskbar, no clutter",
     icon: LayoutGrid,
   },
   {
@@ -39,7 +39,7 @@ const features: PersonalizationFeature[] = [
   },
 ];
 
-// ─── Sub-component ───────────────────────────────────────────────────────────
+// Sub-component
 
 function FeatureItem({ feature }: { feature: PersonalizationFeature }) {
   const Icon = feature.icon;
@@ -64,7 +64,7 @@ function FeatureItem({ feature }: { feature: PersonalizationFeature }) {
   );
 }
 
-// ─── Main Component ──────────────────────────────────────────────────────────
+// Main Component
 
 export function PersonalizationSection() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -80,7 +80,7 @@ export function PersonalizationSection() {
       <div className="section-divide" aria-hidden="true" />
 
       <div className="max-w-5xl mx-auto px-6 lg:px-8">
-        {/* ─── Header ─── */}
+        {/* Header */}
         <motion.div
           variants={staggerContainer(0.1, 0)}
           initial="hidden"
@@ -95,7 +95,7 @@ export function PersonalizationSection() {
           </motion.h2>
         </motion.div>
 
-        {/* ─── Feature Grid ─── */}
+        {/* Feature Grid */}
         <motion.div
           variants={staggerContainer(0.08, 0.15)}
           initial="hidden"

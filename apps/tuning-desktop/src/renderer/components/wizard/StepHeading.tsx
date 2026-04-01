@@ -1,4 +1,4 @@
-// ─── Step Heading ────────────────────────────────────────────────────────────
+// Step Heading
 // Consistent display-scale heading for wizard steps.
 // Enforces typography hierarchy: display title + concise subtitle.
 // Every wizard step should use this instead of ad-hoc heading markup.

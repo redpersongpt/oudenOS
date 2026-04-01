@@ -5,7 +5,7 @@ import { Mail, AlertCircle, ArrowLeft, Zap } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { cloudApi, CloudApiRequestError } from "@/lib/cloud-api";
 
-// ─── Motion variants ──────────────────────────────────────────────────────────
+// Motion variants
 
 const pageVariants = {
   hidden: { opacity: 0, y: 20, scale: 0.98 },
@@ -49,7 +49,7 @@ const successVariants = {
   },
 };
 
-// ─── Success illustration ─────────────────────────────────────────────────────
+// Success illustration
 
 function SuccessIllustration() {
   return (
@@ -102,7 +102,7 @@ function SuccessIllustration() {
   );
 }
 
-// ─── Component ────────────────────────────────────────────────────────────────
+// Component
 
 export function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
@@ -145,7 +145,7 @@ export function ForgotPasswordPage() {
       <div className="no-drag relative z-10 w-full max-w-[380px] px-5">
         <AnimatePresence mode="wait">
           {!submitted ? (
-            /* ── Request form ───────────────────────────────────────────── */
+            /* Request form */
             <motion.div
               key="form"
               variants={pageVariants}
@@ -238,7 +238,7 @@ export function ForgotPasswordPage() {
               </motion.div>
             </motion.div>
           ) : (
-            /* ── Success state ──────────────────────────────────────────── */
+            /* Success state */
             <motion.div
               key="success"
               variants={successVariants}

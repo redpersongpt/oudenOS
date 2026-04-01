@@ -28,7 +28,7 @@ import { useTuningStore } from "@/stores/tuning-store";
 import { serviceCall } from "@/lib/api";
 import type { TuningPlanAction, TuningCategory } from "@redcore/shared-schema/tuning";
 
-// ─── Types ────────────────────────────────────────────────────────────────────
+// Types
 
 type LocalActionStatus = "pending" | "applying" | "success" | "failed" | "skipped";
 type Phase = "review" | "executing" | "complete";
@@ -46,7 +46,7 @@ const levelColors: Record<string, string> = {
   error: "text-red-400",
 };
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// Helpers
 
 function statusIcon(status: LocalActionStatus) {
   switch (status) {
@@ -80,7 +80,7 @@ function categoryChips(actions: TuningPlanAction[]) {
   return Array.from(counts.entries());
 }
 
-// ─── Phase: Review ────────────────────────────────────────────────────────────
+// Phase: Review
 
 interface ReviewPhaseProps {
   onBack: () => void;
@@ -268,7 +268,7 @@ function ReviewPhase({ onBack, onBegin }: ReviewPhaseProps) {
   );
 }
 
-// ─── Phase: Executing ─────────────────────────────────────────────────────────
+// Phase: Executing
 
 interface ExecutingPhaseProps {
   actionStates: ActionState[];
@@ -489,7 +489,7 @@ function ExecutingPhase({
   );
 }
 
-// ─── Phase: Complete ──────────────────────────────────────────────────────────
+// Phase: Complete
 
 interface CompletePhaseProps {
   actionStates: ActionState[];
@@ -700,7 +700,7 @@ function CompletePhase({
   );
 }
 
-// ─── Page ─────────────────────────────────────────────────────────────────────
+// Page
 
 export function ApplyWorkflowPage() {
   const navigate = useNavigate();

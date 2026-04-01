@@ -1,4 +1,4 @@
-// ─── Analysis Pipeline Store ─────────────────────────────────────────────────
+// Analysis Pipeline Store
 // Holds the system-analyzer pipeline state for the DiagnosticsPage.
 
 import { create } from "zustand";

@@ -1,4 +1,4 @@
-// ─── TierGate ────────────────────────────────────────────────────────────────
+// TierGate
 // Renders children only when the user's tier meets the feature requirement.
 // Falls back to a contextual upgrade prompt that fits inline or full-screen.
 
@@ -11,7 +11,7 @@ import { FEATURE_GATES } from "@redcore/shared-schema/license";
 import type { SubscriptionTier } from "@redcore/shared-schema/license";
 import { Button } from "./Button";
 
-// ─── Types ────────────────────────────────────────────────────────────────────
+// Types
 
 interface TierGateProps {
   /** Feature key from FEATURE_GATES, e.g. "benchmark_lab" */
@@ -23,7 +23,7 @@ interface TierGateProps {
   variant?: "blur" | "hide" | "inline";
 }
 
-// ─── Feature→tier display names ──────────────────────────────────────────────
+// Feature→tier display names
 
 const FEATURE_LABELS: Partial<Record<string, string>> = {
   full_tuning_engine: "Full Tuning Engine",
@@ -46,7 +46,7 @@ const FEATURE_LABELS: Partial<Record<string, string>> = {
   fault_tolerant_heap_control: "Fault Tolerant Heap Control",
 };
 
-// ─── Component ───────────────────────────────────────────────────────────────
+// Component
 
 export function TierGate({ feature, children, fallback, variant = "blur" }: TierGateProps) {
   const canAccess = useLicenseStore((s) => s.canAccess);
@@ -88,7 +88,7 @@ export function TierGate({ feature, children, fallback, variant = "blur" }: Tier
   );
 }
 
-// ─── Sub-components ───────────────────────────────────────────────────────────
+// Sub-components
 
 interface GateUIProps {
   featureLabel: string;

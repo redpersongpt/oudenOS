@@ -1,11 +1,11 @@
-// ─── RecommendationList ──────────────────────────────────────────────────────
+// RecommendationList
 // Prioritized, filterable list of recommendations with risk badges and toggles.
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { Recommendation, OptimizationCategory, RiskLevel } from "../types.js";
 
-// ─── Risk badge ───────────────────────────────────────────────────────────────
+// Risk badge
 
 function RiskBadge({ level }: { level: RiskLevel }) {
   const styles: Record<RiskLevel, string> = {
@@ -21,7 +21,7 @@ function RiskBadge({ level }: { level: RiskLevel }) {
   );
 }
 
-// ─── Category badge ───────────────────────────────────────────────────────────
+// Category badge
 
 const CATEGORY_LABELS: Record<OptimizationCategory, string> = {
   cpu: "CPU",
@@ -36,7 +36,7 @@ const CATEGORY_LABELS: Record<OptimizationCategory, string> = {
   scheduler: "Scheduler",
 };
 
-// ─── Toggle switch ────────────────────────────────────────────────────────────
+// Toggle switch
 
 function Toggle({ checked, onChange }: { checked: boolean; onChange: () => void }) {
   return (
@@ -56,7 +56,7 @@ function Toggle({ checked, onChange }: { checked: boolean; onChange: () => void 
   );
 }
 
-// ─── Impact bar ───────────────────────────────────────────────────────────────
+// Impact bar
 
 function ImpactBar({ value, disabled }: { value: number; disabled: boolean }) {
   return (
@@ -76,7 +76,7 @@ function ImpactBar({ value, disabled }: { value: number; disabled: boolean }) {
   );
 }
 
-// ─── Recommendation Item ──────────────────────────────────────────────────────
+// Recommendation Item
 
 interface RecommendationItemProps {
   rec: Recommendation;
@@ -158,13 +158,13 @@ function RecommendationItem({ rec, index, onToggle }: RecommendationItemProps) {
   );
 }
 
-// ─── Filter bar ───────────────────────────────────────────────────────────────
+// Filter bar
 
 const ALL_CATEGORIES: Array<OptimizationCategory | "all"> = [
   "all", "cpu", "gpu", "memory", "storage", "power", "scheduler", "network", "security", "services"
 ];
 
-// ─── Main RecommendationList ──────────────────────────────────────────────────
+// Main RecommendationList
 
 interface RecommendationListProps {
   recommendations: Recommendation[];

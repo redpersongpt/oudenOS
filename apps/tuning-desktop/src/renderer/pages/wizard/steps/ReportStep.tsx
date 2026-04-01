@@ -1,4 +1,4 @@
-// ─── Report Step ──────────────────────────────────────────────────────────────
+// Report Step
 // Final report — journey complete. Success celebration, stats, deep satisfaction.
 
 import { useState } from "react";
@@ -25,7 +25,7 @@ import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { ConfidenceRing } from "@/pages/intelligence/components";
 
-// ─── Stat card ────────────────────────────────────────────────────────────────
+// Stat card
 
 function StatCard({ icon: Icon, label, value, sub, accent }: {
   icon: React.ElementType;
@@ -55,7 +55,7 @@ function StatCard({ icon: Icon, label, value, sub, accent }: {
   );
 }
 
-// ─── Component ────────────────────────────────────────────────────────────────
+// Component
 
 export function ReportStep() {
   const { completedActions, selectedActions } = useWizardStore();

@@ -1,4 +1,4 @@
-// ─── Types ───────────────────────────────────────────────────────────────────
+// Types
 
 interface Step {
   title: string;
@@ -9,7 +9,7 @@ interface ProcessStepsProps {
   steps: Step[];
 }
 
-// ─── Component ───────────────────────────────────────────────────────────────
+// Component
 
 export function ProcessSteps({ steps }: ProcessStepsProps) {
   return (

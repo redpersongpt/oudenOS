@@ -1,4 +1,4 @@
-// ─── IPC Contract ───────────────────────────────────────────────────────────
+// IPC Contract
 // Typed JSON-RPC messages between Electron main process and Rust service.
 // The renderer NEVER talks to the service directly — always through main.
 
@@ -10,7 +10,7 @@ import type { JournalState } from "./journal.js";
 import type { LicenseState } from "./license.js";
 import type { MachineClassification, IntelligentTuningProfile, IntelligentRecommendation, MachineArchetype } from "./device-intelligence.js";
 
-// ─── IPC Error types ─────────────────────────────────────────────────────────
+// IPC Error types
 
 export interface IpcError {
   code: string;                  // Machine-readable error code, e.g. "SCAN_FAILED"
@@ -23,7 +23,7 @@ export type IpcResponse<T> =
   | { ok: true; data: T }
   | { ok: false; error: IpcError };
 
-// ─── Request/Response pairs ─────────────────────────────────────────────────
+// Request/Response pairs
 
 export interface IpcMethods {
   // System scan
@@ -83,7 +83,7 @@ export interface IpcMethods {
   "intelligence.getRecommendations": { params: { deviceProfileId: string; archetype?: MachineArchetype }; result: IntelligentRecommendation[] };
 }
 
-// ─── Events (push-based) ─────────────────────────────────────────────────────
+// Events (push-based)
 // Events ACTUALLY emitted today — add to preload ALLOWED_EVENTS to subscribe.
 
 export interface IpcEvents {
@@ -117,7 +117,7 @@ export interface IpcEvents {
   "thermal.update": { cpuTempC: number | null; gpuTempC: number | null; throttling: boolean };
 }
 
-// ─── Supporting types ───────────────────────────────────────────────────────
+// Supporting types
 // AppCatalogEntry is the lighter IPC-level type returned by apphub.getCatalog.
 // It differs from AppCatalogItem in app-catalog.ts which is the rich local type
 // used by the download center. Both are intentionally separate.

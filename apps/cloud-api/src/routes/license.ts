@@ -1,4 +1,4 @@
-// ─── License Routes ────────────────────────────────────────────────────────────
+// License Routes
 // POST /issue           — issue a signed license token for an active machine
 // POST /validate        — validate a license token (online check + revocation)
 // POST /refresh-token   — refresh an expiring license token
@@ -39,7 +39,7 @@ import {
 } from "../lib/jwt.js";
 import { apiRateLimit } from "../lib/rate-limit.js";
 
-// ─── Schemas ──────────────────────────────────────────────────────────────────
+// Schemas
 
 const issueSchema = z.object({
   machineId: z.string().uuid(),
@@ -63,7 +63,7 @@ const revokeParamsSchema = z.object({
   machineId: z.string().uuid(),
 });
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// Helpers
 
 const SUBSCRIPTION_PRODUCT = "tuning" as const;
 
@@ -144,10 +144,10 @@ function buildFeatureList(tier: "free" | "premium" | "expert") {
   }));
 }
 
-// ─── Plugin ───────────────────────────────────────────────────────────────────
+// Plugin
 
 export const licenseRoutes: FastifyPluginAsync = async (app) => {
-  // ── POST /issue ───────────────────────────────────────────────────────────
+  // POST /issue
   // Issue a fresh license token for one of the user's active machines.
   app.post("/issue", { preHandler: [requireAuth, apiRateLimit()] }, async (request, reply) => {
     const parse = issueSchema.safeParse(request.body);
@@ -205,7 +205,7 @@ export const licenseRoutes: FastifyPluginAsync = async (app) => {
     });
   });
 
-  // ── POST /validate ────────────────────────────────────────────────────────
+  // POST /validate
   // Online validation: verify JWT signature AND check DB state.
   app.post("/validate", { preHandler: apiRateLimit() }, async (request, reply) => {
     const parse = validateSchema.safeParse(request.body);
@@ -381,7 +381,7 @@ export const licenseRoutes: FastifyPluginAsync = async (app) => {
     });
   });
 
-  // ── POST /refresh-token ───────────────────────────────────────────────────
+  // POST /refresh-token
   // Exchange an expiring (but still valid) license token for a fresh one.
   app.post("/refresh-token", { preHandler: [requireAuth, apiRateLimit()] }, async (request, reply) => {
     const parse = z.object({ token: z.string().min(1) }).safeParse(request.body);
@@ -437,7 +437,7 @@ export const licenseRoutes: FastifyPluginAsync = async (app) => {
     });
   });
 
-  // ── GET /public-key ───────────────────────────────────────────────────────
+  // GET /public-key
   // Returns the RSA public key PEM for embedding in the desktop client.
   // Returns null if running in HS256 mode (offline verification not available).
   app.get("/public-key", async (_request, reply) => {
@@ -452,7 +452,7 @@ export const licenseRoutes: FastifyPluginAsync = async (app) => {
     return reply.send({ algorithm: "RS256", publicKey: pem });
   });
 
-  // ── POST /revoke/:machineId ───────────────────────────────────────────────
+  // POST /revoke/:machineId
   // User self-service revoke (same as DELETE /users/me/machines/:id).
   // Admin route to revoke any machine is under /admin/machines/:id.
   app.post<{ Params: { machineId: string } }>(
@@ -483,7 +483,7 @@ export const licenseRoutes: FastifyPluginAsync = async (app) => {
     },
   );
 
-  // ── Admin: POST /admin-revoke/:machineId ──────────────────────────────────
+  // Admin: POST /admin-revoke/:machineId
   app.post<{ Params: { machineId: string } }>(
     "/admin-revoke/:machineId",
     { preHandler: requireAdmin },

@@ -1,11 +1,11 @@
-// ─── Machine Intelligence Types ─────────────────────────────────────────────
+// Machine Intelligence Types
 // Device classification, confidence scoring, and intelligent recommendations.
 // The classification engine understands the machine and generates the right
 // tuning strategy for that exact hardware and usage profile.
 
 import type { PlanPreset } from "./tuning.js";
 
-// ─── Machine Archetypes ─────────────────────────────────────────────────────
+// Machine Archetypes
 
 export type MachineArchetype =
   | "gaming_desktop"
@@ -74,7 +74,7 @@ export const ARCHETYPE_META: Record<MachineArchetype, {
   },
 };
 
-// ─── Classification Result ──────────────────────────────────────────────────
+// Classification Result
 
 export interface ClassificationSignal {
   factor: string;
@@ -92,7 +92,7 @@ export interface MachineClassification {
   deviceProfileId: string;
 }
 
-// ─── Recommendation Confidence ──────────────────────────────────────────────
+// Recommendation Confidence
 
 export type RecommendationConfidence =
   | "high"
@@ -113,7 +113,7 @@ export interface IntelligentRecommendation {
   risk: string;
 }
 
-// ─── Full Tuning Profile ────────────────────────────────────────────────────
+// Full Tuning Profile
 
 export interface IntelligentTuningProfile {
   classification: MachineClassification;

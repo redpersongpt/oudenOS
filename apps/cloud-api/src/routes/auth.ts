@@ -1,4 +1,4 @@
-// ─── Auth Routes ──────────────────────────────────────────────────────────────
+// Auth Routes
 // POST /register          — email + password signup
 // POST /login             — email + password login
 // POST /refresh           — rotate refresh token
@@ -30,7 +30,7 @@ import { verifyGoogleIdToken, verifyAppleIdToken } from "../lib/oauth.js";
 import { authRateLimit, refreshRateLimit } from "../lib/rate-limit.js";
 import { requireAuth } from "../middleware/auth.js";
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// Helpers
 
 const SUBSCRIPTION_PRODUCT = "tuning" as const;
 
@@ -77,7 +77,7 @@ async function getUserSubscriptionTier(userId: string) {
   return sub ?? { tier: "free" as const, status: "active" as const };
 }
 
-// ─── Input schemas ────────────────────────────────────────────────────────────
+// Input schemas
 
 const registerSchema = z.object({
   email: z.string().email().max(255),
@@ -112,10 +112,10 @@ const googleOAuthSchema = z.object({
   name: z.string().max(100).optional(), // user-provided name (Apple sign-in first time)
 });
 
-// ─── Plugin ───────────────────────────────────────────────────────────────────
+// Plugin
 
 export const authRoutes: FastifyPluginAsync = async (app) => {
-  // ── POST /register ────────────────────────────────────────────────────────
+  // POST /register
   app.post("/register", { preHandler: authRateLimit() }, async (request, reply) => {
     const parse = registerSchema.safeParse(request.body);
     if (!parse.success) {
@@ -184,7 +184,7 @@ export const authRoutes: FastifyPluginAsync = async (app) => {
     });
   });
 
-  // ── POST /login ───────────────────────────────────────────────────────────
+  // POST /login
   app.post("/login", { preHandler: authRateLimit() }, async (request, reply) => {
     const parse = loginSchema.safeParse(request.body);
     if (!parse.success) {
@@ -235,7 +235,7 @@ export const authRoutes: FastifyPluginAsync = async (app) => {
     });
   });
 
-  // ── POST /refresh ─────────────────────────────────────────────────────────
+  // POST /refresh
   app.post("/refresh", { preHandler: refreshRateLimit() }, async (request, reply) => {
     const parse = refreshSchema.safeParse(request.body);
     if (!parse.success) {
@@ -282,7 +282,7 @@ export const authRoutes: FastifyPluginAsync = async (app) => {
     return reply.send({ accessToken, refreshToken: rawRefresh });
   });
 
-  // ── POST /logout ──────────────────────────────────────────────────────────
+  // POST /logout
   app.post("/logout", { preHandler: requireAuth }, async (request, reply) => {
     const parse = refreshSchema.safeParse(request.body);
     if (parse.success) {
@@ -300,7 +300,7 @@ export const authRoutes: FastifyPluginAsync = async (app) => {
     return reply.send({ ok: true });
   });
 
-  // ── POST /forgot-password ─────────────────────────────────────────────────
+  // POST /forgot-password
   app.post("/forgot-password", { preHandler: authRateLimit(5) }, async (request, reply) => {
     const parse = forgotPasswordSchema.safeParse(request.body);
     if (!parse.success) {
@@ -340,7 +340,7 @@ export const authRoutes: FastifyPluginAsync = async (app) => {
     return reply.send({ ok: true, message: "If an account with that email exists, a reset link has been sent." });
   });
 
-  // ── POST /reset-password ──────────────────────────────────────────────────
+  // POST /reset-password
   app.post("/reset-password", { preHandler: authRateLimit() }, async (request, reply) => {
     const parse = resetPasswordSchema.safeParse(request.body);
     if (!parse.success) {
@@ -384,7 +384,7 @@ export const authRoutes: FastifyPluginAsync = async (app) => {
     return reply.send({ ok: true, message: "Password has been reset. Please log in with your new password." });
   });
 
-  // ── POST /verify-email ────────────────────────────────────────────────────
+  // POST /verify-email
   app.post("/verify-email", async (request, reply) => {
     const parse = verifyEmailSchema.safeParse(request.body);
     if (!parse.success) {
@@ -424,7 +424,7 @@ export const authRoutes: FastifyPluginAsync = async (app) => {
     return reply.send({ ok: true, message: "Email verified successfully" });
   });
 
-  // ── POST /verify-email/resend ─────────────────────────────────────────────
+  // POST /verify-email/resend
   app.post("/verify-email/resend", { preHandler: [requireAuth, authRateLimit(3)] }, async (request, reply) => {
     const [user] = await db
       .select({ id: users.id, email: users.email, name: users.name, emailVerified: users.emailVerified })
@@ -458,7 +458,7 @@ export const authRoutes: FastifyPluginAsync = async (app) => {
     return reply.send({ ok: true, message: "Verification email sent" });
   });
 
-  // ── POST /oauth/google ────────────────────────────────────────────────────
+  // POST /oauth/google
   app.post("/oauth/google", { preHandler: authRateLimit() }, async (request, reply) => {
     const parse = googleOAuthSchema.safeParse(request.body);
     if (!parse.success) {
@@ -476,7 +476,7 @@ export const authRoutes: FastifyPluginAsync = async (app) => {
     return oauthSignIn({ profile, provider: "google", providedName: parse.data.name, reply });
   });
 
-  // ── POST /oauth/apple ─────────────────────────────────────────────────────
+  // POST /oauth/apple
   app.post("/oauth/apple", { preHandler: authRateLimit() }, async (request, reply) => {
     const parse = googleOAuthSchema.safeParse(request.body); // same shape
     if (!parse.success) {
@@ -494,7 +494,7 @@ export const authRoutes: FastifyPluginAsync = async (app) => {
     return oauthSignIn({ profile, provider: "apple", providedName: parse.data.name, reply });
   });
 
-  // ─── OAuth shared sign-in logic ────────────────────────────────────────────
+  // OAuth shared sign-in logic
   async function oauthSignIn({
     profile,
     provider,

@@ -1,4 +1,4 @@
-// ─── Post-Transformation Verification Types ──────────────────────────────────
+// Post-Transformation Verification Types
 
 export interface RegistryVerifyResult {
   hive: string;

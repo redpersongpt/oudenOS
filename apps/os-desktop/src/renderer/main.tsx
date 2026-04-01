@@ -4,7 +4,7 @@ import { HashRouter } from "react-router-dom";
 import { App } from "./App";
 import "./styles/globals.css";
 
-// ─── Smoke test bridge ──────────────────────────────────────────────────────
+// Smoke test bridge
 // Exposes internal question-model functions on window.__smokeTest only when
 // the main process sets window.__SMOKE_TEST__ = true. This allows the CI
 // smoke test to call applyQuestionnaireOverrides with real answer sets and

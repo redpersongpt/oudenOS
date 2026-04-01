@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/Button";
 import { useAuthStore } from "@/stores/auth-store";
 import { openExternalUrl, PRIVACY_URL, REGISTER_URL, TERMS_URL } from "@/lib/external-links";
 
-// ─── Motion variants ──────────────────────────────────────────────────────────
+// Motion variants
 
 const pageVariants = {
   hidden: { opacity: 0, y: 20, scale: 0.98 },
@@ -51,7 +51,7 @@ const successVariants = {
   },
 };
 
-// ─── SVG brand icons (same as LoginPage) ─────────────────────────────────────
+// SVG brand icons (same as LoginPage)
 
 function GoogleIcon() {
   return (
@@ -64,7 +64,7 @@ function GoogleIcon() {
   );
 }
 
-// ─── Password strength ────────────────────────────────────────────────────────
+// Password strength
 
 interface PasswordRequirement {
   label: string;
@@ -92,7 +92,7 @@ const strengthConfig = [
   { label: "Strong", color: "bg-green-500", width: "100%" },
 ];
 
-// ─── Animated envelope icon ───────────────────────────────────────────────────
+// Animated envelope icon
 
 function EnvelopeIllustration() {
   return (
@@ -143,7 +143,7 @@ function EnvelopeIllustration() {
   );
 }
 
-// ─── Component ────────────────────────────────────────────────────────────────
+// Component
 
 export function RegisterPage() {
   const navigate = useNavigate();
@@ -213,7 +213,7 @@ export function RegisterPage() {
       <div className="no-drag relative z-10 w-full max-w-[400px] px-5">
         <AnimatePresence mode="wait">
           {!registered ? (
-            /* ── Registration form ─────────────────────────────────────── */
+            /* Registration form */
             <motion.div
               key="form"
               variants={pageVariants}
@@ -554,7 +554,7 @@ export function RegisterPage() {
               </motion.div>
             </motion.div>
           ) : (
-            /* ── Email verification success ────────────────────────────── */
+            /* Email verification success */
             <motion.div
               key="success"
               variants={successVariants}
@@ -614,7 +614,7 @@ export function RegisterPage() {
   );
 }
 
-// ─── OAuth button ─────────────────────────────────────────────────────────────
+// OAuth button
 
 interface OAuthButtonProps {
   onClick: () => void;

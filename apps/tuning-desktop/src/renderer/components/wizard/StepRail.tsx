@@ -1,4 +1,4 @@
-// ─── Step Rail ────────────────────────────────────────────────────────────────
+// Step Rail
 // Left navigation rail for the wizard shell.
 // Groups steps by category with animated status indicators.
 
@@ -13,7 +13,7 @@ import {
 import type { WizardStep, WizardCategory } from "@/stores/wizard-store";
 import { useDeviceStore } from "@/stores/device-store";
 
-// ─── Step indicator ───────────────────────────────────────────────────────────
+// Step indicator
 
 function StepIndicator({ status }: { status: WizardStep["status"] }) {
   if (status === "completed") {
@@ -56,7 +56,7 @@ function StepIndicator({ status }: { status: WizardStep["status"] }) {
   );
 }
 
-// ─── Single step row ──────────────────────────────────────────────────────────
+// Single step row
 
 interface StepRowProps {
   step: WizardStep;
@@ -107,7 +107,7 @@ function StepRow({ step, onNavigate }: StepRowProps) {
   );
 }
 
-// ─── Category group ───────────────────────────────────────────────────────────
+// Category group
 
 interface CategoryGroupProps {
   category: WizardCategory;
@@ -130,7 +130,7 @@ function CategoryGroup({ category, steps, onNavigate }: CategoryGroupProps) {
   );
 }
 
-// ─── Machine identity mini ────────────────────────────────────────────────────
+// Machine identity mini
 
 function MachineIdentityMini() {
   const profile = useDeviceStore((s) => s.profile);
@@ -155,7 +155,7 @@ function MachineIdentityMini() {
   );
 }
 
-// ─── Step Rail ────────────────────────────────────────────────────────────────
+// Step Rail
 
 export function StepRail() {
   const steps = useWizardStore((s) => s.steps);

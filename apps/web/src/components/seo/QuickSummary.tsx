@@ -1,10 +1,10 @@
-// ─── Types ───────────────────────────────────────────────────────────────────
+// Types
 
 interface QuickSummaryProps {
   items: string[];
 }
 
-// ─── Component ───────────────────────────────────────────────────────────────
+// Component
 
 export function QuickSummary({ items }: QuickSummaryProps) {
   return (

@@ -1,4 +1,4 @@
-// ─── Wizard Shell ─────────────────────────────────────────────────────────────
+// Wizard Shell
 // Full-screen centered wizard layout with a focused, cinematic flow.
 // Each step takes the entire window. No persistent sidebar during flow.
 // Navigation via bottom bar only. Clean, dark, cinematic.
@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/Button";
 import { LogoMark } from "@/components/brand/Logo";
 import { useEffect, useId, useRef, useState } from "react";
 
-// ─── Step metadata ──────────────────────────────────────────────────────────
+// Step metadata
 
 const STEP_LABELS: Record<WizardStepId, string> = {
   welcome: "Welcome",
@@ -40,7 +40,7 @@ const NEXT_LABELS: Partial<Record<WizardStepId, string>> = {
   report: "Finish",
 };
 
-// ─── Step Picker Dropdown ───────────────────────────────────────────────────
+// Step Picker Dropdown
 
 function StepPicker() {
   const [open, setOpen] = useState(false);
@@ -126,7 +126,7 @@ function StepPicker() {
   );
 }
 
-// ─── Title Bar ──────────────────────────────────────────────────────────────
+// Title Bar
 
 function WizardTitleBar() {
   return (
@@ -143,7 +143,7 @@ function WizardTitleBar() {
   );
 }
 
-// ─── Bottom Bar ─────────────────────────────────────────────────────────────
+// Bottom Bar
 
 function WizardBottomBar() {
   const { currentStep, progress, canGoBack, canGoNext, goBack, goNext } = useWizardStore();
@@ -198,7 +198,7 @@ function WizardBottomBar() {
   );
 }
 
-// ─── Shell ──────────────────────────────────────────────────────────────────
+// Shell
 
 export function WizardShell({ children }: { children: ReactNode }) {
   return (

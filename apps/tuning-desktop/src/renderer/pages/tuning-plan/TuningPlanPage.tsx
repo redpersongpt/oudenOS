@@ -31,7 +31,7 @@ import { useTuningStore } from "@/stores/tuning-store";
 import { serviceCall } from "@/lib/api";
 import type { PlanPreset, TuningPlan, TuningPlanAction, TuningCategory, RiskLevel } from "@redcore/shared-schema/tuning";
 
-// ─── Preset definitions ───────────────────────────────────────────────────────
+// Preset definitions
 
 const presets: Array<{
   id: PlanPreset;
@@ -65,7 +65,7 @@ const presets: Array<{
   },
 ];
 
-// ─── Category icon mapping ────────────────────────────────────────────────────
+// Category icon mapping
 
 function categoryIcon(cat: TuningCategory): React.ElementType {
   switch (cat) {
@@ -121,7 +121,7 @@ function categoryLabel(cat: TuningCategory): string {
   return map[cat] ?? cat;
 }
 
-// ─── Impact dots ──────────────────────────────────────────────────────────────
+// Impact dots
 
 function impactDots(confidence: "measured" | "estimated" | "theoretical"): number {
   if (confidence === "measured") return 5;
@@ -148,7 +148,7 @@ function ImpactDots({ dots }: ImpactDotsProps) {
   );
 }
 
-// ─── Expert mode toggle ───────────────────────────────────────────────────────
+// Expert mode toggle
 
 interface ToggleSwitchProps {
   checked: boolean;
@@ -181,7 +181,7 @@ function ToggleSwitch({ checked, onChange, label }: ToggleSwitchProps) {
   );
 }
 
-// ─── Risk category summary ────────────────────────────────────────────────────
+// Risk category summary
 
 function highestRisk(risks: RiskLevel[]): RiskLevel {
   const order: RiskLevel[] = ["extreme", "high", "medium", "low", "safe"];
@@ -191,7 +191,7 @@ function highestRisk(risks: RiskLevel[]): RiskLevel {
   return "safe";
 }
 
-// ─── Page ─────────────────────────────────────────────────────────────────────
+// Page
 
 export function TuningPlanPage() {
   const navigate = useNavigate();
@@ -316,7 +316,7 @@ export function TuningPlanPage() {
         animate="visible"
         className="space-y-5 pb-24"
       >
-        {/* ── Preset selector ── */}
+        {/* Preset selector */}
         <motion.div variants={staggerChild} className="grid grid-cols-4 gap-3">
           {presets.map((preset) => {
             const isSelected = selectedPreset === preset.id;
@@ -365,7 +365,7 @@ export function TuningPlanPage() {
           })}
         </motion.div>
 
-        {/* ── No profile state ── */}
+        {/* No profile state */}
         {!profile && (
           <motion.div variants={staggerChild}>
             <Card>
@@ -396,7 +396,7 @@ export function TuningPlanPage() {
           </motion.div>
         )}
 
-        {/* ── Generate bar ── */}
+        {/* Generate bar */}
         {profile && (
           <motion.div variants={staggerChild}>
             <Card>
@@ -449,7 +449,7 @@ export function TuningPlanPage() {
           </motion.div>
         )}
 
-        {/* ── Plan category sections ── */}
+        {/* Plan category sections */}
         {plan && grouped.size > 0 && (
           <motion.div variants={staggerChild} className="space-y-3">
             {/* Batch controls */}
@@ -674,7 +674,7 @@ export function TuningPlanPage() {
         )}
       </motion.div>
 
-      {/* ── Sticky summary bar ── */}
+      {/* Sticky summary bar */}
       <AnimatePresence>
         {plan && (
           <motion.div

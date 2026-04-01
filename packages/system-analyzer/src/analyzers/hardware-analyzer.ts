@@ -1,4 +1,4 @@
-// ─── Hardware Analyzer ───────────────────────────────────────────────────────
+// Hardware Analyzer
 // Derives structured hardware analysis from a DeviceProfile.
 
 import type { DeviceProfile } from "@redcore/shared-schema/device";

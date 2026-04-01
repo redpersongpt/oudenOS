@@ -1,4 +1,4 @@
-// ─── Database Preflight Check ───────────────────────────────────────────────
+// Database Preflight Check
 // Validates that the live PostgreSQL database matches the canonical schema.
 // Call this on API startup to fail fast on schema mismatch instead of
 // silently running against stale/conflicting tables.
@@ -46,7 +46,7 @@ const REQUIRED_COLUMNS: Record<string, string[]> = {
 export async function runPreflight(db: Database): Promise<PreflightResult> {
   const checks: PreflightCheck[] = [];
 
-  // ── Check 1: Required tables exist ────────────────────────────────────
+  // Check 1: Required tables exist
   for (const [table, columns] of Object.entries(REQUIRED_COLUMNS)) {
     try {
       const result = await db.execute(sql.raw(`
@@ -110,7 +110,7 @@ export async function runPreflight(db: Database): Promise<PreflightResult> {
     }
   }
 
-  // ── Check 2: Required enums have expected values ──────────────────────
+  // Check 2: Required enums have expected values
   for (const [enumName, expectedValues] of Object.entries(REQUIRED_ENUMS)) {
     try {
       const result = await db.execute(sql.raw(`

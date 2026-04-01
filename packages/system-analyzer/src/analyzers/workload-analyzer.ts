@@ -1,4 +1,4 @@
-// ─── Workload Analyzer ───────────────────────────────────────────────────────
+// Workload Analyzer
 // Detects system workload profile from hardware signals + optional app list.
 // Gaming indicators: GPU tier, monitor refresh rate, NVIDIA/AMD discrete GPU
 // Work indicators: Windows edition (Pro/Enterprise), domain signals, Hyper-V
@@ -37,7 +37,7 @@ export function analyzeWorkload({ profile, installedApps = [] }: WorkloadInput):
     general: 0.2, // baseline
   };
 
-  // ─── Hardware signals ───────────────────────────────────────────────────────
+  // Hardware signals
 
   // High-refresh monitor → gaming
   const hasHighRefreshMonitor = profile.monitors.some((m) => m.refreshRateHz >= 120);
@@ -86,7 +86,7 @@ export function analyzeWorkload({ profile, installedApps = [] }: WorkloadInput):
     signals.push({ type: "content_creation", indicator: `${profile.cpu.physicalCores}-core CPU`, strength: "medium" });
   }
 
-  // ─── Windows edition signals ───────────────────────────────────────────────
+  // Windows edition signals
 
   const edition = profile.windows.edition.toLowerCase();
   if (edition.includes("enterprise") || edition.includes("education")) {
@@ -110,7 +110,7 @@ export function analyzeWorkload({ profile, installedApps = [] }: WorkloadInput):
     signals.push({ type: "development", indicator: "WSL (Windows Subsystem for Linux) enabled", strength: "strong" });
   }
 
-  // ─── Installed apps signals ─────────────────────────────────────────────────
+  // Installed apps signals
 
   if (installedApps.length > 0) {
     const gamingScore = scoreApps(installedApps, GAMING_APP_PATTERNS);
@@ -129,7 +129,7 @@ export function analyzeWorkload({ profile, installedApps = [] }: WorkloadInput):
     if (contentScore > 0.3) signals.push({ type: "content_creation", indicator: "Content creation apps detected (Adobe/DaVinci)", strength: "strong" });
   }
 
-  // ─── Laptop-specific signals ────────────────────────────────────────────────
+  // Laptop-specific signals
   const isLaptop = profile.deviceClass === "laptop" || profile.power.batteryPercent !== null;
   if (isLaptop) {
     scores.work += 0.1;
@@ -138,7 +138,7 @@ export function analyzeWorkload({ profile, installedApps = [] }: WorkloadInput):
     }
   }
 
-  // ─── Resolve primary workload ───────────────────────────────────────────────
+  // Resolve primary workload
   const sorted = (Object.entries(scores) as Array<[WorkloadType, number]>)
     .sort(([, a], [, b]) => b - a);
   const primary = sorted[0][0];

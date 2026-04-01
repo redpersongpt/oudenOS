@@ -1,4 +1,4 @@
-// ─── Admin Routes ─────────────────────────────────────────────────────────────
+// Admin Routes
 // All routes require admin JWT. Every mutation is recorded in admin_audit_log.
 // DB layer uses pg (postgres) with drizzle-orm. For now, all queries are typed
 // stubs that show the shape — swap TODO sections with real drizzle calls.
@@ -7,7 +7,7 @@ import type { FastifyPluginAsync } from "fastify";
 import { z } from "zod";
 import { requireAdmin, getAdminId } from "../middleware/admin.js";
 
-// ─── Request schemas ─────────────────────────────────────────────────────────
+// Request schemas
 
 const UpdateUserSchema = z.object({
   email: z.string().email().optional(),
@@ -28,7 +28,7 @@ const GiftPremiumSchema = z.object({
   reason: z.string().min(1),
 });
 
-// ─── In-memory audit log (replace with DB in production) ─────────────────────
+// In-memory audit log (replace with DB in production)
 
 interface AdminAuditEntry {
   id: string;
@@ -62,7 +62,7 @@ function logAdminAction(
   if (auditLog.length > 10000) auditLog.splice(10000);
 }
 
-// ─── Mock data stores (replace with Drizzle/PostgreSQL) ──────────────────────
+// Mock data stores (replace with Drizzle/PostgreSQL)
 
 interface MockUser {
   id: string;
@@ -104,13 +104,13 @@ const mockUsers: MockUser[] = [
   },
 ];
 
-// ─── Plugin ───────────────────────────────────────────────────────────────────
+// Plugin
 
 export const adminRoutes: FastifyPluginAsync = async (app) => {
   // All admin routes require admin JWT
   app.addHook("preHandler", requireAdmin);
 
-  // ── GET /admin/users ─────────────────────────────────────────────────────
+  // GET /admin/users
   app.get<{ Querystring: { page?: string; limit?: string; search?: string } }>(
     "/users",
     async (request) => {
@@ -134,7 +134,7 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
     },
   );
 
-  // ── GET /admin/users/:id ─────────────────────────────────────────────────
+  // GET /admin/users/:id
   app.get<{ Params: { id: string } }>("/users/:id", async (request, reply) => {
     // TODO: SELECT * FROM users WHERE id = $id
     const user = mockUsers.find((u) => u.id === request.params.id);
@@ -142,7 +142,7 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
     return user;
   });
 
-  // ── PATCH /admin/users/:id ───────────────────────────────────────────────
+  // PATCH /admin/users/:id
   app.patch<{ Params: { id: string }; Body: unknown }>(
     "/users/:id",
     async (request, reply) => {
@@ -169,7 +169,7 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
     },
   );
 
-  // ── DELETE /admin/users/:id ──────────────────────────────────────────────
+  // DELETE /admin/users/:id
   app.delete<{ Params: { id: string } }>("/users/:id", async (request, reply) => {
     const idx = mockUsers.findIndex((u) => u.id === request.params.id);
     if (idx === -1) return reply.code(404).send({ error: "User not found" });
@@ -188,7 +188,7 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
     return { deleted: true, id: removed.id };
   });
 
-  // ── POST /admin/users/:id/subscription ──────────────────────────────────
+  // POST /admin/users/:id/subscription
   app.post<{ Params: { id: string }; Body: unknown }>(
     "/users/:id/subscription",
     async (request, reply) => {
@@ -220,7 +220,7 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
     },
   );
 
-  // ── POST /admin/users/:id/gift-premium ───────────────────────────────────
+  // POST /admin/users/:id/gift-premium
   app.post<{ Params: { id: string }; Body: unknown }>(
     "/users/:id/gift-premium",
     async (request, reply) => {
@@ -255,7 +255,7 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
     },
   );
 
-  // ── GET /admin/stats/revenue ─────────────────────────────────────────────
+  // GET /admin/stats/revenue
   app.get("/stats/revenue", async () => {
     // TODO: Real SQL aggregations against subscriptions + payments tables
     // MRR = SUM(monthly_amount) WHERE status='active'
@@ -281,7 +281,7 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
     };
   });
 
-  // ── GET /admin/stats/telemetry ───────────────────────────────────────────
+  // GET /admin/stats/telemetry
   app.get("/stats/telemetry", async () => {
     // TODO: Query telemetry_events table with real aggregations
     return {
@@ -313,7 +313,7 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
     };
   });
 
-  // ── GET /admin/machines ──────────────────────────────────────────────────
+  // GET /admin/machines
   app.get<{ Querystring: { userId?: string; page?: string } }>(
     "/machines",
     async (request) => {
@@ -346,7 +346,7 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
     },
   );
 
-  // ── DELETE /admin/machines/:id ───────────────────────────────────────────
+  // DELETE /admin/machines/:id
   app.delete<{ Params: { id: string } }>("/machines/:id", async (request) => {
     // TODO: UPDATE device_bindings SET status='revoked', revoked_at=NOW() WHERE id=$id
 
@@ -361,7 +361,7 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
     return { revoked: true, id: request.params.id };
   });
 
-  // ── GET /admin/audit-log ─────────────────────────────────────────────────
+  // GET /admin/audit-log
   app.get<{
     Querystring: { page?: string; limit?: string; action?: string; adminId?: string };
   }>("/audit-log", async (request) => {

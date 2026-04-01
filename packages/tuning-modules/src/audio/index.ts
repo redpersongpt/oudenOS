@@ -1,4 +1,4 @@
-// ─── Audio Tuning Module ────────────────────────────────────────────────────
+// Audio Tuning Module
 // Derived from the redcore internal audio-latency notes.
 
 import type { TuningActionDefinition } from "../types.js";

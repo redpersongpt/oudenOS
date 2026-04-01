@@ -1,4 +1,4 @@
-// ─── Machine Intelligence Page ────────────────────────────────────────────────
+// Machine Intelligence Page
 
 import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -21,7 +21,7 @@ import {
   RecommendationCard,
 } from "./components";
 
-// ─── Empty / CTA state ───────────────────────────────────────────────────────
+// Empty / CTA state
 
 function ClassifyCTA({ onClassify, loading }: { onClassify: () => void; loading: boolean }) {
   return (
@@ -56,7 +56,7 @@ function ClassifyCTA({ onClassify, loading }: { onClassify: () => void; loading:
   );
 }
 
-// ─── No scan state ───────────────────────────────────────────────────────────
+// No scan state
 
 function NoScanState() {
   return (
@@ -80,11 +80,11 @@ function NoScanState() {
   );
 }
 
-// ─── Recommendation filter state ─────────────────────────────────────────────
+// Recommendation filter state
 
 type ConfidenceFilter = "all" | RecommendationConfidence;
 
-// ─── Page ─────────────────────────────────────────────────────────────────────
+// Page
 
 export function IntelligencePage() {
   const deviceProfile = useDeviceStore((s) => s.profile);
@@ -126,7 +126,7 @@ export function IntelligencePage() {
       animate="visible"
       className="space-y-5"
     >
-      {/* ── Page header ── */}
+      {/* Page header */}
       <motion.div variants={staggerChild} className="flex items-center justify-between">
         <div>
           <h1 className="text-lg font-semibold text-ink">Machine Intelligence</h1>
@@ -175,10 +175,10 @@ export function IntelligencePage() {
             animate="visible"
             className="space-y-5"
           >
-            {/* ── A. Hero ── */}
+            {/* A. Hero */}
             <HeroCard meta={archetypeMeta} confidence={classification.confidence} archetype={classification.primary} />
 
-            {/* ── B. Classification Signals + C. Score Breakdown ── */}
+            {/* B. Classification Signals + C. Score Breakdown */}
             <div className="grid grid-cols-5 gap-4">
               {/* Signals — 3 cols */}
               <motion.div variants={staggerChild} className="col-span-3">
@@ -228,7 +228,7 @@ export function IntelligencePage() {
               </motion.div>
             </div>
 
-            {/* ── D. Quick Wins (premium-gated) ── */}
+            {/* D. Quick Wins (premium-gated) */}
             <motion.div variants={staggerChild}>
               <Card>
                 <CardHeader>
@@ -265,7 +265,7 @@ export function IntelligencePage() {
               </Card>
             </motion.div>
 
-            {/* ── E. Full Recommendations (premium-gated) ── */}
+            {/* E. Full Recommendations (premium-gated) */}
             <motion.div variants={staggerChild}>
               <Card>
                 <CardHeader>

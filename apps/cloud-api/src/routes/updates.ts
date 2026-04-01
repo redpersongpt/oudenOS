@@ -1,4 +1,4 @@
-// ─── Update Check Routes ───────────────────────────────────────────────────────
+// Update Check Routes
 // GET /check             — check if a newer version is available (semver)
 // GET /releases          — list recent releases (latest N per channel)
 // GET /releases/:version — get metadata for a specific version
@@ -16,10 +16,10 @@ import { requireAdmin } from "../middleware/admin.js";
 
 const channelSchema = z.enum(["stable", "beta", "nightly"]);
 
-// ─── Plugin ───────────────────────────────────────────────────────────────────
+// Plugin
 
 export const updateRoutes: FastifyPluginAsync = async (app) => {
-  // ── GET /check ────────────────────────────────────────────────────────────
+  // GET /check
   // Query params:
   //   version  — current client version, e.g. "1.2.3"
   //   channel  — "stable" | "beta" | "nightly" (default: "stable")
@@ -106,7 +106,7 @@ export const updateRoutes: FastifyPluginAsync = async (app) => {
     },
   );
 
-  // ── GET /releases ─────────────────────────────────────────────────────────
+  // GET /releases
   app.get<{ Querystring: { channel?: string; limit?: string } }>(
     "/releases",
     async (request, reply) => {
@@ -133,7 +133,7 @@ export const updateRoutes: FastifyPluginAsync = async (app) => {
     },
   );
 
-  // ── GET /releases/:version ────────────────────────────────────────────────
+  // GET /releases/:version
   app.get<{ Params: { version: string }; Querystring: { channel?: string } }>(
     "/releases/:version",
     async (request, reply) => {
@@ -165,7 +165,7 @@ export const updateRoutes: FastifyPluginAsync = async (app) => {
     },
   );
 
-  // ── Admin: POST /releases — publish a new release ─────────────────────────
+  // Admin: POST /releases — publish a new release
   const publishSchema = z.object({
     version: z.string().refine((v) => semver.valid(v) !== null, "Must be valid semver"),
     channel: channelSchema.default("stable"),

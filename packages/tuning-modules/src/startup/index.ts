@@ -1,4 +1,4 @@
-// ─── Startup & Background Tuning Module ─────────────────────────────────────
+// Startup & Background Tuning Module
 // Derived from the redcore internal startup optimization notes.
 
 import type { TuningActionDefinition } from "../types.js";

@@ -1,4 +1,4 @@
-// ─── Cleanup Step ─────────────────────────────────────────────────────────────
+// Cleanup Step
 // Windows Cleanup / Debloat — first real tuning step.
 // Three curated sections: Startup, Privacy/Telemetry, System Controls.
 
@@ -8,7 +8,7 @@ import { ChevronDown, Lock } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
 import type { RiskLevel } from "@redcore/shared-schema/tuning";
 
-// ─── Action data ──────────────────────────────────────────────────────────────
+// Action data
 
 interface ActionDef {
   id: string;
@@ -172,7 +172,7 @@ const SYSTEM_ACTIONS: ActionDef[] = [
   },
 ];
 
-// ─── Sub-components ───────────────────────────────────────────────────────────
+// Sub-components
 
 const riskLabel: Record<RiskLevel, string> = {
   safe: "Safe",
@@ -300,7 +300,7 @@ function Section({ title, actions, selected, onToggle, defaultOpen = false }: Se
   );
 }
 
-// ─── Step ─────────────────────────────────────────────────────────────────────
+// Step
 
 function buildDefaultSelected(): Set<string> {
   const ids = new Set<string>();

@@ -1,4 +1,4 @@
-// ─── App Hub Catalog ─────────────────────────────────────────────────────────
+// App Hub Catalog
 // Defines the app catalog for the Download Center / App Hub feature.
 // All download URLs point to official sources. Silent install args are for
 // unattended deployment via the Rust executor.
@@ -36,10 +36,10 @@ export interface AppPresetBundle {
   tags: string[];
 }
 
-// ─── App Catalog ─────────────────────────────────────────────────────────────
+// App Catalog
 
 export const APP_CATALOG: AppCatalogItem[] = [
-  // ── Gaming ──────────────────────────────────────────────────────────────────
+  // Gaming
 
   {
     id: "steam",
@@ -162,7 +162,7 @@ export const APP_CATALOG: AppCatalogItem[] = [
     sizeEstimateMb: 70,
   },
 
-  // ── Streaming & Media ──────────────────────────────────────────────────────
+  // Streaming & Media
 
   {
     id: "obs-studio",
@@ -210,7 +210,7 @@ export const APP_CATALOG: AppCatalogItem[] = [
     sizeEstimateMb: 45,
   },
 
-  // ── Communication ──────────────────────────────────────────────────────────
+  // Communication
 
   {
     id: "telegram",
@@ -243,7 +243,7 @@ export const APP_CATALOG: AppCatalogItem[] = [
     sizeEstimateMb: 150,
   },
 
-  // ── Browsers ───────────────────────────────────────────────────────────────
+  // Browsers
 
   {
     id: "chrome",
@@ -291,7 +291,7 @@ export const APP_CATALOG: AppCatalogItem[] = [
     sizeEstimateMb: 100,
   },
 
-  // ── Utilities ──────────────────────────────────────────────────────────────
+  // Utilities
 
   {
     id: "7zip",
@@ -399,7 +399,7 @@ export const APP_CATALOG: AppCatalogItem[] = [
     sizeEstimateMb: 35,
   },
 
-  // ── Development ────────────────────────────────────────────────────────────
+  // Development
 
   {
     id: "vscode",
@@ -417,7 +417,7 @@ export const APP_CATALOG: AppCatalogItem[] = [
     sizeEstimateMb: 100,
   },
 
-  // ── System Monitoring ──────────────────────────────────────────────────────
+  // System Monitoring
 
   {
     id: "msi-afterburner",
@@ -511,7 +511,7 @@ export const APP_CATALOG: AppCatalogItem[] = [
   },
 ];
 
-// ─── Preset Bundles ──────────────────────────────────────────────────────────
+// Preset Bundles
 
 export const APP_PRESET_BUNDLES: AppPresetBundle[] = [
   {
@@ -551,7 +551,7 @@ export const APP_PRESET_BUNDLES: AppPresetBundle[] = [
   },
 ];
 
-// ─── Helper Maps ─────────────────────────────────────────────────────────────
+// Helper Maps
 
 export const APP_CATALOG_BY_ID: ReadonlyMap<string, AppCatalogItem> = new Map(
   APP_CATALOG.map((app) => [app.id, app]),

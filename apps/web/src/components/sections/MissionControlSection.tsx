@@ -10,7 +10,7 @@ import {
   easing,
 } from "@/lib/motion";
 
-// ─── Types ───────────────────────────────────────────────────────────────────
+// Types
 
 interface CompletedAction {
   name: string;
@@ -23,7 +23,7 @@ interface StatItem {
   colorClass: string;
 }
 
-// ─── Data ────────────────────────────────────────────────────────────────────
+// Data
 
 const completedActions: CompletedAction[] = [
   { name: "Remove Xbox Game Bar", time: "1.2s" },
@@ -40,7 +40,7 @@ const stats: StatItem[] = [
   { label: "REMAINING", value: "4", colorClass: "text-ink-secondary" },
 ];
 
-// ─── Sub-components ─────────────────────────────────────────────────────────
+// Sub-components
 
 function LiveDot() {
   return (
@@ -91,7 +91,7 @@ function TimelineItem({
   );
 }
 
-// ─── Main Component ─────────────────────────────────────────────────────────
+// Main Component
 
 export function MissionControlSection() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -107,7 +107,7 @@ export function MissionControlSection() {
       <div className="section-divide" aria-hidden="true" />
 
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
-        {/* ─── Header ─── */}
+        {/* Header */}
         <motion.div
           variants={staggerContainer(0.1, 0)}
           initial="hidden"
@@ -122,7 +122,7 @@ export function MissionControlSection() {
           </motion.h2>
         </motion.div>
 
-        {/* ─── Execution Panel ─── */}
+        {/* Execution Panel */}
         <motion.div
           initial={{ opacity: 0, y: 32 }}
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 32 }}
@@ -215,7 +215,7 @@ export function MissionControlSection() {
           </div>
         </motion.div>
 
-        {/* ─── Trust Line ─── */}
+        {/* Trust Line */}
         <motion.p
           initial={{ opacity: 0, y: 16 }}
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}

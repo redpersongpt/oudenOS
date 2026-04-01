@@ -1,4 +1,4 @@
-// ─── Auth Routes ─────────────────────────────────────────────────────────────
+// Auth Routes
 
 import type { FastifyPluginAsync } from "fastify";
 import bcrypt from "bcryptjs";
@@ -30,7 +30,7 @@ const refreshSchema = z.object({
 export const authRoutes: FastifyPluginAsync = async (app) => {
   const rateLimit = authRateLimit(10, 60_000);
 
-  // ── Register ──────────────────────────────────────────────────────────────
+  // Register
   app.post("/register", { preHandler: rateLimit }, async (request, reply) => {
     const parse = registerSchema.safeParse(request.body);
     if (!parse.success) {
@@ -81,7 +81,7 @@ export const authRoutes: FastifyPluginAsync = async (app) => {
     });
   });
 
-  // ── Login ─────────────────────────────────────────────────────────────────
+  // Login
   app.post("/login", { preHandler: rateLimit }, async (request, reply) => {
     const parse = loginSchema.safeParse(request.body);
     if (!parse.success) {
@@ -135,7 +135,7 @@ export const authRoutes: FastifyPluginAsync = async (app) => {
     });
   });
 
-  // ── Refresh token ─────────────────────────────────────────────────────────
+  // Refresh token
   app.post("/refresh", { preHandler: rateLimit }, async (request, reply) => {
     const parse = refreshSchema.safeParse(request.body);
     if (!parse.success) {
@@ -177,7 +177,7 @@ export const authRoutes: FastifyPluginAsync = async (app) => {
     });
   });
 
-  // ── Logout ────────────────────────────────────────────────────────────────
+  // Logout
   app.post("/logout", { preHandler: requireAuth }, async (request, reply) => {
     const parse = refreshSchema.safeParse(request.body);
     if (parse.success) {

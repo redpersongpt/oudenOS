@@ -1,4 +1,4 @@
-// ─── Download Center / App Hub ───────────────────────────────────────────────
+// Download Center / App Hub
 // Curated app catalog with trusted sources, checksums, and silent install support.
 
 import type { AppCatalogEntry } from "@redcore/shared-schema/ipc";

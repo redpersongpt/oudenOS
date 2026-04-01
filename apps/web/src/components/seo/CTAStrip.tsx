@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-// ─── Types ───────────────────────────────────────────────────────────────────
+// Types
 
 interface CTAAction {
   label: string;
@@ -14,7 +14,7 @@ interface CTAStripProps {
   secondaryAction?: CTAAction;
 }
 
-// ─── Component ───────────────────────────────────────────────────────────────
+// Component
 
 export function CTAStrip({
   title,

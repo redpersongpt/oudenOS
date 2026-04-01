@@ -1,4 +1,4 @@
-// ─── Windows Version Compatibility Matrix ───────────────────────────────────
+// Windows Version Compatibility Matrix
 
 export interface WindowsBuild {
   version: string;       // "10" | "11"

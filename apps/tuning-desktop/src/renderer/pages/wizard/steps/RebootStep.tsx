@@ -1,4 +1,4 @@
-// ─── Reboot Step ──────────────────────────────────────────────────────────────
+// Reboot Step
 // Reboot / resume flow. Shows pending reboot actions or auto-advances.
 
 import { useEffect } from "react";
@@ -12,7 +12,7 @@ import { useTuningStore } from "@/stores/tuning-store";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 
-// ─── Component ────────────────────────────────────────────────────────────────
+// Component
 
 export function RebootStep() {
   const { goNext } = useWizardStore();
@@ -40,7 +40,7 @@ export function RebootStep() {
     });
   }
 
-  // ── No reboot needed ─────────────────────────────────────────────────────
+  // No reboot needed
 
   if (!needsReboot) {
     return (
@@ -89,7 +89,7 @@ export function RebootStep() {
     );
   }
 
-  // ── Reboot needed ─────────────────────────────────────────────────────────
+  // Reboot needed
 
   return (
     <motion.div

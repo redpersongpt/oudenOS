@@ -1,4 +1,4 @@
-// ─── Recommender ────────────────────────────────────────────────────────────
+// Recommender
 // Generates prioritized recommendations from system analysis and profile.
 
 import type {
@@ -37,7 +37,7 @@ export function generateRecommendations(
   const p = profile.primary;
   const { hardware, software, workload, network, security } = analysis;
 
-  // ─── CPU Optimizations ────────────────────────────────────────────────────
+  // CPU Optimizations
 
   if (software.coreParkingEnabled === true) {
     templates.push(rec(
@@ -78,7 +78,7 @@ export function generateRecommendations(
     ));
   }
 
-  // ─── GPU Optimizations ────────────────────────────────────────────────────
+  // GPU Optimizations
 
   if (!hardware.gpu.resizableBar && hardware.gpu.vendor === "nvidia" && hardware.gpu.hasDiscreteGpu) {
     templates.push(rec(
@@ -120,7 +120,7 @@ export function generateRecommendations(
     ));
   }
 
-  // ─── Memory Optimizations ─────────────────────────────────────────────────
+  // Memory Optimizations
 
   if (!hardware.ram.xmpEnabled) {
     templates.push(rec(
@@ -162,7 +162,7 @@ export function generateRecommendations(
     ));
   }
 
-  // ─── Storage Optimizations ─────────────────────────────────────────────────
+  // Storage Optimizations
 
   if (!hardware.storage.systemDrive.trimEnabled) {
     templates.push(rec(
@@ -190,7 +190,7 @@ export function generateRecommendations(
     ));
   }
 
-  // ─── Power Optimizations ─────────────────────────────────────────────────
+  // Power Optimizations
 
   const powerPlanLow = software.powerPlan.toLowerCase().includes("power saver") ||
     software.powerPlan.toLowerCase().includes("balanced");
@@ -221,7 +221,7 @@ export function generateRecommendations(
     ));
   }
 
-  // ─── Network Optimizations ────────────────────────────────────────────────
+  // Network Optimizations
 
   if (network.rssQueues !== null && network.rssQueues < 4 && hardware.cpu.cores >= 4) {
     templates.push(rec(
@@ -249,7 +249,7 @@ export function generateRecommendations(
     ));
   }
 
-  // ─── Security / Performance Trade-offs ────────────────────────────────────
+  // Security / Performance Trade-offs
 
   if (security.hvciPerformanceImpact && (p === "gaming" || p === "highend")) {
     templates.push(rec(
@@ -265,7 +265,7 @@ export function generateRecommendations(
     ));
   }
 
-  // ─── Startup / Services ───────────────────────────────────────────────────
+  // Startup / Services
 
   if (software.runningServicesCount !== null && software.runningServicesCount > 200) {
     templates.push(rec(

@@ -1,4 +1,4 @@
-// ─── Analysis Pipeline Orchestrator ─────────────────────────────────────────
+// Analysis Pipeline Orchestrator
 // Multi-step pipeline: scan → classify → risk → recommend → impact → validate
 // Each step updates state via a callback, enabling live UI progress.
 
@@ -33,7 +33,7 @@ export interface OrchestratorOptions {
   simulatedDelay?: number;
 }
 
-// ─── Helper: set step status ──────────────────────────────────────────────────
+// Helper: set step status
 
 function setStep(
   onUpdate: PipelineStateUpdate,
@@ -51,7 +51,7 @@ async function maybeDelay(ms: number | undefined) {
   if (ms && ms > 0) await new Promise((r) => setTimeout(r, ms));
 }
 
-// ─── Main Pipeline ────────────────────────────────────────────────────────────
+// Main Pipeline
 
 /**
  * Runs the full analysis pipeline on a DeviceProfile.
@@ -91,7 +91,7 @@ export async function runAnalysisPipeline(
   }
 
   try {
-    // ─── Step 1: System Scan (all analyzers in parallel) ──────────────────────
+    // Step 1: System Scan (all analyzers in parallel)
     setStep(onUpdate, "scan", "running");
     update((prev) => ({ ...prev, currentStep: "scan" }));
     await maybeDelay(simulatedDelay);
@@ -117,7 +117,7 @@ export async function runAnalysisPipeline(
 
     update((prev) => ({ ...prev, analysis, stepStatuses: { ...prev.stepStatuses, scan: "done" } }));
 
-    // ─── Step 2: Profile Classification ───────────────────────────────────────
+    // Step 2: Profile Classification
     setStep(onUpdate, "classify", "running");
     update((prev) => ({ ...prev, currentStep: "classify" }));
     await maybeDelay(simulatedDelay);
@@ -125,7 +125,7 @@ export async function runAnalysisPipeline(
     const profile = classifyProfile(analysis);
     update((prev) => ({ ...prev, profile, stepStatuses: { ...prev.stepStatuses, classify: "done" } }));
 
-    // ─── Step 3: Risk Assessment ───────────────────────────────────────────────
+    // Step 3: Risk Assessment
     setStep(onUpdate, "risk", "running");
     update((prev) => ({ ...prev, currentStep: "risk" }));
     await maybeDelay(simulatedDelay);
@@ -139,7 +139,7 @@ export async function runAnalysisPipeline(
       stepStatuses: { ...prev.stepStatuses, risk: "done" },
     }));
 
-    // ─── Step 4: Recommendations ───────────────────────────────────────────────
+    // Step 4: Recommendations
     setStep(onUpdate, "recommend", "running");
     update((prev) => ({ ...prev, currentStep: "recommend" }));
     await maybeDelay(simulatedDelay);
@@ -150,7 +150,7 @@ export async function runAnalysisPipeline(
       stepStatuses: { ...prev.stepStatuses, recommend: "done" },
     }));
 
-    // ─── Step 5: Impact Estimation ─────────────────────────────────────────────
+    // Step 5: Impact Estimation
     setStep(onUpdate, "impact", "running");
     update((prev) => ({ ...prev, currentStep: "impact" }));
     await maybeDelay(simulatedDelay);
@@ -162,7 +162,7 @@ export async function runAnalysisPipeline(
       stepStatuses: { ...prev.stepStatuses, impact: "done" },
     }));
 
-    // ─── Step 6: Safety Validation ─────────────────────────────────────────────
+    // Step 6: Safety Validation
     setStep(onUpdate, "validate", "running");
     update((prev) => ({ ...prev, currentStep: "validate" }));
     await maybeDelay(simulatedDelay);

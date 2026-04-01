@@ -1,4 +1,4 @@
-// ─── OS Transformation Types ─────────────────────────────────────────────────
+// OS Transformation Types
 
 import type { MachineProfile, PreservationFlag } from "./profiles.js";
 
@@ -77,7 +77,7 @@ export interface FeatureChange {
   action: "enable" | "disable";
 }
 
-// ─── Transformation Plan ────────────────────────────────────────────────────
+// Transformation Plan
 
 export interface TransformPlan {
   id: string;
@@ -98,7 +98,7 @@ export interface TransformStage {
   order: number;
 }
 
-// ─── OS Health Assessment ───────────────────────────────────────────────────
+// OS Health Assessment
 
 export interface OSHealthAssessment {
   startupLoad: { count: number; heavyItems: string[]; estimatedDelayMs: number };

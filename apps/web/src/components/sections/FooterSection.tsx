@@ -37,7 +37,7 @@ export function FooterSection() {
 
         <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-[2fr_1fr_1fr_1fr] gap-10 mb-14">
 
-          {/* ── Brand ── */}
+          {/* Brand */}
           <div className="col-span-2 md:col-span-1">
             <Logo size="sm" />
             <p className="mt-4 text-[0.75rem] leading-[1.75] text-ink-muted max-w-[210px]">
@@ -77,7 +77,7 @@ export function FooterSection() {
             </div>
           </div>
 
-          {/* ── Products ── */}
+          {/* Products */}
           <div>
             <p className="text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-ink-tertiary mb-5">
               Products
@@ -96,7 +96,7 @@ export function FooterSection() {
             </ul>
           </div>
 
-          {/* ── Resources ── */}
+          {/* Resources */}
           <div>
             <p className="text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-ink-tertiary mb-5">
               Resources
@@ -115,7 +115,7 @@ export function FooterSection() {
             </ul>
           </div>
 
-          {/* ── Company ── */}
+          {/* Company */}
           <div>
             <p className="text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-ink-tertiary mb-5">
               Company
@@ -146,7 +146,7 @@ export function FooterSection() {
           </div>
         </div>
 
-        {/* ── Bottom bar ── */}
+        {/* Bottom bar */}
         <div className="border-t border-border/50 pt-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <p className="text-[0.68rem] text-ink-muted">
             © 2026 redcore

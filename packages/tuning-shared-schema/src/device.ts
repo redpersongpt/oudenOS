@@ -1,4 +1,4 @@
-// ─── Device Profile ─────────────────────────────────────────────────────────
+// Device Profile
 // The normalized representation of a scanned machine.
 // Produced by the Rust scanner, consumed by the compatibility engine and UI.
 
@@ -162,7 +162,7 @@ export interface DeviceProfile {
   memMgmt: MemMgmtConfig | null;
 }
 
-// ─── Extended Config Scan Types ──────────────────────────────────────────────
+// Extended Config Scan Types
 
 export interface CpuPowerConfig {
   scannedAt: string;

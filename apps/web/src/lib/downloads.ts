@@ -1,4 +1,4 @@
-// ─── Download Truth ─────────────────────────────────────────────────────────
+// Download Truth
 // Single canonical source of truth for release artifact metadata.
 // All download buttons on the site must use these functions.
 // Never hardcode version strings or download URLs in pages.

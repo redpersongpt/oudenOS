@@ -1,6 +1,6 @@
 import type { RiskLevel } from "@redcore/shared-schema/tuning";
 
-// ─── RiskBadge ────────────────────────────────────────────────────────────────
+// RiskBadge
 // Standalone badge for tuning action risk levels.
 // Consistent dot indicator + label, readable on dark surfaces.
 

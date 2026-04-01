@@ -1,4 +1,4 @@
-// ─── Email Delivery ───────────────────────────────────────────────────────────
+// Email Delivery
 // In production: prefers SendGrid when configured, otherwise falls back to
 // local sendmail so the server can still deliver branded transactional mail.
 
@@ -103,13 +103,13 @@ async function deliverViaSendmail(
   console.info("[email] delivered via sendmail", { to: opts.to, subject: opts.subject });
 }
 
-// ─── HTML escaping ────────────────────────────────────────────────────────────
+// HTML escaping
 
 function esc(str: string): string {
   return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 }
 
-// ─── Email Templates ──────────────────────────────────────────────────────────
+// Email Templates
 
 const APP = "redcore-Tuning";
 const SUPPORT_EMAIL = "support@redcoreos.net";

@@ -1,4 +1,4 @@
-// ─── Wizard Page ──────────────────────────────────────────────────────────────
+// Wizard Page
 // Root wizard route. Renders WizardShell with the active step component.
 // AnimatePresence handles horizontal slide transitions between steps.
 
@@ -21,7 +21,7 @@ import { ExecutionStep }      from "./steps/ExecutionStep";
 import { RebootStep }         from "./steps/RebootStep";
 import { ReportStep }         from "./steps/ReportStep";
 
-// ─── Wizard Page ──────────────────────────────────────────────────────────────
+// Wizard Page
 
 export function WizardPage() {
   const currentStep = useWizardStore((s) => s.currentStep);

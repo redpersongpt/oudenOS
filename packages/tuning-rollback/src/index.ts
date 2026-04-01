@@ -1,4 +1,4 @@
-// ─── Rollback Package ───────────────────────────────────────────────────────
+// Rollback Package
 // Shared rollback logic: diff generation, snapshot serialization, undo plans.
 
 export { generateDiff } from "./diff.js";

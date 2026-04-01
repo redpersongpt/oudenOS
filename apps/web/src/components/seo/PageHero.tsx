@@ -1,4 +1,4 @@
-// ─── Types ───────────────────────────────────────────────────────────────────
+// Types
 
 interface PageHeroProps {
   overline: string;
@@ -6,7 +6,7 @@ interface PageHeroProps {
   description: string;
 }
 
-// ─── Component ───────────────────────────────────────────────────────────────
+// Component
 
 export function PageHero({ overline, title, description }: PageHeroProps) {
   return (

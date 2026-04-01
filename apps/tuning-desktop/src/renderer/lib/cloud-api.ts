@@ -1,4 +1,4 @@
-// ─── Cloud API Client ─────────────────────────────────────────────────────────
+// Cloud API Client
 // JWT-authenticated HTTP client for the redcore cloud API.
 // Handles automatic token refresh on 401 and network error normalization.
 
@@ -33,7 +33,7 @@ export class CloudApiRequestError extends Error {
   }
 }
 
-// ─── Token storage (module-level to avoid circular deps with auth store) ──────
+// Token storage (module-level to avoid circular deps with auth store)
 
 let _accessToken: string | null = null;
 let _refreshToken: string | null = null;
@@ -58,7 +58,7 @@ export function clearApiTokens() {
   _refreshToken = null;
 }
 
-// ─── In-flight refresh de-duplication ─────────────────────────────────────────
+// In-flight refresh de-duplication
 
 let _refreshPromise: Promise<boolean> | null = null;
 
@@ -89,7 +89,7 @@ async function refreshAccessToken(): Promise<boolean> {
   return _refreshPromise;
 }
 
-// ─── Core request ─────────────────────────────────────────────────────────────
+// Core request
 
 async function request<T>(
   method: string,
@@ -143,7 +143,7 @@ async function request<T>(
   return resp.json() as Promise<T>;
 }
 
-// ─── Typed API surface ────────────────────────────────────────────────────────
+// Typed API surface
 
 export interface AuthLoginRequest { email: string; password: string }
 export interface AuthRegisterRequest { email: string; password: string; displayName?: string }

@@ -1,4 +1,4 @@
-// ─── Reboot-Resume Journal ──────────────────────────────────────────────────
+// Reboot-Resume Journal
 // Survives app closure, system restart, crash, UAC interruption.
 // Stored in SQLite by the Rust service, read by the UI on launch.
 

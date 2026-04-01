@@ -1,4 +1,4 @@
-// ─── @redcore/auth-core ──────────────────────────────────────────────────────
+// @redcore/auth-core
 // Shared JWT authentication for the redcoreECO platform.
 
 export {

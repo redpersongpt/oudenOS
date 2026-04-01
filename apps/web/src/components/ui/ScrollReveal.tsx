@@ -4,7 +4,7 @@ import * as React from "react";
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
 
-// ─── Types ───────────────────────────────────────────────────────────────────
+// Types
 
 type RevealDirection = "up" | "down" | "left" | "right";
 
@@ -17,7 +17,7 @@ interface ScrollRevealProps {
   distance?: number;
 }
 
-// ─── Offset Factory ─────────────────────────────────────────────────────────
+// Offset Factory
 
 function getHiddenTransform(
   direction: RevealDirection,
@@ -35,7 +35,7 @@ function getHiddenTransform(
   }
 }
 
-// ─── Component ───────────────────────────────────────────────────────────────
+// Component
 
 export function ScrollReveal({
   children,

@@ -1,4 +1,4 @@
-// ─── Apply Prep Step ──────────────────────────────────────────────────────────
+// Apply Prep Step
 // Confirm before running — snapshot assurance, plan review, final warnings.
 
 import { motion } from "framer-motion";
@@ -16,7 +16,7 @@ import { useTuningStore } from "@/stores/tuning-store";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 
-// ─── Summary stat row ─────────────────────────────────────────────────────────
+// Summary stat row
 
 function SummaryRow({ icon: Icon, label, value, accent }: {
   icon: React.ElementType;
@@ -40,7 +40,7 @@ function SummaryRow({ icon: Icon, label, value, accent }: {
   );
 }
 
-// ─── Component ────────────────────────────────────────────────────────────────
+// Component
 
 export function ApplyPrepStep() {
   const { goNext, goBack, selectedActions } = useWizardStore();

@@ -1,4 +1,4 @@
-// ─── IPC Error & Response Types ───────────────────────────────────────────────
+// IPC Error & Response Types
 // Structured error handling across the IPC boundary.
 // Main process and renderer use these to communicate failures without throwing.
 
@@ -13,7 +13,7 @@ export type IpcResponse<T> =
   | { ok: true; data: T }
   | { ok: false; error: IpcError };
 
-// ─── Sentinel types returned by Electron main process ────────────────────────
+// Sentinel types returned by Electron main process
 // When the Rust service is not running, main returns one of these objects.
 // The renderer's serviceCall wrapper checks for these markers.
 

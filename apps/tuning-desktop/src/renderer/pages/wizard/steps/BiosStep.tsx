@@ -1,4 +1,4 @@
-// ─── BIOS Step ────────────────────────────────────────────────────────────────
+// BIOS Step
 // Expert final layer — manual BIOS settings with per-setting guidance.
 // Premium treatment: amber/gold accent, prestigious tone.
 
@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { PremiumGate } from "@/components/ui/PremiumGate";
 
-// ─── BIOS recommendations ─────────────────────────────────────────────────────
+// BIOS recommendations
 
 interface BiosRec {
   id: string;
@@ -84,7 +84,7 @@ const BIOS_RECS: BiosRec[] = [
   },
 ];
 
-// ─── Single BIOS card ─────────────────────────────────────────────────────────
+// Single BIOS card
 
 function BiosCard({ rec, checked, onToggle }: {
   rec: BiosRec;
@@ -130,7 +130,7 @@ function BiosCard({ rec, checked, onToggle }: {
   );
 }
 
-// ─── Component ────────────────────────────────────────────────────────────────
+// Component
 
 export function BiosStep() {
   const { goNext, skipStep, currentStep } = useWizardStore();

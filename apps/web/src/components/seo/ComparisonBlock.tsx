@@ -1,4 +1,4 @@
-// ─── Types ───────────────────────────────────────────────────────────────────
+// Types
 
 interface ComparisonColumn {
   heading: string;
@@ -11,7 +11,7 @@ interface ComparisonBlockProps {
   right: ComparisonColumn;
 }
 
-// ─── Component ───────────────────────────────────────────────────────────────
+// Component
 
 export function ComparisonBlock({ title, left, right }: ComparisonBlockProps) {
   return (

@@ -5,7 +5,7 @@ import { useLicenseStore } from "@/stores/license-store";
 import { Button } from "./Button";
 import { scaleUp } from "@redcore/design-system";
 
-// ─── ExpertGate ───────────────────────────────────────────────────────────────
+// ExpertGate
 // Locks expert/advanced features behind a gate. Shows blurred content with an
 // upgrade CTA overlay when the user doesn't have the required access.
 //
@@ -101,7 +101,7 @@ export function ExpertGate({
   );
 }
 
-// ─── Standalone gate overlay (no blurred preview) ────────────────────────────
+// Standalone gate overlay (no blurred preview)
 
 function GateOverlay({
   label,

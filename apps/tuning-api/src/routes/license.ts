@@ -1,6 +1,6 @@
 import type { FastifyPluginAsync } from "fastify";
 
-// ─── License Routes ─────────────────────────────────────────────────────────
+// License Routes
 // Product decision: redcore-Tuning v1 uses LOCAL-FIRST licensing.
 //
 // The desktop app validates licenses offline using AES-256-GCM encrypted

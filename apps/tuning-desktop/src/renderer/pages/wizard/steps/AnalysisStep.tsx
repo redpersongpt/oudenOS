@@ -1,4 +1,4 @@
-// ─── Analysis Step ────────────────────────────────────────────────────────────
+// Analysis Step
 // Live system scan with animated status cards per category.
 // Triggers real hardware scan via IPC, stores result in device-store,
 // then auto-classifies via intelligence-store.
@@ -25,7 +25,7 @@ import { useIntelligenceStore } from "@/stores/intelligence-store";
 import { serviceCall } from "@/lib/api";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 
-// ─── Scan category config ─────────────────────────────────────────────────────
+// Scan category config
 
 const SCAN_CATEGORIES = [
   { id: "cpu",     label: "CPU & Scheduler",  icon: Cpu,          mockDelay: 600  },
@@ -39,7 +39,7 @@ const SCAN_CATEGORIES = [
 type CategoryId = (typeof SCAN_CATEGORIES)[number]["id"];
 type CategoryStatus = "pending" | "scanning" | "done" | "error";
 
-// ─── Category card ────────────────────────────────────────────────────────────
+// Category card
 
 interface CategoryCardProps {
   label: string;
@@ -150,7 +150,7 @@ function CategoryCard({ label, icon: Icon, status }: CategoryCardProps) {
   );
 }
 
-// ─── Analysis Step ────────────────────────────────────────────────────────────
+// Analysis Step
 
 export function AnalysisStep() {
   const [categoryStatus, setCategoryStatus] = useState<Record<CategoryId, CategoryStatus>>(

@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { spring } from "@/lib/motion";
 
-// ─── Profile Registry ────────────────────────────────────────────────────────
+// Profile Registry
 
 interface ProfileConfig {
   icon: LucideIcon;
@@ -33,7 +33,7 @@ const PROFILES: Record<string, ProfileConfig> = {
   "work-pc": { icon: Briefcase, label: "Work PC", color: "#818CF8" },
 };
 
-// ─── Size Map ─────────────────────────────────────────────────────────────────
+// Size Map
 
 const sizeConfig = {
   sm: { container: 40, icon: 16, text: "text-[10px]", gap: "gap-1.5", showLabel: false },
@@ -41,7 +41,7 @@ const sizeConfig = {
   lg: { container: 72, icon: 28, text: "text-sm", gap: "gap-2.5", showLabel: true },
 } as const;
 
-// ─── Types ───────────────────────────────────────────────────────────────────
+// Types
 
 interface ProfileEmblemProps {
   profile: string;
@@ -50,7 +50,7 @@ interface ProfileEmblemProps {
   className?: string;
 }
 
-// ─── Component ───────────────────────────────────────────────────────────────
+// Component
 
 export function ProfileEmblem({
   profile,

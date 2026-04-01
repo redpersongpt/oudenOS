@@ -1,4 +1,4 @@
-// ─── OAuth ID Token Verification ─────────────────────────────────────────────
+// OAuth ID Token Verification
 // Verifies Google and Apple id_tokens using their public JWKS endpoints.
 // Uses `jose` for standards-compliant JWKS + JWT verification.
 
@@ -20,7 +20,7 @@ export interface OAuthProfile {
   emailVerified: boolean;
 }
 
-// ─── Google ───────────────────────────────────────────────────────────────────
+// Google
 
 export async function verifyGoogleIdToken(idToken: string): Promise<OAuthProfile> {
   const clientId = process.env.GOOGLE_CLIENT_ID;
@@ -42,7 +42,7 @@ export async function verifyGoogleIdToken(idToken: string): Promise<OAuthProfile
   return { id: sub, email, name, avatarUrl: picture, emailVerified };
 }
 
-// ─── Apple ────────────────────────────────────────────────────────────────────
+// Apple
 
 export async function verifyAppleIdToken(idToken: string): Promise<OAuthProfile> {
   const clientId = process.env.APPLE_CLIENT_ID;

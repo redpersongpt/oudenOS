@@ -1,4 +1,4 @@
-// ─── redcore · OS — Preload Script ───────────────────────────────────────────
+// redcore · OS — Preload Script
 // Exposes a strict, typed API to the renderer via contextBridge.
 // The renderer NEVER has direct access to Node.js or Electron APIs.
 //
@@ -7,7 +7,7 @@
 
 import { contextBridge, ipcRenderer } from "electron";
 
-// ─── Allowed IPC methods (defense-in-depth allowlist) ────────────────────────
+// Allowed IPC methods (defense-in-depth allowlist)
 // Must match the keys of IpcMethods in @redcore-os/shared-schema/ipc.ts.
 
 const ALLOWED_METHODS = new Set([
@@ -48,7 +48,7 @@ const ALLOWED_METHODS = new Set([
   "system.reboot",
 ]);
 
-// ─── Allowed IPC event channels (defense-in-depth) ─────────────────────────
+// Allowed IPC event channels (defense-in-depth)
 // Must match the keys of IpcEvents in @redcore-os/shared-schema/ipc.ts.
 // Only channels that Rust ACTUALLY emits belong here.
 
@@ -59,7 +59,7 @@ const ALLOWED_CHANNELS = new Set([
   // "scan.progress",    // Add when Rust scan emission is wired
 ]);
 
-// ─── Exposed API ─────────────────────────────────────────────────────────────
+// Exposed API
 
 contextBridge.exposeInMainWorld("redcore", {
   service: {

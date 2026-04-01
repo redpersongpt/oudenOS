@@ -1,4 +1,4 @@
-// ─── DonationPage ─────────────────────────────────────────────────────────────
+// DonationPage
 // Post-wizard support page — amount selection, wall of fame, thank-you state.
 
 import { useState } from "react";
@@ -6,7 +6,7 @@ import { motion, AnimatePresence, stagger, useAnimate } from "framer-motion";
 import { Heart, ExternalLink, ArrowLeft, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 
-// ─── Mock wall of fame ────────────────────────────────────────────────────────
+// Mock wall of fame
 
 const SUPPORTERS = [
   { name: "Stefan K.", amount: 25, flag: "🇩🇪" },
@@ -25,7 +25,7 @@ const SUPPORTERS = [
 
 const PRESET_AMOUNTS = [3, 5, 10, 25] as const;
 
-// ─── Thank-you screen ─────────────────────────────────────────────────────────
+// Thank-you screen
 
 function ThankYouScreen({ amount, onBack }: { amount: number; onBack: () => void }) {
   return (
@@ -103,7 +103,7 @@ function ThankYouScreen({ amount, onBack }: { amount: number; onBack: () => void
   );
 }
 
-// ─── Main component ───────────────────────────────────────────────────────────
+// Main component
 
 export function DonationPage() {
   const [selected, setSelected] = useState<number>(5);

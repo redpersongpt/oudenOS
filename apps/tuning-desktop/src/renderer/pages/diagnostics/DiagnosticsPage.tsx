@@ -1,4 +1,4 @@
-// ─── Diagnostics Page ────────────────────────────────────────────────────────
+// Diagnostics Page
 // Premium multi-step system analysis and recommendation engine.
 // Runs the full 6-step pipeline on the current DeviceProfile.
 
@@ -24,7 +24,7 @@ import { useDeviceStore } from "@/stores/device-store";
 import { useAnalysisStore } from "@/stores/analysis-store";
 import { serviceCall } from "@/lib/api";
 
-// ─── Tab definitions ──────────────────────────────────────────────────────────
+// Tab definitions
 
 const TABS = [
   { id: "pipeline",    label: "Pipeline",        icon: Activity   },
@@ -35,7 +35,7 @@ const TABS = [
 
 type TabId = (typeof TABS)[number]["id"];
 
-// ─── Profile badge ────────────────────────────────────────────────────────────
+// Profile badge
 
 const PROFILE_LABELS: Record<string, string> = {
   gaming:   "Gaming System",
@@ -55,7 +55,7 @@ const PROFILE_COLORS: Record<string, string> = {
   vm:      "text-ink-secondary bg-white/[0.04] border-white/[0.08]",
 };
 
-// ─── Main Page ────────────────────────────────────────────────────────────────
+// Main Page
 
 export function DiagnosticsPage() {
   const [activeTab, setActiveTab] = useState<TabId>("pipeline");

@@ -1,4 +1,4 @@
-// ─── Service helper ──────────────────────────────────────────────────────────
+// Service helper
 // Wraps all IPC calls with error handling and demo mode detection.
 // If the Rust service is not running, returns null so callers can fallback.
 

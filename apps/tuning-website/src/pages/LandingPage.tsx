@@ -18,7 +18,7 @@ import {
   ArrowDown,
 } from "lucide-react";
 
-// ─── Animation helpers ────────────────────────────────────────────────────────
+// Animation helpers
 
 function FadeUp({
   children,
@@ -44,7 +44,7 @@ function FadeUp({
   );
 }
 
-// ─── Features ─────────────────────────────────────────────────────────────────
+// Features
 
 const features = [
   {
@@ -97,7 +97,7 @@ const features = [
   },
 ];
 
-// ─── Steps ────────────────────────────────────────────────────────────────────
+// Steps
 
 const steps = [
   {
@@ -126,7 +126,7 @@ const steps = [
   },
 ];
 
-// ─── Testimonials ─────────────────────────────────────────────────────────────
+// Testimonials
 
 const testimonials = [
   {
@@ -152,7 +152,7 @@ const testimonials = [
   },
 ];
 
-// ─── Page ─────────────────────────────────────────────────────────────────────
+// Page
 
 export default function LandingPage() {
   const heroRef = useRef(null);
@@ -165,7 +165,7 @@ export default function LandingPage() {
 
   return (
     <main className="overflow-x-hidden">
-      {/* ── Hero ────────────────────────────────────────────────────────── */}
+      {/* Hero */}
       <section
         ref={heroRef}
         className="relative flex min-h-screen items-center justify-center px-6 pt-24 pb-16"
@@ -286,7 +286,7 @@ export default function LandingPage() {
         </motion.div>
       </section>
 
-      {/* ── Features ────────────────────────────────────────────────────── */}
+      {/* Features */}
       <section id="features" className="px-6 py-24">
         <div className="mx-auto max-w-7xl">
           <FadeUp className="text-center mb-16">
@@ -331,7 +331,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── How it works ────────────────────────────────────────────────── */}
+      {/* How it works */}
       <section id="how-it-works" className="px-6 py-24 border-t border-white/[0.04]">
         <div className="mx-auto max-w-5xl">
           <FadeUp className="text-center mb-16">
@@ -369,7 +369,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── Testimonials ────────────────────────────────────────────────── */}
+      {/* Testimonials */}
       <section className="px-6 py-24 border-t border-white/[0.04]">
         <div className="mx-auto max-w-6xl">
           <FadeUp className="text-center mb-14">
@@ -408,7 +408,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── CTA ─────────────────────────────────────────────────────────── */}
+      {/* CTA */}
       <section className="px-6 py-24 border-t border-white/[0.04]">
         <FadeUp>
           <div className="mx-auto max-w-3xl text-center rounded-3xl border border-brand-500/20 bg-gradient-to-b from-brand-500/10 to-transparent p-12 relative overflow-hidden">

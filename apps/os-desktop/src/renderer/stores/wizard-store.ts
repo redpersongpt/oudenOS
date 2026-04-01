@@ -1,9 +1,9 @@
-// ─── Wizard Store ─────────────────────────────────────────────────────────────
+// Wizard Store
 // 13-step OS transformation wizard. Playbook-native flow.
 
 import { create } from "zustand";
 
-// ─── Step IDs ─────────────────────────────────────────────────────────────────
+// Step IDs
 
 export type WizardStepId =
   | "welcome"
@@ -21,7 +21,7 @@ export type WizardStepId =
   | "donation"
   | "handoff";
 
-// ─── Step shape ───────────────────────────────────────────────────────────────
+// Step shape
 
 export interface WizardStep {
   id: WizardStepId;
@@ -29,7 +29,7 @@ export interface WizardStep {
   status: "locked" | "current" | "completed" | "skipped";
 }
 
-// ─── Profile detection result ─────────────────────────────────────────────────
+// Profile detection result
 
 export interface DetectedProfile {
   id: string;
@@ -42,7 +42,7 @@ export interface DetectedProfile {
   windowsBuild: number;
 }
 
-// ─── Playbook resolved plan ──────────────────────────────────────────────────
+// Playbook resolved plan
 
 export interface ResolvedPlaybook {
   playbookName: string;
@@ -163,7 +163,7 @@ export interface ActionDecisionProvenance {
   executionResultRef: string | null;
 }
 
-// ─── App bundle ──────────────────────────────────────────────────────────────
+// App bundle
 
 export interface RecommendedApp {
   id: string;
@@ -175,7 +175,7 @@ export interface RecommendedApp {
   workSafe: boolean;
 }
 
-// ─── Personalization ─────────────────────────────────────────────────────────
+// Personalization
 
 export interface PersonalizationPreferences {
   darkMode: boolean;
@@ -217,7 +217,7 @@ export function getProfilePersonalizationDefaults(profileId?: string | null): Pe
 
 export const DEFAULT_PERSONALIZATION: PersonalizationPreferences = getProfilePersonalizationDefaults(null);
 
-// ─── Execution result ────────────────────────────────────────────────────────
+// Execution result
 
 export interface AppInstallSummary {
   requested: number;
@@ -257,7 +257,7 @@ export interface ExecutionResult {
   truthSource?: "ledger" | "local";
 }
 
-// ─── Store interface ─────────────────────────────────────────────────────────
+// Store interface
 
 interface WizardState {
   currentStep: WizardStepId;
@@ -304,7 +304,7 @@ interface WizardState {
   reset: () => void;
 }
 
-// ─── Ordered step definitions ────────────────────────────────────────────────
+// Ordered step definitions
 
 const INITIAL_STEPS: WizardStep[] = [
   { id: "welcome",            label: "Welcome",           status: "current" },
@@ -340,7 +340,7 @@ const INITIAL_STEP_READINESS: Record<WizardStepId, boolean> = {
   handoff: false,
 };
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
+// Helpers
 
 function computeProgress(steps: WizardStep[]): number {
   const done = steps.filter((s) => s.status === "completed" || s.status === "skipped").length;
@@ -359,7 +359,7 @@ function computeCanGoBack(_steps: WizardStep[], currentStep: WizardStepId): bool
   return STEP_ORDER.indexOf(currentStep) > 0;
 }
 
-// ─── Store ───────────────────────────────────────────────────────────────────
+// Store
 
 export const useWizardStore = create<WizardState>((set, get) => ({
   currentStep: "welcome",

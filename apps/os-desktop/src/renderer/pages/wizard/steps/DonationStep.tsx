@@ -1,4 +1,4 @@
-// ─── Donation Step ───────────────────────────────────────────────────────────
+// Donation Step
 // Optional step — accessible from ReportStep. Support the project.
 
 import { motion } from "framer-motion";

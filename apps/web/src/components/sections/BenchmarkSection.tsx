@@ -12,7 +12,7 @@ import {
   Settings,
 } from "lucide-react";
 
-// ─── Types ──────────────────────────────────────────────────────────────────
+// Types
 
 interface StatCard {
   icon: React.ElementType;
@@ -30,7 +30,7 @@ interface ComparisonRow {
   lowerIsBetter: boolean;
 }
 
-// ─── Data ───────────────────────────────────────────────────────────────────
+// Data
 
 const STAT_CARDS: StatCard[] = [
   {
@@ -94,7 +94,7 @@ const COMPARISONS: ComparisonRow[] = [
   },
 ];
 
-// ─── Animated Counter Hook ──────────────────────────────────────────────────
+// Animated Counter Hook
 
 function useCountUp(
   target: number,
@@ -134,7 +134,7 @@ function useCountUp(
   return current;
 }
 
-// ─── Stat Card Component ────────────────────────────────────────────────────
+// Stat Card Component
 
 function StatCardItem({
   stat,
@@ -187,7 +187,7 @@ function StatCardItem({
   );
 }
 
-// ─── Comparison Bar ─────────────────────────────────────────────────────────
+// Comparison Bar
 
 function ComparisonBar({
   row,
@@ -276,7 +276,7 @@ function ComparisonBar({
   );
 }
 
-// ─── Main Section ───────────────────────────────────────────────────────────
+// Main Section
 
 export function BenchmarkSection() {
   const sectionRef = useRef<HTMLElement>(null);

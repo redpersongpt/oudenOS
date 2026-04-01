@@ -1,4 +1,4 @@
-// ─── OS Rollback & Audit Types ────────────────────────────────────────────────
+// OS Rollback & Audit Types
 
 export type OsSnapshotScope = "full_plan" | "stage" | "single_action";
 

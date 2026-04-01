@@ -1,4 +1,4 @@
-// ─── Spacing & Layout System ────────────────────────────────────────────────
+// Spacing & Layout System
 // 4px base unit. Calm, precise, intentional.
 
 export const spacing = {

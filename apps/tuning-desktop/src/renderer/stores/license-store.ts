@@ -1,4 +1,4 @@
-// ─── License State Store ────────────────────────────────────────────────────
+// License State Store
 
 import { create } from "zustand";
 import type { LicenseState, SubscriptionTier } from "@redcore/shared-schema/license";

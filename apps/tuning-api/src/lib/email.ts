@@ -1,4 +1,4 @@
-// ─── Email Delivery ──────────────────────────────────────────────────────────
+// Email Delivery
 // Stub for dev — replace with SendGrid / Resend / SES in production.
 // Set EMAIL_PROVIDER=sendgrid and SENDGRID_API_KEY to enable real delivery.
 

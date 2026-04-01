@@ -1,4 +1,4 @@
-// ─── Machine Intelligence Store ──────────────────────────────────────────────
+// Machine Intelligence Store
 
 import { create } from "zustand";
 import type {
