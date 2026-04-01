@@ -1,0 +1,22 @@
+{
+  "aggressionPreset": "balanced",
+  "highPerformancePlan": true,
+  "optimizeThreadPriority": true,
+  "globalTimerResolution": true,
+  "disableGameDvr": true,
+  "disableFullscreenOptimizations": true,
+  "stripSearchWebNoise": true,
+  "edgeBehavior": "suppress",
+  "disableCopilot": true,
+  "disableAiApps": true,
+  "telemetryLevel": "reduce",
+  "disableClipboardHistory": true,
+  "disableActivityFeed": true,
+  "disableTailoredExperiences": true,
+  "restoreClassicContextMenu": true,
+  "enableEndTask": true,
+  "disableBackgroundApps": true,
+  "disableAutomaticMaintenance": true,
+  "enableGameMode": true,
+  "disableTransparency": true
+}

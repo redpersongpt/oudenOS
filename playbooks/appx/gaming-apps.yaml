@@ -1,0 +1,48 @@
+# ─── AppX: Gaming Apps Removal ────────────────────────────────────────────────
+# Removes Widgets and Xbox companion apps.
+
+module: appx.gaming-apps
+name: "Gaming & Widgets App Removal"
+description: "Remove Windows Widgets and Xbox companion apps"
+category: appx
+
+actions:
+  - id: appx.remove-widgets
+    name: "Remove Widgets"
+    description: "Remove Windows Widgets (WebExperience) and disable via registry"
+    rationale: "Removes resource-consuming widgets panel and prevents accidental activation"
+    risk: low
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: false
+    estimatedSeconds: 10
+    blockedProfiles:
+      - vm_cautious
+    packages:
+      - MicrosoftWindows.Client.WebExperience
+    registryChanges:
+      - hive: HKLM
+        path: "SOFTWARE\\Policies\\Microsoft\\Dsh"
+        valueName: AllowNewsAndInterests
+        value: 0
+        valueType: DWord
+
+  - id: appx.remove-xbox-apps
+    name: "Remove Xbox Apps"
+    description: "Remove Xbox companion apps (XboxApp, GamingOverlay, Xbox.TCUI, XboxGameCallableUI, XboxSpeechToTextOverlay)"
+    rationale: "Removes Xbox social features and overlay processes that consume resources during gaming"
+    risk: low
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: false
+    estimatedSeconds: 15
+    blockedProfiles:
+      - vm_cautious
+    packages:
+      - Microsoft.XboxApp
+      - Microsoft.XboxGamingOverlay
+      - Microsoft.Xbox.TCUI
+      - Microsoft.XboxGameCallableUI
+      - Microsoft.XboxSpeechToTextOverlay

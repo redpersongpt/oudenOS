@@ -1,0 +1,53 @@
+# ─── Profile Override: Work PC ────────────────────────────────────────────────
+# Work PCs must preserve enterprise infrastructure: printing, RDP, domain,
+# SMB, Group Policy, managed updates, and business-critical services.
+
+profile: work_pc
+label: "Work PC"
+description: "Enterprise/business machine — preserves printing, networking, domain services"
+preset: conservative
+
+# Actions that are BLOCKED for this profile (will not appear in plan)
+blockedActions:
+  # Services — business-critical
+  - services.disable-print-spooler
+  - services.disable-remote-services
+  - services.disable-sysmain
+  # Tasks — managed by enterprise
+  - tasks.disable-onedrive-tasks
+  - tasks.disable-update-orchestrator
+  # Privacy — may conflict with enterprise policy
+  - privacy.disable-location
+  - privacy.disable-smartscreen
+  # Performance — may affect business apps
+  - perf.mmcss-system-responsiveness
+  - perf.disable-fullscreen-optimizations
+  # Security — enterprise manages these
+  - security.reduce-ssbd-mitigation
+  - security.disable-hvci
+  # System — enterprise manages updates
+  - system.disable-windows-update
+  - system.disable-update-auto-restart
+  - system.defer-feature-updates
+  # Network — may break enterprise network
+  - network.disable-ipv6
+  - network.disable-llmnr
+  - network.disable-netbios
+  # Shell — business users expect defaults
+  - shell.reduce-search-box
+  # GPU — not relevant for work
+  - gpu.nvidia-disable-dynamic-pstate
+
+# Actions that should be default=false (optional) instead of default=true
+optionalActions:
+  - shell.disable-copilot  # Some enterprises use Copilot
+
+# Preservation flags — passed to executor for safety checks
+preservationFlags:
+  - print_spooler
+  - rdp_server
+  - smb_client
+  - group_policy_client
+  - domain_services
+  - managed_updates
+  - onedrive_sync

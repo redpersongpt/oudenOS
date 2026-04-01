@@ -1,0 +1,143 @@
+# ─── Privacy: Telemetry Reduction ────────────────────────────────────────────
+# Disables Windows diagnostic data collection and telemetry services.
+
+module: privacy.telemetry
+name: "Telemetry Reduction"
+description: "Reduce diagnostic data collection to minimum levels"
+category: privacy
+
+actions:
+  - id: privacy.disable-telemetry
+    name: "Set Diagnostic Data to Minimum"
+    description: "Set Windows diagnostic data collection to Security level (minimum)"
+    rationale: "Prevents Windows from collecting usage, browsing, and app telemetry"
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKLM
+        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection"
+        valueName: AllowTelemetry
+        value: 0
+        valueType: DWord
+      - hive: HKLM
+        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\DataCollection"
+        valueName: AllowTelemetry
+        value: 0
+        valueType: DWord
+
+  - id: privacy.disable-ceip
+    name: "Disable Customer Experience Program"
+    description: "Opt out of Microsoft Customer Experience Improvement Program"
+    rationale: "CEIP collects hardware and software usage data for Microsoft product improvement"
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKLM
+        path: "SOFTWARE\\Microsoft\\SQMClient\\Windows"
+        valueName: CEIPEnable
+        value: 0
+        valueType: DWord
+
+  - id: privacy.disable-error-reporting
+    name: "Disable Windows Error Reporting"
+    description: "Disable automatic error report submission to Microsoft"
+    rationale: "Error reports can contain sensitive data including memory dumps"
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKLM
+        path: "SOFTWARE\\Microsoft\\Windows\\Windows Error Reporting"
+        valueName: Disabled
+        value: 1
+        valueType: DWord
+
+  - id: privacy.disable-advertising-id
+    name: "Disable Advertising ID"
+    description: "Reset and disable the Windows advertising identifier"
+    rationale: "Advertising ID allows cross-app ad tracking; disabling prevents personalized ads"
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKCU
+        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\AdvertisingInfo"
+        valueName: Enabled
+        value: 0
+        valueType: DWord
+
+  - id: privacy.powershell-telemetry-optout
+    name: "Opt Out of PowerShell Telemetry"
+    description: "Set POWERSHELL_TELEMETRY_OPTOUT environment variable"
+    rationale: "PowerShell sends telemetry data to Microsoft by default. Setting this environment variable prevents it."
+    risk: safe
+    tier: free
+    default: true
+    expertOnly: false
+    requiresReboot: true
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKLM
+        path: "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment"
+        valueName: POWERSHELL_TELEMETRY_OPTOUT
+        value: "1"
+        valueType: String
+
+  - id: privacy.disable-typing-insights
+    name: "Disable Typing Insights"
+    description: "Disable typing analytics collection"
+    rationale: "Stops typing pattern analysis that tracks keystrokes for Microsoft's AI improvement."
+    risk: safe
+    tier: free
+    default: true
+    expertOnly: false
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKCU
+        path: "SOFTWARE\\Microsoft\\input\\Settings"
+        valueName: InsightsEnabled
+        value: 0
+        valueType: DWord
+
+  - id: privacy.disable-msrt
+    name: "Disable MSRT Windows Update Delivery"
+    description: "Prevent Malicious Software Removal Tool from being offered via Windows Update"
+    rationale: "MSRT scans consume CPU resources during Windows Update cycles. Manual security scanning is preferred on tuned systems."
+    risk: moderate
+    tier: free
+    default: false
+    expertOnly: false
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles:
+      - work_pc
+    registryChanges:
+      - hive: HKLM
+        path: "SOFTWARE\\Policies\\Microsoft\\MRT"
+        valueName: DontOfferThroughWUAU
+        value: 1
+        valueType: DWord

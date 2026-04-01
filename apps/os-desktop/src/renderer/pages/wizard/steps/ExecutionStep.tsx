@@ -1,0 +1,817 @@
+
+import { useEffect, useRef, useState, useMemo } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Check, AlertCircle } from "lucide-react";
+import { useWizardStore } from "@/stores/wizard-store";
+import type { ActionDecisionProvenance, ExecutionJournalEntry } from "@/stores/wizard-store";
+import { useDecisionsStore } from "@/stores/decisions-store";
+import { useLogStore } from "@/stores/log-store";
+import { getActionRationale } from "@/lib/expert-rationale";
+import { resolveEffectivePersonalization } from "@/lib/personalization-resolution";
+import { buildExecutionJournalContext } from "@/lib/package-journal";
+
+const SPINNING_QUOTES = [
+  "petting windows gently...",
+  "convincing Cortana to retire...",
+  "teaching Windows what \"no\" means...",
+  "removing apps you never asked for...",
+  "telling Edge it's not the default...",
+  "Windows Update can't hurt you here...",
+  "deleting Candy Crush for the 47th time...",
+  "who needs Bing anyway?",
+  "making Bill Gates slightly disappointed...",
+  "solitaire had a good run lmfao...",
+  "removing BloatPilot\u2122...",
+  "remember when PCs just... worked?",
+  "one does not simply debloat Windows...",
+  "fun fact: Windows has 200+ background services...",
+  "turning off things Microsoft turned on...",
+  "Windows is basically an ad platform now...",
+  "how did 45GB become the minimum OS size...",
+  "Cortana says goodbye... finally...",
+  "uninstalling the weather widget nobody asked for...",
+  "telling OneDrive to go drive itself...",
+  "Dear Microsoft: no, I don't want to try Edge...",
+  "removing the 17th Bing integration...",
+  "Xbox Game Bar: thanks but no thanks...",
+  "disabling the \"helpful\" tips that help nobody...",
+  "Windows 11 start menu: less is more, right?",
+  "telling SmartScreen you're smart enough...",
+  "Microsoft Rewards? more like Microsoft Tax...",
+  "removing the widget panel of doom...",
+  "no Clippy, I don't need help...",
+
+  "tweaking your package ( \u0361\u00b0 \u035c\u0296 \u0361\u00b0)",
+  "optimizing bits and bytes...",
+  "making your RAM feel appreciated...",
+  "whispering sweet nothings to your CPU...",
+  "your SSD just sighed with relief...",
+  "the registry is trembling...",
+  "your RAM called, it wants its memory back...",
+  "teaching your CPU to skip leg day...",
+  "defragmenting your soul...",
+  "your GPU just winked at us...",
+  "negotiating with the kernel...",
+  "asking the BIOS nicely...",
+  "recalibrating the flux capacitor...",
+  "feeding your CPU some red bull...",
+  "telling your cores to wake up...",
+  "your disk I/O just hit a new PR...",
+  "compiling happiness.exe...",
+  "sudo make me a sandwich...",
+  "chmod 777 /your/freedom...",
+  "rm -rf /bloat...",
+  "git commit -m \"bye bloat\"...",
+
+  "im poor donate plz \ud83d\ude4f",
+  "this is what freedom feels like...",
+  "every byte counts when you're debloating...",
+  "removing digital cholesterol...",
+  "reject bloat, return to performance...",
+  "your PC is about to feel 10 years younger...",
+  "making Task Manager proud...",
+  "unfriending Microsoft telemetry...",
+  "sending Clippy into retirement...",
+  "removing digital barnacles...",
+  "if you're reading this, you're patient...",
+  "you can listen to Kanye's new album while waiting...",
+  "grab a coffee, we're cooking...",
+  "trust the process...",
+  "this PC is going to be FAST...",
+  "almost as satisfying as peeling screen protectors...",
+  "your future self will thank you...",
+  "doing what Microsoft should've done...",
+  "free your PC, free your mind...",
+  "this is cheaper than a new PC...",
+  "less bloat = less heat = less noise...",
+  "your fans are about to get quieter...",
+  "saving the planet one disabled service at a time...",
+  "you're basically a hacker now...",
+  "your PC after this: *chef's kiss*...",
+  "loading... just kidding, we're actually working...",
+  "did you know: a fresh Windows install uses 4GB RAM idle?",
+  "after this: probably 1.8GB idle RAM...",
+  "we're not deleting System32, we promise...",
+  "the FPS gods smile upon you...",
+  "debloating your load ( \u0361\u00b0 \u035c\u0296 \u0361\u00b0)",
+  "meanwhile, Edge is crying in the corner...",
+  "Satya Nadella left the chat...",
+  "plot twist: Windows was the malware all along...",
+];
+
+interface ExecutableAction {
+  id: string;
+  name: string;
+  phase: string;
+  provenance: ActionDecisionProvenance | null;
+}
+
+interface CompletedAction {
+  label: string;
+  actionId: string;
+  status: "applied" | "failed";
+  errorMessage?: string;
+  packageSourceRef: string | null;
+  provenanceRef: string | null;
+}
+
+interface AppInstallProgress {
+  requested: number;
+  installed: number;
+  failed: number;
+}
+
+function TimelineItem({ action }: { action: CompletedAction }) {
+  const failed = action.status === "failed";
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: -10, height: 0 }}
+      animate={
+        failed
+          ? { opacity: 1, x: [0, -5, 5, -3, 3, -1, 0], height: "auto" }
+          : { opacity: 1, x: 0, height: "auto" }
+      }
+      transition={
+        failed
+          ? { duration: 0.44, ease: "easeOut" }
+          : { duration: 0.18, ease: [0.0, 0.0, 0.2, 1.0] }
+      }
+      className="flex flex-col gap-0.5 py-1"
+    >
+      <div className="flex items-center gap-2.5">
+        {action.status === "applied" ? (
+          <Check className="h-3.5 w-3.5 shrink-0 text-success-400" />
+        ) : (
+          <AlertCircle className="h-3.5 w-3.5 shrink-0 text-danger-400" />
+        )}
+        <span className="text-[11px] text-ink-secondary break-words">{action.label}</span>
+        <span className={`ml-auto shrink-0 text-[10px] font-medium ${
+          action.status === "applied" ? "text-success-400/60" : "text-danger-400/60"
+        }`}>
+          {action.status}
+        </span>
+      </div>
+      {action.status === "failed" && action.errorMessage && (
+        <span
+          className="text-[9px] text-danger-400/50 pl-6 break-words"
+          title={action.errorMessage}
+        >
+          {action.errorMessage}
+        </span>
+      )}
+    </motion.div>
+  );
+}
+
+function SpinningQuote({ isActive }: { isActive: boolean }) {
+  const [idx, setIdx] = useState(() => Math.floor(Math.random() * SPINNING_QUOTES.length));
+
+  useEffect(() => {
+    if (!isActive) return;
+    const interval = setInterval(() => {
+      setIdx((prev) => {
+        let next: number;
+        do { next = Math.floor(Math.random() * SPINNING_QUOTES.length); } while (next === prev && SPINNING_QUOTES.length > 1);
+        return next;
+      });
+    }, 4000);
+    return () => clearInterval(interval);
+  }, [isActive]);
+
+  if (!isActive) return null;
+
+  return (
+    <AnimatePresence mode="wait">
+      <motion.p
+        key={idx}
+        initial={{ opacity: 0, y: 6 }}
+        animate={{ opacity: 0.5, y: 0 }}
+        exit={{ opacity: 0, y: -6 }}
+        transition={{ duration: 0.3, ease: [0.0, 0.0, 0.2, 1.0] }}
+        className="mt-1 text-[10px] italic text-ink-muted select-none"
+      >
+        {SPINNING_QUOTES[idx]}
+      </motion.p>
+    </AnimatePresence>
+  );
+}
+
+export function ExecutionStep() {
+  const { detectedProfile, resolvedPlaybook, selectedAppIds, personalization, demoMode, completeStep, setExecutionResult, setResolvedPlaybook } = useWizardStore();
+  const answers = useDecisionsStore((state) => state.answers);
+  const addLogEntry = useLogStore((state) => state.addEntry);
+  const effectivePersonalization = useMemo(
+    () => resolveEffectivePersonalization(detectedProfile?.id, personalization, answers),
+    [answers, detectedProfile?.id, personalization],
+  );
+
+  const actionQueue = useMemo<ExecutableAction[]>(() => {
+    if (!resolvedPlaybook) return [];
+    const provenanceByAction = new Map(
+      (resolvedPlaybook.actionProvenance ?? []).map((entry) => [entry.actionId, entry] as const),
+    );
+    const queue: ExecutableAction[] = [];
+    for (const phase of resolvedPlaybook.phases) {
+      for (const action of phase.actions) {
+        if (action.status === "Included") {
+          queue.push({
+            id: action.id,
+            name: action.name,
+            phase: phase.name,
+            provenance: provenanceByAction.get(action.id) ?? null,
+          });
+        }
+      }
+    }
+    return queue;
+  }, [resolvedPlaybook]);
+
+  const totalActions = actionQueue.length + selectedAppIds.length + 1;
+
+  const [currentIdx,    setCurrentIdx]    = useState(-1);
+  const [currentAction, setCurrentAction] = useState<string | null>(null);
+  const [currentActionId, setCurrentActionId] = useState<string | null>(null);
+  const [currentPhase, setCurrentPhase]   = useState<string | null>(null);
+  const [completed,     setCompleted]     = useState<CompletedAction[]>([]);
+  const timerRef    = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const abortRef    = useRef<AbortController | null>(null);
+  const started     = useRef(false);
+  const timelineRef = useRef<HTMLDivElement>(null);
+
+  const applied   = completed.filter((c) => c.status === "applied").length;
+  const failCount = completed.filter((c) => c.status === "failed").length;
+  const remaining = Math.max(0, totalActions - completed.length - (currentAction ? 1 : 0));
+  const progress  = totalActions > 0
+    ? Math.round((completed.length / totalActions) * 100)
+    : 0;
+
+  useEffect(() => {
+    if (started.current || totalActions === 0) return;
+    started.current = true;
+
+    const controller = new AbortController();
+    abortRef.current = controller;
+
+    const exec = async () => {
+      const playbook = resolvedPlaybook;
+      if (!playbook) return;
+      const { serviceCall } = await import("@/lib/service");
+      let localFailed = 0;
+      let operationIndex = 0;
+      const journalEntries: ExecutionJournalEntry[] = [];
+
+      addLogEntry({ level: "info", category: "Execution", message: `Starting execution with ${actionQueue.length} actions, ${selectedAppIds.length} apps` });
+
+      const planId = playbook.packageRefs?.planId ?? `plan-${Date.now()}`;
+      try {
+        const ledgerActions = actionQueue.map((action, idx) => ({
+          actionId: action.id,
+          actionName: action.name,
+          phase: action.phase,
+          queuePosition: idx,
+          inclusionReason: action.provenance?.inclusionReason ?? null,
+          blockedReason: null,
+          preservedReason: null,
+          riskLevel: action.provenance?.riskLevel ?? "safe",
+          expertOnly: action.provenance?.expertOnly ?? false,
+          requiresReboot: action.provenance?.requiresReboot ?? false,
+          packageSourceRef: action.provenance?.packageSourceRef ?? null,
+          provenanceRef: action.provenance?.packageSourceRef ?? null,
+          questionKeys: action.provenance?.sourceQuestionIds ?? [],
+          selectedValues: (action.provenance?.sourceOptionValues ?? []).map(String),
+        }));
+
+        await serviceCall("ledger.createPlan", {
+          package: {
+            planId,
+            packageId: playbook.packageRefs?.packageId ?? "redcore-os",
+            packageRole: playbook.packageRefs?.packageRole ?? "user-resolved",
+            packageVersion: playbook.packageRefs?.packageVersion ?? null,
+            packageSourceRef: playbook.packageRefs?.packageSourceRef ?? null,
+            actionProvenanceRef: playbook.packageRefs?.actionProvenanceRef ?? null,
+            executionJournalRef: playbook.packageRefs?.executionJournalRef ?? null,
+            sourceCommit: playbook.packageRefs?.sourceCommit ?? null,
+          },
+          profile: detectedProfile?.id ?? "gaming_desktop",
+          preset: playbook.preset ?? "balanced",
+          actions: ledgerActions,
+        });
+      } catch (e) {
+        console.warn("[ExecutionStep] Failed to create DB ledger plan (non-fatal):", e);
+      }
+
+      for (let i = 0; i < actionQueue.length; i++) {
+        if (controller.signal.aborted) return;
+        const action = actionQueue[i];
+        const startedAt = new Date().toISOString();
+
+        setCurrentIdx(operationIndex);
+        setCurrentAction(action.name);
+        setCurrentActionId(action.id);
+        setCurrentPhase(action.phase);
+
+        serviceCall("ledger.markStarted", { planId, actionId: action.id }).catch(() => {});
+
+        addLogEntry({ level: "info", category: "Action", message: `Starting: ${action.name}`, details: `actionId=${action.id}, phase=${action.phase}` });
+
+        let status: "applied" | "failed" = "failed";
+        let errorMessage: string | null = null;
+        const result = await serviceCall<Record<string, unknown>>("execute.applyAction", {
+          actionId: action.id,
+          journalContext: action.provenance
+            ? buildExecutionJournalContext(playbook, action.provenance, detectedProfile?.id)
+            : undefined,
+        });
+        const resultData = result.ok ? result.data : null;
+        if (result.ok) {
+          const rpcStatus = typeof result.data.status === "string" ? result.data.status : "failed";
+          const nestedFailures = typeof result.data.failed === "number" ? result.data.failed : 0;
+          status = rpcStatus === "success" && nestedFailures === 0 ? "applied" : "failed";
+          if (status === "failed") {
+            errorMessage =
+              (typeof result.data.error === "string" ? result.data.error : null)
+              ?? (typeof result.data.message === "string" ? result.data.message : null)
+              ?? (typeof result.data.errorMessage === "string" ? result.data.errorMessage : null)
+              ?? `Action returned status="${rpcStatus}" with ${nestedFailures} nested failure(s)`;
+          }
+        } else if (demoMode) {
+          await new Promise<void>((resolve) => {
+            timerRef.current = setTimeout(resolve, 80 + Math.random() * 120);
+          });
+          status = "applied";
+        } else {
+          errorMessage = result.error ?? "Service call failed";
+        }
+
+        if (controller.signal.aborted) return;
+        setCurrentAction(null);
+        if (status === "failed") {
+          localFailed++;
+          addLogEntry({ level: "error", category: "Action", message: `Failed: ${action.name}`, details: errorMessage ?? undefined });
+        } else {
+          addLogEntry({ level: "success", category: "Action", message: `Applied: ${action.name}` });
+        }
+
+        serviceCall("ledger.recordResult", {
+          planId,
+          result: {
+            actionId: action.id,
+            status: status === "applied" ? "success" : "failed",
+            rollbackSnapshotId: null,
+            errorMessage,
+            durationMs: null,
+          },
+        }).catch(() => {});
+
+        const finishedAt = new Date().toISOString();
+        const completedEntry: CompletedAction = {
+          label: action.name,
+          actionId: action.id,
+          status,
+          errorMessage: errorMessage ?? undefined,
+          packageSourceRef: action.provenance?.packageSourceRef ?? null,
+          provenanceRef: action.provenance?.packageSourceRef ?? null,
+        };
+        const journalEntry: ExecutionJournalEntry = {
+          id: `journal.playbook.${action.id}`,
+          kind: "playbook-action",
+          actionId: action.id,
+          label: action.name,
+          phase: action.phase,
+          status,
+          startedAt,
+          finishedAt,
+          durationMs: Math.max(0, new Date(finishedAt).getTime() - new Date(startedAt).getTime()),
+          questionKeys: action.provenance?.sourceQuestionIds ?? [],
+          selectedValues: action.provenance?.sourceOptionValues ?? [],
+          packageSourceRef: typeof resultData?.packageSourceRef === "string"
+            ? resultData.packageSourceRef
+            : action.provenance?.packageSourceRef ?? null,
+          provenanceRef: typeof resultData?.provenanceRef === "string"
+            ? resultData.provenanceRef
+            : action.provenance?.packageSourceRef ?? null,
+          resultRef: typeof resultData?.journalRef === "string"
+            ? resultData.journalRef
+            : `${playbook.packageRefs?.executionJournalRef ?? "state/execution-journal.json"}#/entries/${journalEntries.length}`,
+          errorMessage,
+        };
+        journalEntries.push(journalEntry);
+        setCompleted((prev) => [...prev, completedEntry]);
+        operationIndex += 1;
+
+        requestAnimationFrame(() => {
+          if (timelineRef.current) {
+            timelineRef.current.scrollTop = timelineRef.current.scrollHeight;
+          }
+        });
+      }
+
+      if (controller.signal.aborted) return;
+
+      addLogEntry({ level: "info", category: "Personalization", message: "Applying personalization settings" });
+      let personalizationFailed = false;
+      let personalizationApplied = false;
+      const personalizationStartedAt = new Date().toISOString();
+      try {
+        setCurrentIdx(operationIndex);
+        setCurrentAction("Applying personalization");
+        setCurrentActionId("personalize.apply");
+        setCurrentPhase("Personalization");
+        const persResult = await serviceCall("personalize.apply", {
+          profile: detectedProfile?.id ?? "gaming_desktop",
+          options: effectivePersonalization,
+        });
+        if (!persResult.ok) {
+          personalizationFailed = true;
+        } else {
+          const payload = persResult.data as { status?: unknown; failed?: unknown } | undefined;
+          const rpcStatus = typeof payload?.status === "string" ? payload.status : "failed";
+          const failedCount = typeof payload?.failed === "number" ? payload.failed : 0;
+          personalizationFailed = rpcStatus !== "success" || failedCount > 0;
+          personalizationApplied = !personalizationFailed;
+        }
+      } catch {
+        personalizationFailed = true;
+      }
+      setCurrentAction(null);
+      const personalizationFinishedAt = new Date().toISOString();
+      const personalizationStatus = personalizationFailed ? "failed" : "applied";
+      addLogEntry({
+        level: personalizationFailed ? "error" : "success",
+        category: "Personalization",
+        message: personalizationFailed ? "Personalization failed" : "Personalization applied",
+      });
+      journalEntries.push({
+        id: "journal.personalization.apply",
+        kind: "personalization",
+        actionId: "personalize.apply",
+        label: "Apply personalization",
+        phase: "Personalization",
+        status: personalizationStatus,
+        startedAt: personalizationStartedAt,
+        finishedAt: personalizationFinishedAt,
+        durationMs: Math.max(0, new Date(personalizationFinishedAt).getTime() - new Date(personalizationStartedAt).getTime()),
+        questionKeys: ["disableTransparency"],
+        selectedValues: [],
+        packageSourceRef: playbook.packageRefs?.decisionSummaryRef ?? null,
+        provenanceRef: null,
+        resultRef: `${playbook.packageRefs?.executionJournalRef ?? "state/execution-journal.json"}#/entries/${journalEntries.length}`,
+        errorMessage: personalizationFailed ? "Personalization apply failed." : null,
+      });
+      setCompleted((prev) => [
+        ...prev,
+        {
+          label: "Apply personalization",
+          actionId: "personalize.apply",
+          status: personalizationStatus,
+          errorMessage: personalizationFailed ? "Personalization apply failed." : undefined,
+          packageSourceRef: playbook.packageRefs?.decisionSummaryRef ?? null,
+          provenanceRef: null,
+        },
+      ]);
+      operationIndex += 1;
+
+      if (selectedAppIds.length > 0) {
+        addLogEntry({ level: "info", category: "Apps", message: `Installing ${selectedAppIds.length} selected apps` });
+      }
+      let appInstallProgress: AppInstallProgress = {
+        requested: selectedAppIds.length,
+        installed: 0,
+        failed: 0,
+      };
+      if (selectedAppIds.length > 0) {
+        try {
+          const appResult = await serviceCall("appbundle.resolve", {
+            profile: detectedProfile?.id ?? "gaming_desktop",
+            selectedApps: selectedAppIds,
+          });
+          if (!appResult.ok) {
+            appInstallProgress.failed = selectedAppIds.length;
+          } else {
+            const payload = appResult.data as { installQueue?: Array<{ id: string; name: string }> } | undefined;
+            const installQueue = Array.isArray(payload?.installQueue) ? payload.installQueue : [];
+
+            for (const app of installQueue) {
+              if (controller.signal.aborted) return;
+              const appStartedAt = new Date().toISOString();
+
+              setCurrentIdx(operationIndex);
+              setCurrentAction(`Installing ${app.name}`);
+              setCurrentActionId(`app.${app.id}`);
+              setCurrentPhase("App Setup");
+
+              let status: "applied" | "failed" = "failed";
+              let appErrorMessage: string | null = null;
+              const installResult = await serviceCall<{
+                status?: unknown;
+                error?: unknown;
+                message?: unknown;
+                name?: unknown;
+              }>("appbundle.install", { appId: app.id });
+
+              if (installResult.ok) {
+                const rpcStatus = typeof installResult.data.status === "string" ? installResult.data.status : "failed";
+                status = rpcStatus === "installed" || rpcStatus === "skipped" ? "applied" : "failed";
+                if (status === "failed") {
+                  appErrorMessage =
+                    (typeof installResult.data.error === "string" ? installResult.data.error : null)
+                    ?? (typeof installResult.data.message === "string" ? installResult.data.message : null)
+                    ?? `App install returned status="${rpcStatus}"`;
+                }
+              } else if (demoMode) {
+                await new Promise<void>((resolve) => {
+                  timerRef.current = setTimeout(resolve, 80 + Math.random() * 120);
+                });
+                status = "applied";
+              } else {
+                appErrorMessage = installResult.error ?? "Service call failed";
+              }
+
+              if (status === "applied") {
+                appInstallProgress.installed += 1;
+                addLogEntry({ level: "success", category: "Apps", message: `Installed: ${app.name}` });
+              } else {
+                appInstallProgress.failed += 1;
+                addLogEntry({ level: "error", category: "Apps", message: `Failed: ${app.name}`, details: appErrorMessage ?? undefined });
+              }
+
+              setCurrentAction(null);
+              const appFinishedAt = new Date().toISOString();
+              journalEntries.push({
+                id: `journal.app.${app.id}`,
+                kind: "app-install",
+                actionId: `app.${app.id}`,
+                label: `Install ${app.name}`,
+                phase: "App Setup",
+                status,
+                startedAt: appStartedAt,
+                finishedAt: appFinishedAt,
+                durationMs: Math.max(0, new Date(appFinishedAt).getTime() - new Date(appStartedAt).getTime()),
+                questionKeys: [],
+                selectedValues: [app.id],
+                packageSourceRef: "state/selected-apps.json",
+                provenanceRef: null,
+                resultRef: `${playbook.packageRefs?.executionJournalRef ?? "state/execution-journal.json"}#/entries/${journalEntries.length}`,
+                errorMessage: status === "failed" ? `App install failed for ${app.name}.` : null,
+              });
+              setCompleted((prev) => [
+                ...prev,
+                {
+                  label: `Install ${app.name}`,
+                  actionId: `app.${app.id}`,
+                  status,
+                  errorMessage: appErrorMessage ?? undefined,
+                  packageSourceRef: "state/selected-apps.json",
+                  provenanceRef: null,
+                },
+              ]);
+              operationIndex += 1;
+
+              requestAnimationFrame(() => {
+                if (timelineRef.current) {
+                  timelineRef.current.scrollTop = timelineRef.current.scrollHeight;
+                }
+              });
+            }
+          }
+        } catch {
+          appInstallProgress.failed = selectedAppIds.length;
+        }
+      }
+
+      if (controller.signal.aborted) return;
+
+      await serviceCall("ledger.completePlan", { planId }).catch(() => {});
+
+      const ledgerResult = await serviceCall<{
+        totalCompleted?: number;
+        totalFailed?: number;
+        totalRemaining?: number;
+        status?: string;
+        steps?: Array<{ actionId: string; status: string }>;
+      }>("ledger.query", { planId });
+
+      const ledgerIsAuthoritative = ledgerResult.ok
+        && typeof ledgerResult.data?.totalCompleted === "number"
+        && typeof ledgerResult.data?.totalFailed === "number";
+
+      if (!ledgerIsAuthoritative) {
+        console.warn(
+          "[ExecutionStep] DEGRADED: ledger.query failed or returned incomplete data. " +
+          "Final counts are from renderer-local journal, NOT service-authoritative. " +
+          `ledger.ok=${ledgerResult.ok}, planId=${planId}`
+        );
+      }
+
+      const ledgerApplied = ledgerIsAuthoritative
+        ? ledgerResult.data!.totalCompleted!
+        : journalEntries.filter((entry) => entry.status === "applied").length;
+      const ledgerFailed = ledgerIsAuthoritative
+        ? ledgerResult.data!.totalFailed!
+        : journalEntries.filter((entry) => entry.status === "failed").length;
+
+      const skipped = personalizationFailed ? 1 : 0;
+      const executionJournalRef = playbook.packageRefs?.executionJournalRef ?? "state/execution-journal.json";
+      const actionProvenance = (playbook.actionProvenance ?? []).map((entry) => {
+        const matchingJournalRefs = journalEntries
+          .filter((journalEntry) => journalEntry.actionId === entry.actionId)
+          .map((journalEntry) => `${executionJournalRef}#/entries/${journalEntries.indexOf(journalEntry)}`);
+        return {
+          ...entry,
+          journalRecordRefs: matchingJournalRefs,
+          executionResultRef: matchingJournalRefs[0] ?? null,
+        };
+      });
+      const executionAwarePlaybook = {
+        ...playbook,
+        actionProvenance,
+      };
+      setResolvedPlaybook(executionAwarePlaybook);
+      setExecutionResult({
+        applied: ledgerApplied,
+        failed: ledgerFailed,
+        skipped,
+        preserved: executionAwarePlaybook.totalBlocked,
+        personalizationApplied,
+        appInstall: appInstallProgress,
+        packageKind: "user-resolved",
+        packageRefs: executionAwarePlaybook.packageRefs ?? null,
+        journal: journalEntries,
+        truthSource: ledgerIsAuthoritative ? "ledger" : "local",
+      });
+
+      addLogEntry({
+        level: "info",
+        category: "Execution",
+        message: `Execution complete — ${ledgerApplied} applied, ${ledgerFailed} failed, ${skipped} skipped`,
+        details: `truthSource=${ledgerIsAuthoritative ? "ledger" : "local"}`,
+      });
+
+      timerRef.current = setTimeout(() => completeStep("execution"), 800);
+    };
+
+    exec().catch((err) => {
+      console.error("[ExecutionStep] Unexpected execution error:", err);
+      addLogEntry({ level: "error", category: "Execution", message: "Unexpected execution error", details: err instanceof Error ? err.message : String(err) });
+      setExecutionResult({
+        applied: 0,
+        failed: actionQueue.length,
+        skipped: 0,
+        preserved: resolvedPlaybook?.totalBlocked ?? 0,
+        personalizationApplied: false,
+        appInstall: {
+          requested: selectedAppIds.length,
+          installed: 0,
+          failed: selectedAppIds.length,
+        },
+        packageKind: "user-resolved",
+        packageRefs: resolvedPlaybook?.packageRefs ?? null,
+        journal: [],
+      });
+      setTimeout(() => completeStep("execution"), 800);
+    });
+
+    return () => {
+      controller.abort();
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, []);
+
+  if (!resolvedPlaybook) {
+    return (
+      <div className="flex h-full flex-col items-center justify-center gap-3 px-8">
+        <AlertCircle className="h-8 w-8 text-amber-400" />
+        <p className="text-sm text-ink-secondary">No playbook actions resolved. Go back and review your playbook.</p>
+      </div>
+    );
+  }
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -8 }}
+      transition={{ duration: 0.22, ease: [0.0, 0.0, 0.2, 1.0] }}
+      className="flex h-full flex-col items-center justify-center gap-5 px-8"
+    >
+      {/* Header */}
+      <div className="flex flex-col items-center gap-1 text-center">
+        <h2 className="text-lg font-semibold text-ink">Applying Optimizations</h2>
+        <p className="text-xs text-ink-secondary">Do not shut down your computer</p>
+        <SpinningQuote isActive={completed.length < totalActions} />
+      </div>
+
+      {/* Current action card */}
+      <div className="w-full max-w-md">
+        <AnimatePresence mode="wait">
+          {currentAction ? (
+            <motion.div
+              key={currentAction}
+              initial={{ opacity: 0, y: 4 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -4 }}
+              transition={{ duration: 0.15 }}
+              style={{
+                boxShadow: "0 0 0 0 rgba(232,69,60,0.0)",
+                animation: "executionPulse 1.5s ease-in-out infinite",
+              }}
+              className="rounded-xl border border-brand-500/25 bg-brand-500/[0.06] px-5 py-3"
+            >
+              <div className="flex items-center gap-3">
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 0.9, ease: "linear", repeat: Infinity }}
+                  className="h-4 w-4 shrink-0 rounded-full border-2 border-brand-500 border-t-transparent"
+                />
+                <span className="flex-1 truncate text-[13px] font-medium text-ink">{currentAction}</span>
+                <span className="shrink-0 font-mono-metric text-[10px] text-brand-500/60">
+                  {currentIdx + 1}/{totalActions}
+                </span>
+              </div>
+              {/* Expert rationale — why this action is running */}
+              {currentActionId && (() => {
+                const r = getActionRationale(currentActionId);
+                return r.why ? (
+                  <p className="mt-1.5 text-[10px] leading-relaxed text-ink-tertiary pl-7">{r.why}</p>
+                ) : null;
+              })()}
+              {currentPhase && (
+                <p className="mt-0.5 text-[9px] text-ink-muted pl-7">{currentPhase}</p>
+              )}
+            </motion.div>
+          ) : completed.length === totalActions ? (
+            <motion.div
+              key="done"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ type: "spring", stiffness: 340, damping: 16 }}
+              className="flex flex-col items-center justify-center gap-1 rounded-xl border border-success-500/25 bg-success-500/[0.06] px-5 py-3.5"
+            >
+              <div className="flex items-center gap-3">
+                <Check className="h-4 w-4 text-success-400" />
+                <span className="text-sm font-medium text-success-300">All actions complete</span>
+              </div>
+              <span className="text-[10px] text-success-400/40 italic">
+                {failCount === 0 ? "debloated your load ( \u0361\u00b0 \u035c\u0296 \u0361\u00b0)" : "mostly debloated your load \ud83d\ude05"}
+              </span>
+            </motion.div>
+          ) : (
+            <div className="h-[50px]" />
+          )}
+        </AnimatePresence>
+      </div>
+
+      {/* Progress */}
+      <div className="w-full max-w-md">
+        <div className="relative h-1.5 overflow-hidden rounded-full bg-white/[0.06]">
+          <motion.div
+            className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-brand-600 to-brand-400"
+            animate={{ width: `${progress}%` }}
+            transition={{ type: "spring", stiffness: 280, damping: 28 }}
+          />
+        </div>
+        <div className="mt-2 flex justify-between">
+          <span className="font-mono-metric text-[10px] text-ink-tertiary">{progress}%</span>
+          <span className="font-mono-metric text-[10px] text-ink-tertiary">
+            {completed.length}/{totalActions}
+          </span>
+        </div>
+      </div>
+
+      {/* Stats row */}
+      <div className="flex gap-6 text-center">
+        {[
+          { label: "Applied",   value: applied,    color: "text-success-400"   },
+          { label: "Failed",    value: failCount,  color: "text-danger-400"    },
+          { label: "Remaining", value: remaining,  color: "text-ink-secondary" },
+        ].map((stat) => (
+          <div key={stat.label} className="flex flex-col items-center gap-0.5">
+            <motion.span
+              key={stat.value}
+              initial={{ scale: 0.75, opacity: 0.4 }}
+              animate={{ scale: 1,    opacity: 1   }}
+              transition={{ type: "spring", stiffness: 600, damping: 18 }}
+              className={`font-mono-metric text-xl font-semibold ${stat.color}`}
+            >
+              {stat.value}
+            </motion.span>
+            <span className="text-[10px] text-ink-muted">{stat.label}</span>
+          </div>
+        ))}
+      </div>
+
+      {/* Completed timeline */}
+      <div
+        ref={timelineRef}
+        className="w-full max-w-md overflow-y-auto scrollbar-none"
+        style={{ maxHeight: "120px" }}
+      >
+        <div className="flex flex-col divide-y divide-white/[0.03] px-1">
+          {(completed as CompletedAction[]).map((action, i) => (
+            <TimelineItem key={`${action.label}-${i}`} action={action} />
+          ))}
+        </div>
+      </div>
+    </motion.div>
+  );
+}

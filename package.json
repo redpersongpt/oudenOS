@@ -1,0 +1,15 @@
+{
+  "name": "redcore-os",
+  "private": true,
+  "packageManager": "pnpm@9.15.4",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev:desktop": "pnpm --dir apps/os-desktop dev",
+    "typecheck:desktop": "pnpm --dir apps/os-desktop typecheck",
+    "build:desktop": "pnpm --dir apps/os-desktop build",
+    "build:service": "cargo build --release --manifest-path services/os-service/Cargo.toml",
+    "dist:desktop": "pnpm run build:service && pnpm --dir apps/os-desktop dist"
+  }
+}
