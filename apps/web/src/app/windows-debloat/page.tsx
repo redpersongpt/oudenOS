@@ -16,7 +16,7 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "Windows Debloat — Guided, Reversible, Machine-Aware",
   description:
-    "Debloat Windows safely with redcore OS. Machine-aware scanning, guided removal, and full rollback support. No blind scripts, no broken systems.",
+    "Debloat Windows safely with redcore OS. Scans your hardware, guided removal, and full rollback support. No blind scripts, no broken systems.",
   keywords: [
     "windows debloat",
     "windows debloater",
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Windows Debloat — Guided, Reversible, Machine-Aware | redcore",
     description:
-      "Debloat Windows safely with machine-aware scanning and full rollback support.",
+      "Debloat Windows safely with hardware scanning and full rollback support.",
     url: "https://redcoreos.net/windows-debloat",
     type: "article",
   },
@@ -46,7 +46,7 @@ function buildJsonLd(downloadUrl: string | null) {
     applicationCategory: "UtilitiesApplication",
     offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
     description:
-      "Free Windows transformation tool with guided debloating, machine-aware scanning, and full rollback support.",
+      "Free Windows optimization tool with step-by-step debloating, hardware scanning, and full rollback support.",
     url: "https://redcoreos.net/redcore-os",
   };
   if (downloadUrl) {
@@ -79,7 +79,7 @@ export default async function WindowsDebloatPage() {
             items={[
               "What debloating actually means",
               "Why blind debloat scripts are risky",
-              "How machine-aware debloating works",
+              "How smart debloating works",
               "What gets removed vs preserved",
               "Work PC and gaming profile differences",
             ]}
@@ -173,7 +173,7 @@ export default async function WindowsDebloatPage() {
           <div className="space-y-4 mt-8 mb-8">
             <TrustBlock
               icon={<Shield className="h-4 w-4 text-accent" />}
-              title="Machine-aware scanning"
+              title="Scans your hardware"
               description="Detects CPU, GPU, disk type, network adapters, power source, and installed software before generating recommendations. Laptops get different defaults than desktops."
             />
             <TrustBlock
@@ -214,7 +214,7 @@ export default async function WindowsDebloatPage() {
               },
               {
                 title: "Why redcore",
-                description: "Machine-aware, profile-driven, fully reversible.",
+                description: "Scans your PC, adapts to your setup, fully reversible.",
                 href: "/why-redcore",
               },
             ]}

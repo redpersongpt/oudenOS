@@ -25,8 +25,8 @@ export function TrustSection() {
               Everything reversible.
             </h2>
             <p className="mt-6 text-[0.95rem] leading-[1.75] text-ink-secondary">
-              redcore shows you the exact transformation plan before it
-              runs. Every registry key, every service change, every removal
+              redcore shows you exactly what it&apos;ll do before it
+              does it. Every registry key, every service change, every removal
               — visible in real time. Not buried in logs.
             </p>
           </motion.div>

@@ -6,7 +6,7 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "redcore Tuning — Machine-Aware Windows Optimization",
   description:
-    "Machine-aware Windows performance optimization. 15+ tuning modules, benchmark lab, BIOS guidance, timer resolution, scheduler tuning. $12.99 one-time purchase.",
+    "Hardware-based Windows performance optimization. 15+ tuning modules, benchmark lab, BIOS guidance, timer resolution, scheduler tuning. $12.99 one-time purchase.",
   keywords: [
     "windows tuning software",
     "windows optimization tool",
@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     "cpu scheduler optimization",
     "timer resolution tool",
     "gpu optimization windows",
-    "machine-aware tuning",
+    "hardware tuning",
   ],
   alternates: {
     canonical: "https://redcoreos.net/redcore-tuning",
@@ -41,7 +41,7 @@ const jsonLd = {
     availability: "https://schema.org/PreOrder",
   },
   description:
-    "Machine-aware Windows performance optimization with 15+ tuning modules, benchmark lab, and BIOS guidance.",
+    "Hardware-based Windows performance optimization with 15+ tuning modules, benchmark lab, and BIOS guidance.",
   url: "https://redcoreos.net/redcore-tuning",
 };
 

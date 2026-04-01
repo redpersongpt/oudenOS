@@ -313,9 +313,9 @@ export function BenchmarkSection() {
             }}
             className="text-[clamp(1.7rem,3.2vw,2.6rem)] font-bold tracking-[-0.03em] leading-[1.1] text-ink-primary"
           >
-            Numbers don&apos;t lie.
+            Before and after.
             <span className="block text-ink-secondary font-normal">
-              Your system does less, so you can do more.
+              Same PC, less garbage running in the background.
             </span>
           </motion.h2>
           <motion.p
