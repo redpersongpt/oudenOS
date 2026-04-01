@@ -358,15 +358,32 @@ export function ReportStep() {
         </motion.div>
       )}
 
-      {/* Trust footer (easter egg: click 5 times = rickroll) */}
+      {/* How to undo */}
+      <motion.div
+        initial={{ opacity: 0, y: 6 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4 }}
+        className="w-full max-w-md rounded-lg border border-white/[0.06] bg-white/[0.02] px-4 py-3"
+      >
+        <p className="text-[11px] font-semibold text-ink mb-2">How to undo changes</p>
+        <div className="space-y-1.5 text-[10px] text-ink-secondary leading-relaxed">
+          <p><span className="text-ink font-medium">System Restore:</span> Windows saved a restore point before we started. Open Start → type "Create a restore point" → System Restore → pick the point from today.</p>
+          <p><span className="text-ink font-medium">Registry:</span> Every registry key we changed has its old value saved. Re-run redcore OS and it will detect previous changes.</p>
+          <p><span className="text-ink font-medium">Services:</span> Open <span className="font-mono text-[9px] bg-white/[0.04] px-1 rounded">services.msc</span> and set any service back to Automatic or Manual.</p>
+          <p><span className="text-ink font-medium">Removed apps:</span> Open Microsoft Store and reinstall anything you want back.</p>
+          <p><span className="text-ink font-medium">Full reset:</span> Settings → System → Recovery → Reset this PC keeps your files but restores all Windows defaults.</p>
+        </div>
+      </motion.div>
+
+      {/* Footer (easter egg: click 5 times = rickroll) */}
       <motion.p
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 0.45 }}
+        transition={{ delay: 0.5 }}
         onClick={handleFooterClick}
         className="text-[10px] text-ink-muted cursor-default select-none"
       >
-        Every change can be undone · Snapshots saved before each action
+        Every change can be undone
       </motion.p>
 
       {/* Optional donation CTA */}
