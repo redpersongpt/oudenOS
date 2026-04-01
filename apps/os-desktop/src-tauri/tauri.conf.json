@@ -1,0 +1,49 @@
+{
+  "$schema": "https://raw.githubusercontent.com/tauri-apps/tauri/dev/crates/tauri-utils/schema.json",
+  "productName": "redcore OS",
+  "version": "0.1.0",
+  "identifier": "net.redcoreos.os",
+  "build": {
+    "devUrl": "http://localhost:5173",
+    "frontendDist": "../dist/renderer"
+  },
+  "app": {
+    "withGlobalTauri": true,
+    "windows": [
+      {
+        "title": "redcore OS",
+        "width": 820,
+        "height": 580,
+        "minWidth": 720,
+        "minHeight": 500,
+        "maxWidth": 1024,
+        "maxHeight": 720,
+        "center": true,
+        "resizable": true,
+        "maximizable": false,
+        "decorations": false,
+        "transparent": false,
+        "visible": false
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["nsis"],
+    "icon": ["icons/icon.ico", "icons/icon.png"],
+    "resources": {
+      "../../../playbooks": "playbooks",
+      "../resources/redcore-icon.png": "redcore-icon.png"
+    },
+    "windows": {
+      "nsis": {
+        "installMode": "perMachine",
+        "installerIcon": "icons/icon.ico",
+        "displayLanguageSelector": false
+      }
+    }
+  }
+}
