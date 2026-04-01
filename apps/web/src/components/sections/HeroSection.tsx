@@ -2,7 +2,7 @@
 
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
-import { ArrowDown, Download } from "lucide-react";
+import { ArrowDown, Download, Github } from "lucide-react";
 
 const ease = [0.16, 1, 0.3, 1] as const;
 
@@ -285,20 +285,19 @@ export function HeroSection() {
                 <Download className="h-4 w-4" />
                 Get redcore
               </motion.button>
-              <motion.button onClick={() => scrollTo("products")}
-                className="inline-flex items-center gap-2 px-4 py-4 text-[0.92rem] font-medium text-ink-tertiary transition-colors hover:text-ink-primary cursor-pointer"
-                whileHover={{ y: -1 }}>
-                See what it does
-                <motion.span animate={{ y: [0, 4, 0] }} transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}>
-                  <ArrowDown className="h-4 w-4" />
-                </motion.span>
-              </motion.button>
+              <motion.a href="https://github.com/redpersongpt/redcore-OS" target="_blank" rel="noopener noreferrer"
+                className="group inline-flex items-center gap-2.5 rounded-xl border border-white/[0.08] bg-white/[0.03] px-6 py-4 text-[0.92rem] font-medium text-ink-secondary transition-all hover:border-white/[0.15] hover:bg-white/[0.06] hover:text-ink-primary cursor-pointer backdrop-blur-sm"
+                whileHover={{ scale: 1.02, y: -2 }} whileTap={{ scale: 0.98 }}>
+                <Github className="h-4 w-4" />
+                <span>View on GitHub</span>
+                <span className="rounded-full bg-accent/15 px-2 py-0.5 text-[0.65rem] font-semibold text-accent">Open Source</span>
+              </motion.a>
             </motion.div>
 
             {/* Trust signals */}
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.1, duration: 1 }}
               className="mt-14 flex flex-wrap items-center gap-x-8 gap-y-3">
-              {["Windows 10 & 11", "100% reversible", "No subscription"].map((t, i) => (
+              {["Open Source", "Windows 10 & 11", "100% reversible", "No subscription"].map((t, i) => (
                 <span key={t} className="flex items-center gap-3 text-[0.7rem] font-mono font-medium tracking-wider text-ink-muted">
                   {i > 0 && <span className="h-3 w-px bg-accent/20" />}
                   {t}
