@@ -98,13 +98,13 @@ export default function Windows11DebloatPage() {
 
           <TrustBlock
             icon={<RotateCcw className="h-5 w-5" />}
-            title="Every change undoable"
+            title="Snapshots included"
             description="Every change is logged with exact registry keys, service states, and file modifications. A system restore point is created before execution. Roll back individual actions or the entire batch from within the tool."
           />
 
           <CTAStrip
             title="Clean up your Windows 11 installation"
-            description="redcore OS scans your system, identifies what to remove, and lets you review everything before applying. Free to use, every change undoable."
+            description="redcore OS scans your system, identifies what to remove, and lets you review everything before applying. Free to use."
             primaryAction={{
               label: "Download redcore OS",
               href: "/downloads",

@@ -180,7 +180,7 @@ export function FinalReviewStep() {
           Ready to Apply
         </h1>
         <p className="mt-1.5 text-[13px] text-ink-secondary">
-          Last check before we start. Everything here can be undone.
+          Last check before we start. We save a snapshot before each change.
         </p>
         <div className="mt-3 flex flex-wrap items-center gap-3">
           <button
@@ -219,7 +219,7 @@ export function FinalReviewStep() {
         transition={{ delay: 0.38 }}
         className="mt-4 text-center text-[11px] text-ink-tertiary"
       >
-        Every change can be undone. Snapshots saved before each one.
+        Snapshots saved before each action. Snapshots saved before each one.
       </motion.p>
     </motion.div>
   );
