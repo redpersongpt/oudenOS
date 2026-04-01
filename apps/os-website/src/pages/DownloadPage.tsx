@@ -309,14 +309,14 @@ export function DownloadPage() {
             className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row"
           >
             <Link
-              to="https://github.com/redpersongpt/redcore-OS/releases"
+              to="https://github.com/redpersongpt/redcoreOS/releases"
               className="text-sm text-neutral-500 underline underline-offset-4 transition-colors hover:text-neutral-300"
             >
               View changelog
             </Link>
             <span className="hidden text-neutral-700 sm:block">/</span>
             <Link
-              to="https://github.com/redpersongpt/redcore-OS/issues"
+              to="https://github.com/redpersongpt/redcoreOS/issues"
               className="text-sm text-neutral-500 underline underline-offset-4 transition-colors hover:text-neutral-300"
             >
               Report an issue

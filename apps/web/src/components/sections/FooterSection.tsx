@@ -17,7 +17,7 @@ const resourceLinks = [
 ];
 
 const companyLinks = [
-  { label: "GitHub (Open Source)",  href: "https://github.com/redpersongpt/redcore-OS", external: true },
+  { label: "GitHub (Open Source)",  href: "https://github.com/redpersongpt/redcoreOS", external: true },
   { label: "Donate",  href: "/donate" },
   { label: "Account", href: "/profile" },
   { label: "Privacy", href: "/privacy" },
