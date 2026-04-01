@@ -117,6 +117,48 @@ VBS, HVCI, Spectre/Meltdown mitigations, Defender control. All default to OFF. A
 See: [`playbooks/security/`](playbooks/security/)
 </details>
 
+### What a playbook action looks like
+
+Every action in redcore OS is a YAML block like this. This is a real action from [`playbooks/privacy/telemetry.yaml`](playbooks/privacy/telemetry.yaml):
+
+```yaml
+- id: privacy.disable-telemetry
+  name: "Set Diagnostic Data to Minimum"
+  description: "Set Windows diagnostic data collection to Security level (minimum)"
+  rationale: "Prevents Windows from collecting usage, browsing, and app telemetry"
+  risk: safe
+  default: true
+  reversible: true
+  requiresReboot: false
+  blockedProfiles: []
+  registryChanges:
+    - hive: HKLM
+      path: "SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection"
+      valueName: AllowTelemetry
+      value: 0
+      valueType: DWord
+    - hive: HKLM
+      path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\DataCollection"
+      valueName: AllowTelemetry
+      value: 0
+      valueType: DWord
+```
+
+Every action follows this structure. `risk` tells you the severity. `reversible` tells you if it can be undone. `registryChanges` shows the exact keys. `blockedProfiles` shows which machine types skip this action. There are no hidden operations beyond what the YAML declares.
+
+## Anti-Cheat Compatibility
+
+If you play competitive games, this matters:
+
+| Anti-Cheat | Default behavior | Risk area | What to watch |
+|-----------|-----------------|-----------|--------------|
+| **Vanguard** (Valorant) | Not affected | VBS/HVCI disable | Vanguard requires VBS on Windows 11. If you manually opt in to disable VBS (expert-only, `risk: high`), Vanguard will refuse to launch. The app warns you before this action. |
+| **Easy Anti-Cheat** (Fortnite, Apex, Rust) | Not affected | None by default | EAC does not depend on VBS, HVCI, or any service that redcore OS touches by default. |
+| **BattlEye** (PUBG, DayZ, R6 Siege) | Not affected | None by default | BattlEye does not depend on any default redcore OS action. |
+| **Kernel anti-cheat in general** | Not affected | Vulnerable Driver Blocklist | Disabling the Vulnerable Driver Blocklist (`risk: high`, expert-only, premium) may interact with kernel-level anti-cheat. This action is off by default and blocked on most profiles. |
+
+If you only use default settings, no anti-cheat is affected. Risk exists only in expert-only actions that you must manually enable with full warnings shown.
+
 ## Machine Profiles
 
 The app classifies your machine and applies a matching profile. Profiles control which actions are available and which are blocked:
@@ -167,6 +209,20 @@ pnpm run dist:desktop
 
 The desktop packaging step expects the Rust service binary to be built first.
 
+## How to Audit Before Running
+
+You do not need to trust this README. You can verify everything yourself:
+
+1. **Read the playbooks.** Open [`playbooks/`](playbooks/) &mdash; every action is a YAML file. No compiled logic, no obfuscation. Each file lists the exact registry keys, services, packages, and scheduled tasks that will be modified.
+
+2. **Check risk levels.** Every action has a `risk` field: `safe`, `low`, `medium`, `high`, or `extreme`. Search for `risk: high` or `risk: extreme` to find the aggressive actions &mdash; they are all `default: false` and `expertOnly: true`.
+
+3. **Check what your profile blocks.** Open [`playbooks/profiles/`](playbooks/profiles/) to see which actions are blocked for your machine type. Work PCs block security tweaks, update disables, and network changes by default.
+
+4. **Inspect in-app before executing.** The review step shows every action with expandable technical details: exact registry paths, service names, risk level, and whether the action is reversible. Nothing executes until you advance past this screen.
+
+5. **Search for any registry key.** If you want to know whether a specific key is touched, search the `playbooks/` directory. If it is not in a YAML file, redcore OS does not touch it.
+
 ## FAQ
 
 **Is this another "custom Windows ISO" project?**
@@ -183,6 +239,9 @@ System-level operations need memory safety and predictable performance. Rust giv
 
 **Why are playbooks YAML and not compiled?**
 So you can read them. Every action, every registry key, every risk level is visible in plain text before you run anything. No trust-me binaries.
+
+**Windows SmartScreen warns me when I run the installer. Is this safe?**
+Yes. SmartScreen flags executables that are new or not signed with an Extended Validation certificate. This is normal for independent open-source software. The warning disappears as the app builds download reputation over time. To verify the download yourself: check the SHA-256 hash published with each release, review the source code in this repo, and read the playbooks to confirm what the app actually does. If you are uncomfortable running unsigned software, you can build from source instead.
 
 ## Security
 
