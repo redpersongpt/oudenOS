@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, User, Github } from "lucide-react";
+import { Menu, X, User } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { Logo } from "@/components/brand/Logo";
