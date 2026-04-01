@@ -185,10 +185,10 @@ function SpinningQuote({ isActive }: { isActive: boolean }) {
       <motion.p
         key={idx}
         initial={{ opacity: 0, y: 6 }}
-        animate={{ opacity: 0.5, y: 0 }}
+        animate={{ opacity: 0.8, y: 0 }}
         exit={{ opacity: 0, y: -6 }}
         transition={{ duration: 0.3, ease: [0.0, 0.0, 0.2, 1.0] }}
-        className="mt-1 text-[10px] italic text-ink-muted select-none"
+        className="mt-1 text-[10px] italic text-ink-secondary select-none"
       >
         {SPINNING_QUOTES[idx]}
       </motion.p>

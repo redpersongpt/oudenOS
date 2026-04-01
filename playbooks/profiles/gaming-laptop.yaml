@@ -1,5 +1,4 @@
-# ─── Profile: Gaming Laptop ───────────────────────────────────────────────────
-# Aggressive gaming optimization but preserves battery/power management,
+# Profile: Gaming Laptop
 # WiFi services, Bluetooth, and laptop-specific hardware services.
 
 profile: gaming_laptop

@@ -1,5 +1,4 @@
-# ─── Shell: Explorer Settings ─────────────────────────────────────────────────
-# File Explorer usability and cleanup improvements.
+# Shell: Explorer Settings
 
 module: shell.explorer
 name: "Explorer Settings"

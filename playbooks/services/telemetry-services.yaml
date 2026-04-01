@@ -1,5 +1,4 @@
-# ─── Services: Telemetry & Diagnostic Services ──────────────────────────────
-# Disables telemetry, diagnostic, and data-collection background services.
+# Services: Telemetry & Diagnostic Services
 
 module: services.telemetry-services
 name: "Telemetry & Diagnostic Services"
@@ -10,7 +9,7 @@ actions:
   - id: services.disable-diagtrack
     name: "Disable Connected User Experiences (DiagTrack)"
     description: "Disable the Connected User Experiences and Telemetry service (DiagTrack) — primary Windows telemetry pipeline"
-    rationale: "DiagTrack is the main telemetry exfiltration service. It collects diagnostic data, usage patterns, and crash reports and uploads them to Microsoft servers. This is the single highest-impact telemetry disable."
+    rationale: "Main telemetry pipeline — collects diagnostic data, usage patterns, and crash reports, uploads to Microsoft"
     risk: safe
     tier: free
     default: true
@@ -25,7 +24,7 @@ actions:
   - id: services.disable-dmwappushservice
     name: "Disable WAP Push Message Routing"
     description: "Disable dmwappushservice — routes telemetry data from DiagTrack to Microsoft"
-    rationale: "dmwappushservice is a secondary telemetry relay. Even with DiagTrack disabled, this service can still attempt data uploads."
+    rationale: "Secondary telemetry relay for DiagTrack, can still upload data independently"
     risk: safe
     tier: free
     default: true
@@ -40,7 +39,7 @@ actions:
   - id: services.disable-sysmain
     name: "Disable SysMain (Superfetch)"
     description: "Disable the SysMain service (formerly Superfetch) which preloads frequently used applications into memory"
-    rationale: "SysMain uses background I/O to preload application data into RAM. On SSD systems, the preloading offers negligible benefit while creating disk contention."
+    rationale: "Preloads app data into RAM via background I/O; negligible benefit on SSD"
     risk: low
     tier: free
     default: true
@@ -71,7 +70,7 @@ actions:
   - id: services.disable-diagnostic-services
     name: "Disable Diagnostic Policy & Execution Services"
     description: "Disable DPS, WdiServiceHost, and WdiSystemHost — background diagnostic data collectors"
-    rationale: "These services collect hardware/software diagnostic data and problem reports. They run continuously and consume CPU cycles for diagnostics most users never see."
+    rationale: "Continuously collect hardware/software diagnostic data and problem reports"
     risk: low
     tier: free
     default: true
@@ -91,7 +90,7 @@ actions:
   - id: services.disable-pca-service
     name: "Disable Program Compatibility Assistant"
     description: "Disable PcaSvc — monitors program execution and detects compatibility issues"
-    rationale: "PCA intercepts every program launch to check compatibility. On modern systems with modern software, this adds overhead with no benefit."
+    rationale: "Intercepts every program launch to check compatibility; no benefit on modern systems"
     risk: low
     tier: free
     default: true
@@ -107,7 +106,7 @@ actions:
   - id: services.disable-tiledatamodelsvc
     name: "Disable Tile Data Model Server"
     description: "Disable tiledatamodelsvc — indexes Start Menu tile data"
-    rationale: "Legacy service for Live Tiles in Start Menu. With Live Tiles deprecated in Windows 11, this service is pure overhead."
+    rationale: "Legacy Live Tiles indexer, deprecated in Windows 11"
     risk: safe
     tier: free
     default: true
@@ -122,7 +121,7 @@ actions:
   - id: services.disable-wisvc
     name: "Disable Windows Insider Service"
     description: "Disable wisvc — Windows Insider Program flight/preview management"
-    rationale: "Unless enrolled in Windows Insider, this service runs idle but keeps background connections for preview builds"
+    rationale: "Keeps background connections for Windows Insider preview builds when not enrolled"
     risk: safe
     tier: free
     default: true
@@ -137,7 +136,7 @@ actions:
   - id: services.disable-retaildemo
     name: "Disable Retail Demo Service"
     description: "Disable RetailDemo — retail store demo experience management"
-    rationale: "Only used in retail store display mode. Has no function on consumer or enterprise machines."
+    rationale: "Only used in retail store display mode"
     risk: safe
     tier: free
     default: true
@@ -152,7 +151,7 @@ actions:
   - id: services.disable-map-services
     name: "Disable Map Download & Broker"
     description: "Disable MapsBroker and lfsvc — offline map data download and geolocation"
-    rationale: "MapsBroker downloads map data in the background. lfsvc provides geolocation. Neither needed on desktop systems."
+    rationale: "Downloads offline map data and provides geolocation; unused on desktops"
     risk: safe
     tier: free
     default: true

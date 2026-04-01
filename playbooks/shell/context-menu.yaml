@@ -1,5 +1,4 @@
-# ─── Shell: Context Menu Cleanup ──────────────────────────────────────────────
-# Context menu restoration, clutter removal, and shell extension cleanup.
+# Shell: Context Menu Cleanup
 
 module: shell.context-menu
 name: "Context Menu Cleanup"

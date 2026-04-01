@@ -1,27 +1,12 @@
 
-interface RedcoreAPI {
-  service: {
-    call: <T = unknown>(method: string, params?: Record<string, unknown>) => Promise<T>;
-    status: () => Promise<{ running: boolean; mode: string }>;
-  };
-}
-
-function getAPI(): RedcoreAPI | null {
-  const win = window as unknown as { redcore?: RedcoreAPI };
-  return win.redcore ?? null;
-}
+import { platform } from "./platform";
 
 export async function serviceCall<T = unknown>(
   method: string,
   params?: Record<string, unknown>
 ): Promise<{ ok: true; data: T } | { ok: false; error: string }> {
-  const api = getAPI();
-  if (!api) {
-    return { ok: false, error: "No API available" };
-  }
-
   try {
-    const result = await api.service.call<unknown>(method, params ?? {});
+    const result = await platform().service.call<unknown>(method, params ?? {});
 
     const r = result as Record<string, unknown>;
     if (r?.__serviceUnavailable || r?.__serviceError) {
@@ -35,10 +20,8 @@ export async function serviceCall<T = unknown>(
 }
 
 export async function isServiceRunning(): Promise<boolean> {
-  const api = getAPI();
-  if (!api) return false;
   try {
-    const status = await api.service.status();
+    const status = await platform().service.status();
     return status.running;
   } catch {
     return false;
