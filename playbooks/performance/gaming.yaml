@@ -1,5 +1,4 @@
-# ─── Performance: Gaming Optimizations ────────────────────────────────────────
-# Gaming-specific system tuning: CSRSS priority, MMCSS depth, NTFS, process
+# Performance: Gaming Optimizations
 # scheduling, and multimedia class scheduler hardening.
 
 module: performance.gaming

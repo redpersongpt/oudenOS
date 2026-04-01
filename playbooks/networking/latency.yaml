@@ -1,5 +1,4 @@
-# ─── Networking: Latency Optimization ─────────────────────────────────────────
-# Disables Nagle's algorithm and configures RSS queues.
+# Networking: Latency Optimization
 
 module: networking.latency
 name: "Network Latency Optimization"
@@ -10,10 +9,10 @@ actions:
   - id: network.disable-nagle
     name: "Disable Nagle's Algorithm (TCPNoDelay)"
     description: "Disable Nagle's algorithm and set TCP acknowledgement frequency to 1, sending small packets immediately instead of buffering them"
-    rationale: "Nagle's algorithm buffers small TCP packets to reduce overhead, but introduces up to 200ms of delay for small game packets."
+    rationale: "Nagle buffers small TCP packets. Disabling may reduce game packet delay by 1-10ms on LAN. Minimal effect over internet."
     risk: low
     tier: premium
-    default: true
+    default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 3

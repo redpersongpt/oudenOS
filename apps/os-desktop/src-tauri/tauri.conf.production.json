@@ -1,0 +1,9 @@
+{
+  "bundle": {
+    "resources": {
+      "../../../services/os-service/target/release/redcore-os-service.exe": "redcore-os-service.exe",
+      "../../../playbooks": "playbooks",
+      "../resources/redcore-icon.png": "redcore-icon.png"
+    }
+  }
+}

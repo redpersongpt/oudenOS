@@ -1,5 +1,4 @@
-# ─── Security: Windows Defender Control ───────────────────────────────────────
-# Expert-only: Disable or reduce Windows Defender real-time protection.
+# Security: Windows Defender Control
 # This is the single most impactful security/performance tradeoff on Windows.
 
 module: security.defender-control

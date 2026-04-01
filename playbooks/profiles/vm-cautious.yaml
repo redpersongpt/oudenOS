@@ -1,5 +1,4 @@
-# ─── Profile Override: VM / Cautious ─────────────────────────────────────────
-# VMs lack real hardware — no GPU, no AppX store, limited drivers.
+# Profile Override: VM / Cautious
 
 profile: vm_cautious
 label: "Virtual Machine"

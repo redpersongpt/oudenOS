@@ -1,5 +1,4 @@
-# ─── Privacy: AI Features ────────────────────────────────────────────────────
-# Comprehensive AI feature control from the redcore internal research set.
+# Privacy: AI Features
 
 module: privacy.ai
 name: "AI Feature Control"

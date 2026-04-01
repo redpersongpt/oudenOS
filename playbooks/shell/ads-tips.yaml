@@ -1,5 +1,4 @@
-# ─── Shell: Ads, Tips & Suggestions Removal ──────────────────────────────────
-# Comprehensive ad/suggestion/notification removal from the redcore internal cleanup set.
+# Shell: Ads, Tips & Suggestions Removal
 
 module: shell.ads
 name: "Ads, Tips & Suggestions Removal"
