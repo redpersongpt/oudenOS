@@ -24,10 +24,10 @@ const config: Record<
   },
   low: {
     label: "Low",
-    dot:   "bg-green-400",
-    text:  "text-green-400",
-    bg:    "bg-green-900/20",
-    border: "border-green-800/50",
+    dot:   "bg-yellow-400",
+    text:  "text-yellow-400",
+    bg:    "bg-yellow-900/20",
+    border: "border-yellow-800/50",
   },
   medium: {
     label: "Medium",
@@ -38,10 +38,10 @@ const config: Record<
   },
   high: {
     label: "High",
-    dot:   "bg-brand-400",
-    text:  "text-brand-400",
-    bg:    "bg-brand-950/60",
-    border: "border-brand-800",
+    dot:   "bg-red-400",
+    text:  "text-red-400",
+    bg:    "bg-red-950/60",
+    border: "border-red-800",
   },
   extreme: {
     label: "Extreme",
