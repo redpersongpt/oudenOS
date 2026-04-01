@@ -92,7 +92,7 @@ export function FinalCTASection() {
             transition={{ delay: 0.4, duration: 0.6 }}
             className="mt-10 font-mono text-[0.65rem] text-ink-muted tracking-wider"
           >
-            Windows 10 & 11 · No subscription · Every change undoable
+            Windows 10 & 11 · No subscription
           </motion.p>
         </motion.div>
       </div>
