@@ -305,7 +305,7 @@ export function HeroSection() {
             {/* Trust signals */}
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.1, duration: 1 }}
               className="mt-14 flex flex-wrap items-center gap-x-8 gap-y-3">
-              {["Open Source", "Windows 10 & 11", "100% reversible", "No subscription"].map((t, i) => (
+              {["Open Source", "Windows 10 & 11", "Every change undoable", "No subscription"].map((t, i) => (
                 <span key={t} className="flex items-center gap-3 text-[0.7rem] font-mono font-medium tracking-wider text-ink-muted">
                   {i > 0 && <span className="h-3 w-px bg-accent/20" />}
                   {t}
