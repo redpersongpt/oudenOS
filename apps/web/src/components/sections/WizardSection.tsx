@@ -60,9 +60,9 @@ const philosophy: PhilosophyItem[] = [
 // Risk badge styles
 
 const riskConfig: Record<ActionItem["risk"], { text: string; bg: string }> = {
-  SAFE: { text: "text-brand-400", bg: "bg-brand-500/10" },
-  LOW: { text: "text-brand-400", bg: "bg-brand-500/10" },
-  MEDIUM: { text: "text-brand-400", bg: "bg-brand-500/10" },
+  SAFE:   { text: "text-green-400",  bg: "bg-green-500/10"  },
+  LOW:    { text: "text-yellow-400", bg: "bg-yellow-500/10" },
+  MEDIUM: { text: "text-amber-400",  bg: "bg-amber-500/10"  },
 };
 
 // Sub-components
