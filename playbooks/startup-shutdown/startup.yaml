@@ -1,5 +1,4 @@
-# ─── Startup-Shutdown: Startup Optimization ───────────────────────────────────
-# Disables background apps, Cortana, automatic maintenance, gamebar presence, cloud notifications.
+# Startup-Shutdown: Startup Optimization
 
 module: startup-shutdown.startup
 name: "Startup Optimization"

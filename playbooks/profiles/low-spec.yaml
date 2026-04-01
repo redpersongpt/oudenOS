@@ -1,5 +1,4 @@
-# ─── Profile: Low Spec System ─────────────────────────────────────────────────
-# Lightweight tuning for low-spec systems, blocking heavy CPU actions.
+# Profile: Low Spec System
 
 profile: low-spec
 name: "Low Spec System"

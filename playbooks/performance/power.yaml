@@ -1,5 +1,4 @@
-# ─── Performance: Power Configuration ─────────────────────────────────────────
-# High Performance plan, disable fast startup, hibernation, USB suspend, PCIe PM.
+# Performance: Power Configuration
 
 module: performance.power
 name: "Power Configuration"

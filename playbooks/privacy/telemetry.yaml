@@ -1,5 +1,4 @@
-# ─── Privacy: Telemetry Reduction ────────────────────────────────────────────
-# Disables Windows diagnostic data collection and telemetry services.
+# Privacy: Telemetry Reduction
 
 module: privacy.telemetry
 name: "Telemetry Reduction"
@@ -87,7 +86,7 @@ actions:
   - id: privacy.powershell-telemetry-optout
     name: "Opt Out of PowerShell Telemetry"
     description: "Set POWERSHELL_TELEMETRY_OPTOUT environment variable"
-    rationale: "PowerShell sends telemetry data to Microsoft by default. Setting this environment variable prevents it."
+    rationale: "PowerShell sends usage telemetry to Microsoft by default"
     risk: safe
     tier: free
     default: true
@@ -106,7 +105,7 @@ actions:
   - id: privacy.disable-typing-insights
     name: "Disable Typing Insights"
     description: "Disable typing analytics collection"
-    rationale: "Stops typing pattern analysis that tracks keystrokes for Microsoft's AI improvement."
+    rationale: "Tracks keystroke patterns for Microsoft AI improvement"
     risk: safe
     tier: free
     default: true
@@ -125,7 +124,7 @@ actions:
   - id: privacy.disable-msrt
     name: "Disable MSRT Windows Update Delivery"
     description: "Prevent Malicious Software Removal Tool from being offered via Windows Update"
-    rationale: "MSRT scans consume CPU resources during Windows Update cycles. Manual security scanning is preferred on tuned systems."
+    rationale: "Runs full system scans during Windows Update cycles, consuming CPU"
     risk: moderate
     tier: free
     default: false

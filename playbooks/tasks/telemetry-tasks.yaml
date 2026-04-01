@@ -1,5 +1,4 @@
-# ─── Tasks: Telemetry & Diagnostic Tasks ──────────────────────────────────────
-# Disables telemetry, diagnostic, and data collection scheduled tasks.
+# Tasks: Telemetry & Diagnostic Tasks
 
 module: tasks.telemetry-tasks
 name: "Telemetry Task Disabling"

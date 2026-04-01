@@ -1,5 +1,4 @@
-# ─── Security: Update Control ─────────────────────────────────────────────────
-# Controls Windows Update behavior: disable, prevent auto-restart, defer feature updates.
+# Security: Update Control
 
 module: security.update-control
 name: "Windows Update Control"
