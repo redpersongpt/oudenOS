@@ -261,6 +261,13 @@ pub fn load_playbook(playbook_dir: &Path) -> anyhow::Result<LoadedPlaybook> {
 
         if !is_builtin {
             for module_path in &phase.modules {
+                if module_path.contains("..") {
+                    tracing::error!(
+                        path = module_path.as_str(),
+                        "Playbook module path contains '..', skipping (possible path traversal)"
+                    );
+                    continue;
+                }
                 let full_path = playbook_dir.join(module_path);
                 match load_module(&full_path) {
                     Ok(module) => {

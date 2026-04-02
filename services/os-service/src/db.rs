@@ -36,7 +36,7 @@ impl Database {
         #[cfg(windows)]
         {
             let appdata = std::env::var("LOCALAPPDATA")
-                .unwrap_or_else(|_| "C:\\ProgramData".to_string());
+                .unwrap_or_else(|_| "C:\\Users\\Default\\AppData\\Local".to_string());
             PathBuf::from(appdata).join("redcore-os")
         }
         #[cfg(not(windows))]

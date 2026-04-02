@@ -147,6 +147,11 @@ impl ServiceBridge {
             .flush()
             .map_err(|e| format!("Failed to flush service stdin: {e}"))?;
 
+        if self.buffered.len() > 50 {
+            let min_id = id.saturating_sub(50);
+            self.buffered.retain(|&k, _| k > min_id);
+        }
+
         if let Some(result) = self.buffered.remove(&id) {
             return result;
         }
