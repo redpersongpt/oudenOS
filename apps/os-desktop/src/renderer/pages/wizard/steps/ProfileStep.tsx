@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Monitor, Briefcase, ChevronDown, Gamepad2, Laptop, Server, Cpu, AlertTriangle, Check } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { useWizardStore } from "@/stores/wizard-store";
 import type { DetectedProfile } from "@/stores/wizard-store";
 
-function useCountUp(target: number, duration = 1100): number {
+const ND_EASE = [0.25, 0.1, 0.25, 1] as const;
+
+function useCountUp(target: number, duration = 1000): number {
   const [v, setV] = useState(0);
   useEffect(() => {
     if (target === 0) { setV(0); return; }
@@ -12,8 +14,7 @@ function useCountUp(target: number, duration = 1100): number {
     const start = performance.now();
     const tick = (now: number) => {
       const t = Math.min((now - start) / duration, 1);
-      const ease = 1 - Math.pow(1 - t, 3); // ease-out cubic
-      setV(Math.round(target * ease));
+      setV(Math.round(target * t));
       if (t < 1) raf = requestAnimationFrame(tick);
       else setV(target);
     };
@@ -24,11 +25,11 @@ function useCountUp(target: number, duration = 1100): number {
 }
 
 const PROFILE_OPTIONS = [
-  { id: "gaming_desktop", label: "Gaming Desktop", icon: Gamepad2, desc: "Aggressive performance, max FPS" },
-  { id: "office_laptop", label: "Office Laptop", icon: Laptop, desc: "Battery-safe, keep productivity tools" },
-  { id: "work_pc", label: "Work PC", icon: Briefcase, desc: "Preserve enterprise services, cautious" },
-  { id: "vm_cautious", label: "Virtual Machine", icon: Server, desc: "Skip hardware tweaks, minimal changes" },
-  { id: "low_spec_system", label: "Low Spec System", icon: Cpu, desc: "Lightweight cleanup, reduce overhead" },
+  { id: "gaming_desktop", label: "GAMING DESKTOP", desc: "AGGRESSIVE PERFORMANCE, MAX FPS" },
+  { id: "office_laptop", label: "OFFICE LAPTOP", desc: "BATTERY-SAFE, KEEP PRODUCTIVITY" },
+  { id: "work_pc", label: "WORK PC", desc: "PRESERVE ENTERPRISE SERVICES" },
+  { id: "vm_cautious", label: "VIRTUAL MACHINE", desc: "SKIP HARDWARE TWEAKS" },
+  { id: "low_spec_system", label: "LOW SPEC", desc: "LIGHTWEIGHT CLEANUP" },
 ] as const;
 
 export function ProfileStep() {
@@ -37,8 +38,7 @@ export function ProfileStep() {
   const signals = Array.isArray(p?.signals) ? p.signals : [];
   const [showOverride, setShowOverride] = useState(false);
   const [isOverridden, setIsOverridden] = useState(false);
-
-  const displayConfidence = useCountUp(p?.confidence ?? 0, 1100);
+  const displayConfidence = useCountUp(p?.confidence ?? 0, 1000);
 
   useEffect(() => {
     setStepReady("profile", Boolean(p));
@@ -46,96 +46,108 @@ export function ProfileStep() {
 
   if (!p) {
     return (
-      <div className="flex h-full items-center justify-center">
-        <p className="text-[12px] text-ink-tertiary">No profile detected.</p>
+      <div className="flex h-full items-center justify-center bg-nd-bg">
+        <p className="nd-label text-nd-text-disabled">NO PROFILE DETECTED</p>
       </div>
     );
   }
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 6 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -6 }}
-      transition={{ duration: 0.22, ease: [0.0, 0.0, 0.2, 1.0] }}
-      className="flex h-full flex-col items-center justify-center gap-5 px-8"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3, ease: ND_EASE }}
+      className="flex h-full flex-col items-center justify-center gap-6 px-8 bg-nd-bg"
     >
+      {/* Machine name label */}
       <motion.div
-        initial={{ scale: 0.8, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ type: "spring", stiffness: 300, damping: 18 }}
-        className="flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-500/10 border border-brand-500/20"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.1, duration: 0.3, ease: ND_EASE }}
+        className="nd-label-sm text-nd-text-disabled"
       >
-        <Monitor className="h-6 w-6 text-brand-400" />
+        {p.machineName}
       </motion.div>
 
-      <div className="text-center">
-        <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-ink-tertiary">{p.machineName}</p>
-        <h2 className="mt-1 text-[20px] font-bold text-ink">{p.label}</h2>
-      </div>
+      {/* Profile name — Doto display */}
+      <motion.h2
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.15, duration: 0.3, ease: ND_EASE }}
+        className="font-display text-heading text-nd-text-display"
+      >
+        {p.label.toUpperCase()}
+      </motion.h2>
 
-      {/* Confidence with count-up — hidden when user overrides profile */}
+      {/* Confidence — Nothing segmented bar */}
       {!isOverridden && (
-      <div className="w-full max-w-xs">
-        <div className="flex justify-between text-[10px]">
-          <span className="text-ink-tertiary">Confidence</span>
-          <motion.span
-            className="font-mono-metric text-brand-400"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.1 }}
-          >
-            {displayConfidence}%
-          </motion.span>
-        </div>
-        <div className="mt-1 relative h-1 overflow-hidden rounded-full bg-white/[0.06]">
-          <motion.div
-            initial={{ width: 0 }}
-            animate={{ width: `${p.confidence}%` }}
-            transition={{ duration: 1.1, ease: [0.0, 0.0, 0.2, 1.0], delay: 0.1 }}
-            className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-brand-600 to-brand-400"
-          />
-        </div>
-      </div>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2, duration: 0.3, ease: ND_EASE }}
+          className="w-full max-w-xs"
+        >
+          <div className="flex justify-between mb-1">
+            <span className="nd-label text-nd-text-secondary">CONFIDENCE</span>
+            <span className="font-mono text-label tracking-label text-brand-500">
+              {displayConfidence}%
+            </span>
+          </div>
+          {/* Segmented bar — 10 segments */}
+          <div className="flex gap-0.5">
+            {Array.from({ length: 10 }).map((_, i) => (
+              <motion.div
+                key={i}
+                initial={{ scaleX: 0 }}
+                animate={{ scaleX: 1 }}
+                transition={{ delay: 0.3 + i * 0.04, duration: 0.2, ease: ND_EASE }}
+                className={`flex-1 h-1 origin-left ${
+                  i < Math.round((p.confidence ?? 0) / 10) ? "bg-brand-500" : "bg-nd-border-subtle"
+                }`}
+              />
+            ))}
+          </div>
+        </motion.div>
       )}
 
       {/* Manual override indicator */}
       {isOverridden && (
         <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="rounded-full bg-brand-500/10 border border-brand-500/20 px-3 py-1"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="nd-label text-brand-500"
         >
-          <span className="text-[10px] font-medium text-brand-400">Manual selection</span>
+          [MANUAL SELECTION]
         </motion.div>
       )}
 
-      {/* Signal chips — staggered entrance */}
+      {/* Signal chips — Nothing style */}
       <div className="flex flex-wrap justify-center gap-1.5">
         {signals.map((s, i) => (
           <motion.span
             key={s}
-            initial={{ opacity: 0, scale: 0.82 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.15 + i * 0.07, type: "spring", stiffness: 400, damping: 20 }}
-            className="rounded-full bg-white/[0.04] border border-white/[0.06] px-2.5 py-1 text-[10px] font-medium text-ink-secondary"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 + i * 0.05, duration: 0.2, ease: ND_EASE }}
+            className="border border-nd-border bg-nd-surface px-3 py-1 rounded-sm font-mono text-label tracking-label text-nd-text-secondary"
           >
-            {s}
+            {s.toUpperCase()}
           </motion.span>
         ))}
       </div>
 
+      {/* Work PC warning */}
       {p.isWorkPc && (
         <motion.div
-          initial={{ opacity: 0, y: 4 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="flex items-start gap-2.5 rounded-lg border border-amber-500/20 bg-amber-500/[0.04] px-3 py-2.5 max-w-sm"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3, duration: 0.3, ease: ND_EASE }}
+          className="flex items-start gap-3 border border-warning-400/20 bg-warning-400/[0.04] px-4 py-3 rounded-sm max-w-sm"
         >
-          <Briefcase className="mt-0.5 h-3.5 w-3.5 shrink-0 text-amber-400" />
+          <div className="w-3 h-0.5 bg-warning-400 mt-1.5 shrink-0" />
           <div>
-            <p className="text-[11px] font-semibold text-amber-300">Work PC Detected</p>
-            <p className="mt-0.5 text-[10px] leading-relaxed text-amber-400/70">
+            <p className="nd-label text-warning-400">WORK PC DETECTED</p>
+            <p className="mt-1 text-caption text-nd-text-secondary">
               Business-critical services preserved. Aggressive optimizations blocked.
             </p>
           </div>
@@ -146,30 +158,30 @@ export function ProfileStep() {
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 0.5 }}
+        transition={{ delay: 0.5, duration: 0.3, ease: ND_EASE }}
         className="w-full max-w-xs"
       >
         <button
           onClick={() => setShowOverride(!showOverride)}
-          className="flex items-center gap-1.5 mx-auto text-[10px] text-ink-muted hover:text-ink-tertiary transition-colors cursor-pointer"
+          className="flex items-center gap-2 mx-auto nd-label-sm text-nd-text-disabled hover:text-nd-text-secondary transition-colors duration-150 ease-nd"
         >
-          <span>Not right? Switch profile</span>
-          <motion.div animate={{ rotate: showOverride ? 180 : 0 }} transition={{ duration: 0.2 }}>
+          <span>SWITCH PROFILE</span>
+          <motion.div animate={{ rotate: showOverride ? 180 : 0 }} transition={{ duration: 0.2, ease: ND_EASE }}>
             <ChevronDown className="h-3 w-3" />
           </motion.div>
         </button>
+
         <AnimatePresence>
           {showOverride && (
             <motion.div
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.2, ease: [0.0, 0.0, 0.2, 1.0] }}
+              transition={{ duration: 0.25, ease: ND_EASE }}
               className="overflow-hidden"
             >
-              <div className="mt-2 flex flex-col gap-1">
+              <div className="mt-3 flex flex-col gap-px">
                 {PROFILE_OPTIONS.map((opt) => {
-                  const Icon = opt.icon;
                   const isActive = p.id === opt.id;
                   return (
                     <button
@@ -177,37 +189,28 @@ export function ProfileStep() {
                       onClick={() => {
                         if (isActive) return;
                         const overridden: DetectedProfile = {
-                          ...p,
-                          id: opt.id,
-                          label: opt.label,
-                          isWorkPc: opt.id === "work_pc",
-                          confidence: p.confidence,
-                          signals: p.id === opt.id ? p.signals : [...p.signals, "Manual override"],
+                          ...p, id: opt.id, label: opt.label.split(" ").map(w => w[0] + w.slice(1).toLowerCase()).join(" "),
+                          isWorkPc: opt.id === "work_pc", confidence: p.confidence,
+                          signals: [...p.signals, "Manual override"],
                         };
                         setDetectedProfile(overridden);
                         setIsOverridden(true);
                         setShowOverride(false);
                       }}
-                      className={[
-                        "flex items-center gap-2.5 rounded-lg px-3 py-2 text-left transition-all cursor-pointer",
-                        isActive
-                          ? "bg-brand-500/10 border border-brand-500/25"
-                          : "bg-white/[0.02] border border-white/[0.04] hover:bg-white/[0.04]",
-                      ].join(" ")}
+                      className={`flex items-center justify-between px-4 py-2.5 text-left transition-colors duration-150 ease-nd border-b border-nd-border-subtle ${
+                        isActive ? "bg-nd-surface-raised" : "bg-nd-bg hover:bg-nd-surface"
+                      }`}
                     >
-                      <Icon className={`h-3.5 w-3.5 shrink-0 ${isActive ? "text-brand-400" : "text-ink-tertiary"}`} />
-                      <div className="flex-1 min-w-0">
-                        <p className={`text-[11px] font-medium ${isActive ? "text-brand-400" : "text-ink-secondary"}`}>{opt.label}</p>
-                        <p className="text-[9px] text-ink-muted truncate">{opt.desc}</p>
+                      <div>
+                        <p className={`font-mono text-caption tracking-label ${isActive ? "text-brand-500" : "text-nd-text-secondary"}`}>
+                          {opt.label}
+                        </p>
+                        <p className="nd-label-sm text-nd-text-disabled mt-0.5">{opt.desc}</p>
                       </div>
-                      {isActive && <Check className="h-3 w-3 shrink-0 text-brand-400" />}
+                      {isActive && <div className="w-3 h-0.5 bg-brand-500" />}
                     </button>
                   );
                 })}
-                <p className="mt-1 text-[9px] text-ink-muted/60 text-center flex items-center justify-center gap-1">
-                  <AlertTriangle className="h-2.5 w-2.5" />
-                  Override affects which optimizations are safe to apply
-                </p>
               </div>
             </motion.div>
           )}
