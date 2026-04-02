@@ -1,10 +1,12 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, AlertTriangle } from "lucide-react";
 import { LogoHero } from "@/components/brand/Logo";
 import { Button } from "@/components/ui/Button";
 import { useWizardStore } from "@/stores/wizard-store";
 import { platform } from "@/lib/platform";
+
+const RICKROLL_URL = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
 
 const FEATURES = [
   "Kill bloatware",
@@ -29,6 +31,16 @@ export function WelcomeStep() {
   const [adminState, setAdminState] = useState<{ checked: boolean; isAdmin: boolean; platform: string }>({
     checked: false, isAdmin: true, platform: "unknown",
   });
+  const [logoClicks, setLogoClicks] = useState(0);
+
+  const handleLogoClick = useCallback(() => {
+    const next = logoClicks + 1;
+    setLogoClicks(next);
+    if (next >= 7) {
+      setLogoClicks(0);
+      platform().shell.openExternal(RICKROLL_URL);
+    }
+  }, [logoClicks]);
   const [taglineIdx, setTaglineIdx] = useState(0);
 
   useEffect(() => {
@@ -139,7 +151,8 @@ export function WelcomeStep() {
 
         {/* Logo */}
         <motion.div
-          className="select-none relative z-10"
+          onClick={handleLogoClick}
+          className="cursor-default select-none relative z-10"
           initial={{ scale: 0.6, opacity: 0, rotate: -10 }}
           animate={{ scale: 1, opacity: 1, rotate: 0 }}
           transition={{ type: "spring", stiffness: 200, damping: 14, delay: 0.1 }}
