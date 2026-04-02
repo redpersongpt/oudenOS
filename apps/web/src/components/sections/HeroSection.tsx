@@ -51,10 +51,6 @@ function DotGrid() {
 
 function TechnicalComposition() {
   const size = 96;
-  const stroke = 1.5;
-  const r = Math.round(size * 0.22);
-  const dot = Math.max(2, Math.round(size * 0.08));
-  const half = size / 2;
 
   return (
     <div className="relative flex items-center justify-center w-[320px] h-[320px]">
@@ -82,17 +78,22 @@ function TechnicalComposition() {
         <div className="absolute bottom-[20%] right-[20%] w-px h-3 bg-[#E8254B]/50 bottom-0" style={{ bottom: "20%" }} />
       </div>
 
-      {/* Central mark */}
+      {/* Central mark — open ring + accent dot */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.3, ease: "easeOut", delay: 0.2 }}
         className="relative"
       >
-        <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} fill="none" aria-hidden="true">
-          <rect x={stroke / 2} y={stroke / 2} width={size - stroke} height={size - stroke} stroke="#333333" strokeWidth={stroke} fill="none" />
-          <circle cx={half} cy={half} r={r} stroke="#E8254B" strokeWidth={stroke} fill="none" />
-          <circle cx={half} cy={half} r={dot} fill="#E8254B" />
+        <svg width={size} height={size} viewBox="0 0 100 100" fill="none" aria-hidden="true">
+          <path
+            d="M 82.14 66.08 A 32 32 0 1 1 77.1 39.9"
+            stroke="#E8E8E8"
+            strokeWidth={8}
+            strokeLinecap="round"
+            fill="none"
+          />
+          <circle cx="77.1" cy="39.9" r={4.5} fill="#E8254B" />
         </svg>
       </motion.div>
 
