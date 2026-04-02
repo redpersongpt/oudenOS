@@ -6,7 +6,7 @@ const isDev = process.env.NODE_ENV !== 'production';
 const sendgridApiKey = process.env.SENDGRID_API_KEY;
 const fromEmail = process.env.FROM_EMAIL ?? 'noreply@ouden.cc';
 const appUrl = process.env.APP_URL ?? 'http://localhost:5173';
-const brandColor = '#D71921';
+const brandColor = '#D42A45';
 const bg = '#000000';
 const cardBg = '#111111';
 const border = '#222222';
@@ -85,12 +85,12 @@ function wrap(content: string): string {
 <html>
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width"></head>
 <body style="margin:0;padding:32px;background:
-  radial-gradient(circle at top left, rgba(232,37,75,0.16), transparent 34%),
+  radial-gradient(circle at top left, rgba(212,42,69,0.16), transparent 34%),
   radial-gradient(circle at top right, rgba(255,72,106,0.08), transparent 28%),
   ${bg};font-family:'Plus Jakarta Sans',Inter,system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
   <div style="max-width:620px;margin:0 auto;">
     <div style="padding:0 6px 16px;font-size:14px;font-weight:800;letter-spacing:.12em;text-transform:lowercase;color:${text};">redcore</div>
-    <div style="background:linear-gradient(180deg,rgba(232,37,75,0.20),rgba(44,44,49,0.96) 30%);border-radius:28px;padding:1px;">
+    <div style="background:linear-gradient(180deg,rgba(212,42,69,0.20),rgba(44,44,49,0.96) 30%);border-radius:28px;padding:1px;">
       <div style="background:${cardBg};border-radius:27px;padding:34px;border:1px solid ${border};box-shadow:0 28px 80px rgba(0,0,0,0.34);color:${text};">
         ${content}
       </div>
@@ -121,7 +121,7 @@ export async function sendVerificationEmail(
     <p style="color:${muted};margin:0;font-size:15px;line-height:1.75;">Use the button below to verify your account.</p>
     <div style="text-align:left;margin:24px 0 0;">
       <a href="${verifyUrl}"
-         style="display:inline-flex;align-items:center;justify-content:center;background:linear-gradient(180deg,#ff6b70 0%,${brandColor} 100%);color:#ffffff;text-decoration:none;padding:12px 20px;border-radius:12px;font-size:14px;font-weight:800;letter-spacing:.01em;box-shadow:0 10px 24px rgba(232,37,75,0.22);">
+         style="display:inline-flex;align-items:center;justify-content:center;background:linear-gradient(180deg,#ff6b70 0%,${brandColor} 100%);color:#ffffff;text-decoration:none;padding:12px 20px;border-radius:12px;font-size:14px;font-weight:800;letter-spacing:.01em;box-shadow:0 10px 24px rgba(212,42,69,0.22);">
         Verify email
       </a>
     </div>
@@ -145,7 +145,7 @@ export async function sendPasswordResetEmail(
     <p style="color:${muted};margin:0;font-size:15px;line-height:1.75;">Use the button below to set a new password.</p>
     <div style="text-align:left;margin:24px 0 0;">
       <a href="${resetUrl}"
-         style="display:inline-flex;align-items:center;justify-content:center;background:linear-gradient(180deg,#ff6b70 0%,${brandColor} 100%);color:#ffffff;text-decoration:none;padding:12px 20px;border-radius:12px;font-size:14px;font-weight:800;letter-spacing:.01em;box-shadow:0 10px 24px rgba(232,37,75,0.22);">
+         style="display:inline-flex;align-items:center;justify-content:center;background:linear-gradient(180deg,#ff6b70 0%,${brandColor} 100%);color:#ffffff;text-decoration:none;padding:12px 20px;border-radius:12px;font-size:14px;font-weight:800;letter-spacing:.01em;box-shadow:0 10px 24px rgba(212,42,69,0.22);">
         Reset password
       </a>
     </div>

@@ -64,7 +64,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
                     ? {
                         y: 6,
                         scale: 0.75,
-                        color: error ? "#D71921" : focused ? "#D71921" : "#6a6a76",
+                        color: error ? "#D42A45" : focused ? "#D42A45" : "#6a6a76",
                       }
                     : { y: 18, scale: 1, color: "#6a6a76" }
                 }

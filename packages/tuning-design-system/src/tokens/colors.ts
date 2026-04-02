@@ -4,8 +4,8 @@
 export const colors = {
   red: {
     50: "#FFF5F5", 100: "#FFE0E0", 200: "#FFC0C0", 300: "#FF8888",
-    400: "#E82029", 500: "#D71921", 600: "#B5141B", 700: "#8E0F15",
-    800: "#6A0B10", 900: "#46070A", 950: "#2D0A0C",
+    400: "#E03050", 500: "#D42A45", 600: "#B52238", 700: "#8E1A2C",
+    800: "#6A0B10", 900: "#46070A", 950: "#2D0A10",
   },
 
   dark: {
@@ -62,27 +62,27 @@ export const colors = {
     textSecondary: "#999999",
     textTertiary: "#666666",
     textInverse: "#000000",
-    textBrand: "#D71921",
+    textBrand: "#D42A45",
 
     border: "#333333",
     borderSubtle: "#222222",
     borderStrong: "#444444",
-    borderFocus: "#D71921",
+    borderFocus: "#D42A45",
 
-    primaryDefault: "#D71921",
-    primaryHover: "#E82029",
-    primaryActive: "#B5141B",
-    primaryDisabled: "#2D0A0C",
+    primaryDefault: "#D42A45",
+    primaryHover: "#E03050",
+    primaryActive: "#B52238",
+    primaryDisabled: "#2D0A10",
 
     success: "#4A9E5C",
     warning: "#D4A843",
-    error: "#D71921",
+    error: "#D42A45",
     info: "#5B9BF6",
 
     riskSafe: "#4A9E5C",
     riskLow: "#4A9E5C",
     riskMedium: "#D4A843",
-    riskHigh: "#E8254B",
+    riskHigh: "#D42A45",
     riskExtreme: "#FF3040",
   },
 } as const;

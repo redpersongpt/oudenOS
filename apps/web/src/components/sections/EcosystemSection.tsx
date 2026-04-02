@@ -44,10 +44,10 @@ function FeatureCard({ icon: Icon, title, body, delay, inView }: {
       animate={inView ? { opacity: 1, y: 0 } : {}}
       transition={{ delay, duration: 0.6, ease }}
       whileHover={{ y: -4, transition: { duration: 0.2 } }}
-      className="group bg-[var(--surface)] p-7 lg:p-8 cursor-default"
+      className="group border border-[var(--color-border)] rounded-lg p-7 lg:p-8 cursor-default bg-transparent"
     >
-      <div className="mb-4 flex h-9 w-9 items-center justify-center rounded-lg bg-[var(--accent)]/10">
-        <Icon className="h-4 w-4 text-[var(--accent)]" />
+      <div className="mb-4 flex h-9 w-9 items-center justify-center rounded-lg border border-[var(--color-border-subtle)]">
+        <Icon className="h-4 w-4 text-[var(--color-ink-tertiary)]" />
       </div>
       <h3 className="text-[0.88rem] font-semibold text-[var(--text-primary)] mb-2 group-hover:text-white transition-colors">
         {title}
@@ -70,7 +70,7 @@ function EcosystemDiagram({ inView }: { inView: boolean }) {
       pills: ["Stock install", "Untouched data", "Your apps"],
       desc: "Left unchanged — Ouden only changes what needs changing",
       borderStyle: "border-border/40",
-      bgStyle: "bg-[var(--black)]/60",
+      bgStyle: "bg-transparent",
       delay: 0.1,
     },
     {
@@ -78,9 +78,9 @@ function EcosystemDiagram({ inView }: { inView: boolean }) {
       badge: "Free",
       badgeStyle: "text-[var(--text-secondary)] bg-ink-muted/20 border border-border",
       pills: ["150+ actions", "8 profiles", "Privacy", "Rollback", "Work-safe"],
-      desc: "Ouden layer — debloat, optimize, clean, protect",
+      desc: "Debloat, optimize, clean, protect",
       borderStyle: "border-border",
-      bgStyle: "bg-surface/80",
+      bgStyle: "bg-transparent",
       delay: 0.25,
     },
     {
@@ -88,9 +88,9 @@ function EcosystemDiagram({ inView }: { inView: boolean }) {
       badge: "$12.99 one-time",
       badgeStyle: "text-[var(--accent)] bg-[var(--accent)]/10 border border-accent/20",
       pills: ["CPU tuning", "GPU latency", "Benchmark lab", "BIOS guidance", "Timer resolution"],
-      desc: "Deep optimization layer — adds benchmark-validated hardware tuning on top of OudenOS",
+      desc: "Hardware-level optimization on top of OudenOS",
       borderStyle: "border-accent/40",
-      bgStyle: "bg-gradient-to-b from-[#2a2229]/80 to-surface/60",
+      bgStyle: "bg-transparent",
       delay: 0.4,
     },
   ];
@@ -126,13 +126,7 @@ function EcosystemDiagram({ inView }: { inView: boolean }) {
             animate={inView ? { opacity: 1, x: 0 } : {}}
             transition={{ delay: layer.delay, duration: 0.7, ease }}
           >
-            <div className={`relative rounded-lg border ${layer.borderStyle} ${layer.bgStyle} p-6 backdrop-blur-sm overflow-hidden`}>
-                {/* Subtle glow on top layer */}
-                {i === 0 && (
-                  <div className="pointer-events-none absolute -top-16 right-0 h-32 w-64 rounded-full opacity-[0.08]"
-                    style={{ background: "radial-gradient(circle, #E8254B, transparent 60%)" }} />
-                )}
-
+            <div className={`relative rounded-lg border ${layer.borderStyle} ${layer.bgStyle} p-6 overflow-hidden`}>
               <div className="flex flex-col sm:flex-row sm:items-center gap-4">
                 {/* Layer info */}
                 <div className="flex-1 min-w-0">
@@ -229,17 +223,14 @@ function TuningSection() {
 
   return (
     <section id="tuning" ref={ref} className="relative py-28 lg:py-36">
-      <div className="pointer-events-none absolute right-0 top-1/2 -translate-y-1/2 h-[500px] w-[500px] rounded-full opacity-[0.03]"
-        style={{ background: "radial-gradient(circle, #E8254B, transparent 65%)" }} />
-
       <div className="relative mx-auto max-w-[1100px] px-6 lg:px-12">
         <SectionHeader
           label="Ouden.Tuning"
-          title="Guided machine optimization with benchmark-driven validation."
+          title="Hardware-level optimization with benchmark validation."
           subtitle="Every step wizard-led, every change reversible."
           inView={inView}
         />
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-border rounded-lg overflow-hidden">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {tuningFeatures.map((f, i) => (
             <FeatureCard key={f.title} {...f} delay={0.05 * i} inView={inView} />
           ))}
@@ -257,9 +248,6 @@ function OSSection() {
 
   return (
     <section id="os" ref={ref} className="relative py-28 lg:py-36">
-      <div className="pointer-events-none absolute left-0 top-1/2 -translate-y-1/2 h-[500px] w-[500px] rounded-full opacity-[0.03]"
-        style={{ background: "radial-gradient(circle, #E8254B, transparent 65%)" }} />
-
       <div className="relative mx-auto max-w-[1100px] px-6 lg:px-12">
         <SectionHeader
           label="OudenOS"
@@ -267,7 +255,7 @@ function OSSection() {
           subtitle="Scans your PC, shows you exactly what it'll change, and lets you undo everything."
           inView={inView}
         />
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-border rounded-lg overflow-hidden">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {osFeatures.map((f, i) => (
             <FeatureCard key={f.title} {...f} delay={0.05 * i} inView={inView} />
           ))}
@@ -285,13 +273,6 @@ function EcosystemIntro() {
 
   return (
     <section ref={ref} className="relative py-32 lg:py-40 overflow-hidden">
-      {/* Background texture */}
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-surface/30 to-transparent" />
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[500px] w-[900px] rounded-full opacity-[0.03]"
-          style={{ background: "radial-gradient(ellipse, #E8254B, transparent 55%)" }} />
-      </div>
-
       <div className="relative mx-auto max-w-[1100px] px-6 lg:px-12">
         {/* Header */}
         <div className="mb-20 text-center">
@@ -309,8 +290,7 @@ function EcosystemIntro() {
             transition={{ delay: 0.1, duration: 0.8, ease }}
             className="text-[clamp(1.8rem,3.5vw,2.8rem)] font-bold tracking-[-0.035em] leading-[1.08] text-[var(--text-primary)]"
           >
-            Two products.
-            <span className="block text-[var(--text-secondary)] font-normal">One system.</span>
+            Two products. One system.
           </motion.h2>
           <motion.p
             initial={{ opacity: 0, y: 16 }}
@@ -318,8 +298,7 @@ function EcosystemIntro() {
             transition={{ delay: 0.2, duration: 0.7, ease }}
             className="mt-6 mx-auto max-w-[480px] text-[0.95rem] leading-[1.75] text-[var(--text-secondary)]"
           >
-            OS kills the bloat and fixes the defaults. Tuning squeezes
-            more FPS out of your actual hardware. Use one or both.
+            OudenOS handles the cleanup. Ouden.Tuning goes deeper.
           </motion.p>
         </div>
 

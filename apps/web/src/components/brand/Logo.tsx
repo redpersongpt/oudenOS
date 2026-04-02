@@ -70,7 +70,7 @@ function OudenMark({ size }: { size: number }) {
         fill="none"
       />
       {/* Accent dot at gap terminus */}
-      <circle cx={dotX} cy={dotY} r={dotR} fill="#E8254B" />
+      <circle cx={dotX} cy={dotY} r={dotR} fill="#D42A45" />
     </svg>
   );
 }
