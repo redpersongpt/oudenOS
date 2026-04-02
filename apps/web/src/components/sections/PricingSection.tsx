@@ -13,7 +13,7 @@ export function PricingSection() {
   return (
     <section id="pricing" ref={ref} className="relative py-36 lg:py-48">
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute left-1/2 top-0 -translate-x-1/2 h-[600px] w-[800px] rounded-full opacity-[0.04]" style={{ background: "radial-gradient(ellipse, #D71921, transparent 55%)" }} />
+        <div className="absolute left-1/2 top-0 -translate-x-1/2 h-[600px] w-[800px] rounded-full opacity-[0.04]" style={{ background: "radial-gradient(ellipse, #E8254B, transparent 55%)" }} />
       </div>
 
       <div className="relative mx-auto max-w-[1100px] px-6 lg:px-12">
@@ -81,7 +81,7 @@ export function PricingSection() {
                 href="https://github.com/redpersongpt/redcoreOS/releases/latest"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2.5 rounded-lg bg-[#D71921] px-6 py-4 text-[0.88rem] font-semibold text-white w-full justify-center hover:bg-[#B5141B] transition-colors"
+                className="inline-flex items-center gap-2.5 rounded-lg bg-[#E8254B] px-6 py-4 text-[0.88rem] font-semibold text-white w-full justify-center hover:bg-[#C41E3E] transition-colors"
                 whileHover={{ scale: 1.01 }}
                 whileTap={{ scale: 0.98 }}
               >
@@ -108,8 +108,8 @@ export function PricingSection() {
             className="relative rounded-lg border-2 border-accent/40 bg-gradient-to-b from-[#2a2229] to-surface p-9 lg:p-10 overflow-hidden shadow-xl shadow-accent/10"
           >
             {/* Accent glow */}
-            <div className="pointer-events-none absolute -top-24 -right-24 h-[220px] w-[220px] rounded-full opacity-[0.1]" style={{ background: "radial-gradient(circle, #D71921, transparent 60%)" }} />
-            <div className="pointer-events-none absolute -bottom-16 -left-16 h-[150px] w-[150px] rounded-full opacity-[0.05]" style={{ background: "radial-gradient(circle, #D71921, transparent 60%)" }} />
+            <div className="pointer-events-none absolute -top-24 -right-24 h-[220px] w-[220px] rounded-full opacity-[0.1]" style={{ background: "radial-gradient(circle, #E8254B, transparent 60%)" }} />
+            <div className="pointer-events-none absolute -bottom-16 -left-16 h-[150px] w-[150px] rounded-full opacity-[0.05]" style={{ background: "radial-gradient(circle, #E8254B, transparent 60%)" }} />
 
             {/* Badge */}
             <motion.div
