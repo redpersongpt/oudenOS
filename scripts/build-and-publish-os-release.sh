@@ -46,23 +46,13 @@ if ! command -v cargo >/dev/null 2>&1; then
   fi
 fi
 
-if ! command -v cargo >/dev/null 2>&1; then
-  echo "cargo is required" >&2
-  exit 1
+need_cmd cargo
+
+# Tauri CLI required for building the desktop installer
+if ! cargo tauri --version >/dev/null 2>&1; then
+  echo "==> Installing Tauri CLI"
+  cargo install tauri-cli --version "^2" --locked
 fi
-
-need_cmd xvfb-run
-
-CACHE_ROOT="${CACHE_ROOT:-$(mktemp -d "${TMPDIR:-/tmp}/redcore-os-release-cache.XXXXXX")}"
-WINEPREFIX="${WINEPREFIX:-$(mktemp -d "${TMPDIR:-/tmp}/redcore-os-release-wine.XXXXXX")}"
-ELECTRON_CACHE="${ELECTRON_CACHE:-$CACHE_ROOT/electron}"
-ELECTRON_BUILDER_CACHE="${ELECTRON_BUILDER_CACHE:-$CACHE_ROOT/electron-builder}"
-export WINEPREFIX ELECTRON_CACHE ELECTRON_BUILDER_CACHE
-
-cleanup() {
-  rm -rf "$CACHE_ROOT" "$WINEPREFIX"
-}
-trap cleanup EXIT
 
 check_free_space_mb
 
@@ -94,7 +84,9 @@ VERSION="$(node -p "require('./apps/os-desktop/package.json').version")"
 VERSION_TAG="v${VERSION}-${COMMIT_SHA}"
 RELEASE_BASENAME="redcore-os-${VERSION}-${COMMIT_SHA}.exe"
 RELEASE_PATH="$RELEASES_DIR/$RELEASE_BASENAME"
-INSTALLER_PATH="$APP_DIR/dist/installers/$STABLE_NAME"
+# Tauri NSIS output — find the actual file after build
+TAURI_NSIS_DIR="$APP_DIR/src-tauri/target/release/bundle/nsis"
+INSTALLER_STABLE_PATH="$APP_DIR/dist/installers/$STABLE_NAME"
 WIZARD_RELEASE_BASENAME="redcore-os-wizard-playbook-${VERSION}-${COMMIT_SHA}.zip"
 WIZARD_RELEASE_PATH="$WIZARD_RELEASE_ROOT/$WIZARD_RELEASE_BASENAME"
 WIZARD_BUILD_ROOT="$ROOT_DIR/artifacts/os-wizard-package"
@@ -122,13 +114,22 @@ mkdir -p target/release
 cp target/x86_64-pc-windows-gnu/release/redcore-os-service.exe target/release/redcore-os-service.exe
 popd >/dev/null
 
-echo "==> Building desktop app"
+echo "==> Building desktop app (Tauri)"
 pushd "$APP_DIR" >/dev/null
 bash "$ROOT_DIR/scripts/sync-desktop-brand-assets.sh"
 pnpm build
-rm -f dist/installers/"$STABLE_NAME"
-xvfb-run -a pnpm exec electron-builder --win --x64 --publish never -c.win.signAndEditExecutable=false
+cargo tauri build --config src-tauri/tauri.conf.production.json
 popd >/dev/null
+
+# Copy Tauri NSIS output to stable name
+TAURI_NSIS_EXE="$(find "$TAURI_NSIS_DIR" -name '*.exe' -print -quit 2>/dev/null || true)"
+if [ -z "$TAURI_NSIS_EXE" ] || [ ! -f "$TAURI_NSIS_EXE" ]; then
+  echo "Tauri NSIS installer not found in $TAURI_NSIS_DIR" >&2
+  exit 1
+fi
+mkdir -p "$(dirname "$INSTALLER_STABLE_PATH")"
+cp "$TAURI_NSIS_EXE" "$INSTALLER_STABLE_PATH"
+echo "==> Installer: $(basename "$TAURI_NSIS_EXE") -> $STABLE_NAME"
 
 echo "==> Building wizard package"
 node "$ROOT_DIR/scripts/build-os-wizard-package.mjs" \
@@ -143,8 +144,8 @@ pnpm --dir "$APP_DIR" exec tsx "$ROOT_DIR/scripts/build-os-apbx-package.ts" \
   --out-dir "$APBX_BUILD_ROOT" \
   --package-name "$APBX_STABLE_NAME"
 
-if [ ! -f "$INSTALLER_PATH" ]; then
-  echo "Installer not produced at $INSTALLER_PATH" >&2
+if [ ! -f "$INSTALLER_STABLE_PATH" ]; then
+  echo "Installer not produced at $INSTALLER_STABLE_PATH" >&2
   exit 1
 fi
 
@@ -158,13 +159,13 @@ if [ ! -f "$APBX_BUILD_PATH" ]; then
   exit 1
 fi
 
-SIZE_BYTES="$(stat -c '%s' "$INSTALLER_PATH")"
+SIZE_BYTES="$(stat -c '%s' "$INSTALLER_STABLE_PATH")"
 if [ "$SIZE_BYTES" -lt "$MIN_BYTES" ]; then
   echo "Installer too small: $SIZE_BYTES bytes" >&2
   exit 1
 fi
 
-SHA256="$(sha256sum "$INSTALLER_PATH" | awk '{print $1}')"
+SHA256="$(sha256sum "$INSTALLER_STABLE_PATH" | awk '{print $1}')"
 WIZARD_SHA256="$(sha256sum "$WIZARD_BUILD_PATH" | awk '{print $1}')"
 WIZARD_SIZE_BYTES="$(stat -c '%s' "$WIZARD_BUILD_PATH")"
 APBX_SHA256="$(sha256sum "$APBX_BUILD_PATH" | awk '{print $1}')"
@@ -177,8 +178,8 @@ if [ -f "$RELEASE_ROOT/$STABLE_NAME" ]; then
   fi
 fi
 
-cp "$INSTALLER_PATH" "$RELEASE_PATH"
-cp "$INSTALLER_PATH" "$RELEASE_ROOT/$STABLE_NAME"
+cp "$INSTALLER_STABLE_PATH" "$RELEASE_PATH"
+cp "$INSTALLER_STABLE_PATH" "$RELEASE_ROOT/$STABLE_NAME"
 cp "$WIZARD_BUILD_PATH" "$WIZARD_RELEASE_PATH"
 cp "$WIZARD_BUILD_PATH" "$WIZARD_RELEASE_ROOT/$WIZARD_STABLE_NAME"
 cp "$APBX_BUILD_PATH" "$APBX_RELEASE_PATH"
