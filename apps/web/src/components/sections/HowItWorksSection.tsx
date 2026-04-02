@@ -58,7 +58,7 @@ export function HowItWorksSection() {
           <p className="font-mono text-[0.6rem] font-medium uppercase tracking-[0.16em] text-[var(--color-ink-secondary)] mb-5">
             The process
           </p>
-          <h2 className="text-[clamp(1.6rem,3vw,2.4rem)] font-bold tracking-[-0.03em] leading-[1.12] text-[var(--text-primary)]">
+          <h2 className="text-[clamp(1.6rem,3vw,2.4rem)] font-bold tracking-[-0.03em] leading-[1.12] text-[var(--text-primary)]" style={{ fontFamily: "var(--font-display)" }}>
             Five steps. Full control.
           </h2>
           <p className="mt-5 text-[0.95rem] leading-[1.75] text-[var(--text-secondary)]">

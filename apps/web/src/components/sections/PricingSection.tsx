@@ -23,7 +23,7 @@ export function PricingSection() {
           transition={{ duration: 0.7, ease }}
           className="text-center mb-20"
         >
-          <h2 className="text-[clamp(2rem,4vw,3rem)] font-bold tracking-[-0.035em] leading-[1.05] text-[var(--text-primary)]">
+          <h2 className="text-[clamp(2rem,4vw,3rem)] font-bold tracking-[-0.035em] leading-[1.05] text-[var(--text-primary)]" style={{ fontFamily: "var(--font-display)" }}>
             One price. No tricks.
           </h2>
           <p className="mt-5 text-[1rem] leading-[1.75] text-[var(--text-secondary)] max-w-[440px] mx-auto">
