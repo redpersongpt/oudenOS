@@ -365,7 +365,8 @@ fn install_catalog_entry(app_id: &str, entry: &CatalogEntry) -> anyhow::Result<I
 #[cfg(windows)]
 fn installer_cache_dir() -> anyhow::Result<PathBuf> {
     let base = std::env::var("LOCALAPPDATA")
-        .unwrap_or_else(|_| "C:\\ProgramData".to_string());
+        .or_else(|_| std::env::var("USERPROFILE").map(|p| format!("{}\\AppData\\Local", p)))
+        .unwrap_or_else(|_| ".".to_string());
     let dir = PathBuf::from(base).join("redcore-os").join("downloads");
     std::fs::create_dir_all(&dir)?;
     Ok(dir)

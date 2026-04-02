@@ -308,7 +308,18 @@ async fn dispatch(
             };
 
             let action_data = if let Some(data) = params.get("actionData") {
-                data.clone()
+                // Caller-supplied actionData: strip powerShellCommands to prevent script injection.
+                // PowerShell commands are only safe when sourced from trusted bundled YAML playbooks.
+                let mut safe_data = data.clone();
+                if let Some(obj) = safe_data.as_object_mut() {
+                    if obj.remove("powerShellCommands").is_some() {
+                        tracing::warn!(
+                            action_id = action_id,
+                            "Stripped powerShellCommands from caller-supplied actionData"
+                        );
+                    }
+                }
+                safe_data
             } else {
                 let playbook_dir = resolve_playbook_dir()
                     .unwrap_or_else(playbook::default_playbook_dir);
@@ -1140,10 +1151,10 @@ fn store_plan(
     preset: &str,
     plan: &serde_json::Value,
 ) -> anyhow::Result<String> {
-    let id = plan["id"]
-        .as_str()
-        .unwrap_or(&uuid::Uuid::new_v4().to_string())
-        .to_string();
+    let id = {
+        let fallback = uuid::Uuid::new_v4().to_string();
+        plan["id"].as_str().unwrap_or(&fallback).to_string()
+    };
     let now = chrono::Utc::now().to_rfc3339();
     let cid: Option<&str> = classification_id;
     let data = serde_json::to_string(plan)?;
