@@ -5,6 +5,13 @@
 
 use std::process::Command;
 
+#[cfg(windows)]
+use std::os::windows::process::CommandExt;
+
+/// Windows flag to prevent console window from flashing during PowerShell execution.
+#[cfg(windows)]
+const CREATE_NO_WINDOW: u32 = 0x08000000;
+
 pub struct PsResult {
     pub success: bool,
     pub stdout: String,
@@ -36,19 +43,29 @@ pub fn validate_safe_arg<'a>(s: &'a str, context: &str) -> anyhow::Result<&'a st
     Ok(s)
 }
 
+/// Build a PowerShell command with platform-appropriate flags.
+fn build_ps_command(script: &str) -> Command {
+    let mut cmd = Command::new("powershell.exe");
+    cmd.args([
+        "-NoProfile",
+        "-NonInteractive",
+        "-WindowStyle", "Hidden",
+        "-ExecutionPolicy", "Bypass",
+        "-Command", script,
+    ]);
+
+    #[cfg(windows)]
+    cmd.creation_flags(CREATE_NO_WINDOW);
+
+    cmd
+}
+
 /// Execute a PowerShell command and return the result.
 /// All commands are logged to the audit trail.
 pub fn execute(script: &str) -> anyhow::Result<PsResult> {
     tracing::info!("PowerShell exec: {}", &script[..script.len().min(200)]);
 
-    let output = Command::new("powershell.exe")
-        .args([
-            "-NoProfile",
-            "-NonInteractive",
-            "-ExecutionPolicy", "Bypass",
-            "-Command", script,
-        ])
-        .output()?;
+    let output = build_ps_command(script).output()?;
 
     let result = PsResult {
         success: output.status.success(),
@@ -73,16 +90,21 @@ pub fn execute(script: &str) -> anyhow::Result<PsResult> {
 pub fn execute_elevated(script: &str, minsudo_path: &str) -> anyhow::Result<PsResult> {
     tracing::info!("PowerShell elevated exec: {}", &script[..script.len().min(200)]);
 
-    let output = Command::new(minsudo_path)
-        .args([
-            "--TrustedInstaller",
-            "powershell.exe",
-            "-NoProfile",
-            "-NonInteractive",
-            "-ExecutionPolicy", "Bypass",
-            "-Command", script,
-        ])
-        .output()?;
+    let mut cmd = Command::new(minsudo_path);
+    cmd.args([
+        "--TrustedInstaller",
+        "powershell.exe",
+        "-NoProfile",
+        "-NonInteractive",
+        "-WindowStyle", "Hidden",
+        "-ExecutionPolicy", "Bypass",
+        "-Command", script,
+    ]);
+
+    #[cfg(windows)]
+    cmd.creation_flags(CREATE_NO_WINDOW);
+
+    let output = cmd.output()?;
 
     Ok(PsResult {
         success: output.status.success(),
