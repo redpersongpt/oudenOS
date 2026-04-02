@@ -12,6 +12,12 @@ use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::mpsc;
 use std::time::Duration;
 
+#[cfg(windows)]
+use std::os::windows::process::CommandExt;
+
+#[cfg(windows)]
+const CREATE_NO_WINDOW: u32 = 0x08000000;
+
 const REQUEST_TIMEOUT: Duration = Duration::from_secs(30);
 
 pub struct ServiceBridge {
@@ -56,6 +62,9 @@ impl ServiceBridge {
         cmd.stdin(Stdio::piped())
             .stdout(Stdio::piped())
             .stderr(Stdio::piped());
+
+        #[cfg(windows)]
+        cmd.creation_flags(CREATE_NO_WINDOW);
 
         if let Some(ref pb_dir) = playbook_dir {
             cmd.env("REDCORE_PLAYBOOK_DIR", pb_dir);
@@ -209,11 +218,12 @@ impl Drop for ServiceBridge {
 fn detect_admin() -> bool {
     #[cfg(windows)]
     {
-        std::process::Command::new("net")
-            .arg("session")
+        let mut cmd = std::process::Command::new("net");
+        cmd.arg("session")
             .stdout(Stdio::null())
-            .stderr(Stdio::null())
-            .status()
+            .stderr(Stdio::null());
+        cmd.creation_flags(CREATE_NO_WINDOW);
+        cmd.status()
             .map(|s| s.success())
             .unwrap_or(false)
     }
