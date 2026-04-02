@@ -39,35 +39,35 @@ function ContrastBar({ row, index }: { row: ContrastRow; index: number }) {
         ease: easing.enter,
         delay: 0.15 + index * 0.1,
       }}
-      className="flex rounded-lg border border-border-default overflow-hidden"
+      className="flex rounded-lg border border-[var(--border)] overflow-hidden"
       role="listitem"
     >
       {/* Before */}
-      <div className="flex-1 flex items-center gap-3 bg-surface px-5 py-4">
+      <div className="flex-1 flex items-center gap-3 bg-[var(--surface)] px-5 py-4">
         <X
           size={14}
-          className="text-ink-tertiary flex-shrink-0"
+          className="text-[var(--text-disabled)] flex-shrink-0"
           aria-hidden="true"
         />
-        <span className="text-[14px] text-ink-tertiary">{row.before}</span>
+        <span className="text-[14px] text-[var(--text-disabled)]">{row.before}</span>
       </div>
 
       {/* Divider + arrow */}
       <div
-        className="flex items-center justify-center w-10 bg-surface-overlay"
+        className="flex items-center justify-center w-10 bg-[var(--surface-raised)]"
         aria-hidden="true"
       >
         <ArrowRight size={12} className="text-brand-500" />
       </div>
 
       {/* After */}
-      <div className="flex-1 flex items-center gap-3 bg-surface-raised px-5 py-4">
+      <div className="flex-1 flex items-center gap-3 bg-[var(--surface-raised)] px-5 py-4">
         <Check
           size={14}
           className="text-brand-500 flex-shrink-0"
           aria-hidden="true"
         />
-        <span className="text-[14px] text-ink-primary">{row.after}</span>
+        <span className="text-[14px] text-[var(--text-primary)]">{row.after}</span>
       </div>
     </motion.div>
   );
@@ -100,7 +100,7 @@ export function WhyRedcoreSection() {
             <motion.h2
               id="why-heading"
               variants={staggerChild}
-              className="text-4xl md:text-5xl font-bold text-ink-primary leading-[1.1]"
+              className="text-4xl md:text-5xl font-bold text-[var(--text-primary)] leading-[1.1]"
             >
               Most tools guess.
             </motion.h2>
@@ -109,12 +109,12 @@ export function WhyRedcoreSection() {
               variants={staggerChild}
               className="text-4xl md:text-5xl font-bold leading-[1.1] mt-1"
             >
-              <span className="text-ink-primary">We understand.</span>
+              <span className="text-[var(--text-primary)]">We understand.</span>
             </motion.p>
 
             <motion.p
               variants={staggerChild}
-              className="mt-8 text-[16px] leading-relaxed text-ink-secondary max-w-md"
+              className="mt-8 text-[16px] leading-relaxed text-[var(--text-secondary)] max-w-md"
             >
               Generic optimization tools apply the same aggressive tweaks to
               every machine &mdash; no hardware profiling, no safety net, no
@@ -145,7 +145,7 @@ export function WhyRedcoreSection() {
             ease: easing.enter,
             delay: 0.8,
           }}
-          className="mt-16 text-[17px] text-ink-secondary italic max-w-3xl"
+          className="mt-16 text-[17px] text-[var(--text-secondary)] italic max-w-3xl"
         >
           redcore understands your machine before it touches a single setting.
         </motion.p>

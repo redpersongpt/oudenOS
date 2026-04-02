@@ -160,16 +160,16 @@ function StepNode({
         <div className="flex items-center gap-2 lg:flex-col lg:gap-1">
           <Icon
             size={16}
-            className="text-ink-secondary flex-shrink-0"
+            className="text-[var(--text-secondary)] flex-shrink-0"
             aria-hidden="true"
           />
-          <span className="text-[15px] font-medium text-ink-primary whitespace-nowrap">
+          <span className="text-[15px] font-medium text-[var(--text-primary)] whitespace-nowrap">
             {step.title}
           </span>
         </div>
       </div>
 
-      <p className="text-[13px] text-ink-secondary mt-1.5 hidden lg:block max-w-[120px]">
+      <p className="text-[13px] text-[var(--text-secondary)] mt-1.5 hidden lg:block max-w-[120px]">
         {step.description}
       </p>
 
@@ -203,19 +203,19 @@ function ModuleCard({ module }: { module: TuningModule }) {
   return (
     <motion.div
       variants={staggerChild}
-      className="rounded-lg bg-surface border border-border-default p-5 transition-colors duration-200 hover:border-border-strong"
+      className="rounded-lg bg-[var(--surface)] border border-[var(--border)] p-5 transition-colors duration-200 hover:border-[var(--border-visible)]"
     >
       <div className="flex items-center gap-2.5 mb-2">
         <Icon
           size={18}
-          className="text-ink-tertiary flex-shrink-0"
+          className="text-[var(--text-disabled)] flex-shrink-0"
           aria-hidden="true"
         />
-        <h4 className="text-[15px] font-medium text-ink-primary">
+        <h4 className="text-[15px] font-medium text-[var(--text-primary)]">
           {module.title}
         </h4>
       </div>
-      <p className="text-[13px] text-ink-secondary leading-relaxed">
+      <p className="text-[13px] text-[var(--text-secondary)] leading-relaxed">
         {module.description}
       </p>
     </motion.div>
@@ -262,14 +262,14 @@ export function TuningSection() {
           <motion.h2
             id="tuning-heading"
             variants={staggerChild}
-            className="text-4xl md:text-5xl font-bold tracking-tight text-ink-primary"
+            className="text-4xl md:text-5xl font-bold tracking-tight text-[var(--text-primary)]"
           >
             Guided optimization.
           </motion.h2>
 
           <motion.p
             variants={staggerChild}
-            className="mt-5 max-w-2xl text-[17px] leading-relaxed text-ink-secondary"
+            className="mt-5 max-w-2xl text-[17px] leading-relaxed text-[var(--text-secondary)]"
           >
             From first scan to final benchmark. Every step validated, every
             change reversible.
@@ -317,14 +317,14 @@ export function TuningSection() {
                   </div>
                   <Icon
                     size={16}
-                    className="text-ink-secondary flex-shrink-0"
+                    className="text-[var(--text-secondary)] flex-shrink-0"
                     aria-hidden="true"
                   />
                   <div>
-                    <span className="text-[15px] font-medium text-ink-primary">
+                    <span className="text-[15px] font-medium text-[var(--text-primary)]">
                       {step.title}
                     </span>
-                    <p className="text-[13px] text-ink-secondary">
+                    <p className="text-[13px] text-[var(--text-secondary)]">
                       {step.description}
                     </p>
                   </div>
@@ -375,14 +375,14 @@ export function TuningSection() {
 
             <div>
               <div className="flex flex-wrap items-center gap-3 mb-2">
-                <h3 className="text-lg font-semibold text-ink-primary">
+                <h3 className="text-lg font-semibold text-[var(--text-primary)]">
                   BIOS Guidance
                 </h3>
                 <span className="inline-flex items-center rounded-full bg-amber-500/10 border border-amber-500/20 px-3 py-0.5 text-[11px] font-medium uppercase tracking-wider text-amber-500">
                   Expert Mode
                 </span>
               </div>
-              <p className="text-[14px] text-ink-secondary leading-relaxed max-w-2xl">
+              <p className="text-[14px] text-[var(--text-secondary)] leading-relaxed max-w-2xl">
                 Profile-aware BIOS recommendations for enthusiasts &mdash;
                 voltage, timing, and firmware settings tailored to your exact
                 hardware.

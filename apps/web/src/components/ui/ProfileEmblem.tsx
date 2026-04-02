@@ -81,7 +81,7 @@ export function ProfileEmblem({
     >
       {/* Icon circle */}
       <div
-        className="flex items-center justify-center rounded-full bg-surface-overlay border transition-all duration-300"
+        className="flex items-center justify-center rounded-full bg-[var(--surface-raised)] border transition-all duration-300"
         style={{
           width: sz.container,
           height: sz.container,

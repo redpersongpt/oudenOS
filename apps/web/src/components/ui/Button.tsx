@@ -27,11 +27,11 @@ interface ButtonProps {
 
 const variantStyles: Record<ButtonVariant, string> = {
   primary: "btn-primary text-white font-semibold",
-  secondary: "btn-secondary text-ink-primary font-medium",
+  secondary: "btn-secondary text-[var(--text-primary)] font-medium",
   ghost: [
-    "bg-transparent text-ink-secondary font-medium",
+    "bg-transparent text-[var(--text-secondary)] font-medium",
     "border-none",
-    "hover:text-ink-primary",
+    "hover:text-[var(--text-primary)]",
     "transition-colors duration-200",
   ].join(" "),
 };

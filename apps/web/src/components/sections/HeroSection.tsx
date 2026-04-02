@@ -80,7 +80,7 @@ function Pill({ label, angle, r, i }: { label: string; angle: number; r: number;
         className="pill-float rounded-full border border-accent/15 bg-surface/90 backdrop-blur-md px-4 py-1.5 whitespace-nowrap shadow-lg shadow-black/20"
         style={{ animationDelay: `${i * 0.4}s` }}
       >
-        <span className="text-[10px] sm:text-[11px] font-semibold tracking-wide text-ink-primary/80">
+        <span className="text-[10px] sm:text-[11px] font-semibold tracking-wide text-[var(--text-primary)]/80">
           {label}
         </span>
       </div>
@@ -252,14 +252,14 @@ export function HeroSection() {
               transition={{ delay: 0.05, duration: 0.6, ease }}
               className="mb-7 inline-flex items-center gap-2.5"
             >
-              <span className="h-px w-8 bg-accent" />
-              <span className="font-mono text-[0.6rem] font-medium uppercase tracking-[0.18em] text-accent">
+              <span className="h-px w-8 bg-[var(--accent)]" />
+              <span className="font-mono text-[0.6rem] font-medium uppercase tracking-[0.18em] text-[var(--accent)]">
                 Windows Optimization
               </span>
             </motion.div>
 
             <h1 style={{ fontSize: "clamp(2.8rem, 5.5vw, 5.2rem)" }} className="font-bold tracking-[-0.045em] leading-[0.96]">
-              <motion.span className="block text-ink-primary"
+              <motion.span className="block text-[var(--text-primary)]"
                 initial={{ opacity: 0, y: 60, filter: "blur(12px)" }}
                 animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
                 transition={{ delay: 0.1, duration: 1, ease }}>
@@ -275,10 +275,10 @@ export function HeroSection() {
 
             <motion.p initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.55, duration: 0.8, ease }}
-              className="mt-8 max-w-[480px] text-[1.05rem] leading-[1.8] text-ink-secondary">
+              className="mt-8 max-w-[480px] text-[1.05rem] leading-[1.8] text-[var(--text-secondary)]">
               Fed up with bloated debloaters and broken scripts?
               redcore gives Windows the clean pass it should have had.
-              <span className="block mt-3 text-[0.9rem] leading-[1.7] text-ink-tertiary">
+              <span className="block mt-3 text-[0.9rem] leading-[1.7] text-[var(--text-disabled)]">
                 We all want better FPS. Nobody wants a broken install.
               </span>
             </motion.p>
@@ -287,18 +287,18 @@ export function HeroSection() {
               transition={{ delay: 0.8, duration: 0.7, ease }}
               className="mt-10 flex flex-col sm:flex-row items-start gap-4">
               <motion.button onClick={() => scrollTo("pricing")}
-                className="group inline-flex items-center gap-2.5 rounded-lg bg-accent px-8 py-4 text-[0.92rem] font-semibold text-white cursor-pointer relative overflow-hidden shadow-lg shadow-accent/25"
+                className="group inline-flex items-center gap-2.5 rounded-lg bg-[var(--accent)] px-8 py-4 text-[0.92rem] font-semibold text-white cursor-pointer relative overflow-hidden shadow-lg shadow-accent/25"
                 whileHover={{ scale: 1.02, y: -2 }} whileTap={{ scale: 0.98 }}>
                 <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700" />
                 <Download className="h-4 w-4" />
                 Get redcore
               </motion.button>
               <motion.a href="https://github.com/redpersongpt/redcoreOS" target="_blank" rel="noopener noreferrer"
-                className="group inline-flex items-center gap-2.5 rounded-lg border border-white/[0.08] bg-white/[0.03] px-6 py-4 text-[0.92rem] font-medium text-ink-secondary transition-all hover:border-white/[0.15] hover:bg-white/[0.06] hover:text-ink-primary cursor-pointer backdrop-blur-sm"
+                className="group inline-flex items-center gap-2.5 rounded-lg border border-white/[0.08] bg-white/[0.03] px-6 py-4 text-[0.92rem] font-medium text-[var(--text-secondary)] transition-all hover:border-white/[0.15] hover:bg-white/[0.06] hover:text-[var(--text-primary)] cursor-pointer backdrop-blur-sm"
                 whileHover={{ scale: 1.02, y: -2 }} whileTap={{ scale: 0.98 }}>
                 <GithubIcon className="h-4 w-4" />
                 <span>View on GitHub</span>
-                <span className="rounded-full bg-accent/15 px-2 py-0.5 text-[0.65rem] font-semibold text-accent">Open Source</span>
+                <span className="rounded-full bg-[var(--accent)]/15 px-2 py-0.5 text-[0.65rem] font-semibold text-[var(--accent)]">Open Source</span>
               </motion.a>
             </motion.div>
 
@@ -306,8 +306,8 @@ export function HeroSection() {
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.1, duration: 1 }}
               className="mt-14 flex flex-wrap items-center gap-x-8 gap-y-3">
               {["Open Source", "Windows 10 & 11", "Snapshots included", "No subscription"].map((t, i) => (
-                <span key={t} className="flex items-center gap-3 text-[0.7rem] font-mono font-medium tracking-wider text-ink-muted">
-                  {i > 0 && <span className="h-3 w-px bg-accent/20" />}
+                <span key={t} className="flex items-center gap-3 text-[0.7rem] font-mono font-medium tracking-wider text-[var(--text-disabled)]">
+                  {i > 0 && <span className="h-3 w-px bg-[var(--accent)]/20" />}
                   {t}
                 </span>
               ))}

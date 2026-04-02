@@ -40,11 +40,11 @@ export function FooterSection() {
           {/* Brand */}
           <div className="col-span-2 md:col-span-1">
             <Logo size="sm" />
-            <p className="mt-4 text-[0.75rem] leading-[1.75] text-ink-muted max-w-[210px]">
+            <p className="mt-4 text-[0.75rem] leading-[1.75] text-[var(--text-disabled)] max-w-[210px]">
               Hardware-based Windows optimization. Built for people who care about their hardware.
             </p>
             <div className="mt-6 rounded-lg border border-border/80 bg-surface-elevated/50 p-4">
-              <p className="text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-ink-tertiary">
+              <p className="text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-[var(--text-disabled)]">
                 Contact
               </p>
               <ul className="mt-3 space-y-2.5">
@@ -52,12 +52,12 @@ export function FooterSection() {
                   <li key={link.label}>
                     <a
                       href={link.href}
-                      className="group flex items-center justify-between gap-4 text-[0.72rem] text-ink-muted transition-colors duration-150 hover:text-ink-primary"
+                      className="group flex items-center justify-between gap-4 text-[0.72rem] text-[var(--text-disabled)] transition-colors duration-150 hover:text-[var(--text-primary)]"
                     >
-                      <span className="font-mono uppercase tracking-[0.14em] text-ink-tertiary">
+                      <span className="font-mono uppercase tracking-[0.14em] text-[var(--text-disabled)]">
                         {link.label}
                       </span>
-                      <span className="truncate text-right text-[0.72rem] text-ink-secondary transition-colors group-hover:text-ink-primary">
+                      <span className="truncate text-right text-[0.72rem] text-[var(--text-secondary)] transition-colors group-hover:text-[var(--text-primary)]">
                         {link.value}
                       </span>
                     </a>
@@ -69,7 +69,7 @@ export function FooterSection() {
             <div className="mt-5 flex flex-wrap gap-2">
               {["Windows 10", "Windows 11", "x64"].map((b) => (
                 <span key={b}
-                  className="rounded-full border border-border px-2.5 py-1 text-[0.6rem] font-mono font-medium tracking-wider text-ink-muted">
+                  className="rounded-full border border-[var(--border)] px-2.5 py-1 text-[0.6rem] font-mono font-medium tracking-wider text-[var(--text-disabled)]">
                   {b}
                 </span>
               ))}
@@ -78,7 +78,7 @@ export function FooterSection() {
 
           {/* Products */}
           <div>
-            <p className="text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-ink-tertiary mb-5">
+            <p className="text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-[var(--text-disabled)] mb-5">
               Products
             </p>
             <ul className="space-y-3">
@@ -86,7 +86,7 @@ export function FooterSection() {
                 <li key={link.label}>
                   <Link
                     href={link.href}
-                    className="text-[0.78rem] text-ink-muted transition-colors duration-150 hover:text-ink-secondary"
+                    className="text-[0.78rem] text-[var(--text-disabled)] transition-colors duration-150 hover:text-[var(--text-secondary)]"
                   >
                     {link.label}
                   </Link>
@@ -97,7 +97,7 @@ export function FooterSection() {
 
           {/* Resources */}
           <div>
-            <p className="text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-ink-tertiary mb-5">
+            <p className="text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-[var(--text-disabled)] mb-5">
               Resources
             </p>
             <ul className="space-y-3">
@@ -105,7 +105,7 @@ export function FooterSection() {
                 <li key={link.label}>
                   <Link
                     href={link.href}
-                    className="text-[0.78rem] text-ink-muted transition-colors duration-150 hover:text-ink-secondary"
+                    className="text-[0.78rem] text-[var(--text-disabled)] transition-colors duration-150 hover:text-[var(--text-secondary)]"
                   >
                     {link.label}
                   </Link>
@@ -116,7 +116,7 @@ export function FooterSection() {
 
           {/* Company */}
           <div>
-            <p className="text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-ink-tertiary mb-5">
+            <p className="text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-[var(--text-disabled)] mb-5">
               Company
             </p>
             <ul className="space-y-3">
@@ -127,14 +127,14 @@ export function FooterSection() {
                       href={link.href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-[0.78rem] text-ink-muted transition-colors duration-150 hover:text-ink-secondary"
+                      className="text-[0.78rem] text-[var(--text-disabled)] transition-colors duration-150 hover:text-[var(--text-secondary)]"
                     >
                       {link.label}
                     </a>
                   ) : (
                     <Link
                       href={link.href}
-                      className="text-[0.78rem] text-ink-muted transition-colors duration-150 hover:text-ink-secondary"
+                      className="text-[0.78rem] text-[var(--text-disabled)] transition-colors duration-150 hover:text-[var(--text-secondary)]"
                     >
                       {link.label}
                     </Link>
@@ -147,18 +147,18 @@ export function FooterSection() {
 
         {/* Bottom bar */}
         <div className="border-t border-border/50 pt-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <p className="text-[0.68rem] text-ink-muted">
+          <p className="text-[0.68rem] text-[var(--text-disabled)]">
             © 2026 redcore
           </p>
           <div className="flex items-center gap-6">
-            <span className="text-[0.65rem] font-mono text-ink-muted tracking-wider">
+            <span className="text-[0.65rem] font-mono text-[var(--text-disabled)] tracking-wider">
               No subscription
             </span>
             <a
               href="https://github.com/redpersongpt"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-ink-muted hover:text-ink-tertiary transition-colors duration-150"
+              className="text-[var(--text-disabled)] hover:text-[var(--text-disabled)] transition-colors duration-150"
               aria-label="GitHub"
             >
               <svg viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4" aria-hidden="true">

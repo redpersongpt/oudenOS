@@ -119,7 +119,7 @@ function MobileOverlay({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: duration.normal, ease: easing.enter }}
-          className="fixed inset-0 top-0 z-40 flex flex-col items-center justify-center bg-bg lg:hidden"
+          className="fixed inset-0 top-0 z-40 flex flex-col items-center justify-center bg-[var(--black)] lg:hidden"
         >
           <nav
             className="flex flex-col items-center gap-8"
@@ -144,8 +144,8 @@ function MobileOverlay({
                 className={[
                   "text-2xl font-medium tracking-wide transition-colors duration-200",
                   activeId === link.sectionId
-                    ? "text-ink-primary"
-                    : "text-ink-tertiary hover:text-ink-primary",
+                    ? "text-[var(--text-primary)]"
+                    : "text-[var(--text-disabled)] hover:text-[var(--text-primary)]",
                 ].join(" ")}
               >
                 {link.label}
@@ -166,7 +166,7 @@ function MobileOverlay({
                   delay: (NAV_LINKS.length + i) * 0.05,
                 }}
                 onClick={onClose}
-                className="text-2xl font-medium tracking-wide text-ink-tertiary hover:text-ink-primary transition-colors duration-200"
+                className="text-2xl font-medium tracking-wide text-[var(--text-disabled)] hover:text-[var(--text-primary)] transition-colors duration-200"
               >
                 {link.label}
               </motion.a>
@@ -191,7 +191,7 @@ function MobileOverlay({
                   scrollToSection("pricing");
                   onClose();
                 }}
-                className="inline-flex items-center gap-2 rounded-lg bg-accent px-6 py-2.5 text-[13px] font-semibold text-white transition-all hover:bg-accent-dim"
+                className="inline-flex items-center gap-2 rounded-lg bg-[var(--accent)] px-6 py-2.5 text-[13px] font-semibold text-white transition-all hover:bg-[var(--accent)]-dim"
               >
                 Get redcore
               </a>
@@ -269,8 +269,8 @@ export function Navigation() {
                   className={[
                     "cursor-pointer text-[13px] font-medium tracking-wide transition-colors duration-200",
                     activeId === link.sectionId
-                      ? "text-ink-primary"
-                      : "text-ink-tertiary hover:text-ink-primary",
+                      ? "text-[var(--text-primary)]"
+                      : "text-[var(--text-disabled)] hover:text-[var(--text-primary)]",
                   ].join(" ")}
                 >
                   {link.label}
@@ -280,7 +280,7 @@ export function Navigation() {
                 <a
                   key={link.href}
                   href={link.href}
-                  className="cursor-pointer text-[13px] font-medium tracking-wide text-ink-tertiary hover:text-ink-primary transition-colors duration-200"
+                  className="cursor-pointer text-[13px] font-medium tracking-wide text-[var(--text-disabled)] hover:text-[var(--text-primary)] transition-colors duration-200"
                 >
                   {link.label}
                 </a>
@@ -293,7 +293,7 @@ export function Navigation() {
                 /* Logged in — Profile button */
                 <a
                   href="/profile"
-                  className="hidden items-center gap-2 cursor-pointer rounded-md bg-white/[0.08] px-4 py-1.5 text-[13px] font-medium text-ink-primary border border-white/[0.1] transition-all duration-200 hover:bg-white/[0.12] hover:border-white/[0.16] lg:inline-flex"
+                  className="hidden items-center gap-2 cursor-pointer rounded-md bg-white/[0.08] px-4 py-1.5 text-[13px] font-medium text-[var(--text-primary)] border border-white/[0.1] transition-all duration-200 hover:bg-white/[0.12] hover:border-white/[0.16] lg:inline-flex"
                 >
                   <User size={14} />
                   Profile
@@ -303,13 +303,13 @@ export function Navigation() {
                 <>
                   <a
                     href="/login"
-                    className="hidden text-[13px] font-medium tracking-wide text-ink-tertiary transition-colors duration-200 hover:text-ink-primary lg:inline-flex"
+                    className="hidden text-[13px] font-medium tracking-wide text-[var(--text-disabled)] transition-colors duration-200 hover:text-[var(--text-primary)] lg:inline-flex"
                   >
                     Login
                   </a>
                   <a
                     href="/register"
-                    className="hidden cursor-pointer rounded-md bg-white/[0.08] px-4 py-1.5 text-[13px] font-medium text-ink-primary border border-white/[0.1] transition-all duration-200 hover:bg-white/[0.12] hover:border-white/[0.16] lg:inline-flex"
+                    className="hidden cursor-pointer rounded-md bg-white/[0.08] px-4 py-1.5 text-[13px] font-medium text-[var(--text-primary)] border border-white/[0.1] transition-all duration-200 hover:bg-white/[0.12] hover:border-white/[0.16] lg:inline-flex"
                   >
                     Register
                   </a>
@@ -319,7 +319,7 @@ export function Navigation() {
               {/* Mobile Hamburger */}
               <button
                 onClick={() => setMobileOpen((prev) => !prev)}
-                className="relative z-50 inline-flex items-center justify-center rounded-lg p-2 text-ink-secondary transition-colors duration-200 hover:text-ink-primary lg:hidden"
+                className="relative z-50 inline-flex items-center justify-center rounded-lg p-2 text-[var(--text-secondary)] transition-colors duration-200 hover:text-[var(--text-primary)] lg:hidden"
                 aria-label={mobileOpen ? "Close menu" : "Open menu"}
                 aria-expanded={mobileOpen}
               >

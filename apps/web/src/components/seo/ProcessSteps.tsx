@@ -26,17 +26,17 @@ export function ProcessSteps({ steps }: ProcessStepsProps) {
             <li key={step.title} className="relative">
               {/* Step number */}
               <span
-                className="absolute -left-10 top-0 flex h-7 w-7 items-center justify-center rounded-full border border-border bg-surface-raised font-mono text-[0.7rem] font-medium text-ink-muted"
+                className="absolute -left-10 top-0 flex h-7 w-7 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface-raised)] font-mono text-[0.7rem] font-medium text-[var(--text-disabled)]"
                 aria-hidden="true"
               >
                 {String(index + 1).padStart(2, "0")}
               </span>
 
-              <h3 className="text-[0.95rem] font-semibold text-ink-primary">
+              <h3 className="text-[0.95rem] font-semibold text-[var(--text-primary)]">
                 {step.title}
               </h3>
 
-              <p className="mt-1.5 text-[0.85rem] leading-[1.65] text-ink-secondary">
+              <p className="mt-1.5 text-[0.85rem] leading-[1.65] text-[var(--text-secondary)]">
                 {step.description}
               </p>
             </li>

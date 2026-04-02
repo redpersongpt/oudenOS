@@ -157,23 +157,23 @@ function StatCardItem({
       />
 
       <div className="relative">
-        <div className="mb-3 inline-flex h-8 w-8 items-center justify-center rounded-lg border border-border/60 bg-surface-raised/80">
-          <Icon className="h-3.5 w-3.5 text-accent" />
+        <div className="mb-3 inline-flex h-8 w-8 items-center justify-center rounded-lg border border-border/60 bg-[var(--surface-raised)]/80">
+          <Icon className="h-3.5 w-3.5 text-[var(--accent)]" />
         </div>
 
         <div className="flex items-baseline gap-0.5">
-          <span className="font-mono text-[1.75rem] font-bold tracking-tight text-ink-primary">
+          <span className="font-mono text-[1.75rem] font-bold tracking-tight text-[var(--text-primary)]">
             {count}
           </span>
-          <span className="font-mono text-[0.85rem] font-semibold text-accent">
+          <span className="font-mono text-[0.85rem] font-semibold text-[var(--accent)]">
             {stat.suffix}
           </span>
         </div>
 
-        <p className="mt-1 text-[0.8rem] font-semibold text-ink-secondary">
+        <p className="mt-1 text-[0.8rem] font-semibold text-[var(--text-secondary)]">
           {stat.label}
         </p>
-        <p className="mt-0.5 text-[0.68rem] text-ink-muted">{stat.detail}</p>
+        <p className="mt-0.5 text-[0.68rem] text-[var(--text-disabled)]">{stat.detail}</p>
       </div>
     </motion.div>
   );
@@ -209,11 +209,11 @@ function ComparisonBar({
       className="rounded-lg border border-border/50 bg-surface/60 p-4"
     >
       <div className="mb-3 flex items-center justify-between">
-        <span className="text-[0.8rem] font-semibold text-ink-primary">
+        <span className="text-[0.8rem] font-semibold text-[var(--text-primary)]">
           {row.label}
         </span>
         {reduction > 0 && (
-          <span className="rounded-full bg-accent/10 px-2 py-0.5 font-mono text-[0.6rem] font-bold text-accent">
+          <span className="rounded-full bg-[var(--accent)]/10 px-2 py-0.5 font-mono text-[0.6rem] font-bold text-[var(--accent)]">
             -{reduction}%
           </span>
         )}
@@ -221,10 +221,10 @@ function ComparisonBar({
 
       {/* Before bar */}
       <div className="mb-1.5 flex items-center gap-3">
-        <span className="w-12 shrink-0 text-right font-mono text-[0.65rem] text-ink-muted">
+        <span className="w-12 shrink-0 text-right font-mono text-[0.65rem] text-[var(--text-disabled)]">
           Before
         </span>
-        <div className="relative h-2.5 flex-1 overflow-hidden rounded-full bg-surface-overlay">
+        <div className="relative h-2.5 flex-1 overflow-hidden rounded-full bg-[var(--surface-raised)]">
           <motion.div
             className="absolute inset-y-0 left-0 rounded-full bg-ink-muted/50"
             initial={{ width: 0 }}
@@ -236,7 +236,7 @@ function ComparisonBar({
             }}
           />
         </div>
-        <span className="w-14 shrink-0 font-mono text-[0.7rem] text-ink-tertiary">
+        <span className="w-14 shrink-0 font-mono text-[0.7rem] text-[var(--text-disabled)]">
           {row.before}
           {row.unit}
         </span>
@@ -244,10 +244,10 @@ function ComparisonBar({
 
       {/* After bar */}
       <div className="flex items-center gap-3">
-        <span className="w-12 shrink-0 text-right font-mono text-[0.65rem] text-accent">
+        <span className="w-12 shrink-0 text-right font-mono text-[0.65rem] text-[var(--accent)]">
           After
         </span>
-        <div className="relative h-2.5 flex-1 overflow-hidden rounded-full bg-surface-overlay">
+        <div className="relative h-2.5 flex-1 overflow-hidden rounded-full bg-[var(--surface-raised)]">
           <motion.div
             className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-accent-dim to-accent"
             initial={{ width: 0 }}
@@ -259,7 +259,7 @@ function ComparisonBar({
             }}
           />
         </div>
-        <span className="w-14 shrink-0 font-mono text-[0.7rem] font-semibold text-ink-primary">
+        <span className="w-14 shrink-0 font-mono text-[0.7rem] font-semibold text-[var(--text-primary)]">
           {row.after}
           {row.unit}
         </span>
@@ -291,7 +291,7 @@ export function BenchmarkSection() {
             initial={{ opacity: 0, y: 10 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: duration.slow, ease: easing.enter }}
-            className="font-mono text-[0.6rem] font-medium uppercase tracking-[0.18em] text-accent mb-5"
+            className="font-mono text-[0.6rem] font-medium uppercase tracking-[0.18em] text-[var(--accent)] mb-5"
           >
             Measured Impact
           </motion.p>
@@ -303,10 +303,10 @@ export function BenchmarkSection() {
               duration: duration.slower,
               ease: easing.enter,
             }}
-            className="text-[clamp(1.7rem,3.2vw,2.6rem)] font-bold tracking-[-0.03em] leading-[1.1] text-ink-primary"
+            className="text-[clamp(1.7rem,3.2vw,2.6rem)] font-bold tracking-[-0.03em] leading-[1.1] text-[var(--text-primary)]"
           >
             Before and after.
-            <span className="block text-ink-secondary font-normal">
+            <span className="block text-[var(--text-secondary)] font-normal">
               Same PC, less garbage running in the background.
             </span>
           </motion.h2>
@@ -318,7 +318,7 @@ export function BenchmarkSection() {
               duration: duration.slow,
               ease: easing.enter,
             }}
-            className="mt-5 mx-auto max-w-[480px] text-[0.88rem] leading-[1.75] text-ink-secondary"
+            className="mt-5 mx-auto max-w-[480px] text-[0.88rem] leading-[1.75] text-[var(--text-secondary)]"
           >
             Tested on stock Windows 11 23H2. Balanced profile. Results vary by hardware.
           </motion.p>
@@ -348,11 +348,11 @@ export function BenchmarkSection() {
           className="mt-14"
         >
           <div className="mb-6 flex items-center gap-3">
-            <ShieldOff className="h-4 w-4 text-accent" />
-            <h3 className="text-[0.88rem] font-bold text-ink-primary">
+            <ShieldOff className="h-4 w-4 text-[var(--accent)]" />
+            <h3 className="text-[0.88rem] font-bold text-[var(--text-primary)]">
               Before &amp; After
             </h3>
-            <span className="rounded-full border border-border/60 bg-surface-raised/80 px-2.5 py-0.5 font-mono text-[0.55rem] text-ink-muted">
+            <span className="rounded-full border border-border/60 bg-[var(--surface-raised)]/80 px-2.5 py-0.5 font-mono text-[0.55rem] text-[var(--text-disabled)]">
               balanced profile
             </span>
           </div>
@@ -374,7 +374,7 @@ export function BenchmarkSection() {
           initial={{ opacity: 0 }}
           animate={inView ? { opacity: 1 } : {}}
           transition={{ delay: 0.8, duration: duration.slow }}
-          className="mt-8 text-center font-mono text-[0.65rem] text-ink-muted tracking-wide"
+          className="mt-8 text-center font-mono text-[0.65rem] text-[var(--text-disabled)] tracking-wide"
         >
           Results vary by hardware and profile. All changes reversible.
         </motion.p>

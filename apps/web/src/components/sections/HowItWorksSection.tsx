@@ -55,13 +55,13 @@ export function HowItWorksSection() {
           transition={{ duration: 0.7, ease }}
           className="mb-20 max-w-[480px]"
         >
-          <p className="font-mono text-[0.6rem] font-medium uppercase tracking-[0.16em] text-accent mb-5">
+          <p className="font-mono text-[0.6rem] font-medium uppercase tracking-[0.16em] text-[var(--accent)] mb-5">
             The process
           </p>
-          <h2 className="text-[clamp(1.6rem,3vw,2.4rem)] font-bold tracking-[-0.03em] leading-[1.12] text-ink-primary">
+          <h2 className="text-[clamp(1.6rem,3vw,2.4rem)] font-bold tracking-[-0.03em] leading-[1.12] text-[var(--text-primary)]">
             Five steps. Full control.
           </h2>
-          <p className="mt-5 text-[0.95rem] leading-[1.75] text-ink-secondary">
+          <p className="mt-5 text-[0.95rem] leading-[1.75] text-[var(--text-secondary)]">
             Both products follow the same disciplined flow.
             Every step is guided. Every change is reversible.
           </p>
@@ -75,15 +75,15 @@ export function HowItWorksSection() {
               initial={{ opacity: 0, x: -20 }}
               animate={inView ? { opacity: 1, x: 0 } : {}}
               transition={{ delay: 0.1 + 0.09 * i, duration: 0.6, ease }}
-              className="group grid grid-cols-[60px_1fr] lg:grid-cols-[80px_180px_1fr] items-baseline border-t border-border py-7 hover:bg-surface-raised/30 transition-colors duration-200 rounded-sm -mx-3 px-3"
+              className="group grid grid-cols-[60px_1fr] lg:grid-cols-[80px_180px_1fr] items-baseline border-t border-[var(--border)] py-7 hover:bg-[var(--surface-raised)]/30 transition-colors duration-200 rounded-sm -mx-3 px-3"
             >
-              <span className="font-mono text-[0.7rem] font-bold text-accent/40 group-hover:text-accent/70 transition-colors">
+              <span className="font-mono text-[0.7rem] font-bold text-[var(--accent)]/40 group-hover:text-[var(--accent)]/70 transition-colors">
                 {step.num}
               </span>
-              <span className="text-[0.95rem] font-semibold text-ink-primary lg:pr-8">
+              <span className="text-[0.95rem] font-semibold text-[var(--text-primary)] lg:pr-8">
                 {step.title}
               </span>
-              <span className="col-start-2 lg:col-start-3 text-[0.85rem] leading-[1.65] text-ink-tertiary mt-1 lg:mt-0">
+              <span className="col-start-2 lg:col-start-3 text-[0.85rem] leading-[1.65] text-[var(--text-disabled)] mt-1 lg:mt-0">
                 {step.body}
               </span>
             </motion.div>

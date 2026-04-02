@@ -34,7 +34,7 @@ export function FinalCTASection() {
         >
           {/* Overline */}
           <motion.p
-            className="font-mono text-[0.6rem] font-medium uppercase tracking-[0.18em] text-accent mb-8"
+            className="font-mono text-[0.6rem] font-medium uppercase tracking-[0.18em] text-[var(--accent)] mb-8"
             initial={{ opacity: 0 }}
             animate={inView ? { opacity: 1 } : {}}
             transition={{ delay: 0.05, duration: 0.6 }}
@@ -42,7 +42,7 @@ export function FinalCTASection() {
             Get started
           </motion.p>
 
-          <h2 className="text-[clamp(2.2rem,4.5vw,3.6rem)] font-bold tracking-[-0.038em] leading-[1.06] text-ink-primary">
+          <h2 className="text-[clamp(2.2rem,4.5vw,3.6rem)] font-bold tracking-[-0.038em] leading-[1.06] text-[var(--text-primary)]">
             Built for the machines
             <br />
             <span className="bg-gradient-to-r from-accent to-[#FF3860] bg-clip-text text-transparent">
@@ -50,7 +50,7 @@ export function FinalCTASection() {
             </span>
           </h2>
 
-          <p className="mt-7 mx-auto max-w-[440px] text-[1rem] leading-[1.75] text-ink-secondary">
+          <p className="mt-7 mx-auto max-w-[440px] text-[1rem] leading-[1.75] text-[var(--text-secondary)]">
             Start with OS for free. Go deeper with Tuning when you are ready.
             No subscription ever.
           </p>
@@ -65,7 +65,7 @@ export function FinalCTASection() {
             {/* Primary */}
             <motion.a
               href="/downloads"
-              className="group inline-flex items-center gap-2.5 rounded-lg bg-accent px-8 py-4 text-[0.92rem] font-semibold text-white relative overflow-hidden shadow-lg shadow-accent/25"
+              className="group inline-flex items-center gap-2.5 rounded-lg bg-[var(--accent)] px-8 py-4 text-[0.92rem] font-semibold text-white relative overflow-hidden shadow-lg shadow-accent/25"
               whileHover={{ scale: 1.03, y: -2 }}
               whileTap={{ scale: 0.97 }}
             >
@@ -77,7 +77,7 @@ export function FinalCTASection() {
             {/* Secondary */}
             <motion.a
               href="/register"
-              className="inline-flex items-center gap-2 px-6 py-4 text-[0.88rem] font-medium text-ink-tertiary border border-border rounded-lg hover:border-border-strong hover:text-ink-secondary transition-all duration-200"
+              className="inline-flex items-center gap-2 px-6 py-4 text-[0.88rem] font-medium text-[var(--text-disabled)] border border-[var(--border)] rounded-lg hover:border-[var(--border-visible)] hover:text-[var(--text-secondary)] transition-all duration-200"
               whileHover={{ y: -1 }}
             >
               Create account
@@ -90,7 +90,7 @@ export function FinalCTASection() {
             initial={{ opacity: 0 }}
             animate={inView ? { opacity: 1 } : {}}
             transition={{ delay: 0.4, duration: 0.6 }}
-            className="mt-10 font-mono text-[0.65rem] text-ink-muted tracking-wider"
+            className="mt-10 font-mono text-[0.65rem] text-[var(--text-disabled)] tracking-wider"
           >
             Windows 10 & 11 · No subscription
           </motion.p>

@@ -44,15 +44,15 @@ function FeatureCard({ icon: Icon, title, body, delay, inView }: {
       animate={inView ? { opacity: 1, y: 0 } : {}}
       transition={{ delay, duration: 0.6, ease }}
       whileHover={{ y: -4, transition: { duration: 0.2 } }}
-      className="group bg-surface p-7 lg:p-8 cursor-default"
+      className="group bg-[var(--surface)] p-7 lg:p-8 cursor-default"
     >
-      <div className="mb-4 flex h-9 w-9 items-center justify-center rounded-lg bg-accent/10">
-        <Icon className="h-4 w-4 text-accent" />
+      <div className="mb-4 flex h-9 w-9 items-center justify-center rounded-lg bg-[var(--accent)]/10">
+        <Icon className="h-4 w-4 text-[var(--accent)]" />
       </div>
-      <h3 className="text-[0.88rem] font-semibold text-ink-primary mb-2 group-hover:text-white transition-colors">
+      <h3 className="text-[0.88rem] font-semibold text-[var(--text-primary)] mb-2 group-hover:text-white transition-colors">
         {title}
       </h3>
-      <p className="text-[0.8rem] leading-[1.7] text-ink-tertiary">
+      <p className="text-[0.8rem] leading-[1.7] text-[var(--text-disabled)]">
         {body}
       </p>
     </motion.div>
@@ -66,17 +66,17 @@ function EcosystemDiagram({ inView }: { inView: boolean }) {
     {
       label: "Your Windows 10 / 11",
       badge: "Foundation",
-      badgeStyle: "text-ink-muted bg-transparent border border-border/50",
+      badgeStyle: "text-[var(--text-disabled)] bg-transparent border border-border/50",
       pills: ["Stock install", "Untouched data", "Your apps"],
       desc: "Left unchanged — redcore only changes what needs changing",
       borderStyle: "border-border/40",
-      bgStyle: "bg-bg/60",
+      bgStyle: "bg-[var(--black)]/60",
       delay: 0.1,
     },
     {
       label: "redcore · OS",
       badge: "Free",
-      badgeStyle: "text-ink-secondary bg-ink-muted/20 border border-border",
+      badgeStyle: "text-[var(--text-secondary)] bg-ink-muted/20 border border-border",
       pills: ["150+ actions", "8 profiles", "Privacy", "Rollback", "Work-safe"],
       desc: "redcore layer — debloat, optimize, clean, protect",
       borderStyle: "border-border",
@@ -86,7 +86,7 @@ function EcosystemDiagram({ inView }: { inView: boolean }) {
     {
       label: "redcore · Tuning",
       badge: "$12.99 one-time",
-      badgeStyle: "text-accent bg-accent/10 border border-accent/20",
+      badgeStyle: "text-[var(--accent)] bg-[var(--accent)]/10 border border-accent/20",
       pills: ["CPU tuning", "GPU latency", "Benchmark lab", "BIOS guidance", "Timer resolution"],
       desc: "Deep optimization layer — adds benchmark-validated hardware tuning on top",
       borderStyle: "border-accent/40",
@@ -109,7 +109,7 @@ function EcosystemDiagram({ inView }: { inView: boolean }) {
 
       {!prefersReducedMotion && (
         <motion.div
-          className="pointer-events-none absolute left-1/2 top-0 h-8 w-8 -translate-x-1/2 rounded-full bg-accent/20 blur-2xl"
+          className="pointer-events-none absolute left-1/2 top-0 h-8 w-8 -translate-x-1/2 rounded-full bg-[var(--accent)]/20 blur-2xl"
           initial={{ opacity: 0, y: -12 }}
           animate={inView ? { opacity: [0, 1, 0.55, 0], y: [0, 120, 250, 340] } : {}}
           transition={{ delay: 0.55, duration: 1.8, ease }}
@@ -137,12 +137,12 @@ function EcosystemDiagram({ inView }: { inView: boolean }) {
                 {/* Layer info */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-3 mb-2">
-                    <span className="text-[0.92rem] font-bold text-ink-primary">{layer.label}</span>
+                    <span className="text-[0.92rem] font-bold text-[var(--text-primary)]">{layer.label}</span>
                     <span className={`rounded-full px-2.5 py-0.5 text-[0.6rem] font-semibold uppercase tracking-wider ${layer.badgeStyle}`}>
                       {layer.badge}
                     </span>
                   </div>
-                  <p className="text-[0.75rem] text-ink-muted leading-relaxed hidden sm:block">
+                  <p className="text-[0.75rem] text-[var(--text-disabled)] leading-relaxed hidden sm:block">
                     {layer.desc}
                   </p>
                 </div>
@@ -151,7 +151,7 @@ function EcosystemDiagram({ inView }: { inView: boolean }) {
                 <div className="flex flex-wrap gap-1.5 sm:justify-end">
                   {layer.pills.map((pill) => (
                     <span key={pill}
-                      className="rounded-full border border-border bg-surface-raised px-2.5 py-1 text-[0.65rem] font-medium text-ink-tertiary">
+                      className="rounded-full border border-[var(--border)] bg-[var(--surface-raised)] px-2.5 py-1 text-[0.65rem] font-medium text-[var(--text-disabled)]">
                       {pill}
                     </span>
                   ))}
@@ -167,7 +167,7 @@ function EcosystemDiagram({ inView }: { inView: boolean }) {
                 animate={inView ? { opacity: 1, y: 0 } : {}}
                 transition={{ delay: layer.delay + 0.3, duration: 0.4 }}
               >
-                <ArrowUp className="h-4 w-4 text-accent/40" />
+                <ArrowUp className="h-4 w-4 text-[var(--accent)]/40" />
               </motion.div>
             )}
           </motion.div>
@@ -176,7 +176,7 @@ function EcosystemDiagram({ inView }: { inView: boolean }) {
 
       {/* Caption */}
       <motion.p
-        className="mt-6 text-center text-[0.72rem] font-mono text-ink-muted tracking-wide"
+        className="mt-6 text-center text-[0.72rem] font-mono text-[var(--text-disabled)] tracking-wide"
         initial={{ opacity: 0 }}
         animate={inView ? { opacity: 1 } : {}}
         transition={{ delay: 0.9, duration: 0.6 }}
@@ -207,14 +207,14 @@ function SectionHeader({ label, title, subtitle, inView, delay = 0 }: {
         initial={{ opacity: 0, x: -20 }}
         animate={inView ? { opacity: 1, x: 0 } : {}}
         transition={{ duration: 0.5, ease, delay: delay + 0.05 }}
-        className="font-mono text-[0.6rem] font-medium uppercase tracking-[0.16em] text-accent mb-5"
+        className="font-mono text-[0.6rem] font-medium uppercase tracking-[0.16em] text-[var(--accent)] mb-5"
       >
         {label}
       </motion.p>
-      <h2 className="text-[clamp(1.7rem,3.2vw,2.6rem)] font-bold tracking-[-0.03em] leading-[1.1] text-ink-primary max-w-[620px]">
+      <h2 className="text-[clamp(1.7rem,3.2vw,2.6rem)] font-bold tracking-[-0.03em] leading-[1.1] text-[var(--text-primary)] max-w-[620px]">
         {title}
       </h2>
-      <p className="mt-5 text-[0.95rem] leading-[1.75] text-ink-secondary max-w-[520px]">
+      <p className="mt-5 text-[0.95rem] leading-[1.75] text-[var(--text-secondary)] max-w-[520px]">
         {subtitle}
       </p>
     </motion.div>
@@ -299,7 +299,7 @@ function EcosystemIntro() {
             initial={{ opacity: 0, y: 10 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.5, ease }}
-            className="font-mono text-[0.6rem] font-medium uppercase tracking-[0.18em] text-accent mb-6"
+            className="font-mono text-[0.6rem] font-medium uppercase tracking-[0.18em] text-[var(--accent)] mb-6"
           >
             The ecosystem
           </motion.p>
@@ -307,16 +307,16 @@ function EcosystemIntro() {
             initial={{ opacity: 0, y: 24 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}
             transition={{ delay: 0.1, duration: 0.8, ease }}
-            className="text-[clamp(1.8rem,3.5vw,2.8rem)] font-bold tracking-[-0.035em] leading-[1.08] text-ink-primary"
+            className="text-[clamp(1.8rem,3.5vw,2.8rem)] font-bold tracking-[-0.035em] leading-[1.08] text-[var(--text-primary)]"
           >
             Two products.
-            <span className="block text-ink-secondary font-normal">One system.</span>
+            <span className="block text-[var(--text-secondary)] font-normal">One system.</span>
           </motion.h2>
           <motion.p
             initial={{ opacity: 0, y: 16 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}
             transition={{ delay: 0.2, duration: 0.7, ease }}
-            className="mt-6 mx-auto max-w-[480px] text-[0.95rem] leading-[1.75] text-ink-secondary"
+            className="mt-6 mx-auto max-w-[480px] text-[0.95rem] leading-[1.75] text-[var(--text-secondary)]"
           >
             OS kills the bloat and fixes the defaults. Tuning squeezes
             more FPS out of your actual hardware. Use one or both.

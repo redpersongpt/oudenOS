@@ -53,16 +53,16 @@ export default function VerifyEmailPage() {
       <Navigation />
       <main className="min-h-screen flex items-center justify-center px-6 pt-20 pb-16">
         <div className="w-full max-w-sm">
-          <motion.h1 {...fade(0)} className="text-2xl font-bold text-ink-primary text-center">
+          <motion.h1 {...fade(0)} className="text-2xl font-bold text-[var(--text-primary)] text-center">
             Verify Email
           </motion.h1>
-          <motion.p {...fade(0.05)} className="mt-2 text-[14px] text-ink-secondary text-center">
+          <motion.p {...fade(0.05)} className="mt-2 text-[14px] text-[var(--text-secondary)] text-center">
             {error || message}
           </motion.p>
 
           {done && (
-            <motion.div {...fade(0.12)} className="mt-8 rounded-lg border border-border bg-surface p-6 text-center">
-              <Link href="/login" className="inline-flex text-[13px] font-medium text-accent hover:text-accent-bright transition-colors">
+            <motion.div {...fade(0.12)} className="mt-8 rounded-lg border border-[var(--border)] bg-[var(--surface)] p-6 text-center">
+              <Link href="/login" className="inline-flex text-[13px] font-medium text-[var(--accent)] hover:text-[var(--accent)]-bright transition-colors">
                 Continue to sign in
               </Link>
             </motion.div>

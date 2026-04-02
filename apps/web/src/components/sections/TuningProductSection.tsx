@@ -33,7 +33,7 @@ export function TuningProductSection() {
               <h2 className="text-4xl md:text-5xl font-bold tracking-tight">
                 redcore · Tuning
               </h2>
-              <p className="mt-4 text-lg text-ink-secondary max-w-xl">
+              <p className="mt-4 text-lg text-[var(--text-secondary)] max-w-xl">
                 Guided machine optimization with benchmark-driven validation.
                 Every step wizard-led, every change reversible.
               </p>
@@ -47,10 +47,10 @@ export function TuningProductSection() {
             >
               {features.map((f) => (
                 <div key={f.title} className="flex gap-3">
-                  <f.icon size={18} className="text-ink-tertiary mt-0.5 shrink-0" />
+                  <f.icon size={18} className="text-[var(--text-disabled)] mt-0.5 shrink-0" />
                   <div>
-                    <p className="text-[15px] font-medium text-ink-primary">{f.title}</p>
-                    <p className="text-[13px] text-ink-secondary mt-0.5 leading-relaxed">{f.desc}</p>
+                    <p className="text-[15px] font-medium text-[var(--text-primary)]">{f.title}</p>
+                    <p className="text-[13px] text-[var(--text-secondary)] mt-0.5 leading-relaxed">{f.desc}</p>
                   </div>
                 </div>
               ))}
@@ -64,14 +64,14 @@ export function TuningProductSection() {
             transition={{ duration: duration.slow, ease: easing.enter, delay: 0.2 }}
             className="premium-card rounded-lg p-8 lg:sticky lg:top-28"
           >
-            <p className="text-[13px] font-medium text-ink-tertiary uppercase tracking-wider">Premium License</p>
+            <p className="text-[13px] font-medium text-[var(--text-disabled)] uppercase tracking-wider">Premium License</p>
 
             <div className="mt-3 flex items-baseline gap-1">
-              <span className="text-4xl font-bold text-ink-primary" style={{ fontVariantNumeric: "tabular-nums" }}>
+              <span className="text-4xl font-bold text-[var(--text-primary)]" style={{ fontVariantNumeric: "tabular-nums" }}>
                 $12.99
               </span>
             </div>
-            <p className="text-[13px] text-ink-tertiary mt-1">one-time purchase, per machine</p>
+            <p className="text-[13px] text-[var(--text-disabled)] mt-1">one-time purchase, per machine</p>
 
             <div className="mt-6 space-y-3">
               {[
@@ -87,7 +87,7 @@ export function TuningProductSection() {
                   <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="text-brand-500 shrink-0">
                     <path d="M3.5 7L6 9.5L10.5 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                   </svg>
-                  <span className="text-[14px] text-ink-primary">{item}</span>
+                  <span className="text-[14px] text-[var(--text-primary)]">{item}</span>
                 </div>
               ))}
             </div>
@@ -99,7 +99,7 @@ export function TuningProductSection() {
               Buy License
             </button>
 
-            <p className="mt-3 text-center text-[12px] text-ink-tertiary">
+            <p className="mt-3 text-center text-[12px] text-[var(--text-disabled)]">
               Free tier available with core modules
             </p>
           </motion.div>

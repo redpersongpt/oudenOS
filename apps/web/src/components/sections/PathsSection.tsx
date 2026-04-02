@@ -128,7 +128,7 @@ function PathCardComponent({ card, index }: { card: PathCard; index: number }) {
       </div>
 
       {/* Description */}
-      <p className="mt-4 text-[15px] text-ink-secondary leading-relaxed">
+      <p className="mt-4 text-[15px] text-[var(--text-secondary)] leading-relaxed">
         {card.description}
       </p>
 
@@ -143,7 +143,7 @@ function PathCardComponent({ card, index }: { card: PathCard; index: number }) {
             >
               <ItemIcon size={12} strokeWidth={2} style={{ color: card.accent }} />
             </span>
-            <span className="text-[14px] text-ink-primary font-medium">
+            <span className="text-[14px] text-[var(--text-primary)] font-medium">
               {item.label}
             </span>
           </li>
@@ -178,7 +178,7 @@ export function PathsSection() {
           <motion.h2
             id="paths-heading"
             variants={staggerChild}
-            className="mt-4 text-4xl md:text-5xl font-bold text-ink-primary leading-tight"
+            className="mt-4 text-4xl md:text-5xl font-bold text-[var(--text-primary)] leading-tight"
           >
             Your workflow shapes
             <br className="hidden sm:block" />
@@ -198,7 +198,7 @@ export function PathsSection() {
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
           transition={{ duration: duration.slow, ease: easing.enter, delay: 0.9 }}
-          className="mt-12 text-[15px] text-ink-tertiary text-center max-w-2xl mx-auto leading-relaxed"
+          className="mt-12 text-[15px] text-[var(--text-disabled)] text-center max-w-2xl mx-auto leading-relaxed"
         >
           Every action is gated by machine confidence, profile context, and rollback readiness.
         </motion.p>

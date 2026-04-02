@@ -73,10 +73,10 @@ export default function LoginPage() {
       <Navigation />
       <main className="min-h-screen flex items-center justify-center px-6 pt-20 pb-16">
         <div className="w-full max-w-sm">
-          <motion.h1 {...fade(0)} className="text-2xl font-bold text-ink-primary text-center">
+          <motion.h1 {...fade(0)} className="text-2xl font-bold text-[var(--text-primary)] text-center">
             Sign in
           </motion.h1>
-          <motion.p {...fade(0.05)} className="mt-2 text-[14px] text-ink-secondary text-center">
+          <motion.p {...fade(0.05)} className="mt-2 text-[14px] text-[var(--text-secondary)] text-center">
             Welcome back to redcore
           </motion.p>
 
@@ -92,7 +92,7 @@ export default function LoginPage() {
             className="mt-8 space-y-4"
           >
             <div>
-              <label htmlFor="email" className="block text-[13px] font-medium text-ink-secondary mb-1.5">
+              <label htmlFor="email" className="block text-[13px] font-medium text-[var(--text-secondary)] mb-1.5">
                 Email
               </label>
               <input
@@ -100,13 +100,13 @@ export default function LoginPage() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full h-11 px-3.5 rounded-lg bg-surface border border-border text-[14px] text-ink-primary placeholder:text-ink-tertiary outline-none focus:border-accent/50 transition-colors"
+                className="w-full h-11 px-3.5 rounded-lg bg-[var(--surface)] border border-[var(--border)] text-[14px] text-[var(--text-primary)] placeholder:text-[var(--text-disabled)] outline-none focus:border-accent/50 transition-colors"
                 placeholder="you@example.com"
               />
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-[13px] font-medium text-ink-secondary mb-1.5">
+              <label htmlFor="password" className="block text-[13px] font-medium text-[var(--text-secondary)] mb-1.5">
                 Password
               </label>
               <input
@@ -114,11 +114,11 @@ export default function LoginPage() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full h-11 px-3.5 rounded-lg bg-surface border border-border text-[14px] text-ink-primary placeholder:text-ink-tertiary outline-none focus:border-accent/50 transition-colors"
+                className="w-full h-11 px-3.5 rounded-lg bg-[var(--surface)] border border-[var(--border)] text-[14px] text-[var(--text-primary)] placeholder:text-[var(--text-disabled)] outline-none focus:border-accent/50 transition-colors"
                 placeholder="Your password"
               />
               <div className="mt-2 text-right">
-                <Link href="/forgot-password" className="text-[12px] text-accent hover:text-accent-bright transition-colors">
+                <Link href="/forgot-password" className="text-[12px] text-[var(--accent)] hover:text-[var(--accent)]-bright transition-colors">
                   Forgot your password?
                 </Link>
               </div>
@@ -126,7 +126,7 @@ export default function LoginPage() {
 
             <motion.button
               type="submit"
-              className="w-full h-11 rounded-lg bg-accent hover:bg-accent-dim text-white text-[14px] font-medium cursor-pointer transition-colors"
+              className="w-full h-11 rounded-lg bg-[var(--accent)] hover:bg-[var(--accent)]-dim text-white text-[14px] font-medium cursor-pointer transition-colors"
               whileHover={{ y: -1 }}
               whileTap={{ scale: 0.98 }}
             >
@@ -136,7 +136,7 @@ export default function LoginPage() {
 
           <motion.div {...fade(0.2)} className="flex items-center gap-3 my-5">
             <div className="flex-1 h-px bg-border" />
-            <span className="text-[11px] text-ink-tertiary">or</span>
+            <span className="text-[11px] text-[var(--text-disabled)]">or</span>
             <div className="flex-1 h-px bg-border" />
           </motion.div>
 
@@ -145,7 +145,7 @@ export default function LoginPage() {
               <motion.button
                 type="button"
                 onClick={() => signIn("google", { callbackUrl: "/profile" })}
-                className="w-full h-10 rounded-lg bg-surface border border-border text-[13px] font-medium text-ink-secondary cursor-pointer transition-colors hover:border-border-strong inline-flex items-center justify-center gap-2.5"
+                className="w-full h-10 rounded-lg bg-[var(--surface)] border border-[var(--border)] text-[13px] font-medium text-[var(--text-secondary)] cursor-pointer transition-colors hover:border-[var(--border-visible)] inline-flex items-center justify-center gap-2.5"
                 whileHover={{ y: -1 }}
                 whileTap={{ scale: 0.98 }}
               >
@@ -155,9 +155,9 @@ export default function LoginPage() {
             </motion.div>
           )}
 
-          <motion.p {...fade(0.3)} className="mt-6 text-center text-[13px] text-ink-tertiary">
+          <motion.p {...fade(0.3)} className="mt-6 text-center text-[13px] text-[var(--text-disabled)]">
             Don&apos;t have an account?{" "}
-            <Link href="/register" className="text-accent hover:text-accent-bright transition-colors">
+            <Link href="/register" className="text-[var(--accent)] hover:text-[var(--accent)]-bright transition-colors">
               Create one
             </Link>
           </motion.p>

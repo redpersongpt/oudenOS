@@ -165,13 +165,13 @@ function SignalCardItem({ card }: { card: SignalCard }) {
   return (
     <motion.div
       variants={staggerChild}
-      className="rounded-lg bg-surface border border-border-default p-4"
+      className="rounded-lg bg-[var(--surface)] border border-[var(--border)] p-4"
     >
       <div className="flex items-center gap-2.5">
-        <Icon size={16} strokeWidth={1.5} className="text-ink-tertiary flex-shrink-0" />
-        <span className="text-[13px] font-medium text-ink-primary">{card.title}</span>
+        <Icon size={16} strokeWidth={1.5} className="text-[var(--text-disabled)] flex-shrink-0" />
+        <span className="text-[13px] font-medium text-[var(--text-primary)]">{card.title}</span>
       </div>
-      <p className="mt-1.5 text-[12px] text-ink-tertiary leading-relaxed pl-[26px]">
+      <p className="mt-1.5 text-[12px] text-[var(--text-disabled)] leading-relaxed pl-[26px]">
         {card.reads}
       </p>
     </motion.div>
@@ -255,11 +255,11 @@ function ProfileDetailPanel({ profile }: { profile: MachineProfile }) {
           <h3 className="text-2xl font-bold" style={{ color: profile.color }}>
             {profile.name}
           </h3>
-          <p className="mt-1 text-ink-secondary text-[15px]">{profile.tagline}</p>
+          <p className="mt-1 text-[var(--text-secondary)] text-[15px]">{profile.tagline}</p>
         </div>
 
         {/* Strategy */}
-        <p className="text-[15px] text-ink-secondary leading-relaxed">
+        <p className="text-[15px] text-[var(--text-secondary)] leading-relaxed">
           {profile.strategy}
         </p>
 
@@ -335,11 +335,11 @@ export function IntelligenceSection() {
           <motion.h2
             id="intelligence-heading"
             variants={staggerChild}
-            className="mt-4 text-4xl md:text-5xl font-bold text-ink-primary leading-tight"
+            className="mt-4 text-4xl md:text-5xl font-bold text-[var(--text-primary)] leading-tight"
           >
             Every machine is different.
             <br className="hidden sm:block" />
-            <span className="text-ink-primary">We know yours.</span>
+            <span className="text-[var(--text-primary)]">We know yours.</span>
           </motion.h2>
         </motion.div>
 

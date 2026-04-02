@@ -50,13 +50,13 @@ function FeatureItem({ feature }: { feature: PersonalizationFeature }) {
         className="flex-shrink-0 flex items-center justify-center w-9 h-9 rounded-lg bg-surface"
         aria-hidden="true"
       >
-        <Icon className="w-[18px] h-[18px] text-ink-tertiary" />
+        <Icon className="w-[18px] h-[18px] text-[var(--text-disabled)]" />
       </span>
       <div>
-        <h3 className="text-[15px] font-medium text-ink-primary">
+        <h3 className="text-[15px] font-medium text-[var(--text-primary)]">
           {feature.title}
         </h3>
-        <p className="text-[13px] text-ink-secondary mt-0.5">
+        <p className="text-[13px] text-[var(--text-secondary)] mt-0.5">
           {feature.description}
         </p>
       </div>
@@ -89,7 +89,7 @@ export function PersonalizationSection() {
           <motion.h2
             id="personalization-heading"
             variants={staggerChild}
-            className="mt-4 text-3xl md:text-4xl font-bold text-ink-primary leading-tight"
+            className="mt-4 text-3xl md:text-4xl font-bold text-[var(--text-primary)] leading-tight"
           >
             The final layer.
           </motion.h2>

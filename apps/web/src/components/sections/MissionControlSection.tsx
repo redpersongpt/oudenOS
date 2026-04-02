@@ -34,10 +34,10 @@ const completedActions: CompletedAction[] = [
 ];
 
 const stats: StatItem[] = [
-  { label: "APPLIED", value: "12", colorClass: "text-ink-tertiary" },
-  { label: "FAILED", value: "0", colorClass: "text-ink-tertiary" },
+  { label: "APPLIED", value: "12", colorClass: "text-[var(--text-disabled)]" },
+  { label: "FAILED", value: "0", colorClass: "text-[var(--text-disabled)]" },
   { label: "SKIPPED", value: "2", colorClass: "text-warning" },
-  { label: "REMAINING", value: "4", colorClass: "text-ink-secondary" },
+  { label: "REMAINING", value: "4", colorClass: "text-[var(--text-secondary)]" },
 ];
 
 // Sub-components
@@ -45,8 +45,8 @@ const stats: StatItem[] = [
 function LiveDot() {
   return (
     <span className="relative flex h-2 w-2" aria-hidden="true">
-      <span className="absolute inline-flex h-full w-full rounded-full bg-accent animate-breathe" />
-      <span className="relative inline-flex h-2 w-2 rounded-full bg-accent" />
+      <span className="absolute inline-flex h-full w-full rounded-full bg-[var(--accent)] animate-breathe" />
+      <span className="relative inline-flex h-2 w-2 rounded-full bg-[var(--accent)]" />
     </span>
   );
 }
@@ -84,9 +84,9 @@ function TimelineItem({
       }}
       className="flex items-center gap-3 py-2"
     >
-      <CheckCircle size={14} className="text-ink-tertiary flex-shrink-0" aria-hidden="true" />
-      <span className="flex-1 text-[13px] text-ink-secondary">{action.name}</span>
-      <span className="text-[11px] font-mono text-ink-tertiary ml-auto">{action.time}</span>
+      <CheckCircle size={14} className="text-[var(--text-disabled)] flex-shrink-0" aria-hidden="true" />
+      <span className="flex-1 text-[13px] text-[var(--text-secondary)]">{action.name}</span>
+      <span className="text-[11px] font-mono text-[var(--text-disabled)] ml-auto">{action.time}</span>
     </motion.div>
   );
 }
@@ -116,7 +116,7 @@ export function MissionControlSection() {
           <motion.h2
             id="execution-heading"
             variants={staggerChild}
-            className="mt-4 text-4xl md:text-5xl font-bold text-ink-primary leading-tight"
+            className="mt-4 text-4xl md:text-5xl font-bold text-[var(--text-primary)] leading-tight"
           >
             Mission control for your machine.
           </motion.h2>
@@ -130,14 +130,14 @@ export function MissionControlSection() {
           className="mt-16 max-w-4xl mx-auto premium-card glow-brand-edge rounded-lg overflow-hidden"
         >
           {/* Header */}
-          <div className="bg-surface-raised px-6 py-3.5 flex items-center justify-between">
+          <div className="bg-[var(--surface-raised)] px-6 py-3.5 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <LiveDot />
-              <span className="text-[13px] font-medium text-ink-primary">
+              <span className="text-[13px] font-medium text-[var(--text-primary)]">
                 Execution in Progress
               </span>
             </div>
-            <span className="font-mono text-ink-secondary text-[13px]">12 / 18</span>
+            <span className="font-mono text-[var(--text-secondary)] text-[13px]">12 / 18</span>
           </div>
 
           {/* Current action */}
@@ -146,15 +146,15 @@ export function MissionControlSection() {
               initial={{ opacity: 0, x: -12 }}
               animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -12 }}
               transition={{ duration: duration.slow, ease: easing.enter, delay: 0.4 }}
-              className="bg-surface rounded-lg p-4 border-l-2 border-brand-500"
+              className="bg-[var(--surface)] rounded-lg p-4 border-l-2 border-brand-500"
             >
               <div className="flex items-center gap-3">
                 <Spinner />
-                <span className="text-[14px] font-medium text-ink-primary">
+                <span className="text-[14px] font-medium text-[var(--text-primary)]">
                   Disabling Windows Telemetry Tasks
                 </span>
               </div>
-              <p className="mt-2 text-[12px] text-ink-tertiary pl-7">
+              <p className="mt-2 text-[12px] text-[var(--text-disabled)] pl-7">
                 3 of 5 registry keys
               </p>
             </motion.div>
@@ -170,7 +170,7 @@ export function MissionControlSection() {
           </div>
 
           {/* Stats */}
-          <div className="px-6 py-4 border-t border-border-default">
+          <div className="px-6 py-4 border-t border-[var(--border)]">
             <motion.div
               initial={{ opacity: 0, y: 12 }}
               animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 12 }}
@@ -182,7 +182,7 @@ export function MissionControlSection() {
                   <p className={`text-xl font-mono font-bold ${stat.colorClass}`}>
                     {stat.value}
                   </p>
-                  <p className="text-[11px] text-ink-tertiary uppercase tracking-wider mt-1">
+                  <p className="text-[11px] text-[var(--text-disabled)] uppercase tracking-wider mt-1">
                     {stat.label}
                   </p>
                 </div>
@@ -193,7 +193,7 @@ export function MissionControlSection() {
           {/* Progress */}
           <div className="px-6 pb-5">
             <div
-              className="h-1.5 rounded-full bg-surface-overlay overflow-hidden"
+              className="h-1.5 rounded-full bg-[var(--surface-raised)] overflow-hidden"
               role="progressbar"
               aria-valuenow={67}
               aria-valuemin={0}
@@ -211,7 +211,7 @@ export function MissionControlSection() {
                 }}
               />
             </div>
-            <p className="text-[11px] text-ink-tertiary mt-1.5">67% complete</p>
+            <p className="text-[11px] text-[var(--text-disabled)] mt-1.5">67% complete</p>
           </div>
         </motion.div>
 
@@ -220,7 +220,7 @@ export function MissionControlSection() {
           initial={{ opacity: 0, y: 16 }}
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
           transition={{ duration: duration.slow, ease: easing.enter, delay: 1.0 }}
-          className="mt-10 text-center text-[15px] text-ink-tertiary max-w-2xl mx-auto"
+          className="mt-10 text-center text-[15px] text-[var(--text-disabled)] max-w-2xl mx-auto"
         >
           Every action creates a rollback snapshot. Every result is validated.
         </motion.p>

@@ -76,10 +76,10 @@ export function Logo({ size = "md", className = "", markOnly = false }: LogoProp
     <div className={`inline-flex items-center ${className}`} style={{ gap: s.gap }}>
       <RedcoreMark size={s.mark} />
       <span
-        className="font-bold tracking-[-0.03em] text-ink-primary"
+        className="font-bold tracking-[-0.03em] text-[var(--text-primary)]"
         style={{ fontSize: s.fontSize, lineHeight: 1 }}
       >
-        red<span className="text-accent">core</span>
+        red<span className="text-[var(--accent)]">core</span>
       </span>
     </div>
   );
