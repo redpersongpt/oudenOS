@@ -84,7 +84,7 @@ export default function RegisterPage() {
             Create account
           </motion.h1>
           <motion.p {...fade(0.05)} className="mt-2 text-[14px] text-[var(--text-secondary)] text-center">
-            Join the redcore ecosystem
+            Join the Ouden ecosystem
           </motion.p>
 
           {error && (

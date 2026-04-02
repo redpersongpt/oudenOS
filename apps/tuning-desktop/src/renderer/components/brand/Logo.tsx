@@ -1,4 +1,4 @@
-// redcore Tuning Logo — matches website theme
+// Ouden.Tuning Logo — Ouden mark system
 
 import { motion } from "framer-motion";
 
@@ -8,53 +8,39 @@ interface LogoProps {
   className?: string;
 }
 
+function OudenMark({ size = 32 }: { size?: number }) {
+  const stroke = size >= 32 ? 1.5 : 1;
+  const r = Math.round(size * 0.22);
+  const dot = Math.max(2, Math.round(size * 0.08));
+  const half = size / 2;
+
+  return (
+    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} fill="none">
+      <rect x={stroke / 2} y={stroke / 2} width={size - stroke} height={size - stroke} stroke="var(--color-dark-border)" strokeWidth={stroke} fill="none" />
+      <circle cx={half} cy={half} r={r} stroke="var(--color-brand-500)" strokeWidth={stroke} fill="none" />
+      <circle cx={half} cy={half} r={dot} fill="var(--color-brand-500)" />
+    </svg>
+  );
+}
+
 export function Logo({ size = 32, animated = false, className = "" }: LogoProps) {
   const Wrap = animated ? motion.div : "div";
   const props = animated
-    ? { initial: { opacity: 0, scale: 0.9 }, animate: { opacity: 1, scale: 1 }, transition: { type: "spring" as const, stiffness: 280, damping: 28 } }
+    ? { initial: { opacity: 0 }, animate: { opacity: 1 }, transition: { duration: 0.3, ease: [0.25, 0.1, 0.25, 1] } }
     : {};
 
   return (
     <Wrap {...(props as Record<string, unknown>)} className={`flex items-center gap-2.5 ${className}`}>
-      <LogoMark size={size} />
+      <OudenMark size={size} />
       <span className="text-[13px] font-bold tracking-[-0.02em] text-neutral-300">
-        red<span className="text-brand-500">core</span><span className="font-normal text-neutral-500"> · Tuning</span>
+        Ouden<span className="font-normal text-neutral-500">.Tuning</span>
       </span>
     </Wrap>
   );
 }
 
-export function LogoMark({ size = 32 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 64 64" fill="none">
-      <path d="M32 4L56.5 18v28L32 60 7.5 46V18L32 4z" fill="#E8254B" opacity="0.12" />
-      <path d="M32 4L56.5 18v28L32 60 7.5 46V18L32 4z" stroke="#E8254B" strokeWidth="2" fill="none" />
-      <circle cx="32" cy="32" r="17" stroke="#E8254B" strokeWidth="2.5" fill="none" opacity="0.5" />
-      <circle cx="32" cy="32" r="10" fill="#E8254B" />
-    </svg>
-  );
-}
+export { OudenMark as LogoMark };
 
 export function LogoHero({ size = 80 }: { size?: number }) {
-  return (
-    <motion.div
-      initial={{ scale: 0.8, opacity: 0 }}
-      animate={{ scale: 1, opacity: 1 }}
-      transition={{ type: "spring", stiffness: 300, damping: 20 }}
-      className="relative"
-    >
-      <motion.div
-        animate={{ scale: [1, 1.15, 1], opacity: [0.2, 0.4, 0.2] }}
-        transition={{ duration: 4, ease: "easeInOut", repeat: Infinity }}
-        className="absolute inset-0 rounded-lg blur-xl"
-        style={{ width: size, height: size, background: "rgba(232,37,75,0.2)" }}
-      />
-      <svg width={size} height={size} viewBox="0 0 64 64" fill="none" className="relative">
-        <path d="M32 4L56.5 18v28L32 60 7.5 46V18L32 4z" fill="#E8254B" opacity="0.15" />
-        <path d="M32 4L56.5 18v28L32 60 7.5 46V18L32 4z" stroke="#E8254B" strokeWidth="1.5" fill="none" />
-        <circle cx="32" cy="32" r="14" stroke="#E8254B" strokeWidth="1.5" fill="none" opacity="0.4" />
-        <circle cx="32" cy="32" r="8" fill="#E8254B" />
-      </svg>
-    </motion.div>
-  );
+  return <OudenMark size={size} />;
 }

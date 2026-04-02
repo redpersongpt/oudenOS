@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Space_Grotesk, Space_Mono } from "next/font/google";
+import { Space_Grotesk, Space_Mono, Doto } from "next/font/google";
 import "./globals.css";
 import { SmoothScrollProvider } from "@/components/providers/SmoothScrollProvider";
 import { SessionProvider } from "@/components/providers/SessionProvider";
@@ -17,14 +17,21 @@ const spaceMono = Space_Mono({
   weight: ["400", "700"],
 });
 
+const doto = Doto({
+  variable: "--font-doto",
+  subsets: ["latin"],
+  display: "swap",
+  weight: ["400", "500", "600", "700"],
+});
+
 export const metadata: Metadata = {
-  metadataBase: new URL("https://redcoreos.net"),
+  metadataBase: new URL("https://ouden.cc"),
   title: {
-    default: "redcore — Windows Optimization & Optimization Tools",
-    template: "%s | redcore",
+    default: "Ouden — Windows Optimization",
+    template: "%s | Ouden",
   },
   description:
-    "Hardware-based Windows optimization and in-place optimization. redcore scans your hardware, builds a profile-specific plan, and applies reversible changes. Free OS optimization + $12.99 Tuning.",
+    "Hardware-based Windows optimization and in-place optimization. Ouden scans your hardware, builds a profile-specific plan, and applies reversible changes. Free OS optimization + paid Tuning.",
   keywords: [
     "Windows optimizer",
     "Windows debloat tool",
@@ -37,9 +44,9 @@ export const metadata: Metadata = {
     "rollback-safe optimizer",
     "hardware-based optimization",
   ],
-  authors: [{ name: "redcore" }],
-  creator: "redcore",
-  publisher: "redcore",
+  authors: [{ name: "Ouden" }],
+  creator: "Ouden",
+  publisher: "Ouden",
   icons: {
     icon: [
       { url: "/favicon.ico", sizes: "any" },
@@ -49,27 +56,27 @@ export const metadata: Metadata = {
     apple: "/apple-icon.png",
   },
   openGraph: {
-    title: "redcore — Windows Optimization & Optimization Tools",
+    title: "Ouden — Windows Optimization",
     description:
       "Scan your hardware. Build a plan. Transform your system. Free OS optimization + paid Tuning",
     type: "website",
     locale: "en_US",
-    siteName: "redcore",
-    url: "https://redcoreos.net",
+    siteName: "Ouden",
+    url: "https://ouden.cc",
     images: [
       {
         url: "/redcore-logo.png",
         width: 1200,
         height: 360,
-        alt: "redcore logo",
+        alt: "Ouden logo",
       },
     ],
   },
   twitter: {
     card: "summary",
-    title: "redcore — Windows Optimization & Optimization Tools",
+    title: "Ouden — Windows Optimization",
     description:
-      "Hardware-based Windows optimization. Free OS optimization + $12.99 Tuning",
+      "Hardware-based Windows optimization. Free OS optimization + paid Tuning",
     images: ["/redcore-logo.png"],
   },
   robots: {
@@ -81,7 +88,7 @@ export const metadata: Metadata = {
     },
   },
   alternates: {
-    canonical: "https://redcoreos.net",
+    canonical: "https://ouden.cc",
   },
 };
 
@@ -93,7 +100,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${spaceGrotesk.variable} ${spaceMono.variable}`}
+      className={`${spaceGrotesk.variable} ${spaceMono.variable} ${doto.variable}`}
     >
       <head>
         <script
@@ -102,9 +109,9 @@ export default function RootLayout({
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "Organization",
-              name: "redcore",
-              url: "https://redcoreos.net",
-              logo: "https://redcoreos.net/redcore-logo.png",
+              name: "Ouden",
+              url: "https://ouden.cc",
+              logo: "https://ouden.cc/redcore-logo.png",
               description:
                 "Hardware-based Windows optimization and optimization tools.",
             }),
@@ -116,8 +123,8 @@ export default function RootLayout({
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "WebSite",
-              name: "redcore",
-              url: "https://redcoreos.net",
+              name: "Ouden",
+              url: "https://ouden.cc",
             }),
           }}
         />

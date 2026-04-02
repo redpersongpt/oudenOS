@@ -80,7 +80,7 @@ export default function SetupPage() {
             {...fade(0.05)}
             className="mt-2 text-[14px] text-[var(--text-secondary)] text-center"
           >
-            Welcome to redcore, {session.user.email}
+            Welcome to Ouden, {session.user.email}
           </motion.p>
 
           {error && (

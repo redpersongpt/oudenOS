@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
         price_data: {
           currency: "usd",
           product_data: {
-            name: "redcore · Tuning — Premium License",
+            name: "Ouden.Tuning — Premium License",
             description: "One-time purchase. Lifetime license key for one machine.",
           },
           unit_amount: TUNING_PRICE_CENTS,

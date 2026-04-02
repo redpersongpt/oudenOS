@@ -25,7 +25,7 @@ export function TrustSection() {
               Everything reversible.
             </h2>
             <p className="mt-6 text-[0.95rem] leading-[1.75] text-[var(--text-secondary)]">
-              redcore shows you exactly what it&apos;ll do before it
+              Ouden shows you exactly what it&apos;ll do before it
               does it. Every registry key, every service change, every removal
               — visible in real time. Not buried in logs.
             </p>
@@ -53,7 +53,7 @@ export function TrustSection() {
               },
               {
                 title: "Validation pass",
-                body: "After execution, redcore reads back the registry to verify changes applied correctly. Benchmark comparison confirms the impact.",
+                body: "After execution, Ouden reads back the registry to verify changes applied correctly. Benchmark comparison confirms the impact.",
               },
             ].map((item, i) => (
               <motion.div

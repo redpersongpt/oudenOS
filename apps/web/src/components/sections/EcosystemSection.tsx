@@ -68,27 +68,27 @@ function EcosystemDiagram({ inView }: { inView: boolean }) {
       badge: "Foundation",
       badgeStyle: "text-[var(--text-disabled)] bg-transparent border border-border/50",
       pills: ["Stock install", "Untouched data", "Your apps"],
-      desc: "Left unchanged — redcore only changes what needs changing",
+      desc: "Left unchanged — Ouden only changes what needs changing",
       borderStyle: "border-border/40",
       bgStyle: "bg-[var(--black)]/60",
       delay: 0.1,
     },
     {
-      label: "redcore · OS",
+      label: "OudenOS",
       badge: "Free",
       badgeStyle: "text-[var(--text-secondary)] bg-ink-muted/20 border border-border",
       pills: ["150+ actions", "8 profiles", "Privacy", "Rollback", "Work-safe"],
-      desc: "redcore layer — debloat, optimize, clean, protect",
+      desc: "Ouden layer — debloat, optimize, clean, protect",
       borderStyle: "border-border",
       bgStyle: "bg-surface/80",
       delay: 0.25,
     },
     {
-      label: "redcore · Tuning",
+      label: "Ouden.Tuning",
       badge: "$12.99 one-time",
       badgeStyle: "text-[var(--accent)] bg-[var(--accent)]/10 border border-accent/20",
       pills: ["CPU tuning", "GPU latency", "Benchmark lab", "BIOS guidance", "Timer resolution"],
-      desc: "Deep optimization layer — adds benchmark-validated hardware tuning on top",
+      desc: "Deep optimization layer — adds benchmark-validated hardware tuning on top of OudenOS",
       borderStyle: "border-accent/40",
       bgStyle: "bg-gradient-to-b from-[#2a2229]/80 to-surface/60",
       delay: 0.4,
@@ -130,7 +130,7 @@ function EcosystemDiagram({ inView }: { inView: boolean }) {
                 {/* Subtle glow on top layer */}
                 {i === 0 && (
                   <div className="pointer-events-none absolute -top-16 right-0 h-32 w-64 rounded-full opacity-[0.08]"
-                    style={{ background: "radial-gradient(circle, #E8254B, transparent 60%)" }} />
+                    style={{ background: "radial-gradient(circle, #D71921, transparent 60%)" }} />
                 )}
 
               <div className="flex flex-col sm:flex-row sm:items-center gap-4">
@@ -230,11 +230,11 @@ function TuningSection() {
   return (
     <section id="tuning" ref={ref} className="relative py-28 lg:py-36">
       <div className="pointer-events-none absolute right-0 top-1/2 -translate-y-1/2 h-[500px] w-[500px] rounded-full opacity-[0.03]"
-        style={{ background: "radial-gradient(circle, #E8254B, transparent 65%)" }} />
+        style={{ background: "radial-gradient(circle, #D71921, transparent 65%)" }} />
 
       <div className="relative mx-auto max-w-[1100px] px-6 lg:px-12">
         <SectionHeader
-          label="redcore · Tuning"
+          label="Ouden.Tuning"
           title="Guided machine optimization with benchmark-driven validation."
           subtitle="Every step wizard-led, every change reversible."
           inView={inView}
@@ -258,11 +258,11 @@ function OSSection() {
   return (
     <section id="os" ref={ref} className="relative py-28 lg:py-36">
       <div className="pointer-events-none absolute left-0 top-1/2 -translate-y-1/2 h-[500px] w-[500px] rounded-full opacity-[0.03]"
-        style={{ background: "radial-gradient(circle, #E8254B, transparent 65%)" }} />
+        style={{ background: "radial-gradient(circle, #D71921, transparent 65%)" }} />
 
       <div className="relative mx-auto max-w-[1100px] px-6 lg:px-12">
         <SectionHeader
-          label="redcore · OS"
+          label="OudenOS"
           title="Fix your Windows without reinstalling."
           subtitle="Scans your PC, shows you exactly what it'll change, and lets you undo everything."
           inView={inView}
@@ -289,7 +289,7 @@ function EcosystemIntro() {
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-surface/30 to-transparent" />
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[500px] w-[900px] rounded-full opacity-[0.03]"
-          style={{ background: "radial-gradient(ellipse, #E8254B, transparent 55%)" }} />
+          style={{ background: "radial-gradient(ellipse, #D71921, transparent 55%)" }} />
       </div>
 
       <div className="relative mx-auto max-w-[1100px] px-6 lg:px-12">

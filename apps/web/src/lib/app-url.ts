@@ -1,4 +1,4 @@
-const PROD_APP_URL = "https://redcoreos.net";
+const PROD_APP_URL = "https://ouden.cc";
 
 export function getAppUrl(fallbackOrigin?: string): string {
   const baseUrl =

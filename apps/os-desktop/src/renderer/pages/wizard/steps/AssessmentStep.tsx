@@ -28,7 +28,7 @@ type Status = "idle" | "scanning" | "done";
 
 const DEMO_PROFILE: DetectedProfile = {
   id: "gaming_desktop", label: "Gaming Desktop", confidence: 92,
-  isWorkPc: false, machineName: "REDCORE-PC",
+  isWorkPc: false, machineName: "OUDEN-PC",
   signals: ["Steam detected", "No domain join", "NVIDIA GPU", "32 GB RAM"],
   accentColor: "text-[var(--accent)]", windowsBuild: 22631,
 };
@@ -120,7 +120,7 @@ function normalizeDetectedProfileFromService(assessmentValue: unknown, classific
       label: readString(assessmentValue.label) ?? "Gaming Desktop",
       confidence: normalizeConfidence(assessmentValue.confidence),
       isWorkPc: readBoolean(assessmentValue.isWorkPc) ?? false,
-      machineName: readString(assessmentValue.machineName) ?? "REDCORE-PC",
+      machineName: readString(assessmentValue.machineName) ?? "OUDEN-PC",
       signals: normalizeSignals(assessmentValue.signals),
       accentColor: readString(assessmentValue.accentColor) ?? "text-[var(--accent)]",
       windowsBuild: readWindowsBuild(assessmentValue),
@@ -132,7 +132,7 @@ function normalizeDetectedProfileFromService(assessmentValue: unknown, classific
   const workSignals = isObject(assessmentValue.workSignals) ? assessmentValue.workSignals : {};
   const profileId = readString(classification.primary) ?? "gaming_desktop";
   const isWorkPc = profileId === "work_pc" || readBoolean(workIndicators.isWorkPc) === true || readBoolean(workSignals.domainJoined) === true;
-  const machineName = readString(hardware.hostname) ?? readString(assessmentValue.machineName) ?? readString(assessmentValue.hostname) ?? "REDCORE-PC";
+  const machineName = readString(hardware.hostname) ?? readString(assessmentValue.machineName) ?? readString(assessmentValue.hostname) ?? "OUDEN-PC";
   const signals = [...normalizeSignals(classification.signals), ...normalizeSignals(workIndicators.indicators), ...deriveSignalsFromAssessment(assessmentValue, isWorkPc)];
   return {
     id: profileId,

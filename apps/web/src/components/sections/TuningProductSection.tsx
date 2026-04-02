@@ -31,7 +31,7 @@ export function TuningProductSection() {
               transition={{ duration: duration.slow, ease: easing.enter }}
             >
               <h2 className="text-4xl md:text-5xl font-bold tracking-tight">
-                redcore · Tuning
+                Ouden.Tuning
               </h2>
               <p className="mt-4 text-lg text-[var(--text-secondary)] max-w-xl">
                 Guided machine optimization with benchmark-driven validation.

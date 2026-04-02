@@ -280,7 +280,7 @@ export function BenchmarkSection() {
       <div
         className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[600px] w-[800px] rounded-full opacity-[0.03]"
         style={{
-          background: "radial-gradient(ellipse, #E8254B, transparent 55%)",
+          background: "radial-gradient(ellipse, #D71921, transparent 55%)",
         }}
       />
 

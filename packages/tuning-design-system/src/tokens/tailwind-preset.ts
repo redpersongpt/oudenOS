@@ -49,6 +49,7 @@ const preset: Partial<Config> = {
       fontFamily: {
         sans: [fontFamily.sans],
         mono: [fontFamily.mono],
+        display: [(fontFamily as Record<string, string>).display ?? '"Doto", monospace'],
       },
       fontSize: {
         xs:    fontSize.xs,

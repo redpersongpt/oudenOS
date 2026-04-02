@@ -26,10 +26,10 @@ export function DonateSection() {
         >
           <Heart size={28} className="text-brand-500 mx-auto mb-4" />
           <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-[var(--text-primary)]">
-            Support redcore · OS
+            Support OudenOS
           </h2>
           <p className="mt-3 text-[16px] text-[var(--text-secondary)] max-w-lg mx-auto">
-            redcore · OS is free. Donations help us maintain the project,
+            OudenOS is free. Donations help us maintain the project,
             ship new features, and keep it independent.
           </p>
         </motion.div>
@@ -86,7 +86,7 @@ export function DonateSection() {
           transition={{ duration: duration.slow, ease: easing.enter, delay: 0.4 }}
           className="mt-6 text-[12px] text-[var(--text-disabled)]"
         >
-          Every contribution counts. Thank you for supporting redcore.
+          Every contribution counts. Thank you for supporting Ouden.
         </motion.p>
       </div>
     </section>

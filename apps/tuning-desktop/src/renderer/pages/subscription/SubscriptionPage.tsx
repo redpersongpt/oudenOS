@@ -66,7 +66,7 @@ export function SubscriptionPage() {
   async function handleActivate() {
     const normalized = licenseKey.trim().toUpperCase();
     if (!normalized) {
-      toast.error("License Key Required", "Enter your redcore Tuning license key first.");
+      toast.error("License Key Required", "Enter your Ouden.Tuning license key first.");
       return;
     }
 
@@ -132,7 +132,7 @@ export function SubscriptionPage() {
         <div className="flex-1">
           <h1 className="text-base font-semibold text-ink">License</h1>
           <p className="text-xs text-ink-tertiary">
-            redcore Tuning is free by default. Premium is a $12.99 one-time license key.
+            Ouden.Tuning is free by default. Premium is a $12.99 one-time license key.
           </p>
         </div>
         <TierBadge tier={currentTier} size="md" />
@@ -193,7 +193,7 @@ export function SubscriptionPage() {
               className="w-full"
               onClick={() => openExternalUrl(TUNING_SITE_URL)}
             >
-              Buy On redcoreos.net
+              Buy Ouden.Tuning
               <ExternalLink className="h-3.5 w-3.5" />
             </Button>
           </CardContent>

@@ -11,19 +11,19 @@ export const easing = {
 // Duration Tokens
 export const duration = {
   fast: 0.15,
-  normal: 0.3,
-  slow: 0.5,
-  slower: 0.7,
-  dramatic: 1.0,
-  hero: 1.4,
+  normal: 0.25,
+  slow: 0.4,
+  slower: 0.6,
+  dramatic: 0.8,
+  hero: 1.0,
 };
 
-// Spring Presets
+// Spring Presets (kept for compatibility but no bounce/snappy springs)
 export const spring = {
-  snappy: { type: "spring" as const, stiffness: 550, damping: 32, mass: 1 },
-  smooth: { type: "spring" as const, stiffness: 280, damping: 28, mass: 1 },
-  gentle: { type: "spring" as const, stiffness: 180, damping: 22, mass: 1 },
-  bounce: { type: "spring" as const, stiffness: 340, damping: 16, mass: 1 },
+  snappy: { type: "tween" as const, duration: 0.15, ease: [0.25, 0.1, 0.25, 1.0] as [number, number, number, number] },
+  smooth: { type: "tween" as const, duration: 0.25, ease: [0.25, 0.1, 0.25, 1.0] as [number, number, number, number] },
+  gentle: { type: "tween" as const, duration: 0.4, ease: [0.0, 0.0, 0.2, 1.0] as [number, number, number, number] },
+  bounce: { type: "tween" as const, duration: 0.25, ease: [0.0, 0.0, 0.2, 1.0] as [number, number, number, number] },
 };
 
 // Transition Presets
@@ -56,7 +56,7 @@ export const slideUpSubtle: Variants = {
 // Scale In
 export const scaleIn: Variants = {
   hidden: { opacity: 0, scale: 0.92 },
-  visible: { opacity: 1, scale: 1, transition: spring.smooth },
+  visible: { opacity: 1, scale: 1, transition: { duration: duration.normal, ease: easing.enter } },
 };
 
 // Stagger Container
@@ -78,26 +78,25 @@ export const staggerChild: Variants = {
   },
 };
 
-// Card Hover
+// Card Hover — flat opacity change, no spring
 export const cardHover = {
-  rest: { y: 0, transition: spring.snappy },
-  hover: { y: -4, transition: spring.snappy },
+  rest: { opacity: 1, transition: { duration: duration.fast, ease: easing.default } },
+  hover: { opacity: 0.88, transition: { duration: duration.fast, ease: easing.default } },
 };
 
-// Button Press
+// Button Press — minimal, no spring
 export const buttonPress = {
-  whileTap: { scale: 0.97 },
-  transition: spring.snappy,
+  whileTap: { scale: 0.98 },
+  transition: { duration: duration.fast, ease: easing.default },
 };
 
 // Hero Text Reveal
 export const heroTextReveal: Variants = {
-  hidden: { opacity: 0, y: 60, filter: "blur(8px)" },
+  hidden: { opacity: 0, y: 30 },
   visible: {
     opacity: 1,
     y: 0,
-    filter: "blur(0px)",
-    transition: { duration: duration.dramatic, ease: easing.emphasized },
+    transition: { duration: duration.slow, ease: easing.enter },
   },
 };
 

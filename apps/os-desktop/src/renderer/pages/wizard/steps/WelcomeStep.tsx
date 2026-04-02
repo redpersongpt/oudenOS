@@ -70,7 +70,7 @@ export function WelcomeStep() {
 
         {/* Doto display — hero. 48px. The ONE thing you see first. */}
         <h1 className="font-display text-display tracking-tight" style={{ color: "var(--text-display)" }}>
-          redcore
+          Ouden
         </h1>
 
         {/* SECONDARY — label */}

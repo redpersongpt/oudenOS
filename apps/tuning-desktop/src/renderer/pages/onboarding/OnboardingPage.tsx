@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import type { Variants } from "framer-motion";
 import {
-  Zap,
   Gamepad2,
   BarChart3,
   Gauge,
@@ -22,6 +21,7 @@ import {
   Crown,
   CheckCircle2,
 } from "lucide-react";
+import { LogoMark } from "@/components/brand/Logo";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { ProgressBar } from "@/components/ui/ProgressBar";
@@ -239,16 +239,12 @@ export function OnboardingPage() {
           transition={{ duration: 0.5, delay: 0.1 }}
           className="flex items-center gap-3"
         >
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-500">
-            <Zap
-              className="text-white"
-              strokeWidth={2.5}
-              style={{ width: 18, height: 18 }}
-            />
+          <div className="flex h-9 w-9 items-center justify-center">
+            <LogoMark size={28} />
           </div>
           <div>
-            <p className="text-sm font-bold tracking-tight text-white">
-              redcore<span className="text-brand-400"> · Tuning</span>
+            <p className="text-sm font-bold tracking-tight text-neutral-300">
+              Ouden<span className="font-normal text-neutral-500">.Tuning</span>
             </p>
             <p className="text-[10px] uppercase tracking-widest text-neutral-600">
               Precision Performance
@@ -341,15 +337,15 @@ export function OnboardingPage() {
               >
                 <motion.div
                   variants={itemVariant}
-                  className="flex h-16 w-16 items-center justify-center rounded-lg bg-brand-500 shadow-lg shadow-brand-500/30"
+                  className="flex items-center justify-center"
                 >
-                  <Zap className="h-8 w-8 text-white" strokeWidth={2.5} />
+                  <LogoMark size={64} />
                 </motion.div>
                 <motion.div variants={itemVariant}>
                   <h1 className="text-3xl font-bold tracking-tight text-ink">
                     Welcome to
                     <br />
-                    <span className="text-brand-500">redcore · Tuning</span>
+                    <span className="text-brand-500">Ouden.Tuning</span>
                   </h1>
                   <p className="mt-3 text-base leading-relaxed text-ink-secondary">
                     Precision performance optimization for Windows. We'll scan
@@ -757,14 +753,14 @@ export function OnboardingPage() {
               >
                 <motion.div
                   variants={itemVariant}
-                  className="mx-auto flex h-20 w-20 items-center justify-center rounded-lg bg-brand-500 shadow-xl shadow-brand-500/30"
+                  className="mx-auto flex h-20 w-20 items-center justify-center"
                 >
                   <motion.div
                     initial={{ rotate: -10, scale: 0.8 }}
                     animate={{ rotate: 0, scale: 1 }}
                     transition={{ ...spring.bounce, delay: 0.2 }}
                   >
-                    <Zap className="h-10 w-10 text-white" strokeWidth={2.5} />
+                    <LogoMark size={40} />
                   </motion.div>
                 </motion.div>
 

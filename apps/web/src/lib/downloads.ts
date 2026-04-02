@@ -3,7 +3,7 @@
 // All download buttons on the site must use these functions.
 // Never hardcode version strings or download URLs in pages.
 
-const OS_LATEST_URL = "https://redcoreos.net/downloads/os/latest.json";
+const OS_LATEST_URL = "https://ouden.cc/downloads/os/latest.json";
 
 export interface ReleaseManifest {
   product: string;

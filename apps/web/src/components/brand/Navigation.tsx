@@ -193,7 +193,7 @@ function MobileOverlay({
                 }}
                 className="inline-flex items-center gap-2 rounded-lg bg-[var(--accent)] px-6 py-2.5 text-[13px] font-semibold text-white transition-all hover:bg-[var(--accent)]-dim"
               >
-                Get redcore
+                Get Ouden
               </a>
             </motion.div>
           </nav>
@@ -242,7 +242,7 @@ export function Navigation() {
           className={[
             "transition-all duration-300",
             isScrolled
-              ? "glass border-b border-border/60 shadow-lg shadow-black/20"
+              ? "bg-[#000000]/95 border-b border-[var(--color-border-subtle)]"
               : "border-b border-transparent bg-transparent",
           ].join(" ")}
         >

@@ -15,7 +15,7 @@ import { Shield, RotateCcw } from "lucide-react";
 export const metadata: Metadata = {
   title: "Windows 11 Debloat — Remove Copilot, Recall, Telemetry",
   description:
-    "Remove Copilot, Recall, telemetry, widgets, and Edge nags from Windows 11. redcore OS handles Windows 11 specific bloat with guided, reversible removal.",
+    "Remove Copilot, Recall, telemetry, widgets, and Edge nags from Windows 11. OudenOS handles Windows 11 specific bloat with guided, reversible removal.",
   keywords: [
     "windows 11 debloat",
     "debloat windows 11",
@@ -25,14 +25,14 @@ export const metadata: Metadata = {
     "disable windows 11 bloatware",
   ],
   alternates: {
-    canonical: "https://redcoreos.net/windows-11-debloat",
+    canonical: "https://ouden.cc/windows-11-debloat",
   },
   openGraph: {
     title:
-      "Windows 11 Debloat — Remove Copilot, Recall, Telemetry | redcore",
+      "Windows 11 Debloat — Remove Copilot, Recall, Telemetry | Ouden",
     description:
       "Guided removal of Windows 11 specific bloat including Copilot, Recall, telemetry, and Edge browser forcing.",
-    url: "https://redcoreos.net/windows-11-debloat",
+    url: "https://ouden.cc/windows-11-debloat",
     type: "article",
   },
 };
@@ -46,7 +46,7 @@ export default function Windows11DebloatPage() {
           <PageHero
             overline="Windows 11"
             title="Windows 11 Debloat — Remove Copilot, Recall, Telemetry"
-            description="Windows 11 introduced a new generation of built-in features that many users did not ask for. From AI assistants to screenshot surveillance, the default installation is more opinionated than any previous Windows release. Here is what ships with Windows 11 that you might want to remove, and how redcore handles each one."
+            description="Windows 11 introduced a new generation of built-in features that many users did not ask for. From AI assistants to screenshot surveillance, the default installation is more opinionated than any previous Windows release. Here is what ships with Windows 11 that you might want to remove, and how Ouden handles each one."
           />
 
           <QuickSummary
@@ -93,7 +93,7 @@ export default function Windows11DebloatPage() {
           <TrustBlock
             icon={<Shield className="h-5 w-5" />}
             title="Profile-aware removal"
-            description="redcore does not apply a universal checklist. The profile system ensures that removals match your actual use case. Gaming keeps game services. Work PC keeps corporate tools. Privacy maximizes telemetry removal. Every action is reviewable before execution."
+            description="Ouden does not apply a universal checklist. The profile system ensures that removals match your actual use case. Gaming keeps game services. Work PC keeps corporate tools. Privacy maximizes telemetry removal. Every action is reviewable before execution."
           />
 
           <TrustBlock
@@ -104,9 +104,9 @@ export default function Windows11DebloatPage() {
 
           <CTAStrip
             title="Clean up your Windows 11 installation"
-            description="redcore OS scans your system, identifies what to remove, and lets you review everything before applying. Free to use."
+            description="OudenOS scans your system, identifies what to remove, and lets you review everything before applying. Free to use."
             primaryAction={{
-              label: "Download redcore OS",
+              label: "Download OudenOS",
               href: "/downloads",
             }}
             secondaryAction={{
@@ -120,18 +120,18 @@ export default function Windows11DebloatPage() {
               {
                 title: "Windows Debloat",
                 description:
-                  "General guide to debloating Windows 10 and 11 — what to remove, what to keep, and how redcore handles it.",
+                  "General guide to debloating Windows 10 and 11 — what to remove, what to keep, and how Ouden handles it.",
                 href: "/windows-debloat",
               },
               {
-                title: "redcore OS",
+                title: "OudenOS",
                 description:
                   "Free Windows optimization tool. 8 profiles, 250 actions, full rollback support.",
-                href: "/redcore-os",
+                href: "/Ouden-os",
               },
               {
                 title: "Downloads",
-                description: "Download the latest redcore OS build. Free, no account required.",
+                description: "Download the latest OudenOS build. Free, no account required.",
                 href: "/downloads",
               },
               {

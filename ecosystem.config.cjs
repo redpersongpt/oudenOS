@@ -46,7 +46,7 @@ const webAppUrl =
   webEnvFile.APP_URL ??
   webEnvFile.AUTH_URL ??
   webEnvFile.NEXTAUTH_URL ??
-  "https://redcoreos.net";
+  "https://ouden.cc";
 
 const webDatabaseUrl =
   `file:${path.join(__dirname, "apps/web/prisma/prisma/dev.db")}`;
