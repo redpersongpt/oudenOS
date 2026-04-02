@@ -129,7 +129,9 @@ actions:
     blockedProfiles:
       - office_laptop
       - gaming_laptop
-    powerChanges:
-      - settingPath: "device_power_management"
-        value: "disabled"
-        scope: "all_devices"
+    powerChanges: []
+    powerShellCommands:
+      - |
+        # Disable "Allow the computer to turn off this device to save power" for all devices
+        Get-WmiObject -Class MSPower_DeviceEnable -Namespace root\wmi |
+          ForEach-Object { if ($_.Enable) { $_.Enable = $false; $_.Put() | Out-Null } }
