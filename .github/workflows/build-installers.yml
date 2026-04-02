@@ -80,16 +80,11 @@ jobs:
             ~/.cargo/registry
             ~/.cargo/git
             services/os-service/target
-            services/tuning-service/target
-          key: rust-windows-debug-${{ hashFiles('services/*/Cargo.toml') }}
-          restore-keys: rust-windows-debug-
+          key: rust-os-debug-${{ hashFiles('services/os-service/Cargo.toml') }}
+          restore-keys: rust-os-debug-
 
       - name: Build OS service (debug)
         working-directory: services/os-service
-        run: cargo build
-
-      - name: Build Tuning service (debug)
-        working-directory: services/tuning-service
         run: cargo build
 
       - name: Run OS service smoke test
