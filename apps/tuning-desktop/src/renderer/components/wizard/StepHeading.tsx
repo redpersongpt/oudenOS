@@ -33,7 +33,7 @@ export function StepHeading({
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.25 }}
-          className={`mb-5 flex h-12 w-12 items-center justify-center rounded-2xl border ${iconBg}`}
+          className={`mb-5 flex h-12 w-12 items-center justify-center rounded-lg border ${iconBg}`}
         >
           <Icon className={`h-6 w-6 ${iconColor}`} strokeWidth={1.5} />
         </motion.div>

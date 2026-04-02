@@ -122,7 +122,7 @@ export function SettingsPage() {
         return (
           <div className="space-y-4">
             {/* Avatar + name */}
-            <div className="flex items-center gap-4 rounded-xl bg-surface-overlay border border-border p-4">
+            <div className="flex items-center gap-4 rounded-lg bg-surface-overlay border border-border p-4">
               <div className="relative flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-brand-400 to-brand-600 shadow-sm">
                 <span className="text-lg font-bold text-white">
                   {mockLicense.email[0]?.toUpperCase()}
@@ -155,9 +155,9 @@ export function SettingsPage() {
       case "license":
         return (
           <div className="space-y-4">
-            <div className="flex items-center justify-between rounded-xl bg-brand-500/10 border border-brand-500/20 p-4">
+            <div className="flex items-center justify-between rounded-lg bg-brand-500/10 border border-brand-500/20 p-4">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-500/20">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-brand-500/20">
                   <Shield className="h-5 w-5 text-brand-400" />
                 </div>
                 <div>
@@ -300,7 +300,7 @@ export function SettingsPage() {
               </SettingRow>
             </div>
 
-            <div className="rounded-xl border border-amber-500/20 bg-amber-500/10 p-4">
+            <div className="rounded-lg border border-amber-500/20 bg-amber-500/10 p-4">
               <div className="flex items-start gap-3">
                 <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-amber-500/20">
                   <Wrench className="h-4 w-4 text-amber-400" />
@@ -323,7 +323,7 @@ export function SettingsPage() {
         return (
           <div className="space-y-4">
             <div className="flex items-center gap-4">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-500/10 border border-brand-500/20">
+              <div className="flex h-14 w-14 items-center justify-center rounded-lg bg-brand-500/10 border border-brand-500/20">
                 <Monitor className="h-7 w-7 text-brand-500" strokeWidth={1.5} />
               </div>
               <div>
@@ -332,7 +332,7 @@ export function SettingsPage() {
               </div>
             </div>
 
-            <div className="rounded-xl border border-border bg-surface-overlay divide-y divide-border px-3">
+            <div className="rounded-lg border border-border bg-surface-overlay divide-y divide-border px-3">
               {[
                 { label: "Version",    value: "1.0.0-beta.3"         },
                 { label: "Electron",   value: "33.2.0"               },
@@ -369,7 +369,7 @@ export function SettingsPage() {
       <motion.div variants={staggerChild}>
         <Card>
           <div className="flex items-center gap-3 px-5 py-4">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-500/10 border border-brand-500/20">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-brand-500/10 border border-brand-500/20">
               <Settings2 className="h-5 w-5 text-brand-500" strokeWidth={1.5} />
             </div>
             <div>

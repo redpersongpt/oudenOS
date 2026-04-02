@@ -70,7 +70,7 @@ const ARCHETYPE_STRATEGY: Record<string, string[]> = {
 function DarkSkeleton({ className = "" }: { className?: string }) {
   return (
     <motion.div
-      className={`rounded-xl bg-white/[0.04] ${className}`}
+      className={`rounded-lg bg-white/[0.04] ${className}`}
       animate={{ opacity: [0.4, 0.7, 0.4] }}
       transition={{ duration: 1.6, ease: "easeInOut", repeat: Infinity }}
     />
@@ -157,7 +157,7 @@ export function ProfileStep() {
               key="error"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="flex items-center gap-3 rounded-xl border border-red-500/20 bg-red-500/[0.04] px-4 py-4"
+              className="flex items-center gap-3 rounded-lg border border-red-500/20 bg-red-500/[0.04] px-4 py-4"
             >
               <AlertTriangle className="h-5 w-5 shrink-0 text-red-400" strokeWidth={1.5} />
               <p className="text-sm text-red-300">
@@ -175,7 +175,7 @@ export function ProfileStep() {
               {/* Hero archetype card */}
               <motion.div
                 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }}
-                className={`rounded-xl border bg-white/[0.04] p-6 ${borderClass}`}
+                className={`rounded-lg border bg-white/[0.04] p-6 ${borderClass}`}
               >
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex items-start gap-5">
@@ -235,7 +235,7 @@ export function ProfileStep() {
               {strategy.length > 0 && (
                 <motion.div
                   initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }}
-                  className="rounded-xl border border-white/[0.06] bg-white/[0.03] p-5 space-y-3"
+                  className="rounded-lg border border-white/[0.06] bg-white/[0.03] p-5 space-y-3"
                 >
                   <p className="text-xs font-semibold uppercase tracking-widest text-ink-tertiary">
                     What we will focus on

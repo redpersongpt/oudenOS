@@ -92,7 +92,7 @@ export function ExpertWarningModal({
               exit="exit"
               className="
                 relative w-full max-w-md overflow-hidden
-                rounded-2xl border border-amber-800/60
+                rounded-lg border border-amber-800/60
                 bg-surface-raised shadow-modal
                 ring-1 ring-amber-900/30
               "
@@ -122,7 +122,7 @@ export function ExpertWarningModal({
                 {/* Icon + title */}
                 <div className="flex items-start gap-4 pr-8">
                   <div
-                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl
+                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg
                                 bg-amber-900/40 border border-amber-800/70"
                     aria-hidden="true"
                   >

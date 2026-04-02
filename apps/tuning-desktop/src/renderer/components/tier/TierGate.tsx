@@ -97,7 +97,7 @@ export function TierGate({
 
   if (variant === "blur") {
     return (
-      <div className="relative overflow-hidden rounded-xl">
+      <div className="relative overflow-hidden rounded-lg">
         <div
           className="pointer-events-none select-none"
           style={{ filter: "blur(4px)", opacity: 0.25 }}
@@ -141,7 +141,7 @@ function LockOverlay({
 
   return (
     <motion.div
-      className={`${absolute ? "absolute inset-0" : ""} flex flex-col items-center justify-center gap-3 rounded-xl border ${glow} backdrop-blur-sm p-6`}
+      className={`${absolute ? "absolute inset-0" : ""} flex flex-col items-center justify-center gap-3 rounded-lg border ${glow} backdrop-blur-sm p-6`}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.2 }}
@@ -173,7 +173,7 @@ function InlinePrompt({
 
   return (
     <motion.div
-      className={`flex items-center gap-3 rounded-xl border ${glow} px-4 py-3`}
+      className={`flex items-center gap-3 rounded-lg border ${glow} px-4 py-3`}
       initial={{ opacity: 0, y: 4 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.18 }}

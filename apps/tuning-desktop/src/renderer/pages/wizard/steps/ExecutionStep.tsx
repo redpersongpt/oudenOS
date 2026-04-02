@@ -255,7 +255,7 @@ export function ExecutionStep() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -6 }}
               transition={spring.smooth}
-              className="rounded-xl border border-brand-800/60 bg-brand-950/40 p-5 space-y-3"
+              className="rounded-lg border border-brand-800/60 bg-brand-950/40 p-5 space-y-3"
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="space-y-1">
@@ -325,7 +325,7 @@ export function ExecutionStep() {
         )}
 
         {/* Live log stream */}
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }} className="rounded-xl border border-white/[0.07] overflow-hidden">
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }} className="rounded-lg border border-white/[0.07] overflow-hidden">
           <button
             onClick={() => setLogsOpen((o) => !o)}
             className="flex w-full items-center justify-between px-4 py-3 bg-white/[0.03] hover:bg-white/[0.05] transition-colors"

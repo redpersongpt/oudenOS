@@ -121,7 +121,7 @@ function ReviewPhase({ onBack, onBegin }: ReviewPhaseProps) {
                   {presetLabel} Plan
                 </h1>
               </div>
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-50 border border-brand-100">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-brand-50 border border-brand-100">
                 <Shield
                   className="h-5 w-5 text-brand-500"
                   strokeWidth={1.5}
@@ -191,7 +191,7 @@ function ReviewPhase({ onBack, onBegin }: ReviewPhaseProps) {
       {/* Risk advisory */}
       {showRiskWarning && (
         <motion.div variants={staggerChild}>
-          <div className="flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3.5">
+          <div className="flex items-start gap-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3.5">
             <AlertTriangle
               className="h-4 w-4 text-amber-500 shrink-0 mt-0.5"
               strokeWidth={2}
@@ -212,7 +212,7 @@ function ReviewPhase({ onBack, onBegin }: ReviewPhaseProps) {
       {/* Reboot notice */}
       {rebootCount > 0 && (
         <motion.div variants={staggerChild}>
-          <div className="flex items-start gap-3 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3.5">
+          <div className="flex items-start gap-3 rounded-lg border border-blue-200 bg-blue-50 px-4 py-3.5">
             <RotateCcw
               className="h-4 w-4 text-blue-500 shrink-0 mt-0.5"
               strokeWidth={2}
@@ -232,7 +232,7 @@ function ReviewPhase({ onBack, onBegin }: ReviewPhaseProps) {
 
       {/* Backup notice */}
       <motion.div variants={staggerChild}>
-        <div className="flex items-center gap-2.5 rounded-xl border border-neutral-150 bg-neutral-25 px-4 py-3">
+        <div className="flex items-center gap-2.5 rounded-lg border border-neutral-150 bg-neutral-25 px-4 py-3">
           <Info className="h-3.5 w-3.5 text-neutral-400 shrink-0" />
           <p className="text-xs text-neutral-500">
             All changes will be backed up automatically before applying.
@@ -601,7 +601,7 @@ function CompletePhase({
           {failedActions.map((state) => (
             <div
               key={state.planAction.action.id}
-              className="flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3"
+              className="flex items-start gap-3 rounded-lg border border-red-200 bg-red-50 px-4 py-3"
             >
               <AlertTriangle
                 className="h-4 w-4 text-red-500 shrink-0 mt-0.5"
@@ -625,7 +625,7 @@ function CompletePhase({
       {/* Reboot required card */}
       {rebootRequired && (
         <motion.div variants={slideUp}>
-          <div className="flex items-start gap-4 rounded-xl border border-amber-200 bg-amber-50 px-5 py-4">
+          <div className="flex items-start gap-4 rounded-lg border border-amber-200 bg-amber-50 px-5 py-4">
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-amber-200 bg-white">
               <RotateCcw
                 className="h-4 w-4 text-amber-600"
@@ -659,7 +659,7 @@ function CompletePhase({
 
       {/* Rollback card */}
       <motion.div variants={staggerChild}>
-        <div className="flex items-center gap-3 rounded-xl border border-neutral-150 bg-neutral-25 px-4 py-3.5">
+        <div className="flex items-center gap-3 rounded-lg border border-neutral-150 bg-neutral-25 px-4 py-3.5">
           <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-neutral-100">
             <Shield
               className="h-4 w-4 text-neutral-500"
@@ -842,7 +842,7 @@ export function ApplyWorkflowPage() {
         <motion.div variants={staggerChild}>
           <Card>
             <div className="flex flex-col items-center gap-4 px-5 py-16 text-center">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl border-2 border-dashed border-neutral-200 bg-neutral-50">
+              <div className="flex h-12 w-12 items-center justify-center rounded-lg border-2 border-dashed border-neutral-200 bg-neutral-50">
                 <ScanSearch
                   className="h-6 w-6 text-neutral-300"
                   strokeWidth={1.5}

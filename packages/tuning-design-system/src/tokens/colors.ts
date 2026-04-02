@@ -1,138 +1,87 @@
-// redcore-Tuning Color System
-// Premium dark-first palette matching redperson brand banner.
-// Pink-red accent, warm charcoal surfaces, precise hierarchy.
+// redcore Tuning Color System
+// OLED black base with pink-red accent
 
 export const colors = {
-  // Brand Red
   red: {
-    50: "#FFF5F7",
-    100: "#FFE3E8",
-    200: "#FFC9D3",
-    300: "#FFA3B4",
-    400: "#FF4D6A",
-    500: "#E8254B",   // Primary brand red (pink-red)
-    600: "#C41E3E",
-    700: "#A01832",
-    800: "#7C1226",
-    900: "#580C1A",
-    950: "#34070F",
+    50: "#FFF5F7", 100: "#FFE3E8", 200: "#FFC9D3", 300: "#FFA3B4",
+    400: "#FF4D6A", 500: "#E8254B", 600: "#C41E3E", 700: "#A01832",
+    800: "#7C1226", 900: "#580C1A", 950: "#34070F",
   },
 
-  // Dark surfaces
   dark: {
-    950: "#1a1a1e",   // deepest background
-    900: "#1e1e22",   // primary bg
-    850: "#252529",   // raised surface
-    800: "#2c2c31",   // overlay
-    750: "#333338",   // muted fill
-    border: "#38383e",
-    borderSubtle: "#2e2e34",
-    borderStrong: "#48484f",
+    950: "#000000",
+    900: "#000000",
+    850: "#111111",
+    800: "#1A1A1A",
+    750: "#222222",
+    border: "#333333",
+    borderSubtle: "#222222",
+    borderStrong: "#444444",
   },
 
-  // Ink (text on dark)
   ink: {
-    primary: "#f0f0f4",
-    secondary: "#a0a0ac",
-    tertiary: "#6a6a76",
-    inverse: "#1e1e22",
+    primary: "#E8E8E8",
+    secondary: "#999999",
+    tertiary: "#666666",
+    inverse: "#000000",
   },
 
-  // Success
   green: {
-    50: "#F0FDF4",
-    100: "#DCFCE7",
-    200: "#BBF7D0",
-    400: "#4ADE80",
-    500: "#22C55E",
-    600: "#16A34A",
-    700: "#15803D",
-    900: "#14532D",
-    subtle: "#1A2E22",
-    dim: "#244A32",
-    muted: "#2A7A4A",
+    50: "#F0FDF4", 100: "#DCFCE7", 200: "#BBF7D0",
+    400: "#4A9E5C", 500: "#3D8B4F", 600: "#16A34A", 700: "#15803D",
+    900: "#14532D", subtle: "#0A1A0E", dim: "#122A18", muted: "#1A3A22",
   },
 
-  // Warning
   amber: {
-    50: "#FFFBEB",
-    100: "#FEF3C7",
-    200: "#FDE68A",
-    400: "#FBBF24",
-    500: "#F59E0B",
-    600: "#D97706",
-    700: "#B45309",
-    900: "#78350F",
-    subtle: "#2A2200",
-    dim: "#3D2800",
-    muted: "#8A5A00",
+    50: "#FFFBEB", 100: "#FEF3C7", 200: "#FDE68A",
+    400: "#D4A843", 500: "#C49A38", 600: "#D97706", 700: "#B45309",
+    900: "#78350F", subtle: "#1A1400", dim: "#2A1E00", muted: "#5A3A00",
   },
 
-  // Info / Accent Blue
   blue: {
-    50: "#EFF6FF",
-    100: "#DBEAFE",
-    200: "#BFDBFE",
-    400: "#60A5FA",
-    500: "#3B82F6",
-    600: "#2563EB",
-    700: "#1D4ED8",
-    900: "#1E3A5F",
-    subtle: "#1A2238",
-    dim: "#1E2C4A",
-    muted: "#2A4A8A",
+    50: "#EFF6FF", 100: "#DBEAFE", 200: "#BFDBFE",
+    400: "#5B9BF6", 500: "#3B82F6", 600: "#2563EB", 700: "#1D4ED8",
+    900: "#1E3A5F", subtle: "#0A1220", dim: "#0E1A2A", muted: "#1A2A4A",
   },
 
-  // Neutral (warm gray)
   neutral: {
-    0: "#FFFFFF",
-    25: "#FAFAF9",
-    50: "#F7F6F5",
-    100: "#F0EFED",
-    150: "#E8E7E4",
-    200: "#DDDCD8",
-    300: "#C4C3BE",
-    400: "#A3A29C",
-    500: "#85847E",
-    600: "#6B6A65",
-    700: "#53524E",
-    800: "#3D3C39",
-    900: "#282724",
-    950: "#1A1917",
+    0: "#FFFFFF", 25: "#FAFAF9", 50: "#F7F6F5", 100: "#F0EFED",
+    150: "#E8E7E4", 200: "#DDDCD8", 300: "#C4C3BE", 400: "#A3A29C",
+    500: "#85847E", 600: "#6B6A65", 700: "#53524E", 800: "#3D3C39",
+    900: "#282724", 950: "#1A1917",
   },
 
-  // Semantic aliases
   semantic: {
-    background: "#1e1e22",
-    surface: "#252529",
-    surfaceRaised: "#2c2c31",
-    surfaceOverlay: "#333338",
-    surfaceMuted: "#38383e",
+    background: "#000000",
+    surface: "#111111",
+    surfaceRaised: "#1A1A1A",
+    surfaceOverlay: "#222222",
+    surfaceMuted: "#0A0A0A",
 
-    textPrimary: "#f0f0f4",
-    textSecondary: "#a0a0ac",
-    textTertiary: "#6a6a76",
-    textInverse: "#1e1e22",
+    textPrimary: "#E8E8E8",
+    textSecondary: "#999999",
+    textTertiary: "#666666",
+    textInverse: "#000000",
     textBrand: "#E8254B",
 
-    border: "#38383e",
-    borderSubtle: "#2e2e34",
-    borderStrong: "#48484f",
+    border: "#333333",
+    borderSubtle: "#222222",
+    borderStrong: "#444444",
     borderFocus: "#E8254B",
 
     primaryDefault: "#E8254B",
-    primaryHover: "#FF3860",
+    primaryHover: "#FF4D6A",
     primaryActive: "#C41E3E",
-    primaryDisabled: "#5C1A28",
+    primaryDisabled: "#330A14",
 
-    success: "#22C55E",
-    warning: "#F59E0B",
+    success: "#4A9E5C",
+    warning: "#D4A843",
     error: "#E8254B",
-    info: "#3B82F6",
+    info: "#5B9BF6",
 
-    riskSafe: "#22C55E",
-    riskLow: "#4ADE80",
-    riskMedium: "#F59E0B",
+    riskSafe: "#4A9E5C",
+    riskLow: "#4A9E5C",
+    riskMedium: "#D4A843",
     riskHigh: "#E8254B",
     riskExtreme: "#FF3040",
   },

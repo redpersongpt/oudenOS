@@ -32,7 +32,7 @@ export function DangerZone({
   return (
     <div
       className={`
-        relative rounded-xl border p-5
+        relative rounded-lg border p-5
         ${isDanger
           ? "border-brand-800 bg-brand-950/30 shadow-[inset_0_1px_0_rgba(232,69,60,0.08)]"
           : "border-amber-800/70 bg-amber-950/20 shadow-[inset_0_1px_0_rgba(245,158,11,0.08)]"

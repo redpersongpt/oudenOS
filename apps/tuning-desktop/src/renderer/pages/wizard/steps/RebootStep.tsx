@@ -168,7 +168,7 @@ export function RebootStep() {
         {/* Journal state indicator */}
         <motion.div
           initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }}
-          className="flex items-center gap-3 rounded-xl border border-blue-800/30 bg-blue-900/10 px-4 py-3"
+          className="flex items-center gap-3 rounded-lg border border-blue-800/30 bg-blue-900/10 px-4 py-3"
         >
           <RotateCcw className="h-4 w-4 text-blue-400 shrink-0" strokeWidth={1.5} />
           <p className="text-xs text-blue-400 leading-relaxed">

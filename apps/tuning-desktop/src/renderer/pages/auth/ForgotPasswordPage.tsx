@@ -67,7 +67,7 @@ function SuccessIllustration() {
       <motion.div
         animate={{ y: [0, -4, 0] }}
         transition={{ duration: 3.2, repeat: Infinity, ease: "easeInOut" }}
-        className="relative flex h-16 w-16 items-center justify-center rounded-2xl bg-brand-500/10 border border-brand-500/20"
+        className="relative flex h-16 w-16 items-center justify-center rounded-lg bg-brand-500/10 border border-brand-500/20"
       >
         <svg viewBox="0 0 40 40" width="32" height="32" fill="none" aria-hidden="true">
           {/* Lock body */}
@@ -156,7 +156,7 @@ export function ForgotPasswordPage() {
               <motion.div variants={stagger} initial="hidden" animate="visible">
                 {/* Brand */}
                 <motion.div variants={fadeUp} className="mb-8 flex flex-col items-center gap-3">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-500 shadow-[0_0_28px_rgba(232,37,75,0.38)]">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-brand-500 shadow-[0_0_28px_rgba(232,37,75,0.38)]">
                     <Zap className="h-6 w-6 text-white" strokeWidth={2.5} />
                   </div>
                   <div className="text-center">
@@ -172,7 +172,7 @@ export function ForgotPasswordPage() {
                 {/* Card */}
                 <motion.div
                   variants={fadeUp}
-                  className="rounded-2xl border border-white/[0.05] bg-neutral-900 p-6 shadow-[0_12px_48px_rgba(0,0,0,0.55)]"
+                  className="rounded-lg border border-white/[0.05] bg-neutral-900 p-6 shadow-[0_12px_48px_rgba(0,0,0,0.55)]"
                 >
                   {/* Error */}
                   <AnimatePresence>
@@ -185,7 +185,7 @@ export function ForgotPasswordPage() {
                         transition={{ duration: 0.2 }}
                         className="overflow-hidden"
                       >
-                        <div className="flex items-start gap-2 rounded-xl border border-red-900/50 bg-red-950/40 px-3 py-2.5">
+                        <div className="flex items-start gap-2 rounded-lg border border-red-900/50 bg-red-950/40 px-3 py-2.5">
                           <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-red-400" />
                           <p className="text-xs leading-relaxed text-red-300">{error}</p>
                         </div>
@@ -207,7 +207,7 @@ export function ForgotPasswordPage() {
                           autoFocus
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
-                          className="w-full rounded-xl border border-neutral-700/70 bg-neutral-800/60 py-2.5 pl-9 pr-3 text-sm text-white placeholder-neutral-600 outline-none transition-all focus:border-brand-500/60 focus:ring-2 focus:ring-brand-500/15"
+                          className="w-full rounded-lg border border-neutral-700/70 bg-neutral-800/60 py-2.5 pl-9 pr-3 text-sm text-white placeholder-neutral-600 outline-none transition-all focus:border-brand-500/60 focus:ring-2 focus:ring-brand-500/15"
                           placeholder="you@example.com"
                         />
                       </div>

@@ -110,7 +110,7 @@ function ServiceCard({
   return (
     <motion.div
       initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}
-      className={`rounded-xl border p-4 transition-colors ${
+      className={`rounded-lg border p-4 transition-colors ${
         selected
           ? "border-white/[0.1] bg-white/[0.05]"
           : "border-white/[0.06] bg-white/[0.03]"
@@ -242,7 +242,7 @@ export function ServicesStep() {
         {/* Summary */}
         <motion.div
           initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }}
-          className="flex items-center justify-between rounded-xl border border-white/[0.06] bg-white/[0.03] px-5 py-4"
+          className="flex items-center justify-between rounded-lg border border-white/[0.06] bg-white/[0.03] px-5 py-4"
         >
           <span className="text-sm text-ink-secondary">
             Total services to disable:{" "}

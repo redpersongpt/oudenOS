@@ -138,7 +138,7 @@ function DangerZone({
   const canDelete = confirmText === "DELETE";
 
   return (
-    <div className="rounded-xl border border-red-900/40 bg-red-950/10 p-4">
+    <div className="rounded-lg border border-red-900/40 bg-red-950/10 p-4">
       <button
         onClick={() => setExpanded((v) => !v)}
         className="flex w-full items-center justify-between text-left"
@@ -338,7 +338,7 @@ export function ProfilePage() {
         <Card>
           <div className="flex items-center justify-between px-5 py-4">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-brand-500/20 bg-brand-500/10">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-brand-500/20 bg-brand-500/10">
                 <User className="h-5 w-5 text-brand-500" strokeWidth={1.5} />
               </div>
               <div>
@@ -442,21 +442,21 @@ export function ProfilePage() {
                 </div>
 
                 <div className="mt-5 grid gap-3 sm:grid-cols-3">
-                  <div className="rounded-xl border border-border bg-surface-overlay/60 p-3">
+                  <div className="rounded-lg border border-border bg-surface-overlay/60 p-3">
                     <p className="text-[11px] uppercase tracking-wide text-ink-tertiary">Plan</p>
                     <p className="mt-1 text-sm font-semibold text-ink">{isPremium ? "Premium" : "Free"}</p>
                   </div>
-                  <div className="rounded-xl border border-border bg-surface-overlay/60 p-3">
+                  <div className="rounded-lg border border-border bg-surface-overlay/60 p-3">
                     <p className="text-[11px] uppercase tracking-wide text-ink-tertiary">Machine</p>
                     <p className="mt-1 text-sm font-semibold text-ink">{licenseMachineLabel}</p>
                   </div>
-                  <div className="rounded-xl border border-border bg-surface-overlay/60 p-3">
+                  <div className="rounded-lg border border-border bg-surface-overlay/60 p-3">
                     <p className="text-[11px] uppercase tracking-wide text-ink-tertiary">Access</p>
                     <p className="mt-1 text-sm font-semibold text-ink">{licenseAccessLabel}</p>
                   </div>
                 </div>
 
-                <div className="mt-5 rounded-xl border border-border bg-black/10 p-4">
+                <div className="mt-5 rounded-lg border border-border bg-black/10 p-4">
                   <p className="text-xs font-semibold text-ink">What this unlocks</p>
                   <div className="mt-3 grid gap-2 sm:grid-cols-2">
                     {(isPremium ? PREMIUM_FEATURES : FREE_FEATURES.slice(0, 4)).map((feature) => (

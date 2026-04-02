@@ -121,7 +121,7 @@ export function BiosGuidancePage() {
         <Card>
           <div className="flex items-center justify-between px-5 py-4">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-50 border border-brand-100">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-brand-50 border border-brand-100">
                 <Monitor className="h-5 w-5 text-brand-500" strokeWidth={1.5} />
               </div>
               <div>
@@ -207,7 +207,7 @@ export function BiosGuidancePage() {
             <div className="flex items-center justify-between py-2">
               <div className="flex items-center gap-3">
                 <div
-                  className={`flex h-10 w-10 items-center justify-center rounded-xl border ${
+                  className={`flex h-10 w-10 items-center justify-center rounded-lg border ${
                     returnedFromBios
                       ? "border-green-200 bg-green-50"
                       : "border-neutral-150 bg-neutral-50"

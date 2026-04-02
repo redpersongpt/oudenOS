@@ -126,7 +126,7 @@ export function SubscriptionPage() {
       className="space-y-6"
     >
       <motion.div variants={staggerChild} className="flex items-center gap-3">
-        <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-brand-500/20 bg-brand-500/10">
+        <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-brand-500/20 bg-brand-500/10">
           <KeyRound className="h-5 w-5 text-brand-500" strokeWidth={1.5} />
         </div>
         <div className="flex-1">

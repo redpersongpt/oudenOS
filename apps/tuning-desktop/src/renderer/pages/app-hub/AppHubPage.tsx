@@ -87,7 +87,7 @@ export function AppHubPage() {
           <Card>
             <div className="flex items-center justify-between px-5 py-4">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-50 border border-brand-100">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-brand-50 border border-brand-100">
                   <Package className="h-5 w-5 text-brand-500" strokeWidth={1.5} />
                 </div>
                 <div>
@@ -144,7 +144,7 @@ export function AppHubPage() {
             return (
               <Card key={app.id} hoverable>
                 <div className="flex items-center gap-4 px-4 py-3">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-neutral-50 border border-neutral-100">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-neutral-50 border border-neutral-100">
                     <Icon className="h-5 w-5 text-neutral-600" strokeWidth={1.5} />
                   </div>
                   <div className="flex-1 min-w-0">

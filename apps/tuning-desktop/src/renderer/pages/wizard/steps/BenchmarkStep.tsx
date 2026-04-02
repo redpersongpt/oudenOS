@@ -185,7 +185,7 @@ export function BenchmarkStep() {
                 </>
               ) : (
                 <div className="flex flex-col items-center gap-5 text-center">
-                  <div className="flex h-20 w-20 items-center justify-center rounded-2xl border border-white/[0.08] bg-white/[0.04]">
+                  <div className="flex h-20 w-20 items-center justify-center rounded-lg border border-white/[0.08] bg-white/[0.04]">
                     <Activity className="h-9 w-9 text-ink-tertiary" strokeWidth={1.25} />
                   </div>
                   <p className="max-w-xs text-sm text-ink-secondary leading-relaxed">
@@ -227,7 +227,7 @@ export function BenchmarkStep() {
                     <motion.div
                       key={m.key}
                       initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}
-                      className="rounded-xl border border-white/[0.07] bg-white/[0.04] p-4 space-y-3"
+                      className="rounded-lg border border-white/[0.07] bg-white/[0.04] p-4 space-y-3"
                     >
                       <p className="text-[11px] font-medium uppercase tracking-wider text-ink-tertiary">
                         {m.label}

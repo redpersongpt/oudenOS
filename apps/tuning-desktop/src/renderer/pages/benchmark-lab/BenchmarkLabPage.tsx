@@ -346,7 +346,7 @@ export function BenchmarkLabPage() {
           <Card>
             <div className="flex items-center justify-between px-5 py-4">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-500/10 border border-brand-500/20">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-brand-500/10 border border-brand-500/20">
                   <BarChart3 className="h-5 w-5 text-brand-500" strokeWidth={1.5} />
                 </div>
                 <div>
@@ -415,7 +415,7 @@ export function BenchmarkLabPage() {
 
         {/* Category tabs */}
         <motion.div variants={staggerChild}>
-          <div className="flex gap-1 rounded-xl bg-surface-overlay border border-border p-1">
+          <div className="flex gap-1 rounded-lg bg-surface-overlay border border-border p-1">
             {categories.map((cat) => (
               <button
                 key={cat.id}

@@ -91,7 +91,7 @@ export function ApplyPrepStep() {
         {/* Summary panel */}
         <motion.div
           initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }}
-          className="rounded-xl border border-white/[0.07] bg-white/[0.04] px-5 divide-y divide-white/[0.05]"
+          className="rounded-lg border border-white/[0.07] bg-white/[0.04] px-5 divide-y divide-white/[0.05]"
         >
           <SummaryRow
             icon={Shield}
@@ -123,7 +123,7 @@ export function ApplyPrepStep() {
         {hasHighRisk && (
           <motion.div
             initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }}
-            className="flex items-start gap-3 rounded-xl border border-amber-700/40 bg-amber-900/10 px-4 py-4"
+            className="flex items-start gap-3 rounded-lg border border-amber-700/40 bg-amber-900/10 px-4 py-4"
           >
             <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-amber-400" strokeWidth={1.5} />
             <div className="space-y-1">
@@ -141,7 +141,7 @@ export function ApplyPrepStep() {
         {/* Rollback assurance */}
         <motion.div
           initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }}
-          className="flex items-start gap-3 rounded-xl border border-green-800/30 bg-green-900/10 px-4 py-4"
+          className="flex items-start gap-3 rounded-lg border border-green-800/30 bg-green-900/10 px-4 py-4"
         >
           <Shield className="mt-0.5 h-5 w-5 shrink-0 text-green-400" strokeWidth={1.5} />
           <div className="space-y-1">

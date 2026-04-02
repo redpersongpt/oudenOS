@@ -150,7 +150,7 @@ export function RollbackCenterPage() {
           <Card>
             <div className="flex items-center justify-between px-5 py-4">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-brand-500/20 bg-brand-500/10">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-brand-500/20 bg-brand-500/10">
                   <History className="h-5 w-5 text-brand-500" strokeWidth={1.5} />
                 </div>
                 <div>
@@ -198,7 +198,7 @@ export function RollbackCenterPage() {
           <motion.div variants={staggerChild}>
             <Card>
               <div className="flex flex-col items-center gap-4 py-16 text-ink-tertiary">
-                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-surface-overlay border border-border">
+                <div className="flex h-14 w-14 items-center justify-center rounded-lg bg-surface-overlay border border-border">
                   <History className="h-7 w-7" strokeWidth={1.5} />
                 </div>
                 <div className="text-center">

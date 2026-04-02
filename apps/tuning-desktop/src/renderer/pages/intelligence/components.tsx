@@ -207,7 +207,7 @@ export function HeroCard({ meta, confidence, archetype }: HeroCardProps & { arch
   return (
     <motion.div
       variants={staggerChild}
-      className={`rounded-xl border bg-white/[0.04] p-6 ${border} ${glow}`}
+      className={`rounded-lg border bg-white/[0.04] p-6 ${border} ${glow}`}
     >
       <div className="flex items-start justify-between gap-4">
         <div className="flex items-start gap-5 flex-1 min-w-0">
@@ -365,7 +365,7 @@ export function RecommendationCard({ rec, compact = false }: RecommendationCardP
     >
       <motion.div
         variants={cardHover}
-        className={`rounded-xl border border-white/[0.06] bg-white/[0.04] ${
+        className={`rounded-lg border border-white/[0.06] bg-white/[0.04] ${
           compact ? "p-3" : "p-4"
         } space-y-2.5`}
       >
