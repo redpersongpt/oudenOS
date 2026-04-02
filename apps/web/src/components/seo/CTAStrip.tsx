@@ -36,7 +36,7 @@ export function CTAStrip({
         <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">
           <Link
             href={primaryAction.href}
-            className="inline-flex h-11 items-center justify-center rounded-lg bg-[var(--accent)] px-6 text-[0.875rem] font-semibold text-white transition-colors duration-200 hover:bg-[var(--accent)]-bright"
+            className="inline-flex h-11 items-center justify-center rounded-lg bg-white px-6 text-[0.875rem] font-semibold text-black transition-colors duration-200 hover:bg-[#E8E8E8]"
           >
             {primaryAction.label}
           </Link>

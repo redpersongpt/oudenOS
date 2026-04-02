@@ -238,7 +238,7 @@ export default function ProfilePage() {
                   <button
                     type="submit"
                     disabled={passwordLoading}
-                    className="inline-flex items-center justify-center h-10 px-5 rounded-lg bg-[var(--accent)] hover:bg-[var(--accent)]-dim disabled:opacity-70 text-white text-[13px] font-medium cursor-pointer transition-colors"
+                    className="inline-flex items-center justify-center h-10 px-5 rounded-lg bg-white hover:bg-[#E8E8E8] disabled:opacity-70 text-black text-[13px] font-medium cursor-pointer transition-colors"
                   >
                     {passwordLoading ? "Saving..." : "Save password"}
                   </button>

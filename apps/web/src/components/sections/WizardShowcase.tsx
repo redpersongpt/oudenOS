@@ -47,10 +47,10 @@ const STEPS: ShowcaseStep[] = [
 function LogoMark({ size = 20 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 64 64" fill="none">
-      <path d="M32 4L56.5 18v28L32 60 7.5 46V18L32 4z" fill="#E8254B" opacity="0.12" />
-      <path d="M32 4L56.5 18v28L32 60 7.5 46V18L32 4z" stroke="#E8254B" strokeWidth="2" fill="none" />
-      <circle cx="32" cy="32" r="17" stroke="#E8254B" strokeWidth="2.5" fill="none" opacity="0.5" />
-      <circle cx="32" cy="32" r="10" fill="#E8254B" />
+      <path d="M32 4L56.5 18v28L32 60 7.5 46V18L32 4z" fill="#E8E8E8" opacity="0.12" />
+      <path d="M32 4L56.5 18v28L32 60 7.5 46V18L32 4z" stroke="#E8E8E8" strokeWidth="2" fill="none" />
+      <circle cx="32" cy="32" r="17" stroke="#E8E8E8" strokeWidth="2.5" fill="none" opacity="0.5" />
+      <circle cx="32" cy="32" r="10" fill="#E8E8E8" />
     </svg>
   );
 }
@@ -113,7 +113,7 @@ function WelcomeContent() {
           animate={{ scale: [1, 1.15, 1], opacity: [0.2, 0.4, 0.2] }}
           transition={{ duration: 4, ease: "easeInOut", repeat: Infinity }}
           className="absolute inset-0 rounded-lg blur-xl"
-          style={{ width: 56, height: 56, background: "rgba(232,37,75,0.2)" }}
+          style={{ width: 56, height: 56, background: "rgba(255,255,255,0.1)" }}
         />
         <LogoMark size={56} />
       </motion.div>

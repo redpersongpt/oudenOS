@@ -153,7 +153,7 @@ function StatCardItem({
     >
       {/* Subtle glow on hover */}
       <div className="pointer-events-none absolute inset-0 rounded-lg opacity-0 transition-opacity group-hover:opacity-100"
-        style={{ boxShadow: "inset 0 0 40px rgba(232, 37, 75, 0.04)" }}
+        style={{ boxShadow: "inset 0 0 40px rgba(255, 255, 255, 0.03)" }}
       />
 
       <div className="relative">
@@ -280,7 +280,7 @@ export function BenchmarkSection() {
       <div
         className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[600px] w-[800px] rounded-full opacity-[0.03]"
         style={{
-          background: "radial-gradient(ellipse, #E8254B, transparent 55%)",
+          background: "radial-gradient(ellipse, #ffffff, transparent 55%)",
         }}
       />
 

@@ -15,17 +15,17 @@
   --color-ink-muted: #444444;
   --color-ink-disabled: #333333;
 
-  /* Ouden accent — pinkish red */
-  --color-accent: #D42A45;
-  --color-accent-bright: #E03050;
-  --color-accent-dim: #B52238;
-  --color-accent-glow: rgba(212, 42, 69, 0.08);
+  /* Ouden accent — monochrome */
+  --color-accent: #E8E8E8;
+  --color-accent-bright: #FFFFFF;
+  --color-accent-dim: #CCCCCC;
+  --color-accent-glow: rgba(255, 255, 255, 0.06);
   --color-success: #4A9E5C;
   --color-warning: #D4A843;
-  --color-brand-300: #F06070;
-  --color-brand-400: #E03050;
-  --color-brand-500: #D42A45;
-  --color-brand-600: #B52238;
+  --color-brand-300: #FFFFFF;
+  --color-brand-400: #F0F0F0;
+  --color-brand-500: #E8E8E8;
+  --color-brand-600: #CCCCCC;
 
   /* Semantic aliases */
   --color-surface-base: #000000;
@@ -43,30 +43,40 @@
 html {
   background: var(--color-bg);
   background-image:
-    radial-gradient(1px 1px at 3% 8%, rgba(255,255,255,0.12), transparent),
-    radial-gradient(1px 1px at 7% 45%, rgba(255,255,255,0.08), transparent),
-    radial-gradient(1px 1px at 12% 72%, rgba(255,255,255,0.1), transparent),
-    radial-gradient(1px 1px at 18% 23%, rgba(255,255,255,0.07), transparent),
-    radial-gradient(1px 1px at 24% 88%, rgba(255,255,255,0.11), transparent),
-    radial-gradient(1px 1px at 31% 55%, rgba(255,255,255,0.06), transparent),
-    radial-gradient(1px 1px at 38% 12%, rgba(255,255,255,0.09), transparent),
-    radial-gradient(1px 1px at 44% 67%, rgba(255,255,255,0.13), transparent),
-    radial-gradient(1px 1px at 51% 34%, rgba(255,255,255,0.07), transparent),
-    radial-gradient(1px 1px at 57% 91%, rgba(255,255,255,0.1), transparent),
-    radial-gradient(1px 1px at 63% 5%, rgba(255,255,255,0.08), transparent),
-    radial-gradient(1px 1px at 69% 48%, rgba(255,255,255,0.11), transparent),
-    radial-gradient(1px 1px at 75% 76%, rgba(255,255,255,0.06), transparent),
-    radial-gradient(1px 1px at 82% 19%, rgba(255,255,255,0.09), transparent),
-    radial-gradient(1px 1px at 88% 62%, rgba(255,255,255,0.12), transparent),
-    radial-gradient(1px 1px at 94% 38%, rgba(255,255,255,0.07), transparent),
-    radial-gradient(1px 1px at 2% 95%, rgba(255,255,255,0.08), transparent),
-    radial-gradient(1px 1px at 15% 3%, rgba(255,255,255,0.1), transparent),
-    radial-gradient(1px 1px at 35% 82%, rgba(255,255,255,0.06), transparent),
-    radial-gradient(1px 1px at 55% 15%, rgba(255,255,255,0.09), transparent),
-    radial-gradient(1px 1px at 72% 58%, rgba(255,255,255,0.07), transparent),
-    radial-gradient(1px 1px at 91% 85%, rgba(255,255,255,0.11), transparent),
-    radial-gradient(1px 1px at 48% 42%, rgba(255,255,255,0.05), transparent),
-    radial-gradient(1px 1px at 66% 28%, rgba(255,255,255,0.08), transparent);
+    radial-gradient(1px 1px at 3% 8%, rgba(255,255,255,0.16), transparent),
+    radial-gradient(1px 1px at 7% 45%, rgba(255,255,255,0.12), transparent),
+    radial-gradient(1px 1px at 12% 72%, rgba(255,255,255,0.14), transparent),
+    radial-gradient(1px 1px at 18% 23%, rgba(255,255,255,0.11), transparent),
+    radial-gradient(1px 1px at 24% 88%, rgba(255,255,255,0.15), transparent),
+    radial-gradient(1px 1px at 31% 55%, rgba(255,255,255,0.10), transparent),
+    radial-gradient(1px 1px at 38% 12%, rgba(255,255,255,0.13), transparent),
+    radial-gradient(1px 1px at 44% 67%, rgba(255,255,255,0.17), transparent),
+    radial-gradient(1px 1px at 51% 34%, rgba(255,255,255,0.11), transparent),
+    radial-gradient(1px 1px at 57% 91%, rgba(255,255,255,0.14), transparent),
+    radial-gradient(1px 1px at 63% 5%, rgba(255,255,255,0.12), transparent),
+    radial-gradient(1px 1px at 69% 48%, rgba(255,255,255,0.15), transparent),
+    radial-gradient(1px 1px at 75% 76%, rgba(255,255,255,0.10), transparent),
+    radial-gradient(1px 1px at 82% 19%, rgba(255,255,255,0.13), transparent),
+    radial-gradient(1px 1px at 88% 62%, rgba(255,255,255,0.16), transparent),
+    radial-gradient(1px 1px at 94% 38%, rgba(255,255,255,0.11), transparent),
+    radial-gradient(1px 1px at 2% 95%, rgba(255,255,255,0.12), transparent),
+    radial-gradient(1px 1px at 15% 3%, rgba(255,255,255,0.14), transparent),
+    radial-gradient(1px 1px at 35% 82%, rgba(255,255,255,0.10), transparent),
+    radial-gradient(1px 1px at 55% 15%, rgba(255,255,255,0.13), transparent),
+    radial-gradient(1px 1px at 72% 58%, rgba(255,255,255,0.11), transparent),
+    radial-gradient(1px 1px at 91% 85%, rgba(255,255,255,0.15), transparent),
+    radial-gradient(1px 1px at 48% 42%, rgba(255,255,255,0.09), transparent),
+    radial-gradient(1px 1px at 66% 28%, rgba(255,255,255,0.12), transparent),
+    radial-gradient(1px 1px at 9% 60%, rgba(255,255,255,0.13), transparent),
+    radial-gradient(1px 1px at 27% 35%, rgba(255,255,255,0.10), transparent),
+    radial-gradient(1px 1px at 42% 90%, rgba(255,255,255,0.15), transparent),
+    radial-gradient(1px 1px at 58% 50%, rgba(255,255,255,0.11), transparent),
+    radial-gradient(1px 1px at 79% 10%, rgba(255,255,255,0.14), transparent),
+    radial-gradient(1.5px 1.5px at 20% 78%, rgba(255,255,255,0.18), transparent),
+    radial-gradient(1px 1px at 85% 44%, rgba(255,255,255,0.12), transparent),
+    radial-gradient(1px 1px at 50% 22%, rgba(255,255,255,0.10), transparent),
+    radial-gradient(1px 1px at 96% 70%, rgba(255,255,255,0.13), transparent),
+    radial-gradient(1px 1px at 33% 52%, rgba(255,255,255,0.11), transparent);
   background-attachment: fixed;
   color: var(--color-ink-primary);
   scroll-behavior: smooth;
@@ -81,7 +91,7 @@ body {
 }
 
 ::selection {
-  background: rgba(212, 42, 69, 0.35);
+  background: rgba(255, 255, 255, 0.2);
   color: #fff;
 }
 
@@ -115,7 +125,7 @@ body {
   font-weight: 500;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--color-accent);
+  color: var(--color-ink-secondary);
 }
 
 /* Dot grid */
@@ -132,22 +142,32 @@ body {
 /* Star field — subtle white dots scattered randomly */
 .nd-starfield {
   background-image:
-    radial-gradient(1px 1px at 10% 15%, rgba(255,255,255,0.15), transparent),
-    radial-gradient(1px 1px at 25% 82%, rgba(255,255,255,0.12), transparent),
-    radial-gradient(1px 1px at 47% 5%, rgba(255,255,255,0.18), transparent),
-    radial-gradient(1px 1px at 63% 38%, rgba(255,255,255,0.1), transparent),
-    radial-gradient(1px 1px at 78% 71%, rgba(255,255,255,0.14), transparent),
-    radial-gradient(1px 1px at 92% 22%, rgba(255,255,255,0.11), transparent),
-    radial-gradient(1px 1px at 15% 55%, rgba(255,255,255,0.13), transparent),
-    radial-gradient(1px 1px at 38% 92%, rgba(255,255,255,0.16), transparent),
-    radial-gradient(1px 1px at 55% 60%, rgba(255,255,255,0.09), transparent),
-    radial-gradient(1px 1px at 82% 8%, rgba(255,255,255,0.17), transparent),
-    radial-gradient(1px 1px at 5% 42%, rgba(255,255,255,0.11), transparent),
-    radial-gradient(1px 1px at 70% 95%, rgba(255,255,255,0.13), transparent),
-    radial-gradient(1.5px 1.5px at 33% 28%, rgba(255,255,255,0.2), transparent),
-    radial-gradient(1.5px 1.5px at 88% 52%, rgba(255,255,255,0.15), transparent),
-    radial-gradient(0.5px 0.5px at 18% 73%, rgba(255,255,255,0.08), transparent),
-    radial-gradient(0.5px 0.5px at 95% 40%, rgba(255,255,255,0.07), transparent);
+    radial-gradient(1px 1px at 10% 15%, rgba(255,255,255,0.19), transparent),
+    radial-gradient(1px 1px at 25% 82%, rgba(255,255,255,0.16), transparent),
+    radial-gradient(1px 1px at 47% 5%, rgba(255,255,255,0.22), transparent),
+    radial-gradient(1px 1px at 63% 38%, rgba(255,255,255,0.14), transparent),
+    radial-gradient(1px 1px at 78% 71%, rgba(255,255,255,0.18), transparent),
+    radial-gradient(1px 1px at 92% 22%, rgba(255,255,255,0.15), transparent),
+    radial-gradient(1px 1px at 15% 55%, rgba(255,255,255,0.17), transparent),
+    radial-gradient(1px 1px at 38% 92%, rgba(255,255,255,0.20), transparent),
+    radial-gradient(1px 1px at 55% 60%, rgba(255,255,255,0.13), transparent),
+    radial-gradient(1px 1px at 82% 8%, rgba(255,255,255,0.21), transparent),
+    radial-gradient(1px 1px at 5% 42%, rgba(255,255,255,0.15), transparent),
+    radial-gradient(1px 1px at 70% 95%, rgba(255,255,255,0.17), transparent),
+    radial-gradient(1.5px 1.5px at 33% 28%, rgba(255,255,255,0.24), transparent),
+    radial-gradient(1.5px 1.5px at 88% 52%, rgba(255,255,255,0.19), transparent),
+    radial-gradient(0.5px 0.5px at 18% 73%, rgba(255,255,255,0.12), transparent),
+    radial-gradient(0.5px 0.5px at 95% 40%, rgba(255,255,255,0.11), transparent),
+    radial-gradient(1px 1px at 3% 30%, rgba(255,255,255,0.16), transparent),
+    radial-gradient(1px 1px at 42% 48%, rgba(255,255,255,0.14), transparent),
+    radial-gradient(1px 1px at 60% 85%, rgba(255,255,255,0.18), transparent),
+    radial-gradient(1px 1px at 76% 20%, rgba(255,255,255,0.15), transparent),
+    radial-gradient(1px 1px at 22% 65%, rgba(255,255,255,0.13), transparent),
+    radial-gradient(1.5px 1.5px at 50% 12%, rgba(255,255,255,0.20), transparent),
+    radial-gradient(1px 1px at 86% 75%, rgba(255,255,255,0.16), transparent),
+    radial-gradient(0.5px 0.5px at 30% 40%, rgba(255,255,255,0.11), transparent),
+    radial-gradient(1px 1px at 68% 55%, rgba(255,255,255,0.14), transparent),
+    radial-gradient(1px 1px at 14% 90%, rgba(255,255,255,0.17), transparent);
   background-size: 100% 100%;
 }
 

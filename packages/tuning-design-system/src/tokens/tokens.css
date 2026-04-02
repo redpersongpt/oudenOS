@@ -1,13 +1,13 @@
-/* ─── Ouden Design Tokens — OLED Black + Signal Red ────────────────────────── */
+/* ─── Ouden Design Tokens — OLED Black + Monochrome ────────────────────────── */
 
 :root {
   /* ── Brand ──────────────────────────────────────────────────────────────── */
-  --color-brand-500: #D42A45;
-  --color-brand-600: #B52238;
-  --color-brand-700: #8E1A2C;
-  --color-brand-hover: #E03050;
-  --color-brand-active: #B52238;
-  --color-brand-disabled: #2D0A10;
+  --color-brand-500: #E8E8E8;
+  --color-brand-600: #CCCCCC;
+  --color-brand-700: #999999;
+  --color-brand-hover: #FFFFFF;
+  --color-brand-active: #CCCCCC;
+  --color-brand-disabled: #333333;
 
   /* ── Surfaces (OLED Black) ──────────────────────────────────────────────── */
   --color-dark-950: #000000;
@@ -45,14 +45,14 @@
   /* ── Status ─────────────────────────────────────────────────────────────── */
   --color-success:    #4A9E5C;
   --color-warning:    #D4A843;
-  --color-error:      #D42A45;
+  --color-error:      #FF6B6B;
   --color-info:       #5B9BF6;
 
   /* ── Risk ────────────────────────────────────────────────────────────────── */
   --color-risk-safe:    #4A9E5C;
   --color-risk-low:     #4A9E5C;
   --color-risk-medium:  #D4A843;
-  --color-risk-high:    #D42A45;
+  --color-risk-high:    #FF6B6B;
   --color-risk-extreme: #FF3040;
 
   /* ── Typography ─────────────────────────────────────────────────────────── */
@@ -84,7 +84,7 @@
   --shadow-card:       none;
   --shadow-card-hover: none;
   --shadow-modal:      none;
-  --shadow-brand-glow: 0 0 0 1px rgba(212,42,69,0.15);
+  --shadow-brand-glow: 0 0 0 1px rgba(255,255,255,0.1);
   --shadow-amber-glow: 0 0 0 1px rgba(212,168,67,0.15);
 
   /* ── Layout ─────────────────────────────────────────────────────────────── */

@@ -21,7 +21,7 @@ function OudenMark({ size = 32 }: { size?: number }) {
         strokeLinecap="round"
         fill="none"
       />
-      <circle cx="77.1" cy="39.9" r={dotR} fill="var(--color-brand-500, #D42A45)" />
+      <circle cx="77.1" cy="39.9" r={dotR} fill="var(--color-brand-500, #E8E8E8)" />
     </svg>
   );
 }

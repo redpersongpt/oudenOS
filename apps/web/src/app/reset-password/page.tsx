@@ -138,7 +138,7 @@ export default function ResetPasswordPage() {
               <motion.button
                 type="submit"
                 disabled={!token || loading}
-                className="w-full h-11 rounded-lg bg-[var(--accent)] hover:bg-[var(--accent)]-dim disabled:opacity-70 text-white text-[14px] font-medium cursor-pointer transition-colors"
+                className="w-full h-11 rounded-lg bg-white hover:bg-[#E8E8E8] disabled:opacity-70 text-black text-[14px] font-medium cursor-pointer transition-colors"
                 whileHover={{ y: -1 }}
                 whileTap={{ scale: 0.98 }}
               >

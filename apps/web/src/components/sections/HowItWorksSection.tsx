@@ -42,7 +42,7 @@ export function HowItWorksSection() {
       {/* Subtle left accent */}
       <motion.div
         className="pointer-events-none absolute left-0 top-0 bottom-0 w-px"
-        style={{ background: "linear-gradient(to bottom, transparent, #D42A45 30%, #D42A45 70%, transparent)" }}
+        style={{ background: "linear-gradient(to bottom, transparent, #666666 30%, #666666 70%, transparent)" }}
         initial={{ scaleY: 0, opacity: 0 }}
         animate={inView ? { scaleY: 1, opacity: 0.08 } : {}}
         transition={{ delay: 0.3, duration: 1.5, ease }}
@@ -55,7 +55,7 @@ export function HowItWorksSection() {
           transition={{ duration: 0.7, ease }}
           className="mb-20 max-w-[480px]"
         >
-          <p className="font-mono text-[0.6rem] font-medium uppercase tracking-[0.16em] text-[var(--accent)] mb-5">
+          <p className="font-mono text-[0.6rem] font-medium uppercase tracking-[0.16em] text-[var(--color-ink-secondary)] mb-5">
             The process
           </p>
           <h2 className="text-[clamp(1.6rem,3vw,2.4rem)] font-bold tracking-[-0.03em] leading-[1.12] text-[var(--text-primary)]">
@@ -77,7 +77,7 @@ export function HowItWorksSection() {
               transition={{ delay: 0.1 + 0.09 * i, duration: 0.6, ease }}
               className="group grid grid-cols-[60px_1fr] lg:grid-cols-[80px_180px_1fr] items-baseline border-t border-[var(--border)] py-7 hover:bg-[var(--surface-raised)]/30 transition-colors duration-200 rounded-sm -mx-3 px-3"
             >
-              <span className="font-mono text-[0.7rem] font-bold text-[var(--accent)]/40 group-hover:text-[var(--accent)]/70 transition-colors">
+              <span className="font-display text-[0.7rem] font-bold text-[var(--color-ink-tertiary)] group-hover:text-[var(--color-ink-secondary)] transition-colors">
                 {step.num}
               </span>
               <span className="text-[0.95rem] font-semibold text-[var(--text-primary)] lg:pr-8">

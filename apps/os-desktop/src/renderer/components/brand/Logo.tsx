@@ -14,7 +14,7 @@ export function LogoMark({ size = 20 }: { size?: number }) {
         strokeLinecap="round"
         fill="none"
       />
-      <circle cx="77.1" cy="39.9" r={dotR} fill="var(--accent, #D42A45)" />
+      <circle cx="77.1" cy="39.9" r={dotR} fill="var(--accent, #E8E8E8)" />
     </svg>
   );
 }

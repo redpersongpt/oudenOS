@@ -100,7 +100,7 @@ export function LoginPage() {
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            "radial-gradient(ellipse 90% 55% at 50% -5%, rgba(212,42,69,0.07) 0%, transparent 65%)",
+            "radial-gradient(ellipse 90% 55% at 50% -5%, rgba(255,255,255,0.04) 0%, transparent 65%)",
         }}
       />
 

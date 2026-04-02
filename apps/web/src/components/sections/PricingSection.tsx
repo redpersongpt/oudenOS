@@ -13,7 +13,7 @@ export function PricingSection() {
   return (
     <section id="pricing" ref={ref} className="relative py-36 lg:py-48">
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute left-1/2 top-0 -translate-x-1/2 h-[600px] w-[800px] rounded-full opacity-[0.04]" style={{ background: "radial-gradient(ellipse, #D42A45, transparent 55%)" }} />
+        <div className="absolute left-1/2 top-0 -translate-x-1/2 h-[600px] w-[800px] rounded-full opacity-[0.04]" style={{ background: "radial-gradient(ellipse, #ffffff, transparent 55%)" }} />
       </div>
 
       <div className="relative mx-auto max-w-[1100px] px-6 lg:px-12">
@@ -53,7 +53,7 @@ export function PricingSection() {
               </div>
 
               <div className="flex items-baseline gap-1 mb-2">
-                <span className="text-[3rem] font-bold tracking-tight text-[var(--text-primary)] leading-none">$0</span>
+                <span className="text-[3rem] font-bold tracking-tight text-[var(--text-primary)] leading-none font-display">$0</span>
               </div>
               <p className="text-[0.78rem] text-[var(--text-disabled)] mb-8">
                 Full Windows optimization. No limits. No account required.
@@ -81,7 +81,7 @@ export function PricingSection() {
                 href="https://github.com/redpersongpt/redcoreOS/releases/latest"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2.5 rounded-full bg-[var(--accent)] px-6 py-4 text-[0.88rem] font-semibold text-white w-full justify-center hover:bg-[var(--accent-dim)] transition-colors"
+                className="inline-flex items-center gap-2.5 rounded-full bg-white px-6 py-4 text-[0.88rem] font-semibold text-black w-full justify-center hover:bg-[#E8E8E8] transition-colors"
                 whileHover={{ scale: 1.01 }}
                 whileTap={{ scale: 0.98 }}
               >
@@ -92,7 +92,7 @@ export function PricingSection() {
 
             <div className="mt-8 pt-6 border-t border-[var(--border)] flex items-center justify-between">
               <p className="text-[0.72rem] text-[var(--text-disabled)]">Love OudenOS?</p>
-              <a href="/donate" className="inline-flex items-center gap-1.5 text-[0.75rem] font-medium text-[var(--accent)] hover:text-[var(--accent-bright)] transition-colors">
+              <a href="/donate" className="inline-flex items-center gap-1.5 text-[0.75rem] font-medium text-[var(--color-ink-secondary)] hover:text-white transition-colors">
                 <Heart className="h-3 w-3" />
                 Donate
               </a>
@@ -112,31 +112,31 @@ export function PricingSection() {
               initial={{ opacity: 0, scale: 0.8 }}
               animate={inView ? { opacity: 1, scale: 1 } : {}}
               transition={{ delay: 0.5, duration: 0.4, ease }}
-              className="absolute top-4 right-4 font-mono text-[0.55rem] font-bold uppercase tracking-[0.18em] text-[var(--accent)] bg-[var(--accent)]/15 rounded-full px-3 py-1"
+              className="absolute top-4 right-4 font-mono text-[0.55rem] font-bold uppercase tracking-[0.18em] text-white bg-white/15 rounded-full px-3 py-1"
             >
               Recommended
             </motion.div>
 
             <div className="relative">
               <div className="flex items-center gap-3 mb-6">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[var(--accent)]/15 border border-accent/20">
-                  <Zap className="h-5 w-5 text-[var(--accent)]" />
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/10 border border-[var(--color-border)]">
+                  <Zap className="h-5 w-5 text-white" />
                 </div>
                 <div>
                   <p className="text-[0.95rem] font-bold text-[var(--text-primary)]">Ouden.Tuning</p>
-                  <p className="font-mono text-[0.65rem] text-[var(--accent)] tracking-wide">ONE-TIME PURCHASE</p>
+                  <p className="font-mono text-[0.65rem] text-[var(--color-ink-secondary)] tracking-wide">ONE-TIME PURCHASE</p>
                 </div>
               </div>
 
               <div className="flex items-baseline gap-1 mb-2">
-                <span className="text-[3rem] font-bold tracking-tight text-[var(--text-primary)] leading-none">$12</span>
-                <span className="text-[1.5rem] font-bold text-[var(--text-disabled)]">.99</span>
+                <span className="text-[3rem] font-bold tracking-tight text-[var(--text-primary)] leading-none font-display">$12</span>
+                <span className="text-[1.5rem] font-bold text-[var(--text-disabled)] font-display">.99</span>
               </div>
               <p className="text-[0.78rem] text-[var(--text-disabled)] mb-8">
                 Per machine · Lifetime license · No subscription
               </p>
 
-              <div className="h-px bg-[var(--accent)]/15 mb-8" />
+              <div className="h-px bg-[var(--color-border)] mb-8" />
 
               <ul className="space-y-3.5 mb-10">
                 {[
@@ -150,13 +150,13 @@ export function PricingSection() {
                   "Priority support",
                 ].map((f, i) => (
                   <li key={f} className={`text-[0.82rem] flex items-start gap-3 ${i === 0 ? "font-semibold text-[var(--text-primary)]" : "text-[var(--text-secondary)]"}`}>
-                    {i > 0 && <Check className="h-4 w-4 mt-0.5 shrink-0 text-[var(--accent)]" />}
+                    {i > 0 && <Check className="h-4 w-4 mt-0.5 shrink-0 text-white" />}
                     {f}
                   </li>
                 ))}
               </ul>
 
-              <span className="inline-flex items-center gap-2.5 rounded-full bg-[var(--accent)] px-6 py-4 text-[0.88rem] font-semibold text-white w-full justify-center">
+              <span className="inline-flex items-center gap-2.5 rounded-full bg-white px-6 py-4 text-[0.88rem] font-semibold text-black w-full justify-center">
                 Coming soon
               </span>
 
