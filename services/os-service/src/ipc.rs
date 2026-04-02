@@ -278,7 +278,8 @@ async fn dispatch(
 
             tracing::info!(preset = preset, "Generating transformation plan");
 
-            match transformer::generate_plan(&classification, preset) {
+            let playbook_dir = resolve_playbook_dir().unwrap_or_else(playbook::default_playbook_dir);
+            match transformer::generate_plan(&classification, preset, &playbook_dir) {
                 Ok(plan) => {
                     if let Err(e) = store_plan(db, classification_id, preset, &plan) {
                         tracing::error!("Failed to store plan: {}", e);
@@ -295,8 +296,11 @@ async fn dispatch(
         "transform.getActions" => {
             let category = params.get("category").and_then(|v| v.as_str());
             tracing::info!(category = ?category, "Getting actions");
-            let actions = transformer::get_actions(category);
-            RpcResponse::ok(id, serde_json::json!(actions))
+            let playbook_dir = resolve_playbook_dir().unwrap_or_else(playbook::default_playbook_dir);
+            match transformer::get_actions(category, &playbook_dir) {
+                Ok(actions) => RpcResponse::ok(id, serde_json::json!(actions)),
+                Err(e) => RpcResponse::err(id, -51, format!("Failed to load actions: {}", e)),
+            }
         }
 
         "execute.applyAction" => {
@@ -330,19 +334,13 @@ async fn dispatch(
 
                 match playbook_lookup {
                     Ok(Some(def)) => def,
-                    Ok(None) => match transformer::get_actions(None)
-                        .into_iter()
-                        .find(|a| a.get("id").and_then(|v| v.as_str()) == Some(action_id))
-                    {
-                        Some(def) => def,
-                        None => {
-                            return RpcResponse::err(
-                                id,
-                                -20,
-                                format!("Action not found: {}", action_id),
-                            );
-                        }
-                    },
+                    Ok(None) => {
+                        return RpcResponse::err(
+                            id,
+                            -20,
+                            format!("Action not found: {}", action_id),
+                        );
+                    }
                     Err(e) => {
                         tracing::error!(action_id = action_id, error = %e, "Playbook action lookup failed");
                         return RpcResponse::err(
@@ -614,7 +612,11 @@ async fn dispatch(
                 Err(e) => return RpcResponse::err(id, -11, format!("Classification failed: {}", e)),
             };
 
-            let plan = match transformer::generate_plan(&classification, preset) {
+            let plan = match transformer::generate_plan(
+                &classification,
+                preset,
+                &resolve_playbook_dir().unwrap_or_else(playbook::default_playbook_dir),
+            ) {
                 Ok(p) => {
                     let _ = store_plan(db, None, preset, &p);
                     p

@@ -111,6 +111,9 @@ pub struct PlaybookAction {
     #[serde(default)]
     #[serde(rename = "warningMessage")]
     pub warning_message: Option<String>,
+    /// Populated at load time from the parent module — not present in YAML.
+    #[serde(default, skip_deserializing)]
+    pub category: String,
 }
 
 fn default_risk() -> String { "safe".into() }
@@ -277,7 +280,12 @@ pub fn load_playbook(playbook_dir: &Path) -> anyhow::Result<LoadedPlaybook> {
                             actions = module.actions.len(),
                             "Loaded playbook module"
                         );
-                        phase_actions.extend(module.actions);
+                        let category = module.category.clone();
+                        let mut module_actions = module.actions;
+                        for action in &mut module_actions {
+                            action.category = category.clone();
+                        }
+                        phase_actions.extend(module_actions);
                     }
                     Err(e) => {
                         tracing::warn!(

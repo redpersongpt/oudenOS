@@ -34,6 +34,11 @@ struct CatalogEntry {
     silent_args: String,
     #[serde(rename = "workSafe")]
     work_safe: bool,
+    /// Expected SHA-256 of the downloaded installer, hex-encoded, case-insensitive.
+    /// Leave unset (or null) for rolling-release URLs where the content changes with
+    /// each release.  Set this for pinned/versioned URLs to prevent MITM substitution.
+    #[serde(rename = "expectedSha256", default)]
+    expected_sha256: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -332,6 +337,28 @@ fn install_catalog_entry(app_id: &str, entry: &CatalogEntry) -> anyhow::Result<I
         .and_then(|value| value.as_str())
         .map(ToOwned::to_owned);
 
+    // Verify the downloaded file's SHA-256 if the catalog entry specifies one.
+    if let (Some(ref path), Some(ref expected_hash)) = (&downloaded_path, &entry.expected_sha256) {
+        if let Err(e) = verify_installer_sha256(path, expected_hash) {
+            // Delete the suspect file before returning the error.
+            let _ = std::fs::remove_file(path);
+            return Ok(InstallResult {
+                id: app_id.to_string(),
+                name: app_name,
+                status: "failed".to_string(),
+                downloaded_path: None,
+                exit_code: None,
+                error: Some(format!("SHA-256 verification failed: {e}")),
+            });
+        }
+    } else if entry.expected_sha256.is_none() {
+        tracing::warn!(
+            app_id = app_id,
+            url = entry.url.as_str(),
+            "No expectedSha256 in catalog — skipping hash verification"
+        );
+    }
+
     Ok(InstallResult {
         id: app_id.to_string(),
         name: app_name,
@@ -370,6 +397,37 @@ fn installer_cache_dir() -> anyhow::Result<PathBuf> {
     let dir = PathBuf::from(base).join("redcore-os").join("downloads");
     std::fs::create_dir_all(&dir)?;
     Ok(dir)
+}
+
+/// Compute the SHA-256 of a local file via PowerShell's Get-FileHash and compare
+/// it against the expected hex digest (case-insensitive).
+#[cfg(windows)]
+fn verify_installer_sha256(file_path: &str, expected_hex: &str) -> anyhow::Result<()> {
+    let safe_path = powershell::escape_ps_string(file_path);
+    let script = format!(
+        "(Get-FileHash -Algorithm SHA256 -Path '{}').Hash",
+        safe_path
+    );
+    let result = powershell::execute(&script)?;
+    if !result.success {
+        anyhow::bail!("Get-FileHash failed: {}", result.stderr.trim());
+    }
+    let computed = result.stdout.trim().to_uppercase();
+    let expected = expected_hex.trim().to_uppercase();
+    if computed != expected {
+        anyhow::bail!(
+            "SHA-256 mismatch for '{}': expected {}, got {}",
+            file_path,
+            expected,
+            computed
+        );
+    }
+    tracing::info!(
+        path = file_path,
+        sha256 = computed.as_str(),
+        "Installer SHA-256 verified"
+    );
+    Ok(())
 }
 
 #[cfg(test)]

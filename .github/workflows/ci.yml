@@ -17,7 +17,7 @@ jobs:
           node-version: 22
 
       - name: Install desktop dependencies
-        run: pnpm install --dir apps/os-desktop --frozen-lockfile=false
+        run: pnpm install --dir apps/os-desktop
 
       - name: Desktop typecheck
         run: pnpm --dir apps/os-desktop typecheck
@@ -27,3 +27,20 @@ jobs:
 
       - name: Rust service check
         run: cargo check --manifest-path services/os-service/Cargo.toml
+
+      - name: Rust service tests
+        run: cargo test --manifest-path services/os-service/Cargo.toml
+
+  windows-service-check:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Rust service check (Windows)
+        run: cargo check --manifest-path services/os-service/Cargo.toml
+
+      - name: Rust service tests (Windows)
+        run: cargo test --manifest-path services/os-service/Cargo.toml
