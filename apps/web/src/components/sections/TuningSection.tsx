@@ -203,7 +203,7 @@ function ModuleCard({ module }: { module: TuningModule }) {
   return (
     <motion.div
       variants={staggerChild}
-      className="rounded-lg bg-surface-card border border-border-default p-5 transition-colors duration-200 hover:border-border-strong"
+      className="rounded-lg bg-surface border border-border-default p-5 transition-colors duration-200 hover:border-border-strong"
     >
       <div className="flex items-center gap-2.5 mb-2">
         <Icon

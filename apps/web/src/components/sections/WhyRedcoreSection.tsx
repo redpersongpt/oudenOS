@@ -43,7 +43,7 @@ function ContrastBar({ row, index }: { row: ContrastRow; index: number }) {
       role="listitem"
     >
       {/* Before */}
-      <div className="flex-1 flex items-center gap-3 bg-surface-card px-5 py-4">
+      <div className="flex-1 flex items-center gap-3 bg-surface px-5 py-4">
         <X
           size={14}
           className="text-ink-tertiary flex-shrink-0"

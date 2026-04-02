@@ -1,30 +1,43 @@
+@import url('https://fonts.googleapis.com/css2?family=Doto:wght@400;500;600;700&family=Space+Grotesk:wght@300;400;500;700&family=Space+Mono:wght@400;700&display=swap');
 @import "tailwindcss";
 
 @theme inline {
-  --color-bg: #1e1e22;
-  --color-surface: #252529;
-  --color-surface-raised: #2c2c31;
-  --color-border: #38383e;
-  --color-border-strong: #48484f;
-  --color-ink-primary: #f0f0f4;
-  --color-ink-secondary: #a0a0ac;
-  --color-ink-tertiary: #6a6a76;
-  --color-ink-muted: #4a4a54;
+  /* OLED Black base */
+  --color-bg: #000000;
+  --color-surface: #111111;
+  --color-surface-raised: #1A1A1A;
+  --color-border: #333333;
+  --color-border-subtle: #222222;
+  --color-border-strong: #444444;
+  --color-ink-primary: #E8E8E8;
+  --color-ink-secondary: #999999;
+  --color-ink-tertiary: #666666;
+  --color-ink-muted: #444444;
+  --color-ink-disabled: #333333;
+
+  /* redcore accent */
   --color-accent: #E8254B;
-  --color-accent-bright: #FF3860;
+  --color-accent-bright: #FF4D6A;
   --color-accent-dim: #C41E3E;
-  --color-accent-glow: rgba(232, 37, 75, 0.15);
-  --color-success: #E8254B;
+  --color-accent-glow: rgba(232, 37, 75, 0.08);
+  --color-success: #4A9E5C;
+  --color-warning: #D4A843;
+  --color-brand-300: #FF6B82;
   --color-brand-400: #FF4D6A;
   --color-brand-500: #E8254B;
   --color-brand-600: #C41E3E;
-  --color-surface-base: #1e1e22;
-  --color-surface-card: #252529;
-  --color-surface-muted: #222226;
-  --color-surface-overlay: #2a2a2f;
-  --color-border-default: #38383e;
-  --font-sans: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", "Cascadia Code", monospace;
+
+  /* Semantic aliases */
+  --color-surface-base: #000000;
+  --color-surface-card: #111111;
+  --color-surface-muted: #0A0A0A;
+  --color-surface-overlay: #1A1A1A;
+  --color-border-default: #333333;
+
+  /* Typography */
+  --font-display: "Doto", monospace;
+  --font-sans: "Space Grotesk", system-ui, sans-serif;
+  --font-mono: "Space Mono", "Cascadia Code", monospace;
 }
 
 html {
@@ -46,141 +59,87 @@ body {
   color: #fff;
 }
 
-::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar { width: 3px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 2px; }
+::-webkit-scrollbar-thumb { background: var(--color-border-subtle); border-radius: 0; }
 
+/* Label utility */
+.nd-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.3;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-ink-secondary);
+}
+
+.nd-label-sm {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  line-height: 1.2;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-ink-secondary);
+}
+
+/* Overline */
 .overline {
   font-family: var(--font-mono);
   font-size: 0.6875rem;
   font-weight: 500;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--color-accent);
 }
 
-.glass {
-  background: rgba(30, 30, 34, 0.85);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
+/* Dot grid */
+.nd-dot-grid {
+  background-image: radial-gradient(circle, #333333 1px, transparent 1px);
+  background-size: 16px 16px;
 }
 
-/* ─── Legacy utility classes (used by DonateSection and other components) ─── */
+.nd-dot-grid-subtle {
+  background-image: radial-gradient(circle, #222222 0.5px, transparent 0.5px);
+  background-size: 12px 12px;
+}
 
+/* Section divider */
 .section-divide {
   height: 1px;
-  background: linear-gradient(90deg, transparent 0%, var(--color-border) 30%, var(--color-border) 70%, transparent 100%);
-  opacity: 0.5;
+  background: var(--color-border-subtle);
 }
 
+/* Cards */
 .premium-card {
   background: var(--color-surface-card);
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-border-subtle);
 }
 
-.glow-surface {
-  box-shadow: 0 0 40px rgba(232, 37, 75, 0.06);
-}
-
-.glow-brand-edge {
-  box-shadow: 0 0 0 1px rgba(232, 37, 75, 0.15), 0 0 32px rgba(232, 37, 75, 0.08);
-}
-
-/* Scroll targets account for fixed nav */
+/* Scroll targets */
 [id] {
   scroll-margin-top: 88px;
 }
 
-/* ─── Hero GPU animations (no React re-render) ─── */
-
-@keyframes pill-float {
-  0%, 100% { transform: translateY(0) translateX(0); }
-  33% { transform: translateY(-5px) translateX(2px); }
-  66% { transform: translateY(3px) translateX(-2px); }
+/* Subtle pulse */
+@keyframes nd-pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
 }
-.pill-float {
-  animation: pill-float 7s ease-in-out infinite;
-  will-change: transform;
+.nd-pulse {
+  animation: nd-pulse 2s cubic-bezier(0.25, 0.1, 0.25, 1) infinite;
 }
 
-@keyframes hex-glow {
-  0%, 100% { opacity: 0.05; transform: scale(0.92); }
-  50% { opacity: 0.12; transform: scale(1.08); }
-}
-.hex-glow {
-  animation: hex-glow 5s ease-in-out infinite;
-  will-change: transform, opacity;
+/* Segment fill */
+@keyframes segment-fill {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
 }
 
-@keyframes hex-breathe {
-  0%, 100% { transform: rotate(0deg); }
-  25% { transform: rotate(1.5deg); }
-  75% { transform: rotate(-1.5deg); }
-}
-.hex-breathe {
-  animation: hex-breathe 14s ease-in-out infinite;
-  will-change: transform;
-}
-
-@keyframes orbit-spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-.orbit-spin {
-  animation: orbit-spin 40s linear infinite;
-  transform-origin: 130px 131px;
-}
-
-@keyframes core-breathe {
-  0%, 100% { r: 34; opacity: 0.25; }
-  50% { r: 38; opacity: 0.08; }
-}
-.core-breathe {
-  animation: core-breathe 3.5s ease-in-out infinite;
-}
-
-@keyframes core-shimmer {
-  0%, 100% { opacity: 0.06; }
-  50% { opacity: 0.14; }
-}
-.core-shimmer {
-  animation: core-shimmer 2.5s ease-in-out infinite;
-}
-
-@keyframes orbit-cw {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-.orbit-cw {
-  animation: orbit-cw 10s linear infinite;
-  transform-origin: 130px 131px;
-}
-
-@keyframes orbit-ccw {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(-360deg); }
-}
-.orbit-ccw {
-  animation: orbit-ccw 16s linear infinite;
-  transform-origin: 130px 131px;
-}
-
-/* ─── Wizard showcase animations ─── */
-
-@keyframes executionPulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(232,69,60,0); }
-  50% { box-shadow: 0 0 16px 0 rgba(232,69,60,0.15); }
-}
-
-@keyframes scanBorderGlow {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(232, 69, 60, 0); }
-  50%       { box-shadow: 0 0 14px 0 rgba(232, 69, 60, 0.16); }
-}
-
+/* Float animation — subtle, no bounce */
 @keyframes float-slow {
-  0%, 100% { transform: perspective(1200px) rotateX(1.5deg) translateY(0); }
-  50% { transform: perspective(1200px) rotateX(1.5deg) translateY(-6px); }
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
 }
 .animate-float-slow {
-  animation: float-slow 6s ease-in-out infinite;
+  animation: float-slow 6s cubic-bezier(0.25, 0.1, 0.25, 1) infinite;
 }

@@ -1,19 +1,20 @@
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
+import { Space_Grotesk, Space_Mono } from "next/font/google";
 import "./globals.css";
 import { SmoothScrollProvider } from "@/components/providers/SmoothScrollProvider";
 import { SessionProvider } from "@/components/providers/SessionProvider";
 
-const jakarta = Plus_Jakarta_Sans({
-  variable: "--font-jakarta",
+const spaceGrotesk = Space_Grotesk({
+  variable: "--font-space-grotesk",
   subsets: ["latin"],
   display: "swap",
 });
 
-const jetbrainsMono = JetBrains_Mono({
-  variable: "--font-jetbrains",
+const spaceMono = Space_Mono({
+  variable: "--font-space-mono",
   subsets: ["latin"],
   display: "swap",
+  weight: ["400", "700"],
 });
 
 export const metadata: Metadata = {
@@ -92,7 +93,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${jakarta.variable} ${jetbrainsMono.variable}`}
+      className={`${spaceGrotesk.variable} ${spaceMono.variable}`}
     >
       <head>
         <script
@@ -121,7 +122,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="bg-surface-base text-ink-primary antialiased">
+      <body className="bg-bg text-ink-primary antialiased">
         <SessionProvider>
           <SmoothScrollProvider>{children}</SmoothScrollProvider>
         </SessionProvider>

@@ -233,7 +233,7 @@ export function OSSection() {
                   role="listitem"
                 >
                   {/* Step card */}
-                  <div className="flex items-center gap-3 rounded-lg bg-surface-card border border-border-default px-5 py-4 min-w-[160px]">
+                  <div className="flex items-center gap-3 rounded-lg bg-surface border border-border-default px-5 py-4 min-w-[160px]">
                     <span
                       className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-surface-overlay"
                       aria-hidden="true"
@@ -306,7 +306,7 @@ export function OSSection() {
                   <span
                     key={service.label}
                     role="listitem"
-                    className="inline-flex items-center gap-2 rounded-lg bg-surface-card border border-border-default px-3 py-2.5 text-[13px] text-ink-secondary"
+                    className="inline-flex items-center gap-2 rounded-lg bg-surface border border-border-default px-3 py-2.5 text-[13px] text-ink-secondary"
                   >
                     <Shield
                       size={13}

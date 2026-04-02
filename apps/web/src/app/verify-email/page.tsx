@@ -61,7 +61,7 @@ export default function VerifyEmailPage() {
           </motion.p>
 
           {done && (
-            <motion.div {...fade(0.12)} className="mt-8 rounded-2xl border border-border bg-surface-card p-6 text-center">
+            <motion.div {...fade(0.12)} className="mt-8 rounded-lg border border-border bg-surface p-6 text-center">
               <Link href="/login" className="inline-flex text-[13px] font-medium text-accent hover:text-accent-bright transition-colors">
                 Continue to sign in
               </Link>

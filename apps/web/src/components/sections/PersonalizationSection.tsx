@@ -47,7 +47,7 @@ function FeatureItem({ feature }: { feature: PersonalizationFeature }) {
   return (
     <motion.div variants={staggerChild} className="flex gap-4">
       <span
-        className="flex-shrink-0 flex items-center justify-center w-9 h-9 rounded-lg bg-surface-card"
+        className="flex-shrink-0 flex items-center justify-center w-9 h-9 rounded-lg bg-surface"
         aria-hidden="true"
       >
         <Icon className="w-[18px] h-[18px] text-ink-tertiary" />
