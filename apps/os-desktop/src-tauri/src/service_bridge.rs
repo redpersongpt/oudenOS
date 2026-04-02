@@ -8,6 +8,12 @@ use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::mpsc;
 use std::time::Duration;
 
+#[cfg(windows)]
+use std::os::windows::process::CommandExt;
+
+#[cfg(windows)]
+const CREATE_NO_WINDOW: u32 = 0x08000000;
+
 const REQUEST_TIMEOUT: Duration = Duration::from_secs(30);
 
 pub struct ServiceBridge {
@@ -52,6 +58,9 @@ impl ServiceBridge {
         cmd.stdin(Stdio::piped())
             .stdout(Stdio::piped())
             .stderr(Stdio::piped());
+
+        #[cfg(windows)]
+        cmd.creation_flags(CREATE_NO_WINDOW);
 
         if let Some(ref pb_dir) = playbook_dir {
             cmd.env("REDCORE_PLAYBOOK_DIR", pb_dir);
@@ -192,11 +201,12 @@ impl Drop for ServiceBridge {
 fn detect_admin() -> bool {
     #[cfg(windows)]
     {
-        std::process::Command::new("net")
-            .arg("session")
+        let mut cmd = std::process::Command::new("net");
+        cmd.arg("session")
             .stdout(Stdio::null())
-            .stderr(Stdio::null())
-            .status()
+            .stderr(Stdio::null());
+        cmd.creation_flags(CREATE_NO_WINDOW);
+        cmd.status()
             .map(|s| s.success())
             .unwrap_or(false)
     }
@@ -213,21 +223,55 @@ fn find_service_binary(resource_dir: &Path) -> Option<PathBuf> {
         "redcore-os-service"
     };
 
-    let candidates = [
+    let exe_dir = std::env::current_exe()
+        .ok()
+        .and_then(|p| p.parent().map(|pp| pp.to_path_buf()));
+
+    let mut candidates: Vec<PathBuf> = vec![
         resource_dir.join(exe),
-        resource_dir.join("_up_").join(exe), // Tauri resource nesting
-        PathBuf::from("../../services/os-service/target/release").join(exe),
-        PathBuf::from("../../services/os-service/target/debug").join(exe),
+        resource_dir.join("_up_").join(exe),
     ];
+
+    if let Some(ref dir) = exe_dir {
+        candidates.push(dir.join(exe));
+        candidates.push(dir.join("resources").join(exe));
+    }
+
+    candidates.push(PathBuf::from("../../services/os-service/target/release").join(exe));
+    candidates.push(PathBuf::from("../../services/os-service/target/debug").join(exe));
+
+    eprintln!("[service-bridge] resource_dir = {}", resource_dir.display());
+    if let Some(ref dir) = exe_dir {
+        eprintln!("[service-bridge] exe_dir = {}", dir.display());
+    }
+    for c in &candidates {
+        let exists = c.exists();
+        eprintln!("[service-bridge]   candidate: {} (exists={})", c.display(), exists);
+    }
 
     candidates.into_iter().find(|p| p.exists())
 }
 
 fn find_playbook_dir(resource_dir: &Path) -> Option<PathBuf> {
-    let candidates = [
+    let exe_dir = std::env::current_exe()
+        .ok()
+        .and_then(|p| p.parent().map(|pp| pp.to_path_buf()));
+
+    let mut candidates = vec![
         resource_dir.join("playbooks"),
-        PathBuf::from("../../playbooks"),
     ];
+
+    if let Some(ref dir) = exe_dir {
+        candidates.push(dir.join("playbooks"));
+        candidates.push(dir.join("resources").join("playbooks"));
+    }
+
+    candidates.push(PathBuf::from("../../playbooks"));
+
+    for c in &candidates {
+        let exists = c.is_dir();
+        eprintln!("[service-bridge] playbook candidate: {} (exists={})", c.display(), exists);
+    }
 
     candidates.into_iter().find(|p| p.is_dir())
 }

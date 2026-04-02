@@ -3,7 +3,7 @@ mod service_bridge;
 
 use service_bridge::ServiceBridge;
 use std::sync::Arc;
-use tauri::Manager;
+use tauri::{Emitter, Manager};
 use tokio::sync::Mutex;
 
 struct AppState {
@@ -187,12 +187,22 @@ pub fn run() {
                 .resource_dir()
                 .unwrap_or_else(|_| std::path::PathBuf::from("."));
 
+            eprintln!("[Tauri] resource_dir = {}", resource_dir.display());
+
             let bridge_clone = bridge.clone();
             let res_dir = resource_dir.clone();
+            let win = app.get_webview_window("main");
             tauri::async_runtime::spawn(async move {
                 let mut b = bridge_clone.lock().await;
-                if let Err(e) = b.start(&res_dir) {
-                    eprintln!("[Tauri] Failed to start service: {e}");
+                match b.start(&res_dir) {
+                    Ok(()) => eprintln!("[Tauri] Service started successfully"),
+                    Err(e) => {
+                        eprintln!("[Tauri] CRITICAL: Failed to start service: {e}");
+                        eprintln!("[Tauri] App will run in demo mode — no changes will be applied");
+                        if let Some(ref w) = win {
+                            let _ = w.emit("service-start-failed", e.clone());
+                        }
+                    }
                 }
             });
 
