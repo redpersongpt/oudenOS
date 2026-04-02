@@ -1,131 +1,91 @@
-// App Setup Step
-// Comprehensive software installer with categories, icons, and descriptions.
+// App Setup Step — software catalog with category sections
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Download, Check, Globe, Wrench, Gamepad2, MessageCircle, Monitor, Code, Music, Film, Package, Cpu } from "lucide-react";
+import { Package } from "lucide-react";
 import { useWizardStore } from "@/stores/wizard-store";
 import type { RecommendedApp } from "@/stores/wizard-store";
 
-// Category config
+const ND_EASE = [0.25, 0.1, 0.25, 1] as const;
 
-const CATEGORIES: Record<string, { label: string; icon: typeof Globe; desc: string }> = {
-  browser:       { label: "Browsers",          icon: Globe,         desc: "Web browsers to replace Edge" },
-  utility:       { label: "Utilities",          icon: Wrench,        desc: "Essential tools for daily use" },
-  runtime:       { label: "Runtimes",           icon: Package,       desc: "Required frameworks and libraries" },
-  gaming:        { label: "Gaming",             icon: Gamepad2,      desc: "Game platforms and launchers" },
-  communication: { label: "Communication",      icon: MessageCircle, desc: "Voice, video, and messaging" },
-  development:   { label: "Development",        icon: Code,          desc: "Code editors and dev tools" },
-  monitoring:    { label: "System Monitoring",   icon: Cpu,           desc: "Hardware info and diagnostics" },
-  media:         { label: "Media",              icon: Film,          desc: "Media players and audio tools" },
-  streaming:     { label: "Streaming",          icon: Monitor,       desc: "Recording and streaming" },
-  music:         { label: "Music",              icon: Music,         desc: "Music players and services" },
+const CATEGORIES: Record<string, { label: string; desc: string }> = {
+  browser:       { label: "BROWSERS",         desc: "REPLACE EDGE" },
+  utility:       { label: "UTILITIES",        desc: "ESSENTIAL TOOLS" },
+  runtime:       { label: "RUNTIMES",         desc: "REQUIRED FRAMEWORKS" },
+  gaming:        { label: "GAMING",           desc: "GAME LAUNCHERS" },
+  communication: { label: "COMMUNICATION",    desc: "MESSAGING" },
+  development:   { label: "DEVELOPMENT",      desc: "CODE TOOLS" },
+  monitoring:    { label: "MONITORING",       desc: "HARDWARE INFO" },
+  media:         { label: "MEDIA",            desc: "PLAYERS" },
+  music:         { label: "MUSIC",            desc: "STREAMING" },
+  streaming:     { label: "STREAMING",        desc: "RECORDING" },
 };
 
 const CATEGORY_ORDER = ["browser", "utility", "runtime", "gaming", "communication", "development", "monitoring", "media", "music", "streaming"];
 
-// Full app catalog (mock)
-
 function buildMockApps(): RecommendedApp[] {
   return [
-    // Browsers
-    { id: "brave",     name: "Brave Browser",    category: "browser", description: "Privacy-focused Chromium browser with built-in ad blocking", recommended: true, selected: true, workSafe: true },
-    { id: "firefox",   name: "Mozilla Firefox",  category: "browser", description: "Independent, privacy-respecting browser", recommended: false, selected: false, workSafe: true },
-    { id: "chrome",    name: "Google Chrome",    category: "browser", description: "Fast Chromium browser with Google integration", recommended: false, selected: false, workSafe: true },
-
-    // Utilities
-    { id: "7zip",        name: "7-Zip",            category: "utility", description: "Free file archiver with high compression ratio", recommended: true, selected: true, workSafe: true },
-    { id: "winrar",      name: "WinRAR",           category: "utility", description: "Popular archive manager with RAR support", recommended: false, selected: false, workSafe: true },
-    { id: "everything",  name: "Everything",       category: "utility", description: "Instant file search — finds any file in milliseconds", recommended: true, selected: true, workSafe: true },
-    { id: "notepadpp",   name: "Notepad++",        category: "utility", description: "Lightweight source code editor with syntax highlighting", recommended: true, selected: true, workSafe: true },
-    { id: "powertoys",   name: "PowerToys",        category: "utility", description: "Microsoft power-user utilities (FancyZones, Color Picker, etc.)", recommended: false, selected: false, workSafe: true },
-    { id: "sharex",      name: "ShareX",           category: "utility", description: "Advanced screenshot and screen recording tool", recommended: false, selected: false, workSafe: true },
-
-    // Runtimes
-    { id: "vcredist",    name: "Visual C++ Runtimes",  category: "runtime", description: "VC++ 2015-2022 x64 — required by most games and apps", recommended: true, selected: true, workSafe: true },
-    { id: "dotnet8",     name: ".NET 8 Runtime",       category: "runtime", description: "Microsoft .NET 8 desktop runtime", recommended: true, selected: true, workSafe: true },
-    { id: "java",        name: "Java (Adoptium JRE)",  category: "runtime", description: "Java runtime for Minecraft, dev tools, and enterprise apps", recommended: false, selected: false, workSafe: true },
-    { id: "directx",     name: "DirectX End-User",     category: "runtime", description: "Legacy DirectX components for older games", recommended: true, selected: true, workSafe: true },
-
-    // Gaming
-    { id: "steam",       name: "Steam",              category: "gaming", description: "Valve's game store and community platform", recommended: true, selected: true, workSafe: false },
-    { id: "epicgames",   name: "Epic Games",          category: "gaming", description: "Epic Games Store with free weekly games", recommended: false, selected: false, workSafe: false },
-    { id: "battlenet",   name: "Battle.net",          category: "gaming", description: "Blizzard launcher (WoW, Diablo, Overwatch)", recommended: false, selected: false, workSafe: false },
-    { id: "riotclient",  name: "Riot Client",         category: "gaming", description: "Valorant, League of Legends launcher", recommended: false, selected: false, workSafe: false },
-    { id: "ea",          name: "EA App",              category: "gaming", description: "Electronic Arts game launcher", recommended: false, selected: false, workSafe: false },
-    { id: "gog",         name: "GOG Galaxy",          category: "gaming", description: "DRM-free game store and multi-launcher", recommended: false, selected: false, workSafe: false },
-
-    // Communication
-    { id: "discord",     name: "Discord",             category: "communication", description: "Voice, video, and text for gaming communities", recommended: true, selected: true, workSafe: false },
-    { id: "telegram",    name: "Telegram",            category: "communication", description: "Fast, secure messaging with cloud sync", recommended: false, selected: false, workSafe: true },
-    { id: "signal",      name: "Signal",              category: "communication", description: "End-to-end encrypted private messaging", recommended: false, selected: false, workSafe: true },
-
-    // Development
-    { id: "vscode",      name: "Visual Studio Code",  category: "development", description: "Microsoft's free code editor with extensions", recommended: false, selected: false, workSafe: true },
-    { id: "git",         name: "Git",                 category: "development", description: "Distributed version control system", recommended: false, selected: false, workSafe: true },
-    { id: "wt",          name: "Windows Terminal",    category: "development", description: "Modern terminal with tabs, themes, and GPU rendering", recommended: false, selected: false, workSafe: true },
-    { id: "python",      name: "Python",              category: "development", description: "Python programming language and runtime", recommended: false, selected: false, workSafe: true },
-    { id: "nodejs",      name: "Node.js LTS",         category: "development", description: "JavaScript runtime for server and tooling", recommended: false, selected: false, workSafe: true },
-
-    // Monitoring
-    { id: "hwinfo",      name: "HWiNFO64",           category: "monitoring", description: "Comprehensive hardware monitoring and sensor readout", recommended: true, selected: false, workSafe: true },
-    { id: "afterburner", name: "MSI Afterburner",     category: "monitoring", description: "GPU overclocking, monitoring, and on-screen display", recommended: false, selected: false, workSafe: false },
-    { id: "cpuz",        name: "CPU-Z",              category: "monitoring", description: "Detailed CPU, memory, and motherboard information", recommended: false, selected: false, workSafe: true },
-    { id: "gpuz",        name: "GPU-Z",              category: "monitoring", description: "GPU specifications, clock speeds, and sensor monitoring", recommended: false, selected: false, workSafe: true },
-
-    // Media
-    { id: "vlc",         name: "VLC Media Player",   category: "media", description: "Plays any video/audio format without codec packs", recommended: true, selected: true, workSafe: true },
-    { id: "mpv",         name: "mpv",                category: "media", description: "Minimalist, high-performance video player", recommended: false, selected: false, workSafe: true },
-    { id: "irfanview",   name: "IrfanView",          category: "media", description: "Fast, lightweight image viewer and converter", recommended: false, selected: false, workSafe: true },
-
-    // Music
-    { id: "spotify",     name: "Spotify",            category: "music", description: "Music streaming with free and premium tiers", recommended: false, selected: false, workSafe: true },
-
-    // Streaming
-    { id: "obs",         name: "OBS Studio",         category: "streaming", description: "Open-source screen recording and live streaming", recommended: false, selected: false, workSafe: true },
+    { id: "brave", name: "Brave Browser", category: "browser", description: "Privacy-focused Chromium browser", recommended: true, selected: true, workSafe: true },
+    { id: "firefox", name: "Mozilla Firefox", category: "browser", description: "Independent privacy browser", recommended: false, selected: false, workSafe: true },
+    { id: "chrome", name: "Google Chrome", category: "browser", description: "Fast Chromium browser", recommended: false, selected: false, workSafe: true },
+    { id: "7zip", name: "7-Zip", category: "utility", description: "File archiver", recommended: true, selected: true, workSafe: true },
+    { id: "everything", name: "Everything", category: "utility", description: "Instant file search", recommended: true, selected: true, workSafe: true },
+    { id: "notepadpp", name: "Notepad++", category: "utility", description: "Source code editor", recommended: true, selected: true, workSafe: true },
+    { id: "powertoys", name: "PowerToys", category: "utility", description: "Microsoft power-user utilities", recommended: false, selected: false, workSafe: true },
+    { id: "sharex", name: "ShareX", category: "utility", description: "Screenshot tool", recommended: false, selected: false, workSafe: true },
+    { id: "winrar", name: "WinRAR", category: "utility", description: "Archive manager", recommended: false, selected: false, workSafe: true },
+    { id: "vcredist", name: "Visual C++ Runtimes", category: "runtime", description: "VC++ 2015-2022 x64", recommended: true, selected: true, workSafe: true },
+    { id: "dotnet8", name: ".NET 8 Runtime", category: "runtime", description: "Microsoft .NET 8", recommended: true, selected: true, workSafe: true },
+    { id: "directx", name: "DirectX End-User", category: "runtime", description: "Legacy DirectX", recommended: true, selected: true, workSafe: true },
+    { id: "java", name: "Java (Adoptium)", category: "runtime", description: "Java runtime", recommended: false, selected: false, workSafe: true },
+    { id: "steam", name: "Steam", category: "gaming", description: "Valve game store", recommended: true, selected: true, workSafe: false },
+    { id: "epicgames", name: "Epic Games", category: "gaming", description: "Free weekly games", recommended: false, selected: false, workSafe: false },
+    { id: "discord", name: "Discord", category: "communication", description: "Voice and text", recommended: true, selected: true, workSafe: false },
+    { id: "telegram", name: "Telegram", category: "communication", description: "Secure messaging", recommended: false, selected: false, workSafe: true },
+    { id: "vscode", name: "VS Code", category: "development", description: "Code editor", recommended: false, selected: false, workSafe: true },
+    { id: "git", name: "Git", category: "development", description: "Version control", recommended: false, selected: false, workSafe: true },
+    { id: "hwinfo", name: "HWiNFO64", category: "monitoring", description: "Hardware monitoring", recommended: true, selected: false, workSafe: true },
+    { id: "vlc", name: "VLC", category: "media", description: "Plays any format", recommended: true, selected: true, workSafe: true },
+    { id: "spotify", name: "Spotify", category: "music", description: "Music streaming", recommended: false, selected: false, workSafe: true },
+    { id: "obs", name: "OBS Studio", category: "streaming", description: "Screen recording", recommended: false, selected: false, workSafe: true },
   ];
 }
 
-// App Card
-
-function AppCard({ app, selected, onToggle }: {
-  app: RecommendedApp;
-  selected: boolean;
-  onToggle: () => void;
-}) {
+function AppRow({ app, selected, onToggle }: { app: RecommendedApp; selected: boolean; onToggle: () => void }) {
   return (
     <button
       onClick={onToggle}
-      className={`flex items-center gap-3 rounded-lg border px-3 py-2 text-left transition-all ${
-        selected
-          ? "border-brand-500/25 bg-brand-500/[0.06]"
-          : "border-white/[0.05] bg-white/[0.02] hover:border-white/[0.10]"
+      className={`flex items-center justify-between w-full px-4 py-2 text-left transition-colors duration-150 ease-nd border-b border-nd-border-subtle ${
+        selected ? "bg-nd-surface" : "bg-nd-bg hover:bg-nd-surface"
       }`}
     >
-      {/* Checkbox */}
-      <div className={`flex h-4 w-4 shrink-0 items-center justify-center rounded transition-colors ${
-        selected ? "bg-brand-500" : "border border-white/[0.15]"
-      }`}>
-        {selected && <Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />}
-      </div>
-
-      {/* Info */}
-      <div className="min-w-0 flex-1">
-        <div className="flex items-center gap-2">
-          <span className={`text-[11px] font-semibold ${selected ? "text-ink" : "text-ink-secondary"}`}>{app.name}</span>
-          {app.recommended && (
-            <span className="rounded bg-brand-500/15 px-1 py-0.5 text-[8px] font-bold uppercase tracking-wide text-brand-400">
-              recommended
-            </span>
+      <div className="flex items-center gap-3 min-w-0">
+        <div className="shrink-0">
+          {selected ? (
+            <div className="w-3 h-0.5 bg-brand-500" />
+          ) : (
+            <div className="w-2 h-px bg-nd-border" />
           )}
         </div>
-        <p className="text-[10px] text-ink-tertiary truncate">{app.description}</p>
+        <div className="min-w-0">
+          <div className="flex items-center gap-2">
+            <span className={`font-mono text-caption tracking-label ${selected ? "text-nd-text-display" : "text-nd-text-secondary"}`}>
+              {app.name.toUpperCase()}
+            </span>
+            {app.recommended && (
+              <span className="nd-label-sm text-brand-500">REC</span>
+            )}
+          </div>
+          <p className="nd-label-sm text-nd-text-disabled truncate">{app.description.toUpperCase()}</p>
+        </div>
+      </div>
+      <div className="flex gap-0.5 shrink-0">
+        <div className={`w-3 h-1 ${selected ? "bg-brand-500" : "bg-nd-border-subtle"}`} />
+        <div className={`w-3 h-1 ${selected ? "bg-brand-500" : "bg-nd-border-subtle"}`} />
       </div>
     </button>
   );
 }
-
-// Component
 
 export function AppSetupStep() {
   const { detectedProfile, recommendedApps, selectedAppIds, demoMode, setRecommendedApps, toggleApp, setStepReady } = useWizardStore();
@@ -135,7 +95,6 @@ export function AppSetupStep() {
   useEffect(() => {
     setStepReady("app-setup", false);
     if (recommendedApps.length > 0) return;
-
     const load = async () => {
       setLoadError(null);
       try {
@@ -148,15 +107,11 @@ export function AppSetupStep() {
           setRecommendedApps(buildMockApps());
         } else {
           setRecommendedApps([]);
-          setLoadError((!result.ok && result.error) || "Unable to load the real app catalog.");
+          setLoadError((!result.ok && result.error) || "Unable to load catalog.");
         }
       } catch {
-        if (demoMode) {
-          setRecommendedApps(buildMockApps());
-        } else {
-          setRecommendedApps([]);
-          setLoadError("Unable to load the real app catalog.");
-        }
+        if (demoMode) setRecommendedApps(buildMockApps());
+        else { setRecommendedApps([]); setLoadError("Unable to load catalog."); }
       } finally {
         setLoading(false);
       }
@@ -170,135 +125,93 @@ export function AppSetupStep() {
 
   if (loading) {
     return (
-      <div className="flex h-full flex-col px-5 py-4">
-        {/* Skeleton header */}
-        <div className="mb-3 space-y-1.5">
-          <div className="h-5 w-44 rounded-md bg-white/[0.04] animate-pulse" />
-          <div className="h-3 w-72 rounded bg-white/[0.03] animate-pulse" />
-        </div>
-        {/* Skeleton selection bar */}
-        <div className="mb-3 h-9 w-full rounded-lg bg-white/[0.03] animate-pulse" />
-        {/* Skeleton categories */}
-        {[0, 1, 2].map((i) => (
-          <div key={i} className="mb-4">
-            <div className="mb-1.5 h-3 w-24 rounded bg-white/[0.03] animate-pulse" style={{ animationDelay: `${i * 0.08}s` }} />
-            <div className="grid grid-cols-2 gap-1.5">
-              {[0, 1, 2, 3].map((j) => (
-                <div key={j} className="h-11 rounded-lg bg-white/[0.02] animate-pulse" style={{ animationDelay: `${(i * 4 + j) * 0.05}s` }} />
-              ))}
-            </div>
-          </div>
-        ))}
+      <div className="flex h-full items-center justify-center bg-nd-bg">
+        <div className="w-2 h-2 bg-brand-500 nd-pulse" />
       </div>
     );
   }
 
   if (recommendedApps.length === 0) {
     return (
-      <div className="flex h-full flex-col items-center justify-center gap-3 px-8">
-        <Package className="h-8 w-8 text-amber-400" />
-        <p className="text-sm text-ink-secondary">{loadError ?? "App catalog not available"}</p>
+      <div className="flex h-full flex-col items-center justify-center gap-3 bg-nd-bg">
+        <Package className="h-6 w-6 text-nd-text-disabled" />
+        <p className="nd-label text-nd-text-disabled">{(loadError ?? "CATALOG NOT AVAILABLE").toUpperCase()}</p>
       </div>
     );
   }
 
-  // Group by category
   const byCategory = new Map<string, RecommendedApp[]>();
   for (const app of recommendedApps) {
     const list = byCategory.get(app.category) ?? [];
     list.push(app);
     byCategory.set(app.category, list);
   }
-
   const sortedCategories = [...byCategory.entries()].sort(
-    ([a], [b]) => {
-      const ai = CATEGORY_ORDER.indexOf(a);
-      const bi = CATEGORY_ORDER.indexOf(b);
-      return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
-    }
+    ([a], [b]) => (CATEGORY_ORDER.indexOf(a) === -1 ? 99 : CATEGORY_ORDER.indexOf(a)) - (CATEGORY_ORDER.indexOf(b) === -1 ? 99 : CATEGORY_ORDER.indexOf(b))
   );
-
-  const selectedCount = selectedAppIds.length;
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 6 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -6 }}
-      transition={{ duration: 0.22, ease: [0.0, 0.0, 0.2, 1.0] }}
-      className="flex h-full flex-col px-5 py-4 overflow-y-auto scrollbar-thin"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3, ease: ND_EASE }}
+      className="flex h-full flex-col bg-nd-bg overflow-y-auto scrollbar-thin"
     >
       {/* Header */}
-      <div className="mb-3">
-        <h1 className="text-[17px] font-bold tracking-tight text-ink">
-          Software Setup
-        </h1>
-        <p className="mt-1 text-[11px] leading-relaxed text-ink-secondary">
-          Choose what to install on your{" "}
-          <span className="font-medium text-ink">{detectedProfile?.label ?? "machine"}</span>.
-          {" "}Apps marked <span className="text-brand-400 font-medium">recommended</span> are selected by default for your profile.
+      <div className="px-6 pt-5 pb-4 border-b border-nd-border-subtle">
+        <h2 className="font-display text-title text-nd-text-display">SOFTWARE</h2>
+        <p className="mt-1 nd-label text-nd-text-secondary">
+          SELECT APPS FOR {(detectedProfile?.label ?? "YOUR MACHINE").toUpperCase()}
         </p>
+        <div className="mt-3 flex items-center gap-3">
+          <span className="font-mono text-label tracking-label text-nd-text-display">
+            {selectedAppIds.length}
+          </span>
+          <span className="nd-label text-nd-text-secondary">SELECTED</span>
+          {selectedAppIds.length > 0 && (
+            <button
+              onClick={() => { for (const id of selectedAppIds) toggleApp(id); }}
+              className="ml-auto nd-label-sm text-nd-text-disabled hover:text-nd-text-secondary transition-colors duration-150 ease-nd"
+            >
+              CLEAR
+            </button>
+          )}
+        </div>
       </div>
 
-      {/* Selection bar */}
-      <div className="mb-3 flex items-center gap-2 rounded-lg bg-white/[0.03] border border-white/[0.05] px-3 py-2">
-        <Download className="h-3.5 w-3.5 text-brand-400" />
-        <span className="text-[11px] font-medium text-ink-secondary">
-          {selectedCount} app{selectedCount !== 1 ? "s" : ""} selected for installation
-        </span>
-        {selectedCount > 0 && (
-          <button
-            onClick={() => {
-              for (const id of selectedAppIds) toggleApp(id);
-            }}
-            className="ml-auto text-[10px] text-ink-muted hover:text-ink-tertiary transition-colors"
-          >
-            Clear all
-          </button>
-        )}
-      </div>
-
-      {/* Categories — staggered entrance */}
-      <div className="space-y-4">
+      {/* Categories */}
+      <div className="flex-1">
         {sortedCategories.map(([category, apps], catIdx) => {
-          const meta = CATEGORIES[category] ?? { label: category, icon: Package, desc: "" };
-          const Icon = meta.icon;
-
+          const meta = CATEGORIES[category] ?? { label: category.toUpperCase(), desc: "" };
           return (
             <motion.div
               key={category}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: catIdx * 0.04, duration: 0.2, ease: [0.0, 0.0, 0.2, 1.0] }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: catIdx * 0.03, duration: 0.2, ease: ND_EASE }}
             >
-              {/* Category header */}
-              <div className="mb-1.5 flex items-center gap-2">
-                <Icon className="h-3.5 w-3.5 text-ink-muted" />
-                <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-ink-tertiary">
-                  {meta.label}
-                </span>
-                <span className="text-[9px] text-ink-muted">— {meta.desc}</span>
+              <div className="px-4 py-2 bg-nd-surface border-b border-nd-border-subtle flex items-center gap-3">
+                <span className="nd-label text-nd-text-secondary">{meta.label}</span>
+                <span className="nd-label-sm text-nd-text-disabled">{meta.desc}</span>
               </div>
-              {/* App cards */}
-              <div className="grid grid-cols-2 gap-1.5">
-                {apps.map((app) => (
-                  <AppCard
-                    key={app.id}
-                    app={app}
-                    selected={Boolean(selectedAppIds.includes(app.id))}
-                    onToggle={(): void => { toggleApp(app.id); }}
-                  />
-                ))}
-              </div>
+              {apps.map((app) => (
+                <AppRow
+                  key={app.id}
+                  app={app}
+                  selected={selectedAppIds.includes(app.id)}
+                  onToggle={() => toggleApp(app.id)}
+                />
+              ))}
             </motion.div>
           );
         })}
       </div>
 
-      {/* Footer */}
-      <p className="mt-3 text-center text-[10px] text-ink-muted">
-        All apps are installed silently. You can skip this step and install software later.
-      </p>
+      <div className="px-6 py-3 border-t border-nd-border-subtle">
+        <p className="nd-label-sm text-nd-text-disabled text-center">
+          [ALL APPS INSTALLED SILENTLY · SKIP TO CONTINUE WITHOUT INSTALLING]
+        </p>
+      </div>
     </motion.div>
   );
 }
