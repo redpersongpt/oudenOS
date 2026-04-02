@@ -1,12 +1,9 @@
 // Tauri platform backend
-// Replaces the Electron preload bridge with Tauri invoke() calls.
-// Import this and call setPlatform(tauriBackend) at app startup
-// when running inside a Tauri shell.
+// Canonical runtime for redcore OS desktop (since v0.2.0).
+// Uses Tauri v2 APIs via window.__TAURI__ (withGlobalTauri: true).
 
 import type { PlatformAPI, ServiceStatus, SaveResult, ExportResult } from "./platform";
 
-// Tauri v2 exposes invoke/listen on window.__TAURI__
-// With withGlobalTauri: true in tauri.conf.json, these are available globally.
 declare global {
   interface Window {
     __TAURI__?: {
@@ -15,6 +12,13 @@ declare global {
       };
       event: {
         listen: (event: string, handler: (event: { payload: unknown }) => void) => Promise<() => void>;
+      };
+      window: {
+        getCurrentWindow: () => {
+          minimize: () => Promise<void>;
+          toggleMaximize: () => Promise<void>;
+          close: () => Promise<void>;
+        };
       };
     };
   }
@@ -56,13 +60,13 @@ export const tauriBackend: PlatformAPI = {
 
   window: {
     minimize: () => {
-      getTauri()?.core.invoke("plugin:window|minimize", { label: "main" });
+      getTauri()?.window.getCurrentWindow().minimize();
     },
     maximize: () => {
-      getTauri()?.core.invoke("plugin:window|toggle_maximize", { label: "main" });
+      getTauri()?.window.getCurrentWindow().toggleMaximize();
     },
     close: () => {
-      getTauri()?.core.invoke("plugin:window|close", { label: "main" });
+      getTauri()?.window.getCurrentWindow().close();
     },
   },
 
