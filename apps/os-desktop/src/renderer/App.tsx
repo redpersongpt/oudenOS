@@ -24,16 +24,16 @@ class ErrorBoundary extends Component<{ children: ReactNode }, ErrorState> {
           alignItems: "center",
           justifyContent: "center",
           height: "100vh",
-          background: "#1e1e22",
-          color: "#f0f0f4",
-          fontFamily: "Inter, system-ui, sans-serif",
+          background: "#000000",
+          color: "#E8E8E8",
+          fontFamily: "Space Grotesk, system-ui, sans-serif",
           padding: "2rem",
           textAlign: "center",
         }}>
-          <h1 style={{ fontSize: "1.2rem", fontWeight: 700, marginBottom: "0.5rem" }}>
-            Something went wrong
+          <h1 style={{ fontSize: "1.2rem", fontWeight: 500, marginBottom: "0.5rem", fontFamily: "Space Mono, monospace", letterSpacing: "0.08em", textTransform: "uppercase" as const }}>
+            [ERROR]
           </h1>
-          <p style={{ fontSize: "0.8rem", color: "#a0a0ac", maxWidth: 400, marginBottom: "1rem" }}>
+          <p style={{ fontSize: "0.75rem", color: "#999999", maxWidth: 400, marginBottom: "1rem", fontFamily: "Space Mono, monospace" }}>
             {this.state.error || "An unexpected error occurred."}
           </p>
           <button
@@ -47,13 +47,15 @@ class ErrorBoundary extends Component<{ children: ReactNode }, ErrorState> {
               background: "#E8254B",
               color: "white",
               border: "none",
-              borderRadius: "0.5rem",
-              fontSize: "0.8rem",
-              fontWeight: 600,
+              borderRadius: "2px",
+              fontSize: "0.7rem",
+              fontFamily: "Space Mono, monospace",
+              letterSpacing: "0.08em",
+              textTransform: "uppercase" as const,
               cursor: "pointer",
             }}
           >
-            Restart
+            RESTART
           </button>
         </div>
       );
