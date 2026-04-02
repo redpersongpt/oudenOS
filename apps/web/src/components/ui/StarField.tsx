@@ -30,14 +30,14 @@ export function StarField() {
         return s / 2147483647;
       }
 
-      const density = Math.floor((canvas.width * canvas.height) / 8000);
-      const starCount = Math.min(density, 600);
+      const density = Math.floor((canvas.width * canvas.height) / 4000);
+      const starCount = Math.min(density, 1200);
 
       for (let i = 0; i < starCount; i++) {
         const x = Math.floor(rand() * canvas.width);
         const y = Math.floor(rand() * canvas.height);
-        const size = rand() > 0.92 ? 2 : 1;
-        const opacity = 0.08 + rand() * 0.18;
+        const size = rand() > 0.85 ? 2 : 1;
+        const opacity = 0.15 + rand() * 0.35;
 
         ctx.fillStyle = `rgba(255, 255, 255, ${opacity})`;
         ctx.fillRect(x, y, size, size);
@@ -60,8 +60,8 @@ export function StarField() {
   return (
     <canvas
       ref={canvasRef}
-      className="pointer-events-none fixed inset-0 z-0"
-      style={{ imageRendering: "pixelated" }}
+      className="pointer-events-none fixed inset-0"
+      style={{ imageRendering: "pixelated", zIndex: 1 }}
       aria-hidden="true"
     />
   );
