@@ -42,7 +42,7 @@ export function HowItWorksSection() {
       {/* Subtle left accent */}
       <motion.div
         className="pointer-events-none absolute left-0 top-0 bottom-0 w-px"
-        style={{ background: "linear-gradient(to bottom, transparent, #E8254B 30%, #E8254B 70%, transparent)" }}
+        style={{ background: "linear-gradient(to bottom, transparent, #D42A45 30%, #D42A45 70%, transparent)" }}
         initial={{ scaleY: 0, opacity: 0 }}
         animate={inView ? { scaleY: 1, opacity: 0.08 } : {}}
         transition={{ delay: 0.3, duration: 1.5, ease }}

@@ -74,7 +74,7 @@ export default async function DownloadsPage() {
               {os.available && os.url ? (
                 <a
                   href={os.url}
-                  className="inline-flex items-center rounded-lg bg-[var(--accent)] px-5 py-2.5 text-[13px] font-semibold text-white transition-all hover:bg-[var(--accent)]-dim"
+                  className="inline-flex items-center rounded-full bg-[var(--accent)] px-8 py-3 text-[14px] font-bold text-white transition-all hover:bg-[var(--accent-dim)]"
                 >
                   Download OudenOS{os.version ? ` ${os.version}` : ""}
                 </a>

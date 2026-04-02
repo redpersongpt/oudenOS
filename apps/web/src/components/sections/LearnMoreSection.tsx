@@ -56,7 +56,7 @@ export function LearnMoreSection() {
           Learn more
         </motion.p>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-border rounded-lg overflow-hidden">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {pages.map((page, i) => (
             <motion.div
               key={page.href}
@@ -66,7 +66,7 @@ export function LearnMoreSection() {
             >
               <Link
                 href={page.href}
-                className="group block bg-[var(--surface)] p-7 h-full transition-colors hover:bg-[var(--surface-raised)]"
+                className="group block border border-[var(--color-border-subtle)] rounded-lg bg-[var(--surface)] p-7 h-full transition-colors hover:bg-[var(--surface-raised)]"
               >
                 <h3 className="text-[0.88rem] font-semibold text-[var(--text-primary)] group-hover:text-white transition-colors flex items-center gap-2">
                   {page.title}

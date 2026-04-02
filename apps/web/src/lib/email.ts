@@ -8,7 +8,7 @@ export interface EmailOptions {
 
 const APP_NAME = "Ouden";
 const SUPPORT_EMAIL = "support@ouden.cc";
-const BRAND_COLOR = "#E8254B";
+const BRAND_COLOR = "#D42A45";
 const BG = "#000000";
 const CARD_BG = "#0D0D0D";
 const BORDER = "#1C1C1C";
@@ -87,8 +87,8 @@ function emailWrapper(title: string, body: string): string {
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
 <body style="margin:0;padding:32px;background:${BG};font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
   <div style="max-width:620px;margin:0 auto;">
-    <div style="padding:0 6px 16px;font-size:14px;font-weight:700;letter-spacing:.1em;text-transform:lowercase;color:${TEXT};">ouden<span style="color:#E8254B;">.cc</span></div>
-    <div style="background:linear-gradient(180deg,rgba(232,37,75,0.18),rgba(13,13,13,0.98) 30%);border-radius:20px;padding:1px;">
+    <div style="padding:0 6px 16px;font-size:14px;font-weight:700;letter-spacing:.1em;text-transform:lowercase;color:${TEXT};">ouden<span style="color:#D42A45;">.cc</span></div>
+    <div style="background:linear-gradient(180deg,rgba(212,42,69,0.18),rgba(13,13,13,0.98) 30%);border-radius:20px;padding:1px;">
       <div style="background:${CARD_BG};border-radius:19px;padding:34px;border:1px solid ${BORDER};box-shadow:0 28px 80px rgba(0,0,0,0.60);">
         <h1 style="margin:0 0 12px;font-size:24px;line-height:1.2;font-weight:800;letter-spacing:-0.03em;color:${TEXT};">${title}</h1>
         ${body}

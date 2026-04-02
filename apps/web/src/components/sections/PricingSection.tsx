@@ -13,7 +13,7 @@ export function PricingSection() {
   return (
     <section id="pricing" ref={ref} className="relative py-36 lg:py-48">
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute left-1/2 top-0 -translate-x-1/2 h-[600px] w-[800px] rounded-full opacity-[0.04]" style={{ background: "radial-gradient(ellipse, #E8254B, transparent 55%)" }} />
+        <div className="absolute left-1/2 top-0 -translate-x-1/2 h-[600px] w-[800px] rounded-full opacity-[0.04]" style={{ background: "radial-gradient(ellipse, #D42A45, transparent 55%)" }} />
       </div>
 
       <div className="relative mx-auto max-w-[1100px] px-6 lg:px-12">
@@ -81,7 +81,7 @@ export function PricingSection() {
                 href="https://github.com/redpersongpt/redcoreOS/releases/latest"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2.5 rounded-lg bg-[#E8254B] px-6 py-4 text-[0.88rem] font-semibold text-white w-full justify-center hover:bg-[#C41E3E] transition-colors"
+                className="inline-flex items-center gap-2.5 rounded-full bg-[var(--accent)] px-6 py-4 text-[0.88rem] font-semibold text-white w-full justify-center hover:bg-[var(--accent-dim)] transition-colors"
                 whileHover={{ scale: 1.01 }}
                 whileTap={{ scale: 0.98 }}
               >
@@ -92,31 +92,27 @@ export function PricingSection() {
 
             <div className="mt-8 pt-6 border-t border-[var(--border)] flex items-center justify-between">
               <p className="text-[0.72rem] text-[var(--text-disabled)]">Love OudenOS?</p>
-              <a href="/donate" className="inline-flex items-center gap-1.5 text-[0.75rem] font-medium text-[var(--accent)] hover:text-[var(--accent)]-bright transition-colors">
+              <a href="/donate" className="inline-flex items-center gap-1.5 text-[0.75rem] font-medium text-[var(--accent)] hover:text-[var(--accent-bright)] transition-colors">
                 <Heart className="h-3 w-3" />
                 Donate
               </a>
             </div>
           </motion.div>
 
-          {/* Ouden.Tuning — $12.99 — HERO CARD */}
+          {/* Ouden.Tuning — $12.99 */}
           <motion.div
             initial={{ opacity: 0, y: 32 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}
             transition={{ delay: 0.2, duration: 0.7, ease }}
             whileHover={{ y: -6, transition: { duration: 0.3 } }}
-            className="relative rounded-lg border-2 border-accent/40 bg-gradient-to-b from-[#2a2229] to-surface p-9 lg:p-10 overflow-hidden shadow-xl shadow-accent/10"
+            className="relative rounded-lg border border-[var(--border)] bg-[var(--surface)] p-9 lg:p-10 overflow-hidden"
           >
-            {/* Accent glow */}
-            <div className="pointer-events-none absolute -top-24 -right-24 h-[220px] w-[220px] rounded-full opacity-[0.1]" style={{ background: "radial-gradient(circle, #E8254B, transparent 60%)" }} />
-            <div className="pointer-events-none absolute -bottom-16 -left-16 h-[150px] w-[150px] rounded-full opacity-[0.05]" style={{ background: "radial-gradient(circle, #E8254B, transparent 60%)" }} />
-
             {/* Badge */}
             <motion.div
               initial={{ opacity: 0, scale: 0.8 }}
               animate={inView ? { opacity: 1, scale: 1 } : {}}
               transition={{ delay: 0.5, duration: 0.4, ease }}
-              className="absolute top-4 right-4 font-mono text-[0.55rem] font-bold uppercase tracking-[0.18em] text-white bg-[var(--accent)] rounded-full px-3 py-1 shadow-lg shadow-accent/30"
+              className="absolute top-4 right-4 font-mono text-[0.55rem] font-bold uppercase tracking-[0.18em] text-[var(--accent)] bg-[var(--accent)]/15 rounded-full px-3 py-1"
             >
               Recommended
             </motion.div>
@@ -160,7 +156,7 @@ export function PricingSection() {
                 ))}
               </ul>
 
-              <span className="inline-flex items-center gap-2.5 rounded-lg bg-[var(--accent)] px-6 py-4 text-[0.88rem] font-semibold text-white w-full justify-center shadow-lg shadow-accent/25">
+              <span className="inline-flex items-center gap-2.5 rounded-full bg-[var(--accent)] px-6 py-4 text-[0.88rem] font-semibold text-white w-full justify-center">
                 Coming soon
               </span>
 
