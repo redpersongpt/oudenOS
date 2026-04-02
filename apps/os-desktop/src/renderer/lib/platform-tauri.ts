@@ -10,6 +10,13 @@ declare global {
       event: {
         listen: (event: string, handler: (event: { payload: unknown }) => void) => Promise<() => void>;
       };
+      window: {
+        getCurrentWindow: () => {
+          minimize: () => Promise<void>;
+          toggleMaximize: () => Promise<void>;
+          close: () => Promise<void>;
+        };
+      };
     };
   }
 }
@@ -50,13 +57,13 @@ export const tauriBackend: PlatformAPI = {
 
   window: {
     minimize: () => {
-      getTauri()?.core.invoke("plugin:window|minimize", { label: "main" });
+      getTauri()?.window.getCurrentWindow().minimize();
     },
     maximize: () => {
-      getTauri()?.core.invoke("plugin:window|toggle_maximize", { label: "main" });
+      getTauri()?.window.getCurrentWindow().toggleMaximize();
     },
     close: () => {
-      getTauri()?.core.invoke("plugin:window|close", { label: "main" });
+      getTauri()?.window.getCurrentWindow().close();
     },
   },
 
