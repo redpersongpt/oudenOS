@@ -14,7 +14,7 @@ export default function Home() {
     <>
       <Navigation />
       <HashScroller />
-      <main className="relative isolate">
+      <main className="relative" style={{ zIndex: 2 }}>
         <LandingChrome />
         <HeroSection />
         <SectionSeparator label="How it works" note="Four steps, full control" />
