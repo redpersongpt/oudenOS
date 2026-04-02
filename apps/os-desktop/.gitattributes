@@ -1,0 +1,3 @@
+# Generated data files — do not hand-edit.
+# Regenerate via: pnpm sync:os:wizard (from repo root)
+src/renderer/lib/generated-*.json linguist-generated=true
