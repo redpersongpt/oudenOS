@@ -54,7 +54,7 @@ export default function SupportPage() {
   return (
     <>
       <Navigation />
-      <main className="min-h-screen bg-surface-base pt-24">
+      <main className="min-h-screen bg-bg pt-24">
         <section className="mx-auto flex w-full max-w-[1180px] flex-col gap-10 px-6 pb-20 sm:px-8 lg:px-16">
           <div className="max-w-3xl">
             <p className="mb-3 text-[0.72rem] font-semibold uppercase tracking-[0.18em] text-accent">
@@ -77,9 +77,9 @@ export default function SupportPage() {
                 <a
                   key={card.title}
                   href={card.href}
-                  className="group rounded-3xl border border-border/70 bg-surface-elevated/60 p-6 transition-colors hover:border-accent/60 hover:bg-surface-elevated"
+                  className="group rounded-lg border border-border/70 bg-surface-elevated/60 p-6 transition-colors hover:border-accent/60 hover:bg-surface-elevated"
                 >
-                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-accent/20 bg-accent/10 text-accent">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-lg border border-accent/20 bg-accent/10 text-accent">
                     <Icon className="h-5 w-5" />
                   </div>
                   <h2 className="mt-5 text-lg font-semibold text-ink-primary">{card.title}</h2>

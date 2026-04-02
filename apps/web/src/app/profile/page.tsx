@@ -175,7 +175,7 @@ export default function ProfilePage() {
             )}
 
             {passwordOpen && (
-              <form onSubmit={handlePasswordChange} className="rounded-xl border border-border bg-surface p-6 space-y-4">
+              <form onSubmit={handlePasswordChange} className="rounded-lg border border-border bg-surface p-6 space-y-4">
                 <p className="text-[14px] leading-6 text-ink-secondary">
                   Update your password here. If you signed in with Google and do not have a password yet, leave current password empty.
                 </p>
@@ -194,7 +194,7 @@ export default function ProfilePage() {
                     autoComplete="current-password"
                     value={currentPassword}
                     onChange={(e) => setCurrentPassword(e.target.value)}
-                    className="w-full h-11 px-3.5 rounded-lg bg-surface-card border border-border text-[14px] text-ink-primary placeholder:text-ink-tertiary outline-none focus:border-accent/50 transition-colors"
+                    className="w-full h-11 px-3.5 rounded-lg bg-surface border border-border text-[14px] text-ink-primary placeholder:text-ink-tertiary outline-none focus:border-accent/50 transition-colors"
                     placeholder="Leave blank if this account has no password yet"
                   />
                 </div>
@@ -210,7 +210,7 @@ export default function ProfilePage() {
                     required
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
-                    className="w-full h-11 px-3.5 rounded-lg bg-surface-card border border-border text-[14px] text-ink-primary placeholder:text-ink-tertiary outline-none focus:border-accent/50 transition-colors"
+                    className="w-full h-11 px-3.5 rounded-lg bg-surface border border-border text-[14px] text-ink-primary placeholder:text-ink-tertiary outline-none focus:border-accent/50 transition-colors"
                     placeholder="Create a new password"
                   />
                 </div>
@@ -226,7 +226,7 @@ export default function ProfilePage() {
                     required
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="w-full h-11 px-3.5 rounded-lg bg-surface-card border border-border text-[14px] text-ink-primary placeholder:text-ink-tertiary outline-none focus:border-accent/50 transition-colors"
+                    className="w-full h-11 px-3.5 rounded-lg bg-surface border border-border text-[14px] text-ink-primary placeholder:text-ink-tertiary outline-none focus:border-accent/50 transition-colors"
                     placeholder="Repeat the new password"
                   />
                 </div>
@@ -255,7 +255,7 @@ export default function ProfilePage() {
             </div>
 
             {licenses.length === 0 ? (
-              <div className="rounded-xl border border-border bg-surface p-6 text-center">
+              <div className="rounded-lg border border-border bg-surface p-6 text-center">
                 <p className="text-[14px] text-ink-secondary mb-4">
                   No license keys yet. Buy redcore · Tuning once and your license key will appear here.
                 </p>
@@ -269,7 +269,7 @@ export default function ProfilePage() {
             ) : (
               <div className="space-y-3">
                 {licenses.map((lic) => (
-                  <div key={lic.id} className="rounded-xl border border-border bg-surface p-5">
+                  <div key={lic.id} className="rounded-lg border border-border bg-surface p-5">
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-[12px] text-ink-tertiary uppercase tracking-wider">
                         redcore · Tuning
@@ -303,7 +303,7 @@ export default function ProfilePage() {
               <h2 className="text-lg font-semibold text-ink-primary">Support</h2>
             </div>
 
-            <div className="rounded-xl border border-border bg-surface p-6 text-center">
+            <div className="rounded-lg border border-border bg-surface p-6 text-center">
               <p className="text-[14px] text-ink-secondary mb-4">
                 redcore · OS is free. Support development with a donation.
               </p>

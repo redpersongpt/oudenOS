@@ -287,14 +287,14 @@ export function HeroSection() {
               transition={{ delay: 0.8, duration: 0.7, ease }}
               className="mt-10 flex flex-col sm:flex-row items-start gap-4">
               <motion.button onClick={() => scrollTo("pricing")}
-                className="group inline-flex items-center gap-2.5 rounded-xl bg-accent px-8 py-4 text-[0.92rem] font-semibold text-white cursor-pointer relative overflow-hidden shadow-lg shadow-accent/25"
+                className="group inline-flex items-center gap-2.5 rounded-lg bg-accent px-8 py-4 text-[0.92rem] font-semibold text-white cursor-pointer relative overflow-hidden shadow-lg shadow-accent/25"
                 whileHover={{ scale: 1.02, y: -2 }} whileTap={{ scale: 0.98 }}>
                 <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700" />
                 <Download className="h-4 w-4" />
                 Get redcore
               </motion.button>
               <motion.a href="https://github.com/redpersongpt/redcoreOS" target="_blank" rel="noopener noreferrer"
-                className="group inline-flex items-center gap-2.5 rounded-xl border border-white/[0.08] bg-white/[0.03] px-6 py-4 text-[0.92rem] font-medium text-ink-secondary transition-all hover:border-white/[0.15] hover:bg-white/[0.06] hover:text-ink-primary cursor-pointer backdrop-blur-sm"
+                className="group inline-flex items-center gap-2.5 rounded-lg border border-white/[0.08] bg-white/[0.03] px-6 py-4 text-[0.92rem] font-medium text-ink-secondary transition-all hover:border-white/[0.15] hover:bg-white/[0.06] hover:text-ink-primary cursor-pointer backdrop-blur-sm"
                 whileHover={{ scale: 1.02, y: -2 }} whileTap={{ scale: 0.98 }}>
                 <GithubIcon className="h-4 w-4" />
                 <span>View on GitHub</span>

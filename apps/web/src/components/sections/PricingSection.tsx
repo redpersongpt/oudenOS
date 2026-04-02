@@ -39,11 +39,11 @@ export function PricingSection() {
             animate={inView ? { opacity: 1, y: 0 } : {}}
             transition={{ delay: 0.1, duration: 0.7, ease }}
             whileHover={{ y: -6, transition: { duration: 0.3 } }}
-            className="relative rounded-2xl border border-border bg-surface p-9 lg:p-10 overflow-hidden"
+            className="relative rounded-lg border border-border bg-surface p-9 lg:p-10 overflow-hidden"
           >
             <div className="relative">
               <div className="flex items-center gap-3 mb-6">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-ink-muted/20">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-ink-muted/20">
                   <Shield className="h-5 w-5 text-ink-secondary" />
                 </div>
                 <div>
@@ -81,7 +81,7 @@ export function PricingSection() {
                 href="https://github.com/redpersongpt/redcoreOS/releases/latest"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2.5 rounded-xl border border-border bg-surface-raised px-6 py-4 text-[0.88rem] font-semibold text-ink-primary w-full justify-center hover:bg-border/30 transition-colors"
+                className="inline-flex items-center gap-2.5 rounded-lg border border-border bg-surface-raised px-6 py-4 text-[0.88rem] font-semibold text-ink-primary w-full justify-center hover:bg-border/30 transition-colors"
                 whileHover={{ scale: 1.01 }}
                 whileTap={{ scale: 0.98 }}
               >
@@ -105,7 +105,7 @@ export function PricingSection() {
             animate={inView ? { opacity: 1, y: 0 } : {}}
             transition={{ delay: 0.2, duration: 0.7, ease }}
             whileHover={{ y: -6, transition: { duration: 0.3 } }}
-            className="relative rounded-2xl border-2 border-accent/40 bg-gradient-to-b from-[#2a2229] to-surface p-9 lg:p-10 overflow-hidden shadow-xl shadow-accent/10"
+            className="relative rounded-lg border-2 border-accent/40 bg-gradient-to-b from-[#2a2229] to-surface p-9 lg:p-10 overflow-hidden shadow-xl shadow-accent/10"
           >
             {/* Accent glow */}
             <div className="pointer-events-none absolute -top-24 -right-24 h-[220px] w-[220px] rounded-full opacity-[0.1]" style={{ background: "radial-gradient(circle, #E8254B, transparent 60%)" }} />
@@ -123,7 +123,7 @@ export function PricingSection() {
 
             <div className="relative">
               <div className="flex items-center gap-3 mb-6">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent/15 border border-accent/20">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent/15 border border-accent/20">
                   <Zap className="h-5 w-5 text-accent" />
                 </div>
                 <div>
@@ -160,7 +160,7 @@ export function PricingSection() {
                 ))}
               </ul>
 
-              <span className="inline-flex items-center gap-2.5 rounded-xl bg-accent px-6 py-4 text-[0.88rem] font-semibold text-white w-full justify-center shadow-lg shadow-accent/25">
+              <span className="inline-flex items-center gap-2.5 rounded-lg bg-accent px-6 py-4 text-[0.88rem] font-semibold text-white w-full justify-center shadow-lg shadow-accent/25">
                 Coming soon
               </span>
 

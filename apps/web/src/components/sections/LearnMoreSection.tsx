@@ -56,7 +56,7 @@ export function LearnMoreSection() {
           Learn more
         </motion.p>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-border rounded-xl overflow-hidden">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-border rounded-lg overflow-hidden">
           {pages.map((page, i) => (
             <motion.div
               key={page.href}

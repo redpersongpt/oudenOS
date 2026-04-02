@@ -70,7 +70,7 @@ function EcosystemDiagram({ inView }: { inView: boolean }) {
       pills: ["Stock install", "Untouched data", "Your apps"],
       desc: "Left unchanged — redcore only changes what needs changing",
       borderStyle: "border-border/40",
-      bgStyle: "bg-surface-base/60",
+      bgStyle: "bg-bg/60",
       delay: 0.1,
     },
     {
@@ -126,7 +126,7 @@ function EcosystemDiagram({ inView }: { inView: boolean }) {
             animate={inView ? { opacity: 1, x: 0 } : {}}
             transition={{ delay: layer.delay, duration: 0.7, ease }}
           >
-            <div className={`relative rounded-2xl border ${layer.borderStyle} ${layer.bgStyle} p-6 backdrop-blur-sm overflow-hidden`}>
+            <div className={`relative rounded-lg border ${layer.borderStyle} ${layer.bgStyle} p-6 backdrop-blur-sm overflow-hidden`}>
                 {/* Subtle glow on top layer */}
                 {i === 0 && (
                   <div className="pointer-events-none absolute -top-16 right-0 h-32 w-64 rounded-full opacity-[0.08]"
@@ -239,7 +239,7 @@ function TuningSection() {
           subtitle="Every step wizard-led, every change reversible."
           inView={inView}
         />
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-border rounded-2xl overflow-hidden">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-border rounded-lg overflow-hidden">
           {tuningFeatures.map((f, i) => (
             <FeatureCard key={f.title} {...f} delay={0.05 * i} inView={inView} />
           ))}
@@ -267,7 +267,7 @@ function OSSection() {
           subtitle="Scans your PC, shows you exactly what it'll change, and lets you undo everything."
           inView={inView}
         />
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-border rounded-2xl overflow-hidden">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-border rounded-lg overflow-hidden">
           {osFeatures.map((f, i) => (
             <FeatureCard key={f.title} {...f} delay={0.05 * i} inView={inView} />
           ))}

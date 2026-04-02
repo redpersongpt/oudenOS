@@ -35,7 +35,7 @@ export default function SubscriptionPage() {
             {message}
           </motion.p>
 
-          <motion.div {...fade(0.12)} className="mt-8 rounded-2xl border border-border bg-surface-card p-6 text-center">
+          <motion.div {...fade(0.12)} className="mt-8 rounded-lg border border-border bg-surface p-6 text-center">
             <div className="flex flex-col items-center gap-3">
               <Link href="/downloads" className="text-[13px] font-medium text-accent hover:text-accent-bright transition-colors">
                 Download redcore OS

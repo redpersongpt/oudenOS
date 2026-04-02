@@ -149,10 +149,10 @@ function StatCardItem({
         duration: duration.slow,
         ease: easing.enter,
       }}
-      className="group relative rounded-xl border border-border/60 bg-surface/80 p-5 backdrop-blur-sm transition-colors hover:border-accent/25"
+      className="group relative rounded-lg border border-border/60 bg-surface/80 p-5 backdrop-blur-sm transition-colors hover:border-accent/25"
     >
       {/* Subtle glow on hover */}
-      <div className="pointer-events-none absolute inset-0 rounded-xl opacity-0 transition-opacity group-hover:opacity-100"
+      <div className="pointer-events-none absolute inset-0 rounded-lg opacity-0 transition-opacity group-hover:opacity-100"
         style={{ boxShadow: "inset 0 0 40px rgba(232, 37, 75, 0.04)" }}
       />
 
