@@ -19,12 +19,12 @@ export function TrustSection() {
             animate={inView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.7, ease }}
           >
-            <h2 className="text-[clamp(1.6rem,3vw,2.4rem)] font-bold tracking-[-0.03em] leading-[1.12] text-ink-primary">
+            <h2 className="text-[clamp(1.6rem,3vw,2.4rem)] font-bold tracking-[-0.03em] leading-[1.12] text-[var(--text-primary)]">
               Nothing hidden.
               <br />
               Everything reversible.
             </h2>
-            <p className="mt-6 text-[0.95rem] leading-[1.75] text-ink-secondary">
+            <p className="mt-6 text-[0.95rem] leading-[1.75] text-[var(--text-secondary)]">
               redcore shows you exactly what it&apos;ll do before it
               does it. Every registry key, every service change, every removal
               — visible in real time. Not buried in logs.
@@ -62,10 +62,10 @@ export function TrustSection() {
                 animate={inView ? { opacity: 1, y: 0 } : {}}
                 transition={{ delay: 0.15 + i * 0.06, duration: 0.5, ease }}
               >
-                <h3 className="text-[0.88rem] font-semibold text-ink-primary mb-2">
+                <h3 className="text-[0.88rem] font-semibold text-[var(--text-primary)] mb-2">
                   {item.title}
                 </h3>
-                <p className="text-[0.82rem] leading-[1.7] text-ink-tertiary">
+                <p className="text-[0.82rem] leading-[1.7] text-[var(--text-disabled)]">
                   {item.body}
                 </p>
               </motion.div>

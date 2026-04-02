@@ -36,7 +36,7 @@ function CopyButton({ text }: { text: string }) {
   return (
     <button
       onClick={copy}
-      className="p-1.5 rounded-md text-ink-tertiary hover:text-ink-primary hover:bg-surface-raised transition-colors cursor-pointer"
+      className="p-1.5 rounded-md text-[var(--text-disabled)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-raised)] transition-colors cursor-pointer"
       title="Copy license key"
     >
       {copied ? <Check size={14} /> : <Copy size={14} />}
@@ -121,7 +121,7 @@ export default function ProfilePage() {
       <>
         <Navigation />
         <main className="min-h-screen flex items-center justify-center pt-20">
-          <p className="text-ink-tertiary text-[14px]">Loading...</p>
+          <p className="text-[var(--text-disabled)] text-[14px]">Loading...</p>
         </main>
       </>
     );
@@ -137,16 +137,16 @@ export default function ProfilePage() {
           {/* Header */}
           <motion.div {...fade(0)} className="flex items-center justify-between mb-10">
             <div>
-              <h1 className="text-2xl font-bold text-ink-primary">
+              <h1 className="text-2xl font-bold text-[var(--text-primary)]">
                 {session.user.name || "Your Profile"}
               </h1>
-              <p className="text-[14px] text-ink-secondary mt-1">
+              <p className="text-[14px] text-[var(--text-secondary)] mt-1">
                 {session.user.email}
               </p>
             </div>
             <button
               onClick={() => signOut({ callbackUrl: "/" })}
-              className="inline-flex items-center gap-2 text-[13px] text-ink-tertiary hover:text-ink-primary transition-colors cursor-pointer"
+              className="inline-flex items-center gap-2 text-[13px] text-[var(--text-disabled)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
             >
               <LogOut size={14} />
               Sign out
@@ -157,13 +157,13 @@ export default function ProfilePage() {
           <motion.section {...fade(0.08)} className="mb-10">
             <div className="flex items-center justify-between gap-3 mb-4">
               <div className="flex items-center gap-2">
-                <Lock size={16} className="text-ink-tertiary" />
-                <h2 className="text-lg font-semibold text-ink-primary">Password</h2>
+                <Lock size={16} className="text-[var(--text-disabled)]" />
+                <h2 className="text-lg font-semibold text-[var(--text-primary)]">Password</h2>
               </div>
               <button
                 type="button"
                 onClick={() => setPasswordOpen((value) => !value)}
-                className="inline-flex items-center gap-2 text-[13px] font-medium text-ink-secondary hover:text-ink-primary transition-colors"
+                className="inline-flex items-center gap-2 text-[13px] font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
               >
                 {passwordOpen ? "Close" : "Change password"}
                 {passwordOpen ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
@@ -175,8 +175,8 @@ export default function ProfilePage() {
             )}
 
             {passwordOpen && (
-              <form onSubmit={handlePasswordChange} className="rounded-lg border border-border bg-surface p-6 space-y-4">
-                <p className="text-[14px] leading-6 text-ink-secondary">
+              <form onSubmit={handlePasswordChange} className="rounded-lg border border-[var(--border)] bg-[var(--surface)] p-6 space-y-4">
+                <p className="text-[14px] leading-6 text-[var(--text-secondary)]">
                   Update your password here. If you signed in with Google and do not have a password yet, leave current password empty.
                 </p>
 
@@ -185,7 +185,7 @@ export default function ProfilePage() {
                 )}
 
                 <div>
-                  <label htmlFor="currentPassword" className="block text-[13px] font-medium text-ink-secondary mb-1.5">
+                  <label htmlFor="currentPassword" className="block text-[13px] font-medium text-[var(--text-secondary)] mb-1.5">
                     Current password
                   </label>
                   <input
@@ -194,13 +194,13 @@ export default function ProfilePage() {
                     autoComplete="current-password"
                     value={currentPassword}
                     onChange={(e) => setCurrentPassword(e.target.value)}
-                    className="w-full h-11 px-3.5 rounded-lg bg-surface border border-border text-[14px] text-ink-primary placeholder:text-ink-tertiary outline-none focus:border-accent/50 transition-colors"
+                    className="w-full h-11 px-3.5 rounded-lg bg-[var(--surface)] border border-[var(--border)] text-[14px] text-[var(--text-primary)] placeholder:text-[var(--text-disabled)] outline-none focus:border-accent/50 transition-colors"
                     placeholder="Leave blank if this account has no password yet"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="newPassword" className="block text-[13px] font-medium text-ink-secondary mb-1.5">
+                  <label htmlFor="newPassword" className="block text-[13px] font-medium text-[var(--text-secondary)] mb-1.5">
                     New password
                   </label>
                   <input
@@ -210,13 +210,13 @@ export default function ProfilePage() {
                     required
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
-                    className="w-full h-11 px-3.5 rounded-lg bg-surface border border-border text-[14px] text-ink-primary placeholder:text-ink-tertiary outline-none focus:border-accent/50 transition-colors"
+                    className="w-full h-11 px-3.5 rounded-lg bg-[var(--surface)] border border-[var(--border)] text-[14px] text-[var(--text-primary)] placeholder:text-[var(--text-disabled)] outline-none focus:border-accent/50 transition-colors"
                     placeholder="Create a new password"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="confirmPassword" className="block text-[13px] font-medium text-ink-secondary mb-1.5">
+                  <label htmlFor="confirmPassword" className="block text-[13px] font-medium text-[var(--text-secondary)] mb-1.5">
                     Confirm new password
                   </label>
                   <input
@@ -226,19 +226,19 @@ export default function ProfilePage() {
                     required
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="w-full h-11 px-3.5 rounded-lg bg-surface border border-border text-[14px] text-ink-primary placeholder:text-ink-tertiary outline-none focus:border-accent/50 transition-colors"
+                    className="w-full h-11 px-3.5 rounded-lg bg-[var(--surface)] border border-[var(--border)] text-[14px] text-[var(--text-primary)] placeholder:text-[var(--text-disabled)] outline-none focus:border-accent/50 transition-colors"
                     placeholder="Repeat the new password"
                   />
                 </div>
 
                 <div className="flex items-center justify-between gap-3 pt-2">
-                  <p className="text-[12px] text-ink-tertiary">
+                  <p className="text-[12px] text-[var(--text-disabled)]">
                     Changing your password signs out other sessions.
                   </p>
                   <button
                     type="submit"
                     disabled={passwordLoading}
-                    className="inline-flex items-center justify-center h-10 px-5 rounded-lg bg-accent hover:bg-accent-dim disabled:opacity-70 text-white text-[13px] font-medium cursor-pointer transition-colors"
+                    className="inline-flex items-center justify-center h-10 px-5 rounded-lg bg-[var(--accent)] hover:bg-[var(--accent)]-dim disabled:opacity-70 text-white text-[13px] font-medium cursor-pointer transition-colors"
                   >
                     {passwordLoading ? "Saving..." : "Save password"}
                   </button>
@@ -250,18 +250,18 @@ export default function ProfilePage() {
           {/* License Keys */}
           <motion.section {...fade(0.1)} className="mb-10">
             <div className="flex items-center gap-2 mb-4">
-              <Key size={16} className="text-ink-tertiary" />
-              <h2 className="text-lg font-semibold text-ink-primary">License Keys</h2>
+              <Key size={16} className="text-[var(--text-disabled)]" />
+              <h2 className="text-lg font-semibold text-[var(--text-primary)]">License Keys</h2>
             </div>
 
             {licenses.length === 0 ? (
-              <div className="rounded-lg border border-border bg-surface p-6 text-center">
-                <p className="text-[14px] text-ink-secondary mb-4">
+              <div className="rounded-lg border border-[var(--border)] bg-[var(--surface)] p-6 text-center">
+                <p className="text-[14px] text-[var(--text-secondary)] mb-4">
                   No license keys yet. Buy redcore · Tuning once and your license key will appear here.
                 </p>
                 <a
                   href="/redcore-tuning"
-                  className="inline-flex items-center justify-center h-10 px-6 text-[13px] font-medium rounded-lg text-ink-primary border border-border bg-surface-raised hover:border-border-strong transition-colors"
+                  className="inline-flex items-center justify-center h-10 px-6 text-[13px] font-medium rounded-lg text-[var(--text-primary)] border border-[var(--border)] bg-[var(--surface-raised)] hover:border-[var(--border-visible)] transition-colors"
                 >
                   Buy redcore · Tuning — $12.99 one-time
                 </a>
@@ -269,24 +269,24 @@ export default function ProfilePage() {
             ) : (
               <div className="space-y-3">
                 {licenses.map((lic) => (
-                  <div key={lic.id} className="rounded-lg border border-border bg-surface p-5">
+                  <div key={lic.id} className="rounded-lg border border-[var(--border)] bg-[var(--surface)] p-5">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-[12px] text-ink-tertiary uppercase tracking-wider">
+                      <span className="text-[12px] text-[var(--text-disabled)] uppercase tracking-wider">
                         redcore · Tuning
                       </span>
                       <span className={`text-[11px] font-medium uppercase tracking-wider ${
-                        lic.status === "active" ? "text-accent" : "text-ink-tertiary"
+                        lic.status === "active" ? "text-[var(--accent)]" : "text-[var(--text-disabled)]"
                       }`}>
                         {lic.status}
                       </span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <code className="text-[15px] font-mono text-ink-primary tracking-wider">
+                      <code className="text-[15px] font-mono text-[var(--text-primary)] tracking-wider">
                         {lic.licenseKey}
                       </code>
                       <CopyButton text={lic.licenseKey} />
                     </div>
-                    <p className="text-[12px] text-ink-tertiary mt-2">
+                    <p className="text-[12px] text-[var(--text-disabled)] mt-2">
                       Purchased {new Date(lic.createdAt).toLocaleDateString()}
                       {lic.machineId && ` · Activated on ${lic.machineId}`}
                     </p>
@@ -299,17 +299,17 @@ export default function ProfilePage() {
           {/* Donations */}
           <motion.section {...fade(0.2)}>
             <div className="flex items-center gap-2 mb-4">
-              <Heart size={16} className="text-ink-tertiary" />
-              <h2 className="text-lg font-semibold text-ink-primary">Support</h2>
+              <Heart size={16} className="text-[var(--text-disabled)]" />
+              <h2 className="text-lg font-semibold text-[var(--text-primary)]">Support</h2>
             </div>
 
-            <div className="rounded-lg border border-border bg-surface p-6 text-center">
-              <p className="text-[14px] text-ink-secondary mb-4">
+            <div className="rounded-lg border border-[var(--border)] bg-[var(--surface)] p-6 text-center">
+              <p className="text-[14px] text-[var(--text-secondary)] mb-4">
                 redcore · OS is free. Support development with a donation.
               </p>
               <a
                 href="/donate"
-                className="inline-flex items-center justify-center gap-2 h-10 px-6 text-[13px] font-medium rounded-lg text-ink-primary cursor-pointer border border-border hover:border-border-strong transition-colors"
+                className="inline-flex items-center justify-center gap-2 h-10 px-6 text-[13px] font-medium rounded-lg text-[var(--text-primary)] cursor-pointer border border-[var(--border)] hover:border-[var(--border-visible)] transition-colors"
               >
                 <Heart size={14} />
                 Donate

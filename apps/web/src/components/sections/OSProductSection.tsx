@@ -37,7 +37,7 @@ export function OSProductSection() {
             <div className="mt-3 flex items-baseline gap-2">
               <span className="text-4xl font-bold text-brand-500">Free</span>
             </div>
-            <p className="text-[13px] text-ink-tertiary mt-1">forever, for everyone</p>
+            <p className="text-[13px] text-[var(--text-disabled)] mt-1">forever, for everyone</p>
 
             <div className="mt-6 space-y-3">
               {[
@@ -52,7 +52,7 @@ export function OSProductSection() {
                   <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="text-brand-500 shrink-0">
                     <path d="M3.5 7L6 9.5L10.5 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                   </svg>
-                  <span className="text-[14px] text-ink-primary">{item}</span>
+                  <span className="text-[14px] text-[var(--text-primary)]">{item}</span>
                 </div>
               ))}
             </div>
@@ -64,13 +64,13 @@ export function OSProductSection() {
               Download Free
             </a>
 
-            <div className="mt-5 pt-5 border-t border-border-default">
-              <p className="text-[12px] text-ink-tertiary text-center mb-3">
+            <div className="mt-5 pt-5 border-t border-[var(--border)]">
+              <p className="text-[12px] text-[var(--text-disabled)] text-center mb-3">
                 Love redcore · OS? Support development.
               </p>
               <a
                 href="/donate"
-                className="w-full inline-flex items-center justify-center gap-2 h-9 px-4 text-[12px] font-medium rounded-lg text-ink-secondary cursor-pointer transition-colors duration-200 border border-border-default hover:border-border-strong hover:text-ink-primary"
+                className="w-full inline-flex items-center justify-center gap-2 h-9 px-4 text-[12px] font-medium rounded-lg text-[var(--text-secondary)] cursor-pointer transition-colors duration-200 border border-[var(--border)] hover:border-[var(--border-visible)] hover:text-[var(--text-primary)]"
               >
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
                 Support with a Donation
@@ -88,7 +88,7 @@ export function OSProductSection() {
               <h2 className="text-4xl md:text-5xl font-bold tracking-tight">
                 redcore · OS
               </h2>
-              <p className="mt-4 text-lg text-ink-secondary max-w-xl">
+              <p className="mt-4 text-lg text-[var(--text-secondary)] max-w-xl">
                 In-place Windows optimization. Reshape your current installation
                 without reinstalling — guided by machine intelligence, protected by
                 rollback safety.
@@ -103,10 +103,10 @@ export function OSProductSection() {
             >
               {features.map((f) => (
                 <div key={f.title} className="flex gap-3">
-                  <f.icon size={18} className="text-ink-tertiary mt-0.5 shrink-0" />
+                  <f.icon size={18} className="text-[var(--text-disabled)] mt-0.5 shrink-0" />
                   <div>
-                    <p className="text-[15px] font-medium text-ink-primary">{f.title}</p>
-                    <p className="text-[13px] text-ink-secondary mt-0.5 leading-relaxed">{f.desc}</p>
+                    <p className="text-[15px] font-medium text-[var(--text-primary)]">{f.title}</p>
+                    <p className="text-[13px] text-[var(--text-secondary)] mt-0.5 leading-relaxed">{f.desc}</p>
                   </div>
                 </div>
               ))}

@@ -50,10 +50,10 @@ export default function ForgotPasswordPage() {
       <Navigation />
       <main className="min-h-screen flex items-center justify-center px-6 pt-20 pb-16">
         <div className="w-full max-w-sm">
-          <motion.h1 {...fade(0)} className="text-2xl font-bold text-ink-primary text-center">
+          <motion.h1 {...fade(0)} className="text-2xl font-bold text-[var(--text-primary)] text-center">
             Forgot password
           </motion.h1>
-          <motion.p {...fade(0.05)} className="mt-2 text-[14px] text-ink-secondary text-center">
+          <motion.p {...fade(0.05)} className="mt-2 text-[14px] text-[var(--text-secondary)] text-center">
             Enter your email and we&apos;ll send you a secure reset link.
           </motion.p>
 
@@ -64,18 +64,18 @@ export default function ForgotPasswordPage() {
           )}
 
           {submitted ? (
-            <motion.div {...fade(0.12)} className="mt-8 rounded-lg border border-border bg-surface p-6 text-center">
-              <p className="text-[14px] leading-6 text-ink-secondary">
+            <motion.div {...fade(0.12)} className="mt-8 rounded-lg border border-[var(--border)] bg-[var(--surface)] p-6 text-center">
+              <p className="text-[14px] leading-6 text-[var(--text-secondary)]">
                 If an account with that email exists, a reset link has been sent. Check your inbox and spam folder.
               </p>
-              <Link href="/login" className="mt-5 inline-flex text-[13px] font-medium text-accent hover:text-accent-bright transition-colors">
+              <Link href="/login" className="mt-5 inline-flex text-[13px] font-medium text-[var(--accent)] hover:text-[var(--accent)]-bright transition-colors">
                 Back to sign in
               </Link>
             </motion.div>
           ) : (
             <motion.form {...fade(0.1)} onSubmit={handleSubmit} className="mt-8 space-y-4">
               <div>
-                <label htmlFor="email" className="block text-[13px] font-medium text-ink-secondary mb-1.5">
+                <label htmlFor="email" className="block text-[13px] font-medium text-[var(--text-secondary)] mb-1.5">
                   Email
                 </label>
                 <input
@@ -85,7 +85,7 @@ export default function ForgotPasswordPage() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full h-11 px-3.5 rounded-lg bg-surface border border-border text-[14px] text-ink-primary placeholder:text-ink-tertiary outline-none focus:border-accent/50 transition-colors"
+                  className="w-full h-11 px-3.5 rounded-lg bg-[var(--surface)] border border-[var(--border)] text-[14px] text-[var(--text-primary)] placeholder:text-[var(--text-disabled)] outline-none focus:border-accent/50 transition-colors"
                   placeholder="you@example.com"
                 />
               </div>
@@ -93,7 +93,7 @@ export default function ForgotPasswordPage() {
               <motion.button
                 type="submit"
                 disabled={loading}
-                className="w-full h-11 rounded-lg bg-accent hover:bg-accent-dim disabled:opacity-70 text-white text-[14px] font-medium cursor-pointer transition-colors"
+                className="w-full h-11 rounded-lg bg-[var(--accent)] hover:bg-[var(--accent)]-dim disabled:opacity-70 text-white text-[14px] font-medium cursor-pointer transition-colors"
                 whileHover={{ y: -1 }}
                 whileTap={{ scale: 0.98 }}
               >
@@ -102,9 +102,9 @@ export default function ForgotPasswordPage() {
             </motion.form>
           )}
 
-          <motion.p {...fade(0.2)} className="mt-6 text-center text-[13px] text-ink-tertiary">
+          <motion.p {...fade(0.2)} className="mt-6 text-center text-[13px] text-[var(--text-disabled)]">
             Remembered it?{" "}
-            <Link href="/login" className="text-accent hover:text-accent-bright transition-colors">
+            <Link href="/login" className="text-[var(--accent)] hover:text-[var(--accent)]-bright transition-colors">
               Sign in
             </Link>
           </motion.p>

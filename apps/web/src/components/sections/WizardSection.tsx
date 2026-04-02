@@ -80,7 +80,7 @@ function StepCircle({ step, index }: { step: WizardStep; index: number }) {
             ? "bg-brand-500/15 text-brand-500 border border-brand-500/20"
             : isCurrent
               ? "bg-brand-500 text-white"
-              : "bg-surface-overlay text-ink-tertiary border border-border-default",
+              : "bg-[var(--surface-raised)] text-[var(--text-disabled)] border border-[var(--border)]",
         ].join(" ")}
       >
         {isCompleted ? <Check size={12} strokeWidth={3} /> : index + 1}
@@ -88,7 +88,7 @@ function StepCircle({ step, index }: { step: WizardStep; index: number }) {
       <span
         className={[
           "text-[10px] font-mono uppercase tracking-wider",
-          isCurrent ? "text-brand-500" : isCompleted ? "text-ink-secondary" : "text-ink-tertiary",
+          isCurrent ? "text-brand-500" : isCompleted ? "text-[var(--text-secondary)]" : "text-[var(--text-disabled)]",
         ].join(" ")}
       >
         {step.label}
@@ -99,7 +99,7 @@ function StepCircle({ step, index }: { step: WizardStep; index: number }) {
 
 function StepRail() {
   return (
-    <div className="bg-surface px-6 py-3 flex items-center justify-center">
+    <div className="bg-[var(--surface)] px-6 py-3 flex items-center justify-center">
       {steps.map((step, i) => {
         const isLast = i === steps.length - 1;
         return (
@@ -125,14 +125,14 @@ function ActionRow({ item }: { item: ActionItem }) {
   const isWarning = item.risk === "MEDIUM";
 
   return (
-    <div className="flex items-center gap-3 bg-surface rounded-lg px-4 py-3">
+    <div className="flex items-center gap-3 bg-[var(--surface)] rounded-lg px-4 py-3">
       {/* Status icon */}
       <span aria-hidden="true">
-        <Check size={14} className="text-ink-tertiary" strokeWidth={2} />
+        <Check size={14} className="text-[var(--text-disabled)]" strokeWidth={2} />
       </span>
 
       {/* Name */}
-      <span className="flex-1 text-[14px] text-ink-primary font-medium truncate">
+      <span className="flex-1 text-[14px] text-[var(--text-primary)] font-medium truncate">
         {item.name}
       </span>
 
@@ -147,7 +147,7 @@ function ActionRow({ item }: { item: ActionItem }) {
       <div
         className={[
           "flex-shrink-0 w-8 h-[18px] rounded-full relative transition-colors",
-          item.enabled ? "bg-brand-500" : "bg-surface-overlay",
+          item.enabled ? "bg-brand-500" : "bg-[var(--surface-raised)]",
         ].join(" ")}
         aria-hidden="true"
       >
@@ -180,13 +180,13 @@ function WizardWindow() {
           }}
         >
           {/* Window chrome */}
-          <div className="bg-surface-raised h-10 flex items-center px-4">
+          <div className="bg-[var(--surface-raised)] h-10 flex items-center px-4">
             <div className="flex items-center gap-2" aria-hidden="true">
               <span className="w-2 h-2 rounded-full bg-[#FF5F57]" />
               <span className="w-2 h-2 rounded-full bg-[#FEBC2E]" />
               <span className="w-2 h-2 rounded-full bg-[#28C840]" />
             </div>
-            <span className="flex-1 text-center text-[12px] text-ink-tertiary font-mono">
+            <span className="flex-1 text-center text-[12px] text-[var(--text-disabled)] font-mono">
               redcore
             </span>
             <div className="w-[36px]" />
@@ -196,10 +196,10 @@ function WizardWindow() {
           <StepRail />
 
           {/* Content */}
-          <div className="bg-bg p-6">
+          <div className="bg-[var(--black)] p-6">
             <div className="flex items-baseline gap-3 mb-4">
               <span className="text-brand-500 font-mono text-[12px]">Step 4</span>
-              <span className="text-lg font-semibold text-ink-primary">
+              <span className="text-lg font-semibold text-[var(--text-primary)]">
                 Optimization Plan
               </span>
             </div>
@@ -212,10 +212,10 @@ function WizardWindow() {
           </div>
 
           {/* Bottom bar */}
-          <div className="bg-surface-raised px-6 py-3 flex items-center justify-between">
+          <div className="bg-[var(--surface-raised)] px-6 py-3 flex items-center justify-between">
             <button
               type="button"
-              className="flex items-center gap-1 text-[13px] text-ink-tertiary"
+              className="flex items-center gap-1 text-[13px] text-[var(--text-disabled)]"
               tabIndex={-1}
               aria-hidden="true"
             >
@@ -225,7 +225,7 @@ function WizardWindow() {
 
             {/* Progress bar */}
             <div className="flex-1 mx-6">
-              <div className="h-1 rounded-full bg-surface-overlay overflow-hidden">
+              <div className="h-1 rounded-full bg-[var(--surface-raised)] overflow-hidden">
                 <div
                   className="h-full rounded-full bg-brand-500"
                   style={{ width: "67%" }}
@@ -274,11 +274,11 @@ export function WizardSection() {
           <motion.h2
             id="wizard-heading"
             variants={staggerChild}
-            className="mt-4 text-4xl md:text-5xl font-bold text-ink-primary leading-tight"
+            className="mt-4 text-4xl md:text-5xl font-bold text-[var(--text-primary)] leading-tight"
           >
             Not a control panel.
             <br className="hidden sm:block" />
-            <span className="text-ink-primary">A guided journey.</span>
+            <span className="text-[var(--text-primary)]">A guided journey.</span>
           </motion.h2>
         </motion.div>
 
@@ -300,11 +300,11 @@ export function WizardSection() {
               variants={staggerChild}
               className={[
                 "text-center px-6",
-                i < philosophy.length - 1 ? "md:border-r md:border-border-default" : "",
+                i < philosophy.length - 1 ? "md:border-r md:border-[var(--border)]" : "",
               ].join(" ")}
             >
-              <p className="text-[15px] font-medium text-ink-primary">{item.title}</p>
-              <p className="mt-1 text-[13px] text-ink-tertiary">{item.description}</p>
+              <p className="text-[15px] font-medium text-[var(--text-primary)]">{item.title}</p>
+              <p className="mt-1 text-[13px] text-[var(--text-disabled)]">{item.description}</p>
             </motion.div>
           ))}
         </motion.div>

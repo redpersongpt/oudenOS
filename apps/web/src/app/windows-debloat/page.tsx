@@ -85,10 +85,10 @@ export default async function WindowsDebloatPage() {
             ]}
           />
 
-          <h2 className="text-xl font-semibold text-ink-primary mt-14 mb-4">
+          <h2 className="text-xl font-semibold text-[var(--text-primary)] mt-14 mb-4">
             What debloating actually means
           </h2>
-          <p className="text-ink-secondary text-[15px] leading-relaxed mb-4">
+          <p className="text-[var(--text-secondary)] text-[15px] leading-relaxed mb-4">
             Debloating is removing or disabling pre-installed software,
             background services, telemetry endpoints, and UI elements that
             consume CPU, memory, disk, and network without providing value.
@@ -96,33 +96,33 @@ export default async function WindowsDebloatPage() {
             running, dozens of scheduled tasks phoning home, and several
             gigabytes of apps most people never open.
           </p>
-          <p className="text-ink-secondary text-[15px] leading-relaxed mb-4">
+          <p className="text-[var(--text-secondary)] text-[15px] leading-relaxed mb-4">
             The goal is straightforward: keep what you use, remove what you
             do not, and make sure the system still updates and functions
             correctly afterward.
           </p>
 
-          <h2 className="text-xl font-semibold text-ink-primary mt-14 mb-4">
+          <h2 className="text-xl font-semibold text-[var(--text-primary)] mt-14 mb-4">
             Why blind debloat scripts are risky
           </h2>
-          <p className="text-ink-secondary text-[15px] leading-relaxed mb-4">
+          <p className="text-[var(--text-secondary)] text-[15px] leading-relaxed mb-4">
             The most common approach is running a PowerShell script from
             GitHub or Reddit. These apply a fixed list of registry changes
             and service removals without knowing your hardware or use case.
           </p>
-          <ul className="list-disc pl-6 space-y-2 text-ink-secondary text-[15px] leading-relaxed mb-6">
+          <ul className="list-disc pl-6 space-y-2 text-[var(--text-secondary)] text-[15px] leading-relaxed mb-6">
             <li>
-              <strong className="text-ink-primary">No rollback path.</strong>{" "}
+              <strong className="text-[var(--text-primary)]">No rollback path.</strong>{" "}
               If a script disables a service your VPN depends on, reverting
               means manually hunting through registry exports or reinstalling.
             </li>
             <li>
-              <strong className="text-ink-primary">Hardware-blind.</strong>{" "}
+              <strong className="text-[var(--text-primary)]">Hardware-blind.</strong>{" "}
               A script for a gaming rig breaks Wi-Fi power management on a
               laptop or disables GPU scheduling on systems that benefit from it.
             </li>
             <li>
-              <strong className="text-ink-primary">Context-blind.</strong>{" "}
+              <strong className="text-[var(--text-primary)]">Context-blind.</strong>{" "}
               Removing Microsoft Store blocks app installation for users who
               depend on it. Disabling delivery optimization causes problems
               on managed corporate networks.
@@ -157,11 +157,11 @@ export default async function WindowsDebloatPage() {
             }}
           />
 
-          <h2 className="text-xl font-semibold text-ink-primary mt-14 mb-4">
+          <h2 className="text-xl font-semibold text-[var(--text-primary)] mt-14 mb-4">
             How redcore approaches debloating
           </h2>
-          <p className="text-ink-secondary text-[15px] leading-relaxed mb-4">
-            <Link href="/redcore-os" className="text-accent hover:text-accent-bright transition-colors">
+          <p className="text-[var(--text-secondary)] text-[15px] leading-relaxed mb-4">
+            <Link href="/redcore-os" className="text-[var(--accent)] hover:text-[var(--accent)]-bright transition-colors">
               redcore OS
             </Link>{" "}
             does not apply a fixed script. It runs a hardware and software
@@ -172,21 +172,21 @@ export default async function WindowsDebloatPage() {
 
           <div className="space-y-4 mt-8 mb-8">
             <TrustBlock
-              icon={<Shield className="h-4 w-4 text-accent" />}
+              icon={<Shield className="h-4 w-4 text-[var(--accent)]" />}
               title="Scans your hardware"
               description="Detects CPU, GPU, disk type, network adapters, power source, and installed software before generating recommendations. Laptops get different defaults than desktops."
             />
             <TrustBlock
-              icon={<RotateCcw className="h-4 w-4 text-accent" />}
+              icon={<RotateCcw className="h-4 w-4 text-[var(--accent)]" />}
               title="Per-action rollback"
               description="Every change creates a granular restore snapshot. Roll back one change without affecting others — not a system restore point, but individual undo per action."
             />
           </div>
 
-          <p className="text-ink-secondary text-[15px] leading-relaxed mb-4">
+          <p className="text-[var(--text-secondary)] text-[15px] leading-relaxed mb-4">
             Eight profiles determine which changes are safe: Gaming, Work PC,
             Development, Privacy, Minimal, Balanced, Laptop, and Server. A{" "}
-            <Link href="/work-pc-debloat" className="text-accent hover:text-accent-bright transition-colors">
+            <Link href="/work-pc-debloat" className="text-[var(--accent)] hover:text-[var(--accent)]-bright transition-colors">
               Work PC profile
             </Link>{" "}
             preserves printing, RDP, and Group Policy. A Gaming profile

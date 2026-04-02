@@ -28,19 +28,19 @@ export default function SubscriptionPage() {
       <Navigation />
       <main className="min-h-screen flex items-center justify-center px-6 pt-20 pb-16">
         <div className="w-full max-w-md">
-          <motion.h1 {...fade(0)} className="text-2xl font-bold text-ink-primary text-center">
+          <motion.h1 {...fade(0)} className="text-2xl font-bold text-[var(--text-primary)] text-center">
             {title}
           </motion.h1>
-          <motion.p {...fade(0.05)} className="mt-2 text-[14px] text-ink-secondary text-center">
+          <motion.p {...fade(0.05)} className="mt-2 text-[14px] text-[var(--text-secondary)] text-center">
             {message}
           </motion.p>
 
-          <motion.div {...fade(0.12)} className="mt-8 rounded-lg border border-border bg-surface p-6 text-center">
+          <motion.div {...fade(0.12)} className="mt-8 rounded-lg border border-[var(--border)] bg-[var(--surface)] p-6 text-center">
             <div className="flex flex-col items-center gap-3">
-              <Link href="/downloads" className="text-[13px] font-medium text-accent hover:text-accent-bright transition-colors">
+              <Link href="/downloads" className="text-[13px] font-medium text-[var(--accent)] hover:text-[var(--accent)]-bright transition-colors">
                 Download redcore OS
               </Link>
-              <Link href="/redcore-tuning" className="text-[13px] font-medium text-accent hover:text-accent-bright transition-colors">
+              <Link href="/redcore-tuning" className="text-[13px] font-medium text-[var(--accent)] hover:text-[var(--accent)]-bright transition-colors">
                 View redcore Tuning
               </Link>
             </div>

@@ -122,7 +122,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="bg-bg text-ink-primary antialiased">
+      <body className="bg-[var(--black)] text-[var(--text-primary)] antialiased">
         <SessionProvider>
           <SmoothScrollProvider>{children}</SmoothScrollProvider>
         </SessionProvider>

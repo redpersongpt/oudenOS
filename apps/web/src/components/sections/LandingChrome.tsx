@@ -66,16 +66,16 @@ function SideRail({
             >
               <div
                 className={[
-                  "mb-2 inline-flex h-8 w-8 items-center justify-center rounded-full border border-border/70 bg-surface-raised/80",
+                  "mb-2 inline-flex h-8 w-8 items-center justify-center rounded-full border border-border/70 bg-[var(--surface-raised)]/80",
                   iconAlignClass,
                 ].join(" ")}
               >
-                <item.icon className="h-3.5 w-3.5 text-accent" />
+                <item.icon className="h-3.5 w-3.5 text-[var(--accent)]" />
               </div>
-              <p className="text-[0.8rem] font-semibold text-ink-primary">
+              <p className="text-[0.8rem] font-semibold text-[var(--text-primary)]">
                 {item.label}
               </p>
-              <p className="mt-1 text-[0.66rem] leading-[1.5] text-ink-tertiary">
+              <p className="mt-1 text-[0.66rem] leading-[1.5] text-[var(--text-disabled)]">
                 {item.note}
               </p>
             </div>
@@ -84,7 +84,7 @@ function SideRail({
       </div>
       {!reduceMotion && (
         <motion.div
-          className="absolute top-1/2 left-1/2 h-40 w-40 -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent/10 blur-3xl"
+          className="absolute top-1/2 left-1/2 h-40 w-40 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[var(--accent)]/10 blur-3xl"
           animate={{ opacity: [0.2, 0.5, 0.2], scale: [0.95, 1.05, 0.95] }}
           transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
         />
@@ -137,10 +137,10 @@ export function SectionSeparator({
             />
           )}
           <div className="flex items-center gap-2">
-            <span className="text-[0.62rem] font-mono font-semibold uppercase tracking-[0.2em] text-accent">
+            <span className="text-[0.62rem] font-mono font-semibold uppercase tracking-[0.2em] text-[var(--accent)]">
               {label}
             </span>
-            <span className="text-[0.62rem] text-ink-muted">{note}</span>
+            <span className="text-[0.62rem] text-[var(--text-disabled)]">{note}</span>
           </div>
         </motion.div>
 

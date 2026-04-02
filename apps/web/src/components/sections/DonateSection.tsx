@@ -25,10 +25,10 @@ export function DonateSection() {
           transition={{ duration: duration.slow, ease: easing.enter }}
         >
           <Heart size={28} className="text-brand-500 mx-auto mb-4" />
-          <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-ink-primary">
+          <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-[var(--text-primary)]">
             Support redcore · OS
           </h2>
-          <p className="mt-3 text-[16px] text-ink-secondary max-w-lg mx-auto">
+          <p className="mt-3 text-[16px] text-[var(--text-secondary)] max-w-lg mx-auto">
             redcore · OS is free. Donations help us maintain the project,
             ship new features, and keep it independent.
           </p>
@@ -49,8 +49,8 @@ export function DonateSection() {
               className="premium-card rounded-lg p-5 text-center cursor-pointer transition-all duration-200 hover:border-brand-500/30 group"
             >
               <p className="text-2xl font-bold text-brand-500">{tier.amount}</p>
-              <p className="text-[14px] font-medium text-ink-primary mt-1">{tier.label}</p>
-              <p className="text-[12px] text-ink-tertiary mt-0.5">{tier.desc}</p>
+              <p className="text-[14px] font-medium text-[var(--text-primary)] mt-1">{tier.label}</p>
+              <p className="text-[12px] text-[var(--text-disabled)] mt-0.5">{tier.desc}</p>
             </a>
           ))}
         </motion.div>
@@ -74,7 +74,7 @@ export function DonateSection() {
             href="https://ko-fi.com/redperson"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center justify-center h-11 px-6 text-[14px] font-medium rounded-lg text-ink-primary cursor-pointer border border-border-default hover:border-border-strong transition-colors"
+            className="inline-flex items-center justify-center h-11 px-6 text-[14px] font-medium rounded-lg text-[var(--text-primary)] cursor-pointer border border-[var(--border)] hover:border-[var(--border-visible)] transition-colors"
           >
             One-time Donation
           </a>
@@ -84,7 +84,7 @@ export function DonateSection() {
           initial={{ opacity: 0 }}
           animate={inView ? { opacity: 1 } : {}}
           transition={{ duration: duration.slow, ease: easing.enter, delay: 0.4 }}
-          className="mt-6 text-[12px] text-ink-tertiary"
+          className="mt-6 text-[12px] text-[var(--text-disabled)]"
         >
           Every contribution counts. Thank you for supporting redcore.
         </motion.p>

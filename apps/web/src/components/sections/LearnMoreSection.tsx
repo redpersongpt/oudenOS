@@ -51,7 +51,7 @@ export function LearnMoreSection() {
           initial={{ opacity: 0 }}
           animate={inView ? { opacity: 1 } : {}}
           transition={{ duration: 0.6, ease }}
-          className="font-mono text-[0.6rem] font-medium uppercase tracking-[0.16em] text-ink-muted mb-10"
+          className="font-mono text-[0.6rem] font-medium uppercase tracking-[0.16em] text-[var(--text-disabled)] mb-10"
         >
           Learn more
         </motion.p>
@@ -66,13 +66,13 @@ export function LearnMoreSection() {
             >
               <Link
                 href={page.href}
-                className="group block bg-surface p-7 h-full transition-colors hover:bg-surface-raised"
+                className="group block bg-[var(--surface)] p-7 h-full transition-colors hover:bg-[var(--surface-raised)]"
               >
-                <h3 className="text-[0.88rem] font-semibold text-ink-primary group-hover:text-white transition-colors flex items-center gap-2">
+                <h3 className="text-[0.88rem] font-semibold text-[var(--text-primary)] group-hover:text-white transition-colors flex items-center gap-2">
                   {page.title}
-                  <ArrowRight className="h-3.5 w-3.5 text-ink-muted group-hover:text-accent transition-colors" />
+                  <ArrowRight className="h-3.5 w-3.5 text-[var(--text-disabled)] group-hover:text-[var(--accent)] transition-colors" />
                 </h3>
-                <p className="mt-2 text-[0.78rem] leading-[1.65] text-ink-tertiary">
+                <p className="mt-2 text-[0.78rem] leading-[1.65] text-[var(--text-disabled)]">
                   {page.description}
                 </p>
               </Link>

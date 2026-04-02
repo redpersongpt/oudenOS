@@ -57,7 +57,7 @@ export default function SetupPage() {
       <>
         <Navigation />
         <main className="min-h-screen flex items-center justify-center pt-20">
-          <p className="text-ink-tertiary text-[14px]">Loading...</p>
+          <p className="text-[var(--text-disabled)] text-[14px]">Loading...</p>
         </main>
       </>
     );
@@ -72,13 +72,13 @@ export default function SetupPage() {
         <div className="w-full max-w-sm">
           <motion.h1
             {...fade(0)}
-            className="text-2xl font-bold text-ink-primary text-center"
+            className="text-2xl font-bold text-[var(--text-primary)] text-center"
           >
             Choose a username
           </motion.h1>
           <motion.p
             {...fade(0.05)}
-            className="mt-2 text-[14px] text-ink-secondary text-center"
+            className="mt-2 text-[14px] text-[var(--text-secondary)] text-center"
           >
             Welcome to redcore, {session.user.email}
           </motion.p>
@@ -100,7 +100,7 @@ export default function SetupPage() {
             <div>
               <label
                 htmlFor="username"
-                className="block text-[13px] font-medium text-ink-secondary mb-1.5"
+                className="block text-[13px] font-medium text-[var(--text-secondary)] mb-1.5"
               >
                 Username
               </label>
@@ -109,12 +109,12 @@ export default function SetupPage() {
                 type="text"
                 value={username || prefixedUsername}
                 onChange={(e) => setUsername(e.target.value)}
-                className="w-full h-11 px-3.5 rounded-lg bg-surface border border-border text-[14px] text-ink-primary placeholder:text-ink-tertiary outline-none focus:border-accent/50 transition-colors"
+                className="w-full h-11 px-3.5 rounded-lg bg-[var(--surface)] border border-[var(--border)] text-[14px] text-[var(--text-primary)] placeholder:text-[var(--text-disabled)] outline-none focus:border-accent/50 transition-colors"
                 placeholder="your-username"
                 autoFocus
                 maxLength={30}
               />
-              <p className="mt-1.5 text-[11px] text-ink-muted">
+              <p className="mt-1.5 text-[11px] text-[var(--text-disabled)]">
                 Letters, numbers, _ and - only. 2-30 characters.
               </p>
             </div>
@@ -122,7 +122,7 @@ export default function SetupPage() {
             <motion.button
               type="submit"
               disabled={saving || username.trim().length < 2}
-              className="w-full h-11 rounded-lg bg-accent hover:bg-accent-dim text-white text-[14px] font-medium cursor-pointer transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              className="w-full h-11 rounded-lg bg-[var(--accent)] hover:bg-[var(--accent)]-dim text-white text-[14px] font-medium cursor-pointer transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
               whileHover={!saving ? { y: -1 } : undefined}
               whileTap={!saving ? { scale: 0.98 } : undefined}
             >

@@ -10,8 +10,8 @@ export function QuickSummary({ items }: QuickSummaryProps) {
   return (
     <aside className="px-6 py-6 lg:px-12">
       <div className="mx-auto max-w-[740px]">
-        <div className="rounded-lg border border-border bg-surface px-5 py-5 sm:px-6">
-          <h2 className="font-mono text-[0.6875rem] font-medium uppercase tracking-[0.12em] text-ink-muted">
+        <div className="rounded-lg border border-[var(--border)] bg-[var(--surface)] px-5 py-5 sm:px-6">
+          <h2 className="font-mono text-[0.6875rem] font-medium uppercase tracking-[0.12em] text-[var(--text-disabled)]">
             What this covers
           </h2>
 
@@ -19,7 +19,7 @@ export function QuickSummary({ items }: QuickSummaryProps) {
             {items.map((item) => (
               <li
                 key={item}
-                className="flex items-start gap-2.5 text-[0.85rem] leading-[1.6] text-ink-secondary"
+                className="flex items-start gap-2.5 text-[0.85rem] leading-[1.6] text-[var(--text-secondary)]"
               >
                 <span
                   className="mt-[0.5rem] inline-block h-1 w-1 shrink-0 rounded-full bg-ink-muted"

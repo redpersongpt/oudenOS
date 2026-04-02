@@ -59,7 +59,7 @@ function LogoMark({ size = 20 }: { size?: number }) {
 
 function StepRail({ activeIndex }: { activeIndex: number }) {
   return (
-    <div className="hidden sm:flex w-[140px] shrink-0 flex-col border-r border-border-default bg-surface/50 py-4 px-2 gap-0.5">
+    <div className="hidden sm:flex w-[140px] shrink-0 flex-col border-r border-[var(--border)] bg-surface/50 py-4 px-2 gap-0.5">
       {STEPS.map((step, i) => {
         const isActive = i === activeIndex;
         const isDone = i < activeIndex;
@@ -78,7 +78,7 @@ function StepRail({ activeIndex }: { activeIndex: number }) {
                   ? "bg-brand-500/20 text-brand-500"
                   : isActive
                     ? "bg-brand-500 text-white"
-                    : "bg-surface-overlay text-ink-tertiary",
+                    : "bg-[var(--surface-raised)] text-[var(--text-disabled)]",
               ].join(" ")}
             >
               {isDone ? <Check size={8} strokeWidth={3} /> : i + 1}
@@ -86,7 +86,7 @@ function StepRail({ activeIndex }: { activeIndex: number }) {
             <span
               className={[
                 "text-[10px] font-medium",
-                isActive ? "text-brand-500" : isDone ? "text-ink-secondary" : "text-ink-muted",
+                isActive ? "text-brand-500" : isDone ? "text-[var(--text-secondary)]" : "text-[var(--text-disabled)]",
               ].join(" ")}
             >
               {step.label}
@@ -118,11 +118,11 @@ function WelcomeContent() {
         <LogoMark size={56} />
       </motion.div>
       <div className="text-center">
-        <h3 className="text-[15px] font-bold text-ink-primary">
+        <h3 className="text-[15px] font-bold text-[var(--text-primary)]">
           red<span className="text-brand-500">core</span>{" "}
-          <span className="font-normal text-ink-secondary">OS</span>
+          <span className="font-normal text-[var(--text-secondary)]">OS</span>
         </h3>
-        <p className="mt-1.5 text-[11px] text-ink-tertiary leading-relaxed max-w-[260px]">
+        <p className="mt-1.5 text-[11px] text-[var(--text-disabled)] leading-relaxed max-w-[260px]">
           Windows optimization done right.
           <br />
           Guided, reversible, honest.
@@ -170,7 +170,7 @@ function AssessmentContent() {
         <p className="text-[10px] font-mono uppercase tracking-[0.12em] text-brand-500 font-bold">
           System Assessment
         </p>
-        <p className="mt-1 text-[11px] text-ink-tertiary">Scanning your machine...</p>
+        <p className="mt-1 text-[11px] text-[var(--text-disabled)]">Scanning your machine...</p>
       </div>
       <div className="flex-1 space-y-1.5 overflow-hidden">
         {SCAN_CATEGORIES.map((cat, i) => {
@@ -189,14 +189,14 @@ function AssessmentContent() {
               ].join(" ")}
               style={active ? { animation: "scanBorderGlow 1.8s ease-in-out infinite" } : undefined}
             >
-              <Icon size={13} className={done ? "text-brand-500" : "text-ink-muted"} />
+              <Icon size={13} className={done ? "text-brand-500" : "text-[var(--text-disabled)]"} />
               <div className="flex-1 min-w-0">
-                <span className="text-[11px] text-ink-secondary">{cat.label}</span>
+                <span className="text-[11px] text-[var(--text-secondary)]">{cat.label}</span>
                 {done && (
                   <motion.span
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    className="ml-2 text-[10px] text-ink-tertiary"
+                    className="ml-2 text-[10px] text-[var(--text-disabled)]"
                   >
                     {cat.result}
                   </motion.span>
@@ -208,7 +208,7 @@ function AssessmentContent() {
         })}
       </div>
       <div className="mt-2">
-        <div className="h-1 rounded-full bg-surface-overlay overflow-hidden">
+        <div className="h-1 rounded-full bg-[var(--surface-raised)] overflow-hidden">
           <motion.div
             className="h-full rounded-full bg-brand-500"
             animate={{ width: `${(scanned / SCAN_CATEGORIES.length) * 100}%` }}
@@ -246,7 +246,7 @@ function ProfileContent() {
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="mt-1 text-[17px] font-bold text-ink-primary"
+          className="mt-1 text-[17px] font-bold text-[var(--text-primary)]"
         >
           Gaming Desktop
         </motion.h3>
@@ -254,7 +254,7 @@ function ProfileContent() {
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-          className="mt-1.5 text-[10px] text-ink-tertiary leading-relaxed max-w-[240px]"
+          className="mt-1.5 text-[10px] text-[var(--text-disabled)] leading-relaxed max-w-[240px]"
         >
           High-end CPU + dedicated GPU detected.
           <br />
@@ -305,8 +305,8 @@ function StrategyContent() {
             Optimization Depth
           </p>
         </div>
-        <h3 className="mt-1.5 text-[14px] font-bold text-ink-primary">How much should we optimize?</h3>
-        <p className="mt-1 text-[10px] text-ink-tertiary leading-relaxed">
+        <h3 className="mt-1.5 text-[14px] font-bold text-[var(--text-primary)]">How much should we optimize?</h3>
+        <p className="mt-1 text-[10px] text-[var(--text-disabled)] leading-relaxed">
           Start safe, or go deeper if you know what you&apos;re doing.
         </p>
       </div>
@@ -323,17 +323,17 @@ function StrategyContent() {
                 "rounded-lg border px-3.5 py-2.5 cursor-pointer transition-all",
                 isSelected
                   ? "border-brand-500/30 bg-brand-500/[0.06]"
-                  : "border-border-default bg-surface/50 hover:border-border-strong",
+                  : "border-[var(--border)] bg-surface/50 hover:border-[var(--border-visible)]",
               ].join(" ")}
             >
               <div className="flex items-center gap-2.5">
                 <div className={[
                   "flex h-4 w-4 items-center justify-center rounded-full",
-                  isSelected ? "bg-brand-500" : "border border-border-strong",
+                  isSelected ? "bg-brand-500" : "border border-[var(--border-visible)]",
                 ].join(" ")}>
                   {isSelected && <div className="h-2 w-2 rounded-full bg-white" />}
                 </div>
-                <span className={["text-[12px] font-semibold", isSelected ? "text-ink-primary" : "text-ink-secondary"].join(" ")}>
+                <span className={["text-[12px] font-semibold", isSelected ? "text-[var(--text-primary)]" : "text-[var(--text-secondary)]"].join(" ")}>
                   {opt.title}
                 </span>
                 {opt.badge && (
@@ -342,7 +342,7 @@ function StrategyContent() {
                   </span>
                 )}
               </div>
-              <p className="mt-1 pl-6.5 text-[10px] text-ink-tertiary">{opt.desc}</p>
+              <p className="mt-1 pl-6.5 text-[10px] text-[var(--text-disabled)]">{opt.desc}</p>
             </motion.div>
           );
         })}
@@ -371,7 +371,7 @@ function ReviewContent() {
           <p className="text-[10px] font-mono uppercase tracking-[0.12em] text-brand-500 font-bold">
             Action Review
           </p>
-          <p className="mt-0.5 text-[10px] text-ink-tertiary">Review every action before it runs</p>
+          <p className="mt-0.5 text-[10px] text-[var(--text-disabled)]">Review every action before it runs</p>
         </div>
         <div className="flex gap-2 text-[9px] font-mono">
           <span className="text-brand-500">5 included</span>
@@ -392,15 +392,15 @@ function ReviewContent() {
             ) : action.status === "blocked" ? (
               <Shield size={10} className="text-amber-400 shrink-0" />
             ) : (
-              <AlertCircle size={10} className="text-ink-muted shrink-0" />
+              <AlertCircle size={10} className="text-[var(--text-disabled)] shrink-0" />
             )}
-            <span className="flex-1 text-[10px] text-ink-secondary truncate">{action.name}</span>
-            <span className="text-[8px] text-ink-muted font-mono">{action.phase}</span>
+            <span className="flex-1 text-[10px] text-[var(--text-secondary)] truncate">{action.name}</span>
+            <span className="text-[8px] text-[var(--text-disabled)] font-mono">{action.phase}</span>
             <span className={[
               "rounded px-1 py-0.5 text-[7px] font-bold uppercase font-mono",
               action.status === "included" ? "bg-brand-500/10 text-brand-400"
                 : action.status === "blocked" ? "bg-amber-500/10 text-amber-400"
-                : "bg-surface-overlay text-ink-muted",
+                : "bg-[var(--surface-raised)] text-[var(--text-disabled)]",
             ].join(" ")}>
               {action.status}
             </span>
@@ -446,8 +446,8 @@ function ExecutionContent() {
   return (
     <div className="flex h-full flex-col items-center justify-center gap-3.5 px-6">
       <div className="text-center">
-        <h3 className="text-[14px] font-semibold text-ink-primary">Applying Changes</h3>
-        <p className="text-[10px] text-ink-tertiary">Do not shut down your computer</p>
+        <h3 className="text-[14px] font-semibold text-[var(--text-primary)]">Applying Changes</h3>
+        <p className="text-[10px] text-[var(--text-disabled)]">Do not shut down your computer</p>
       </div>
 
       {/* Current action card */}
@@ -469,7 +469,7 @@ function ExecutionContent() {
                   transition={{ duration: 0.9, ease: "linear", repeat: Infinity }}
                   className="h-3 w-3 shrink-0 rounded-full border-[1.5px] border-brand-500 border-t-transparent"
                 />
-                <span className="flex-1 text-[10px] font-medium text-ink-primary truncate">{currentAction}</span>
+                <span className="flex-1 text-[10px] font-medium text-[var(--text-primary)] truncate">{currentAction}</span>
                 <span className="shrink-0 font-mono text-[9px] text-brand-500/60">
                   {completed + 1}/{EXEC_ACTIONS.length}
                 </span>
@@ -491,14 +491,14 @@ function ExecutionContent() {
 
       {/* Progress */}
       <div className="w-full max-w-[280px]">
-        <div className="h-1 rounded-full bg-surface-overlay overflow-hidden">
+        <div className="h-1 rounded-full bg-[var(--surface-raised)] overflow-hidden">
           <motion.div
             className="h-full rounded-full bg-gradient-to-r from-brand-600 to-brand-400"
             animate={{ width: `${progress}%` }}
             transition={{ duration: 0.3, ease: "easeOut" }}
           />
         </div>
-        <div className="mt-1 flex justify-between text-[9px] font-mono text-ink-muted">
+        <div className="mt-1 flex justify-between text-[9px] font-mono text-[var(--text-disabled)]">
           <span>{progress}%</span>
           <span>{completed}/{EXEC_ACTIONS.length}</span>
         </div>
@@ -508,12 +508,12 @@ function ExecutionContent() {
       <div className="flex gap-4">
         {[
           { label: "Applied", value: completed, color: "text-emerald-400" },
-          { label: "Failed", value: 0, color: "text-ink-muted" },
-          { label: "Remaining", value: EXEC_ACTIONS.length - completed, color: "text-ink-secondary" },
+          { label: "Failed", value: 0, color: "text-[var(--text-disabled)]" },
+          { label: "Remaining", value: EXEC_ACTIONS.length - completed, color: "text-[var(--text-secondary)]" },
         ].map((stat) => (
           <div key={stat.label} className="flex flex-col items-center gap-0.5">
             <span className={`font-mono text-[16px] font-bold ${stat.color}`}>{stat.value}</span>
-            <span className="text-[8px] text-ink-muted">{stat.label}</span>
+            <span className="text-[8px] text-[var(--text-disabled)]">{stat.label}</span>
           </div>
         ))}
       </div>
@@ -528,7 +528,7 @@ function ExecutionContent() {
             className="flex items-center gap-1.5 py-0.5"
           >
             <Check size={8} className="text-emerald-400 shrink-0" />
-            <span className="text-[8px] text-ink-tertiary truncate">{action}</span>
+            <span className="text-[8px] text-[var(--text-disabled)] truncate">{action}</span>
           </motion.div>
         ))}
       </div>
@@ -562,7 +562,7 @@ function ReportContent() {
           initial={{ opacity: 0, y: 6 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="text-[15px] font-bold text-ink-primary"
+          className="text-[15px] font-bold text-[var(--text-primary)]"
         >
           Done. Your PC is clean.
         </motion.h3>
@@ -570,7 +570,7 @@ function ReportContent() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3 }}
-          className="mt-0.5 text-[10px] text-ink-tertiary"
+          className="mt-0.5 text-[10px] text-[var(--text-disabled)]"
         >
           Your Gaming Desktop has been optimized
         </motion.p>
@@ -585,13 +585,13 @@ function ReportContent() {
       >
         {[
           { value: 42, label: "Applied", color: "text-emerald-400", icon: Check },
-          { value: 0, label: "Failed", color: "text-ink-muted", icon: AlertCircle },
-          { value: 8, label: "Preserved", color: "text-ink-secondary", icon: Shield },
+          { value: 0, label: "Failed", color: "text-[var(--text-disabled)]", icon: AlertCircle },
+          { value: 8, label: "Preserved", color: "text-[var(--text-secondary)]", icon: Shield },
         ].map(({ value, label, color, icon: Icon }) => (
-          <div key={label} className="flex flex-col items-center gap-0.5 rounded-lg border border-border-default bg-surface/50 px-3 py-2">
+          <div key={label} className="flex flex-col items-center gap-0.5 rounded-lg border border-[var(--border)] bg-surface/50 px-3 py-2">
             <Icon size={10} className={color} />
             <span className={`font-mono text-[16px] font-bold ${color}`}>{value}</span>
-            <span className="text-[8px] text-ink-muted">{label}</span>
+            <span className="text-[8px] text-[var(--text-disabled)]">{label}</span>
           </div>
         ))}
       </motion.div>
@@ -601,7 +601,7 @@ function ReportContent() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.6 }}
-        className="text-[8px] text-ink-muted text-center max-w-[240px]"
+        className="text-[8px] text-[var(--text-disabled)] text-center max-w-[240px]"
       >
         Rollback snapshot created before every change. Full execution log available.
       </motion.p>
@@ -659,12 +659,12 @@ export function WizardShowcase() {
           className="text-center mb-12"
         >
           <p className="overline">Live Preview</p>
-          <h2 className="mt-3 text-3xl md:text-4xl lg:text-5xl font-bold text-ink-primary leading-tight">
+          <h2 className="mt-3 text-3xl md:text-4xl lg:text-5xl font-bold text-[var(--text-primary)] leading-tight">
             Not a control panel.
             <br className="hidden sm:block" />
-            <span className="text-ink-secondary">A guided journey.</span>
+            <span className="text-[var(--text-secondary)]">A guided journey.</span>
           </h2>
-          <p className="mt-4 text-[15px] text-ink-tertiary max-w-xl mx-auto">
+          <p className="mt-4 text-[15px] text-[var(--text-disabled)] max-w-xl mx-auto">
             Every step explains what it does and why. You stay in control.
           </p>
         </motion.div>
@@ -683,7 +683,7 @@ export function WizardShowcase() {
 
           <div className="premium-card rounded-lg overflow-hidden relative" style={{ transform: "perspective(1200px) rotateX(1.5deg)" }}>
             {/* Title bar */}
-            <div className="bg-surface-raised h-9 flex items-center px-3.5 border-b border-border-default">
+            <div className="bg-[var(--surface-raised)] h-9 flex items-center px-3.5 border-b border-[var(--border)]">
               <div className="flex items-center gap-1.5">
                 <span className="w-2.5 h-2.5 rounded-full bg-[#FF5F57]" />
                 <span className="w-2.5 h-2.5 rounded-full bg-[#FEBC2E]" />
@@ -691,9 +691,9 @@ export function WizardShowcase() {
               </div>
               <div className="flex-1 flex items-center justify-center gap-1.5">
                 <LogoMark size={14} />
-                <span className="text-[11px] font-semibold text-ink-secondary">
+                <span className="text-[11px] font-semibold text-[var(--text-secondary)]">
                   red<span className="text-brand-500">core</span>{" "}
-                  <span className="font-normal text-ink-tertiary">OS</span>
+                  <span className="font-normal text-[var(--text-disabled)]">OS</span>
                 </span>
               </div>
               <div className="w-[42px]" />
@@ -705,7 +705,7 @@ export function WizardShowcase() {
               <StepRail activeIndex={activeStep} />
 
               {/* Content area */}
-              <div className="flex-1 bg-bg relative overflow-hidden">
+              <div className="flex-1 bg-[var(--black)] relative overflow-hidden">
                 <AnimatePresence mode="wait">
                   <motion.div
                     key={STEPS[activeStep].id}
@@ -722,7 +722,7 @@ export function WizardShowcase() {
             </div>
 
             {/* Bottom bar */}
-            <div className="bg-surface-raised/80 px-4 py-2 flex items-center gap-3 border-t border-border-default">
+            <div className="bg-[var(--surface-raised)]/80 px-4 py-2 flex items-center gap-3 border-t border-[var(--border)]">
               {/* Step dots */}
               <div className="flex items-center gap-1">
                 {STEPS.map((_, i) => (
@@ -731,14 +731,14 @@ export function WizardShowcase() {
                     onClick={() => setActiveStep(i)}
                     className={[
                       "w-1.5 h-1.5 rounded-full transition-all duration-200",
-                      i === activeStep ? "bg-brand-500 w-4" : i < activeStep ? "bg-brand-500/40" : "bg-surface-overlay",
+                      i === activeStep ? "bg-brand-500 w-4" : i < activeStep ? "bg-brand-500/40" : "bg-[var(--surface-raised)]",
                     ].join(" ")}
                   />
                 ))}
               </div>
               {/* Progress */}
               <div className="flex-1">
-                <div className="h-0.5 rounded-full bg-surface-overlay overflow-hidden">
+                <div className="h-0.5 rounded-full bg-[var(--surface-raised)] overflow-hidden">
                   <motion.div
                     className="h-full rounded-full bg-brand-500"
                     animate={{ width: `${((activeStep + 1) / STEPS.length) * 100}%` }}
@@ -747,7 +747,7 @@ export function WizardShowcase() {
                 </div>
               </div>
               {/* Pause indicator */}
-              <span className="text-[9px] font-mono text-ink-muted">
+              <span className="text-[9px] font-mono text-[var(--text-disabled)]">
                 {isPaused ? "paused" : `${STEPS[activeStep].label.toLowerCase()}`}
               </span>
             </div>
@@ -768,7 +768,7 @@ export function WizardShowcase() {
             <Download size={15} />
             Download — it&apos;s free
           </a>
-          <p className="text-[11px] text-ink-muted font-mono">
+          <p className="text-[11px] text-[var(--text-disabled)] font-mono">
             Windows 10 & 11 · No subscription
           </p>
         </motion.div>

@@ -56,34 +56,34 @@ export default function RedcoreTuningPage() {
             dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
           />
 
-          <p className="font-mono text-[11px] font-medium uppercase tracking-[0.12em] text-accent mb-4">
+          <p className="font-mono text-[11px] font-medium uppercase tracking-[0.12em] text-[var(--accent)] mb-4">
             Product
           </p>
-          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-ink-primary mb-6 leading-tight">
+          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-[var(--text-primary)] mb-6 leading-tight">
             redcore Tuning — Machine-Aware Windows Optimization
           </h1>
 
-          <p className="text-ink-secondary text-base leading-relaxed mb-4">
+          <p className="text-[var(--text-secondary)] text-base leading-relaxed mb-4">
             redcore Tuning goes beyond debloating. It is a system-level
             performance optimization tool that reads your hardware
             configuration and applies tuning changes specific to your CPU,
             GPU, memory, and disk setup.
           </p>
 
-          <div className="border border-accent/30 rounded-lg p-4 mb-8 bg-accent/5">
-            <p className="text-accent text-[14px] font-medium">
+          <div className="border border-accent/30 rounded-lg p-4 mb-8 bg-[var(--accent)]/5">
+            <p className="text-[var(--accent)] text-[14px] font-medium">
               redcore Tuning is currently in development. The installer is
               not yet available for download. This page describes the planned
               feature set. Pricing is set at $12.99 one-time purchase.
             </p>
           </div>
 
-          <h2 className="text-xl font-semibold text-ink-primary mt-10 mb-4">
+          <h2 className="text-xl font-semibold text-[var(--text-primary)] mt-10 mb-4">
             What it does
           </h2>
-          <p className="text-ink-secondary text-[15px] leading-relaxed mb-4">
+          <p className="text-[var(--text-secondary)] text-[15px] leading-relaxed mb-4">
             Where{" "}
-            <Link href="/redcore-os" className="text-accent hover:text-accent-bright transition-colors">
+            <Link href="/redcore-os" className="text-[var(--accent)] hover:text-[var(--accent)]-bright transition-colors">
               redcore OS
             </Link>{" "}
             handles the software layer — removing bloat, hardening privacy,
@@ -92,10 +92,10 @@ export default function RedcoreTuningPage() {
             your specific hardware.
           </p>
 
-          <h2 className="text-xl font-semibold text-ink-primary mt-10 mb-4">
+          <h2 className="text-xl font-semibold text-[var(--text-primary)] mt-10 mb-4">
             Tuning modules
           </h2>
-          <p className="text-ink-secondary text-[15px] leading-relaxed mb-4">
+          <p className="text-[var(--text-secondary)] text-[15px] leading-relaxed mb-4">
             redcore Tuning includes 15+ specialized modules, each targeting
             a different subsystem:
           </p>
@@ -141,22 +141,22 @@ export default function RedcoreTuningPage() {
             ].map((module) => (
               <div
                 key={module.name}
-                className="border border-border rounded-lg p-4 bg-surface"
+                className="border border-[var(--border)] rounded-lg p-4 bg-surface"
               >
-                <p className="text-ink-primary font-semibold text-[14px] mb-1">
+                <p className="text-[var(--text-primary)] font-semibold text-[14px] mb-1">
                   {module.name}
                 </p>
-                <p className="text-ink-tertiary text-[13px] leading-relaxed">
+                <p className="text-[var(--text-disabled)] text-[13px] leading-relaxed">
                   {module.desc}
                 </p>
               </div>
             ))}
           </div>
 
-          <h2 className="text-xl font-semibold text-ink-primary mt-10 mb-4">
+          <h2 className="text-xl font-semibold text-[var(--text-primary)] mt-10 mb-4">
             How it differs from registry tweaks
           </h2>
-          <p className="text-ink-secondary text-[15px] leading-relaxed mb-4">
+          <p className="text-[var(--text-secondary)] text-[15px] leading-relaxed mb-4">
             Anyone can find a list of &ldquo;Windows gaming tweaks&rdquo;
             online. The problem is that most of those tweaks are either
             placebo, outdated, or only beneficial on specific hardware. A
@@ -164,29 +164,29 @@ export default function RedcoreTuningPage() {
             nothing on AMD Zen 4. A power plan tweak for a desktop harms
             battery life on a laptop.
           </p>
-          <p className="text-ink-secondary text-[15px] leading-relaxed mb-4">
+          <p className="text-[var(--text-secondary)] text-[15px] leading-relaxed mb-4">
             redcore Tuning reads your hardware configuration and only
             applies changes that are validated for your specific setup. The
             benchmark lab measures the actual impact so you can see whether
             a change helped or made no difference.
           </p>
 
-          <h2 className="text-xl font-semibold text-ink-primary mt-10 mb-4">
+          <h2 className="text-xl font-semibold text-[var(--text-primary)] mt-10 mb-4">
             Pricing
           </h2>
-          <p className="text-ink-secondary text-[15px] leading-relaxed mb-6">
+          <p className="text-[var(--text-secondary)] text-[15px] leading-relaxed mb-6">
             redcore Tuning will be a one-time purchase at{" "}
-            <strong className="text-ink-primary">$12.99</strong>. No
+            <strong className="text-[var(--text-primary)]">$12.99</strong>. No
             subscription, no recurring fees, no upsells. Payment processing
             is not yet active — when the tool is ready for release, Stripe
             will be integrated for secure payments.
           </p>
 
-          <div className="border border-border rounded-lg p-6 mt-10 bg-surface">
-            <p className="text-ink-primary font-semibold mb-2">
+          <div className="border border-[var(--border)] rounded-lg p-6 mt-10 bg-surface">
+            <p className="text-[var(--text-primary)] font-semibold mb-2">
               Not available yet
             </p>
-            <p className="text-ink-secondary text-[14px] mb-4">
+            <p className="text-[var(--text-secondary)] text-[14px] mb-4">
               redcore Tuning is still in development. In the meantime, you
               can use redcore OS for free to debloat and optimize your
               Windows installation at the software level.
@@ -194,13 +194,13 @@ export default function RedcoreTuningPage() {
             <div className="flex flex-wrap gap-3">
               <Link
                 href="/downloads"
-                className="inline-flex items-center rounded-lg bg-accent px-5 py-2.5 text-[13px] font-semibold text-white transition-all hover:bg-accent-dim"
+                className="inline-flex items-center rounded-lg bg-[var(--accent)] px-5 py-2.5 text-[13px] font-semibold text-white transition-all hover:bg-[var(--accent)]-dim"
               >
                 Download redcore OS (free)
               </Link>
               <Link
                 href="/redcore-os"
-                className="inline-flex items-center rounded-lg border border-border px-5 py-2.5 text-[13px] font-medium text-ink-secondary transition-all hover:text-ink-primary hover:border-border-strong"
+                className="inline-flex items-center rounded-lg border border-[var(--border)] px-5 py-2.5 text-[13px] font-medium text-[var(--text-secondary)] transition-all hover:text-[var(--text-primary)] hover:border-[var(--border-visible)]"
               >
                 Learn about redcore OS
               </Link>

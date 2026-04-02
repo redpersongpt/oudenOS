@@ -115,11 +115,11 @@ function StatBlock({
           className="text-3xl font-bold"
         />
       ) : (
-        <span className="text-3xl font-mono font-bold text-ink-primary">
+        <span className="text-3xl font-mono font-bold text-[var(--text-primary)]">
           {stat.value}
         </span>
       )}
-      <p className="mt-2 text-[12px] text-ink-tertiary uppercase tracking-wide">
+      <p className="mt-2 text-[12px] text-[var(--text-disabled)] uppercase tracking-wide">
         {stat.label}
       </p>
     </motion.div>
@@ -163,7 +163,7 @@ export function OSSection() {
           <motion.h2
             id="os-heading"
             variants={staggerChild}
-            className="text-4xl md:text-5xl font-bold tracking-tight text-ink-primary"
+            className="text-4xl md:text-5xl font-bold tracking-tight text-[var(--text-primary)]"
           >
             Transform.
           </motion.h2>
@@ -172,14 +172,14 @@ export function OSSection() {
             variants={staggerChild}
             className="text-4xl md:text-5xl font-bold tracking-tight mt-1"
           >
-            <span className="text-ink-primary">
+            <span className="text-[var(--text-primary)]">
               Don&rsquo;t reinstall.
             </span>
           </motion.p>
 
           <motion.p
             variants={staggerChild}
-            className="mt-5 max-w-2xl text-[17px] leading-relaxed text-ink-secondary"
+            className="mt-5 max-w-2xl text-[17px] leading-relaxed text-[var(--text-secondary)]"
           >
             Reshape your current Windows installation in place &mdash; no ISO,
             no data loss, no starting over.
@@ -233,18 +233,18 @@ export function OSSection() {
                   role="listitem"
                 >
                   {/* Step card */}
-                  <div className="flex items-center gap-3 rounded-lg bg-surface border border-border-default px-5 py-4 min-w-[160px]">
+                  <div className="flex items-center gap-3 rounded-lg bg-[var(--surface)] border border-[var(--border)] px-5 py-4 min-w-[160px]">
                     <span
-                      className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-surface-overlay"
+                      className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-[var(--surface-raised)]"
                       aria-hidden="true"
                     >
-                      <Icon size={16} className="text-ink-secondary" />
+                      <Icon size={16} className="text-[var(--text-secondary)]" />
                     </span>
                     <div>
-                      <span className="text-[14px] font-medium text-ink-primary block">
+                      <span className="text-[14px] font-medium text-[var(--text-primary)] block">
                         {step.title}
                       </span>
-                      <span className="text-[12px] text-ink-tertiary">
+                      <span className="text-[12px] text-[var(--text-disabled)]">
                         {step.description}
                       </span>
                     </div>
@@ -254,7 +254,7 @@ export function OSSection() {
                   {!isLast && (
                     <ArrowRight
                       size={16}
-                      className="text-ink-tertiary flex-shrink-0 mx-1"
+                      className="text-[var(--text-disabled)] flex-shrink-0 mx-1"
                       aria-hidden="true"
                     />
                   )}
@@ -287,10 +287,10 @@ export function OSSection() {
             </span>
 
             <div className="flex-1 min-w-0">
-              <h3 className="text-lg font-semibold text-ink-primary mb-2">
+              <h3 className="text-lg font-semibold text-[var(--text-primary)] mb-2">
                 Work PC Preservation
               </h3>
-              <p className="text-[14px] text-ink-secondary leading-relaxed mb-6 max-w-2xl">
+              <p className="text-[14px] text-[var(--text-secondary)] leading-relaxed mb-6 max-w-2xl">
                 Enterprise services, printing, RDP, and domain workflows are
                 automatically protected. redcore · OS understands the difference
                 between consumer bloat and enterprise infrastructure.
@@ -306,7 +306,7 @@ export function OSSection() {
                   <span
                     key={service.label}
                     role="listitem"
-                    className="inline-flex items-center gap-2 rounded-lg bg-surface border border-border-default px-3 py-2.5 text-[13px] text-ink-secondary"
+                    className="inline-flex items-center gap-2 rounded-lg bg-[var(--surface)] border border-[var(--border)] px-3 py-2.5 text-[13px] text-[var(--text-secondary)]"
                   >
                     <Shield
                       size={13}
