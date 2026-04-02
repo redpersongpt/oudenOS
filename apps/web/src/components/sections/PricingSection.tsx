@@ -81,12 +81,12 @@ export function PricingSection() {
                 href="https://github.com/redpersongpt/redcoreOS/releases/latest"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2.5 rounded-lg border border-[var(--border)] bg-[var(--surface-raised)] px-6 py-4 text-[0.88rem] font-semibold text-[var(--text-primary)] w-full justify-center hover:bg-border/30 transition-colors"
+                className="inline-flex items-center gap-2.5 rounded-lg bg-[#D71921] px-6 py-4 text-[0.88rem] font-semibold text-white w-full justify-center hover:bg-[#B5141B] transition-colors"
                 whileHover={{ scale: 1.01 }}
                 whileTap={{ scale: 0.98 }}
               >
                 <Download className="h-4 w-4" />
-                Download Free
+                Download OudenOS
               </motion.a>
             </div>
 

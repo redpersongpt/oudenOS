@@ -42,6 +42,22 @@
 
 html {
   background: var(--color-bg);
+  background-image:
+    radial-gradient(1px 1px at 10% 15%, rgba(255,255,255,0.08), transparent),
+    radial-gradient(1px 1px at 25% 82%, rgba(255,255,255,0.06), transparent),
+    radial-gradient(1px 1px at 47% 5%, rgba(255,255,255,0.09), transparent),
+    radial-gradient(1px 1px at 63% 38%, rgba(255,255,255,0.05), transparent),
+    radial-gradient(1px 1px at 78% 71%, rgba(255,255,255,0.07), transparent),
+    radial-gradient(1px 1px at 92% 22%, rgba(255,255,255,0.06), transparent),
+    radial-gradient(1px 1px at 15% 55%, rgba(255,255,255,0.07), transparent),
+    radial-gradient(1px 1px at 38% 92%, rgba(255,255,255,0.08), transparent),
+    radial-gradient(1px 1px at 55% 60%, rgba(255,255,255,0.04), transparent),
+    radial-gradient(1px 1px at 82% 8%, rgba(255,255,255,0.09), transparent),
+    radial-gradient(1px 1px at 5% 42%, rgba(255,255,255,0.06), transparent),
+    radial-gradient(1px 1px at 70% 95%, rgba(255,255,255,0.07), transparent),
+    radial-gradient(1.5px 1.5px at 33% 28%, rgba(255,255,255,0.1), transparent),
+    radial-gradient(1.5px 1.5px at 88% 52%, rgba(255,255,255,0.08), transparent);
+  background-attachment: fixed;
   color: var(--color-ink-primary);
   scroll-behavior: smooth;
 }
@@ -101,6 +117,28 @@ body {
 .nd-dot-grid-subtle {
   background-image: radial-gradient(circle, #222222 0.5px, transparent 0.5px);
   background-size: 12px 12px;
+}
+
+/* Star field — subtle white dots scattered randomly */
+.nd-starfield {
+  background-image:
+    radial-gradient(1px 1px at 10% 15%, rgba(255,255,255,0.15), transparent),
+    radial-gradient(1px 1px at 25% 82%, rgba(255,255,255,0.12), transparent),
+    radial-gradient(1px 1px at 47% 5%, rgba(255,255,255,0.18), transparent),
+    radial-gradient(1px 1px at 63% 38%, rgba(255,255,255,0.1), transparent),
+    radial-gradient(1px 1px at 78% 71%, rgba(255,255,255,0.14), transparent),
+    radial-gradient(1px 1px at 92% 22%, rgba(255,255,255,0.11), transparent),
+    radial-gradient(1px 1px at 15% 55%, rgba(255,255,255,0.13), transparent),
+    radial-gradient(1px 1px at 38% 92%, rgba(255,255,255,0.16), transparent),
+    radial-gradient(1px 1px at 55% 60%, rgba(255,255,255,0.09), transparent),
+    radial-gradient(1px 1px at 82% 8%, rgba(255,255,255,0.17), transparent),
+    radial-gradient(1px 1px at 5% 42%, rgba(255,255,255,0.11), transparent),
+    radial-gradient(1px 1px at 70% 95%, rgba(255,255,255,0.13), transparent),
+    radial-gradient(1.5px 1.5px at 33% 28%, rgba(255,255,255,0.2), transparent),
+    radial-gradient(1.5px 1.5px at 88% 52%, rgba(255,255,255,0.15), transparent),
+    radial-gradient(0.5px 0.5px at 18% 73%, rgba(255,255,255,0.08), transparent),
+    radial-gradient(0.5px 0.5px at 95% 40%, rgba(255,255,255,0.07), transparent);
+  background-size: 100% 100%;
 }
 
 /* Section divider */
