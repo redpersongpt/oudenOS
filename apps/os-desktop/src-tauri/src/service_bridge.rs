@@ -155,6 +155,13 @@ impl ServiceBridge {
             .flush()
             .map_err(|e| format!("Failed to flush service stdin: {e}"))?;
 
+        // Evict stale buffered responses (from timed-out requests) to prevent
+        // unbounded memory growth. Keep only entries newer than the last 50 IDs.
+        if self.buffered.len() > 50 {
+            let min_id = id.saturating_sub(50);
+            self.buffered.retain(|&k, _| k > min_id);
+        }
+
         // Check if the response was already buffered (from a previous call
         // that received this ID's response while waiting for its own)
         if let Some(result) = self.buffered.remove(&id) {
