@@ -261,6 +261,14 @@ pub fn load_playbook(playbook_dir: &Path) -> anyhow::Result<LoadedPlaybook> {
 
         if !is_builtin {
             for module_path in &phase.modules {
+                // Guard against path-traversal attacks in module references
+                if module_path.contains("..") || std::path::Path::new(module_path).is_absolute() {
+                    tracing::warn!(
+                        path = module_path.as_str(),
+                        "Rejecting unsafe module path (contains '..' or is absolute) — skipping"
+                    );
+                    continue;
+                }
                 let full_path = playbook_dir.join(module_path);
                 match load_module(&full_path) {
                     Ok(module) => {

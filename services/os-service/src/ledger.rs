@@ -52,7 +52,7 @@ pub fn create_plan(
     let now = chrono::Utc::now().to_rfc3339();
 
     db.conn().execute(
-        "INSERT OR REPLACE INTO execution_plans
+        "INSERT OR IGNORE INTO execution_plans
          (id, package_id, package_role, package_version, package_source_ref,
           action_provenance_ref, execution_journal_ref, source_commit,
           profile, preset, total_actions, status, created_at, updated_at)
@@ -79,7 +79,7 @@ pub fn create_plan(
         let selected_values_json = serde_json::to_string(&action.selected_values)?;
 
         db.conn().execute(
-            "INSERT OR REPLACE INTO execution_queue
+            "INSERT OR IGNORE INTO execution_queue
              (id, plan_id, action_id, action_name, phase, queue_position, status,
               inclusion_reason, blocked_reason, preserved_reason, risk_level, expert_only,
               requires_reboot, package_source_ref, provenance_ref, question_keys, selected_values,
