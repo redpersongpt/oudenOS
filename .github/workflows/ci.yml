@@ -15,7 +15,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: pnpm
 
       - name: Install desktop dependencies
         run: pnpm install --dir apps/os-desktop --frozen-lockfile=false
