@@ -17,7 +17,7 @@ jobs:
           node-version: 22
 
       - name: Install desktop dependencies
-        run: pnpm install --dir apps/os-desktop
+        run: pnpm install --dir apps/os-desktop --frozen-lockfile
 
       - name: Desktop typecheck
         run: pnpm --dir apps/os-desktop typecheck

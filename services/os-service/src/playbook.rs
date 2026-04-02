@@ -264,11 +264,16 @@ pub fn load_playbook(playbook_dir: &Path) -> anyhow::Result<LoadedPlaybook> {
 
         if !is_builtin {
             for module_path in &phase.modules {
-                // Guard against path-traversal attacks in module references
-                if module_path.contains("..") || std::path::Path::new(module_path).is_absolute() {
+                // Guard against path-traversal attacks in module references.
+                // Accept only paths composed entirely of Normal components (no ParentDir,
+                // RootDir, drive prefixes, or UNC roots).
+                let is_safe = std::path::Path::new(module_path).components().all(|c| {
+                    matches!(c, std::path::Component::Normal(_))
+                });
+                if !is_safe {
                     tracing::warn!(
                         path = module_path.as_str(),
-                        "Rejecting unsafe module path (contains '..' or is absolute) — skipping"
+                        "Rejecting unsafe module path (contains traversal, absolute, or UNC component) — skipping"
                     );
                     continue;
                 }

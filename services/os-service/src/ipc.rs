@@ -312,14 +312,34 @@ async fn dispatch(
             };
 
             let action_data = if let Some(data) = params.get("actionData") {
-                // Caller-supplied actionData: strip powerShellCommands to prevent script injection.
-                // PowerShell commands are only safe when sourced from trusted bundled YAML playbooks.
+                // Caller-supplied actionData: strip all executable fields to prevent privilege
+                // escalation.  Only metadata fields (id, name, description, risk, etc.) are
+                // accepted from the caller — actual system operations MUST come from the
+                // trusted bundled YAML playbooks.
+                const EXECUTABLE_FIELDS: &[&str] = &[
+                    "powerShellCommands",
+                    "registryChanges",
+                    "serviceChanges",
+                    "bcdChanges",
+                    "powerChanges",
+                    "appxRemovals",
+                    "featureChanges",
+                    "packages",
+                    "tasks",
+                ];
                 let mut safe_data = data.clone();
                 if let Some(obj) = safe_data.as_object_mut() {
-                    if obj.remove("powerShellCommands").is_some() {
+                    let mut stripped = Vec::new();
+                    for field in EXECUTABLE_FIELDS {
+                        if obj.remove(*field).is_some() {
+                            stripped.push(*field);
+                        }
+                    }
+                    if !stripped.is_empty() {
                         tracing::warn!(
                             action_id = action_id,
-                            "Stripped powerShellCommands from caller-supplied actionData"
+                            stripped = ?stripped,
+                            "Stripped executable fields from caller-supplied actionData"
                         );
                     }
                 }
