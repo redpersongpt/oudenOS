@@ -4,7 +4,30 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ── Nothing Design System — OLED Black + redcore Pink-Red ─────────────── */
+/* ═══════════════════════════════════════════════════════════════════════════
+   redcore OS — Design System
+
+   OLED black (#000). White data. Red signal.
+   Doto display. Space Grotesk body. Space Mono labels.
+   No shadows. No gradients. No blur. Flat surfaces, border separation.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  --black: #000000;
+  --surface: #111111;
+  --surface-raised: #1A1A1A;
+  --border: #222222;
+  --border-visible: #333333;
+  --text-disabled: #666666;
+  --text-secondary: #999999;
+  --text-primary: #E8E8E8;
+  --text-display: #FFFFFF;
+  --accent: #E8254B;
+  --accent-subtle: rgba(232,37,75,0.15);
+  --success: #4A9E5C;
+  --warning: #D4A843;
+  --interactive: #5B9BF6;
+}
 
 @layer base {
   *, *::before, *::after { box-sizing: border-box; }
@@ -15,6 +38,7 @@
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
     line-height: 1.5;
+    font-size: 16px;
   }
 
   body {
@@ -22,73 +46,61 @@
     padding: 0;
     overflow: hidden;
     user-select: text;
-    background: #000000;
-    color: #E8E8E8;
+    background: var(--black);
+    color: var(--text-primary);
   }
 
   button, [role="button"], .drag-region { user-select: none; }
   :focus { outline: none; }
   :root { color-scheme: dark; }
+
+  ::selection {
+    background: var(--accent-subtle);
+    color: var(--text-display);
+  }
 }
 
-/* ── Nothing Labels — Space Mono ALL CAPS ────────────────────────────── */
+/* ── LABELS — Space Mono, ALL CAPS, instrument panel style ───────────── */
 
 @layer components {
   .nd-label {
-    font-family: "Space Mono", ui-monospace, monospace;
+    font-family: "Space Mono", monospace;
     font-size: 11px;
-    line-height: 1.3;
+    line-height: 1.2;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: #999999;
+    color: var(--text-secondary);
   }
-
   .nd-label-sm {
-    font-family: "Space Mono", ui-monospace, monospace;
+    font-family: "Space Mono", monospace;
     font-size: 9px;
     line-height: 1.2;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: #999999;
+    color: var(--text-secondary);
+  }
+  .nd-caption {
+    font-family: "Space Mono", monospace;
+    font-size: 12px;
+    line-height: 1.4;
+    letter-spacing: 0.04em;
   }
 }
 
-/* ── Nothing Dot Grid Background ─────────────────────────────────────── */
+/* ── DOT-MATRIX BACKGROUND ───────────────────────────────────────────── */
 
 @layer components {
   .nd-dot-grid {
-    background-image: radial-gradient(circle, #333333 1px, transparent 1px);
+    background-image: radial-gradient(circle, var(--border-visible) 1px, transparent 1px);
     background-size: 16px 16px;
   }
-
   .nd-dot-grid-subtle {
-    background-image: radial-gradient(circle, #222222 0.5px, transparent 0.5px);
+    background-image: radial-gradient(circle, var(--border) 0.5px, transparent 0.5px);
     background-size: 12px 12px;
   }
 }
 
-/* ── Nothing Segmented Progress ──────────────────────────────────────── */
-
-@layer components {
-  .nd-segment {
-    height: 4px;
-    border-radius: 0;
-    background: #222222;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .nd-segment-fill {
-    height: 100%;
-    border-radius: 0;
-    position: absolute;
-    top: 0;
-    left: 0;
-    transition: width 250ms cubic-bezier(0.25, 0.1, 0.25, 1);
-  }
-}
-
-/* ── Nothing Status Text ─────────────────────────────────────────────── */
+/* ── INLINE STATUS TEXT (replaces toasts) ─────────────────────────────── */
 
 @layer components {
   .nd-status {
@@ -99,61 +111,60 @@
   }
 }
 
-/* ── Scrollbar ────────────────────────────────────────────────────────── */
+/* ── SEGMENTED PROGRESS BAR — signature visualization ────────────────── */
+
+@layer components {
+  .nd-segment {
+    height: 8px;
+    border-radius: 0;
+    background: var(--border);
+  }
+  .nd-segment-sm {
+    height: 4px;
+    border-radius: 0;
+    background: var(--border);
+  }
+  .nd-segment-fill {
+    height: 100%;
+    border-radius: 0;
+    background: var(--text-display);
+  }
+}
+
+/* ── SCROLLBAR ────────────────────────────────────────────────────────── */
 
 @layer utilities {
   .scrollbar-thin {
     scrollbar-width: thin;
-    scrollbar-color: rgba(255,255,255,0.06) transparent;
+    scrollbar-color: var(--border-visible) transparent;
   }
   .scrollbar-thin::-webkit-scrollbar { width: 3px; }
   .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
-  .scrollbar-thin::-webkit-scrollbar-thumb {
-    background: rgba(255,255,255,0.08);
-    border-radius: 0;
-  }
-  .scrollbar-thin::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.15); }
+  .scrollbar-thin::-webkit-scrollbar-thumb { background: var(--border-visible); border-radius: 0; }
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover { background: var(--text-disabled); }
   .scrollbar-none { scrollbar-width: none; }
   .scrollbar-none::-webkit-scrollbar { display: none; }
 }
 
-/* ── Window Drag (Tauri frameless) ────────────────────────────────────── */
+/* ── WINDOW DRAG (Tauri frameless) ────────────────────────────────────── */
 
 @layer utilities {
   .drag-region { -webkit-app-region: drag; }
   .no-drag { -webkit-app-region: no-drag; }
 }
 
-/* ── Nothing Typography Utilities ─────────────────────────────────────── */
+/* ── DISPLAY FONT ─────────────────────────────────────────────────────── */
 
 @layer utilities {
-  .font-display {
-    font-family: "Doto", monospace;
-  }
-
-  .font-mono-metric {
-    font-family: "Space Mono", ui-monospace, monospace;
+  .font-display { font-family: "Doto", monospace; }
+  .font-data {
+    font-family: "Space Mono", monospace;
     font-variant-numeric: tabular-nums;
   }
-
-  .tracking-label {
-    letter-spacing: 0.08em;
-  }
 }
 
-/* ── Animations ───────────────────────────────────────────────────────── */
-
-@keyframes executionPulse {
-  0%, 100% { opacity: 0.4; }
-  50% { opacity: 1; }
-}
-
-@keyframes scanLine {
-  0% { transform: translateY(-100%); }
-  100% { transform: translateY(100%); }
-}
+/* ── MOTION — 150-400ms, subtle ease-out only ─────────────────────────── */
 
 @layer utilities {
-  .nd-pulse { animation: executionPulse 2s cubic-bezier(0.25, 0.1, 0.25, 1) infinite; }
-  .nd-scan { animation: scanLine 1.5s cubic-bezier(0.25, 0.1, 0.25, 1) infinite; }
+  .ease-nd { transition-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1); }
 }
