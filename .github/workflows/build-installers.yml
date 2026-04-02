@@ -160,7 +160,7 @@ jobs:
     name: Package redcore OS Installer (Tauri)
     if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     runs-on: windows-latest
-    needs: [verify, check-rust, build-rust-services]
+    needs: [check-rust, build-rust-services]
     steps:
       - uses: actions/checkout@v4
 
