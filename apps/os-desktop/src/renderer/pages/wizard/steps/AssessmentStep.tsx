@@ -30,7 +30,7 @@ const DEMO_PROFILE: DetectedProfile = {
   id: "gaming_desktop", label: "Gaming Desktop", confidence: 92,
   isWorkPc: false, machineName: "REDCORE-PC",
   signals: ["Steam detected", "No domain join", "NVIDIA GPU", "32 GB RAM"],
-  accentColor: "text-brand-400", windowsBuild: 22631,
+  accentColor: "text-[var(--accent)]", windowsBuild: 22631,
 };
 
 const PROFILE_LABELS: Record<string, string> = {
@@ -122,7 +122,7 @@ function normalizeDetectedProfileFromService(assessmentValue: unknown, classific
       isWorkPc: readBoolean(assessmentValue.isWorkPc) ?? false,
       machineName: readString(assessmentValue.machineName) ?? "REDCORE-PC",
       signals: normalizeSignals(assessmentValue.signals),
-      accentColor: readString(assessmentValue.accentColor) ?? "text-brand-400",
+      accentColor: readString(assessmentValue.accentColor) ?? "text-[var(--accent)]",
       windowsBuild: readWindowsBuild(assessmentValue),
     };
   }
@@ -139,7 +139,7 @@ function normalizeDetectedProfileFromService(assessmentValue: unknown, classific
     label: PROFILE_LABELS[profileId] ?? profileId.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()),
     confidence: normalizeConfidence(classification.confidence), isWorkPc, machineName,
     signals: Array.from(new Set(signals)).slice(0, 6),
-    accentColor: "text-brand-400", windowsBuild: readWindowsBuild(assessmentValue),
+    accentColor: "text-[var(--accent)]", windowsBuild: readWindowsBuild(assessmentValue),
   };
 }
 
@@ -217,14 +217,14 @@ export function AssessmentStep() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3, ease: ND_EASE }}
-      className="flex h-full flex-col items-center justify-center gap-6 px-8 py-6 bg-nd-bg"
+      className="flex h-full flex-col items-center justify-center gap-6 px-8 py-6 bg-[var(--black)]"
     >
       {/* Header */}
       <div className="text-center">
-        <h2 className="font-display text-title text-nd-text-display">
+        <h2 className="font-display text-title text-[var(--text-display)]">
           {isScanning ? "SCANNING" : "COMPLETE"}
         </h2>
-        <p className="mt-2 nd-label text-nd-text-secondary">
+        <p className="mt-2 nd-label text-[var(--text-secondary)]">
           {isScanning ? "ANALYZING HARDWARE, SOFTWARE, AND CONFIGURATION" : "SYSTEM PROFILE READY"}
         </p>
 
@@ -238,7 +238,7 @@ export function AssessmentStep() {
                 animate={{ opacity: 0.5 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.2, ease: ND_EASE }}
-                className="nd-status text-nd-text-disabled"
+                className="nd-status text-[var(--text-disabled)]"
               >
                 [{SCAN_QUOTES[quoteIdx]}]
               </motion.p>
@@ -257,8 +257,8 @@ export function AssessmentStep() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: i * 0.03, duration: 0.2, ease: ND_EASE }}
-              className={`flex items-center gap-4 border-b border-nd-border-subtle px-4 py-2.5 transition-colors duration-150 ease-nd ${
-                st === "scanning" ? "bg-nd-surface" : ""
+              className={`flex items-center gap-4 border-b border-[var(--border)] px-4 py-2.5 transition-colors duration-150 ease-nd ${
+                st === "scanning" ? "bg-[var(--surface)]" : ""
               }`}
             >
               {/* Status indicator */}
@@ -268,10 +268,10 @@ export function AssessmentStep() {
                     initial={{ scaleX: 0 }}
                     animate={{ scaleX: 1 }}
                     transition={{ duration: 0.2, ease: ND_EASE }}
-                    className="w-3 h-0.5 bg-brand-500"
+                    className="w-3 h-0.5 bg-[var(--accent)]"
                   />
                 ) : st === "scanning" ? (
-                  <div className="w-1.5 h-1.5 bg-brand-500 nd-pulse" />
+                  <div className="w-1.5 h-1.5 bg-[var(--accent)] nd-pulse" />
                 ) : (
                   <div className="w-1.5 h-px bg-nd-border" />
                 )}
@@ -280,14 +280,14 @@ export function AssessmentStep() {
               {/* Label */}
               <div className="flex-1 min-w-0">
                 <span className={`font-mono text-caption tracking-label ${
-                  st === "done" ? "text-nd-text-primary" : st === "scanning" ? "text-nd-text-display" : "text-nd-text-disabled"
+                  st === "done" ? "text-[var(--text-primary)]" : st === "scanning" ? "text-[var(--text-display)]" : "text-[var(--text-disabled)]"
                 }`}>
                   {cat.label}
                 </span>
               </div>
 
               {/* Desc */}
-              <span className="nd-label-sm text-nd-text-disabled">
+              <span className="nd-label-sm text-[var(--text-disabled)]">
                 {cat.desc}
               </span>
             </motion.div>
@@ -302,16 +302,16 @@ export function AssessmentStep() {
             <div
               key={cat.id}
               className={`flex-1 h-1 transition-colors duration-250 ease-nd ${
-                statuses[cat.id] === "done" ? "bg-brand-500" : "bg-nd-border-subtle"
+                statuses[cat.id] === "done" ? "bg-[var(--accent)]" : "bg-nd-border-subtle"
               }`}
             />
           ))}
         </div>
         <div className="mt-2 flex justify-between">
-          <span className="nd-label-sm text-nd-text-disabled">
+          <span className="nd-label-sm text-[var(--text-disabled)]">
             {isScanning ? "[SCANNING...]" : "[COMPLETE]"}
           </span>
-          <span className="font-mono text-label tracking-label text-nd-text-disabled">
+          <span className="font-mono text-label tracking-label text-[var(--text-disabled)]">
             {done}/{CATEGORIES.length}
           </span>
         </div>
@@ -323,10 +323,10 @@ export function AssessmentStep() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.3, ease: ND_EASE }}
-          className="flex items-center gap-3 border border-success-400/20 bg-success-400/[0.04] px-4 py-2 rounded-sm"
+          className="flex items-center gap-3 border border-success-400/20 bg-[var(--success)]/[0.04] px-4 py-2 rounded-sm"
         >
-          <div className="w-3 h-0.5 bg-success-400" />
-          <span className="nd-label text-success-400">SYSTEM SCANNED — BUILDING PROFILE</span>
+          <div className="w-3 h-0.5 bg-[var(--success)]" />
+          <span className="nd-label text-[var(--success)]">SYSTEM SCANNED — BUILDING PROFILE</span>
         </motion.div>
       )}
     </motion.div>
