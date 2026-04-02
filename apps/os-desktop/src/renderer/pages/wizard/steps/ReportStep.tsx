@@ -1,5 +1,5 @@
 
-import { useEffect, useMemo, useState, useCallback } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { Check, Shield, AlertTriangle, Lock, Heart, Archive, FileText } from "lucide-react";
 import { useWizardStore } from "@/stores/wizard-store";
@@ -7,8 +7,6 @@ import { useDecisionsStore } from "@/stores/decisions-store";
 import { useLogStore } from "@/stores/log-store";
 import { resolveEffectivePersonalization } from "@/lib/personalization-resolution";
 import { platform } from "@/lib/platform";
-
-const RICKROLL_URL = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
 
 interface LedgerStep {
   actionId: string;
@@ -45,15 +43,6 @@ export function ReportStep() {
   const [exportMessage, setExportMessage] = useState("");
   const [logExportState, setLogExportState] = useState<"idle" | "busy" | "done" | "error">("idle");
   const [logExportMessage, setLogExportMessage] = useState("");
-  const [footerClicks, setFooterClicks] = useState(0);
-  const handleFooterClick = useCallback(() => {
-    const next = footerClicks + 1;
-    setFooterClicks(next);
-    if (next >= 5) {
-      setFooterClicks(0);
-      platform().shell.openExternal(RICKROLL_URL);
-    }
-  }, [footerClicks]);
   const exportLogAsText = useLogStore((state) => state.exportAsText);
 
   const [ledgerState, setLedgerState] = useState<LedgerQueryResult | null>(null);
@@ -330,13 +319,11 @@ export function ReportStep() {
         </div>
       </motion.div>
 
-      {/* Footer (easter egg: click 5 times = rickroll) */}
       <motion.p
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.5 }}
-        onClick={handleFooterClick}
-        className="text-[10px] text-ink-muted cursor-default select-none"
+        className="text-[10px] text-ink-muted select-none"
       >
         Snapshots saved before each action
       </motion.p>

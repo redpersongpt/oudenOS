@@ -6,7 +6,7 @@ import { Check, X, AlertTriangle, Lock, ChevronDown, Shield, Cpu, Eye, Info } fr
 import { useWizardStore } from "@/stores/wizard-store";
 import type { ResolvedPlaybook, PlaybookPhase } from "@/stores/wizard-store";
 import { useDecisionsStore } from "@/stores/decisions-store";
-import { applyDecisionOverrides } from "@/lib/playbook-decision-overrides";
+import { applyQuestionnaireOverrides } from "@/lib/wizard-question-model";
 import { getActionRationale, PHASE_RATIONALE, getBlockedExplanation } from "@/lib/expert-rationale";
 import { buildMockResolvedPlaybook } from "@/lib/mock-playbook";
 import technicalDetails from "@/lib/generated-technical-details.json";
@@ -366,7 +366,7 @@ export function PlaybookReviewStep() {
 
   const effectivePlaybook = useMemo(() => {
     if (!basePlaybook) return null;
-    return applyDecisionOverrides(basePlaybook, answers, {
+    return applyQuestionnaireOverrides(basePlaybook, answers, {
       isLaptop: detectedProfile?.id === "gaming_laptop" || detectedProfile?.id === "office_laptop",
       isWorkPc: detectedProfile?.isWorkPc ?? false,
       windowsBuild: detectedProfile?.windowsBuild ?? 22631,
