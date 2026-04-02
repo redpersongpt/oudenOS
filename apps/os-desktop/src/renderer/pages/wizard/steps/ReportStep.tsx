@@ -331,7 +331,7 @@ export function ReportStep() {
         <p className="text-[11px] font-medium text-[var(--text-primary)] mb-2">How to undo changes</p>
         <div className="space-y-1.5 text-[10px] text-[var(--text-secondary)] leading-relaxed">
           <p><span className="text-[var(--text-primary)] font-medium">System Restore:</span> Windows saved a restore point before we started. Open Start → type "Create a restore point" → System Restore → pick the point from today.</p>
-          <p><span className="text-[var(--text-primary)] font-medium">Registry:</span> Every registry key we changed has its old value saved. Re-run redcore OS and it will detect previous changes.</p>
+          <p><span className="text-[var(--text-primary)] font-medium">Registry:</span> Every registry key we changed has its old value saved. Re-run OudenOS and it will detect previous changes.</p>
           <p><span className="text-[var(--text-primary)] font-medium">Services:</span> Open <span className="font-mono text-[9px] bg-[var(--surface-raised)] px-1 rounded">services.msc</span> and set any service back to Automatic or Manual.</p>
           <p><span className="text-[var(--text-primary)] font-medium">Removed apps:</span> Open Microsoft Store and reinstall anything you want back.</p>
           <p><span className="text-[var(--text-primary)] font-medium">Full reset:</span> Settings → System → Recovery → Reset this PC keeps your files but restores all Windows defaults.</p>

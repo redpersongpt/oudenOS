@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Mail, Lock, Eye, EyeOff, AlertCircle, Zap } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, AlertCircle } from "lucide-react";
+import { LogoMark } from "@/components/brand/Logo";
 import { Button } from "@/components/ui/Button";
 import { useAuthStore } from "@/stores/auth-store";
 import { LOGIN_URL, openExternalUrl } from "@/lib/external-links";
@@ -99,7 +100,7 @@ export function LoginPage() {
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            "radial-gradient(ellipse 90% 55% at 50% -5%, rgba(232,37,75,0.07) 0%, transparent 65%)",
+            "radial-gradient(ellipse 90% 55% at 50% -5%, rgba(215,25,33,0.07) 0%, transparent 65%)",
         }}
       />
 
@@ -112,12 +113,12 @@ export function LoginPage() {
         <motion.div variants={stagger} initial="hidden" animate="visible">
           {/* Brand */}
           <motion.div variants={fadeUp} className="mb-8 flex flex-col items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-brand-500 shadow-[0_0_28px_rgba(232,37,75,0.38)]">
-              <Zap className="h-6 w-6 text-white" strokeWidth={2.5} />
+            <div className="flex items-center justify-center">
+              <LogoMark size={48} />
             </div>
             <div className="text-center">
-              <h1 className="text-xl font-bold tracking-tight text-white">
-                redcore<span className="text-brand-400">-Tuning</span>
+              <h1 className="text-xl font-bold tracking-tight text-neutral-300">
+                Ouden<span className="font-normal text-neutral-500">.Tuning</span>
               </h1>
               <p className="mt-0.5 text-xs text-neutral-500">Welcome back</p>
             </div>

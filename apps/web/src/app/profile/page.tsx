@@ -257,13 +257,13 @@ export default function ProfilePage() {
             {licenses.length === 0 ? (
               <div className="rounded-lg border border-[var(--border)] bg-[var(--surface)] p-6 text-center">
                 <p className="text-[14px] text-[var(--text-secondary)] mb-4">
-                  No license keys yet. Buy redcore · Tuning once and your license key will appear here.
+                  No license keys yet. Buy Ouden.Tuning once and your license key will appear here.
                 </p>
                 <a
                   href="/redcore-tuning"
                   className="inline-flex items-center justify-center h-10 px-6 text-[13px] font-medium rounded-lg text-[var(--text-primary)] border border-[var(--border)] bg-[var(--surface-raised)] hover:border-[var(--border-visible)] transition-colors"
                 >
-                  Buy redcore · Tuning — $12.99 one-time
+                  Buy Ouden.Tuning — $12.99 one-time
                 </a>
               </div>
             ) : (
@@ -272,7 +272,7 @@ export default function ProfilePage() {
                   <div key={lic.id} className="rounded-lg border border-[var(--border)] bg-[var(--surface)] p-5">
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-[12px] text-[var(--text-disabled)] uppercase tracking-wider">
-                        redcore · Tuning
+                        Ouden.Tuning
                       </span>
                       <span className={`text-[11px] font-medium uppercase tracking-wider ${
                         lic.status === "active" ? "text-[var(--accent)]" : "text-[var(--text-disabled)]"
@@ -305,7 +305,7 @@ export default function ProfilePage() {
 
             <div className="rounded-lg border border-[var(--border)] bg-[var(--surface)] p-6 text-center">
               <p className="text-[14px] text-[var(--text-secondary)] mb-4">
-                redcore · OS is free. Support development with a donation.
+                OudenOS is free. Support development with a donation.
               </p>
               <a
                 href="/donate"

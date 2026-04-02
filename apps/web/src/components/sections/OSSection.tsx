@@ -292,7 +292,7 @@ export function OSSection() {
               </h3>
               <p className="text-[14px] text-[var(--text-secondary)] leading-relaxed mb-6 max-w-2xl">
                 Enterprise services, printing, RDP, and domain workflows are
-                automatically protected. redcore · OS understands the difference
+                automatically protected. OudenOS understands the difference
                 between consumer bloat and enterprise infrastructure.
               </p>
 

@@ -47,10 +47,10 @@ const STEPS: ShowcaseStep[] = [
 function LogoMark({ size = 20 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 64 64" fill="none">
-      <path d="M32 4L56.5 18v28L32 60 7.5 46V18L32 4z" fill="#E8254B" opacity="0.12" />
-      <path d="M32 4L56.5 18v28L32 60 7.5 46V18L32 4z" stroke="#E8254B" strokeWidth="2" fill="none" />
-      <circle cx="32" cy="32" r="17" stroke="#E8254B" strokeWidth="2.5" fill="none" opacity="0.5" />
-      <circle cx="32" cy="32" r="10" fill="#E8254B" />
+      <path d="M32 4L56.5 18v28L32 60 7.5 46V18L32 4z" fill="#D71921" opacity="0.12" />
+      <path d="M32 4L56.5 18v28L32 60 7.5 46V18L32 4z" stroke="#D71921" strokeWidth="2" fill="none" />
+      <circle cx="32" cy="32" r="17" stroke="#D71921" strokeWidth="2.5" fill="none" opacity="0.5" />
+      <circle cx="32" cy="32" r="10" fill="#D71921" />
     </svg>
   );
 }
@@ -113,13 +113,13 @@ function WelcomeContent() {
           animate={{ scale: [1, 1.15, 1], opacity: [0.2, 0.4, 0.2] }}
           transition={{ duration: 4, ease: "easeInOut", repeat: Infinity }}
           className="absolute inset-0 rounded-lg blur-xl"
-          style={{ width: 56, height: 56, background: "rgba(232,37,75,0.2)" }}
+          style={{ width: 56, height: 56, background: "rgba(215,25,33,0.2)" }}
         />
         <LogoMark size={56} />
       </motion.div>
       <div className="text-center">
         <h3 className="text-[15px] font-bold text-[var(--text-primary)]">
-          red<span className="text-brand-500">core</span>{" "}
+          ouden<span className="text-brand-500">.cc</span>{" "}
           <span className="font-normal text-[var(--text-secondary)]">OS</span>
         </h3>
         <p className="mt-1.5 text-[11px] text-[var(--text-disabled)] leading-relaxed max-w-[260px]">
@@ -692,7 +692,7 @@ export function WizardShowcase() {
               <div className="flex-1 flex items-center justify-center gap-1.5">
                 <LogoMark size={14} />
                 <span className="text-[11px] font-semibold text-[var(--text-secondary)]">
-                  red<span className="text-brand-500">core</span>{" "}
+                  ouden<span className="text-brand-500">.cc</span>{" "}
                   <span className="font-normal text-[var(--text-disabled)]">OS</span>
                 </span>
               </div>

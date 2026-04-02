@@ -3,10 +3,10 @@ import { Navigation } from "@/components/brand/Navigation";
 import { FooterSection } from "@/components/sections/FooterSection";
 
 export const metadata: Metadata = {
-  title: "Terms of Service | redcore",
-  description: "Terms covering downloads, account usage, licensing, and support for redcore products.",
+  title: "Terms of Service | Ouden",
+  description: "Terms covering downloads, account usage, licensing, and support for Ouden products.",
   alternates: {
-    canonical: "https://redcoreos.net/terms",
+    canonical: "https://Oudenos.net/terms",
   },
 };
 
@@ -20,7 +20,7 @@ export default function TermsPage() {
           <h1 className="mt-3 text-3xl font-semibold text-[var(--text-primary)]">Terms of Service</h1>
           <div className="mt-8 space-y-6 text-sm leading-7 text-[var(--text-secondary)]">
             <p>
-              redcore software is provided as-is for lawful personal or business use. You are responsible
+              Ouden software is provided as-is for lawful personal or business use. You are responsible
               for reviewing changes before applying system modifications and for maintaining backups.
             </p>
             <section>
@@ -41,8 +41,8 @@ export default function TermsPage() {
               <h2 className="text-base font-semibold text-[var(--text-primary)]">Support</h2>
               <p className="mt-2">
                 Support is offered on a best-effort basis through
-                <a className="ml-1 text-[var(--accent)] hover:text-[var(--accent)]-bright" href="mailto:support@redcoreos.net">
-                  support@redcoreos.net
+                <a className="ml-1 text-[var(--accent)] hover:text-[var(--accent)]-bright" href="mailto:support@Oudenos.net">
+                  support@Oudenos.net
                 </a>.
               </p>
             </section>

@@ -39,7 +39,7 @@ function ToggleRow({ label, desc, checked, disabled = false, onChange }: {
 // Preview
 
 function DesktopPreview({ prefs }: { prefs: PersonalizationPreferences }) {
-  const accent = prefs.brandAccent ? "#E8254B" : "#444444";
+  const accent = prefs.brandAccent ? "#D71921" : "#444444";
 
   return (
     <div
@@ -125,7 +125,7 @@ export function PersonalizationStep() {
 
   const toggles = [
     { label: "DARK MODE",        desc: "DARK THEME FOR APPS AND SYSTEM",     key: "darkMode" as const,        disabled: false },
-    { label: "BRAND ACCENT",     desc: "REDCORE RED ACCENT COLOR",           key: "brandAccent" as const,     disabled: false },
+    { label: "BRAND ACCENT",     desc: "OUDEN RED ACCENT COLOR",             key: "brandAccent" as const,     disabled: false },
     { label: "TRANSPARENCY",     desc: "WINDOW TRANSPARENCY EFFECTS",        key: "transparency" as const,    disabled: isLowSpec || transparencyForcedOff },
     { label: "TASKBAR CLEANUP",  desc: "HIDE TASK VIEW, WIDGETS, CHAT",      key: "taskbarCleanup" as const,  disabled: isWorkPc },
     { label: "EXPLORER CLEANUP", desc: "SHOW EXTENSIONS, HIDE RECENTS",      key: "explorerCleanup" as const, disabled: isWorkPc },

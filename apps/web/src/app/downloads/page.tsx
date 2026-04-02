@@ -10,14 +10,14 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "Downloads",
   description:
-    "Download redcore OS for free. Windows 10/11 x64. In-place system optimization with step-by-step debloating and full rollback support.",
+    "Download OudenOS for free. Windows 10/11 x64. In-place system optimization with step-by-step debloating and full rollback support.",
   alternates: {
-    canonical: "https://redcoreos.net/downloads",
+    canonical: "https://ouden.cc/downloads",
   },
   openGraph: {
-    title: "Downloads | redcore",
-    description: "Download redcore OS for free. Windows 10/11 x64 installer.",
-    url: "https://redcoreos.net/downloads",
+    title: "Downloads | Ouden",
+    description: "Download OudenOS for free. Windows 10/11 x64 installer.",
+    url: "https://ouden.cc/downloads",
     type: "website",
   },
 };
@@ -38,16 +38,16 @@ export default async function DownloadsPage() {
           </h1>
 
           <p className="text-[var(--text-secondary)] text-base leading-relaxed mb-10">
-            Download redcore tools for your Windows system. All downloads
+            Download Ouden tools for your Windows system. All downloads
             are standard Windows installers — no command line required.
           </p>
 
-          {/* redcore OS */}
+          {/* OudenOS */}
           <div className="border border-[var(--border)] rounded-lg p-6 bg-[var(--surface)] mb-6">
             <div className="flex items-start justify-between flex-wrap gap-4 mb-4">
               <div>
                 <h2 className="text-xl font-semibold text-[var(--text-primary)] mb-1">
-                  redcore OS
+                  OudenOS
                 </h2>
                 <p className="text-[var(--text-disabled)] text-[13px]">
                   Free Windows optimization tool
@@ -76,7 +76,7 @@ export default async function DownloadsPage() {
                   href={os.url}
                   className="inline-flex items-center rounded-lg bg-[var(--accent)] px-5 py-2.5 text-[13px] font-semibold text-white transition-all hover:bg-[var(--accent)]-dim"
                 >
-                  Download redcore OS{os.version ? ` ${os.version}` : ""}
+                  Download OudenOS{os.version ? ` ${os.version}` : ""}
                 </a>
               ) : (
                 <span className="inline-flex items-center rounded-lg border border-[var(--border)] px-5 py-2.5 text-[13px] font-medium text-[var(--text-disabled)] cursor-not-allowed">
@@ -125,12 +125,12 @@ export default async function DownloadsPage() {
             </div>
           </div>
 
-          {/* redcore Tuning */}
+          {/* Ouden.Tuning */}
           <div className="border border-[var(--border)] rounded-lg p-6 bg-[var(--surface)] opacity-75">
             <div className="flex items-start justify-between flex-wrap gap-4 mb-4">
               <div>
                 <h2 className="text-xl font-semibold text-[var(--text-primary)] mb-1">
-                  redcore Tuning
+                  Ouden.Tuning
                 </h2>
                 <p className="text-[var(--text-disabled)] text-[13px]">
                   Hardware-based performance optimization — $12.99 one-time
@@ -191,13 +191,13 @@ export default async function DownloadsPage() {
               system settings, services, and registry keys. A restore point
               is created before any changes. You can review the{" "}
               <Link href="/redcore-os" className="text-[var(--accent)] hover:text-[var(--accent)]-bright transition-colors">
-                full description of what redcore OS does
+                full description of what OudenOS does
               </Link>{" "}
               before running it.
             </p>
             <div className="rounded-lg bg-[var(--surface)] border border-[var(--border)] p-4">
               <p className="font-mono text-[0.65rem] font-medium uppercase tracking-[0.12em] text-[var(--text-disabled)] mb-2">
-                SHA-256 Checksum — {os.manifest?.filename ?? "redcore-os-setup.exe"}
+                SHA-256 Checksum — {os.manifest?.filename ?? "ouden-os-setup.exe"}
               </p>
               {os.sha256 ? (
                 <code className="font-mono text-[0.72rem] text-[var(--text-disabled)] break-all select-all">
@@ -210,7 +210,7 @@ export default async function DownloadsPage() {
               )}
             </div>
             <p className="mt-3 text-[var(--text-disabled)] text-[12px]">
-              Verify in PowerShell: <code className="font-mono text-[11px]">Get-FileHash redcore-os-setup.exe</code>
+              Verify in PowerShell: <code className="font-mono text-[11px]">Get-FileHash ouden-os-setup.exe</code>
             </p>
           </div>
         </article>

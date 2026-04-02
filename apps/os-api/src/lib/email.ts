@@ -4,16 +4,16 @@
 
 const isDev = process.env.NODE_ENV !== 'production';
 const sendgridApiKey = process.env.SENDGRID_API_KEY;
-const fromEmail = process.env.FROM_EMAIL ?? 'noreply@redcore-os.com';
+const fromEmail = process.env.FROM_EMAIL ?? 'noreply@ouden.cc';
 const appUrl = process.env.APP_URL ?? 'http://localhost:5173';
-const brandColor = '#E8254B';
-const bg = '#1E1E22';
-const cardBg = '#252529';
-const border = '#38383E';
+const brandColor = '#D71921';
+const bg = '#000000';
+const cardBg = '#111111';
+const border = '#222222';
 const text = '#F0F0F4';
 const muted = '#A0A0AC';
 const caption = '#6A6A76';
-const supportEmail = 'support@redcoreos.net';
+const supportEmail = 'support@ouden.cc';
 
 // ---------------------------------------------------------------------------
 // SendGrid transport

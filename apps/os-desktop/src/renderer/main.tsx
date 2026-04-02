@@ -11,7 +11,7 @@ setPlatform(tauriBackend);
 
 // Listen for service start failure — warn user that app is in demo mode
 platform().on("service-start-failed", (error) => {
-  console.error("[redcore] Service failed to start:", error);
+  console.error("[ouden] Service failed to start:", error);
   // Show a visible warning so the user knows changes won't apply
   setTimeout(() => {
     const banner = document.createElement("div");

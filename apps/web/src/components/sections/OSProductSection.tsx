@@ -66,7 +66,7 @@ export function OSProductSection() {
 
             <div className="mt-5 pt-5 border-t border-[var(--border)]">
               <p className="text-[12px] text-[var(--text-disabled)] text-center mb-3">
-                Love redcore · OS? Support development.
+                Love OudenOS? Support development.
               </p>
               <a
                 href="/donate"
@@ -86,12 +86,12 @@ export function OSProductSection() {
               transition={{ duration: duration.slow, ease: easing.enter }}
             >
               <h2 className="text-4xl md:text-5xl font-bold tracking-tight">
-                redcore · OS
+                OudenOS
               </h2>
               <p className="mt-4 text-lg text-[var(--text-secondary)] max-w-xl">
                 In-place Windows optimization. Reshape your current installation
                 without reinstalling — guided by machine intelligence, protected by
-                rollback safety.
+                rollback safety. Free and open source.
               </p>
             </motion.div>
 

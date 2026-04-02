@@ -118,7 +118,7 @@ export function WhyRedcoreSection() {
             >
               Generic optimization tools apply the same aggressive tweaks to
               every machine &mdash; no hardware profiling, no safety net, no
-              understanding of what makes your system unique. redcore starts by
+              understanding of what makes your system unique. Ouden starts by
               learning your machine, then builds a confidence-rated plan before
               touching a single setting.
             </motion.p>
@@ -128,7 +128,7 @@ export function WhyRedcoreSection() {
           <div
             className="flex flex-col gap-4"
             role="list"
-            aria-label="Comparison between generic tools and redcore approach"
+            aria-label="Comparison between generic tools and Ouden approach"
           >
             {contrastRows.map((row, i) => (
               <ContrastBar key={row.before} row={row} index={i} />
@@ -147,7 +147,7 @@ export function WhyRedcoreSection() {
           }}
           className="mt-16 text-[17px] text-[var(--text-secondary)] italic max-w-3xl"
         >
-          redcore understands your machine before it touches a single setting.
+          Ouden understands your machine before it touches a single setting.
         </motion.p>
       </div>
     </section>

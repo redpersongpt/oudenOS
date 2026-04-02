@@ -187,7 +187,7 @@ function WizardWindow() {
               <span className="w-2 h-2 rounded-full bg-[#28C840]" />
             </div>
             <span className="flex-1 text-center text-[12px] text-[var(--text-disabled)] font-mono">
-              redcore
+              ouden.cc
             </span>
             <div className="w-[36px]" />
           </div>

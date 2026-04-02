@@ -6,21 +6,21 @@ import { FooterSection } from "@/components/sections/FooterSection";
 
 export const metadata: Metadata = {
   title: "Support",
-  description: "Support, contact, and donation options for redcore.",
+  description: "Support, contact, and donation options for Ouden.",
   alternates: {
-    canonical: "https://redcoreos.net/support",
+    canonical: "https://ouden.cc/support",
   },
   openGraph: {
-    title: "redcore Support",
-    description: "Support, contact, and donation options for redcore.",
-    url: "https://redcoreos.net/support",
+    title: "Ouden Support",
+    description: "Support, contact, and donation options for Ouden.",
+    url: "https://ouden.cc/support",
     type: "website",
     images: [
       {
         url: "/redcore-logo.png",
         width: 1200,
         height: 360,
-        alt: "redcore logo",
+        alt: "Ouden logo",
       },
     ],
   },
@@ -29,22 +29,22 @@ export const metadata: Metadata = {
 const contactCards = [
   {
     title: "Support",
-    value: "support@redcoreos.net",
-    href: "mailto:support@redcoreos.net",
+    value: "support@ouden.cc",
+    href: "mailto:support@ouden.cc",
     description: "Product issues, install failures, and troubleshooting help.",
     icon: HeartHandshake,
   },
   {
     title: "Info",
-    value: "info@redcoreos.net",
-    href: "mailto:info@redcoreos.net",
+    value: "info@ouden.cc",
+    href: "mailto:info@ouden.cc",
     description: "General questions, partnerships, and product inquiries.",
     icon: Mail,
   },
   {
     title: "Security",
-    value: "security@redcoreos.net",
-    href: "mailto:security@redcoreos.net",
+    value: "security@ouden.cc",
+    href: "mailto:security@ouden.cc",
     description: "Responsible disclosure for security issues and sensitive reports.",
     icon: Shield,
   },
@@ -58,13 +58,13 @@ export default function SupportPage() {
         <section className="mx-auto flex w-full max-w-[1180px] flex-col gap-10 px-6 pb-20 sm:px-8 lg:px-16">
           <div className="max-w-3xl">
             <p className="mb-3 text-[0.72rem] font-semibold uppercase tracking-[0.18em] text-[var(--accent)]">
-              redcore Support
+              Ouden Support
             </p>
             <h1 className="max-w-3xl text-4xl font-semibold tracking-[-0.04em] text-[var(--text-primary)] sm:text-5xl">
               Need help, want to donate, or just need a real contact path?
             </h1>
             <p className="mt-5 max-w-2xl text-sm leading-7 text-[var(--text-secondary)] sm:text-base">
-              This page is the public support target used by redcore OS. If the app sends you here,
+              This page is the public support target used by OudenOS. If the app sends you here,
               you are in the right place. Use the mail paths below for direct contact, or go to the
               donation page if you want to support development financially.
             </p>
@@ -99,7 +99,7 @@ export default function SupportPage() {
                 Donation and Project Support
               </h2>
               <p className="mt-3 max-w-2xl text-sm leading-7 text-[var(--text-secondary)]">
-                redcore OS is free to download. If it saved you time or fixed your system, the fastest
+                OudenOS is free to download. If it saved you time or fixed your system, the fastest
                 way to support the project is through the public donation flow.
               </p>
               <div className="mt-6 flex flex-wrap gap-3">

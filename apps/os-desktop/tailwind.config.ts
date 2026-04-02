@@ -57,16 +57,16 @@ export default {
           "text-secondary": "#999999",
           "text-primary":  "#E8E8E8",
           "text-display":  "#FFFFFF",
-          accent:         "#E8254B",
-          "accent-subtle": "rgba(232,37,75,0.15)",
+          accent:         "#D71921",
+          "accent-subtle": "rgba(215,25,33,0.15)",
           success:        "#4A9E5C",
           warning:        "#D4A843",
           interactive:    "#5B9BF6",
         },
         // Semantic shortcuts
         brand: {
-          300: "#FF6B82", 400: "#FF4D6A", 500: "#E8254B",
-          600: "#C41E3E", 700: "#A01832",
+          300: "#FF8888", 400: "#E82029", 500: "#D71921",
+          600: "#B5141B", 700: "#8E0F15",
         },
         surface: {
           base: "#000000", raised: "#111111", overlay: "#1A1A1A",
@@ -78,7 +78,7 @@ export default {
         },
         success: { 400: "#4A9E5C", 500: "#3D8B4F" },
         warning: { 400: "#D4A843", 500: "#C49A38" },
-        danger:  { 400: "#E8254B", 500: "#C41E3E" },
+        danger:  { 400: "#D71921", 500: "#B5141B" },
       },
       fontFamily: {
         display: ['"Doto"', "monospace"],

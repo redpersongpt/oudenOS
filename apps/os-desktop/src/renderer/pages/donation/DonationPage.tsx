@@ -115,7 +115,7 @@ export function DonationPage() {
   const effectiveAmount = custom ? parseFloat(custom) || 0 : selected;
 
   function handleBack() {
-    platform().shell.openExternal("https://redcoreos.net");
+    platform().shell.openExternal("https://ouden.cc");
   }
 
   async function handleDonate() {
@@ -131,7 +131,7 @@ export function DonationPage() {
 
     // Simulate async donate (open external URL)
     platform().shell.openExternal(
-      `https://redcoreos.net/donate?amount=${effectiveAmount}`,
+      `https://ouden.cc/donate?amount=${effectiveAmount}`,
     );
 
     setDonatedAmount(effectiveAmount);
@@ -169,7 +169,7 @@ export function DonationPage() {
                   <Heart className="h-5 w-5 text-red-400" />
                 </motion.div>
                 <div>
-                  <h2 className="text-base font-medium text-[var(--text-primary)]">Support redcore</h2>
+                  <h2 className="text-base font-medium text-[var(--text-primary)]">Support Ouden</h2>
                   <p className="text-xs text-[var(--text-secondary)]">
                     Help keep it free and open for everyone
                   </p>

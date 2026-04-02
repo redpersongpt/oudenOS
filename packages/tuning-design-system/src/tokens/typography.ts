@@ -1,9 +1,10 @@
 // Typography System
-// Plus Jakarta Sans for UI (unified with eco-site). JetBrains Mono for code/metrics.
+// Space Grotesk for UI. Space Mono for data/labels. Doto for display moments.
 
 export const fontFamily = {
-  sans: '"Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif',
-  mono: '"JetBrains Mono", "Cascadia Code", "Fira Code", "Consolas", monospace',
+  sans: '"Space Grotesk", system-ui, sans-serif',
+  mono: '"Space Mono", "Cascadia Code", monospace',
+  display: '"Doto", monospace',
 } as const;
 
 export const fontWeight = {

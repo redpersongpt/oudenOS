@@ -14,11 +14,11 @@ import { getRedcoreOsDownloadState } from "@/lib/downloads";
 import { RotateCcw, Monitor } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "redcore OS — Free Windows Optimization Tool",
+  title: "OudenOS — Free Windows Optimization Tool",
   description:
     "Free Windows optimization tool. 250 reversible actions, 8 profiles, Work PC safe, full rollback. Scans your hardware, builds a plan, optimizes your system.",
   keywords: [
-    "redcore os",
+    "ouden os",
     "windows optimization tool",
     "free windows optimizer",
     "windows debloat tool",
@@ -26,13 +26,13 @@ export const metadata: Metadata = {
     "reversible windows changes",
   ],
   alternates: {
-    canonical: "https://redcoreos.net/redcore-os",
+    canonical: "https://ouden.cc/redcore-os",
   },
   openGraph: {
-    title: "redcore OS — Free Windows Optimization Tool",
+    title: "OudenOS — Free Windows Optimization Tool",
     description:
       "Scan your hardware, build a plan, transform your system. Free, guided, reversible.",
-    url: "https://redcoreos.net/redcore-os",
+    url: "https://ouden.cc/redcore-os",
     type: "website",
   },
 };
@@ -41,7 +41,7 @@ function buildJsonLd(downloadUrl: string | null, version: string | null) {
   const ld: Record<string, unknown> = {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
-    name: "redcore OS",
+    name: "OudenOS",
     operatingSystem: "Windows 10, Windows 11",
     applicationCategory: "UtilitiesApplication",
     offers: {
@@ -51,7 +51,7 @@ function buildJsonLd(downloadUrl: string | null, version: string | null) {
     },
     description:
       "Free Windows optimization tool with step-by-step debloating, 8 profiles, 250 actions, and full rollback support.",
-    url: "https://redcoreos.net/redcore-os",
+    url: "https://ouden.cc/redcore-os",
     softwareVersion: version ?? "1.0",
     featureList: [
       "Scans your hardware first",
@@ -85,8 +85,8 @@ export default async function RedcoreOSPage() {
 
           <PageHero
             overline="Product"
-            title="redcore OS — Free Windows Optimization Tool"
-            description="redcore OS is a desktop application that scans your Windows system, builds a hardware-aware optimization plan, and applies reversible changes across privacy, performance, shell customization, and bloatware removal. It is free to use."
+            title="OudenOS — Free Windows Optimization Tool"
+            description="OudenOS is a desktop application that scans your Windows system, builds a hardware-aware optimization plan, and applies reversible changes across privacy, performance, shell customization, and bloatware removal. It is free to use."
           />
 
           <QuickSummary
@@ -107,12 +107,12 @@ export default async function RedcoreOSPage() {
               {
                 title: "Scan",
                 description:
-                  "redcore OS scans your CPU, GPU, disk type (NVMe/SSD/HDD), RAM, network adapters, power source, and installed software. This determines which optimizations are safe and beneficial for your specific machine.",
+                  "OudenOS scans your CPU, GPU, disk type (NVMe/SSD/HDD), RAM, network adapters, power source, and installed software. This determines which optimizations are safe and beneficial for your specific machine.",
               },
               {
                 title: "Classify",
                 description:
-                  "Based on scan results, redcore identifies your machine type — laptop vs desktop, gaming vs workstation, personal vs corporate. Domain membership, MDM agents, and enterprise software are detected automatically.",
+                  "Based on scan results, Ouden identifies your machine type — laptop vs desktop, gaming vs workstation, personal vs corporate. Domain membership, MDM agents, and enterprise software are detected automatically.",
               },
               {
                 title: "Plan",
@@ -127,7 +127,7 @@ export default async function RedcoreOSPage() {
               {
                 title: "Validate",
                 description:
-                  "After execution, redcore verifies that critical services are running, network connectivity is intact, and no expected functionality was disrupted. Issues are flagged for immediate rollback.",
+                  "After execution, Ouden verifies that critical services are running, network connectivity is intact, and no expected functionality was disrupted. Issues are flagged for immediate rollback.",
               },
             ]}
           />
@@ -175,14 +175,14 @@ export default async function RedcoreOSPage() {
           />
 
           <CTAStrip
-            title="Download redcore OS"
+            title="Download OudenOS"
             description="Free. No account required. Scan, review, apply, rollback. Windows 10 (21H2+) and Windows 11 supported."
             primaryAction={{
               label: "Go to downloads",
               href: downloadUrl ?? "/downloads",
             }}
             secondaryAction={{
-              label: "See redcore Tuning",
+              label: "See Ouden.Tuning",
               href: "/redcore-tuning",
             }}
           />
@@ -191,11 +191,11 @@ export default async function RedcoreOSPage() {
             pages={[
               {
                 title: "Downloads",
-                description: "Download the latest redcore OS build. Free, no account required.",
+                description: "Download the latest OudenOS build. Free, no account required.",
                 href: "/downloads",
               },
               {
-                title: "redcore Tuning",
+                title: "Ouden.Tuning",
                 description:
                   "Hardware-level optimization. CPU scheduler, timer resolution, GPU tuning, memory management. $12.99 one-time.",
                 href: "/redcore-tuning",
@@ -207,9 +207,9 @@ export default async function RedcoreOSPage() {
                 href: "/windows-debloat",
               },
               {
-                title: "Why redcore",
+                title: "Why Ouden",
                 description:
-                  "How redcore compares to blind debloat scripts and registry hacks.",
+                  "How Ouden compares to blind debloat scripts and registry hacks.",
                 href: "/why-redcore",
               },
             ]}

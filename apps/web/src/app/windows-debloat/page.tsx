@@ -16,7 +16,7 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "Windows Debloat — Guided, Reversible, Machine-Aware",
   description:
-    "Debloat Windows safely with redcore OS. Scans your hardware, guided removal, and full rollback support. No blind scripts, no broken systems.",
+    "Debloat Windows safely with OudenOS. Scans your hardware, guided removal, and full rollback support. No blind scripts, no broken systems.",
   keywords: [
     "windows debloat",
     "windows debloater",
@@ -26,13 +26,13 @@ export const metadata: Metadata = {
     "reversible debloat",
   ],
   alternates: {
-    canonical: "https://redcoreos.net/windows-debloat",
+    canonical: "https://ouden.cc/windows-debloat",
   },
   openGraph: {
-    title: "Windows Debloat — Guided, Reversible, Machine-Aware | redcore",
+    title: "Windows Debloat — Guided, Reversible, Machine-Aware | Ouden",
     description:
       "Debloat Windows safely with hardware scanning and full rollback support.",
-    url: "https://redcoreos.net/windows-debloat",
+    url: "https://ouden.cc/windows-debloat",
     type: "article",
   },
 };
@@ -41,13 +41,13 @@ function buildJsonLd(downloadUrl: string | null) {
   const ld: Record<string, unknown> = {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
-    name: "redcore OS",
+    name: "OudenOS",
     operatingSystem: "Windows 10, Windows 11",
     applicationCategory: "UtilitiesApplication",
     offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
     description:
       "Free Windows optimization tool with step-by-step debloating, hardware scanning, and full rollback support.",
-    url: "https://redcoreos.net/redcore-os",
+    url: "https://ouden.cc/Ouden-os",
   };
   if (downloadUrl) {
     ld.downloadUrl = downloadUrl;
@@ -158,11 +158,11 @@ export default async function WindowsDebloatPage() {
           />
 
           <h2 className="text-xl font-semibold text-[var(--text-primary)] mt-14 mb-4">
-            How redcore approaches debloating
+            How Ouden approaches debloating
           </h2>
           <p className="text-[var(--text-secondary)] text-[15px] leading-relaxed mb-4">
-            <Link href="/redcore-os" className="text-[var(--accent)] hover:text-[var(--accent)]-bright transition-colors">
-              redcore OS
+            <Link href="/Ouden-os" className="text-[var(--accent)] hover:text-[var(--accent)]-bright transition-colors">
+              OudenOS
             </Link>{" "}
             does not apply a fixed script. It runs a hardware and software
             assessment, classifies your machine into one of eight profiles,
@@ -195,8 +195,8 @@ export default async function WindowsDebloatPage() {
 
           <CTAStrip
             title="Ready to debloat safely?"
-            description="redcore OS is free. Download it, run the assessment, and review the plan before applying anything."
-            primaryAction={{ label: "Download redcore OS", href: downloadUrl ?? "/downloads" }}
+            description="OudenOS is free. Download it, run the assessment, and review the plan before applying anything."
+            primaryAction={{ label: "Download OudenOS", href: downloadUrl ?? "/downloads" }}
             secondaryAction={{ label: "Windows 11 specific guide", href: "/windows-11-debloat" }}
           />
 
@@ -213,9 +213,9 @@ export default async function WindowsDebloatPage() {
                 href: "/work-pc-debloat",
               },
               {
-                title: "Why redcore",
+                title: "Why Ouden",
                 description: "Scans your PC, adapts to your setup.",
-                href: "/why-redcore",
+                href: "/why-Ouden",
               },
             ]}
           />

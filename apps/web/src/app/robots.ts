@@ -18,6 +18,6 @@ export default function robots(): MetadataRoute.Robots {
         ],
       },
     ],
-    sitemap: "https://redcoreos.net/sitemap.xml",
+    sitemap: "https://ouden.cc/sitemap.xml",
   };
 }

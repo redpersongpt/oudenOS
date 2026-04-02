@@ -1,11 +1,11 @@
-// redcore Tuning Color System
-// OLED black base with pink-red accent
+// Ouden Color System
+// OLED black base with signal red accent
 
 export const colors = {
   red: {
-    50: "#FFF5F7", 100: "#FFE3E8", 200: "#FFC9D3", 300: "#FFA3B4",
-    400: "#FF4D6A", 500: "#E8254B", 600: "#C41E3E", 700: "#A01832",
-    800: "#7C1226", 900: "#580C1A", 950: "#34070F",
+    50: "#FFF5F5", 100: "#FFE0E0", 200: "#FFC0C0", 300: "#FF8888",
+    400: "#E82029", 500: "#D71921", 600: "#B5141B", 700: "#8E0F15",
+    800: "#6A0B10", 900: "#46070A", 950: "#2D0A0C",
   },
 
   dark: {
@@ -62,21 +62,21 @@ export const colors = {
     textSecondary: "#999999",
     textTertiary: "#666666",
     textInverse: "#000000",
-    textBrand: "#E8254B",
+    textBrand: "#D71921",
 
     border: "#333333",
     borderSubtle: "#222222",
     borderStrong: "#444444",
-    borderFocus: "#E8254B",
+    borderFocus: "#D71921",
 
-    primaryDefault: "#E8254B",
-    primaryHover: "#FF4D6A",
-    primaryActive: "#C41E3E",
-    primaryDisabled: "#330A14",
+    primaryDefault: "#D71921",
+    primaryHover: "#E82029",
+    primaryActive: "#B5141B",
+    primaryDisabled: "#2D0A0C",
 
     success: "#4A9E5C",
     warning: "#D4A843",
-    error: "#E8254B",
+    error: "#D71921",
     info: "#5B9BF6",
 
     riskSafe: "#4A9E5C",

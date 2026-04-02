@@ -2,17 +2,17 @@ import Link from "next/link";
 import { Logo } from "@/components/brand/Logo";
 
 const productLinks = [
-  { label: "redcore OS",     href: "/redcore-os" },
-  { label: "redcore Tuning", href: "/redcore-tuning" },
-  { label: "Downloads",      href: "/downloads" },
-  { label: "Pricing",        href: "/#pricing" },
+  { label: "OudenOS",         href: "/redcore-os" },
+  { label: "Ouden.Tuning",    href: "/redcore-tuning" },
+  { label: "Downloads",       href: "/downloads" },
+  { label: "Pricing",         href: "/#pricing" },
 ];
 
 const resourceLinks = [
   { label: "Windows Debloat",    href: "/windows-debloat" },
   { label: "Windows 11 Debloat", href: "/windows-11-debloat" },
   { label: "Custom Windows",     href: "/custom-windows" },
-  { label: "Why redcore",        href: "/why-redcore" },
+  { label: "Why Ouden",          href: "/why-redcore" },
   { label: "Work PC Debloat",    href: "/work-pc-debloat" },
 ];
 
@@ -25,9 +25,9 @@ const companyLinks = [
 ];
 
 const contactLinks = [
-  { label: "Info", href: "mailto:info@redcoreos.net", value: "info@redcoreos.net" },
-  { label: "Support", href: "mailto:support@redcoreos.net", value: "support@redcoreos.net" },
-  { label: "System Mail", href: "mailto:noreply@redcoreos.net", value: "noreply@redcoreos.net" },
+  { label: "Info", href: "mailto:info@ouden.cc", value: "info@ouden.cc" },
+  { label: "Support", href: "mailto:support@ouden.cc", value: "support@ouden.cc" },
+  { label: "System Mail", href: "mailto:noreply@ouden.cc", value: "noreply@ouden.cc" },
 ];
 
 export function FooterSection() {
@@ -148,7 +148,7 @@ export function FooterSection() {
         {/* Bottom bar */}
         <div className="border-t border-border/50 pt-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <p className="text-[0.68rem] text-[var(--text-disabled)]">
-            © 2026 redcore
+            © 2026 Ouden
           </p>
           <div className="flex items-center gap-6">
             <span className="text-[0.65rem] font-mono text-[var(--text-disabled)] tracking-wider">

@@ -16,7 +16,7 @@ import { Eye, RotateCcw } from "lucide-react";
 export const metadata: Metadata = {
   title: "Work PC Debloat — Safe Windows Cleanup for Corporate Machines",
   description:
-    "Debloat your work PC without breaking printing, VPN, RDP, Group Policy, or domain services. redcore OS detects corporate dependencies and preserves them automatically.",
+    "Debloat your work PC without breaking printing, VPN, RDP, Group Policy, or domain services. OudenOS detects corporate dependencies and preserves them automatically.",
   keywords: [
     "work pc debloat",
     "work pc safe debloat",
@@ -26,13 +26,13 @@ export const metadata: Metadata = {
     "office pc debloat",
   ],
   alternates: {
-    canonical: "https://redcoreos.net/work-pc-debloat",
+    canonical: "https://Oudenos.net/work-pc-debloat",
   },
   openGraph: {
-    title: "Work PC Debloat — Safe Windows Cleanup for Corporate Machines | redcore",
+    title: "Work PC Debloat — Safe Windows Cleanup for Corporate Machines | Ouden",
     description:
       "Debloat your work PC without breaking corporate infrastructure. Print, RDP, VPN, Group Policy — all preserved.",
-    url: "https://redcoreos.net/work-pc-debloat",
+    url: "https://Oudenos.net/work-pc-debloat",
     type: "article",
   },
 };
@@ -46,7 +46,7 @@ export default function WorkPCDebloatPage() {
           <PageHero
             overline="Work PC"
             title="Work PC Debloat — Cleanup Without Breaking Corporate Infrastructure"
-            description="You want to debloat your work computer — remove the telemetry, kill the suggestions, clean up the start menu — but you cannot afford to break printing, VPN, Remote Desktop, or Group Policy. Most debloat tools do not account for corporate dependencies. redcore OS does."
+            description="You want to debloat your work computer — remove the telemetry, kill the suggestions, clean up the start menu — but you cannot afford to break printing, VPN, Remote Desktop, or Group Policy. Most debloat tools do not account for corporate dependencies. OudenOS does."
           />
 
           <QuickSummary
@@ -96,7 +96,7 @@ export default function WorkPCDebloatPage() {
               {
                 title: "Environment detection",
                 description:
-                  "redcore checks Active Directory domain membership, MDM/SCCM/Intune agents, enterprise VPN clients, network share mappings, Group Policy registry keys, and enterprise certificate stores.",
+                  "Ouden checks Active Directory domain membership, MDM/SCCM/Intune agents, enterprise VPN clients, network share mappings, Group Policy registry keys, and enterprise certificate stores.",
               },
               {
                 title: "Work PC profile activation",
@@ -119,7 +119,7 @@ export default function WorkPCDebloatPage() {
           <TrustBlock
             icon={<Eye className="h-5 w-5" />}
             title="Automatic detection, not a dropdown"
-            description="redcore does not ask you to manually select Work PC from a list. It detects domain membership, management agents, VPN clients, network shares, and enterprise certificates automatically. The plan adjusts before you ever see it."
+            description="Ouden does not ask you to manually select Work PC from a list. It detects domain membership, management agents, VPN clients, network shares, and enterprise certificates automatically. The plan adjusts before you ever see it."
           />
 
           <TrustBlock
@@ -130,9 +130,9 @@ export default function WorkPCDebloatPage() {
 
           <CTAStrip
             title="Clean up your work machine safely"
-            description="redcore OS is free. Run the assessment on your work PC and review the plan before applying anything. Corporate infrastructure stays intact."
+            description="OudenOS is free. Run the assessment on your work PC and review the plan before applying anything. Corporate infrastructure stays intact."
             primaryAction={{
-              label: "Download redcore OS",
+              label: "Download OudenOS",
               href: "/downloads",
             }}
             secondaryAction={{
@@ -145,14 +145,14 @@ export default function WorkPCDebloatPage() {
             pages={[
               {
                 title: "Downloads",
-                description: "Download the latest redcore OS build. Free, no account required.",
+                description: "Download the latest OudenOS build. Free, no account required.",
                 href: "/downloads",
               },
               {
-                title: "redcore OS",
+                title: "OudenOS",
                 description:
                   "Free Windows optimization tool. 8 profiles, 250 actions, full rollback.",
-                href: "/redcore-os",
+                href: "/Ouden-os",
               },
               {
                 title: "Windows Debloat",
@@ -161,10 +161,10 @@ export default function WorkPCDebloatPage() {
                 href: "/windows-debloat",
               },
               {
-                title: "Why redcore",
+                title: "Why Ouden",
                 description:
-                  "How redcore compares to blind debloat scripts and registry hacks.",
-                href: "/why-redcore",
+                  "How Ouden compares to blind debloat scripts and registry hacks.",
+                href: "/why-Ouden",
               },
             ]}
           />

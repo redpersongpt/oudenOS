@@ -424,7 +424,7 @@ export function ProfilePage() {
                       <p className="text-sm font-semibold text-ink">License status</p>
                     </div>
                     <p className="max-w-xl text-xs text-ink-tertiary">
-                      redcore Tuning uses a one-time license. redcore OS stays free.
+                      Ouden.Tuning uses a one-time license. OudenOS stays free.
                     </p>
                     <div className="flex flex-wrap gap-2 pt-1">
                       <Badge variant={isPremium ? "premium" : "default"}>

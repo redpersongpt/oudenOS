@@ -111,12 +111,12 @@ function esc(str: string): string {
 
 // Email Templates
 
-const APP = "redcore-Tuning";
-const SUPPORT_EMAIL = "support@redcoreos.net";
-const BRAND_COLOR = "#E8254B";
-const BG = "#1E1E22";
-const CARD_BG = "#252529";
-const BORDER = "#38383E";
+const APP = "Ouden.Tuning";
+const SUPPORT_EMAIL = "support@ouden.cc";
+const BRAND_COLOR = "#D71921";
+const BG = "#000000";
+const CARD_BG = "#111111";
+const BORDER = "#222222";
 const TEXT = "#F0F0F4";
 const MUTED = "#A0A0AC";
 const CAPTION = "#6A6A76";
@@ -126,12 +126,10 @@ function emailWrapper(title: string, body: string): string {
 <html lang="en">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
 <body style="margin:0;padding:32px;background:
-  radial-gradient(circle at top left, rgba(232,37,75,0.16), transparent 34%),
-  radial-gradient(circle at top right, rgba(255,72,106,0.08), transparent 28%),
-  ${BG};font-family:'Plus Jakarta Sans',Inter,system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
+  ${BG};font-family:'Space Grotesk',Inter,system-ui,-apple-system,sans-serif;">
   <div style="max-width:620px;margin:0 auto;">
-    <div style="padding:0 6px 16px;font-size:14px;font-weight:800;letter-spacing:.12em;text-transform:lowercase;color:${TEXT};">redcore</div>
-    <div style="background:linear-gradient(180deg,rgba(232,37,75,0.20),rgba(44,44,49,0.96) 30%);border-radius:28px;padding:1px;">
+    <div style="padding:0 6px 16px;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:${TEXT};font-family:'Space Mono',monospace;">OUDEN</div>
+    <div style="border-radius:12px;padding:1px;border:1px solid ${BORDER};">
       <div style="background:${CARD_BG};border-radius:27px;padding:34px;border:1px solid ${BORDER};box-shadow:0 28px 80px rgba(0,0,0,0.34);">
         <h1 style="margin:0 0 12px;font-size:24px;line-height:1.2;font-weight:800;letter-spacing:-0.03em;color:${TEXT};">${title}</h1>
         ${body}

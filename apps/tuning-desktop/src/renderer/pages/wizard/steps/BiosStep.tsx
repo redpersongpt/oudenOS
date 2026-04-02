@@ -204,7 +204,7 @@ export function BiosStep() {
           >
             <Info className="mt-0.5 h-4 w-4 shrink-0 text-blue-400" strokeWidth={1.5} />
             <p className="text-xs leading-relaxed text-ink-secondary">
-              These are manual BIOS settings. redcore-Tuning will guide you through each one.
+              These are manual BIOS settings. Ouden.Tuning will guide you through each one.
               Reboot into your BIOS setup utility and work through the checklist below.
               Check each item off as you complete it.
             </p>

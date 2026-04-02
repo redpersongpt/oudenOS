@@ -1,4 +1,4 @@
-// Handoff Step — final: handoff to redcore Tuning
+// Handoff Step — final: handoff to Ouden.Tuning
 
 import { motion } from "framer-motion";
 import { Zap } from "lucide-react";
@@ -31,7 +31,7 @@ export function HandoffStep() {
 
       {/* Tuning features */}
       <div className="w-full max-w-sm border border-[var(--border)] bg-[var(--surface)] rounded-sm p-4">
-        <div className="mb-3 nd-label text-[var(--accent)]">REDCORE TUNING</div>
+        <div className="mb-3 nd-label text-[var(--accent)]">OUDEN.TUNING</div>
         {TUNING_FEATURES.map((feature, i) => (
           <motion.div
             key={feature}
@@ -48,7 +48,7 @@ export function HandoffStep() {
 
       <div className="flex gap-3">
         <button
-          onClick={() => platform().shell.openExternal("https://redcoreos.net/redcore-tuning")}
+          onClick={() => platform().shell.openExternal("https://ouden.cc/redcore-tuning")}
           className="flex items-center gap-2 bg-[var(--accent)] text-[var(--text-display)] px-6 py-2.5 rounded-sm font-mono text-label tracking-label uppercase transition-colors duration-150 ease-nd hover:bg-[var(--accent)]"
         >
           <Zap className="h-3.5 w-3.5" />

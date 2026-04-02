@@ -4,7 +4,7 @@ import { FooterSection } from "@/components/sections/FooterSection";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "redcore Tuning — Machine-Aware Windows Optimization",
+  title: "Ouden.Tuning — Machine-Aware Windows Optimization",
   description:
     "Hardware-based Windows performance optimization. 15+ tuning modules, benchmark lab, BIOS guidance, timer resolution, scheduler tuning. $12.99 one-time purchase.",
   keywords: [
@@ -17,13 +17,13 @@ export const metadata: Metadata = {
     "hardware tuning",
   ],
   alternates: {
-    canonical: "https://redcoreos.net/redcore-tuning",
+    canonical: "https://ouden.cc/redcore-tuning",
   },
   openGraph: {
-    title: "redcore Tuning — Machine-Aware Windows Optimization",
+    title: "Ouden.Tuning — Machine-Aware Windows Optimization",
     description:
       "15+ tuning modules, benchmark lab, BIOS guidance. $12.99 one-time. Coming soon.",
-    url: "https://redcoreos.net/redcore-tuning",
+    url: "https://ouden.cc/redcore-tuning",
     type: "website",
   },
 };
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
-  name: "redcore Tuning",
+  name: "Ouden.Tuning",
   operatingSystem: "Windows 10, Windows 11",
   applicationCategory: "UtilitiesApplication",
   offers: {
@@ -42,7 +42,7 @@ const jsonLd = {
   },
   description:
     "Hardware-based Windows performance optimization with 15+ tuning modules, benchmark lab, and BIOS guidance.",
-  url: "https://redcoreos.net/redcore-tuning",
+  url: "https://ouden.cc/redcore-tuning",
 };
 
 export default function RedcoreTuningPage() {
@@ -60,11 +60,11 @@ export default function RedcoreTuningPage() {
             Product
           </p>
           <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-[var(--text-primary)] mb-6 leading-tight">
-            redcore Tuning — Machine-Aware Windows Optimization
+            Ouden.Tuning — Machine-Aware Windows Optimization
           </h1>
 
           <p className="text-[var(--text-secondary)] text-base leading-relaxed mb-4">
-            redcore Tuning goes beyond debloating. It is a system-level
+            Ouden.Tuning goes beyond debloating. It is a system-level
             performance optimization tool that reads your hardware
             configuration and applies tuning changes specific to your CPU,
             GPU, memory, and disk setup.
@@ -72,7 +72,7 @@ export default function RedcoreTuningPage() {
 
           <div className="border border-accent/30 rounded-lg p-4 mb-8 bg-[var(--accent)]/5">
             <p className="text-[var(--accent)] text-[14px] font-medium">
-              redcore Tuning is currently in development. The installer is
+              Ouden.Tuning is currently in development. The installer is
               not yet available for download. This page describes the planned
               feature set. Pricing is set at $12.99 one-time purchase.
             </p>
@@ -84,10 +84,10 @@ export default function RedcoreTuningPage() {
           <p className="text-[var(--text-secondary)] text-[15px] leading-relaxed mb-4">
             Where{" "}
             <Link href="/redcore-os" className="text-[var(--accent)] hover:text-[var(--accent)]-bright transition-colors">
-              redcore OS
+              OudenOS
             </Link>{" "}
             handles the software layer — removing bloat, hardening privacy,
-            cleaning the shell — redcore Tuning works at the hardware
+            cleaning the shell — Ouden.Tuning works at the hardware
             interaction layer. It optimizes how Windows communicates with
             your specific hardware.
           </p>
@@ -96,7 +96,7 @@ export default function RedcoreTuningPage() {
             Tuning modules
           </h2>
           <p className="text-[var(--text-secondary)] text-[15px] leading-relaxed mb-4">
-            redcore Tuning includes 15+ specialized modules, each targeting
+            Ouden.Tuning includes 15+ specialized modules, each targeting
             a different subsystem:
           </p>
 
@@ -165,7 +165,7 @@ export default function RedcoreTuningPage() {
             battery life on a laptop.
           </p>
           <p className="text-[var(--text-secondary)] text-[15px] leading-relaxed mb-4">
-            redcore Tuning reads your hardware configuration and only
+            Ouden.Tuning reads your hardware configuration and only
             applies changes that are validated for your specific setup. The
             benchmark lab measures the actual impact so you can see whether
             a change helped or made no difference.
@@ -175,7 +175,7 @@ export default function RedcoreTuningPage() {
             Pricing
           </h2>
           <p className="text-[var(--text-secondary)] text-[15px] leading-relaxed mb-6">
-            redcore Tuning will be a one-time purchase at{" "}
+            Ouden.Tuning will be a one-time purchase at{" "}
             <strong className="text-[var(--text-primary)]">$12.99</strong>. No
             subscription, no recurring fees, no upsells. Payment processing
             is not yet active — when the tool is ready for release, Stripe
@@ -187,8 +187,8 @@ export default function RedcoreTuningPage() {
               Not available yet
             </p>
             <p className="text-[var(--text-secondary)] text-[14px] mb-4">
-              redcore Tuning is still in development. In the meantime, you
-              can use redcore OS for free to debloat and optimize your
+              Ouden.Tuning is still in development. In the meantime, you
+              can use OudenOS for free to debloat and optimize your
               Windows installation at the software level.
             </p>
             <div className="flex flex-wrap gap-3">
@@ -196,13 +196,13 @@ export default function RedcoreTuningPage() {
                 href="/downloads"
                 className="inline-flex items-center rounded-lg bg-[var(--accent)] px-5 py-2.5 text-[13px] font-semibold text-white transition-all hover:bg-[var(--accent)]-dim"
               >
-                Download redcore OS (free)
+                Download OudenOS (free)
               </Link>
               <Link
                 href="/redcore-os"
                 className="inline-flex items-center rounded-lg border border-[var(--border)] px-5 py-2.5 text-[13px] font-medium text-[var(--text-secondary)] transition-all hover:text-[var(--text-primary)] hover:border-[var(--border-visible)]"
               >
-                Learn about redcore OS
+                Learn about OudenOS
               </Link>
             </div>
           </div>

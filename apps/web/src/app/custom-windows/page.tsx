@@ -6,7 +6,7 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "Custom Windows Without Reinstalling — In-Place Optimization",
   description:
-    "Transform your current Windows installation without reinstalling. redcore OS applies changes in-place — no custom ISO, no fresh install, no lost programs.",
+    "Transform your current Windows installation without reinstalling. OudenOS applies changes in-place — no custom ISO, no fresh install, no lost programs.",
   keywords: [
     "custom windows",
     "custom windows 11",
@@ -15,14 +15,14 @@ export const metadata: Metadata = {
     "modify windows without reinstall",
   ],
   alternates: {
-    canonical: "https://redcoreos.net/custom-windows",
+    canonical: "https://Oudenos.net/custom-windows",
   },
   openGraph: {
     title:
-      "Custom Windows Without Reinstalling — In-Place Optimization | redcore",
+      "Custom Windows Without Reinstalling — In-Place Optimization | Ouden",
     description:
       "Transform your existing Windows install. No custom ISO, no reinstall, no lost programs or settings.",
-    url: "https://redcoreos.net/custom-windows",
+    url: "https://Oudenos.net/custom-windows",
     type: "article",
   },
 };
@@ -44,7 +44,7 @@ export default function CustomWindowsPage() {
             The traditional way to get a lean Windows installation is to
             build a custom ISO, wipe your drive, and start fresh. This works,
             but it costs hours of setup time and loses every installed
-            program, driver configuration, and personal setting. redcore
+            program, driver configuration, and personal setting. Ouden
             takes a different approach: it transforms your current
             installation in place.
           </p>
@@ -91,11 +91,11 @@ export default function CustomWindowsPage() {
           </ul>
 
           <h2 className="text-xl font-semibold text-[var(--text-primary)] mt-10 mb-4">
-            In-place optimization with redcore
+            In-place optimization with Ouden
           </h2>
           <p className="text-[var(--text-secondary)] text-[15px] leading-relaxed mb-4">
-            <Link href="/redcore-os" className="text-[var(--accent)] hover:text-[var(--accent)]-bright transition-colors">
-              redcore OS
+            <Link href="/Ouden-os" className="text-[var(--accent)] hover:text-[var(--accent)]-bright transition-colors">
+              OudenOS
             </Link>{" "}
             works on your existing installation. You download the tool, run
             it, and it scans your current hardware and software environment.
@@ -154,20 +154,20 @@ export default function CustomWindowsPage() {
             </p>
             <p className="text-[var(--text-secondary)] text-[14px] mb-4">
               No ISO burning, no USB booting, no reinstalling drivers.
-              Download redcore OS, run the scan, review the plan, apply.
+              Download OudenOS, run the scan, review the plan, apply.
             </p>
             <div className="flex flex-wrap gap-3">
               <Link
                 href="/downloads"
                 className="inline-flex items-center rounded-lg bg-[var(--accent)] px-5 py-2.5 text-[13px] font-semibold text-white transition-all hover:bg-[var(--accent)]-dim"
               >
-                Download redcore OS
+                Download OudenOS
               </Link>
               <Link
-                href="/why-redcore"
+                href="/why-Ouden"
                 className="inline-flex items-center rounded-lg border border-[var(--border)] px-5 py-2.5 text-[13px] font-medium text-[var(--text-secondary)] transition-all hover:text-[var(--text-primary)] hover:border-[var(--border-visible)]"
               >
-                See why redcore works
+                See why Ouden works
               </Link>
             </div>
           </div>

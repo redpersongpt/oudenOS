@@ -15,17 +15,17 @@
   --color-ink-muted: #444444;
   --color-ink-disabled: #333333;
 
-  /* redcore accent */
-  --color-accent: #E8254B;
-  --color-accent-bright: #FF4D6A;
-  --color-accent-dim: #C41E3E;
-  --color-accent-glow: rgba(232, 37, 75, 0.08);
+  /* Ouden accent */
+  --color-accent: #D71921;
+  --color-accent-bright: #E82029;
+  --color-accent-dim: #B5141B;
+  --color-accent-glow: rgba(215, 25, 33, 0.08);
   --color-success: #4A9E5C;
   --color-warning: #D4A843;
-  --color-brand-300: #FF6B82;
-  --color-brand-400: #FF4D6A;
-  --color-brand-500: #E8254B;
-  --color-brand-600: #C41E3E;
+  --color-brand-300: #FF8888;
+  --color-brand-400: #E82029;
+  --color-brand-500: #D71921;
+  --color-brand-600: #B5141B;
 
   /* Semantic aliases */
   --color-surface-base: #000000;
@@ -55,7 +55,7 @@ body {
 }
 
 ::selection {
-  background: rgba(232, 37, 75, 0.35);
+  background: rgba(215, 25, 33, 0.35);
   color: #fff;
 }
 

@@ -77,7 +77,7 @@ export default function LoginPage() {
             Sign in
           </motion.h1>
           <motion.p {...fade(0.05)} className="mt-2 text-[14px] text-[var(--text-secondary)] text-center">
-            Welcome back to redcore
+            Welcome back to Ouden
           </motion.p>
 
           {error && (

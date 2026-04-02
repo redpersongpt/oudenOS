@@ -5,22 +5,22 @@ import { FooterSection } from "@/components/sections/FooterSection";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Support redcore · OS — Donate",
-  description: "redcore · OS is free. Support development with a donation.",
+  title: "Support OudenOS — Donate",
+  description: "OudenOS is free. Support development with a donation.",
   alternates: {
-    canonical: "https://redcoreos.net/donate",
+    canonical: "https://ouden.cc/donate",
   },
   openGraph: {
-    title: "Support redcore · OS — Donate",
-    description: "redcore · OS is free. Support development with a donation.",
-    url: "https://redcoreos.net/donate",
+    title: "Support OudenOS — Donate",
+    description: "OudenOS is free. Support development with a donation.",
+    url: "https://ouden.cc/donate",
     type: "website",
     images: [
       {
         url: "/redcore-logo.png",
         width: 1200,
         height: 360,
-        alt: "redcore logo",
+        alt: "Ouden logo",
       },
     ],
   },

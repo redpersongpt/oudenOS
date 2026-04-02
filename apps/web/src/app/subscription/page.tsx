@@ -20,8 +20,8 @@ export default function SubscriptionPage() {
 
   const title = success ? "License Updated" : "License Portal";
   const message = success
-    ? "Purchase completed. Return to redcore Tuning and refresh your profile to pull the latest license state."
-    : "Use this portal to manage your one-time redcore Tuning license, then return to the desktop app.";
+    ? "Purchase completed. Return to Ouden.Tuning and refresh your profile to pull the latest license state."
+    : "Use this portal to manage your one-time Ouden.Tuning license, then return to the desktop app.";
 
   return (
     <>
@@ -38,10 +38,10 @@ export default function SubscriptionPage() {
           <motion.div {...fade(0.12)} className="mt-8 rounded-lg border border-[var(--border)] bg-[var(--surface)] p-6 text-center">
             <div className="flex flex-col items-center gap-3">
               <Link href="/downloads" className="text-[13px] font-medium text-[var(--accent)] hover:text-[var(--accent)]-bright transition-colors">
-                Download redcore OS
+                Download OudenOS
               </Link>
               <Link href="/redcore-tuning" className="text-[13px] font-medium text-[var(--accent)] hover:text-[var(--accent)]-bright transition-colors">
-                View redcore Tuning
+                View Ouden.Tuning
               </Link>
             </div>
           </motion.div>

@@ -3,10 +3,10 @@ import { Navigation } from "@/components/brand/Navigation";
 import { FooterSection } from "@/components/sections/FooterSection";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy | redcore",
-  description: "How redcore handles account data, email delivery, analytics, and download telemetry.",
+  title: "Privacy Policy | Ouden",
+  description: "How Ouden handles account data, email delivery, analytics, and download telemetry.",
   alternates: {
-    canonical: "https://redcoreos.net/privacy",
+    canonical: "https://Oudenos.net/privacy",
   },
 };
 
@@ -20,7 +20,7 @@ export default function PrivacyPage() {
           <h1 className="mt-3 text-3xl font-semibold text-[var(--text-primary)]">Privacy Policy</h1>
           <div className="mt-8 space-y-6 text-sm leading-7 text-[var(--text-secondary)]">
             <p>
-              redcore collects only the data needed to deliver downloads, account access, licensing,
+              Ouden collects only the data needed to deliver downloads, account access, licensing,
               password reset, and product updates. We do not sell personal data.
             </p>
             <section>
@@ -41,17 +41,17 @@ export default function PrivacyPage() {
               <h2 className="text-base font-semibold text-[var(--text-primary)]">Emails</h2>
               <p className="mt-2">
                 Transactional emails such as password reset and verification are sent from
-                <span className="mx-1 font-medium text-[var(--text-primary)]">noreply@redcoreos.net</span>.
+                <span className="mx-1 font-medium text-[var(--text-primary)]">noreply@Oudenos.net</span>.
                 Replies and support go through
-                <span className="mx-1 font-medium text-[var(--text-primary)]">support@redcoreos.net</span>.
+                <span className="mx-1 font-medium text-[var(--text-primary)]">support@Oudenos.net</span>.
               </p>
             </section>
             <section>
               <h2 className="text-base font-semibold text-[var(--text-primary)]">Contact</h2>
               <p className="mt-2">
                 Privacy questions can be sent to
-                <a className="ml-1 text-[var(--accent)] hover:text-[var(--accent)]-bright" href="mailto:info@redcoreos.net">
-                  info@redcoreos.net
+                <a className="ml-1 text-[var(--accent)] hover:text-[var(--accent)]-bright" href="mailto:info@Oudenos.net">
+                  info@Oudenos.net
                 </a>.
               </p>
             </section>

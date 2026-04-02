@@ -13,7 +13,7 @@ export function PricingSection() {
   return (
     <section id="pricing" ref={ref} className="relative py-36 lg:py-48">
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute left-1/2 top-0 -translate-x-1/2 h-[600px] w-[800px] rounded-full opacity-[0.04]" style={{ background: "radial-gradient(ellipse, #E8254B, transparent 55%)" }} />
+        <div className="absolute left-1/2 top-0 -translate-x-1/2 h-[600px] w-[800px] rounded-full opacity-[0.04]" style={{ background: "radial-gradient(ellipse, #D71921, transparent 55%)" }} />
       </div>
 
       <div className="relative mx-auto max-w-[1100px] px-6 lg:px-12">
@@ -33,7 +33,7 @@ export function PricingSection() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-[880px] mx-auto">
 
-          {/* redcore OS — FREE */}
+          {/* OudenOS — FREE */}
           <motion.div
             initial={{ opacity: 0, y: 32 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}
@@ -47,7 +47,7 @@ export function PricingSection() {
                   <Shield className="h-5 w-5 text-[var(--text-secondary)]" />
                 </div>
                 <div>
-                  <p className="text-[0.95rem] font-bold text-[var(--text-primary)]">redcore · OS</p>
+                  <p className="text-[0.95rem] font-bold text-[var(--text-primary)]">OudenOS</p>
                   <p className="font-mono text-[0.65rem] text-[var(--text-disabled)] tracking-wide">FREE</p>
                 </div>
               </div>
@@ -91,7 +91,7 @@ export function PricingSection() {
             </div>
 
             <div className="mt-8 pt-6 border-t border-[var(--border)] flex items-center justify-between">
-              <p className="text-[0.72rem] text-[var(--text-disabled)]">Love redcore · OS?</p>
+              <p className="text-[0.72rem] text-[var(--text-disabled)]">Love OudenOS?</p>
               <a href="/donate" className="inline-flex items-center gap-1.5 text-[0.75rem] font-medium text-[var(--accent)] hover:text-[var(--accent)]-bright transition-colors">
                 <Heart className="h-3 w-3" />
                 Donate
@@ -99,7 +99,7 @@ export function PricingSection() {
             </div>
           </motion.div>
 
-          {/* redcore Tuning — $12.99 — HERO CARD */}
+          {/* Ouden.Tuning — $12.99 — HERO CARD */}
           <motion.div
             initial={{ opacity: 0, y: 32 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}
@@ -108,8 +108,8 @@ export function PricingSection() {
             className="relative rounded-lg border-2 border-accent/40 bg-gradient-to-b from-[#2a2229] to-surface p-9 lg:p-10 overflow-hidden shadow-xl shadow-accent/10"
           >
             {/* Accent glow */}
-            <div className="pointer-events-none absolute -top-24 -right-24 h-[220px] w-[220px] rounded-full opacity-[0.1]" style={{ background: "radial-gradient(circle, #E8254B, transparent 60%)" }} />
-            <div className="pointer-events-none absolute -bottom-16 -left-16 h-[150px] w-[150px] rounded-full opacity-[0.05]" style={{ background: "radial-gradient(circle, #E8254B, transparent 60%)" }} />
+            <div className="pointer-events-none absolute -top-24 -right-24 h-[220px] w-[220px] rounded-full opacity-[0.1]" style={{ background: "radial-gradient(circle, #D71921, transparent 60%)" }} />
+            <div className="pointer-events-none absolute -bottom-16 -left-16 h-[150px] w-[150px] rounded-full opacity-[0.05]" style={{ background: "radial-gradient(circle, #D71921, transparent 60%)" }} />
 
             {/* Badge */}
             <motion.div
@@ -127,7 +127,7 @@ export function PricingSection() {
                   <Zap className="h-5 w-5 text-[var(--accent)]" />
                 </div>
                 <div>
-                  <p className="text-[0.95rem] font-bold text-[var(--text-primary)]">redcore · Tuning</p>
+                  <p className="text-[0.95rem] font-bold text-[var(--text-primary)]">Ouden.Tuning</p>
                   <p className="font-mono text-[0.65rem] text-[var(--accent)] tracking-wide">ONE-TIME PURCHASE</p>
                 </div>
               </div>

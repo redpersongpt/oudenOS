@@ -24,7 +24,7 @@ const features: PersonalizationFeature[] = [
   },
   {
     title: "Brand Accents",
-    description: "Subtle redcore accent integration.",
+    description: "Subtle Ouden accent integration.",
     icon: Paintbrush,
   },
   {

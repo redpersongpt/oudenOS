@@ -13,9 +13,9 @@ import { getRedcoreOsDownloadState } from "@/lib/downloads";
 import { Cpu, RotateCcw, Shield } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Why redcore — Guided Optimization vs Blind Debloat Scripts",
+  title: "Why Ouden — Guided Optimization vs Blind Debloat Scripts",
   description:
-    "Why redcore is different from debloat scripts and registry hacks. Scans your hardware, changes based on your PC type, Work-PC-safe, full rollback, validation before execution.",
+    "Why Ouden is different from debloat scripts and registry hacks. Scans your hardware, changes based on your PC type, Work-PC-safe, full rollback, validation before execution.",
   keywords: [
     "guided windows optimization",
     "rollback safe optimizer",
@@ -24,14 +24,14 @@ export const metadata: Metadata = {
     "windows debloat tool",
   ],
   alternates: {
-    canonical: "https://redcoreos.net/why-redcore",
+    canonical: "https://ouden.cc/why-redcore",
   },
   openGraph: {
     title:
-      "Why redcore — Guided Optimization vs Blind Debloat Scripts",
+      "Why Ouden — Guided Optimization vs Blind Debloat Scripts",
     description:
       "Scans your PC first, adapts to what it finds, safe for work PCs, and every change is reversible.",
-    url: "https://redcoreos.net/why-redcore",
+    url: "https://ouden.cc/why-redcore",
     type: "article",
   },
 };
@@ -45,9 +45,9 @@ export default async function WhyRedcorePage() {
       <main className="min-h-screen">
         <article>
           <PageHero
-            overline="Why redcore"
+            overline="Why Ouden"
             title="Guided Optimization vs Blind Debloat Scripts"
-            description="There are many ways to optimize a Windows installation. Most of them involve copying a script from the internet and running it with administrator privileges. redcore takes a different approach — one built around understanding your machine before changing it."
+            description="There are many ways to optimize a Windows installation. Most of them involve copying a script from the internet and running it with administrator privileges. Ouden takes a different approach — one built around understanding your machine before changing it."
           />
 
           <QuickSummary
@@ -62,7 +62,7 @@ export default async function WhyRedcorePage() {
           />
 
           <ComparisonBlock
-            title="Blind scripts vs redcore"
+            title="Blind scripts vs Ouden"
             left={{
               heading: "Typical debloat scripts",
               items: [
@@ -75,7 +75,7 @@ export default async function WhyRedcorePage() {
               ],
             }}
             right={{
-              heading: "redcore OS",
+              heading: "OudenOS",
               items: [
                 "Scans CPU, GPU, disk, RAM, network, power source first",
                 "8 profiles with per-action granularity",
@@ -102,18 +102,18 @@ export default async function WhyRedcorePage() {
           <TrustBlock
             icon={<Shield className="h-5 w-5" />}
             title="Work PC safe by default"
-            description="redcore detects domain membership, MDM enrollment, enterprise VPN clients, and Group Policy keys. The Work PC profile activates automatically and excludes actions that would interfere with managed infrastructure."
+            description="Ouden detects domain membership, MDM enrollment, enterprise VPN clients, and Group Policy keys. The Work PC profile activates automatically and excludes actions that would interfere with managed infrastructure."
           />
 
           <CTAStrip
             title="See the difference yourself"
-            description="Download redcore OS, run the assessment, and look at the plan it builds for your specific machine. You do not have to apply anything to see how it works. Free, no account required."
+            description="Download OudenOS, run the assessment, and look at the plan it builds for your specific machine. You do not have to apply anything to see how it works. Free, no account required."
             primaryAction={{
-              label: "Download redcore OS",
+              label: "Download OudenOS",
               href: os.available && os.url ? os.url : "/downloads",
             }}
             secondaryAction={{
-              label: "Learn about redcore OS",
+              label: "Learn about OudenOS",
               href: "/redcore-os",
             }}
           />
@@ -121,13 +121,13 @@ export default async function WhyRedcorePage() {
           <RelatedPages
             pages={[
               {
-                title: "redcore OS",
+                title: "OudenOS",
                 description:
                   "Free Windows optimization tool. 8 profiles, 250 actions, full rollback.",
                 href: "/redcore-os",
               },
               {
-                title: "redcore Tuning",
+                title: "Ouden.Tuning",
                 description:
                   "Hardware-level optimization for CPU, GPU, memory, and disk. $12.99 one-time.",
                 href: "/redcore-tuning",
@@ -140,7 +140,7 @@ export default async function WhyRedcorePage() {
               },
               {
                 title: "Downloads",
-                description: "Download the latest redcore OS build. Free, no account required.",
+                description: "Download the latest OudenOS build. Free, no account required.",
                 href: "/downloads",
               },
             ]}
