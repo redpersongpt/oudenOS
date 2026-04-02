@@ -1,8 +1,6 @@
 import { Navigation } from "@/components/brand/Navigation";
 import { HeroSection } from "@/components/sections/HeroSection";
-import { WizardShowcase } from "@/components/sections/WizardShowcase";
 import { EcosystemSection } from "@/components/sections/EcosystemSection";
-import { BenchmarkSection } from "@/components/sections/BenchmarkSection";
 import { HowItWorksSection } from "@/components/sections/HowItWorksSection";
 import { PricingSection } from "@/components/sections/PricingSection";
 import { LearnMoreSection } from "@/components/sections/LearnMoreSection";
@@ -19,40 +17,14 @@ export default function Home() {
       <main className="relative isolate">
         <LandingChrome />
         <HeroSection />
-        <SectionSeparator
-          label="See it in action"
-          note="Every step explained, nothing hidden"
-        />
-        <WizardShowcase />
-        <SectionSeparator
-          label="The difference"
-          note="Real numbers, tested on 10+ machines"
-        />
-        <BenchmarkSection />
-        <SectionSeparator
-          label="System layers"
-          note="From Windows foundation to tuning stack"
-        />
-        <EcosystemSection />
-        <SectionSeparator
-          label="Execution flow"
-          note="Clear steps, no dead ends"
-        />
+        <SectionSeparator label="How it works" note="Four steps, full control" />
         <HowItWorksSection />
-        <SectionSeparator
-          label="Pricing"
-          note="Free OS, one-time Tuning"
-        />
+        <SectionSeparator label="The ecosystem" note="Two products, one system" />
+        <EcosystemSection />
+        <SectionSeparator label="Pricing" note="Free OS, one-time Tuning" />
         <PricingSection />
-        <SectionSeparator
-          label="More context"
-          note="What each layer actually changes"
-        />
+        <SectionSeparator label="Resources" note="Guides and downloads" />
         <LearnMoreSection />
-        <SectionSeparator
-          label="Final push"
-          note="Pick the path and go"
-        />
         <FinalCTASection />
       </main>
       <FooterSection />
