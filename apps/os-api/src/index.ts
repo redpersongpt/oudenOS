@@ -4,8 +4,13 @@ import helmet from '@fastify/helmet';
 import { closeDb } from './db/index.js';
 import adminRoutes from './routes/admin.js';
 import authRoutes from './routes/auth.js';
+import donationRoutes from './routes/donations.js';
 import licenseRoutes from './routes/license.js';
+import subscriptionRoutes from './routes/subscription.js';
+import telemetryRoutes from './routes/telemetry.js';
 import updateRoutes from './routes/updates.js';
+import userRoutes from './routes/users.js';
+import webhookRoutes from './routes/webhooks.js';
 
 // ---------------------------------------------------------------------------
 // Server
@@ -74,8 +79,13 @@ await app.register(
   async function v1Routes(v1) {
     await v1.register(adminRoutes, { prefix: '/admin' });
     await v1.register(authRoutes, { prefix: '/auth' });
+    await v1.register(donationRoutes, { prefix: '/donations' });
     await v1.register(licenseRoutes, { prefix: '/license' });
+    await v1.register(subscriptionRoutes, { prefix: '/subscriptions' });
+    await v1.register(telemetryRoutes, { prefix: '/telemetry' });
     await v1.register(updateRoutes, { prefix: '/updates' });
+    await v1.register(userRoutes, { prefix: '/users' });
+    await v1.register(webhookRoutes, { prefix: '/webhooks' });
   },
   { prefix: '/v1' },
 );
