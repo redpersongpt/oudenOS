@@ -1,0 +1,1901 @@
+[
+  {
+    "questionKey": "highPerformancePlan",
+    "scenario": {
+      "profile": "gaming_desktop",
+      "preset": "balanced",
+      "aggressionPreset": "balanced",
+      "windowsBuild": 22631
+    },
+    "changedActionIds": [
+      "power.high-performance-plan"
+    ],
+    "variants": [
+      {
+        "value": true,
+        "totalIncluded": 127,
+        "totalBlocked": 2,
+        "totalOptional": 18,
+        "requiresReboot": true
+      },
+      {
+        "value": false,
+        "totalIncluded": 126,
+        "totalBlocked": 3,
+        "totalOptional": 18,
+        "requiresReboot": true
+      }
+    ]
+  },
+  {
+    "questionKey": "aggressiveBoostMode",
+    "scenario": {
+      "profile": "gaming_desktop",
+      "preset": "balanced",
+      "aggressionPreset": "balanced",
+      "windowsBuild": 22631
+    },
+    "changedActionIds": [
+      "cpu.aggressive-boost-mode"
+    ],
+    "variants": [
+      {
+        "value": true,
+        "totalIncluded": 127,
+        "totalBlocked": 2,
+        "totalOptional": 18,
+        "requiresReboot": true
+      },
+      {
+        "value": false,
+        "totalIncluded": 126,
+        "totalBlocked": 3,
+        "totalOptional": 18,
+        "requiresReboot": true
+      }
+    ]
+  },
+  {
+    "questionKey": "minProcessorState100",
+    "scenario": {
+      "profile": "gaming_desktop",
+      "preset": "balanced",
+      "aggressionPreset": "balanced",
+      "windowsBuild": 22631
+    },
+    "changedActionIds": [
+      "cpu.min-processor-state-100"
+    ],
+    "variants": [
+      {
+        "value": true,
+        "totalIncluded": 127,
+        "totalBlocked": 2,
+        "totalOptional": 18,
+        "requiresReboot": true
+      },
+      {
+        "value": false,
+        "totalIncluded": 126,
+        "totalBlocked": 3,
+        "totalOptional": 18,
+        "requiresReboot": true
+      }
+    ]
+  },
+  {
+    "questionKey": "optimizeThreadPriority",
+    "scenario": {
+      "profile": "gaming_desktop",
+      "preset": "balanced",
+      "aggressionPreset": "balanced",
+      "windowsBuild": 22631
+    },
+    "changedActionIds": [
+      "cpu.win32-priority-separation"
+    ],
+    "variants": [
+      {
+        "value": true,
+        "totalIncluded": 127,
+        "totalBlocked": 2,
+        "totalOptional": 18,
+        "requiresReboot": true
+      },
+      {
+        "value": false,
+        "totalIncluded": 126,
+        "totalBlocked": 3,
+        "totalOptional": 18,
+        "requiresReboot": true
+      }
+    ]
+  },
+  {
+    "questionKey": "globalTimerResolution",
+    "scenario": {
+      "profile": "gaming_desktop",
+      "preset": "balanced",
+      "aggressionPreset": "balanced",
+      "windowsBuild": 22631
+    },
+    "changedActionIds": [
+      "cpu.global-timer-resolution"
+    ],
+    "variants": [
+      {
+        "value": true,
+        "totalIncluded": 127,
+        "totalBlocked": 2,
+        "totalOptional": 18,
+        "requiresReboot": true
+      },
+      {
+        "value": false,
+        "totalIncluded": 126,
+        "totalBlocked": 3,
+        "totalOptional": 18,
+        "requiresReboot": true
+      }
+    ]
+  },
+  {
+    "questionKey": "disableDynamicTick",
+    "scenario": {
+      "profile": "gaming_desktop",
+      "preset": "aggressive",
+      "aggressionPreset": "aggressive",
+      "windowsBuild": 22631
+    },
+    "changedActionIds": [
+      "cpu.disable-dynamic-tick"
+    ],
+    "variants": [
+      {
+        "value": true,
+        "totalIncluded": 128,
+        "totalBlocked": 2,
+        "totalOptional": 17,
+        "requiresReboot": true
+      },
+      {
+        "value": false,
+        "totalIncluded": 127,
+        "totalBlocked": 3,
+        "totalOptional": 17,
+        "requiresReboot": true
+      }
+    ]
+  },
+  {
+    "questionKey": "disableCoreParking",
+    "scenario": {
+      "profile": "gaming_desktop",
+      "preset": "balanced",
+      "aggressionPreset": "balanced",
+      "windowsBuild": 22631
+    },
+    "changedActionIds": [
+      "cpu.disable-core-parking"
+    ],
+    "variants": [
+      {
+        "value": true,
+        "totalIncluded": 127,
+        "totalBlocked": 2,
+        "totalOptional": 18,
+        "requiresReboot": true
+      },
+      {
+        "value": false,
+        "totalIncluded": 126,
+        "totalBlocked": 3,
+        "totalOptional": 18,
+        "requiresReboot": true
+      }
+    ]
+  },
+  {
+    "questionKey": "gamingMmcss",
+    "scenario": {
+      "profile": "gaming_desktop",
+      "preset": "balanced",
+      "aggressionPreset": "balanced",
+      "windowsBuild": 22631
+    },
+    "changedActionIds": [
+      "scheduler.mmcss-gaming-profile"
+    ],
+    "variants": [
+      {
+        "value": true,
+        "totalIncluded": 127,
+        "totalBlocked": 2,
+        "totalOptional": 18,
+        "requiresReboot": true
+      },
+      {
+        "value": false,
+        "totalIncluded": 126,
+        "totalBlocked": 3,
+        "totalOptional": 18,
+        "requiresReboot": true
+      }
+    ]
+  },
+  {
+    "questionKey": "disableMemoryCompression",
+    "scenario": {
+      "profile": "gaming_desktop",
+      "preset": "balanced",
+      "aggressionPreset": "balanced",
+      "windowsBuild": 22631
+    },
+    "changedActionIds": [
+      "memory.disable-compression"
+    ],
+    "variants": [
+      {
+        "value": true,
+        "totalIncluded": 127,
+        "totalBlocked": 2,
+        "totalOptional": 18,
+        "requiresReboot": true
+      },
+      {
+        "value": false,
+        "totalIncluded": 126,
+        "totalBlocked": 3,
+        "totalOptional": 18,
+        "requiresReboot": true
+      }
+    ]
+  },
+  {
+    "questionKey": "disableHags",
+    "scenario": {
+      "profile": "gaming_desktop",
+      "preset": "balanced",
+      "aggressionPreset": "balanced",
+      "windowsBuild": 22631
+    },
+    "changedActionIds": [
+      "gpu.disable-hags"
+    ],
+    "variants": [
+      {
+        "value": true,
+        "totalIncluded": 127,
+        "totalBlocked": 2,
+        "totalOptional": 18,
+        "requiresReboot": true
+      },
+      {
+        "value": false,
+        "totalIncluded": 126,
+        "totalBlocked": 3,
+        "totalOptional": 18,
+        "requiresReboot": true
+      }
+    ]
+  },
+  {
+    "questionKey": "disableGpuTelemetry",
+    "scenario": {
+      "profile": "gaming_desktop",
+      "preset": "balanced",
+      "aggressionPreset": "balanced",
+      "windowsBuild": 22631
+    },
+    "changedActionIds": [
+      "gpu.disable-amd-telemetry",
+      "gpu.disable-nvidia-telemetry"
+    ],
+    "variants": [
+      {
+        "value": true,
+        "totalIncluded": 127,
+        "totalBlocked": 2,
+        "totalOptional": 18,
+        "requiresReboot": true
+      },
+      {
+        "value": false,
+        "totalIncluded": 125,
+        "totalBlocked": 4,
+        "totalOptional": 18,
+        "requiresReboot": true
+      }
+    ]
+  },
+  {
+    "questionKey": "disableGameDvr",
+    "scenario": {
+      "profile": "gaming_desktop",
+      "preset": "balanced",
+      "aggressionPreset": "balanced",
+      "windowsBuild": 22631
+    },
+    "changedActionIds": [
+      "perf.disable-game-dvr"
+    ],
+    "variants": [
+      {
+        "value": true,
+        "totalIncluded": 128,
+        "totalBlocked": 2,
+        "totalOptional": 17,
+        "requiresReboot": true
+      },
+      {
+        "value": false,
+        "totalIncluded": 127,
+        "totalBlocked": 3,
+        "totalOptional": 17,
+        "requiresReboot": true
+      }
+    ]
+  },
+  {
+    "questionKey": "disableFullscreenOptimizations",
+    "scenario": {
+      "profile": "gaming_desktop",
+      "preset": "balanced",
+      "aggressionPreset": "balanced",
+      "windowsBuild": 22631
+    },
+    "changedActionIds": [
+      "perf.disable-fullscreen-optimizations"
+    ],
+    "variants": [
+      {
+        "value": true,
+        "totalIncluded": 127,
+        "totalBlocked": 2,
+        "totalOptional": 18,
+        "requiresReboot": true
+      },
+      {
+        "value": false,
+        "totalIncluded": 126,
+        "totalBlocked": 3,
+        "totalOptional": 18,
+        "requiresReboot": true
+      }
+    ]
+  },
+  {
+    "questionKey": "disableIndexing",
+    "scenario": {
+      "profile": "gaming_desktop",
+      "preset": "balanced",
+      "aggressionPreset": "balanced",
+      "windowsBuild": 22631
+    },
+    "changedActionIds": [
+      "storage.disable-indexing"
+    ],
+    "variants": [
+      {
+        "value": true,
+        "totalIncluded": 127,
+        "totalBlocked": 2,
+        "totalOptional": 18,
+        "requiresReboot": true
+      },
+      {
+        "value": false,
+        "totalIncluded": 126,
+        "totalBlocked": 3,
+        "totalOptional": 18,
+        "requiresReboot": true
+      }
+    ]
+  },
+  {
+    "questionKey": "stripSearchWebNoise",
+    "scenario": {
+      "profile": "gaming_desktop",
+      "preset": "balanced",
+      "aggressionPreset": "balanced",
+      "windowsBuild": 22631
+    },
+    "changedActionIds": [
+      "shell.disable-search-highlights",
+      "shell.disable-search-history",
+      "shell.disable-web-search",
+      "shell.reduce-search-box"
+    ],
+    "variants": [
+      {
+        "value": true,
+        "totalIncluded": 127,
+        "totalBlocked": 2,
+        "totalOptional": 18,
+        "requiresReboot": true
+      },
+      {
+        "value": false,
+        "totalIncluded": 123,
+        "totalBlocked": 6,
+        "totalOptional": 18,
+        "requiresReboot": true
+      }
+    ]
+  },
+  {
+    "questionKey": "keepPrinterSupport",
+    "scenario": {
+      "profile": "gaming_desktop",
+      "preset": "balanced",
+      "aggressionPreset": "balanced",
+      "windowsBuild": 22631
+    },
+    "changedActionIds": [
+      "services.disable-print-spooler"
+    ],
+    "variants": [
+      {
+        "value": true,
+        "totalIncluded": 126,
+        "totalBlocked": 3,
+        "totalOptional": 18,
+        "requiresReboot": true
+      },
+      {
+        "value": false,
+        "totalIncluded": 127,
+        "totalBlocked": 2,
+        "totalOptional": 18,
+        "requiresReboot": true
+      }
+    ]
+  },
+  {
+    "questionKey": "keepRemoteAccess",
+    "scenario": {
+      "profile": "gaming_desktop",
+      "preset": "balanced",
+      "aggressionPreset": "balanced",
+      "windowsBuild": 22631
+    },
+    "changedActionIds": [
+      "services.disable-remote-services"
+    ],
+    "variants": [
+      {
+        "value": true,
+        "totalIncluded": 126,
+        "totalBlocked": 3,
+        "totalOptional": 18,
+        "requiresReboot": true
+      },
+      {
+        "value": false,
+        "totalIncluded": 127,
+        "totalBlocked": 2,
+        "totalOptional": 18,
+        "requiresReboot": true
+      }
+    ]
+  },
+  {
+    "questionKey": "removeEdge",
+    "scenario": {
+      "profile": "gaming_desktop",
+      "preset": "aggressive",
+      "aggressionPreset": "aggressive",
+      "windowsBuild": 22631
+    },
+    "changedActionIds": [
+      "appx.remove-edge"
+    ],
+    "variants": [
+      {
+        "value": true,
+        "totalIncluded": 128,
+        "totalBlocked": 2,
+        "totalOptional": 18,
+        "requiresReboot": true
+      },
+      {
+        "value": false,
+        "totalIncluded": 127,
+        "totalBlocked": 3,
+        "totalOptional": 18,
+        "requiresReboot": true
+      }
+    ]
+  },
+  {
+    "questionKey": "preserveWebView2",
+    "scenario": {
+      "profile": "gaming_desktop",
+      "preset": "aggressive",
+      "aggressionPreset": "aggressive",
+      "windowsBuild": 22631
+    },
+    "changedActionIds": [
+      "appx.remove-edge-webview"
+    ],
+    "variants": [
+      {
+        "value": true,
+        "totalIncluded": 127,
+        "totalBlocked": 3,
+        "totalOptional": 18,
+        "requiresReboot": true
+      },
+      {
+        "value": false,
+        "totalIncluded": 128,
+        "totalBlocked": 2,
+        "totalOptional": 18,
+        "requiresReboot": true
+      }
+    ]
+  },
+  {
+    "questionKey": "disableCopilot",
+    "scenario": {
+      "profile": "gaming_desktop",
+      "preset": "balanced",
+      "aggressionPreset": "balanced",
+      "windowsBuild": 22631
+    },
+    "changedActionIds": [
+      "shell.disable-copilot"
+    ],
+    "variants": [
+      {
+        "value": true,
+        "totalIncluded": 127,
+        "totalBlocked": 2,
+        "totalOptional": 18,
+        "requiresReboot": true
+      },
+      {
+        "value": false,
+        "totalIncluded": 126,
+        "totalBlocked": 3,
+        "totalOptional": 18,
+        "requiresReboot": true
+      }
+    ]
+  },
+  {
+    "questionKey": "disableRecall",
+    "scenario": {
+      "profile": "gaming_desktop",
+      "preset": "aggressive",
+      "aggressionPreset": "expert",
+      "windowsBuild": 26100
+    },
+    "changedActionIds": [
+      "privacy.disable-recall"
+    ],
+    "variants": [
+      {
+        "value": true,
+        "totalIncluded": 129,
+        "totalBlocked": 0,
+        "totalOptional": 18,
+        "requiresReboot": true
+      },
+      {
+        "value": false,
+        "totalIncluded": 128,
+        "totalBlocked": 1,
+        "totalOptional": 18,
+        "requiresReboot": true
+      }
+    ]
+  },
+  {
+    "questionKey": "disableClickToDo",
+    "scenario": {
+      "profile": "gaming_desktop",
+      "preset": "aggressive",
+      "aggressionPreset": "expert",
+      "windowsBuild": 26100
+    },
+    "changedActionIds": [
+      "privacy.disable-click-to-do"
+    ],
+    "variants": [
+      {
+        "value": true,
+        "totalIncluded": 129,
+        "totalBlocked": 0,
+        "totalOptional": 18,
+        "requiresReboot": true
+      },
+      {
+        "value": false,
+        "totalIncluded": 128,
+        "totalBlocked": 1,
+        "totalOptional": 18,
+        "requiresReboot": true
+      }
+    ]
+  },
+  {
+    "questionKey": "disableAiApps",
+    "scenario": {
+      "profile": "gaming_desktop",
+      "preset": "balanced",
+      "aggressionPreset": "balanced",
+      "windowsBuild": 22631
+    },
+    "changedActionIds": [
+      "privacy.disable-edge-ai",
+      "privacy.disable-notepad-ai",
+      "privacy.disable-paint-ai"
+    ],
+    "variants": [
+      {
+        "value": true,
+        "totalIncluded": 127,
+        "totalBlocked": 2,
+        "totalOptional": 18,
+        "requiresReboot": true
+      },
+      {
+        "value": false,
+        "totalIncluded": 124,
+        "totalBlocked": 5,
+        "totalOptional": 18,
+        "requiresReboot": true
+      }
+    ]
+  },
+  {
+    "questionKey": "disableClipboardHistory",
+    "scenario": {
+      "profile": "gaming_desktop",
+      "preset": "balanced",
+      "aggressionPreset": "balanced",
+      "windowsBuild": 22631
+    },
+    "changedActionIds": [
+      "privacy.disable-clipboard-history"
+    ],
+    "variants": [
+      {
+        "value": true,
+        "totalIncluded": 127,
+        "totalBlocked": 2,
+        "totalOptional": 18,
+        "requiresReboot": true
+      },
+      {
+        "value": false,
+        "totalIncluded": 126,
+        "totalBlocked": 3,
+        "totalOptional": 18,
+        "requiresReboot": true
+      }
+    ]
+  },
+  {
+    "questionKey": "disableActivityFeed",
+    "scenario": {
+      "profile": "gaming_desktop",
+      "preset": "balanced",
+      "aggressionPreset": "balanced",
+      "windowsBuild": 22631
+    },
+    "changedActionIds": [
+      "privacy.disable-activity-feed",
+      "privacy.disable-cloud-content"
+    ],
+    "variants": [
+      {
+        "value": true,
+        "totalIncluded": 127,
+        "totalBlocked": 2,
+        "totalOptional": 18,
+        "requiresReboot": true
+      },
+      {
+        "value": false,
+        "totalIncluded": 125,
+        "totalBlocked": 4,
+        "totalOptional": 18,
+        "requiresReboot": true
+      }
+    ]
+  },
+  {
+    "questionKey": "disableLocation",
+    "scenario": {
+      "profile": "gaming_desktop",
+      "preset": "balanced",
+      "aggressionPreset": "balanced",
+      "windowsBuild": 22631
+    },
+    "changedActionIds": [
+      "privacy.disable-find-my-device",
+      "privacy.disable-location"
+    ],
+    "variants": [
+      {
+        "value": true,
+        "totalIncluded": 127,
+        "totalBlocked": 2,
+        "totalOptional": 18,
+        "requiresReboot": true
+      },
+      {
+        "value": false,
+        "totalIncluded": 125,
+        "totalBlocked": 4,
+        "totalOptional": 18,
+        "requiresReboot": true
+      }
+    ]
+  },
+  {
+    "questionKey": "disableTailoredExperiences",
+    "scenario": {
+      "profile": "gaming_desktop",
+      "preset": "balanced",
+      "aggressionPreset": "balanced",
+      "windowsBuild": 22631
+    },
+    "changedActionIds": [
+      "privacy.disable-app-launch-tracking",
+      "privacy.disable-online-tips",
+      "privacy.disable-tailored-experiences"
+    ],
+    "variants": [
+      {
+        "value": true,
+        "totalIncluded": 127,
+        "totalBlocked": 2,
+        "totalOptional": 18,
+        "requiresReboot": true
+      },
+      {
+        "value": false,
+        "totalIncluded": 124,
+        "totalBlocked": 5,
+        "totalOptional": 18,
+        "requiresReboot": true
+      }
+    ]
+  },
+  {
+    "questionKey": "disableSpeechPersonalization",
+    "scenario": {
+      "profile": "gaming_desktop",
+      "preset": "balanced",
+      "aggressionPreset": "balanced",
+      "windowsBuild": 22631
+    },
+    "changedActionIds": [
+      "privacy.disable-input-personalization",
+      "privacy.disable-online-speech",
+      "privacy.disable-tipc"
+    ],
+    "variants": [
+      {
+        "value": true,
+        "totalIncluded": 127,
+        "totalBlocked": 2,
+        "totalOptional": 18,
+        "requiresReboot": true
+      },
+      {
+        "value": false,
+        "totalIncluded": 124,
+        "totalBlocked": 5,
+        "totalOptional": 18,
+        "requiresReboot": true
+      }
+    ]
+  },
+  {
+    "questionKey": "disableSmartScreen",
+    "scenario": {
+      "profile": "gaming_desktop",
+      "preset": "aggressive",
+      "aggressionPreset": "aggressive",
+      "windowsBuild": 22631
+    },
+    "changedActionIds": [
+      "privacy.disable-smartscreen"
+    ],
+    "variants": [
+      {
+        "value": true,
+        "totalIncluded": 128,
+        "totalBlocked": 2,
+        "totalOptional": 17,
+        "requiresReboot": true
+      },
+      {
+        "value": false,
+        "totalIncluded": 127,
+        "totalBlocked": 3,
+        "totalOptional": 17,
+        "requiresReboot": true
+      }
+    ]
+  },
+  {
+    "questionKey": "reduceMitigations",
+    "scenario": {
+      "profile": "gaming_desktop",
+      "preset": "aggressive",
+      "aggressionPreset": "expert",
+      "windowsBuild": 26100
+    },
+    "changedActionIds": [
+      "security.reduce-ssbd-mitigation"
+    ],
+    "variants": [
+      {
+        "value": true,
+        "totalIncluded": 130,
+        "totalBlocked": 0,
+        "totalOptional": 18,
+        "requiresReboot": true
+      },
+      {
+        "value": false,
+        "totalIncluded": 129,
+        "totalBlocked": 1,
+        "totalOptional": 18,
+        "requiresReboot": true
+      }
+    ]
+  },
+  {
+    "questionKey": "disableHvci",
+    "scenario": {
+      "profile": "gaming_desktop",
+      "preset": "aggressive",
+      "aggressionPreset": "expert",
+      "windowsBuild": 26100
+    },
+    "changedActionIds": [
+      "security.disable-hvci"
+    ],
+    "variants": [
+      {
+        "value": true,
+        "totalIncluded": 130,
+        "totalBlocked": 0,
+        "totalOptional": 18,
+        "requiresReboot": true
+      },
+      {
+        "value": false,
+        "totalIncluded": 129,
+        "totalBlocked": 1,
+        "totalOptional": 18,
+        "requiresReboot": true
+      }
+    ]
+  },
+  {
+    "questionKey": "disableLlmnr",
+    "scenario": {
+      "profile": "gaming_desktop",
+      "preset": "aggressive",
+      "aggressionPreset": "aggressive",
+      "windowsBuild": 22631
+    },
+    "changedActionIds": [
+      "network.disable-llmnr"
+    ],
+    "variants": [
+      {
+        "value": true,
+        "totalIncluded": 127,
+        "totalBlocked": 2,
+        "totalOptional": 18,
+        "requiresReboot": true
+      },
+      {
+        "value": false,
+        "totalIncluded": 126,
+        "totalBlocked": 3,
+        "totalOptional": 18,
+        "requiresReboot": true
+      }
+    ]
+  },
+  {
+    "questionKey": "disableIpv6",
+    "scenario": {
+      "profile": "gaming_desktop",
+      "preset": "aggressive",
+      "aggressionPreset": "aggressive",
+      "windowsBuild": 22631
+    },
+    "changedActionIds": [
+      "network.disable-ipv6"
+    ],
+    "variants": [
+      {
+        "value": true,
+        "totalIncluded": 128,
+        "totalBlocked": 2,
+        "totalOptional": 17,
+        "requiresReboot": true
+      },
+      {
+        "value": false,
+        "totalIncluded": 127,
+        "totalBlocked": 3,
+        "totalOptional": 17,
+        "requiresReboot": true
+      }
+    ]
+  },
+  {
+    "questionKey": "disableTeredo",
+    "scenario": {
+      "profile": "gaming_desktop",
+      "preset": "aggressive",
+      "aggressionPreset": "aggressive",
+      "windowsBuild": 22631
+    },
+    "changedActionIds": [
+      "network.disable-teredo"
+    ],
+    "variants": [
+      {
+        "value": true,
+        "totalIncluded": 127,
+        "totalBlocked": 2,
+        "totalOptional": 18,
+        "requiresReboot": true
+      },
+      {
+        "value": false,
+        "totalIncluded": 126,
+        "totalBlocked": 3,
+        "totalOptional": 18,
+        "requiresReboot": true
+      }
+    ]
+  },
+  {
+    "questionKey": "disableNetbios",
+    "scenario": {
+      "profile": "gaming_desktop",
+      "preset": "aggressive",
+      "aggressionPreset": "aggressive",
+      "windowsBuild": 22631
+    },
+    "changedActionIds": [
+      "network.disable-netbios"
+    ],
+    "variants": [
+      {
+        "value": true,
+        "totalIncluded": 127,
+        "totalBlocked": 2,
+        "totalOptional": 18,
+        "requiresReboot": true
+      },
+      {
+        "value": false,
+        "totalIncluded": 126,
+        "totalBlocked": 3,
+        "totalOptional": 18,
+        "requiresReboot": true
+      }
+    ]
+  },
+  {
+    "questionKey": "disableNagle",
+    "scenario": {
+      "profile": "gaming_desktop",
+      "preset": "aggressive",
+      "aggressionPreset": "aggressive",
+      "windowsBuild": 22631
+    },
+    "changedActionIds": [
+      "network.disable-nagle"
+    ],
+    "variants": [
+      {
+        "value": true,
+        "totalIncluded": 127,
+        "totalBlocked": 2,
+        "totalOptional": 18,
+        "requiresReboot": true
+      },
+      {
+        "value": false,
+        "totalIncluded": 126,
+        "totalBlocked": 3,
+        "totalOptional": 18,
+        "requiresReboot": true
+      }
+    ]
+  },
+  {
+    "questionKey": "disableNicOffloading",
+    "scenario": {
+      "profile": "gaming_desktop",
+      "preset": "aggressive",
+      "aggressionPreset": "aggressive",
+      "windowsBuild": 22631
+    },
+    "changedActionIds": [
+      "network.disable-offloading",
+      "network.rss-queues-2",
+      "network.tcp-autotuning-normal"
+    ],
+    "variants": [
+      {
+        "value": true,
+        "totalIncluded": 128,
+        "totalBlocked": 2,
+        "totalOptional": 18,
+        "requiresReboot": true
+      },
+      {
+        "value": false,
+        "totalIncluded": 125,
+        "totalBlocked": 5,
+        "totalOptional": 18,
+        "requiresReboot": true
+      }
+    ]
+  },
+  {
+    "questionKey": "disableDeliveryOptimization",
+    "scenario": {
+      "profile": "gaming_desktop",
+      "preset": "aggressive",
+      "aggressionPreset": "aggressive",
+      "windowsBuild": 22631
+    },
+    "changedActionIds": [
+      "security.disable-delivery-optimization"
+    ],
+    "variants": [
+      {
+        "value": true,
+        "totalIncluded": 127,
+        "totalBlocked": 2,
+        "totalOptional": 18,
+        "requiresReboot": true
+      },
+      {
+        "value": false,
+        "totalIncluded": 126,
+        "totalBlocked": 3,
+        "totalOptional": 18,
+        "requiresReboot": true
+      }
+    ]
+  },
+  {
+    "questionKey": "disableFastStartup",
+    "scenario": {
+      "profile": "gaming_desktop",
+      "preset": "balanced",
+      "aggressionPreset": "balanced",
+      "windowsBuild": 22631
+    },
+    "changedActionIds": [
+      "power.disable-fast-startup"
+    ],
+    "variants": [
+      {
+        "value": true,
+        "totalIncluded": 127,
+        "totalBlocked": 2,
+        "totalOptional": 18,
+        "requiresReboot": true
+      },
+      {
+        "value": false,
+        "totalIncluded": 126,
+        "totalBlocked": 3,
+        "totalOptional": 18,
+        "requiresReboot": true
+      }
+    ]
+  },
+  {
+    "questionKey": "disableHibernation",
+    "scenario": {
+      "profile": "gaming_desktop",
+      "preset": "balanced",
+      "aggressionPreset": "balanced",
+      "windowsBuild": 22631
+    },
+    "changedActionIds": [
+      "power.disable-hibernation"
+    ],
+    "variants": [
+      {
+        "value": true,
+        "totalIncluded": 127,
+        "totalBlocked": 2,
+        "totalOptional": 18,
+        "requiresReboot": true
+      },
+      {
+        "value": false,
+        "totalIncluded": 126,
+        "totalBlocked": 3,
+        "totalOptional": 18,
+        "requiresReboot": true
+      }
+    ]
+  },
+  {
+    "questionKey": "disableUsbSelectiveSuspend",
+    "scenario": {
+      "profile": "gaming_desktop",
+      "preset": "aggressive",
+      "aggressionPreset": "aggressive",
+      "windowsBuild": 22631
+    },
+    "changedActionIds": [
+      "power.disable-usb-selective-suspend"
+    ],
+    "variants": [
+      {
+        "value": true,
+        "totalIncluded": 127,
+        "totalBlocked": 2,
+        "totalOptional": 18,
+        "requiresReboot": true
+      },
+      {
+        "value": false,
+        "totalIncluded": 126,
+        "totalBlocked": 3,
+        "totalOptional": 18,
+        "requiresReboot": true
+      }
+    ]
+  },
+  {
+    "questionKey": "disablePcieLinkStatePm",
+    "scenario": {
+      "profile": "gaming_desktop",
+      "preset": "aggressive",
+      "aggressionPreset": "aggressive",
+      "windowsBuild": 22631
+    },
+    "changedActionIds": [
+      "power.disable-pcie-link-state-pm"
+    ],
+    "variants": [
+      {
+        "value": true,
+        "totalIncluded": 127,
+        "totalBlocked": 2,
+        "totalOptional": 18,
+        "requiresReboot": true
+      },
+      {
+        "value": false,
+        "totalIncluded": 126,
+        "totalBlocked": 3,
+        "totalOptional": 18,
+        "requiresReboot": true
+      }
+    ]
+  },
+  {
+    "questionKey": "disableAudioEnhancements",
+    "scenario": {
+      "profile": "gaming_desktop",
+      "preset": "balanced",
+      "aggressionPreset": "balanced",
+      "windowsBuild": 22631
+    },
+    "changedActionIds": [
+      "audio.disable-enhancements"
+    ],
+    "variants": [
+      {
+        "value": true,
+        "totalIncluded": 127,
+        "totalBlocked": 2,
+        "totalOptional": 18,
+        "requiresReboot": true
+      },
+      {
+        "value": false,
+        "totalIncluded": 126,
+        "totalBlocked": 3,
+        "totalOptional": 18,
+        "requiresReboot": true
+      }
+    ]
+  },
+  {
+    "questionKey": "enableAudioExclusiveMode",
+    "scenario": {
+      "profile": "gaming_desktop",
+      "preset": "balanced",
+      "aggressionPreset": "balanced",
+      "windowsBuild": 22631
+    },
+    "changedActionIds": [
+      "audio.exclusive-mode"
+    ],
+    "variants": [
+      {
+        "value": true,
+        "totalIncluded": 127,
+        "totalBlocked": 2,
+        "totalOptional": 18,
+        "requiresReboot": true
+      },
+      {
+        "value": false,
+        "totalIncluded": 126,
+        "totalBlocked": 3,
+        "totalOptional": 18,
+        "requiresReboot": true
+      }
+    ]
+  },
+  {
+    "questionKey": "restoreClassicContextMenu",
+    "scenario": {
+      "profile": "gaming_desktop",
+      "preset": "balanced",
+      "aggressionPreset": "balanced",
+      "windowsBuild": 22631
+    },
+    "changedActionIds": [
+      "shell.restore-classic-context-menu"
+    ],
+    "variants": [
+      {
+        "value": true,
+        "totalIncluded": 127,
+        "totalBlocked": 2,
+        "totalOptional": 18,
+        "requiresReboot": true
+      },
+      {
+        "value": false,
+        "totalIncluded": 126,
+        "totalBlocked": 3,
+        "totalOptional": 18,
+        "requiresReboot": true
+      }
+    ]
+  },
+  {
+    "questionKey": "enableEndTask",
+    "scenario": {
+      "profile": "gaming_desktop",
+      "preset": "balanced",
+      "aggressionPreset": "balanced",
+      "windowsBuild": 22631
+    },
+    "changedActionIds": [
+      "shell.enable-end-task"
+    ],
+    "variants": [
+      {
+        "value": true,
+        "totalIncluded": 127,
+        "totalBlocked": 2,
+        "totalOptional": 18,
+        "requiresReboot": true
+      },
+      {
+        "value": false,
+        "totalIncluded": 126,
+        "totalBlocked": 3,
+        "totalOptional": 18,
+        "requiresReboot": true
+      }
+    ]
+  },
+  {
+    "questionKey": "disableBackgroundApps",
+    "scenario": {
+      "profile": "gaming_desktop",
+      "preset": "balanced",
+      "aggressionPreset": "balanced",
+      "windowsBuild": 22631
+    },
+    "changedActionIds": [
+      "startup.disable-background-apps"
+    ],
+    "variants": [
+      {
+        "value": true,
+        "totalIncluded": 127,
+        "totalBlocked": 2,
+        "totalOptional": 18,
+        "requiresReboot": true
+      },
+      {
+        "value": false,
+        "totalIncluded": 126,
+        "totalBlocked": 3,
+        "totalOptional": 18,
+        "requiresReboot": true
+      }
+    ]
+  },
+  {
+    "questionKey": "disableAutomaticMaintenance",
+    "scenario": {
+      "profile": "gaming_desktop",
+      "preset": "balanced",
+      "aggressionPreset": "balanced",
+      "windowsBuild": 22631
+    },
+    "changedActionIds": [
+      "startup.disable-automatic-maintenance"
+    ],
+    "variants": [
+      {
+        "value": true,
+        "totalIncluded": 127,
+        "totalBlocked": 2,
+        "totalOptional": 18,
+        "requiresReboot": true
+      },
+      {
+        "value": false,
+        "totalIncluded": 126,
+        "totalBlocked": 3,
+        "totalOptional": 18,
+        "requiresReboot": true
+      }
+    ]
+  },
+  {
+    "questionKey": "enableGameMode",
+    "scenario": {
+      "profile": "gaming_desktop",
+      "preset": "balanced",
+      "aggressionPreset": "balanced",
+      "windowsBuild": 22631
+    },
+    "changedActionIds": [
+      "startup.enable-game-mode"
+    ],
+    "variants": [
+      {
+        "value": true,
+        "totalIncluded": 127,
+        "totalBlocked": 2,
+        "totalOptional": 18,
+        "requiresReboot": true
+      },
+      {
+        "value": false,
+        "totalIncluded": 126,
+        "totalBlocked": 3,
+        "totalOptional": 18,
+        "requiresReboot": true
+      }
+    ]
+  },
+  {
+    "questionKey": "disableTransparency",
+    "scenario": {
+      "profile": "gaming_desktop",
+      "preset": "balanced",
+      "aggressionPreset": "balanced",
+      "windowsBuild": 22631
+    },
+    "changedActionIds": [
+      "perf.disable-transparency"
+    ],
+    "variants": [
+      {
+        "value": true,
+        "totalIncluded": 127,
+        "totalBlocked": 2,
+        "totalOptional": 18,
+        "requiresReboot": true
+      },
+      {
+        "value": false,
+        "totalIncluded": 126,
+        "totalBlocked": 3,
+        "totalOptional": 18,
+        "requiresReboot": true
+      }
+    ]
+  },
+  {
+    "questionKey": "disableDefender",
+    "scenario": {
+      "profile": "gaming_desktop",
+      "preset": "balanced",
+      "aggressionPreset": "balanced",
+      "windowsBuild": 22631
+    },
+    "changedActionIds": [],
+    "variants": [
+      {
+        "value": true,
+        "totalIncluded": 127,
+        "totalBlocked": 2,
+        "totalOptional": 18,
+        "requiresReboot": true
+      },
+      {
+        "value": false,
+        "totalIncluded": 127,
+        "totalBlocked": 2,
+        "totalOptional": 18,
+        "requiresReboot": true
+      }
+    ]
+  },
+  {
+    "questionKey": "disableWindowsUpdate",
+    "scenario": {
+      "profile": "gaming_desktop",
+      "preset": "balanced",
+      "aggressionPreset": "balanced",
+      "windowsBuild": 22631
+    },
+    "changedActionIds": [],
+    "variants": [
+      {
+        "value": true,
+        "totalIncluded": 127,
+        "totalBlocked": 2,
+        "totalOptional": 18,
+        "requiresReboot": true
+      },
+      {
+        "value": false,
+        "totalIncluded": 127,
+        "totalBlocked": 2,
+        "totalOptional": 18,
+        "requiresReboot": true
+      }
+    ]
+  },
+  {
+    "questionKey": "disableMouseAcceleration",
+    "scenario": {
+      "profile": "gaming_desktop",
+      "preset": "balanced",
+      "aggressionPreset": "balanced",
+      "windowsBuild": 22631
+    },
+    "changedActionIds": [],
+    "variants": [
+      {
+        "value": true,
+        "totalIncluded": 127,
+        "totalBlocked": 2,
+        "totalOptional": 18,
+        "requiresReboot": true
+      },
+      {
+        "value": false,
+        "totalIncluded": 127,
+        "totalBlocked": 2,
+        "totalOptional": 18,
+        "requiresReboot": true
+      }
+    ]
+  },
+  {
+    "questionKey": "disableStickyKeys",
+    "scenario": {
+      "profile": "gaming_desktop",
+      "preset": "balanced",
+      "aggressionPreset": "balanced",
+      "windowsBuild": 22631
+    },
+    "changedActionIds": [
+      "perf.disable-sticky-keys"
+    ],
+    "variants": [
+      {
+        "value": true,
+        "totalIncluded": 127,
+        "totalBlocked": 2,
+        "totalOptional": 18,
+        "requiresReboot": true
+      },
+      {
+        "value": false,
+        "totalIncluded": 126,
+        "totalBlocked": 3,
+        "totalOptional": 18,
+        "requiresReboot": true
+      }
+    ]
+  },
+  {
+    "questionKey": "disableFaultTolerantHeap",
+    "scenario": {
+      "profile": "gaming_desktop",
+      "preset": "balanced",
+      "aggressionPreset": "balanced",
+      "windowsBuild": 22631
+    },
+    "changedActionIds": [
+      "perf.disable-fault-tolerant-heap"
+    ],
+    "variants": [
+      {
+        "value": true,
+        "totalIncluded": 127,
+        "totalBlocked": 2,
+        "totalOptional": 18,
+        "requiresReboot": true
+      },
+      {
+        "value": false,
+        "totalIncluded": 126,
+        "totalBlocked": 3,
+        "totalOptional": 18,
+        "requiresReboot": true
+      }
+    ]
+  },
+  {
+    "questionKey": "disableMPOs",
+    "scenario": {
+      "profile": "gaming_desktop",
+      "preset": "balanced",
+      "aggressionPreset": "balanced",
+      "windowsBuild": 22631
+    },
+    "changedActionIds": [],
+    "variants": [
+      {
+        "value": true,
+        "totalIncluded": 127,
+        "totalBlocked": 2,
+        "totalOptional": 18,
+        "requiresReboot": true
+      },
+      {
+        "value": false,
+        "totalIncluded": 127,
+        "totalBlocked": 2,
+        "totalOptional": 18,
+        "requiresReboot": true
+      }
+    ]
+  },
+  {
+    "questionKey": "disableLastAccessTime",
+    "scenario": {
+      "profile": "gaming_desktop",
+      "preset": "balanced",
+      "aggressionPreset": "balanced",
+      "windowsBuild": 22631
+    },
+    "changedActionIds": [
+      "storage.disable-last-access"
+    ],
+    "variants": [
+      {
+        "value": true,
+        "totalIncluded": 127,
+        "totalBlocked": 2,
+        "totalOptional": 18,
+        "requiresReboot": true
+      },
+      {
+        "value": false,
+        "totalIncluded": 126,
+        "totalBlocked": 3,
+        "totalOptional": 18,
+        "requiresReboot": true
+      }
+    ]
+  },
+  {
+    "questionKey": "disableDevicePowerSaving",
+    "scenario": {
+      "profile": "gaming_desktop",
+      "preset": "balanced",
+      "aggressionPreset": "balanced",
+      "windowsBuild": 22631
+    },
+    "changedActionIds": [],
+    "variants": [
+      {
+        "value": true,
+        "totalIncluded": 127,
+        "totalBlocked": 2,
+        "totalOptional": 18,
+        "requiresReboot": true
+      },
+      {
+        "value": false,
+        "totalIncluded": 127,
+        "totalBlocked": 2,
+        "totalOptional": 18,
+        "requiresReboot": true
+      }
+    ]
+  },
+  {
+    "questionKey": "legacyFlipPresentation",
+    "scenario": {
+      "profile": "gaming_desktop",
+      "preset": "balanced",
+      "aggressionPreset": "balanced",
+      "windowsBuild": 22631
+    },
+    "changedActionIds": [],
+    "variants": [
+      {
+        "value": true,
+        "totalIncluded": 127,
+        "totalBlocked": 2,
+        "totalOptional": 18,
+        "requiresReboot": true
+      },
+      {
+        "value": false,
+        "totalIncluded": 127,
+        "totalBlocked": 2,
+        "totalOptional": 18,
+        "requiresReboot": true
+      }
+    ]
+  },
+  {
+    "questionKey": "disableStoreAutoUpdates",
+    "scenario": {
+      "profile": "gaming_desktop",
+      "preset": "balanced",
+      "aggressionPreset": "balanced",
+      "windowsBuild": 22631
+    },
+    "changedActionIds": [],
+    "variants": [
+      {
+        "value": true,
+        "totalIncluded": 127,
+        "totalBlocked": 2,
+        "totalOptional": 18,
+        "requiresReboot": true
+      },
+      {
+        "value": false,
+        "totalIncluded": 127,
+        "totalBlocked": 2,
+        "totalOptional": 18,
+        "requiresReboot": true
+      }
+    ]
+  },
+  {
+    "questionKey": "disableAutoMaintenance",
+    "scenario": {
+      "profile": "gaming_desktop",
+      "preset": "balanced",
+      "aggressionPreset": "balanced",
+      "windowsBuild": 22631
+    },
+    "changedActionIds": [],
+    "variants": [
+      {
+        "value": true,
+        "totalIncluded": 127,
+        "totalBlocked": 2,
+        "totalOptional": 18,
+        "requiresReboot": true
+      },
+      {
+        "value": false,
+        "totalIncluded": 127,
+        "totalBlocked": 2,
+        "totalOptional": 18,
+        "requiresReboot": true
+      }
+    ]
+  },
+  {
+    "questionKey": "fullDefenderDisable",
+    "scenario": {
+      "profile": "gaming_desktop",
+      "preset": "balanced",
+      "aggressionPreset": "balanced",
+      "windowsBuild": 22631
+    },
+    "changedActionIds": [],
+    "variants": [
+      {
+        "value": true,
+        "totalIncluded": 127,
+        "totalBlocked": 2,
+        "totalOptional": 18,
+        "requiresReboot": true
+      },
+      {
+        "value": false,
+        "totalIncluded": 127,
+        "totalBlocked": 2,
+        "totalOptional": 18,
+        "requiresReboot": true
+      }
+    ]
+  },
+  {
+    "questionKey": "disableVulnerableDriverBlocklist",
+    "scenario": {
+      "profile": "gaming_desktop",
+      "preset": "balanced",
+      "aggressionPreset": "balanced",
+      "windowsBuild": 22631
+    },
+    "changedActionIds": [],
+    "variants": [
+      {
+        "value": true,
+        "totalIncluded": 127,
+        "totalBlocked": 2,
+        "totalOptional": 18,
+        "requiresReboot": true
+      },
+      {
+        "value": false,
+        "totalIncluded": 127,
+        "totalBlocked": 2,
+        "totalOptional": 18,
+        "requiresReboot": true
+      }
+    ]
+  },
+  {
+    "questionKey": "disableCpuMitigations",
+    "scenario": {
+      "profile": "gaming_desktop",
+      "preset": "balanced",
+      "aggressionPreset": "balanced",
+      "windowsBuild": 22631
+    },
+    "changedActionIds": [],
+    "variants": [
+      {
+        "value": true,
+        "totalIncluded": 127,
+        "totalBlocked": 2,
+        "totalOptional": 18,
+        "requiresReboot": true
+      },
+      {
+        "value": false,
+        "totalIncluded": 127,
+        "totalBlocked": 2,
+        "totalOptional": 18,
+        "requiresReboot": true
+      }
+    ]
+  },
+  {
+    "questionKey": "edgeBehavior",
+    "scenario": {
+      "profile": "gaming_desktop",
+      "preset": "balanced",
+      "aggressionPreset": "balanced",
+      "windowsBuild": 22631
+    },
+    "changedActionIds": [
+      "appx.disable-edge-default-nag",
+      "appx.disable-edge-preload",
+      "appx.disable-edge-updates"
+    ],
+    "variants": [
+      {
+        "value": "keep",
+        "totalIncluded": 124,
+        "totalBlocked": 5,
+        "totalOptional": 18,
+        "requiresReboot": true
+      },
+      {
+        "value": "suppress",
+        "totalIncluded": 126,
+        "totalBlocked": 3,
+        "totalOptional": 18,
+        "requiresReboot": true
+      },
+      {
+        "value": "suppress-and-freeze",
+        "totalIncluded": 127,
+        "totalBlocked": 2,
+        "totalOptional": 18,
+        "requiresReboot": true
+      }
+    ]
+  },
+  {
+    "questionKey": "telemetryLevel",
+    "scenario": {
+      "profile": "gaming_desktop",
+      "preset": "balanced",
+      "aggressionPreset": "balanced",
+      "windowsBuild": 22631
+    },
+    "changedActionIds": [
+      "privacy.disable-ceip",
+      "privacy.disable-error-reporting",
+      "privacy.disable-siuf",
+      "privacy.disable-telemetry"
+    ],
+    "variants": [
+      {
+        "value": "keep",
+        "totalIncluded": 123,
+        "totalBlocked": 6,
+        "totalOptional": 18,
+        "requiresReboot": true
+      },
+      {
+        "value": "reduce",
+        "totalIncluded": 126,
+        "totalBlocked": 3,
+        "totalOptional": 18,
+        "requiresReboot": true
+      },
+      {
+        "value": "aggressive",
+        "totalIncluded": 127,
+        "totalBlocked": 2,
+        "totalOptional": 18,
+        "requiresReboot": true
+      }
+    ]
+  },
+  {
+    "questionKey": "aggressionPreset",
+    "scenario": {
+      "profile": "gaming_desktop",
+      "preset": "balanced",
+      "aggressionPreset": "balanced",
+      "windowsBuild": 22631
+    },
+    "changedActionIds": [],
+    "variants": [
+      {
+        "value": "conservative",
+        "totalIncluded": 127,
+        "totalBlocked": 2,
+        "totalOptional": 18,
+        "requiresReboot": true
+      },
+      {
+        "value": "balanced",
+        "totalIncluded": 127,
+        "totalBlocked": 2,
+        "totalOptional": 18,
+        "requiresReboot": true
+      },
+      {
+        "value": "aggressive",
+        "totalIncluded": 127,
+        "totalBlocked": 2,
+        "totalOptional": 18,
+        "requiresReboot": true
+      },
+      {
+        "value": "expert",
+        "totalIncluded": 127,
+        "totalBlocked": 2,
+        "totalOptional": 18,
+        "requiresReboot": true
+      }
+    ]
+  }
+]

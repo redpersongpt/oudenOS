@@ -18,7 +18,7 @@ const REQUEST_TIMEOUT: Duration = Duration::from_secs(30);
 
 pub struct ServiceBridge {
     process: Option<Child>,
-    pending: HashMap<u64, mpsc::Sender<Result<Value, String>>>,
+    buffered: HashMap<u64, Result<Value, String>>,
     next_id: AtomicU64,
     admin: bool,
     #[allow(dead_code)]
@@ -30,7 +30,7 @@ impl ServiceBridge {
     pub fn new() -> Self {
         Self {
             process: None,
-            pending: HashMap::new(),
+            buffered: HashMap::new(),
             next_id: AtomicU64::new(1),
             admin: false,
             reader_handle: None,
@@ -123,8 +123,6 @@ impl ServiceBridge {
     }
 
     pub async fn call(&mut self, method: &str, params: Value) -> Result<Value, String> {
-        self.drain_responses();
-
         let child = self.process.as_mut().ok_or("Service not running")?;
         let stdin = child
             .stdin
@@ -149,21 +147,20 @@ impl ServiceBridge {
             .flush()
             .map_err(|e| format!("Failed to flush service stdin: {e}"))?;
 
+        if let Some(result) = self.buffered.remove(&id) {
+            return result;
+        }
+
         let deadline = std::time::Instant::now() + REQUEST_TIMEOUT;
 
         loop {
-            self.drain_responses();
-
-            if let Some(result) = self.pending.remove(&id) {
-                drop(result); // won't use sender pattern
-            }
-
             if let Some(ref rx) = self.response_rx {
-                match rx.recv_timeout(Duration::from_millis(50)) {
+                match rx.recv_timeout(Duration::from_millis(100)) {
                     Ok((resp_id, result)) => {
                         if resp_id == id {
                             return result;
                         }
+                        self.buffered.insert(resp_id, result);
                     }
                     Err(mpsc::RecvTimeoutError::Timeout) => {
                         if std::time::Instant::now() > deadline {
@@ -177,13 +174,6 @@ impl ServiceBridge {
                 }
             } else {
                 return Err("No response channel".into());
-            }
-        }
-    }
-
-    fn drain_responses(&mut self) {
-        if let Some(ref rx) = self.response_rx {
-            while let Ok((_id, _result)) = rx.try_recv() {
             }
         }
     }
