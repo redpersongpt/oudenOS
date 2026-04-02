@@ -2239,37 +2239,3 @@ export function resolveQuestionnairePersonalization(
   return resolved;
 }
 
-export function buildWizardJsonPayload() {
-  const desktopQuestions = strategyQuestions.map((question) => ({
-    ...question,
-    options: question.options.map((option) => ({
-      ...option,
-      behavior: getSelectedQuestionBehavior(question.key, option.value) ?? undefined,
-    })),
-  }));
-
-  const featurePages = strategyQuestions.map((question) => ({
-    type: "RadioPage",
-    description: question.desc,
-    isRequired: true,
-    defaultOption: `${String(question.key)}__${String(question.options[0]?.value ?? "default")}`,
-    questionKey: question.key,
-    visibility: question.visibility ?? null,
-    options: question.options.map((option) => ({
-      text: option.title,
-      name: `${String(question.key)}__${String(option.value)}`,
-      value: option.value,
-      desc: option.desc,
-      badge: option.badge ?? null,
-      badgeColor: option.badgeColor ?? null,
-      danger: option.danger ?? false,
-      behavior: getSelectedQuestionBehavior(question.key, option.value) ?? null,
-    })),
-  }));
-
-  return {
-    ...wizardBundleMetadata,
-    desktopQuestions,
-    featurePages,
-  };
-}
