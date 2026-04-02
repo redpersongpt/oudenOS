@@ -154,7 +154,9 @@ impl ServiceBridge {
             return result;
         }
 
-        // Take rx out so we can .await on it without holding a conflicting borrow on self.
+        // Take rx out of self so we can .await on it without a conflicting borrow on
+        // self.buffered.  The channel is unconditionally restored after the loop exits
+        // (via break), so no error path can leave self.response_rx permanently empty.
         let mut rx = match self.response_rx.take() {
             Some(rx) => rx,
             None => return Err("No response channel".into()),
