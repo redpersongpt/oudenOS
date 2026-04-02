@@ -8,12 +8,11 @@ export default defineConfig({
   build: {
     outDir: "dist/renderer",
     emptyOutDir: true,
-    // Don't add crossorigin attribute — breaks file:// in Electron
     modulePreload: false,
     chunkSizeWarningLimit: 700,
     rollupOptions: {
       output: {
-        // Stable filenames for ASAR packaging
+        // Stable filenames for Tauri bundling
         entryFileNames: "assets/[name].js",
         chunkFileNames: "assets/[name].js",
         assetFileNames: "assets/[name].[ext]",

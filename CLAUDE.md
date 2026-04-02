@@ -9,7 +9,7 @@
 - `apps/tuning-api`: slim product API, only app catalog
 - `apps/os-api`: slim product API, only OS-specific license, updates, fleet admin
 - `apps/tuning-desktop`: Electron desktop for redcore Tuning
-- `apps/os-desktop`: Electron desktop for redcore OS
+- `apps/os-desktop`: Tauri desktop for redcore OS
 - `services/*`: Rust privileged services
 - `packages/db`: shared PostgreSQL schema package
 

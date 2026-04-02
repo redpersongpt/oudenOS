@@ -22,7 +22,7 @@
     "verify": "node scripts/validate-action-parity.mjs --quiet && echo '  parity: pass' && pnpm typecheck && echo '  typecheck: pass'",
     "verify:full": "node scripts/validate-action-parity.mjs && pnpm typecheck",
     "smoke:os": "node scripts/smoke-test-os-service.mjs",
-    "smoke:desktop": "cd apps/os-desktop && npx electron test/smoke-desktop.mjs",
+    "smoke:desktop": "echo 'Use: cd apps/os-desktop && pnpm tauri:dev (requires Tauri CLI + Windows)'",
     "release:gate": "node scripts/release-gate.mjs",
     "release:proof": "echo 'Run on Windows: powershell -File scripts/capture-windows-proof.ps1'",
     "validate:proof": "node scripts/validate-proof.mjs",

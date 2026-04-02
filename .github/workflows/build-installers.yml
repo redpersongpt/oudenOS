@@ -103,13 +103,13 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Build Electron app (renderer + main + preload)
+      - name: Build renderer
         working-directory: apps/os-desktop
         run: pnpm build
 
-      - name: Run desktop smoke test (Electron + real service)
-        working-directory: apps/os-desktop
-        run: npx electron test/smoke-desktop.mjs --service-path ../../services/os-service/target/debug/redcore-os-service.exe
+      - name: Cargo check Tauri shell
+        working-directory: apps/os-desktop/src-tauri
+        run: cargo check
 
   build-rust-services:
     name: Build Rust Services (Windows)
@@ -157,7 +157,7 @@ jobs:
           retention-days: 7
 
   build-os-installer:
-    name: Package redcore OS Installer
+    name: Package redcore OS Installer (Tauri)
     if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     runs-on: windows-latest
     needs: [verify, check-rust, build-rust-services]
@@ -168,6 +168,14 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-pc-windows-msvc
+
+      - name: Install Tauri CLI
+        run: cargo install tauri-cli --version "^2" --locked
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
@@ -183,15 +191,22 @@ jobs:
           name: os-service-binary
           path: services/os-service/target/release/
 
-      - name: Build Electron app
+      - name: Build renderer
         working-directory: apps/os-desktop
         run: pnpm build
 
-      - name: Package installer
+      - name: Build Tauri installer
         working-directory: apps/os-desktop
-        run: pnpm dist
-        env:
-          CI: "true"
+        run: cargo tauri build --config src-tauri/tauri.conf.production.json
+
+      - name: Copy installer to stable name
+        shell: pwsh
+        run: |
+          $nsis = Get-ChildItem -Path "apps/os-desktop/src-tauri/target/release/bundle/nsis/*.exe" | Select-Object -First 1
+          if (-not $nsis) { throw "No NSIS installer found" }
+          New-Item -ItemType Directory -Path "apps/os-desktop/dist/installers" -Force | Out-Null
+          Copy-Item $nsis.FullName "apps/os-desktop/dist/installers/redcore-os-setup.exe"
+          Write-Host "Installer: $($nsis.Name) -> redcore-os-setup.exe ($($nsis.Length) bytes)"
 
       - name: Verify OS installer size
         shell: pwsh
@@ -328,7 +343,6 @@ jobs:
         run: |
           echo "Checking installer is publicly reachable..."
 
-          # Verify main installer URL returns 200 and correct size
           HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" "https://redcoreos.net/downloads/os/redcore-os-setup.exe")
           if [ "$HTTP_CODE" != "200" ]; then
             echo "FAIL: Installer URL returned HTTP $HTTP_CODE"
@@ -336,7 +350,6 @@ jobs:
           fi
           echo "PASS: Installer returns HTTP 200"
 
-          # Verify content-length matches expected size
           REMOTE_SIZE=$(curl -sI "https://redcoreos.net/downloads/os/redcore-os-setup.exe" | grep -i content-length | awk '{print $2}' | tr -d '\r')
           EXPECTED_SIZE="${{ steps.prep.outputs.SIZE }}"
           if [ -n "$REMOTE_SIZE" ] && [ "$REMOTE_SIZE" != "$EXPECTED_SIZE" ]; then
@@ -345,7 +358,6 @@ jobs:
             echo "PASS: Size matches ($REMOTE_SIZE bytes)"
           fi
 
-          # Download and verify SHA-256
           curl -s -o /tmp/verify-installer.exe "https://redcoreos.net/downloads/os/redcore-os-setup.exe"
           DOWNLOAD_SHA=$(sha256sum /tmp/verify-installer.exe | awk '{print $1}')
           EXPECTED_SHA="${{ steps.prep.outputs.SHA }}"
@@ -366,7 +378,6 @@ jobs:
         run: |
           echo "Checking latest.json is publicly reachable and coherent..."
 
-          # Fetch latest.json over HTTPS
           HTTP_CODE=$(curl -s -o /tmp/verify-latest.json -w "%{http_code}" "https://redcoreos.net/downloads/os/latest.json")
           if [ "$HTTP_CODE" != "200" ]; then
             echo "FAIL: latest.json returned HTTP $HTTP_CODE"
@@ -374,7 +385,6 @@ jobs:
           fi
           echo "PASS: latest.json returns HTTP 200"
 
-          # Verify manifest fields match what we published
           MANIFEST_VERSION=$(node -p "JSON.parse(require('fs').readFileSync('/tmp/verify-latest.json','utf8')).version")
           MANIFEST_SHA=$(node -p "JSON.parse(require('fs').readFileSync('/tmp/verify-latest.json','utf8')).sha256")
           MANIFEST_URL=$(node -p "JSON.parse(require('fs').readFileSync('/tmp/verify-latest.json','utf8')).url")

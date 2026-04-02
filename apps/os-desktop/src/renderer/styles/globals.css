@@ -44,7 +44,7 @@
   .scrollbar-none::-webkit-scrollbar { display: none; }
 }
 
-/* Electron */
+/* Window drag regions (Tauri frameless window) */
 @layer utilities {
   .drag-region { -webkit-app-region: drag; }
   .no-drag { -webkit-app-region: no-drag; }

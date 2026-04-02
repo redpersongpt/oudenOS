@@ -1,8 +1,10 @@
 // Platform abstraction layer
 // Centralizes all desktop shell interactions behind a transport-neutral
-// interface. The renderer never calls window.redcore directly — it calls
-// these functions instead. Swap the backend to move from Electron to Tauri
-// without touching any component code.
+// interface. The renderer never calls Tauri invoke directly — it calls
+// these functions instead.
+//
+// Canonical runtime: Tauri (since v0.2.0)
+// The Electron backend was removed during the Tauri cutover.
 
 // ---------------------------------------------------------------------------
 // Types
@@ -57,80 +59,18 @@ export interface PlatformAPI {
 }
 
 // ---------------------------------------------------------------------------
-// Electron backend — reads from window.redcore (set by preload)
+// Platform singleton — Tauri backend is set in main.tsx at startup
 // ---------------------------------------------------------------------------
 
-interface ElectronBridge {
-  service: {
-    call: <T = unknown>(method: string, params?: Record<string, unknown>) => Promise<T>;
-    status: () => Promise<ServiceStatus>;
-  };
-  on: (channel: string, callback: (data: unknown) => void) => () => void;
-  window: { minimize: () => void; maximize: () => void; close: () => void };
-  shell: { openExternal: (url: string) => Promise<void> };
-  log: { saveToDesktop: (content: string) => Promise<SaveResult> };
-  wizard: { exportPackage: (state: Record<string, unknown>) => Promise<ExportResult> };
-}
-
-function getElectronBridge(): ElectronBridge | null {
-  return (window as unknown as { redcore?: ElectronBridge }).redcore ?? null;
-}
-
-const electronBackend: PlatformAPI = {
-  service: {
-    call: async (method, params) => {
-      const bridge = getElectronBridge();
-      if (!bridge) throw new Error("Electron bridge unavailable");
-      return bridge.service.call(method, params);
-    },
-    status: async () => {
-      const bridge = getElectronBridge();
-      if (!bridge) return { running: false, mode: "demo", isAdmin: false, platform: "unknown" };
-      return bridge.service.status();
-    },
-  },
-  on: (channel, callback) => {
-    const bridge = getElectronBridge();
-    if (!bridge) return () => {};
-    return bridge.on(channel, callback);
-  },
-  window: {
-    minimize: () => getElectronBridge()?.window.minimize(),
-    maximize: () => getElectronBridge()?.window.maximize(),
-    close: () => getElectronBridge()?.window.close(),
-  },
-  shell: {
-    openExternal: async (url) => {
-      const bridge = getElectronBridge();
-      if (bridge) await bridge.shell.openExternal(url);
-    },
-  },
-  log: {
-    saveToDesktop: async (content) => {
-      const bridge = getElectronBridge();
-      if (!bridge) return { ok: false, error: "Platform API unavailable" };
-      return bridge.log.saveToDesktop(content);
-    },
-  },
-  wizard: {
-    exportPackage: async (state) => {
-      const bridge = getElectronBridge();
-      if (!bridge) return { ok: false, error: "Platform API unavailable" };
-      return bridge.wizard.exportPackage(state);
-    },
-  },
-};
-
-// ---------------------------------------------------------------------------
-// Platform singleton — swap this to change backends
-// ---------------------------------------------------------------------------
-
-let _platform: PlatformAPI = electronBackend;
+let _platform: PlatformAPI | null = null;
 
 export function setPlatform(p: PlatformAPI): void {
   _platform = p;
 }
 
 export function platform(): PlatformAPI {
+  if (!_platform) {
+    throw new Error("Platform not initialized — setPlatform() must be called before first use");
+  }
   return _platform;
 }
