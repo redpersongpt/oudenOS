@@ -1,4 +1,4 @@
-// Ouden.Tuning Logo — Ouden mark system
+// Ouden.Tuning Logo — open ring + accent dot
 
 import { motion } from "framer-motion";
 
@@ -9,16 +9,19 @@ interface LogoProps {
 }
 
 function OudenMark({ size = 32 }: { size?: number }) {
-  const stroke = size >= 32 ? 1.5 : 1;
-  const r = Math.round(size * 0.22);
-  const dot = Math.max(2, Math.round(size * 0.08));
-  const half = size / 2;
+  const sw = size >= 32 ? 8 : size >= 20 ? 6 : 5;
+  const dotR = size >= 32 ? 4.5 : 3.5;
 
   return (
-    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} fill="none">
-      <rect x={stroke / 2} y={stroke / 2} width={size - stroke} height={size - stroke} stroke="var(--color-dark-border)" strokeWidth={stroke} fill="none" />
-      <circle cx={half} cy={half} r={r} stroke="var(--color-brand-500)" strokeWidth={stroke} fill="none" />
-      <circle cx={half} cy={half} r={dot} fill="var(--color-brand-500)" />
+    <svg width={size} height={size} viewBox="0 0 100 100" fill="none">
+      <path
+        d="M 82.14 66.08 A 32 32 0 1 1 77.1 39.9"
+        stroke="var(--color-ink-primary, #E8E8E8)"
+        strokeWidth={sw}
+        strokeLinecap="round"
+        fill="none"
+      />
+      <circle cx="77.1" cy="39.9" r={dotR} fill="var(--color-brand-500, #E8254B)" />
     </svg>
   );
 }

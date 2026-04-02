@@ -1,35 +1,20 @@
-// Ouden mark: precision square → inner circle → center point
-// Industrial alignment symbol — scales from 14px to 64px
+// Ouden mark — open ring with accent dot
+// Scales from 14px to 64px
 
 export function LogoMark({ size = 20 }: { size?: number }) {
-  const stroke = size >= 32 ? 1.5 : 1;
-  const r = Math.round(size * 0.22);
-  const dot = Math.max(2, Math.round(size * 0.08));
-  const half = size / 2;
+  const sw = size >= 32 ? 8 : size >= 20 ? 6 : 5;
+  const dotR = size >= 32 ? 4.5 : 3.5;
 
   return (
-    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} fill="none">
-      {/* Outer frame */}
-      <rect
-        x={stroke / 2}
-        y={stroke / 2}
-        width={size - stroke}
-        height={size - stroke}
-        stroke="var(--border-visible)"
-        strokeWidth={stroke}
+    <svg width={size} height={size} viewBox="0 0 100 100" fill="none">
+      <path
+        d="M 82.14 66.08 A 32 32 0 1 1 77.1 39.9"
+        stroke="var(--text-primary, #E8E8E8)"
+        strokeWidth={sw}
+        strokeLinecap="round"
         fill="none"
       />
-      {/* Inner circle */}
-      <circle
-        cx={half}
-        cy={half}
-        r={r}
-        stroke="var(--accent)"
-        strokeWidth={stroke}
-        fill="none"
-      />
-      {/* Center point */}
-      <circle cx={half} cy={half} r={dot} fill="var(--accent)" />
+      <circle cx="77.1" cy="39.9" r={dotR} fill="var(--accent, #E8254B)" />
     </svg>
   );
 }
