@@ -53,6 +53,12 @@ Let's be upfront, because this is where most tools lose trust:
 
 Every tweak is defined in a human-readable YAML playbook. You can read every single one before running the app.
 
+<p align="center">
+  <img src="docs/screenshots/trust-review-technical-details.png" alt="Playbook review showing actions with technical details and registry keys" width="720" />
+  <br />
+  <em>Every action shows its exact registry keys, risk level, and status before you run anything.</em>
+</p>
+
 <details>
 <summary><strong>Bloatware Cleanup</strong></summary>
 
@@ -116,6 +122,12 @@ VBS, HVCI, Spectre/Meltdown mitigations, Defender control. All default to OFF. A
 
 See: [`playbooks/security/`](playbooks/security/)
 </details>
+
+<p align="center">
+  <img src="docs/screenshots/trust-review-security-expert.png" alt="Security actions showing expert-only badges and risk warnings" width="720" />
+  <br />
+  <em>Dangerous actions are labeled Expert-only, show REBOOT badges, and are never enabled by default.</em>
+</p>
 
 ### What a playbook action looks like
 
@@ -234,6 +246,12 @@ Default settings do not touch anti-cheat dependencies. VBS (required by Vanguard
 **Can I undo everything?**
 Yes. The Rust service logs every change with its original value. You can roll back individual actions or the entire session.
 
+<p align="center">
+  <img src="docs/screenshots/trust-report-rollback.png" alt="Post-execution report with rollback instructions" width="720" />
+  <br />
+  <em>After execution: applied/preserved counts, rollback instructions, and exportable report.</em>
+</p>
+
 **Why Rust for the service?**
 System-level operations need memory safety and predictable performance. Rust gives both without a runtime. The service handles registry writes, service state changes, file operations, and rollback &mdash; all operations where a crash or corruption would be catastrophic.
 
@@ -242,6 +260,16 @@ So you can read them. Every action, every registry key, every risk level is visi
 
 **Windows SmartScreen warns me when I run the installer. Is this safe?**
 Yes. SmartScreen flags executables that are new or not signed with an Extended Validation certificate. This is normal for independent open-source software. The warning disappears as the app builds download reputation over time. To verify the download yourself: check the SHA-256 hash published with each release, review the source code in this repo, and read the playbooks to confirm what the app actually does. If you are uncomfortable running unsigned software, you can build from source instead.
+
+## Verifying a Release
+
+Each release includes:
+
+- **SHA-256 hash** published in the release notes. Compare with `certutil -hashfile redcore-os-setup.exe SHA256` on Windows or `shasum -a 256` on macOS/Linux.
+- **VirusTotal scan** linked in the release notes so you can verify the binary independently.
+- **Source tag** matching the release, so you can build from source and compare.
+
+If a release does not include these, do not install it. File an issue instead.
 
 ## Security
 
