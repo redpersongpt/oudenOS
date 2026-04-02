@@ -1140,9 +1140,10 @@ fn store_plan(
     preset: &str,
     plan: &serde_json::Value,
 ) -> anyhow::Result<String> {
+    let fallback_id = uuid::Uuid::new_v4().to_string();
     let id = plan["id"]
         .as_str()
-        .unwrap_or(&uuid::Uuid::new_v4().to_string())
+        .unwrap_or(&fallback_id)
         .to_string();
     let now = chrono::Utc::now().to_rfc3339();
     let cid: Option<&str> = classification_id;

@@ -65,7 +65,7 @@ fn sidecar_path() -> PathBuf {
     #[cfg(windows)]
     {
         let base = std::env::var("LOCALAPPDATA")
-            .unwrap_or_else(|_| "C:\\ProgramData".to_string());
+            .unwrap_or_else(|_| "C:\\Users\\Default\\AppData\\Local".to_string());
         PathBuf::from(base).join("redcore-os").join("resume-journal.json")
     }
 

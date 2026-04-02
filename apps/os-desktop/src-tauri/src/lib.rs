@@ -91,7 +91,7 @@ async fn export_package(
 
     let playbook_root = match playbook_root {
         Some(p) => p,
-        None => return Ok(serde_json::to_value(apbx::ExportResult::err("Playbook directory not found")).unwrap()),
+        None => return Ok(serde_json::to_value(apbx::ExportResult::err("Playbook directory not found")).map_err(|e| e.to_string())?),
     };
 
     let wizard_json_path = playbook_root.join("wizard.json");
@@ -127,12 +127,12 @@ async fn export_package(
 
     let output_path = match file_path {
         Some(p) => p.as_path().map(|pp| pp.to_path_buf()).unwrap_or(default_path),
-        None => return Ok(serde_json::to_value(apbx::ExportResult::err("Export cancelled")).unwrap()),
+        None => return Ok(serde_json::to_value(apbx::ExportResult::err("Export cancelled")).map_err(|e| e.to_string())?),
     };
 
     match apbx::create_bundle(&output_path, &playbook_root, &wizard_metadata, &state, version, commit) {
-        Ok(result) => Ok(serde_json::to_value(result).unwrap()),
-        Err(e) => Ok(serde_json::to_value(apbx::ExportResult::err(e)).unwrap()),
+        Ok(result) => Ok(serde_json::to_value(result).map_err(|e| e.to_string())?),
+        Err(e) => Ok(serde_json::to_value(apbx::ExportResult::err(e)).map_err(|e| e.to_string())?),
     }
 }
 

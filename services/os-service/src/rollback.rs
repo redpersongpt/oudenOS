@@ -303,7 +303,7 @@ fn restore_task(prev: &PreviousValue) -> anyhow::Result<()> {
 
 #[cfg(windows)]
 fn restore_bcd(prev: &PreviousValue) -> anyhow::Result<()> {
-    let element = &prev.value_name;
+    let element = powershell::validate_safe_arg(&prev.value_name, "BCD element")?;
     let value = prev
         .previous_value
         .as_ref()
@@ -317,7 +317,8 @@ fn restore_bcd(prev: &PreviousValue) -> anyhow::Result<()> {
             anyhow::bail!("Failed to delete BCD element '{}': {}", element, result.stderr.trim());
         }
     } else {
-        let script = format!("bcdedit /set {{current}} {} {}", element, value);
+        let safe_value = powershell::validate_safe_arg(value, "BCD value")?;
+        let script = format!("bcdedit /set {{current}} {} {}", element, safe_value);
         let result = powershell::execute(&script)?;
         if !result.success {
             anyhow::bail!("Failed to restore BCD element '{}' to '{}': {}", element, value, result.stderr.trim());
@@ -336,8 +337,11 @@ fn restore_power(prev: &PreviousValue) -> anyhow::Result<()> {
         .unwrap_or("");
 
     if !value.is_empty() && !setting_path.is_empty() {
+        powershell::validate_safe_arg(value, "power setting value")?;
         let parts: Vec<&str> = setting_path.split('/').collect();
         if parts.len() == 2 {
+            powershell::validate_safe_arg(parts[0], "power subgroup GUID")?;
+            powershell::validate_safe_arg(parts[1], "power setting GUID")?;
             let script = format!(
                 "powercfg /setacvalueindex scheme_current {} {} {}",
                 parts[0], parts[1], value
