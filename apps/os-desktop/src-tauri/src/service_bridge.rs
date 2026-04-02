@@ -22,7 +22,9 @@ const REQUEST_TIMEOUT: Duration = Duration::from_secs(30);
 
 pub struct ServiceBridge {
     process: Option<Child>,
-    pending: HashMap<u64, mpsc::Sender<Result<Value, String>>>,
+    /// Buffered responses that arrived for other request IDs while we were
+    /// waiting for a specific one. Keyed by request ID.
+    buffered: HashMap<u64, Result<Value, String>>,
     next_id: AtomicU64,
     admin: bool,
     #[allow(dead_code)]
@@ -34,7 +36,7 @@ impl ServiceBridge {
     pub fn new() -> Self {
         Self {
             process: None,
-            pending: HashMap::new(),
+            buffered: HashMap::new(),
             next_id: AtomicU64::new(1),
             admin: false,
             reader_handle: None,
@@ -129,9 +131,6 @@ impl ServiceBridge {
     }
 
     pub async fn call(&mut self, method: &str, params: Value) -> Result<Value, String> {
-        // Drain any responses that arrived for previous requests
-        self.drain_responses();
-
         let child = self.process.as_mut().ok_or("Service not running")?;
         let stdin = child
             .stdin
@@ -156,26 +155,24 @@ impl ServiceBridge {
             .flush()
             .map_err(|e| format!("Failed to flush service stdin: {e}"))?;
 
-        // Wait for response with timeout
+        // Check if the response was already buffered (from a previous call
+        // that received this ID's response while waiting for its own)
+        if let Some(result) = self.buffered.remove(&id) {
+            return result;
+        }
+
+        // Wait for OUR response, buffering any others that arrive first
         let deadline = std::time::Instant::now() + REQUEST_TIMEOUT;
 
         loop {
-            self.drain_responses();
-
-            if let Some(result) = self.pending.remove(&id) {
-                // We stored the sender; we need a different approach
-                // Actually let's simplify: just poll the rx directly
-                drop(result); // won't use sender pattern
-            }
-
-            // Poll the response channel
             if let Some(ref rx) = self.response_rx {
-                match rx.recv_timeout(Duration::from_millis(50)) {
+                match rx.recv_timeout(Duration::from_millis(100)) {
                     Ok((resp_id, result)) => {
                         if resp_id == id {
                             return result;
                         }
-                        // Response for a different request — discard (timed out)
+                        // Not our response — buffer it for the caller that owns it
+                        self.buffered.insert(resp_id, result);
                     }
                     Err(mpsc::RecvTimeoutError::Timeout) => {
                         if std::time::Instant::now() > deadline {
@@ -189,14 +186,6 @@ impl ServiceBridge {
                 }
             } else {
                 return Err("No response channel".into());
-            }
-        }
-    }
-
-    fn drain_responses(&mut self) {
-        if let Some(ref rx) = self.response_rx {
-            while let Ok((_id, _result)) = rx.try_recv() {
-                // Discard stale responses from timed-out requests
             }
         }
     }
@@ -229,7 +218,6 @@ fn detect_admin() -> bool {
     }
     #[cfg(not(windows))]
     {
-        // On non-Windows, check if running as root (for dev testing)
         unsafe { libc::geteuid() == 0 }
     }
 }
@@ -241,25 +229,20 @@ fn find_service_binary(resource_dir: &Path) -> Option<PathBuf> {
         "redcore-os-service"
     };
 
-    // Get the directory containing the Tauri executable itself
     let exe_dir = std::env::current_exe()
         .ok()
         .and_then(|p| p.parent().map(|pp| pp.to_path_buf()));
 
     let mut candidates: Vec<PathBuf> = vec![
-        // Tauri NSIS: resource_dir from app.path().resource_dir()
         resource_dir.join(exe),
-        // Tauri NSIS: resources may be nested
         resource_dir.join("_up_").join(exe),
     ];
 
-    // Next to the Tauri executable itself (common NSIS layout)
     if let Some(ref dir) = exe_dir {
         candidates.push(dir.join(exe));
         candidates.push(dir.join("resources").join(exe));
     }
 
-    // Dev/build paths (relative to working directory)
     candidates.push(PathBuf::from("../../services/os-service/target/release").join(exe));
     candidates.push(PathBuf::from("../../services/os-service/target/debug").join(exe));
 
