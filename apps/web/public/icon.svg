@@ -1,14 +1,6 @@
 <svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- Background -->
-  <rect width="512" height="512" rx="96" fill="#1e1e22"/>
-  <!-- Hexagon shell -->
-  <path d="M256 80L432 182v168L256 452 80 350V182L256 80z" fill="#E8254B" opacity="0.15"/>
-  <path d="M256 80L432 182v168L256 452 80 350V182L256 80z" stroke="#E8254B" stroke-width="12" fill="none"/>
-  <!-- Orbital ring -->
-  <circle cx="256" cy="266" r="120" stroke="#E8254B" stroke-width="14" fill="none" opacity="0.45"/>
-  <!-- Core -->
-  <circle cx="256" cy="266" r="64" fill="#E8254B"/>
-  <!-- Accent marks -->
-  <path d="M352 172l24-14" stroke="#E8254B" stroke-width="10" stroke-linecap="round" opacity="0.6"/>
-  <path d="M136 172l-24-14" stroke="#E8254B" stroke-width="10" stroke-linecap="round" opacity="0.3"/>
+  <rect width="512" height="512" rx="96" fill="#000000"/>
+  <rect x="80" y="80" width="352" height="352" stroke="#333333" stroke-width="12" fill="none"/>
+  <circle cx="256" cy="256" r="100" stroke="#D71921" stroke-width="12" fill="none"/>
+  <circle cx="256" cy="256" r="32" fill="#D71921"/>
 </svg>

@@ -1,54 +1,52 @@
-# redcoreECO
+# Ouden
 
-Premium Windows optimization ecosystem.
+Premium Windows optimization ecosystem — OudenOS, Ouden.Tuning, ouden.cc
+
+## Products
+
+| Product | Description | Price |
+|---------|-------------|-------|
+| **OudenOS** | Windows optimization wizard — debloat, privacy, performance | Free |
+| **Ouden.Tuning** | Deep tuning desktop — CPU, GPU, latency, benchmarks | $12.99 one-time |
+| **ouden.cc** | Marketing site + SaaS backend | — |
 
 ## Structure
 
 ```
 apps/
-  web/               Next.js website (Render)
-  tuning-desktop/    Electron optimizer
-  tuning-api/        Cloud API (Fastify)
-  tuning-website/    Marketing site
-  os-desktop/        Installer wizard (Electron 820x580)
-  os-api/            Cloud API
-  os-website/        Marketing site
+  web/               Next.js website (ouden.cc)
+  tuning-desktop/    Electron tuning app (Ouden.Tuning)
+  os-desktop/        Tauri optimization wizard (OudenOS)
+  cloud-api/         SaaS backend — auth, billing, licensing
+  tuning-api/        Tuning product API
+  os-api/            OS product API
 
 packages/
-  tuning-shared-schema/    IPC contracts
-  tuning-design-system/    Design tokens
-  tuning-license-client/   License validation
-  tuning-benchmark/        Benchmark harness
-  tuning-rollback/         Rollback utilities
-  tuning-modules/          Module definitions
-  tuning-download/         App hub downloads
-  os-shared-schema/        OS IPC contracts
-  os-design-system/        OS design tokens
+  db/                     Shared PostgreSQL schema
+  tuning-design-system/   Design tokens + Tailwind preset
+  system-analyzer/        Hardware classification + recommendations
 
 services/
   tuning-service/    Rust privileged daemon
   os-service/        Rust transformation engine + playbook loader
 
-playbooks/           YAML transformation modules (37 files)
-docs/                Product docs (CLAUDE.md, BUGHUNTER, etc.)
-proof/               Visual proof screenshots
-scripts/             Consumer Windows proof, utilities
+playbooks/           YAML transformation modules
 ```
 
-## Deploy (Render)
+## Deploy
 
-Branch: `main` | Root: `apps/web` | Build: `pnpm install && pnpm build`
+VDS: `REDACTED_VDS_IP` — nginx + PM2 + PostgreSQL
 
-## AME Wizard Playbook
-
-We rebuilt this repo with the same wizard/playbook flow as ReviOS: drop the relevant playbook into the AME Wizard installer, follow the prompts, and the local Rust service applies the reversible transformation plan. The `playbooks/` YAMLs now expose the same configuration hooks as the AME Wizard (version 2.0+). The docs folder contains walkthroughs, and `scripts/build-and-publish-os-release.sh` keeps the exported bundle aligned with the wizard expectation.
+```bash
+ssh ubuntu@REDACTED_VDS_IP
+cd /home/ubuntu/redcoreECO && bash scripts/deploy.sh
+```
 
 ## Dev
 
 ```bash
 pnpm install
-pnpm dev:web        # Website
-pnpm dev:tuning     # Tuning desktop
-pnpm dev:os         # OS desktop
-pnpm typecheck      # All packages
+pnpm dev:web        # ouden.cc
+pnpm dev:tuning     # Ouden.Tuning desktop
+pnpm dev:os         # OudenOS desktop
 ```
