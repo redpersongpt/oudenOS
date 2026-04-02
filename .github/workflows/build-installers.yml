@@ -228,9 +228,10 @@ jobs:
         shell: pwsh
         run: |
           $size = (Get-Item "apps/os-desktop/dist/installers/redcore-os-setup.exe").Length
-          if ($size -lt 20000000) {
-            throw "OS installer too small: $size bytes"
+          if ($size -lt 2000000) {
+            throw "OS installer too small: $size bytes (expected >2MB for Tauri NSIS)"
           }
+          Write-Host "OS installer size: $size bytes (OK)"
 
       - name: Upload OS installer
         uses: actions/upload-artifact@v4
