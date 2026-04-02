@@ -325,7 +325,7 @@ export function TuningPlanPage() {
               <motion.button
                 key={preset.id}
                 onClick={() => setSelectedPreset(preset.id)}
-                className={`relative flex flex-col items-start gap-2.5 rounded-xl border p-4 text-left transition-all ${
+                className={`relative flex flex-col items-start gap-2.5 rounded-lg border p-4 text-left transition-all ${
                   isSelected
                     ? "border-brand-400 bg-brand-50/30 shadow-sm"
                     : "border-neutral-150 bg-white hover:bg-neutral-25 hover:border-neutral-200"
@@ -357,7 +357,7 @@ export function TuningPlanPage() {
                 {isSelected && (
                   <motion.div
                     layoutId="preset-indicator"
-                    className="absolute inset-0 rounded-xl ring-1.5 ring-brand-400 ring-inset pointer-events-none"
+                    className="absolute inset-0 rounded-lg ring-1.5 ring-brand-400 ring-inset pointer-events-none"
                   />
                 )}
               </motion.button>
@@ -370,7 +370,7 @@ export function TuningPlanPage() {
           <motion.div variants={staggerChild}>
             <Card>
               <div className="flex flex-col items-center gap-4 px-5 py-12 text-center">
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl border-2 border-dashed border-neutral-200 bg-neutral-50">
+                <div className="flex h-12 w-12 items-center justify-center rounded-lg border-2 border-dashed border-neutral-200 bg-neutral-50">
                   <ScanSearch
                     className="h-6 w-6 text-neutral-300"
                     strokeWidth={1.5}
@@ -488,7 +488,7 @@ export function TuningPlanPage() {
                   {/* Category header */}
                   <button
                     onClick={() => toggleCategory(cat)}
-                    className="flex w-full items-center gap-3 px-5 py-3.5 text-left hover:bg-neutral-25 rounded-xl transition-colors"
+                    className="flex w-full items-center gap-3 px-5 py-3.5 text-left hover:bg-neutral-25 rounded-lg transition-colors"
                   >
                     <motion.div
                       animate={{ rotate: isExpanded ? 0 : -90 }}

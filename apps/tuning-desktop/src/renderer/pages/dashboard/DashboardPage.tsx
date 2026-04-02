@@ -158,10 +158,10 @@ function OpportunityCard({
     >
       <motion.div
         variants={cardHover}
-        className="flex items-center gap-4 rounded-xl border border-border bg-surface-overlay p-3.5 cursor-default"
+        className="flex items-center gap-4 rounded-lg border border-border bg-surface-overlay p-3.5 cursor-default"
       >
         <div
-          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${iconBg}`}
+          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${iconBg}`}
         >
           <Icon className={`h-4.5 w-4.5 ${iconColor}`} strokeWidth={1.5} />
         </div>
@@ -520,7 +520,7 @@ export function DashboardPage() {
                     exit={{ opacity: 0 }}
                     className="flex flex-col items-center justify-center py-10 gap-3"
                   >
-                    <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-dashed border-white/[0.12] bg-surface-overlay">
+                    <div className="flex h-11 w-11 items-center justify-center rounded-lg border border-dashed border-white/[0.12] bg-surface-overlay">
                       <ScanSearch
                         className="h-5 w-5 text-ink-tertiary"
                         strokeWidth={1.5}
@@ -654,7 +654,7 @@ export function DashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="flex flex-col items-center justify-center gap-4 py-8">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl border-2 border-dashed border-white/[0.12] bg-surface-overlay">
+              <div className="flex h-12 w-12 items-center justify-center rounded-lg border-2 border-dashed border-white/[0.12] bg-surface-overlay">
                 <Activity
                   className="h-5 w-5 text-ink-tertiary"
                   strokeWidth={1.5}

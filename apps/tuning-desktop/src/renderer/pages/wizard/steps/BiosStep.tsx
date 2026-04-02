@@ -94,7 +94,7 @@ function BiosCard({ rec, checked, onToggle }: {
   return (
     <motion.div
       initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}
-      className={`rounded-xl border p-4 transition-colors ${
+      className={`rounded-lg border p-4 transition-colors ${
         checked
           ? "border-amber-700/40 bg-amber-900/10"
           : "border-white/[0.07] bg-white/[0.04]"
@@ -183,7 +183,7 @@ export function BiosStep() {
           {deviceProfile?.motherboard && (
             <motion.div
               initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }}
-              className="flex items-center gap-3 rounded-xl border border-amber-700/30 bg-amber-900/10 px-4 py-3"
+              className="flex items-center gap-3 rounded-lg border border-amber-700/30 bg-amber-900/10 px-4 py-3"
             >
               <Cpu className="h-4 w-4 text-amber-400 shrink-0" strokeWidth={1.5} />
               <div>
@@ -200,7 +200,7 @@ export function BiosStep() {
           {/* Info banner */}
           <motion.div
             initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }}
-            className="flex items-start gap-3 rounded-xl border border-white/[0.07] bg-white/[0.04] px-4 py-3.5"
+            className="flex items-start gap-3 rounded-lg border border-white/[0.07] bg-white/[0.04] px-4 py-3.5"
           >
             <Info className="mt-0.5 h-4 w-4 shrink-0 text-blue-400" strokeWidth={1.5} />
             <p className="text-xs leading-relaxed text-ink-secondary">

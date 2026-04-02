@@ -32,7 +32,7 @@ function ClassifyCTA({ onClassify, loading }: { onClassify: () => void; loading:
       exit="exit"
       className="flex flex-col items-center justify-center gap-5 py-20"
     >
-      <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-white/[0.08] bg-white/[0.04]">
+      <div className="flex h-16 w-16 items-center justify-center rounded-lg border border-white/[0.08] bg-white/[0.04]">
         <Brain className="h-7 w-7 text-ink-tertiary" strokeWidth={1.5} />
       </div>
       <div className="text-center space-y-1.5 max-w-xs">
@@ -67,7 +67,7 @@ function NoScanState() {
       exit="exit"
       className="flex flex-col items-center justify-center gap-4 py-20"
     >
-      <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-dashed border-white/[0.10]">
+      <div className="flex h-14 w-14 items-center justify-center rounded-lg border border-dashed border-white/[0.10]">
         <Brain className="h-6 w-6 text-ink-tertiary" strokeWidth={1.5} />
       </div>
       <div className="text-center space-y-1 max-w-xs">

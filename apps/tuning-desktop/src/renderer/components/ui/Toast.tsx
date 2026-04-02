@@ -90,7 +90,7 @@ export function ToastProvider() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -8, scale: 0.95 }}
             transition={{ type: "spring", stiffness: 400, damping: 30 }}
-            className={`pointer-events-auto flex w-[320px] items-start gap-3 rounded-xl border bg-surface-raised p-4 shadow-xl ${borderMap[item.variant]}`}
+            className={`pointer-events-auto flex w-[320px] items-start gap-3 rounded-lg border bg-surface-raised p-4 shadow-xl ${borderMap[item.variant]}`}
           >
             <span className="mt-0.5 shrink-0">{iconMap[item.variant]}</span>
             <div className="flex-1 min-w-0">

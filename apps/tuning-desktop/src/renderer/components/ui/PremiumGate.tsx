@@ -74,7 +74,7 @@ export function PremiumGate({
   const handleUpgrade = onUpgrade ?? (() => navigate("/subscription"));
 
   return (
-    <div className="relative isolate overflow-hidden rounded-xl">
+    <div className="relative isolate overflow-hidden rounded-lg">
       {/* Blurred preview — shows what's behind the gate */}
       <div
         className="pointer-events-none select-none"
@@ -103,7 +103,7 @@ export function PremiumGate({
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ ...spring.bounce, delay: 0.1 }}
-            className="flex h-12 w-12 items-center justify-center rounded-2xl border border-brand-500/20 bg-brand-500/10"
+            className="flex h-12 w-12 items-center justify-center rounded-lg border border-brand-500/20 bg-brand-500/10"
           >
             <Sparkles className="h-5 w-5 text-brand-400" strokeWidth={1.5} />
           </motion.div>

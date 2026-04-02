@@ -46,7 +46,7 @@ export function LogoHero({ size = 80 }: { size?: number }) {
       <motion.div
         animate={{ scale: [1, 1.15, 1], opacity: [0.2, 0.4, 0.2] }}
         transition={{ duration: 4, ease: "easeInOut", repeat: Infinity }}
-        className="absolute inset-0 rounded-2xl blur-xl"
+        className="absolute inset-0 rounded-lg blur-xl"
         style={{ width: size, height: size, background: "rgba(232,37,75,0.2)" }}
       />
       <svg width={size} height={size} viewBox="0 0 64 64" fill="none" className="relative">

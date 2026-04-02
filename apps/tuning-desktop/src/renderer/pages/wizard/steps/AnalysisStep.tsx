@@ -55,7 +55,7 @@ function CategoryCard({ label, icon: Icon, status }: CategoryCardProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }}
-      className={`flex items-center gap-3 rounded-xl border px-4 py-3 transition-all duration-300 ${
+      className={`flex items-center gap-3 rounded-lg border px-4 py-3 transition-all duration-300 ${
         isDone
           ? "border-green-500/20 bg-green-500/[0.04]"
           : isError
@@ -286,7 +286,7 @@ export function AnalysisStep() {
               initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
-              className="flex items-start gap-3 rounded-xl border border-red-500/20 bg-red-500/[0.04] px-4 py-3"
+              className="flex items-start gap-3 rounded-lg border border-red-500/20 bg-red-500/[0.04] px-4 py-3"
             >
               <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-red-400" strokeWidth={1.5} />
               <div>

@@ -29,7 +29,7 @@ export function ErrorState({
     >
       <motion.div
         variants={staggerChild}
-        className={`mb-4 flex items-center justify-center rounded-2xl bg-brand-500/10 border border-brand-500/20 ${
+        className={`mb-4 flex items-center justify-center rounded-lg bg-brand-500/10 border border-brand-500/20 ${
           compact ? "h-12 w-12" : "h-16 w-16"
         }`}
       >

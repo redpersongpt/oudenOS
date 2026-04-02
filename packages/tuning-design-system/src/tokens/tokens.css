@@ -1,67 +1,67 @@
-/* ─── redcore-Tuning Design Tokens (CSS Custom Properties) ─────────────────── */
-/* Dark-first. Matching redperson brand banner color scheme.                    */
+/* ─── redcore Tuning Design Tokens — OLED Black + Pink-Red ─────────────────── */
 
 :root {
-  /* ── Brand Red (pink-red) ─────────────────────────────────────────────── */
+  /* ── Brand ──────────────────────────────────────────────────────────────── */
   --color-brand-500: #E8254B;
   --color-brand-600: #C41E3E;
   --color-brand-700: #A01832;
-  --color-brand-hover: #FF3860;
+  --color-brand-hover: #FF4D6A;
   --color-brand-active: #C41E3E;
-  --color-brand-disabled: #5C1A28;
+  --color-brand-disabled: #330A14;
 
-  /* ── Dark surfaces (warm charcoal) ────────────────────────────────────── */
-  --color-dark-950: #1a1a1e;
-  --color-dark-900: #1e1e22;
-  --color-dark-850: #252529;
-  --color-dark-800: #2c2c31;
-  --color-dark-750: #333338;
-  --color-dark-border: #38383e;
-  --color-dark-border-subtle: #2e2e34;
-  --color-dark-border-strong: #48484f;
+  /* ── Surfaces (OLED Black) ──────────────────────────────────────────────── */
+  --color-dark-950: #000000;
+  --color-dark-900: #000000;
+  --color-dark-850: #111111;
+  --color-dark-800: #1A1A1A;
+  --color-dark-750: #222222;
+  --color-dark-border: #333333;
+  --color-dark-border-subtle: #222222;
+  --color-dark-border-strong: #444444;
 
-  /* ── Ink (text on dark) ─────────────────────────────────────────────────── */
-  --color-ink-primary: #f0f0f4;
-  --color-ink-secondary: #a0a0ac;
-  --color-ink-tertiary: #6a6a76;
-  --color-ink-inverse: #1e1e22;
+  /* ── Ink ─────────────────────────────────────────────────────────────────── */
+  --color-ink-primary: #E8E8E8;
+  --color-ink-secondary: #999999;
+  --color-ink-tertiary: #666666;
+  --color-ink-inverse: #000000;
 
-  /* ── Semantic — single source of truth for components ───────────────────── */
-  --color-bg:               var(--color-dark-900);
-  --color-surface:          var(--color-dark-850);
-  --color-surface-raised:   var(--color-dark-800);
-  --color-surface-overlay:  var(--color-dark-750);
-  --color-surface-muted:    var(--color-dark-750);
+  /* ── Semantic ───────────────────────────────────────────────────────────── */
+  --color-bg:               #000000;
+  --color-surface:          #111111;
+  --color-surface-raised:   #1A1A1A;
+  --color-surface-overlay:  #222222;
+  --color-surface-muted:    #0A0A0A;
 
-  --color-border:           var(--color-dark-border);
-  --color-border-subtle:    var(--color-dark-border-subtle);
-  --color-border-strong:    var(--color-dark-border-strong);
+  --color-border:           #333333;
+  --color-border-subtle:    #222222;
+  --color-border-strong:    #444444;
   --color-border-focus:     var(--color-brand-500);
 
-  --color-text-primary:     var(--color-ink-primary);
-  --color-text-secondary:   var(--color-ink-secondary);
-  --color-text-tertiary:    var(--color-ink-tertiary);
+  --color-text-primary:     #E8E8E8;
+  --color-text-secondary:   #999999;
+  --color-text-tertiary:    #666666;
   --color-text-brand:       var(--color-brand-500);
 
   /* ── Status ─────────────────────────────────────────────────────────────── */
-  --color-success:    #22C55E;
-  --color-warning:    #F59E0B;
+  --color-success:    #4A9E5C;
+  --color-warning:    #D4A843;
   --color-error:      #E8254B;
-  --color-info:       #3B82F6;
+  --color-info:       #5B9BF6;
 
   /* ── Risk ────────────────────────────────────────────────────────────────── */
-  --color-risk-safe:    #22C55E;
-  --color-risk-low:     #4ADE80;
-  --color-risk-medium:  #F59E0B;
+  --color-risk-safe:    #4A9E5C;
+  --color-risk-low:     #4A9E5C;
+  --color-risk-medium:  #D4A843;
   --color-risk-high:    #E8254B;
   --color-risk-extreme: #FF3040;
 
   /* ── Typography ─────────────────────────────────────────────────────────── */
-  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", "Cascadia Code", "Fira Code", "Consolas", monospace;
+  --font-sans: "Space Grotesk", system-ui, sans-serif;
+  --font-mono: "Space Mono", "Cascadia Code", monospace;
+  --font-display: "Doto", monospace;
   --font-size-base: 0.875rem;
 
-  /* ── Spacing ────────────────────────────────────────────────────────────── */
+  /* ── Spacing (8px grid) ─────────────────────────────────────────────────── */
   --space-unit: 4px;
   --space-1: 4px;
   --space-2: 8px;
@@ -78,14 +78,14 @@
   --radius-md: 8px;
   --radius-lg: 12px;
   --radius-xl: 16px;
-  --radius-2xl: 20px;
+  --radius-2xl: 16px;
 
-  /* ── Shadow (dark-optimized) ─────────────────────────────────────────────── */
-  --shadow-card:       0 1px 3px rgba(0,0,0,0.35), 0 6px 16px rgba(0,0,0,0.2);
-  --shadow-card-hover: 0 2px 8px rgba(0,0,0,0.45), 0 12px 28px rgba(0,0,0,0.3);
-  --shadow-modal:      0 24px 48px -8px rgba(0,0,0,0.6), 0 8px 16px rgba(0,0,0,0.3);
-  --shadow-brand-glow: 0 0 0 3px rgba(232,37,75,0.25);
-  --shadow-amber-glow: 0 0 0 3px rgba(245,158,11,0.2);
+  /* ── Shadow (none — OLED design) ────────────────────────────────────────── */
+  --shadow-card:       none;
+  --shadow-card-hover: none;
+  --shadow-modal:      none;
+  --shadow-brand-glow: 0 0 0 1px rgba(232,37,75,0.15);
+  --shadow-amber-glow: 0 0 0 1px rgba(212,168,67,0.15);
 
   /* ── Layout ─────────────────────────────────────────────────────────────── */
   --sidebar-width: 260px;

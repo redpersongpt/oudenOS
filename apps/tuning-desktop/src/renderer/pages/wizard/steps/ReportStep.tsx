@@ -43,7 +43,7 @@ function StatCard({ icon: Icon, label, value, sub, accent }: {
   return (
     <motion.div
       initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}
-      className="rounded-xl border border-white/[0.07] bg-white/[0.04] p-4 space-y-2"
+      className="rounded-lg border border-white/[0.07] bg-white/[0.04] p-4 space-y-2"
     >
       <div className="flex items-center gap-2">
         <Icon className="h-4 w-4 text-neutral-500 shrink-0" strokeWidth={1.5} />
@@ -155,7 +155,7 @@ export function ReportStep() {
         {profile && (
           <motion.div
             initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }}
-            className="flex items-center justify-between rounded-xl border border-white/[0.07] bg-white/[0.04] px-5 py-4"
+            className="flex items-center justify-between rounded-lg border border-white/[0.07] bg-white/[0.04] px-5 py-4"
           >
             <div className="space-y-1">
               <p className="text-[11px] uppercase tracking-widest text-neutral-500">System</p>
@@ -175,7 +175,7 @@ export function ReportStep() {
         )}
 
         {/* Action timeline */}
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }} className="rounded-xl border border-white/[0.07] overflow-hidden">
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }} className="rounded-lg border border-white/[0.07] overflow-hidden">
           <button
             onClick={() => setTimelineOpen((o) => !o)}
             className="flex w-full items-center justify-between px-4 py-3.5 hover:bg-white/[0.03] transition-colors"

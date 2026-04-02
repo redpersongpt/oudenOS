@@ -112,7 +112,7 @@ function EnvelopeIllustration() {
       <motion.div
         animate={{ y: [0, -5, 0] }}
         transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-        className="relative flex h-20 w-20 items-center justify-center rounded-3xl bg-brand-500/10 border border-brand-500/20"
+        className="relative flex h-20 w-20 items-center justify-center rounded-lg bg-brand-500/10 border border-brand-500/20"
       >
         {/* SVG envelope */}
         <svg viewBox="0 0 48 48" width="40" height="40" fill="none" aria-hidden="true">
@@ -224,7 +224,7 @@ export function RegisterPage() {
               <motion.div variants={stagger} initial="hidden" animate="visible">
                 {/* Brand */}
                 <motion.div variants={fadeUp} className="mb-8 flex flex-col items-center gap-3">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-500 shadow-[0_0_28px_rgba(232,37,75,0.38)]">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-brand-500 shadow-[0_0_28px_rgba(232,37,75,0.38)]">
                     <Zap className="h-6 w-6 text-white" strokeWidth={2.5} />
                   </div>
                   <div className="text-center">
@@ -238,7 +238,7 @@ export function RegisterPage() {
                 {/* Card */}
                 <motion.div
                   variants={fadeUp}
-                  className="rounded-2xl border border-white/[0.05] bg-neutral-900 p-6 shadow-[0_12px_48px_rgba(0,0,0,0.55)]"
+                  className="rounded-lg border border-white/[0.05] bg-neutral-900 p-6 shadow-[0_12px_48px_rgba(0,0,0,0.55)]"
                 >
                   {/* Error */}
                   <AnimatePresence>
@@ -251,7 +251,7 @@ export function RegisterPage() {
                         transition={{ duration: 0.2 }}
                         className="overflow-hidden"
                       >
-                        <div className="flex items-start gap-2 rounded-xl border border-red-900/50 bg-red-950/40 px-3 py-2.5">
+                        <div className="flex items-start gap-2 rounded-lg border border-red-900/50 bg-red-950/40 px-3 py-2.5">
                           <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-red-400" />
                           <p className="text-xs leading-relaxed text-red-300">{displayError}</p>
                         </div>
@@ -269,7 +269,7 @@ export function RegisterPage() {
                         transition={{ duration: 0.2 }}
                         className="overflow-hidden"
                       >
-                        <div className="rounded-xl border border-brand-500/30 bg-brand-500/10 px-3 py-2.5">
+                        <div className="rounded-lg border border-brand-500/30 bg-brand-500/10 px-3 py-2.5">
                           <p className="text-xs leading-relaxed text-brand-200">{oauthNotice}</p>
                         </div>
                       </motion.div>
@@ -309,7 +309,7 @@ export function RegisterPage() {
                           autoComplete="name"
                           value={displayName}
                           onChange={(e) => setDisplayName(e.target.value)}
-                          className="w-full rounded-xl border border-neutral-700/70 bg-neutral-800/60 py-2.5 pl-9 pr-3 text-sm text-white placeholder-neutral-600 outline-none transition-all focus:border-brand-500/60 focus:ring-2 focus:ring-brand-500/15"
+                          className="w-full rounded-lg border border-neutral-700/70 bg-neutral-800/60 py-2.5 pl-9 pr-3 text-sm text-white placeholder-neutral-600 outline-none transition-all focus:border-brand-500/60 focus:ring-2 focus:ring-brand-500/15"
                           placeholder="Your name"
                         />
                       </div>
@@ -328,7 +328,7 @@ export function RegisterPage() {
                           autoComplete="email"
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
-                          className="w-full rounded-xl border border-neutral-700/70 bg-neutral-800/60 py-2.5 pl-9 pr-3 text-sm text-white placeholder-neutral-600 outline-none transition-all focus:border-brand-500/60 focus:ring-2 focus:ring-brand-500/15"
+                          className="w-full rounded-lg border border-neutral-700/70 bg-neutral-800/60 py-2.5 pl-9 pr-3 text-sm text-white placeholder-neutral-600 outline-none transition-all focus:border-brand-500/60 focus:ring-2 focus:ring-brand-500/15"
                           placeholder="you@example.com"
                         />
                       </div>
@@ -347,7 +347,7 @@ export function RegisterPage() {
                           autoComplete="new-password"
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
-                          className="w-full rounded-xl border border-neutral-700/70 bg-neutral-800/60 py-2.5 pl-9 pr-10 text-sm text-white placeholder-neutral-600 outline-none transition-all focus:border-brand-500/60 focus:ring-2 focus:ring-brand-500/15"
+                          className="w-full rounded-lg border border-neutral-700/70 bg-neutral-800/60 py-2.5 pl-9 pr-10 text-sm text-white placeholder-neutral-600 outline-none transition-all focus:border-brand-500/60 focus:ring-2 focus:ring-brand-500/15"
                           placeholder="Create a strong password"
                         />
                         <button
@@ -457,7 +457,7 @@ export function RegisterPage() {
                           autoComplete="new-password"
                           value={confirm}
                           onChange={(e) => setConfirm(e.target.value)}
-                          className={`w-full rounded-xl border bg-neutral-800/60 py-2.5 pl-9 pr-10 text-sm text-white placeholder-neutral-600 outline-none transition-all focus:ring-2 ${
+                          className={`w-full rounded-lg border bg-neutral-800/60 py-2.5 pl-9 pr-10 text-sm text-white placeholder-neutral-600 outline-none transition-all focus:ring-2 ${
                             confirm && confirm !== password
                               ? "border-red-700/70 focus:border-red-600/60 focus:ring-red-500/15"
                               : confirm && confirm === password
@@ -630,7 +630,7 @@ function OAuthButton({ onClick, icon, label }: OAuthButtonProps) {
       whileHover={{ scale: 1.005, backgroundColor: "rgba(255,255,255,0.05)" }}
       whileTap={{ scale: 0.98 }}
       transition={{ type: "spring", stiffness: 550, damping: 32 }}
-      className="flex w-full items-center justify-center gap-2.5 rounded-xl border border-neutral-700/80 bg-neutral-800/50 px-4 py-2.5 text-sm font-medium text-neutral-200 transition-colors"
+      className="flex w-full items-center justify-center gap-2.5 rounded-lg border border-neutral-700/80 bg-neutral-800/50 px-4 py-2.5 text-sm font-medium text-neutral-200 transition-colors"
     >
       {icon}
       {label}

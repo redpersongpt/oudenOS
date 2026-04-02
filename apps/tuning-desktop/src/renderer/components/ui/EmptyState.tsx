@@ -31,7 +31,7 @@ export function EmptyState({
       {icon && (
         <motion.div
           variants={staggerChild}
-          className={`mb-4 flex items-center justify-center rounded-2xl border border-border bg-surface-overlay ${
+          className={`mb-4 flex items-center justify-center rounded-lg border border-border bg-surface-overlay ${
             compact ? "h-12 w-12" : "h-16 w-16"
           }`}
         >

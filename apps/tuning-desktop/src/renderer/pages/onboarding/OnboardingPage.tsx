@@ -239,7 +239,7 @@ export function OnboardingPage() {
           transition={{ duration: 0.5, delay: 0.1 }}
           className="flex items-center gap-3"
         >
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-500">
+          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-500">
             <Zap
               className="text-white"
               strokeWidth={2.5}
@@ -341,7 +341,7 @@ export function OnboardingPage() {
               >
                 <motion.div
                   variants={itemVariant}
-                  className="flex h-16 w-16 items-center justify-center rounded-2xl bg-brand-500 shadow-lg shadow-brand-500/30"
+                  className="flex h-16 w-16 items-center justify-center rounded-lg bg-brand-500 shadow-lg shadow-brand-500/30"
                 >
                   <Zap className="h-8 w-8 text-white" strokeWidth={2.5} />
                 </motion.div>
@@ -404,7 +404,7 @@ export function OnboardingPage() {
                     return (
                       <motion.div
                         key={id}
-                        className={`flex items-center gap-3 rounded-xl border px-4 py-3 transition-all duration-300 ${
+                        className={`flex items-center gap-3 rounded-lg border px-4 py-3 transition-all duration-300 ${
                           done
                             ? "border-green-500/20 bg-green-500/10"
                             : "border-border bg-surface-overlay"
@@ -513,7 +513,7 @@ export function OnboardingPage() {
                         onClick={() => setSelectedProfile(id)}
                         whileHover={{ y: -2, transition: spring.gentle }}
                         whileTap={{ scale: 0.98 }}
-                        className={`relative rounded-xl border-2 p-4 text-left transition-all duration-200 ${
+                        className={`relative rounded-lg border-2 p-4 text-left transition-all duration-200 ${
                           isSelected
                             ? "border-brand-500 bg-brand-500/10 shadow-sm shadow-brand-500/10"
                             : "border-border bg-surface-overlay hover:border-white/[0.16]"
@@ -593,7 +593,7 @@ export function OnboardingPage() {
             {/* Step 3: Safety Explanation */}
             {step === 3 && (
               <div className="space-y-6">
-                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-green-500/10 border border-green-500/20">
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-green-500/10 border border-green-500/20">
                   <Shield className="h-6 w-6 text-green-400" strokeWidth={1.5} />
                 </div>
                 <h1 className="text-2xl font-bold tracking-tight text-ink">
@@ -604,7 +604,7 @@ export function OnboardingPage() {
                 </p>
 
                 {safetyFeatures.map(({ icon: Icon, title, description }) => (
-                  <div key={title} className="flex gap-4 rounded-xl border border-border bg-surface-overlay p-4">
+                  <div key={title} className="flex gap-4 rounded-lg border border-border bg-surface-overlay p-4">
                     <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-green-500/10">
                       <Icon className="h-4 w-4 text-green-400" strokeWidth={1.5} />
                     </div>
@@ -648,7 +648,7 @@ export function OnboardingPage() {
                 className="space-y-5"
               >
                 <motion.div variants={itemVariant}>
-                  <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-500/10 border border-brand-500/20">
+                  <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-brand-500/10 border border-brand-500/20">
                     <Crown
                       className="h-6 w-6 text-brand-400"
                       strokeWidth={1.5}
@@ -668,7 +668,7 @@ export function OnboardingPage() {
                   variants={itemVariant}
                   className="grid grid-cols-2 gap-3"
                 >
-                  <div className="rounded-xl border border-border bg-surface-overlay p-4">
+                  <div className="rounded-lg border border-border bg-surface-overlay p-4">
                     <p className="text-xs font-semibold uppercase tracking-wider text-ink-tertiary">
                       Free
                     </p>
@@ -687,7 +687,7 @@ export function OnboardingPage() {
                       ))}
                     </ul>
                   </div>
-                  <div className="relative rounded-xl border-2 border-brand-500/30 bg-brand-500/10 p-4">
+                  <div className="relative rounded-lg border-2 border-brand-500/30 bg-brand-500/10 p-4">
                     <div className="absolute -top-2 right-3 rounded-full bg-brand-500 px-2 py-0.5 text-[10px] font-bold text-white">
                       PRO
                     </div>
@@ -757,7 +757,7 @@ export function OnboardingPage() {
               >
                 <motion.div
                   variants={itemVariant}
-                  className="mx-auto flex h-20 w-20 items-center justify-center rounded-3xl bg-brand-500 shadow-xl shadow-brand-500/30"
+                  className="mx-auto flex h-20 w-20 items-center justify-center rounded-lg bg-brand-500 shadow-xl shadow-brand-500/30"
                 >
                   <motion.div
                     initial={{ rotate: -10, scale: 0.8 }}
@@ -783,7 +783,7 @@ export function OnboardingPage() {
 
                 <motion.div
                   variants={itemVariant}
-                  className="rounded-xl border border-border bg-surface-overlay p-5 text-left"
+                  className="rounded-lg border border-border bg-surface-overlay p-5 text-left"
                 >
                   <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-ink-tertiary">
                     Your Setup

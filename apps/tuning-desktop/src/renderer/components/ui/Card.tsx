@@ -30,7 +30,7 @@ export function Card({
         whileHover="hover"
         variants={cardHover}
         onClick={onClick}
-        className={`rounded-xl border shadow-card cursor-pointer ${base} ${className}`}
+        className={`rounded-lg border shadow-none cursor-pointer ${base} ${className}`}
       >
         {children}
       </motion.div>
@@ -39,7 +39,7 @@ export function Card({
 
   return (
     <div
-      className={`rounded-xl border shadow-card ${base} ${className}`}
+      className={`rounded-lg border shadow-none ${base} ${className}`}
       onClick={onClick}
     >
       {children}
@@ -105,7 +105,7 @@ export function AnimatedCard({
       variants={cardStaggerItem}
       whileHover={hoverable ? { y: -2 } : undefined}
       onClick={onClick}
-      className={`rounded-xl border shadow-card ${hoverable ? "cursor-pointer" : ""} ${base} ${className}`}
+      className={`rounded-lg border shadow-none ${hoverable ? "cursor-pointer" : ""} ${base} ${className}`}
     >
       {children}
     </motion.div>

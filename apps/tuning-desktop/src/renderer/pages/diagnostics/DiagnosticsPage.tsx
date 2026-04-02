@@ -166,7 +166,7 @@ export function DiagnosticsPage() {
           <Card>
             <CardContent>
               <div className="flex flex-col items-center gap-5 py-12 text-center">
-                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-500/10 border border-brand-500/20">
+                <div className="flex h-14 w-14 items-center justify-center rounded-lg bg-brand-500/10 border border-brand-500/20">
                   <Activity className="h-7 w-7 text-brand-500" strokeWidth={1.5} />
                 </div>
                 <div>

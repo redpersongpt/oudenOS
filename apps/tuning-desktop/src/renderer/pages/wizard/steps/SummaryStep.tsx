@@ -54,7 +54,7 @@ function StatCard({ icon: Icon, label, value, sub }: {
   return (
     <motion.div
       initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}
-      className="rounded-xl border border-white/[0.07] bg-white/[0.04] p-4 space-y-2"
+      className="rounded-lg border border-white/[0.07] bg-white/[0.04] p-4 space-y-2"
     >
       <div className="flex items-center gap-2">
         <Icon className="h-4 w-4 text-ink-tertiary" strokeWidth={1.5} />
@@ -77,7 +77,7 @@ function CategoryGroup({ category, actions }: {
   const hasPremium = actions.some((a) => a.tier === "premium");
 
   return (
-    <div className="rounded-xl border border-white/[0.07] bg-white/[0.04] overflow-hidden">
+    <div className="rounded-lg border border-white/[0.07] bg-white/[0.04] overflow-hidden">
       <button
         onClick={() => setOpen((o) => !o)}
         className="flex w-full items-center justify-between px-4 py-3 text-left hover:bg-white/[0.03] transition-colors"
@@ -208,7 +208,7 @@ export function SummaryStep() {
         ) : (
           <motion.div
             initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }}
-            className="rounded-xl border border-white/[0.07] bg-white/[0.04] p-8 text-center"
+            className="rounded-lg border border-white/[0.07] bg-white/[0.04] p-8 text-center"
           >
             <p className="text-sm text-ink-tertiary">No actions selected. Go back to configure your optimization plan.</p>
           </motion.div>

@@ -340,7 +340,7 @@ export function InfrastructureStep() {
         {/* Summary */}
         <motion.div
           initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }}
-          className="flex items-center justify-between rounded-xl border border-white/[0.06] bg-white/[0.03] px-5 py-4"
+          className="flex items-center justify-between rounded-lg border border-white/[0.06] bg-white/[0.03] px-5 py-4"
         >
           <span className="text-sm text-ink-secondary">
             <span className="font-semibold text-ink">{selected.size}</span>

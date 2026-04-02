@@ -38,7 +38,7 @@ function HardwareCard({
       <CardHeader>
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-surface-overlay border border-border">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-surface-overlay border border-border">
               <Icon className="h-5 w-5 text-ink-secondary" strokeWidth={1.5} />
             </div>
             <div>
@@ -93,7 +93,7 @@ export function HardwarePage() {
       <motion.div variants={staggerChild}>
         <Card>
           <div className="flex items-center gap-4 px-5 py-4">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-500/10 border border-brand-500/20">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-brand-500/10 border border-brand-500/20">
               <MonitorSmartphone
                 className="h-5 w-5 text-brand-500"
                 strokeWidth={1.5}
@@ -143,7 +143,7 @@ export function HardwarePage() {
         <motion.div variants={staggerChild}>
           <Card>
             <div className="flex flex-col items-center gap-4 px-5 py-12 text-center">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-surface-overlay border border-border">
+              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-surface-overlay border border-border">
                 <ScanSearch
                   className="h-6 w-6 text-ink-tertiary"
                   strokeWidth={1.5}

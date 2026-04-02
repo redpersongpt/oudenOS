@@ -75,7 +75,7 @@ export function WelcomeStep() {
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 + i * 0.08, duration: 0.3 }}
-              className="flex flex-1 flex-col items-center gap-2 rounded-xl border border-white/[0.06] bg-white/[0.02] px-3 py-4"
+              className="flex flex-1 flex-col items-center gap-2 rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-4"
             >
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-500/10">
                 <Icon className="h-4 w-4 text-brand-400" strokeWidth={1.5} />
@@ -94,7 +94,7 @@ export function WelcomeStep() {
           whileHover={{ y: -1, transition: spring.gentle }}
           whileTap={{ scale: 0.98 }}
           onClick={goNext}
-          className="mt-8 w-full max-w-xs rounded-xl bg-brand-500 px-6 py-3.5 text-[15px] font-semibold text-white shadow-lg shadow-brand-500/20 transition-shadow hover:shadow-xl hover:shadow-brand-500/30"
+          className="mt-8 w-full max-w-xs rounded-lg bg-brand-500 px-6 py-3.5 text-[15px] font-semibold text-white shadow-lg shadow-brand-500/20 transition-shadow hover:shadow-xl hover:shadow-brand-500/30"
         >
           Begin Optimization
         </motion.button>

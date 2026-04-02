@@ -77,7 +77,7 @@ export function ExpertGate({
           animate="visible"
           className="flex flex-col items-center gap-3 text-center"
         >
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-surface-raised border border-border shadow-card">
+          <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-surface-raised border border-border shadow-none">
             <ShieldAlert className="h-5 w-5 text-brand-500" strokeWidth={1.5} />
           </div>
 
@@ -117,9 +117,9 @@ function GateOverlay({
       variants={scaleUp}
       initial="hidden"
       animate="visible"
-      className="flex flex-col items-center justify-center gap-4 rounded-xl border border-border bg-surface p-8 text-center shadow-card"
+      className="flex flex-col items-center justify-center gap-4 rounded-lg border border-border bg-surface p-8 text-center shadow-none"
     >
-      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-surface-raised border border-border shadow-card">
+      <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-surface-raised border border-border shadow-none">
         <ShieldAlert className="h-5 w-5 text-brand-500" strokeWidth={1.5} />
       </div>
 

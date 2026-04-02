@@ -250,7 +250,7 @@ function Section({ title, actions, selected, onToggle, defaultOpen = false }: Se
   const activeCount = actions.filter((a) => selected.has(a.id)).length;
 
   return (
-    <div className="rounded-xl border border-white/[0.06] bg-white/[0.04] overflow-hidden">
+    <div className="rounded-lg border border-white/[0.06] bg-white/[0.04] overflow-hidden">
       <button
         onClick={() => setOpen((v) => !v)}
         className="flex w-full items-center justify-between px-5 py-4 text-left"
@@ -375,7 +375,7 @@ export function CleanupStep() {
         {/* Summary */}
         <motion.div
           initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }}
-          className="flex items-center justify-between rounded-xl border border-white/[0.06] bg-white/[0.03] px-5 py-4"
+          className="flex items-center justify-between rounded-lg border border-white/[0.06] bg-white/[0.03] px-5 py-4"
         >
           <span className="text-sm text-ink-secondary">
             <span className="font-semibold text-ink">{total}</span>
