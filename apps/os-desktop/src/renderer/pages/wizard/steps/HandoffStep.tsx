@@ -1,92 +1,65 @@
-// Handoff Step
-// Final step: handoff to redcore-Tuning for advanced per-component optimization.
+// Handoff Step — final: handoff to redcore Tuning
 
 import { motion } from "framer-motion";
-import { Zap, ExternalLink, Shield, ArrowRight } from "lucide-react";
-import { Button } from "@/components/ui/Button";
+import { Zap } from "lucide-react";
 import { platform } from "@/lib/platform";
 
+const ND_EASE = [0.25, 0.1, 0.25, 1] as const;
+
 const TUNING_FEATURES = [
-  "Per-component CPU, GPU, and memory tuning",
-  "Benchmark Lab with before/after comparison",
-  "One-click Rollback Center",
-  "Guided overclocking and undervolting",
-  "Timer resolution and latency optimization",
+  "PER-COMPONENT CPU, GPU, AND MEMORY TUNING",
+  "BENCHMARK LAB WITH BEFORE/AFTER",
+  "ONE-CLICK ROLLBACK CENTER",
+  "GUIDED OVERCLOCKING AND UNDERVOLTING",
+  "TIMER RESOLUTION AND LATENCY OPTIMIZATION",
 ];
 
 export function HandoffStep() {
-  const handleOpenTuning = () => {
-    platform().shell.openExternal("https://redcoreos.net/redcore-tuning");
-  };
-
-  const handleClose = () => {
-    platform().window.close();
-  };
-
   return (
     <motion.div
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -8 }}
-      transition={{ duration: 0.22, ease: [0.0, 0.0, 0.2, 1.0] }}
-      className="flex h-full flex-col items-center justify-center gap-6 px-8"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3, ease: ND_EASE }}
+      className="flex h-full flex-col items-center justify-center gap-6 px-8 bg-nd-bg"
     >
-      {/* Icon */}
-      <motion.div
-        initial={{ scale: 0.8, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ type: "spring", stiffness: 340, damping: 16 }}
-        className="flex h-14 w-14 items-center justify-center rounded-full border border-brand-500/30 bg-brand-500/10"
-      >
-        <Zap className="h-7 w-7 text-brand-400" />
-      </motion.div>
+      <Zap className="h-8 w-8 text-brand-500" />
 
-      {/* Heading */}
-      <div className="flex flex-col items-center gap-1.5 text-center">
-        <h2 className="text-lg font-semibold text-ink">Your OS Is Ready</h2>
-        <p className="max-w-sm text-xs text-ink-secondary">
-          Your Windows is clean. Want to squeeze even more out of your hardware? Check out redcore Tuning.
-        </p>
+      <div className="text-center">
+        <h2 className="font-display text-title text-nd-text-display">READY</h2>
+        <p className="mt-2 nd-label text-nd-text-secondary">YOUR WINDOWS IS CLEAN</p>
       </div>
 
-      {/* Feature list */}
-      <div className="w-full max-w-sm rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
-        <div className="mb-3 flex items-center gap-2">
-          <Shield className="h-3.5 w-3.5 text-brand-400" />
-          <span className="text-[11px] font-semibold uppercase tracking-wider text-ink-secondary">
-            redcore-Tuning
-          </span>
-        </div>
-        <div className="flex flex-col gap-2">
-          {TUNING_FEATURES.map((feature, i) => (
-            <motion.div
-              key={feature}
-              initial={{ opacity: 0, x: -6 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.18, delay: 0.1 + i * 0.04 }}
-              className="flex items-start gap-2"
-            >
-              <ArrowRight className="mt-0.5 h-3 w-3 shrink-0 text-brand-400/60" />
-              <span className="text-[11px] text-ink-secondary">{feature}</span>
-            </motion.div>
-          ))}
-        </div>
+      {/* Tuning features */}
+      <div className="w-full max-w-sm border border-nd-border bg-nd-surface rounded-sm p-4">
+        <div className="mb-3 nd-label text-brand-500">REDCORE TUNING</div>
+        {TUNING_FEATURES.map((feature, i) => (
+          <motion.div
+            key={feature}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.1 + i * 0.04, duration: 0.2, ease: ND_EASE }}
+            className="flex items-center gap-3 py-1.5 border-b border-nd-border-subtle last:border-0"
+          >
+            <div className="w-2 h-px bg-brand-500 shrink-0" />
+            <span className="nd-label-sm text-nd-text-secondary">{feature}</span>
+          </motion.div>
+        ))}
       </div>
 
-      {/* CTAs */}
       <div className="flex gap-3">
-        <Button
-          variant="primary"
-          size="md"
-          onClick={handleOpenTuning}
-          icon={<Zap className="h-4 w-4" />}
+        <button
+          onClick={() => platform().shell.openExternal("https://redcoreos.net/redcore-tuning")}
+          className="flex items-center gap-2 bg-brand-500 text-nd-text-display px-6 py-2.5 rounded-sm font-mono text-label tracking-label uppercase transition-colors duration-150 ease-nd hover:bg-brand-400"
         >
-          Open redcore-Tuning
-          <ExternalLink className="ml-1 h-3 w-3 opacity-50" />
-        </Button>
-        <Button variant="secondary" size="md" onClick={handleClose}>
-          Close Installer
-        </Button>
+          <Zap className="h-3.5 w-3.5" />
+          OPEN TUNING
+        </button>
+        <button
+          onClick={() => platform().window.close()}
+          className="px-6 py-2.5 border border-nd-border rounded-sm font-mono text-label tracking-label text-nd-text-secondary uppercase transition-colors duration-150 ease-nd hover:bg-nd-surface"
+        >
+          CLOSE
+        </button>
       </div>
     </motion.div>
   );
