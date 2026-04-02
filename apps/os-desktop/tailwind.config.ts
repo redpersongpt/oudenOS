@@ -1,6 +1,6 @@
 import type { Config } from "tailwindcss";
 
-// Harfi harfine token spec'e uygun. Hiçbir gri yok — sadece siyah, beyaz, kırmızı.
+// Harfi harfine token spec'e uygun. Siyah, beyaz, gri — saf monokrom.
 
 export default {
   darkMode: "class",
@@ -57,16 +57,16 @@ export default {
           "text-secondary": "#999999",
           "text-primary":  "#E8E8E8",
           "text-display":  "#FFFFFF",
-          accent:         "#D42A45",
-          "accent-subtle": "rgba(212,42,69,0.15)",
+          accent:         "#E8E8E8",
+          "accent-subtle": "rgba(255,255,255,0.1)",
           success:        "#4A9E5C",
           warning:        "#D4A843",
           interactive:    "#5B9BF6",
         },
         // Semantic shortcuts
         brand: {
-          300: "#FF8888", 400: "#E03050", 500: "#D42A45",
-          600: "#B52238", 700: "#8E1A2C",
+          300: "#F5F5F5", 400: "#F0F0F0", 500: "#E8E8E8",
+          600: "#CCCCCC", 700: "#999999",
         },
         surface: {
           base: "#000000", raised: "#111111", overlay: "#1A1A1A",
@@ -78,7 +78,7 @@ export default {
         },
         success: { 400: "#4A9E5C", 500: "#3D8B4F" },
         warning: { 400: "#D4A843", 500: "#C49A38" },
-        danger:  { 400: "#D42A45", 500: "#B52238" },
+        danger:  { 400: "#FF6B6B", 500: "#E05555" },
       },
       fontFamily: {
         display: ['"Doto"', "monospace"],

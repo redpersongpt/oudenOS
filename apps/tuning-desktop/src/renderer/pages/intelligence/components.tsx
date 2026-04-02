@@ -89,7 +89,7 @@ interface ArchetypeEmblemProps {
 
 export function ArchetypeEmblem({ archetype, accentColor, size = 64 }: ArchetypeEmblemProps) {
   const strokeColor =
-    accentColor === "red"    ? "#D42A45" :
+    accentColor === "red"    ? "#FF6B6B" :
     accentColor === "blue"   ? "#3B82F6" :
     accentColor === "amber"  ? "#F59E0B" :
     accentColor === "sky"    ? "#38BDF8" :
@@ -152,7 +152,7 @@ export function ConfidenceRing({ confidence, accentColor }: ConfidenceRingProps)
   const offset = RING * (1 - confidence);
   const colorClass = accentText[accentColor] ?? "text-ink-secondary";
   const strokeColor =
-    accentColor === "red"    ? "#D42A45" :
+    accentColor === "red"    ? "#FF6B6B" :
     accentColor === "blue"   ? "#3B82F6" :
     accentColor === "amber"  ? "#F59E0B" :
     accentColor === "sky"    ? "#38BDF8" :

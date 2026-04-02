@@ -86,10 +86,10 @@ function EcosystemDiagram({ inView }: { inView: boolean }) {
     {
       label: "Ouden.Tuning",
       badge: "$12.99 one-time",
-      badgeStyle: "text-[var(--accent)] bg-[var(--accent)]/10 border border-accent/20",
+      badgeStyle: "text-white bg-white/10 border border-[var(--color-border)]",
       pills: ["CPU tuning", "GPU latency", "Benchmark lab", "BIOS guidance", "Timer resolution"],
       desc: "Hardware-level optimization on top of OudenOS",
-      borderStyle: "border-accent/40",
+      borderStyle: "border-[var(--color-border)]",
       bgStyle: "bg-transparent",
       delay: 0.4,
     },
@@ -100,7 +100,7 @@ function EcosystemDiagram({ inView }: { inView: boolean }) {
     <div className="relative mx-auto max-w-[740px]">
       {/* Vertical connector line */}
       <motion.div
-        className="absolute left-1/2 -translate-x-1/2 w-px bg-gradient-to-b from-accent/30 via-border to-transparent"
+        className="absolute left-1/2 -translate-x-1/2 w-px bg-gradient-to-b from-white/20 via-border to-transparent"
         style={{ top: 0, bottom: 0 }}
         initial={{ scaleY: 0, originY: 0 }}
         animate={inView ? { scaleY: 1 } : {}}
@@ -109,7 +109,7 @@ function EcosystemDiagram({ inView }: { inView: boolean }) {
 
       {!prefersReducedMotion && (
         <motion.div
-          className="pointer-events-none absolute left-1/2 top-0 h-8 w-8 -translate-x-1/2 rounded-full bg-[var(--accent)]/20 blur-2xl"
+          className="pointer-events-none absolute left-1/2 top-0 h-8 w-8 -translate-x-1/2 rounded-full bg-white/15 blur-2xl"
           initial={{ opacity: 0, y: -12 }}
           animate={inView ? { opacity: [0, 1, 0.55, 0], y: [0, 120, 250, 340] } : {}}
           transition={{ delay: 0.55, duration: 1.8, ease }}
@@ -161,7 +161,7 @@ function EcosystemDiagram({ inView }: { inView: boolean }) {
                 animate={inView ? { opacity: 1, y: 0 } : {}}
                 transition={{ delay: layer.delay + 0.3, duration: 0.4 }}
               >
-                <ArrowUp className="h-4 w-4 text-[var(--accent)]/40" />
+                <ArrowUp className="h-4 w-4 text-[var(--color-ink-tertiary)]" />
               </motion.div>
             )}
           </motion.div>
@@ -201,7 +201,7 @@ function SectionHeader({ label, title, subtitle, inView, delay = 0 }: {
         initial={{ opacity: 0, x: -20 }}
         animate={inView ? { opacity: 1, x: 0 } : {}}
         transition={{ duration: 0.5, ease, delay: delay + 0.05 }}
-        className="font-mono text-[0.6rem] font-medium uppercase tracking-[0.16em] text-[var(--accent)] mb-5"
+        className="font-mono text-[0.6rem] font-medium uppercase tracking-[0.16em] text-[var(--color-ink-secondary)] mb-5"
       >
         {label}
       </motion.p>
@@ -280,7 +280,7 @@ function EcosystemIntro() {
             initial={{ opacity: 0, y: 10 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.5, ease }}
-            className="font-mono text-[0.6rem] font-medium uppercase tracking-[0.18em] text-[var(--accent)] mb-6"
+            className="font-mono text-[0.6rem] font-medium uppercase tracking-[0.18em] text-[var(--color-ink-secondary)] mb-6"
           >
             The ecosystem
           </motion.p>
@@ -288,7 +288,7 @@ function EcosystemIntro() {
             initial={{ opacity: 0, y: 24 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}
             transition={{ delay: 0.1, duration: 0.8, ease }}
-            className="text-[clamp(1.8rem,3.5vw,2.8rem)] font-bold tracking-[-0.035em] leading-[1.08] text-[var(--text-primary)]"
+            className="text-[clamp(1.8rem,3.5vw,2.8rem)] font-bold tracking-[-0.035em] leading-[1.08] text-[var(--text-primary)] font-display"
           >
             Two products. One system.
           </motion.h2>

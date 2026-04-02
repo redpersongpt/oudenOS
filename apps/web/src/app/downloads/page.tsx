@@ -30,7 +30,7 @@ export default async function DownloadsPage() {
       <Navigation />
       <main className="min-h-screen pt-28 pb-20 px-6">
         <article className="max-w-[740px] mx-auto">
-          <p className="font-mono text-[11px] font-medium uppercase tracking-[0.12em] text-[var(--accent)] mb-4">
+          <p className="font-mono text-[11px] font-medium uppercase tracking-[0.12em] text-[var(--color-ink-secondary)] mb-4">
             Downloads
           </p>
           <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-[var(--text-primary)] mb-6 leading-tight">
@@ -54,7 +54,7 @@ export default async function DownloadsPage() {
                 </p>
               </div>
               {os.available ? (
-                <span className="inline-flex items-center rounded-full bg-[var(--accent)]/10 px-3 py-1 text-[12px] font-medium text-[var(--accent)]">
+                <span className="inline-flex items-center rounded-full bg-white/10 px-3 py-1 text-[12px] font-medium text-white">
                   Available
                 </span>
               ) : (
@@ -74,7 +74,7 @@ export default async function DownloadsPage() {
               {os.available && os.url ? (
                 <a
                   href={os.url}
-                  className="inline-flex items-center rounded-full bg-[var(--accent)] px-8 py-3 text-[14px] font-bold text-white transition-all hover:bg-[var(--accent-dim)]"
+                  className="inline-flex items-center rounded-full bg-white px-8 py-3 text-[14px] font-bold text-black transition-all hover:bg-[#E8E8E8]"
                 >
                   Download OudenOS{os.version ? ` ${os.version}` : ""}
                 </a>
@@ -190,7 +190,7 @@ export default async function DownloadsPage() {
               The tool requires administrator privileges because it modifies
               system settings, services, and registry keys. A restore point
               is created before any changes. You can review the{" "}
-              <Link href="/redcore-os" className="text-[var(--accent)] hover:text-[var(--accent)]-bright transition-colors">
+              <Link href="/redcore-os" className="text-[var(--color-ink-secondary)] hover:text-white transition-colors">
                 full description of what OudenOS does
               </Link>{" "}
               before running it.

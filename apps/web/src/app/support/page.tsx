@@ -77,9 +77,9 @@ export default function SupportPage() {
                 <a
                   key={card.title}
                   href={card.href}
-                  className="group rounded-lg border border-border/70 bg-surface-elevated/60 p-6 transition-colors hover:border-accent/60 hover:bg-surface-elevated"
+                  className="group rounded-lg border border-border/70 bg-surface-elevated/60 p-6 transition-colors hover:border-[var(--color-border-strong)] hover:bg-surface-elevated"
                 >
-                  <div className="flex h-11 w-11 items-center justify-center rounded-lg border border-accent/20 bg-[var(--accent)]/10 text-[var(--accent)]">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-lg border border-[var(--color-border)] bg-white/10 text-white">
                     <Icon className="h-5 w-5" />
                   </div>
                   <h2 className="mt-5 text-lg font-semibold text-[var(--text-primary)]">{card.title}</h2>
@@ -105,7 +105,7 @@ export default function SupportPage() {
               <div className="mt-6 flex flex-wrap gap-3">
                 <Link
                   href="/donate"
-                  className="inline-flex items-center gap-2 rounded-full bg-[var(--accent)] px-5 py-3 text-sm font-medium text-white transition-opacity hover:opacity-90"
+                  className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 text-sm font-medium text-black transition-opacity hover:opacity-90"
                 >
                   Open Donation Page
                   <ArrowRight className="h-4 w-4" />

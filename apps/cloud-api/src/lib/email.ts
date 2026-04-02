@@ -113,7 +113,7 @@ function esc(str: string): string {
 
 const APP = "Ouden.Tuning";
 const SUPPORT_EMAIL = "support@ouden.cc";
-const BRAND_COLOR = "#D42A45";
+const BRAND_COLOR = "#E8E8E8";
 const BG = "#000000";
 const CARD_BG = "#111111";
 const BORDER = "#222222";
@@ -136,7 +136,7 @@ function emailWrapper(title: string, body: string): string {
       </div>
     </div>
     <div style="padding:18px 8px 0;color:${CAPTION};font-size:12px;line-height:1.6;text-align:center;">
-      <div>Need help? <a href="mailto:${SUPPORT_EMAIL}" style="color:#ff98a0;text-decoration:none;">${SUPPORT_EMAIL}</a></div>
+      <div>Need help? <a href="mailto:${SUPPORT_EMAIL}" style="color:#E8E8E8;text-decoration:none;">${SUPPORT_EMAIL}</a></div>
     </div>
   </div>
 </body>
@@ -144,7 +144,7 @@ function emailWrapper(title: string, body: string): string {
 }
 
 function primaryButton(href: string, label: string): string {
-  return `<a href="${href}" style="display:inline-flex;align-items:center;justify-content:center;margin:24px 0 0;background:linear-gradient(180deg,#ff6b70 0%,${BRAND_COLOR} 100%);color:#fff;padding:12px 20px;border-radius:12px;text-decoration:none;font-weight:800;font-size:14px;letter-spacing:.01em;box-shadow:0 10px 24px rgba(212,42,69,0.22);">${label}</a>`;
+  return `<a href="${href}" style="display:inline-flex;align-items:center;justify-content:center;margin:24px 0 0;background:${BRAND_COLOR};color:#000000;padding:12px 20px;border-radius:12px;text-decoration:none;font-weight:800;font-size:14px;letter-spacing:.01em;">${label}</a>`;
 }
 
 function caption(text: string): string {

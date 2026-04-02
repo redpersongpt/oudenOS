@@ -70,8 +70,8 @@ export default function RedcoreTuningPage() {
             GPU, memory, and disk setup.
           </p>
 
-          <div className="border border-accent/30 rounded-lg p-4 mb-8 bg-[var(--accent)]/5">
-            <p className="text-[var(--accent)] text-[14px] font-medium">
+          <div className="border border-[var(--color-border)] rounded-lg p-4 mb-8 bg-white/5">
+            <p className="text-[var(--color-ink-secondary)] text-[14px] font-medium">
               Ouden.Tuning is currently in development. The installer is
               not yet available for download. This page describes the planned
               feature set. Pricing is set at $12.99 one-time purchase.
@@ -194,7 +194,7 @@ export default function RedcoreTuningPage() {
             <div className="flex flex-wrap gap-3">
               <Link
                 href="/downloads"
-                className="inline-flex items-center rounded-lg bg-[var(--accent)] px-5 py-2.5 text-[13px] font-semibold text-white transition-all hover:bg-[var(--accent)]-dim"
+                className="inline-flex items-center rounded-lg bg-white px-5 py-2.5 text-[13px] font-semibold text-black transition-all hover:bg-[#E8E8E8]"
               >
                 Download OudenOS (free)
               </Link>
