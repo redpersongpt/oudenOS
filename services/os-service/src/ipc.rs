@@ -278,8 +278,7 @@ async fn dispatch(
 
             tracing::info!(preset = preset, "Generating transformation plan");
 
-            let playbook_dir = resolve_playbook_dir().unwrap_or_else(playbook::default_playbook_dir);
-            match transformer::generate_plan(&classification, preset, &playbook_dir) {
+            match transformer::generate_plan(&classification, preset) {
                 Ok(plan) => {
                     if let Err(e) = store_plan(db, classification_id, preset, &plan) {
                         tracing::error!("Failed to store plan: {}", e);
@@ -296,11 +295,8 @@ async fn dispatch(
         "transform.getActions" => {
             let category = params.get("category").and_then(|v| v.as_str());
             tracing::info!(category = ?category, "Getting actions");
-            let playbook_dir = resolve_playbook_dir().unwrap_or_else(playbook::default_playbook_dir);
-            match transformer::get_actions(category, &playbook_dir) {
-                Ok(actions) => RpcResponse::ok(id, serde_json::json!(actions)),
-                Err(e) => RpcResponse::err(id, -51, format!("Failed to load actions: {}", e)),
-            }
+            let actions = transformer::get_actions(category);
+            RpcResponse::ok(id, serde_json::json!(actions))
         }
 
         "execute.applyAction" => {
@@ -312,38 +308,7 @@ async fn dispatch(
             };
 
             let action_data = if let Some(data) = params.get("actionData") {
-                // Caller-supplied actionData: strip all executable fields to prevent privilege
-                // escalation.  Only metadata fields (id, name, description, risk, etc.) are
-                // accepted from the caller — actual system operations MUST come from the
-                // trusted bundled YAML playbooks.
-                const EXECUTABLE_FIELDS: &[&str] = &[
-                    "powerShellCommands",
-                    "registryChanges",
-                    "serviceChanges",
-                    "bcdChanges",
-                    "powerChanges",
-                    "appxRemovals",
-                    "featureChanges",
-                    "packages",
-                    "tasks",
-                ];
-                let mut safe_data = data.clone();
-                if let Some(obj) = safe_data.as_object_mut() {
-                    let mut stripped = Vec::new();
-                    for field in EXECUTABLE_FIELDS {
-                        if obj.remove(*field).is_some() {
-                            stripped.push(*field);
-                        }
-                    }
-                    if !stripped.is_empty() {
-                        tracing::warn!(
-                            action_id = action_id,
-                            stripped = ?stripped,
-                            "Stripped executable fields from caller-supplied actionData"
-                        );
-                    }
-                }
-                safe_data
+                data.clone()
             } else {
                 let playbook_dir = resolve_playbook_dir()
                     .unwrap_or_else(playbook::default_playbook_dir);
@@ -354,13 +319,19 @@ async fn dispatch(
 
                 match playbook_lookup {
                     Ok(Some(def)) => def,
-                    Ok(None) => {
-                        return RpcResponse::err(
-                            id,
-                            -20,
-                            format!("Action not found: {}", action_id),
-                        );
-                    }
+                    Ok(None) => match transformer::get_actions(None)
+                        .into_iter()
+                        .find(|a| a.get("id").and_then(|v| v.as_str()) == Some(action_id))
+                    {
+                        Some(def) => def,
+                        None => {
+                            return RpcResponse::err(
+                                id,
+                                -20,
+                                format!("Action not found: {}", action_id),
+                            );
+                        }
+                    },
                     Err(e) => {
                         tracing::error!(action_id = action_id, error = %e, "Playbook action lookup failed");
                         return RpcResponse::err(
@@ -632,11 +603,7 @@ async fn dispatch(
                 Err(e) => return RpcResponse::err(id, -11, format!("Classification failed: {}", e)),
             };
 
-            let plan = match transformer::generate_plan(
-                &classification,
-                preset,
-                &resolve_playbook_dir().unwrap_or_else(playbook::default_playbook_dir),
-            ) {
+            let plan = match transformer::generate_plan(&classification, preset) {
                 Ok(p) => {
                     let _ = store_plan(db, None, preset, &p);
                     p
@@ -1173,10 +1140,11 @@ fn store_plan(
     preset: &str,
     plan: &serde_json::Value,
 ) -> anyhow::Result<String> {
-    let id = {
-        let fallback = uuid::Uuid::new_v4().to_string();
-        plan["id"].as_str().unwrap_or(&fallback).to_string()
-    };
+    let fallback_id = uuid::Uuid::new_v4().to_string();
+    let id = plan["id"]
+        .as_str()
+        .unwrap_or(&fallback_id)
+        .to_string();
     let now = chrono::Utc::now().to_rfc3339();
     let cid: Option<&str> = classification_id;
     let data = serde_json::to_string(plan)?;

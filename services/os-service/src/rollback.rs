@@ -337,11 +337,11 @@ fn restore_power(prev: &PreviousValue) -> anyhow::Result<()> {
         .unwrap_or("");
 
     if !value.is_empty() && !setting_path.is_empty() {
+        powershell::validate_safe_arg(value, "power setting value")?;
         let parts: Vec<&str> = setting_path.split('/').collect();
         if parts.len() == 2 {
-            powershell::validate_safe_arg(parts[0], "power subgroup")?;
-            powershell::validate_safe_arg(parts[1], "power setting")?;
-            powershell::validate_safe_arg(value, "power value")?;
+            powershell::validate_safe_arg(parts[0], "power subgroup GUID")?;
+            powershell::validate_safe_arg(parts[1], "power setting GUID")?;
             let script = format!(
                 "powercfg /setacvalueindex scheme_current {} {} {}",
                 parts[0], parts[1], value

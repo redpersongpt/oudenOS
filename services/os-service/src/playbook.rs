@@ -111,9 +111,6 @@ pub struct PlaybookAction {
     #[serde(default)]
     #[serde(rename = "warningMessage")]
     pub warning_message: Option<String>,
-    /// Populated at load time from the parent module — not present in YAML.
-    #[serde(default, skip_deserializing)]
-    pub category: String,
 }
 
 fn default_risk() -> String { "safe".into() }
@@ -264,16 +261,10 @@ pub fn load_playbook(playbook_dir: &Path) -> anyhow::Result<LoadedPlaybook> {
 
         if !is_builtin {
             for module_path in &phase.modules {
-                // Guard against path-traversal attacks in module references.
-                // Accept only paths composed entirely of Normal components (no ParentDir,
-                // RootDir, drive prefixes, or UNC roots).
-                let is_safe = std::path::Path::new(module_path).components().all(|c| {
-                    matches!(c, std::path::Component::Normal(_))
-                });
-                if !is_safe {
-                    tracing::warn!(
+                if module_path.contains("..") {
+                    tracing::error!(
                         path = module_path.as_str(),
-                        "Rejecting unsafe module path (contains traversal, absolute, or UNC component) — skipping"
+                        "Playbook module path contains '..', skipping (possible path traversal)"
                     );
                     continue;
                 }
@@ -285,12 +276,7 @@ pub fn load_playbook(playbook_dir: &Path) -> anyhow::Result<LoadedPlaybook> {
                             actions = module.actions.len(),
                             "Loaded playbook module"
                         );
-                        let category = module.category.clone();
-                        let mut module_actions = module.actions;
-                        for action in &mut module_actions {
-                            action.category = category.clone();
-                        }
-                        phase_actions.extend(module_actions);
+                        phase_actions.extend(module.actions);
                     }
                     Err(e) => {
                         tracing::warn!(
