@@ -70,7 +70,7 @@ function SideRail({
                   iconAlignClass,
                 ].join(" ")}
               >
-                <item.icon className="h-3.5 w-3.5 text-[var(--accent)]" />
+                <item.icon className="h-3.5 w-3.5 text-[var(--color-ink-secondary)]" />
               </div>
               <p className="text-[0.8rem] font-semibold text-[var(--text-primary)]">
                 {item.label}
@@ -84,7 +84,7 @@ function SideRail({
       </div>
       {!reduceMotion && (
         <motion.div
-          className="absolute top-1/2 left-1/2 h-40 w-40 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[var(--accent)]/10 blur-3xl"
+          className="absolute top-1/2 left-1/2 h-40 w-40 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/5 blur-3xl"
           animate={{ opacity: [0.2, 0.5, 0.2], scale: [0.95, 1.05, 0.95] }}
           transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
         />
@@ -131,13 +131,13 @@ export function SectionSeparator({
         >
           {!reduceMotion && (
             <motion.span
-              className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-accent/80 to-transparent"
+              className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/40 to-transparent"
               animate={{ opacity: [0.3, 0.9, 0.3], scaleX: [0.9, 1, 0.9] }}
               transition={{ duration: 2.8, repeat: Infinity, ease: "easeInOut" }}
             />
           )}
           <div className="flex items-center gap-2">
-            <span className="text-[0.62rem] font-mono font-semibold uppercase tracking-[0.2em] text-[var(--accent)]">
+            <span className="text-[0.62rem] font-mono font-semibold uppercase tracking-[0.2em] text-[var(--color-ink-secondary)]">
               {label}
             </span>
             <span className="text-[0.62rem] text-[var(--text-disabled)]">{note}</span>

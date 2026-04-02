@@ -15,7 +15,7 @@ interface BadgeProps {
 const variantStyles: Record<BadgeVariant, string> = {
   default: "bg-[var(--surface-raised)] text-[var(--text-disabled)] border border-[var(--border)]",
   brand: "bg-brand-950/60 text-brand-400 border border-brand-900/40",
-  success: "bg-[var(--accent)]/10 text-[var(--accent)] border border-accent/20",
+  success: "bg-emerald-950/40 text-emerald-400 border border-emerald-900/30",
   warning: "bg-amber-950/40 text-amber-400 border border-amber-900/30",
 };
 

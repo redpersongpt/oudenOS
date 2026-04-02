@@ -17,7 +17,7 @@ export function FinalCTASection() {
         {/* Top edge accent */}
         <div
           className="absolute top-0 left-0 right-0 h-px opacity-20"
-          style={{ background: "linear-gradient(90deg, transparent 0%, #D42A45 30%, #D42A45 50%, #D42A45 70%, transparent 100%)" }}
+          style={{ background: "linear-gradient(90deg, transparent 0%, #666666 30%, #666666 50%, #666666 70%, transparent 100%)" }}
         />
       </div>
 
@@ -29,7 +29,7 @@ export function FinalCTASection() {
         >
           {/* Overline */}
           <motion.p
-            className="font-mono text-[0.6rem] font-medium uppercase tracking-[0.18em] text-[var(--accent)] mb-8"
+            className="font-mono text-[0.6rem] font-medium uppercase tracking-[0.18em] text-[var(--color-ink-secondary)] mb-8"
             initial={{ opacity: 0 }}
             animate={inView ? { opacity: 1 } : {}}
             transition={{ delay: 0.05, duration: 0.6 }}
@@ -37,7 +37,7 @@ export function FinalCTASection() {
             Get started
           </motion.p>
 
-          <h2 className="text-[clamp(2.2rem,4.5vw,3.6rem)] font-bold tracking-[-0.038em] leading-[1.06] text-[var(--text-primary)]">
+          <h2 className="text-[clamp(2.2rem,4.5vw,3.6rem)] font-bold tracking-[-0.038em] leading-[1.06] text-[var(--text-primary)] font-display">
             Get started.
           </h2>
 
@@ -56,7 +56,7 @@ export function FinalCTASection() {
             {/* Primary */}
             <motion.a
               href="/downloads"
-              className="inline-flex items-center gap-2.5 rounded-full bg-[var(--accent)] px-8 py-4 text-[0.92rem] font-semibold text-white"
+              className="inline-flex items-center gap-2.5 rounded-full bg-white px-8 py-4 text-[0.92rem] font-semibold text-black"
               whileHover={{ scale: 1.03, y: -2 }}
               whileTap={{ scale: 0.97 }}
             >

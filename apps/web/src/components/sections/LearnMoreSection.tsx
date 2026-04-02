@@ -70,7 +70,7 @@ export function LearnMoreSection() {
               >
                 <h3 className="text-[0.88rem] font-semibold text-[var(--text-primary)] group-hover:text-white transition-colors flex items-center gap-2">
                   {page.title}
-                  <ArrowRight className="h-3.5 w-3.5 text-[var(--text-disabled)] group-hover:text-[var(--accent)] transition-colors" />
+                  <ArrowRight className="h-3.5 w-3.5 text-[var(--text-disabled)] group-hover:text-white transition-colors" />
                 </h3>
                 <p className="mt-2 text-[0.78rem] leading-[1.65] text-[var(--text-disabled)]">
                   {page.description}

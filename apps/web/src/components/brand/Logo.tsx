@@ -70,7 +70,7 @@ function OudenMark({ size }: { size: number }) {
         fill="none"
       />
       {/* Accent dot at gap terminus */}
-      <circle cx={dotX} cy={dotY} r={dotR} fill="#D42A45" />
+      <circle cx={dotX} cy={dotY} r={dotR} fill="#E8E8E8" />
     </svg>
   );
 }
@@ -93,7 +93,7 @@ export function Logo({ size = "md", className = "", markOnly = false }: LogoProp
         className="font-bold tracking-[-0.02em] text-[var(--color-ink-primary)]"
         style={{ fontSize: s.fontSize, lineHeight: 1 }}
       >
-        ouden<span className="text-[var(--color-accent)]">.cc</span>
+        ouden<span className="text-[var(--color-ink-secondary)]">.cc</span>
       </span>
     </div>
   );

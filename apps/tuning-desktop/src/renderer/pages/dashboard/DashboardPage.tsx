@@ -55,7 +55,7 @@ function healthLabel(score: number): string {
 function healthArcColor(score: number): string {
   if (score >= 80) return "#22C55E";
   if (score >= 60) return "#F59E0B";
-  return "#D42A45";
+  return "#FF6B6B";
 }
 
 // Health Gauge SVG

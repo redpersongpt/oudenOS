@@ -3,5 +3,5 @@
   <!-- Open ring arc (gap at ~5 o'clock) -->
   <path d="M 410.7 330.4 A 163 163 0 1 1 385.5 199.5" stroke="#E8E8E8" stroke-width="40" stroke-linecap="round" fill="none"/>
   <!-- Accent dot at gap terminus -->
-  <circle cx="385.5" cy="199.5" r="24" fill="#D42A45"/>
+  <circle cx="385.5" cy="199.5" r="24" fill="#E8E8E8"/>
 </svg>

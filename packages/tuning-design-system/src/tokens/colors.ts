@@ -1,10 +1,10 @@
 // Ouden Color System
-// OLED black base with signal red accent
+// OLED black base with monochrome accent
 
 export const colors = {
   red: {
     50: "#FFF5F5", 100: "#FFE0E0", 200: "#FFC0C0", 300: "#FF8888",
-    400: "#E03050", 500: "#D42A45", 600: "#B52238", 700: "#8E1A2C",
+    400: "#F0F0F0", 500: "#E8E8E8", 600: "#CCCCCC", 700: "#999999",
     800: "#6A0B10", 900: "#46070A", 950: "#2D0A10",
   },
 
@@ -62,27 +62,27 @@ export const colors = {
     textSecondary: "#999999",
     textTertiary: "#666666",
     textInverse: "#000000",
-    textBrand: "#D42A45",
+    textBrand: "#E8E8E8",
 
     border: "#333333",
     borderSubtle: "#222222",
     borderStrong: "#444444",
-    borderFocus: "#D42A45",
+    borderFocus: "#E8E8E8",
 
-    primaryDefault: "#D42A45",
-    primaryHover: "#E03050",
-    primaryActive: "#B52238",
-    primaryDisabled: "#2D0A10",
+    primaryDefault: "#E8E8E8",
+    primaryHover: "#FFFFFF",
+    primaryActive: "#CCCCCC",
+    primaryDisabled: "#333333",
 
     success: "#4A9E5C",
     warning: "#D4A843",
-    error: "#D42A45",
+    error: "#FF6B6B",
     info: "#5B9BF6",
 
     riskSafe: "#4A9E5C",
     riskLow: "#4A9E5C",
     riskMedium: "#D4A843",
-    riskHigh: "#D42A45",
+    riskHigh: "#FF6B6B",
     riskExtreme: "#FF3040",
   },
 } as const;

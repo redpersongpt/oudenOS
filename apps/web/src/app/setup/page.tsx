@@ -122,7 +122,7 @@ export default function SetupPage() {
             <motion.button
               type="submit"
               disabled={saving || username.trim().length < 2}
-              className="w-full h-11 rounded-lg bg-[var(--accent)] hover:bg-[var(--accent)]-dim text-white text-[14px] font-medium cursor-pointer transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              className="w-full h-11 rounded-lg bg-white hover:bg-[#E8E8E8] text-black text-[14px] font-medium cursor-pointer transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
               whileHover={!saving ? { y: -1 } : undefined}
               whileTap={!saving ? { scale: 0.98 } : undefined}
             >

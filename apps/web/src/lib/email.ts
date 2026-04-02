@@ -8,7 +8,7 @@ export interface EmailOptions {
 
 const APP_NAME = "Ouden";
 const SUPPORT_EMAIL = "support@ouden.cc";
-const BRAND_COLOR = "#D42A45";
+const BRAND_COLOR = "#E8E8E8";
 const BG = "#000000";
 const CARD_BG = "#0D0D0D";
 const BORDER = "#1C1C1C";
@@ -87,15 +87,15 @@ function emailWrapper(title: string, body: string): string {
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
 <body style="margin:0;padding:32px;background:${BG};font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
   <div style="max-width:620px;margin:0 auto;">
-    <div style="padding:0 6px 16px;font-size:14px;font-weight:700;letter-spacing:.1em;text-transform:lowercase;color:${TEXT};">ouden<span style="color:#D42A45;">.cc</span></div>
-    <div style="background:linear-gradient(180deg,rgba(212,42,69,0.18),rgba(13,13,13,0.98) 30%);border-radius:20px;padding:1px;">
+    <div style="padding:0 6px 16px;font-size:14px;font-weight:700;letter-spacing:.1em;text-transform:lowercase;color:${TEXT};">ouden<span style="color:#999999;">.cc</span></div>
+    <div style="background:linear-gradient(180deg,rgba(255,255,255,0.08),rgba(13,13,13,0.98) 30%);border-radius:20px;padding:1px;">
       <div style="background:${CARD_BG};border-radius:19px;padding:34px;border:1px solid ${BORDER};box-shadow:0 28px 80px rgba(0,0,0,0.60);">
         <h1 style="margin:0 0 12px;font-size:24px;line-height:1.2;font-weight:800;letter-spacing:-0.03em;color:${TEXT};">${title}</h1>
         ${body}
       </div>
     </div>
     <div style="padding:18px 8px 0;color:${CAPTION};font-size:12px;line-height:1.6;text-align:center;">
-      <div>Need help? <a href="mailto:${SUPPORT_EMAIL}" style="color:#ff8da0;text-decoration:none;">${SUPPORT_EMAIL}</a></div>
+      <div>Need help? <a href="mailto:${SUPPORT_EMAIL}" style="color:#999999;text-decoration:none;">${SUPPORT_EMAIL}</a></div>
     </div>
   </div>
 </body>
@@ -103,7 +103,7 @@ function emailWrapper(title: string, body: string): string {
 }
 
 function primaryButton(href: string, label: string): string {
-  return `<a href="${href}" style="display:inline-flex;align-items:center;justify-content:center;margin:24px 0 0;background:${BRAND_COLOR};color:#fff;padding:12px 20px;border-radius:10px;text-decoration:none;font-weight:700;font-size:14px;letter-spacing:.01em;box-shadow:0 8px 20px rgba(232,37,75,0.28);">${label}</a>`;
+  return `<a href="${href}" style="display:inline-flex;align-items:center;justify-content:center;margin:24px 0 0;background:${BRAND_COLOR};color:#000;padding:12px 20px;border-radius:10px;text-decoration:none;font-weight:700;font-size:14px;letter-spacing:.01em;box-shadow:0 8px 20px rgba(255,255,255,0.08);">${label}</a>`;
 }
 
 function caption(text: string): string {
