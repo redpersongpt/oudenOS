@@ -99,7 +99,7 @@ function StepCircle({ step, index }: { step: WizardStep; index: number }) {
 
 function StepRail() {
   return (
-    <div className="bg-surface-card px-6 py-3 flex items-center justify-center">
+    <div className="bg-surface px-6 py-3 flex items-center justify-center">
       {steps.map((step, i) => {
         const isLast = i === steps.length - 1;
         return (
@@ -125,7 +125,7 @@ function ActionRow({ item }: { item: ActionItem }) {
   const isWarning = item.risk === "MEDIUM";
 
   return (
-    <div className="flex items-center gap-3 bg-surface-card rounded-lg px-4 py-3">
+    <div className="flex items-center gap-3 bg-surface rounded-lg px-4 py-3">
       {/* Status icon */}
       <span aria-hidden="true">
         <Check size={14} className="text-ink-tertiary" strokeWidth={2} />
@@ -196,7 +196,7 @@ function WizardWindow() {
           <StepRail />
 
           {/* Content */}
-          <div className="bg-surface-base p-6">
+          <div className="bg-bg p-6">
             <div className="flex items-baseline gap-3 mb-4">
               <span className="text-brand-500 font-mono text-[12px]">Step 4</span>
               <span className="text-lg font-semibold text-ink-primary">

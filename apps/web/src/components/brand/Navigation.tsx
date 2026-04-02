@@ -119,7 +119,7 @@ function MobileOverlay({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: duration.normal, ease: easing.enter }}
-          className="fixed inset-0 top-0 z-40 flex flex-col items-center justify-center bg-surface-base lg:hidden"
+          className="fixed inset-0 top-0 z-40 flex flex-col items-center justify-center bg-bg lg:hidden"
         >
           <nav
             className="flex flex-col items-center gap-8"

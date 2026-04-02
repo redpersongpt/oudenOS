@@ -100,7 +100,7 @@ export default function LoginPage() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full h-11 px-3.5 rounded-lg bg-surface-card border border-border text-[14px] text-ink-primary placeholder:text-ink-tertiary outline-none focus:border-accent/50 transition-colors"
+                className="w-full h-11 px-3.5 rounded-lg bg-surface border border-border text-[14px] text-ink-primary placeholder:text-ink-tertiary outline-none focus:border-accent/50 transition-colors"
                 placeholder="you@example.com"
               />
             </div>
@@ -114,7 +114,7 @@ export default function LoginPage() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full h-11 px-3.5 rounded-lg bg-surface-card border border-border text-[14px] text-ink-primary placeholder:text-ink-tertiary outline-none focus:border-accent/50 transition-colors"
+                className="w-full h-11 px-3.5 rounded-lg bg-surface border border-border text-[14px] text-ink-primary placeholder:text-ink-tertiary outline-none focus:border-accent/50 transition-colors"
                 placeholder="Your password"
               />
               <div className="mt-2 text-right">
@@ -145,7 +145,7 @@ export default function LoginPage() {
               <motion.button
                 type="button"
                 onClick={() => signIn("google", { callbackUrl: "/profile" })}
-                className="w-full h-10 rounded-lg bg-surface-card border border-border text-[13px] font-medium text-ink-secondary cursor-pointer transition-colors hover:border-border-strong inline-flex items-center justify-center gap-2.5"
+                className="w-full h-10 rounded-lg bg-surface border border-border text-[13px] font-medium text-ink-secondary cursor-pointer transition-colors hover:border-border-strong inline-flex items-center justify-center gap-2.5"
                 whileHover={{ y: -1 }}
                 whileTap={{ scale: 0.98 }}
               >

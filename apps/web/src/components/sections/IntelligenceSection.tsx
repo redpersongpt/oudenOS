@@ -165,7 +165,7 @@ function SignalCardItem({ card }: { card: SignalCard }) {
   return (
     <motion.div
       variants={staggerChild}
-      className="rounded-lg bg-surface-card border border-border-default p-4"
+      className="rounded-lg bg-surface border border-border-default p-4"
     >
       <div className="flex items-center gap-2.5">
         <Icon size={16} strokeWidth={1.5} className="text-ink-tertiary flex-shrink-0" />

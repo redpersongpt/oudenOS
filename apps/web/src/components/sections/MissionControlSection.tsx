@@ -146,7 +146,7 @@ export function MissionControlSection() {
               initial={{ opacity: 0, x: -12 }}
               animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -12 }}
               transition={{ duration: duration.slow, ease: easing.enter, delay: 0.4 }}
-              className="bg-surface-card rounded-lg p-4 border-l-2 border-brand-500"
+              className="bg-surface rounded-lg p-4 border-l-2 border-brand-500"
             >
               <div className="flex items-center gap-3">
                 <Spinner />

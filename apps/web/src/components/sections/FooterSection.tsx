@@ -43,7 +43,7 @@ export function FooterSection() {
             <p className="mt-4 text-[0.75rem] leading-[1.75] text-ink-muted max-w-[210px]">
               Hardware-based Windows optimization. Built for people who care about their hardware.
             </p>
-            <div className="mt-6 rounded-2xl border border-border/80 bg-surface-elevated/50 p-4">
+            <div className="mt-6 rounded-lg border border-border/80 bg-surface-elevated/50 p-4">
               <p className="text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-ink-tertiary">
                 Contact
               </p>

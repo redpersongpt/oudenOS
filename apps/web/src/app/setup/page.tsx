@@ -109,7 +109,7 @@ export default function SetupPage() {
                 type="text"
                 value={username || prefixedUsername}
                 onChange={(e) => setUsername(e.target.value)}
-                className="w-full h-11 px-3.5 rounded-lg bg-surface-card border border-border text-[14px] text-ink-primary placeholder:text-ink-tertiary outline-none focus:border-accent/50 transition-colors"
+                className="w-full h-11 px-3.5 rounded-lg bg-surface border border-border text-[14px] text-ink-primary placeholder:text-ink-tertiary outline-none focus:border-accent/50 transition-colors"
                 placeholder="your-username"
                 autoFocus
                 maxLength={30}

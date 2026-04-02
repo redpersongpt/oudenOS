@@ -64,7 +64,7 @@ export default function ForgotPasswordPage() {
           )}
 
           {submitted ? (
-            <motion.div {...fade(0.12)} className="mt-8 rounded-2xl border border-border bg-surface-card p-6 text-center">
+            <motion.div {...fade(0.12)} className="mt-8 rounded-lg border border-border bg-surface p-6 text-center">
               <p className="text-[14px] leading-6 text-ink-secondary">
                 If an account with that email exists, a reset link has been sent. Check your inbox and spam folder.
               </p>
@@ -85,7 +85,7 @@ export default function ForgotPasswordPage() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full h-11 px-3.5 rounded-lg bg-surface-card border border-border text-[14px] text-ink-primary placeholder:text-ink-tertiary outline-none focus:border-accent/50 transition-colors"
+                  className="w-full h-11 px-3.5 rounded-lg bg-surface border border-border text-[14px] text-ink-primary placeholder:text-ink-tertiary outline-none focus:border-accent/50 transition-colors"
                   placeholder="you@example.com"
                 />
               </div>

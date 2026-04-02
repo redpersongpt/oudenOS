@@ -15,7 +15,7 @@ export default function TermsPage() {
     <>
       <Navigation />
       <main className="min-h-screen px-6 pb-20 pt-28">
-        <article className="mx-auto max-w-3xl rounded-3xl border border-border bg-surface-card/70 p-8 md:p-12">
+        <article className="mx-auto max-w-3xl rounded-lg border border-border bg-surface/70 p-8 md:p-12">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent">Terms</p>
           <h1 className="mt-3 text-3xl font-semibold text-ink-primary">Terms of Service</h1>
           <div className="mt-8 space-y-6 text-sm leading-7 text-ink-secondary">

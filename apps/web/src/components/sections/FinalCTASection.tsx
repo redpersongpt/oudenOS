@@ -65,7 +65,7 @@ export function FinalCTASection() {
             {/* Primary */}
             <motion.a
               href="/downloads"
-              className="group inline-flex items-center gap-2.5 rounded-xl bg-accent px-8 py-4 text-[0.92rem] font-semibold text-white relative overflow-hidden shadow-lg shadow-accent/25"
+              className="group inline-flex items-center gap-2.5 rounded-lg bg-accent px-8 py-4 text-[0.92rem] font-semibold text-white relative overflow-hidden shadow-lg shadow-accent/25"
               whileHover={{ scale: 1.03, y: -2 }}
               whileTap={{ scale: 0.97 }}
             >
@@ -77,7 +77,7 @@ export function FinalCTASection() {
             {/* Secondary */}
             <motion.a
               href="/register"
-              className="inline-flex items-center gap-2 px-6 py-4 text-[0.88rem] font-medium text-ink-tertiary border border-border rounded-xl hover:border-border-strong hover:text-ink-secondary transition-all duration-200"
+              className="inline-flex items-center gap-2 px-6 py-4 text-[0.88rem] font-medium text-ink-tertiary border border-border rounded-lg hover:border-border-strong hover:text-ink-secondary transition-all duration-200"
               whileHover={{ y: -1 }}
             >
               Create account

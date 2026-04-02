@@ -59,7 +59,7 @@ function LogoMark({ size = 20 }: { size?: number }) {
 
 function StepRail({ activeIndex }: { activeIndex: number }) {
   return (
-    <div className="hidden sm:flex w-[140px] shrink-0 flex-col border-r border-border-default bg-surface-card/50 py-4 px-2 gap-0.5">
+    <div className="hidden sm:flex w-[140px] shrink-0 flex-col border-r border-border-default bg-surface/50 py-4 px-2 gap-0.5">
       {STEPS.map((step, i) => {
         const isActive = i === activeIndex;
         const isDone = i < activeIndex;
@@ -112,7 +112,7 @@ function WelcomeContent() {
         <motion.div
           animate={{ scale: [1, 1.15, 1], opacity: [0.2, 0.4, 0.2] }}
           transition={{ duration: 4, ease: "easeInOut", repeat: Infinity }}
-          className="absolute inset-0 rounded-2xl blur-xl"
+          className="absolute inset-0 rounded-lg blur-xl"
           style={{ width: 56, height: 56, background: "rgba(232,37,75,0.2)" }}
         />
         <LogoMark size={56} />
@@ -229,7 +229,7 @@ function ProfileContent() {
         initial={{ scale: 0.5, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ type: "spring", stiffness: 300, damping: 16 }}
-        className="flex h-16 w-16 items-center justify-center rounded-2xl border border-brand-500/25 bg-brand-500/[0.08]"
+        className="flex h-16 w-16 items-center justify-center rounded-lg border border-brand-500/25 bg-brand-500/[0.08]"
       >
         <Gamepad2 className="h-8 w-8 text-brand-500" />
       </motion.div>
@@ -323,7 +323,7 @@ function StrategyContent() {
                 "rounded-lg border px-3.5 py-2.5 cursor-pointer transition-all",
                 isSelected
                   ? "border-brand-500/30 bg-brand-500/[0.06]"
-                  : "border-border-default bg-surface-card/50 hover:border-border-strong",
+                  : "border-border-default bg-surface/50 hover:border-border-strong",
               ].join(" ")}
             >
               <div className="flex items-center gap-2.5">
@@ -385,7 +385,7 @@ function ReviewContent() {
             initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.05 + i * 0.08 }}
-            className="flex items-center gap-2 rounded-md bg-surface-card/60 px-3 py-1.5"
+            className="flex items-center gap-2 rounded-md bg-surface/60 px-3 py-1.5"
           >
             {action.status === "included" ? (
               <Check size={10} className="text-brand-500 shrink-0" />
@@ -588,7 +588,7 @@ function ReportContent() {
           { value: 0, label: "Failed", color: "text-ink-muted", icon: AlertCircle },
           { value: 8, label: "Preserved", color: "text-ink-secondary", icon: Shield },
         ].map(({ value, label, color, icon: Icon }) => (
-          <div key={label} className="flex flex-col items-center gap-0.5 rounded-lg border border-border-default bg-surface-card/50 px-3 py-2">
+          <div key={label} className="flex flex-col items-center gap-0.5 rounded-lg border border-border-default bg-surface/50 px-3 py-2">
             <Icon size={10} className={color} />
             <span className={`font-mono text-[16px] font-bold ${color}`}>{value}</span>
             <span className="text-[8px] text-ink-muted">{label}</span>
@@ -679,9 +679,9 @@ export function WizardShowcase() {
           onMouseLeave={() => setIsPaused(false)}
         >
           {/* Glow effect */}
-          <div className="absolute -inset-px rounded-xl bg-gradient-to-b from-brand-500/20 via-transparent to-transparent opacity-60 blur-sm pointer-events-none" />
+          <div className="absolute -inset-px rounded-lg bg-gradient-to-b from-brand-500/20 via-transparent to-transparent opacity-60 blur-sm pointer-events-none" />
 
-          <div className="premium-card rounded-xl overflow-hidden relative" style={{ transform: "perspective(1200px) rotateX(1.5deg)" }}>
+          <div className="premium-card rounded-lg overflow-hidden relative" style={{ transform: "perspective(1200px) rotateX(1.5deg)" }}>
             {/* Title bar */}
             <div className="bg-surface-raised h-9 flex items-center px-3.5 border-b border-border-default">
               <div className="flex items-center gap-1.5">
@@ -705,7 +705,7 @@ export function WizardShowcase() {
               <StepRail activeIndex={activeStep} />
 
               {/* Content area */}
-              <div className="flex-1 bg-surface-base relative overflow-hidden">
+              <div className="flex-1 bg-bg relative overflow-hidden">
                 <AnimatePresence mode="wait">
                   <motion.div
                     key={STEPS[activeStep].id}
