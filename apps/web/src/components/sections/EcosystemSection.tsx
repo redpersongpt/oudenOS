@@ -130,7 +130,7 @@ function EcosystemDiagram({ inView }: { inView: boolean }) {
                 {/* Subtle glow on top layer */}
                 {i === 0 && (
                   <div className="pointer-events-none absolute -top-16 right-0 h-32 w-64 rounded-full opacity-[0.08]"
-                    style={{ background: "radial-gradient(circle, #D71921, transparent 60%)" }} />
+                    style={{ background: "radial-gradient(circle, #E8254B, transparent 60%)" }} />
                 )}
 
               <div className="flex flex-col sm:flex-row sm:items-center gap-4">
@@ -230,7 +230,7 @@ function TuningSection() {
   return (
     <section id="tuning" ref={ref} className="relative py-28 lg:py-36">
       <div className="pointer-events-none absolute right-0 top-1/2 -translate-y-1/2 h-[500px] w-[500px] rounded-full opacity-[0.03]"
-        style={{ background: "radial-gradient(circle, #D71921, transparent 65%)" }} />
+        style={{ background: "radial-gradient(circle, #E8254B, transparent 65%)" }} />
 
       <div className="relative mx-auto max-w-[1100px] px-6 lg:px-12">
         <SectionHeader
@@ -258,7 +258,7 @@ function OSSection() {
   return (
     <section id="os" ref={ref} className="relative py-28 lg:py-36">
       <div className="pointer-events-none absolute left-0 top-1/2 -translate-y-1/2 h-[500px] w-[500px] rounded-full opacity-[0.03]"
-        style={{ background: "radial-gradient(circle, #D71921, transparent 65%)" }} />
+        style={{ background: "radial-gradient(circle, #E8254B, transparent 65%)" }} />
 
       <div className="relative mx-auto max-w-[1100px] px-6 lg:px-12">
         <SectionHeader
@@ -289,7 +289,7 @@ function EcosystemIntro() {
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-surface/30 to-transparent" />
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[500px] w-[900px] rounded-full opacity-[0.03]"
-          style={{ background: "radial-gradient(ellipse, #D71921, transparent 55%)" }} />
+          style={{ background: "radial-gradient(ellipse, #E8254B, transparent 55%)" }} />
       </div>
 
       <div className="relative mx-auto max-w-[1100px] px-6 lg:px-12">

@@ -17,12 +17,12 @@ export function FinalCTASection() {
         {/* Center glow */}
         <div
           className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[400px] w-[700px] rounded-full opacity-[0.05]"
-          style={{ background: "radial-gradient(ellipse, #D71921, transparent 55%)" }}
+          style={{ background: "radial-gradient(ellipse, #E8254B, transparent 55%)" }}
         />
         {/* Top edge accent */}
         <div
           className="absolute top-0 left-0 right-0 h-px opacity-20"
-          style={{ background: "linear-gradient(90deg, transparent 0%, #D71921 30%, #E82029 50%, #D71921 70%, transparent 100%)" }}
+          style={{ background: "linear-gradient(90deg, transparent 0%, #E8254B 30%, #E82029 50%, #E8254B 70%, transparent 100%)" }}
         />
       </div>
 

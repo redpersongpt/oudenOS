@@ -69,17 +69,17 @@ function TechnicalComposition() {
         {/* Vertical rule right */}
         <div className="absolute right-[20%] top-0 bottom-0 w-px bg-[#222222]" />
         {/* Corner crosshair TL */}
-        <div className="absolute top-[20%] left-[20%] w-3 h-px bg-[#D71921]/50 -translate-y-px" />
-        <div className="absolute top-[20%] left-[20%] w-px h-3 bg-[#D71921]/50" />
+        <div className="absolute top-[20%] left-[20%] w-3 h-px bg-[#E8254B]/50 -translate-y-px" />
+        <div className="absolute top-[20%] left-[20%] w-px h-3 bg-[#E8254B]/50" />
         {/* Corner crosshair TR */}
-        <div className="absolute top-[20%] right-[20%] w-3 h-px bg-[#D71921]/50 -translate-y-px" />
-        <div className="absolute top-[20%] right-[20%] w-px h-3 bg-[#D71921]/50 right-0" style={{ right: "20%" }} />
+        <div className="absolute top-[20%] right-[20%] w-3 h-px bg-[#E8254B]/50 -translate-y-px" />
+        <div className="absolute top-[20%] right-[20%] w-px h-3 bg-[#E8254B]/50 right-0" style={{ right: "20%" }} />
         {/* Corner crosshair BL */}
-        <div className="absolute bottom-[20%] left-[20%] w-3 h-px bg-[#D71921]/50" />
-        <div className="absolute bottom-[20%] left-[20%] w-px h-3 bg-[#D71921]/50 bottom-0" style={{ bottom: "20%" }} />
+        <div className="absolute bottom-[20%] left-[20%] w-3 h-px bg-[#E8254B]/50" />
+        <div className="absolute bottom-[20%] left-[20%] w-px h-3 bg-[#E8254B]/50 bottom-0" style={{ bottom: "20%" }} />
         {/* Corner crosshair BR */}
-        <div className="absolute bottom-[20%] right-[20%] w-3 h-px bg-[#D71921]/50" />
-        <div className="absolute bottom-[20%] right-[20%] w-px h-3 bg-[#D71921]/50 bottom-0" style={{ bottom: "20%" }} />
+        <div className="absolute bottom-[20%] right-[20%] w-3 h-px bg-[#E8254B]/50" />
+        <div className="absolute bottom-[20%] right-[20%] w-px h-3 bg-[#E8254B]/50 bottom-0" style={{ bottom: "20%" }} />
       </div>
 
       {/* Central mark */}
@@ -91,8 +91,8 @@ function TechnicalComposition() {
       >
         <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} fill="none" aria-hidden="true">
           <rect x={stroke / 2} y={stroke / 2} width={size - stroke} height={size - stroke} stroke="#333333" strokeWidth={stroke} fill="none" />
-          <circle cx={half} cy={half} r={r} stroke="#D71921" strokeWidth={stroke} fill="none" />
-          <circle cx={half} cy={half} r={dot} fill="#D71921" />
+          <circle cx={half} cy={half} r={r} stroke="#E8254B" strokeWidth={stroke} fill="none" />
+          <circle cx={half} cy={half} r={dot} fill="#E8254B" />
         </svg>
       </motion.div>
 
@@ -105,7 +105,7 @@ function TechnicalComposition() {
       >
         <div className="flex items-center justify-between">
           <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#444444]">SYS</span>
-          <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#D71921]">READY</span>
+          <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#E8254B]">READY</span>
         </div>
       </motion.div>
 
@@ -180,8 +180,8 @@ export function HeroSection() {
               transition={{ delay: 0.05, duration: 0.25, ease: "easeOut" }}
               className="mb-7 inline-flex items-center gap-2.5"
             >
-              <span className="h-px w-8 bg-[#D71921]" />
-              <span className="font-mono text-[0.6rem] font-medium uppercase tracking-[0.18em] text-[#D71921]">
+              <span className="h-px w-8 bg-[#E8254B]" />
+              <span className="font-mono text-[0.6rem] font-medium uppercase tracking-[0.18em] text-[#E8254B]">
                 Windows Optimization
               </span>
             </motion.div>
@@ -198,7 +198,7 @@ export function HeroSection() {
               </motion.span>
               <motion.span
                 className="block tracking-[-0.045em]"
-                style={{ color: "#D71921", fontFamily: "var(--font-doto), monospace" }}
+                style={{ color: "#E8254B", fontFamily: "var(--font-doto), monospace" }}
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2, duration: 0.25, ease: "easeOut" }}
@@ -225,7 +225,7 @@ export function HeroSection() {
             >
               <button
                 onClick={() => scrollTo("pricing")}
-                className="inline-flex items-center gap-2.5 rounded-lg bg-[#D71921] px-8 py-4 text-[0.92rem] font-semibold text-white cursor-pointer transition-colors duration-200 hover:bg-[#B5141B]"
+                className="inline-flex items-center gap-2.5 rounded-lg bg-[#E8254B] px-8 py-4 text-[0.92rem] font-semibold text-white cursor-pointer transition-colors duration-200 hover:bg-[#C41E3E]"
               >
                 <Download className="h-4 w-4" />
                 Get Ouden
@@ -250,7 +250,7 @@ export function HeroSection() {
             >
               {["OPEN SOURCE", "WIN 10 & 11", "SNAPSHOTS", "NO SUBSCRIPTION"].map((t, i) => (
                 <span key={t} className="flex items-center gap-3 text-[0.65rem] font-mono font-medium tracking-[0.12em] text-[var(--color-ink-tertiary)]">
-                  {i > 0 && <span className="h-3 w-px bg-[#D71921]" />}
+                  {i > 0 && <span className="h-3 w-px bg-[#E8254B]" />}
                   {t}
                 </span>
               ))}

@@ -24,8 +24,8 @@ function OudenMark({ size }: { size: number }) {
   return (
     <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} fill="none" aria-hidden="true">
       <rect x={stroke / 2} y={stroke / 2} width={size - stroke} height={size - stroke} stroke="#333333" strokeWidth={stroke} fill="none" />
-      <circle cx={half} cy={half} r={r} stroke="#D71921" strokeWidth={stroke} fill="none" />
-      <circle cx={half} cy={half} r={dot} fill="#D71921" />
+      <circle cx={half} cy={half} r={r} stroke="#E8254B" strokeWidth={stroke} fill="none" />
+      <circle cx={half} cy={half} r={dot} fill="#E8254B" />
     </svg>
   );
 }
