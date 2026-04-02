@@ -247,14 +247,18 @@ export function Navigation() {
           ].join(" ")}
         >
           <div className="mx-auto flex h-16 max-w-[1440px] items-center justify-between px-5 sm:px-6 lg:h-20 lg:px-8 2xl:px-16">
-            {/* Logo */}
-            <Link
-              href="/"
+            {/* Logo — scrolls to top on click */}
+            <a
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
               className="cursor-pointer"
-              aria-label="Go to homepage"
+              aria-label="Scroll to top"
             >
               <Logo size="md" />
-            </Link>
+            </a>
 
             {/* Desktop Nav */}
             <nav
