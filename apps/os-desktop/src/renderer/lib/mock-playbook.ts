@@ -166,6 +166,3 @@ export function buildMockResolvedPlaybook(
   };
 }
 
-export function getMockPlaybookActionIds(): string[] {
-  return FALLBACK_DATA.phases.flatMap((phase) => phase.actions.map((action) => action.id));
-}

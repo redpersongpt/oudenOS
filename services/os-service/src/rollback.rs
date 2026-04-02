@@ -123,6 +123,8 @@ pub fn restore_snapshot(
             "registry" => restore_registry(prev),
             "service" => restore_service(prev),
             "task" => restore_task(prev),
+            "bcd" => restore_bcd(prev),
+            "power" => restore_power(prev),
             "appx" => {
                 // AppX packages cannot be automatically reinstalled -- note the limitation
                 tracing::info!(
@@ -313,7 +315,73 @@ fn restore_task(prev: &PreviousValue) -> anyhow::Result<()> {
     Ok(())
 }
 
+#[cfg(windows)]
+fn restore_bcd(prev: &PreviousValue) -> anyhow::Result<()> {
+    let element = &prev.value_name;
+    let value = prev
+        .previous_value
+        .as_ref()
+        .and_then(|v| v.as_str())
+        .unwrap_or("");
+
+    if value.is_empty() {
+        // BCD element did not exist before — delete it
+        let script = format!("bcdedit /deletevalue {{current}} {}", element);
+        let result = powershell::execute(&script)?;
+        if !result.success {
+            anyhow::bail!("Failed to delete BCD element '{}': {}", element, result.stderr.trim());
+        }
+    } else {
+        let script = format!("bcdedit /set {{current}} {} {}", element, value);
+        let result = powershell::execute(&script)?;
+        if !result.success {
+            anyhow::bail!("Failed to restore BCD element '{}' to '{}': {}", element, value, result.stderr.trim());
+        }
+    }
+    Ok(())
+}
+
+#[cfg(windows)]
+fn restore_power(prev: &PreviousValue) -> anyhow::Result<()> {
+    let setting_path = &prev.path;
+    let value = prev
+        .previous_value
+        .as_ref()
+        .and_then(|v| v.as_str())
+        .unwrap_or("");
+
+    if !value.is_empty() && !setting_path.is_empty() {
+        // setting_path format: "SUBGROUP_GUID/SETTING_GUID"
+        let parts: Vec<&str> = setting_path.split('/').collect();
+        if parts.len() == 2 {
+            let script = format!(
+                "powercfg /setacvalueindex scheme_current {} {} {}",
+                parts[0], parts[1], value
+            );
+            let result = powershell::execute(&script)?;
+            if !result.success {
+                anyhow::bail!("Failed to restore power setting '{}': {}", setting_path, result.stderr.trim());
+            }
+        } else {
+            anyhow::bail!("Invalid power setting path format: {}", setting_path);
+        }
+    }
+    Ok(())
+}
+
 // ─── Non-Windows simulation ─────────────────────────────────────────────────
+
+#[cfg(not(windows))]
+fn restore_bcd(prev: &PreviousValue) -> anyhow::Result<()> {
+    tracing::info!(element = prev.value_name.as_str(), "[simulated] Would restore BCD element");
+    Ok(())
+}
+
+#[cfg(not(windows))]
+fn restore_power(prev: &PreviousValue) -> anyhow::Result<()> {
+    tracing::info!(setting = prev.path.as_str(), "[simulated] Would restore power setting");
+    Ok(())
+}
 
 #[cfg(not(windows))]
 fn restore_registry(prev: &PreviousValue) -> anyhow::Result<()> {
