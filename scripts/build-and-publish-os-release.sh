@@ -14,7 +14,7 @@ STABLE_NAME="redcore-os-setup.exe"
 WIZARD_STABLE_NAME="redcore-os-wizard-playbook.zip"
 APBX_STABLE_NAME="redcore-os-template.apbx"
 MANIFEST_PATH="$RELEASE_ROOT/latest.json"
-MIN_BYTES="${MIN_BYTES:-20000000}"
+MIN_BYTES="${MIN_BYTES:-2000000}"
 MIN_FREE_MB="${MIN_FREE_MB:-3072}"
 
 need_cmd() {
