@@ -14,7 +14,7 @@ const storePath = path.join(
 );
 const overridesPath = path.join(
   repoRoot,
-  "apps/os-desktop/src/renderer/lib/playbook-decision-overrides.ts",
+  "apps/os-desktop/src/renderer/lib/wizard-question-model.ts",
 );
 const reviewPath = path.join(
   repoRoot,

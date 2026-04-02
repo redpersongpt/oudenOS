@@ -268,6 +268,9 @@ export function ReportStep() {
             <Check className="mt-0.5 h-3 w-3 shrink-0 text-success-400" />
             <p className="text-[10px] leading-relaxed text-ink-secondary">
               <span className="font-semibold text-ink">{appliedPlaybookActions || pb.totalIncluded} actions</span> applied across {pb.phases.length} categories.
+              {executionResult?.truthSource === "local" && (
+                <span className="ml-1 text-amber-400/70">(unverified — service ledger unavailable)</span>
+              )}
             </p>
           </div>
 
