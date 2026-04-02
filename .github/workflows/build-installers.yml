@@ -111,8 +111,8 @@ jobs:
         working-directory: apps/os-desktop/src-tauri
         run: cargo check
 
-  build-rust-services:
-    name: Build Rust Services (Windows)
+  build-os-service:
+    name: Build OS Service (Windows)
     if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     runs-on: windows-latest
     steps:
@@ -130,16 +130,11 @@ jobs:
             ~/.cargo/registry
             ~/.cargo/git
             services/os-service/target
-            services/tuning-service/target
-          key: rust-windows-${{ hashFiles('services/*/Cargo.lock', 'services/*/Cargo.toml') }}
-          restore-keys: rust-windows-
+          key: rust-os-service-${{ hashFiles('services/os-service/Cargo.lock', 'services/os-service/Cargo.toml') }}
+          restore-keys: rust-os-service-
 
       - name: Build OS service (release)
         working-directory: services/os-service
-        run: cargo build --release
-
-      - name: Build Tuning service (release)
-        working-directory: services/tuning-service
         run: cargo build --release
 
       - name: Upload OS service binary
@@ -148,6 +143,32 @@ jobs:
           name: os-service-binary
           path: services/os-service/target/release/redcore-os-service.exe
           retention-days: 7
+
+  build-tuning-service:
+    name: Build Tuning Service (Windows)
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-pc-windows-msvc
+
+      - name: Cache Rust dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            services/tuning-service/target
+          key: rust-tuning-service-${{ hashFiles('services/tuning-service/Cargo.lock', 'services/tuning-service/Cargo.toml') }}
+          restore-keys: rust-tuning-service-
+
+      - name: Build Tuning service (release)
+        working-directory: services/tuning-service
+        run: cargo build --release
 
       - name: Upload Tuning service binary
         uses: actions/upload-artifact@v4
@@ -160,7 +181,7 @@ jobs:
     name: Package redcore OS Installer (Tauri)
     if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     runs-on: windows-latest
-    needs: [check-rust, build-rust-services]
+    needs: [check-rust, build-os-service]
     steps:
       - uses: actions/checkout@v4
 
@@ -227,7 +248,7 @@ jobs:
     name: Package redcore Tuning Installer
     if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     runs-on: windows-latest
-    needs: [verify, check-rust, build-rust-services]
+    needs: [check-rust, build-tuning-service]
     steps:
       - uses: actions/checkout@v4
 
