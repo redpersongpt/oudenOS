@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Zap } from "lucide-react";
 import { spring } from "@redcore/design-system";
+import { LogoMark } from "@/components/brand/Logo";
 
 type Phase = "logo" | "text" | "bar" | "exit";
 
@@ -70,9 +70,9 @@ export function SplashPage() {
           initial={{ scale: 0.7, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ ...spring.bounce, delay: 0.05 }}
-          className="relative flex h-[72px] w-[72px] items-center justify-center rounded-[20px] bg-brand-500 shadow-lg shadow-brand-500/40"
+          className="relative flex items-center justify-center"
         >
-          <Zap className="h-9 w-9 text-white" strokeWidth={2.5} />
+          <LogoMark size={72} />
         </motion.div>
 
         {/* Brand text */}
@@ -86,7 +86,7 @@ export function SplashPage() {
               className="flex flex-col items-center gap-1"
             >
               <h1 className="text-2xl font-bold tracking-tight text-white">
-                redcore<span className="text-brand-400"> · Tuning</span>
+                Ouden<span className="font-normal text-neutral-500">.Tuning</span>
               </h1>
               <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-neutral-500">
                 Precision Performance

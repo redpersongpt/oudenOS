@@ -1,9 +1,9 @@
-export const TUNING_SITE_URL = "https://redcoreos.net/redcore-tuning";
-export const PRICING_URL = "https://redcoreos.net/#pricing";
-export const LOGIN_URL = "https://redcoreos.net/login";
-export const REGISTER_URL = "https://redcoreos.net/register";
-export const PRIVACY_URL = "https://redcoreos.net/privacy";
-export const TERMS_URL = "https://redcoreos.net/terms";
+export const TUNING_SITE_URL = "https://ouden.cc/redcore-tuning";
+export const PRICING_URL = "https://ouden.cc/#pricing";
+export const LOGIN_URL = "https://ouden.cc/login";
+export const REGISTER_URL = "https://ouden.cc/register";
+export const PRIVACY_URL = "https://ouden.cc/privacy";
+export const TERMS_URL = "https://ouden.cc/terms";
 
 export function openExternalUrl(url: string): void {
   if (typeof window !== "undefined" && window.redcore?.shell?.openExternal) {

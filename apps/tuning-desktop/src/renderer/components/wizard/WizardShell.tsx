@@ -133,7 +133,7 @@ function WizardTitleBar() {
     <div className="flex h-10 shrink-0 items-center justify-between px-4 drag-region">
       <div className="flex items-center gap-2.5 no-drag">
         <LogoMark size={16} />
-        <span className="text-[11px] font-medium text-neutral-500">redcore · Tuning</span>
+        <span className="text-[11px] font-medium text-neutral-500">Ouden.Tuning</span>
       </div>
       <div className="no-drag">
         <StepPicker />

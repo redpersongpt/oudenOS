@@ -157,7 +157,7 @@ function TitleBar() {
       style={{ background: "var(--black)", borderBottom: "1px solid var(--border)" }}
     >
       <span className="nd-label-sm no-drag" style={{ color: "var(--text-disabled)" }}>
-        REDCORE · OS
+        OUDEN · OS
       </span>
       <div className="flex items-center no-drag">
         <button

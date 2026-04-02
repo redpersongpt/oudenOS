@@ -3,7 +3,8 @@
 // Groups steps by category with animated status indicators.
 
 import { motion, AnimatePresence } from "framer-motion";
-import { Check, Minus, Zap } from "lucide-react";
+import { Check, Minus } from "lucide-react";
+import { LogoMark } from "@/components/brand/Logo";
 import { spring, staggerContainer, staggerChild } from "@redcore/design-system";
 import {
   useWizardStore,
@@ -173,12 +174,12 @@ export function StepRail() {
     <div className="flex h-full flex-col overflow-hidden bg-neutral-950">
       {/* Brand mark */}
       <div className="flex h-14 shrink-0 items-center gap-2.5 px-4 drag-region">
-        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-brand-500 shadow-brand-glow">
-          <Zap className="h-3.5 w-3.5 text-white" strokeWidth={2.5} />
+        <div className="flex h-7 w-7 shrink-0 items-center justify-center">
+          <LogoMark size={22} />
         </div>
         <div>
-          <p className="text-xs font-bold tracking-tight text-white no-drag">
-            redcore<span className="text-brand-400">-Tuning</span>
+          <p className="text-xs font-bold tracking-tight text-neutral-300 no-drag">
+            Ouden<span className="font-normal text-neutral-600">.Tuning</span>
           </p>
           <p className="text-[9px] uppercase tracking-widest text-neutral-600 no-drag">
             Wizard

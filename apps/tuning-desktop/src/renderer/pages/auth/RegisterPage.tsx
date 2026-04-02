@@ -1,7 +1,8 @@
 import { useState, useMemo } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Mail, Lock, Eye, EyeOff, User, AlertCircle, Zap, Check, X } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, User, AlertCircle, Check, X } from "lucide-react";
+import { LogoMark } from "@/components/brand/Logo";
 import { Button } from "@/components/ui/Button";
 import { useAuthStore } from "@/stores/auth-store";
 import { openExternalUrl, PRIVACY_URL, REGISTER_URL, TERMS_URL } from "@/lib/external-links";
@@ -116,14 +117,14 @@ function EnvelopeIllustration() {
       >
         {/* SVG envelope */}
         <svg viewBox="0 0 48 48" width="40" height="40" fill="none" aria-hidden="true">
-          <rect x="4" y="10" width="40" height="28" rx="3" stroke="#E8254B" strokeWidth="2.5" />
-          <path d="M4 13l20 14 20-14" stroke="#E8254B" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+          <rect x="4" y="10" width="40" height="28" rx="3" stroke="var(--color-brand-500)" strokeWidth="2.5" />
+          <path d="M4 13l20 14 20-14" stroke="var(--color-brand-500)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
           <motion.path
             initial={{ pathLength: 0 }}
             animate={{ pathLength: 1 }}
             transition={{ duration: 0.6, delay: 0.4, ease: "easeOut" }}
             d="M14 32l8-6M34 32l-8-6"
-            stroke="#E8254B"
+            stroke="var(--color-brand-500)"
             strokeWidth="2"
             strokeLinecap="round"
             opacity={0.4}
@@ -206,7 +207,7 @@ export function RegisterPage() {
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            "radial-gradient(ellipse 90% 55% at 50% -5%, rgba(232,37,75,0.07) 0%, transparent 65%)",
+            "radial-gradient(ellipse 90% 55% at 50% -5%, rgba(215,25,33,0.07) 0%, transparent 65%)",
         }}
       />
 
@@ -224,12 +225,12 @@ export function RegisterPage() {
               <motion.div variants={stagger} initial="hidden" animate="visible">
                 {/* Brand */}
                 <motion.div variants={fadeUp} className="mb-8 flex flex-col items-center gap-3">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-brand-500 shadow-[0_0_28px_rgba(232,37,75,0.38)]">
-                    <Zap className="h-6 w-6 text-white" strokeWidth={2.5} />
+                  <div className="flex items-center justify-center">
+                    <LogoMark size={48} />
                   </div>
                   <div className="text-center">
-                    <h1 className="text-xl font-bold tracking-tight text-white">
-                      redcore<span className="text-brand-400">-Tuning</span>
+                    <h1 className="text-xl font-bold tracking-tight text-neutral-300">
+                      Ouden<span className="font-normal text-neutral-500">.Tuning</span>
                     </h1>
                     <p className="mt-0.5 text-xs text-neutral-500">Create your account</p>
                   </div>
@@ -489,10 +490,10 @@ export function RegisterPage() {
                             onClick={() => setTermsAccepted((v) => !v)}
                             animate={{
                               backgroundColor: termsAccepted
-                                ? "#E8254B"
+                                ? "#D71921"
                                 : "rgba(255,255,255,0.05)",
                               borderColor: termsAccepted
-                                ? "#E8254B"
+                                ? "#D71921"
                                 : "rgba(255,255,255,0.12)",
                             }}
                             transition={{ duration: 0.15 }}

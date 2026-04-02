@@ -1,4 +1,4 @@
-const PROD_CLOUD_API_BASE_URL = "https://api.redcoreos.net/v1";
+const PROD_CLOUD_API_BASE_URL = "https://api.ouden.cc/v1";
 
 export function getCloudApiBaseUrl(): string {
   const baseUrl =

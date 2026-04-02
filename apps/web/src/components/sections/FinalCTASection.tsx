@@ -17,12 +17,12 @@ export function FinalCTASection() {
         {/* Center glow */}
         <div
           className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[400px] w-[700px] rounded-full opacity-[0.05]"
-          style={{ background: "radial-gradient(ellipse, #E8254B, transparent 55%)" }}
+          style={{ background: "radial-gradient(ellipse, #D71921, transparent 55%)" }}
         />
         {/* Top edge accent */}
         <div
           className="absolute top-0 left-0 right-0 h-px opacity-20"
-          style={{ background: "linear-gradient(90deg, transparent 0%, #E8254B 30%, #FF3860 50%, #E8254B 70%, transparent 100%)" }}
+          style={{ background: "linear-gradient(90deg, transparent 0%, #D71921 30%, #E82029 50%, #D71921 70%, transparent 100%)" }}
         />
       </div>
 
@@ -45,7 +45,7 @@ export function FinalCTASection() {
           <h2 className="text-[clamp(2.2rem,4.5vw,3.6rem)] font-bold tracking-[-0.038em] leading-[1.06] text-[var(--text-primary)]">
             Built for the machines
             <br />
-            <span className="bg-gradient-to-r from-accent to-[#FF3860] bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-accent to-[#E82029] bg-clip-text text-transparent">
               that matter to you.
             </span>
           </h2>

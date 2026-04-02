@@ -29,13 +29,13 @@ const pages = [
     href: "/custom-windows",
   },
   {
-    title: "Why redcore",
+    title: "Why Ouden",
     description: "Scans your PC first, adapts to your setup, and every change is reversible.",
     href: "/why-redcore",
   },
   {
     title: "Downloads",
-    description: "Get redcore OS for free. Windows 10 & 11, x64.",
+    description: "Get OudenOS for free. Windows 10 & 11, x64.",
     href: "/downloads",
   },
 ];

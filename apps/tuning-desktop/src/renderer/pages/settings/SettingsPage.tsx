@@ -198,7 +198,7 @@ export function SettingsPage() {
               <div className="divide-y divide-border">
                 <SettingRow
                   label="Telemetry Opt-in"
-                  description="Send anonymous usage data to help improve redcore-Tuning"
+                  description="Send anonymous usage data to help improve Ouden.Tuning"
                 >
                   <ToggleSwitch enabled={toggles.telemetry!} onToggle={() => toggle("telemetry")} />
                 </SettingRow>
@@ -327,7 +327,7 @@ export function SettingsPage() {
                 <Monitor className="h-7 w-7 text-brand-500" strokeWidth={1.5} />
               </div>
               <div>
-                <p className="text-sm font-semibold text-ink">redcore-Tuning</p>
+                <p className="text-sm font-semibold text-ink">Ouden.Tuning</p>
                 <p className="text-xs text-ink-tertiary">Windows performance optimization toolkit</p>
               </div>
             </div>

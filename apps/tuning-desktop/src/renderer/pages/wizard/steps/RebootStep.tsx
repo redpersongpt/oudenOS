@@ -152,7 +152,7 @@ export function RebootStep() {
           <div className="space-y-2">
             {[
               "System will restart and all pending changes will finalise.",
-              "redcore-Tuning will launch automatically after restart.",
+              "Ouden.Tuning will launch automatically after restart.",
               "The wizard will resume from this point and complete your report.",
             ].map((step, i) => (
               <div key={i} className="flex items-start gap-3">

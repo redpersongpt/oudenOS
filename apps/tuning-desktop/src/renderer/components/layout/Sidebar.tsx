@@ -14,11 +14,11 @@ import {
   Package,
   RotateCcw,
   Settings,
-  Zap,
   KeyRound,
   LogOut,
   PanelLeft,
 } from "lucide-react";
+import { LogoMark } from "@/components/brand/Logo";
 import { useAuthStore } from "@/stores/auth-store";
 import { useLicenseStore } from "@/stores/license-store";
 
@@ -83,8 +83,8 @@ export function Sidebar() {
     >
       {/* Brand */}
       <div className="flex h-14 items-center gap-2.5 px-4 drag-region shrink-0">
-        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-brand-500 shadow-brand-glow">
-          <Zap className="h-4 w-4 text-white" strokeWidth={2.5} />
+        <div className="flex h-8 w-8 shrink-0 items-center justify-center">
+          <LogoMark size={24} />
         </div>
         <AnimatePresence initial={false}>
           {!collapsed && (
@@ -96,7 +96,7 @@ export function Sidebar() {
               transition={{ duration: 0.15 }}
               className="text-base font-semibold tracking-tight text-ink no-drag whitespace-nowrap overflow-hidden"
             >
-              redcore
+              Ouden
             </motion.span>
           )}
         </AnimatePresence>

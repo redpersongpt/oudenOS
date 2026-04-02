@@ -77,7 +77,7 @@ export default function ResetPasswordPage() {
             Reset password
           </motion.h1>
           <motion.p {...fade(0.05)} className="mt-2 text-[14px] text-[var(--text-secondary)] text-center">
-            Choose a new password for your redcore account.
+            Choose a new password for your Ouden account.
           </motion.p>
 
           {error && (

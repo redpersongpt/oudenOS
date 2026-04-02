@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Mail, AlertCircle, ArrowLeft, Zap } from "lucide-react";
+import { Mail, AlertCircle, ArrowLeft } from "lucide-react";
+import { LogoMark } from "@/components/brand/Logo";
 import { Button } from "@/components/ui/Button";
 import { cloudApi, CloudApiRequestError } from "@/lib/cloud-api";
 
@@ -71,19 +72,19 @@ function SuccessIllustration() {
       >
         <svg viewBox="0 0 40 40" width="32" height="32" fill="none" aria-hidden="true">
           {/* Lock body */}
-          <rect x="8" y="18" width="24" height="16" rx="3" stroke="#E8254B" strokeWidth="2.5" />
+          <rect x="8" y="18" width="24" height="16" rx="3" stroke="var(--color-brand-500)" strokeWidth="2.5" />
           {/* Lock shackle */}
           <path
             d="M13 18v-5a7 7 0 0 1 14 0v5"
-            stroke="#E8254B"
+            stroke="var(--color-brand-500)"
             strokeWidth="2.5"
             strokeLinecap="round"
           />
           {/* Keyhole */}
-          <circle cx="20" cy="26" r="2.5" stroke="#E8254B" strokeWidth="2" />
+          <circle cx="20" cy="26" r="2.5" stroke="var(--color-brand-500)" strokeWidth="2" />
           <path
             d="M20 28.5v2.5"
-            stroke="#E8254B"
+            stroke="var(--color-brand-500)"
             strokeWidth="2"
             strokeLinecap="round"
           />
@@ -138,7 +139,7 @@ export function ForgotPasswordPage() {
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            "radial-gradient(ellipse 90% 55% at 50% -5%, rgba(232,37,75,0.06) 0%, transparent 65%)",
+            "radial-gradient(ellipse 90% 55% at 50% -5%, rgba(215,25,33,0.06) 0%, transparent 65%)",
         }}
       />
 
@@ -156,8 +157,8 @@ export function ForgotPasswordPage() {
               <motion.div variants={stagger} initial="hidden" animate="visible">
                 {/* Brand */}
                 <motion.div variants={fadeUp} className="mb-8 flex flex-col items-center gap-3">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-brand-500 shadow-[0_0_28px_rgba(232,37,75,0.38)]">
-                    <Zap className="h-6 w-6 text-white" strokeWidth={2.5} />
+                  <div className="flex items-center justify-center">
+                    <LogoMark size={48} />
                   </div>
                   <div className="text-center">
                     <h1 className="text-xl font-bold tracking-tight text-white">
