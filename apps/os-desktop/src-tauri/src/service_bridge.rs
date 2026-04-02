@@ -231,21 +231,60 @@ fn find_service_binary(resource_dir: &Path) -> Option<PathBuf> {
         "redcore-os-service"
     };
 
-    let candidates = [
+    // Get the directory containing the Tauri executable itself
+    let exe_dir = std::env::current_exe()
+        .ok()
+        .and_then(|p| p.parent().map(|pp| pp.to_path_buf()));
+
+    let mut candidates: Vec<PathBuf> = vec![
+        // Tauri NSIS: resource_dir from app.path().resource_dir()
         resource_dir.join(exe),
-        resource_dir.join("_up_").join(exe), // Tauri resource nesting
-        PathBuf::from("../../services/os-service/target/release").join(exe),
-        PathBuf::from("../../services/os-service/target/debug").join(exe),
+        // Tauri NSIS: resources may be nested
+        resource_dir.join("_up_").join(exe),
     ];
+
+    // Next to the Tauri executable itself (common NSIS layout)
+    if let Some(ref dir) = exe_dir {
+        candidates.push(dir.join(exe));
+        candidates.push(dir.join("resources").join(exe));
+    }
+
+    // Dev/build paths (relative to working directory)
+    candidates.push(PathBuf::from("../../services/os-service/target/release").join(exe));
+    candidates.push(PathBuf::from("../../services/os-service/target/debug").join(exe));
+
+    eprintln!("[service-bridge] resource_dir = {}", resource_dir.display());
+    if let Some(ref dir) = exe_dir {
+        eprintln!("[service-bridge] exe_dir = {}", dir.display());
+    }
+    for c in &candidates {
+        let exists = c.exists();
+        eprintln!("[service-bridge]   candidate: {} (exists={})", c.display(), exists);
+    }
 
     candidates.into_iter().find(|p| p.exists())
 }
 
 fn find_playbook_dir(resource_dir: &Path) -> Option<PathBuf> {
-    let candidates = [
+    let exe_dir = std::env::current_exe()
+        .ok()
+        .and_then(|p| p.parent().map(|pp| pp.to_path_buf()));
+
+    let mut candidates = vec![
         resource_dir.join("playbooks"),
-        PathBuf::from("../../playbooks"),
     ];
+
+    if let Some(ref dir) = exe_dir {
+        candidates.push(dir.join("playbooks"));
+        candidates.push(dir.join("resources").join("playbooks"));
+    }
+
+    candidates.push(PathBuf::from("../../playbooks"));
+
+    for c in &candidates {
+        let exists = c.is_dir();
+        eprintln!("[service-bridge] playbook candidate: {} (exists={})", c.display(), exists);
+    }
 
     candidates.into_iter().find(|p| p.is_dir())
 }
