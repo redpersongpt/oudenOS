@@ -5,8 +5,8 @@ use std::io::{BufRead, BufReader, Write};
 use std::path::{Path, PathBuf};
 use std::process::{Child, Command, Stdio};
 use std::sync::atomic::{AtomicU64, Ordering};
+use std::sync::mpsc;
 use std::time::Duration;
-use tokio::sync::mpsc;
 
 #[cfg(windows)]
 use std::os::windows::process::CommandExt;
@@ -23,7 +23,7 @@ pub struct ServiceBridge {
     admin: bool,
     #[allow(dead_code)]
     reader_handle: Option<std::thread::JoinHandle<()>>,
-    response_rx: Option<mpsc::UnboundedReceiver<(u64, Result<Value, String>)>>,
+    response_rx: Option<mpsc::Receiver<(u64, Result<Value, String>)>>,
 }
 
 impl ServiceBridge {
@@ -79,9 +79,7 @@ impl ServiceBridge {
             });
         }
 
-        // Use tokio unbounded_channel: UnboundedSender::send() is sync and non-blocking,
-        // so the std reader thread can call it directly without a tokio runtime.
-        let (tx, rx) = mpsc::unbounded_channel::<(u64, Result<Value, String>)>();
+        let (tx, rx) = mpsc::channel::<(u64, Result<Value, String>)>();
         if let Some(stdout) = child.stdout.take() {
             std::thread::spawn(move || {
                 let reader = BufReader::new(stdout);
@@ -142,7 +140,6 @@ impl ServiceBridge {
         let mut line = serde_json::to_string(&request).map_err(|e| e.to_string())?;
         line.push('\n');
 
-        // stdin write to a pipe is fast (sub-ms); no async wrapper needed
         stdin
             .write_all(line.as_bytes())
             .map_err(|e| format!("Failed to write to service: {e}"))?;
@@ -159,48 +156,31 @@ impl ServiceBridge {
             return result;
         }
 
-        // Take rx out of self so we can .await on it without a conflicting borrow on
-        // self.buffered.  The channel is unconditionally restored after the loop exits
-        // (via break), so no error path can leave self.response_rx permanently empty.
-        let mut rx = match self.response_rx.take() {
-            Some(rx) => rx,
-            None => return Err("No response channel".into()),
-        };
+        let deadline = std::time::Instant::now() + REQUEST_TIMEOUT;
 
-        let deadline = tokio::time::Instant::now() + REQUEST_TIMEOUT;
-        let final_result = loop {
-            let now = tokio::time::Instant::now();
-            if now >= deadline {
-                break Err(format!("Service call '{method}' timed out after 30s"));
-            }
-            let remaining = deadline - now;
-
-            // Await the next response asynchronously, yielding to the tokio runtime.
-            match tokio::time::timeout(remaining, rx.recv()).await {
-                Ok(Some((resp_id, resp_result))) => {
-                    if resp_id == id {
-                        break resp_result;
+        loop {
+            if let Some(ref rx) = self.response_rx {
+                match rx.recv_timeout(Duration::from_millis(100)) {
+                    Ok((resp_id, result)) => {
+                        if resp_id == id {
+                            return result;
+                        }
+                        self.buffered.insert(resp_id, result);
                     }
-                    // Out-of-order response — buffer it.
-                    self.buffered.insert(resp_id, resp_result);
-                    // Evict stale entries to prevent unbounded growth (#5).
-                    if self.buffered.len() > 50 {
-                        let min_id = id.saturating_sub(50);
-                        self.buffered.retain(|&k, _| k > min_id);
+                    Err(mpsc::RecvTimeoutError::Timeout) => {
+                        if std::time::Instant::now() > deadline {
+                            return Err(format!("Service call '{method}' timed out after 30s"));
+                        }
+                    }
+                    Err(mpsc::RecvTimeoutError::Disconnected) => {
+                        self.process = None;
+                        return Err("Service process died".into());
                     }
                 }
-                Ok(None) => {
-                    self.process = None;
-                    break Err("Service process died".into());
-                }
-                Err(_elapsed) => {
-                    break Err(format!("Service call '{method}' timed out after 30s"));
-                }
+            } else {
+                return Err("No response channel".into());
             }
-        };
-
-        self.response_rx = Some(rx);
-        final_result
+        }
     }
 }
 

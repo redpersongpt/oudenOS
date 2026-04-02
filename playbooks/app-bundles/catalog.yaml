@@ -1,10 +1,4 @@
 # App catalog — each entry defines download source and install method
-#
-# expectedSha256: SHA-256 hex digest of the downloaded installer.
-#   - Set this for pinned/versioned URLs to prevent MITM substitution.
-#   - Omit (or set to null) for rolling-release "latest" URLs where content
-#     changes with every release.  The installer will be downloaded but the
-#     hash check will be skipped with a warning logged.
 apps:
   steam:
     name: "Steam"
@@ -13,7 +7,6 @@ apps:
     url: "https://cdn.cloudflare.steamstatic.com/client/installer/SteamSetup.exe"
     silentArgs: "/S"
     workSafe: false
-    # Rolling-release installer — hash not pinned
 
   discord:
     name: "Discord"
@@ -22,7 +15,6 @@ apps:
     url: "https://discord.com/api/downloads/distributions/app/installers/latest?channel=stable&platform=win&arch=x64"
     silentArgs: "--silent"
     workSafe: false
-    # Rolling-release installer — hash not pinned
 
   brave:
     name: "Brave Browser"
@@ -31,7 +23,6 @@ apps:
     url: "https://laptop-updates.brave.com/latest/winx64"
     silentArgs: "--silent --install"
     workSafe: true
-    # Rolling-release installer — hash not pinned
 
   7zip:
     name: "7-Zip"
@@ -40,8 +31,6 @@ apps:
     url: "https://www.7-zip.org/a/7z2409-x64.exe"
     silentArgs: "/S"
     workSafe: true
-    # Pinned version 24.09 — fill in expectedSha256 after verifying from https://www.7-zip.org/
-    # expectedSha256: null
 
   vlc:
     name: "VLC Media Player"
@@ -50,7 +39,6 @@ apps:
     url: "https://get.videolan.org/vlc/last/win64/"
     silentArgs: "/S /L=1033"
     workSafe: true
-    # Rolling-release installer — hash not pinned
 
   notepadpp:
     name: "Notepad++"
@@ -59,7 +47,6 @@ apps:
     url: "https://github.com/notepad-plus-plus/notepad-plus-plus/releases/latest/download/npp.Installer.x64.exe"
     silentArgs: "/S"
     workSafe: true
-    # Rolling-release (always latest) — hash not pinned; pin a specific release URL to enable hash check
 
   vscode:
     name: "Visual Studio Code"
@@ -68,7 +55,6 @@ apps:
     url: "https://update.code.visualstudio.com/latest/win32-x64/stable"
     silentArgs: "/VERYSILENT /NORESTART /MERGETASKS=!runcode"
     workSafe: true
-    # Rolling-release installer — hash not pinned
 
   obs-studio:
     name: "OBS Studio"
@@ -77,8 +63,6 @@ apps:
     url: "https://cdn-fastly.obsproject.com/downloads/OBS-Studio-30.2.3-Windows-Installer.exe"
     silentArgs: "/S"
     workSafe: true
-    # Pinned version 30.2.3 — fill in expectedSha256 after verifying from https://github.com/obsproject/obs-studio/releases
-    # expectedSha256: null
 
   hwinfo:
     name: "HWiNFO64"
@@ -87,7 +71,6 @@ apps:
     url: "https://www.hwinfo.com/files/hwi_latest.exe"
     silentArgs: "/VERYSILENT"
     workSafe: true
-    # Rolling-release installer — hash not pinned
 
   msi-afterburner:
     name: "MSI Afterburner"
@@ -96,7 +79,6 @@ apps:
     url: "https://download.msi.com/uti_exe/vga/MSIAfterburnerSetup.zip"
     silentArgs: "/S"
     workSafe: false
-    # Rolling-release installer — hash not pinned
 
   riot-client:
     name: "Riot Client"
@@ -105,7 +87,6 @@ apps:
     url: "https://valorant.secure.dyn.riotcdn.net/channels/public/x/installer.exe"
     silentArgs: ""
     workSafe: false
-    # Rolling-release installer — hash not pinned
 
   battlenet:
     name: "Battle.net"
@@ -114,7 +95,6 @@ apps:
     url: "https://www.battle.net/download/getInstallerForGame?os=win&gameProgram=BATTLENET_APP"
     silentArgs: "--lang=enUS --installpath=\"C:\\Program Files (x86)\\Battle.net\""
     workSafe: false
-    # Rolling-release installer — hash not pinned
 
   epic-games:
     name: "Epic Games Launcher"
@@ -123,4 +103,3 @@ apps:
     url: "https://launcher-public-service-prod06.ol.epicgames.com/launcher/api/installer/download/EpicGamesLauncherInstaller.msi"
     silentArgs: "/quiet"
     workSafe: false
-    # Rolling-release installer — hash not pinned
