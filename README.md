@@ -189,7 +189,7 @@ The app classifies your machine and applies a matching profile. Profiles control
 ## Architecture
 
 ```
-apps/os-desktop/       Electron + React desktop shell (Tauri migration in progress)
+apps/os-desktop/       Tauri + React desktop shell
 services/os-service/   Rust privileged service (registry, services, tasks, rollback)
 playbooks/             YAML action definitions and machine profiles
 ```
@@ -216,10 +216,10 @@ cargo build --release --manifest-path services/os-service/Cargo.toml
 ### Windows Installer
 
 ```bash
-pnpm run dist:desktop
+cargo tauri build --config apps/os-desktop/src-tauri/tauri.conf.production.json
 ```
 
-The desktop packaging step expects the Rust service binary to be built first.
+The installer build expects the Rust service binary to be built first. Requires [Tauri CLI](https://v2.tauri.app/start/create-project/#prerequisites).
 
 ## How to Audit Before Running
 
