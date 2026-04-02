@@ -266,14 +266,14 @@ export function RebootResumeStep() {
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="flex h-14 w-14 items-center justify-center rounded-sm border border-brand-500/30 bg-brand-500/10"
+            className="flex h-14 w-14 items-center justify-center rounded-sm border border-brand-500/30 bg-[var(--accent)]/10"
           >
-            <Loader2 className="h-7 w-7 text-brand-400 animate-spin" />
+            <Loader2 className="h-7 w-7 text-[var(--accent)] animate-spin" />
           </motion.div>
 
           <div className="flex flex-col items-center gap-1.5 text-center">
-            <h2 className="text-lg font-medium text-nd-text-primary">Resuming Execution</h2>
-            <p className="max-w-sm text-xs text-nd-text-secondary">
+            <h2 className="text-lg font-medium text-[var(--text-primary)]">Resuming Execution</h2>
+            <p className="max-w-sm text-xs text-[var(--text-secondary)]">
               Applying remaining actions from the service execution ledger
             </p>
           </div>
@@ -285,7 +285,7 @@ export function RebootResumeStep() {
                 initial={{ opacity: 0, y: 4 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -4 }}
-                className="w-full max-w-md rounded-xl border border-brand-500/25 bg-brand-500/[0.06] px-5 py-3"
+                className="w-full max-w-md rounded-xl border border-brand-500/25 bg-[var(--accent)]/[0.06] px-5 py-3"
               >
                 <div className="flex items-center gap-3">
                   <motion.div
@@ -293,8 +293,8 @@ export function RebootResumeStep() {
                     transition={{ duration: 0.9, ease: "linear", repeat: Infinity }}
                     className="h-4 w-4 shrink-0 rounded-sm border-2 border-brand-500 border-t-transparent"
                   />
-                  <span className="flex-1 truncate text-[13px] font-medium text-nd-text-primary">{currentAction}</span>
-                  <span className="shrink-0 font-mono-metric text-[10px] text-brand-500/60">
+                  <span className="flex-1 truncate text-[13px] font-medium text-[var(--text-primary)]">{currentAction}</span>
+                  <span className="shrink-0 font-mono-metric text-[10px] text-[var(--accent)]/60">
                     {resumeProgress.completed + resumeProgress.failed}/{resumeProgress.total}
                   </span>
                 </div>
@@ -311,9 +311,9 @@ export function RebootResumeStep() {
                 transition={{ type: "spring", stiffness: 280, damping: 28 }}
               />
             </div>
-            <div className="mt-2 flex justify-between text-[10px] text-nd-text-secondary font-mono-metric">
+            <div className="mt-2 flex justify-between text-[10px] text-[var(--text-secondary)] font-mono-metric">
               <span>{resumeProgress.completed} applied</span>
-              {resumeProgress.failed > 0 && <span className="text-danger-400">{resumeProgress.failed} failed</span>}
+              {resumeProgress.failed > 0 && <span className="text-[var(--accent)]">{resumeProgress.failed} failed</span>}
               <span>{resumeProgress.total - resumeProgress.completed - resumeProgress.failed} remaining</span>
             </div>
           </div>
@@ -331,12 +331,12 @@ export function RebootResumeStep() {
           </motion.div>
 
           <div className="flex flex-col items-center gap-1.5 text-center">
-            <h2 className="text-lg font-medium text-nd-text-primary">Restart Recommended</h2>
-            <p className="max-w-sm text-xs text-nd-text-secondary">
+            <h2 className="text-lg font-medium text-[var(--text-primary)]">Restart Recommended</h2>
+            <p className="max-w-sm text-xs text-[var(--text-secondary)]">
               Some optimizations require a restart to take effect. You can restart now or continue and restart later.
             </p>
             {resolvedPlaybook && (
-              <p className="max-w-sm text-[10px] text-nd-text-secondary">
+              <p className="max-w-sm text-[10px] text-[var(--text-secondary)]">
                 Resume chain: {journalState?.planId ?? buildRebootJournalContext(resolvedPlaybook, detectedProfile?.id).planId}
                 {" · "}
                 {journalState?.totalRemaining ?? (journalState?.pendingRebootProvenanceRefs.length ?? getPendingRebootProvenanceRefs(resolvedPlaybook, executionResult).length)} pending actions
@@ -345,7 +345,7 @@ export function RebootResumeStep() {
           </div>
 
           {rebootError && (
-            <div className="flex items-center gap-2 rounded-sm border border-danger-500/30 bg-danger-500/10 px-3 py-2 text-xs text-danger-400">
+            <div className="flex items-center gap-2 rounded-sm border border-danger-500/30 bg-danger-500/10 px-3 py-2 text-xs text-[var(--accent)]">
               <AlertCircle className="h-3.5 w-3.5 shrink-0" />
               {rebootError}
             </div>
@@ -360,7 +360,7 @@ export function RebootResumeStep() {
             </Button>
           </div>
 
-          <button onClick={handleSkip} className="text-[11px] text-nd-text-secondary hover:text-nd-text-secondary transition-colors">
+          <button onClick={handleSkip} className="text-[11px] text-[var(--text-secondary)] hover:text-[var(--text-secondary)] transition-colors">
             Skip and restart later
           </button>
         </>

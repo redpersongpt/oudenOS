@@ -5,6 +5,8 @@ import { useWizardStore } from "@/stores/wizard-store";
 import type { WizardStepId } from "@/stores/wizard-store";
 import { platform } from "@/lib/platform";
 
+const ND = { ease: [0.25, 0.1, 0.25, 1] as const };
+
 const LABELS: Record<WizardStepId, string> = {
   welcome: "WELCOME", assessment: "ASSESSMENT", profile: "PROFILE",
   preservation: "PRESERVATION", "playbook-strategy": "STRATEGY",
@@ -15,57 +17,63 @@ const LABELS: Record<WizardStepId, string> = {
 };
 
 const CTA: Partial<Record<WizardStepId, string>> = {
-  welcome: "BEGIN", "playbook-strategy": "REVIEW PLAYBOOK",
+  welcome: "BEGIN", "playbook-strategy": "REVIEW",
   "playbook-review": "PERSONALIZE", "app-setup": "REVIEW",
-  "final-review": "APPLY", report: "NEXT STEPS",
-  profile: "CONFIGURE",
+  "final-review": "APPLY", report: "NEXT STEPS", profile: "CONFIGURE",
 };
 
 const NO_BAR = new Set<WizardStepId>(["execution", "reboot-resume", "donation", "handoff"]);
 
-const ND_EASE = [0.25, 0.1, 0.25, 1] as const;
-
-// ── Nothing-style sidebar rail ──────────────────────────────────────────
+/* ── Sidebar rail — bracket-style nav, divider rows ─────────────────── */
 
 function Rail() {
   const { currentStep, steps } = useWizardStore();
   const ci = steps.findIndex((s) => s.id === currentStep);
 
   return (
-    <aside className="flex w-44 shrink-0 flex-col border-r border-nd-border-subtle bg-nd-bg px-4 pt-5 pb-4">
+    <aside
+      className="flex w-44 shrink-0 flex-col px-4 pt-5 pb-4"
+      style={{ background: "var(--black)", borderRight: "1px solid var(--border)" }}
+    >
       {/* Brand mark */}
       <div className="mb-6 flex items-center gap-2">
-        <div className="w-4 h-4 border border-brand-500 rounded-sm flex items-center justify-center">
-          <div className="w-1.5 h-1.5 bg-brand-500" />
+        <div className="w-4 h-4 flex items-center justify-center" style={{ border: "1px solid var(--accent)" }}>
+          <div className="w-1.5 h-1.5" style={{ background: "var(--accent)" }} />
         </div>
-        <span className="nd-label text-brand-500">SETUP</span>
+        <span className="nd-label" style={{ color: "var(--accent)" }}>SETUP</span>
       </div>
 
-      {/* Step list */}
-      <nav className="flex flex-1 flex-col gap-0">
+      <nav className="flex flex-1 flex-col">
         {steps.map((step, i) => {
           const cur = step.id === currentStep;
           const done = step.status === "completed" || step.status === "skipped" || i < ci;
           return (
-            <div key={step.id} className="relative flex items-center gap-3 py-1.5 pl-1">
-              {/* Segment indicator */}
-              <div className="flex h-4 w-4 shrink-0 items-center justify-center">
+            <div
+              key={step.id}
+              className="flex items-center gap-3 py-1.5 pl-1"
+              style={{ borderBottom: "1px solid var(--border)" }}
+            >
+              {/* Indicator: done=accent bar, current=white bar, pending=dim dot */}
+              <div className="w-4 flex justify-center shrink-0">
                 {done ? (
-                  <div className="w-3 h-0.5 bg-brand-500" />
+                  <div className="w-3 h-px" style={{ background: "var(--accent)" }} />
                 ) : cur ? (
                   <motion.div
-                    layoutId="rail-indicator"
-                    className="w-3 h-0.5 bg-nd-text-display"
-                    transition={{ duration: 0.25, ease: ND_EASE }}
+                    layoutId="rail-bar"
+                    className="w-3 h-px"
+                    style={{ background: "var(--text-display)" }}
+                    transition={{ duration: 0.25, ease: ND.ease }}
                   />
                 ) : (
-                  <div className="w-2 h-px bg-nd-border" />
+                  <div className="w-1 h-px" style={{ background: "var(--border-visible)" }} />
                 )}
               </div>
-              {/* Label */}
-              <span className={`font-mono text-label tracking-label leading-none ${
-                cur ? "text-nd-text-display" : done ? "text-nd-text-secondary" : "text-nd-text-disabled"
-              }`}>
+              <span
+                className="font-mono text-label tracking-[0.08em]"
+                style={{
+                  color: cur ? "var(--text-display)" : done ? "var(--text-secondary)" : "var(--text-disabled)",
+                }}
+              >
                 {LABELS[step.id]}
               </span>
             </div>
@@ -73,9 +81,9 @@ function Rail() {
         })}
       </nav>
 
-      {/* Progress counter */}
-      <div className="border-t border-nd-border-subtle pt-3">
-        <span className="font-mono text-label tracking-label text-nd-text-disabled">
+      {/* Counter */}
+      <div style={{ borderTop: "1px solid var(--border)" }} className="pt-3">
+        <span className="font-mono text-label tracking-[0.08em]" style={{ color: "var(--text-disabled)" }}>
           {String(ci + 1).padStart(2, "0")} / {String(steps.length).padStart(2, "0")}
         </span>
       </div>
@@ -83,46 +91,55 @@ function Rail() {
   );
 }
 
-// ── Nothing-style bottom bar ────────────────────────────────────────────
+/* ── Bottom bar — segmented progress, pill CTA ──────────────────────── */
 
 function Bar() {
   const { currentStep, progress, canGoBack, canGoNext, goBack, goNext } = useWizardStore();
   if (NO_BAR.has(currentStep)) return null;
 
   return (
-    <div className="flex h-12 shrink-0 items-center justify-between border-t border-nd-border-subtle bg-nd-bg px-5">
+    <div
+      className="flex h-12 shrink-0 items-center justify-between px-5"
+      style={{ background: "var(--black)", borderTop: "1px solid var(--border)" }}
+    >
       {canGoBack ? (
         <button
           onClick={goBack}
-          className="flex items-center gap-2 nd-label text-nd-text-secondary hover:text-nd-text-primary transition-colors duration-150 ease-nd"
+          className="flex items-center gap-2 nd-label transition-opacity duration-150 hover:opacity-80"
+          style={{ color: "var(--text-secondary)" }}
         >
           <ArrowLeft className="h-3 w-3" /> BACK
         </button>
       ) : <div className="w-12" />}
 
-      {/* Segmented progress bar */}
+      {/* Segmented progress — 10 discrete blocks, 2px gaps */}
       <div className="flex items-center gap-2">
-        <div className="flex gap-px">
+        <div className="flex gap-0.5">
           {Array.from({ length: 10 }).map((_, i) => (
             <div
               key={i}
-              className={`w-4 h-1 ${i < Math.round(progress / 10) ? "bg-brand-500" : "bg-nd-border-subtle"}`}
+              className="w-4 h-1"
+              style={{ background: i < Math.round(progress / 10) ? "var(--text-display)" : "var(--border)" }}
             />
           ))}
         </div>
-        <span className="font-mono text-label tracking-label text-nd-text-disabled">
+        <span className="font-mono text-label tracking-[0.08em]" style={{ color: "var(--text-disabled)" }}>
           {progress}%
         </span>
       </div>
 
+      {/* Primary button — pill, white bg, black text */}
       <button
         onClick={goNext}
         disabled={!canGoNext}
-        className={`flex items-center gap-2 px-4 py-1.5 rounded-sm font-mono text-label tracking-label uppercase transition-all duration-150 ease-nd ${
-          canGoNext
-            ? "bg-brand-500 text-nd-text-display hover:bg-brand-400"
-            : "bg-nd-surface text-nd-text-disabled cursor-not-allowed"
-        }`}
+        className="flex items-center gap-2 font-mono text-[13px] uppercase tracking-[0.06em] px-5 py-1.5 transition-opacity duration-150"
+        style={{
+          background: canGoNext ? "var(--text-display)" : "var(--surface)",
+          color: canGoNext ? "var(--black)" : "var(--text-disabled)",
+          borderRadius: 999,
+          opacity: canGoNext ? 1 : 0.4,
+          cursor: canGoNext ? "pointer" : "not-allowed",
+        }}
       >
         {CTA[currentStep] ?? "CONTINUE"}
         <ArrowRight className="h-3 w-3" />
@@ -131,28 +148,32 @@ function Bar() {
   );
 }
 
-// ── Nothing-style title bar ─────────────────────────────────────────────
+/* ── Title bar — minimal, --black bg ─────────────────────────────────── */
 
 function TitleBar() {
-  const handleMinimize = () => platform().window.minimize();
-  const handleClose = () => platform().window.close();
-
   return (
-    <div className="flex h-8 shrink-0 items-center justify-between px-4 bg-nd-bg drag-region border-b border-nd-border-subtle">
-      <span className="nd-label-sm text-nd-text-disabled no-drag">
+    <div
+      className="flex h-8 shrink-0 items-center justify-between px-4 drag-region"
+      style={{ background: "var(--black)", borderBottom: "1px solid var(--border)" }}
+    >
+      <span className="nd-label-sm no-drag" style={{ color: "var(--text-disabled)" }}>
         REDCORE · OS
       </span>
-      <div className="flex items-center gap-0 no-drag">
+      <div className="flex items-center no-drag">
         <button
-          onClick={handleMinimize}
-          className="flex h-6 w-8 items-center justify-center text-nd-text-disabled hover:text-nd-text-primary hover:bg-nd-surface transition-colors duration-150 ease-nd"
+          onClick={() => platform().window.minimize()}
+          className="flex h-6 w-8 items-center justify-center transition-opacity duration-150 hover:opacity-80"
+          style={{ color: "var(--text-disabled)" }}
           aria-label="Minimize"
         >
           <svg width="10" height="1" viewBox="0 0 10 1" fill="currentColor"><rect width="10" height="1" /></svg>
         </button>
         <button
-          onClick={handleClose}
-          className="flex h-6 w-8 items-center justify-center text-nd-text-disabled hover:text-nd-text-display hover:bg-brand-500 transition-colors duration-150 ease-nd"
+          onClick={() => platform().window.close()}
+          className="flex h-6 w-8 items-center justify-center transition-colors duration-150"
+          style={{ color: "var(--text-disabled)" }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = "var(--accent)"; e.currentTarget.style.color = "var(--text-display)"; }}
+          onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "var(--text-disabled)"; }}
           aria-label="Close"
         >
           <svg width="10" height="10" viewBox="0 0 10 10" stroke="currentColor" strokeWidth="1.2"><line x1="1" y1="1" x2="9" y2="9"/><line x1="9" y1="1" x2="1" y2="9"/></svg>
@@ -162,14 +183,14 @@ function TitleBar() {
   );
 }
 
-// ── Shell ────────────────────────────────────────────────────────────────
+/* ── Shell ────────────────────────────────────────────────────────────── */
 
 export function WizardShell({ children }: { children: ReactNode }) {
   const { currentStep } = useWizardStore();
   const welcome = currentStep === "welcome";
 
   return (
-    <div className="flex h-screen w-screen flex-col overflow-hidden bg-nd-bg">
+    <div className="flex h-screen w-screen flex-col overflow-hidden" style={{ background: "var(--black)" }}>
       <TitleBar />
       <div className="flex flex-1 overflow-hidden">
         {!welcome && <Rail />}

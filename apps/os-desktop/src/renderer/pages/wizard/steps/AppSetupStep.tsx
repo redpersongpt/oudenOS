@@ -55,33 +55,33 @@ function AppRow({ app, selected, onToggle }: { app: RecommendedApp; selected: bo
   return (
     <button
       onClick={onToggle}
-      className={`flex items-center justify-between w-full px-4 py-2 text-left transition-colors duration-150 ease-nd border-b border-nd-border-subtle ${
-        selected ? "bg-nd-surface" : "bg-nd-bg hover:bg-nd-surface"
+      className={`flex items-center justify-between w-full px-4 py-2 text-left transition-colors duration-150 ease-nd border-b border-[var(--border)] ${
+        selected ? "bg-[var(--surface)]" : "bg-[var(--black)] hover:bg-[var(--surface)]"
       }`}
     >
       <div className="flex items-center gap-3 min-w-0">
         <div className="shrink-0">
           {selected ? (
-            <div className="w-3 h-0.5 bg-brand-500" />
+            <div className="w-3 h-0.5 bg-[var(--accent)]" />
           ) : (
             <div className="w-2 h-px bg-nd-border" />
           )}
         </div>
         <div className="min-w-0">
           <div className="flex items-center gap-2">
-            <span className={`font-mono text-caption tracking-label ${selected ? "text-nd-text-display" : "text-nd-text-secondary"}`}>
+            <span className={`font-mono text-caption tracking-label ${selected ? "text-[var(--text-display)]" : "text-[var(--text-secondary)]"}`}>
               {app.name.toUpperCase()}
             </span>
             {app.recommended && (
-              <span className="nd-label-sm text-brand-500">REC</span>
+              <span className="nd-label-sm text-[var(--accent)]">REC</span>
             )}
           </div>
-          <p className="nd-label-sm text-nd-text-disabled truncate">{app.description.toUpperCase()}</p>
+          <p className="nd-label-sm text-[var(--text-disabled)] truncate">{app.description.toUpperCase()}</p>
         </div>
       </div>
       <div className="flex gap-0.5 shrink-0">
-        <div className={`w-3 h-1 ${selected ? "bg-brand-500" : "bg-nd-border-subtle"}`} />
-        <div className={`w-3 h-1 ${selected ? "bg-brand-500" : "bg-nd-border-subtle"}`} />
+        <div className={`w-3 h-1 ${selected ? "bg-[var(--accent)]" : "bg-nd-border-subtle"}`} />
+        <div className={`w-3 h-1 ${selected ? "bg-[var(--accent)]" : "bg-nd-border-subtle"}`} />
       </div>
     </button>
   );
@@ -125,17 +125,17 @@ export function AppSetupStep() {
 
   if (loading) {
     return (
-      <div className="flex h-full items-center justify-center bg-nd-bg">
-        <div className="w-2 h-2 bg-brand-500 nd-pulse" />
+      <div className="flex h-full items-center justify-center bg-[var(--black)]">
+        <div className="w-2 h-2 bg-[var(--accent)] nd-pulse" />
       </div>
     );
   }
 
   if (recommendedApps.length === 0) {
     return (
-      <div className="flex h-full flex-col items-center justify-center gap-3 bg-nd-bg">
-        <Package className="h-6 w-6 text-nd-text-disabled" />
-        <p className="nd-label text-nd-text-disabled">{(loadError ?? "CATALOG NOT AVAILABLE").toUpperCase()}</p>
+      <div className="flex h-full flex-col items-center justify-center gap-3 bg-[var(--black)]">
+        <Package className="h-6 w-6 text-[var(--text-disabled)]" />
+        <p className="nd-label text-[var(--text-disabled)]">{(loadError ?? "CATALOG NOT AVAILABLE").toUpperCase()}</p>
       </div>
     );
   }
@@ -155,23 +155,23 @@ export function AppSetupStep() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3, ease: ND_EASE }}
-      className="flex h-full flex-col bg-nd-bg overflow-y-auto scrollbar-thin"
+      className="flex h-full flex-col bg-[var(--black)] overflow-y-auto scrollbar-thin"
     >
       {/* Header */}
-      <div className="px-6 pt-5 pb-4 border-b border-nd-border-subtle">
-        <h2 className="font-display text-title text-nd-text-display">SOFTWARE</h2>
-        <p className="mt-1 nd-label text-nd-text-secondary">
+      <div className="px-6 pt-5 pb-4 border-b border-[var(--border)]">
+        <h2 className="font-display text-title text-[var(--text-display)]">SOFTWARE</h2>
+        <p className="mt-1 nd-label text-[var(--text-secondary)]">
           SELECT APPS FOR {(detectedProfile?.label ?? "YOUR MACHINE").toUpperCase()}
         </p>
         <div className="mt-3 flex items-center gap-3">
-          <span className="font-mono text-label tracking-label text-nd-text-display">
+          <span className="font-mono text-label tracking-label text-[var(--text-display)]">
             {selectedAppIds.length}
           </span>
-          <span className="nd-label text-nd-text-secondary">SELECTED</span>
+          <span className="nd-label text-[var(--text-secondary)]">SELECTED</span>
           {selectedAppIds.length > 0 && (
             <button
               onClick={() => { for (const id of selectedAppIds) toggleApp(id); }}
-              className="ml-auto nd-label-sm text-nd-text-disabled hover:text-nd-text-secondary transition-colors duration-150 ease-nd"
+              className="ml-auto nd-label-sm text-[var(--text-disabled)] hover:text-[var(--text-secondary)] transition-colors duration-150 ease-nd"
             >
               CLEAR
             </button>
@@ -190,9 +190,9 @@ export function AppSetupStep() {
               animate={{ opacity: 1 }}
               transition={{ delay: catIdx * 0.03, duration: 0.2, ease: ND_EASE }}
             >
-              <div className="px-4 py-2 bg-nd-surface border-b border-nd-border-subtle flex items-center gap-3">
-                <span className="nd-label text-nd-text-secondary">{meta.label}</span>
-                <span className="nd-label-sm text-nd-text-disabled">{meta.desc}</span>
+              <div className="px-4 py-2 bg-[var(--surface)] border-b border-[var(--border)] flex items-center gap-3">
+                <span className="nd-label text-[var(--text-secondary)]">{meta.label}</span>
+                <span className="nd-label-sm text-[var(--text-disabled)]">{meta.desc}</span>
               </div>
               {apps.map((app) => (
                 <AppRow
@@ -207,8 +207,8 @@ export function AppSetupStep() {
         })}
       </div>
 
-      <div className="px-6 py-3 border-t border-nd-border-subtle">
-        <p className="nd-label-sm text-nd-text-disabled text-center">
+      <div className="px-6 py-3 border-t border-[var(--border)]">
+        <p className="nd-label-sm text-[var(--text-disabled)] text-center">
           [ALL APPS INSTALLED SILENTLY · SKIP TO CONTINUE WITHOUT INSTALLING]
         </p>
       </div>

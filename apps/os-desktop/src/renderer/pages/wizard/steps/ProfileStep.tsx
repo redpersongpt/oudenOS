@@ -46,8 +46,8 @@ export function ProfileStep() {
 
   if (!p) {
     return (
-      <div className="flex h-full items-center justify-center bg-nd-bg">
-        <p className="nd-label text-nd-text-disabled">NO PROFILE DETECTED</p>
+      <div className="flex h-full items-center justify-center bg-[var(--black)]">
+        <p className="nd-label text-[var(--text-disabled)]">NO PROFILE DETECTED</p>
       </div>
     );
   }
@@ -57,14 +57,14 @@ export function ProfileStep() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3, ease: ND_EASE }}
-      className="flex h-full flex-col items-center justify-center gap-6 px-8 bg-nd-bg"
+      className="flex h-full flex-col items-center justify-center gap-6 px-8 bg-[var(--black)]"
     >
       {/* Machine name label */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.1, duration: 0.3, ease: ND_EASE }}
-        className="nd-label-sm text-nd-text-disabled"
+        className="nd-label-sm text-[var(--text-disabled)]"
       >
         {p.machineName}
       </motion.div>
@@ -74,7 +74,7 @@ export function ProfileStep() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.15, duration: 0.3, ease: ND_EASE }}
-        className="font-display text-heading text-nd-text-display"
+        className="font-display text-heading text-[var(--text-display)]"
       >
         {p.label.toUpperCase()}
       </motion.h2>
@@ -88,8 +88,8 @@ export function ProfileStep() {
           className="w-full max-w-xs"
         >
           <div className="flex justify-between mb-1">
-            <span className="nd-label text-nd-text-secondary">CONFIDENCE</span>
-            <span className="font-mono text-label tracking-label text-brand-500">
+            <span className="nd-label text-[var(--text-secondary)]">CONFIDENCE</span>
+            <span className="font-mono text-label tracking-label text-[var(--accent)]">
               {displayConfidence}%
             </span>
           </div>
@@ -102,7 +102,7 @@ export function ProfileStep() {
                 animate={{ scaleX: 1 }}
                 transition={{ delay: 0.3 + i * 0.04, duration: 0.2, ease: ND_EASE }}
                 className={`flex-1 h-1 origin-left ${
-                  i < Math.round((p.confidence ?? 0) / 10) ? "bg-brand-500" : "bg-nd-border-subtle"
+                  i < Math.round((p.confidence ?? 0) / 10) ? "bg-[var(--accent)]" : "bg-nd-border-subtle"
                 }`}
               />
             ))}
@@ -115,7 +115,7 @@ export function ProfileStep() {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="nd-label text-brand-500"
+          className="nd-label text-[var(--accent)]"
         >
           [MANUAL SELECTION]
         </motion.div>
@@ -129,7 +129,7 @@ export function ProfileStep() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 + i * 0.05, duration: 0.2, ease: ND_EASE }}
-            className="border border-nd-border bg-nd-surface px-3 py-1 rounded-sm font-mono text-label tracking-label text-nd-text-secondary"
+            className="border border-[var(--border)] bg-[var(--surface)] px-3 py-1 rounded-sm font-mono text-label tracking-label text-[var(--text-secondary)]"
           >
             {s.toUpperCase()}
           </motion.span>
@@ -142,12 +142,12 @@ export function ProfileStep() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3, duration: 0.3, ease: ND_EASE }}
-          className="flex items-start gap-3 border border-warning-400/20 bg-warning-400/[0.04] px-4 py-3 rounded-sm max-w-sm"
+          className="flex items-start gap-3 border border-warning-400/20 bg-[var(--warning)]/[0.04] px-4 py-3 rounded-sm max-w-sm"
         >
-          <div className="w-3 h-0.5 bg-warning-400 mt-1.5 shrink-0" />
+          <div className="w-3 h-0.5 bg-[var(--warning)] mt-1.5 shrink-0" />
           <div>
-            <p className="nd-label text-warning-400">WORK PC DETECTED</p>
-            <p className="mt-1 text-caption text-nd-text-secondary">
+            <p className="nd-label text-[var(--warning)]">WORK PC DETECTED</p>
+            <p className="mt-1 text-caption text-[var(--text-secondary)]">
               Business-critical services preserved. Aggressive optimizations blocked.
             </p>
           </div>
@@ -163,7 +163,7 @@ export function ProfileStep() {
       >
         <button
           onClick={() => setShowOverride(!showOverride)}
-          className="flex items-center gap-2 mx-auto nd-label-sm text-nd-text-disabled hover:text-nd-text-secondary transition-colors duration-150 ease-nd"
+          className="flex items-center gap-2 mx-auto nd-label-sm text-[var(--text-disabled)] hover:text-[var(--text-secondary)] transition-colors duration-150 ease-nd"
         >
           <span>SWITCH PROFILE</span>
           <motion.div animate={{ rotate: showOverride ? 180 : 0 }} transition={{ duration: 0.2, ease: ND_EASE }}>
@@ -197,17 +197,17 @@ export function ProfileStep() {
                         setIsOverridden(true);
                         setShowOverride(false);
                       }}
-                      className={`flex items-center justify-between px-4 py-2.5 text-left transition-colors duration-150 ease-nd border-b border-nd-border-subtle ${
-                        isActive ? "bg-nd-surface-raised" : "bg-nd-bg hover:bg-nd-surface"
+                      className={`flex items-center justify-between px-4 py-2.5 text-left transition-colors duration-150 ease-nd border-b border-[var(--border)] ${
+                        isActive ? "bg-[var(--surface-raised)]" : "bg-[var(--black)] hover:bg-[var(--surface)]"
                       }`}
                     >
                       <div>
-                        <p className={`font-mono text-caption tracking-label ${isActive ? "text-brand-500" : "text-nd-text-secondary"}`}>
+                        <p className={`font-mono text-caption tracking-label ${isActive ? "text-[var(--accent)]" : "text-[var(--text-secondary)]"}`}>
                           {opt.label}
                         </p>
-                        <p className="nd-label-sm text-nd-text-disabled mt-0.5">{opt.desc}</p>
+                        <p className="nd-label-sm text-[var(--text-disabled)] mt-0.5">{opt.desc}</p>
                       </div>
-                      {isActive && <div className="w-3 h-0.5 bg-brand-500" />}
+                      {isActive && <div className="w-3 h-0.5 bg-[var(--accent)]" />}
                     </button>
                   );
                 })}

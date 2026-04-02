@@ -153,20 +153,20 @@ function TimelineItem({ action }: { action: CompletedAction }) {
     >
       <div className="flex items-center gap-2.5">
         {action.status === "applied" ? (
-          <Check className="h-3.5 w-3.5 shrink-0 text-success-400" />
+          <Check className="h-3.5 w-3.5 shrink-0 text-[var(--success)]" />
         ) : (
-          <AlertCircle className="h-3.5 w-3.5 shrink-0 text-danger-400" />
+          <AlertCircle className="h-3.5 w-3.5 shrink-0 text-[var(--accent)]" />
         )}
-        <span className="text-[11px] text-nd-text-secondary break-words">{action.label}</span>
+        <span className="text-[11px] text-[var(--text-secondary)] break-words">{action.label}</span>
         <span className={`ml-auto shrink-0 text-[10px] font-medium ${
-          action.status === "applied" ? "text-success-400/60" : "text-danger-400/60"
+          action.status === "applied" ? "text-[var(--success)]/60" : "text-[var(--accent)]/60"
         }`}>
           {action.status}
         </span>
       </div>
       {action.status === "failed" && action.errorMessage && (
         <span
-          className="text-[9px] text-danger-400/50 pl-6 break-words"
+          className="text-[9px] text-[var(--accent)]/50 pl-6 break-words"
           title={action.errorMessage}
         >
           {action.errorMessage}
@@ -203,7 +203,7 @@ function SpinningQuote({ isActive }: { isActive: boolean }) {
         animate={{ opacity: 0.8, y: 0 }}
         exit={{ opacity: 0, y: -6 }}
         transition={{ duration: 0.3, ease: [0.0, 0.0, 0.2, 1.0] }}
-        className="mt-1 text-[10px] italic text-nd-text-secondary select-none"
+        className="mt-1 text-[10px] italic text-[var(--text-secondary)] select-none"
       >
         {SPINNING_QUOTES[idx]}
       </motion.p>
@@ -712,7 +712,7 @@ export function ExecutionStep() {
     return (
       <div className="flex h-full flex-col items-center justify-center gap-3 px-8">
         <AlertCircle className="h-8 w-8 text-amber-400" />
-        <p className="text-sm text-nd-text-secondary">No playbook actions resolved. Go back and review your playbook.</p>
+        <p className="text-sm text-[var(--text-secondary)]">No playbook actions resolved. Go back and review your playbook.</p>
       </div>
     );
   }
@@ -727,8 +727,8 @@ export function ExecutionStep() {
     >
       {/* Header */}
       <div className="flex flex-col items-center gap-1 text-center">
-        <h2 className="text-lg font-medium text-nd-text-primary">Applying Optimizations</h2>
-        <p className="text-xs text-nd-text-secondary">Do not shut down your computer</p>
+        <h2 className="text-lg font-medium text-[var(--text-primary)]">Applying Optimizations</h2>
+        <p className="text-xs text-[var(--text-secondary)]">Do not shut down your computer</p>
         <SpinningQuote isActive={completed.length < totalActions} />
       </div>
 
@@ -746,7 +746,7 @@ export function ExecutionStep() {
                 boxShadow: "0 0 0 0 rgba(232,69,60,0.0)",
                 animation: "executionPulse 1.5s ease-in-out infinite",
               }}
-              className="rounded-sm border border-brand-500/25 bg-nd-surface px-5 py-3"
+              className="rounded-sm border border-brand-500/25 bg-[var(--surface)] px-5 py-3"
             >
               <div className="flex items-center gap-3">
                 <motion.div
@@ -754,8 +754,8 @@ export function ExecutionStep() {
                   transition={{ duration: 0.9, ease: "linear", repeat: Infinity }}
                   className="h-4 w-4 shrink-0 rounded-sm border-2 border-brand-500 border-t-transparent"
                 />
-                <span className="flex-1 truncate text-[13px] font-medium text-nd-text-primary">{currentAction}</span>
-                <span className="shrink-0 font-mono-metric text-[10px] text-brand-500/60">
+                <span className="flex-1 truncate text-[13px] font-medium text-[var(--text-primary)]">{currentAction}</span>
+                <span className="shrink-0 font-mono-metric text-[10px] text-[var(--accent)]/60">
                   {currentIdx + 1}/{totalActions}
                 </span>
               </div>
@@ -763,11 +763,11 @@ export function ExecutionStep() {
               {currentActionId && (() => {
                 const r = getActionRationale(currentActionId);
                 return r.why ? (
-                  <p className="mt-1.5 text-[10px] leading-relaxed text-nd-text-secondary pl-7">{r.why}</p>
+                  <p className="mt-1.5 text-[10px] leading-relaxed text-[var(--text-secondary)] pl-7">{r.why}</p>
                 ) : null;
               })()}
               {currentPhase && (
-                <p className="mt-0.5 text-[9px] text-nd-text-disabled pl-7">{currentPhase}</p>
+                <p className="mt-0.5 text-[9px] text-[var(--text-disabled)] pl-7">{currentPhase}</p>
               )}
             </motion.div>
           ) : completed.length === totalActions ? (
@@ -776,13 +776,13 @@ export function ExecutionStep() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ type: "spring", stiffness: 340, damping: 16 }}
-              className="flex flex-col items-center justify-center gap-1 rounded-sm border border-success-500/25 bg-success-400/[0.04] px-5 py-3.5"
+              className="flex flex-col items-center justify-center gap-1 rounded-sm border border-success-500/25 bg-[var(--success)]/[0.04] px-5 py-3.5"
             >
               <div className="flex items-center gap-3">
-                <Check className="h-4 w-4 text-success-400" />
-                <span className="text-sm font-medium text-success-400">All actions complete</span>
+                <Check className="h-4 w-4 text-[var(--success)]" />
+                <span className="text-sm font-medium text-[var(--success)]">All actions complete</span>
               </div>
-              <span className="text-[10px] text-success-400/40 italic">
+              <span className="text-[10px] text-[var(--success)]/40 italic">
                 {failCount === 0 ? "debloated your load ( \u0361\u00b0 \u035c\u0296 \u0361\u00b0)" : "mostly debloated your load \ud83d\ude05"}
               </span>
             </motion.div>
@@ -794,7 +794,7 @@ export function ExecutionStep() {
 
       {/* Progress */}
       <div className="w-full max-w-md">
-        <div className="relative h-1.5 overflow-hidden rounded-sm bg-nd-surface-raised">
+        <div className="relative h-1.5 overflow-hidden rounded-sm bg-[var(--surface-raised)]">
           <motion.div
             className="absolute inset-y-0 left-0 rounded-sm bg-gradient-to-r from-brand-600 to-brand-400"
             animate={{ width: `${progress}%` }}
@@ -802,8 +802,8 @@ export function ExecutionStep() {
           />
         </div>
         <div className="mt-2 flex justify-between">
-          <span className="font-mono-metric text-[10px] text-nd-text-secondary">{progress}%</span>
-          <span className="font-mono-metric text-[10px] text-nd-text-secondary">
+          <span className="font-mono-metric text-[10px] text-[var(--text-secondary)]">{progress}%</span>
+          <span className="font-mono-metric text-[10px] text-[var(--text-secondary)]">
             {completed.length}/{totalActions}
           </span>
         </div>
@@ -812,9 +812,9 @@ export function ExecutionStep() {
       {/* Stats row */}
       <div className="flex gap-6 text-center">
         {[
-          { label: "Applied",   value: applied,    color: "text-success-400"   },
-          { label: "Failed",    value: failCount,  color: "text-danger-400"    },
-          { label: "Remaining", value: remaining,  color: "text-nd-text-secondary" },
+          { label: "Applied",   value: applied,    color: "text-[var(--success)]"   },
+          { label: "Failed",    value: failCount,  color: "text-[var(--accent)]"    },
+          { label: "Remaining", value: remaining,  color: "text-[var(--text-secondary)]" },
         ].map((stat) => (
           <div key={stat.label} className="flex flex-col items-center gap-0.5">
             <motion.span
@@ -826,7 +826,7 @@ export function ExecutionStep() {
             >
               {stat.value}
             </motion.span>
-            <span className="text-[10px] text-nd-text-disabled">{stat.label}</span>
+            <span className="text-[10px] text-[var(--text-disabled)]">{stat.label}</span>
           </div>
         ))}
       </div>

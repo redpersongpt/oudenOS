@@ -192,14 +192,14 @@ export function ReportStep() {
           className="absolute inset-0 rounded-sm bg-success-500/20"
         />
         <div className="flex h-14 w-14 items-center justify-center rounded-sm border border-success-500/30 bg-success-500/10">
-          <Check className="h-7 w-7 text-success-400" strokeWidth={2.5} />
+          <Check className="h-7 w-7 text-[var(--success)]" strokeWidth={2.5} />
         </div>
       </motion.div>
 
       {/* Title */}
       <div className="text-center">
-        <h2 className="text-[18px] font-medium text-nd-text-primary">All Done</h2>
-        <p className="mt-1 text-[11px] text-nd-text-secondary">
+        <h2 className="text-[18px] font-medium text-[var(--text-primary)]">All Done</h2>
+        <p className="mt-1 text-[11px] text-[var(--text-secondary)]">
           Your {detectedProfile?.label ?? "system"} has been optimized
         </p>
         <div className="mt-3 flex flex-col items-center gap-2">
@@ -207,7 +207,7 @@ export function ReportStep() {
             <button
               onClick={handleExportCompletedPackage}
               disabled={!detectedProfile || !resolvedPlaybook || exportState === "busy"}
-              className="inline-flex items-center gap-2 rounded-sm border border-white/[0.12] bg-nd-surface-raised px-4 py-2 text-[11px] font-medium text-nd-text-primary transition-all hover:border-white/[0.22] hover:bg-white/[0.09] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40"
+              className="inline-flex items-center gap-2 rounded-sm border border-white/[0.12] bg-[var(--surface-raised)] px-4 py-2 text-[11px] font-medium text-[var(--text-primary)] transition-all hover:border-white/[0.22] hover:bg-white/[0.09] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40"
             >
               <Archive className="h-3.5 w-3.5 shrink-0" />
               {exportState === "busy" ? "Exporting..." : exportState === "done" ? "Exported" : "Save Report"}
@@ -215,19 +215,19 @@ export function ReportStep() {
             <button
               onClick={handleExportLog}
               disabled={logExportState === "busy"}
-              className="inline-flex items-center gap-2 rounded-sm border border-white/[0.12] bg-nd-surface-raised px-4 py-2 text-[11px] font-medium text-nd-text-primary transition-all hover:border-white/[0.22] hover:bg-white/[0.09] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40"
+              className="inline-flex items-center gap-2 rounded-sm border border-white/[0.12] bg-[var(--surface-raised)] px-4 py-2 text-[11px] font-medium text-[var(--text-primary)] transition-all hover:border-white/[0.22] hover:bg-white/[0.09] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40"
             >
               <FileText className="h-3.5 w-3.5 shrink-0" />
               {logExportState === "busy" ? "Saving..." : logExportState === "done" ? "Saved" : "Save Log"}
             </button>
           </div>
           {exportMessage && (
-            <p className={`text-[11px] ${exportState === "error" ? "text-red-400" : "text-nd-text-secondary"}`}>
+            <p className={`text-[11px] ${exportState === "error" ? "text-red-400" : "text-[var(--text-secondary)]"}`}>
               {exportMessage}
             </p>
           )}
           {logExportMessage && (
-            <p className={`text-[11px] ${logExportState === "error" ? "text-red-400" : "text-nd-text-secondary"}`}>
+            <p className={`text-[11px] ${logExportState === "error" ? "text-red-400" : "text-[var(--text-secondary)]"}`}>
               {logExportMessage}
             </p>
           )}
@@ -237,20 +237,20 @@ export function ReportStep() {
       {/* Stats */}
       <div className="flex gap-3">
         {[
-          { value: appliedPlaybookActions || rendererResult.applied, label: "Applied", color: "text-success-400", icon: Check },
-          { value: failedActions || rendererResult.failed, label: "Failed", color: (failedActions || rendererResult.failed) > 0 ? "text-danger-400" : "text-nd-text-disabled", icon: AlertTriangle },
-          { value: preservedActions.length || rendererResult.preserved, label: "Preserved", color: "text-nd-text-secondary", icon: Shield },
+          { value: appliedPlaybookActions || rendererResult.applied, label: "Applied", color: "text-[var(--success)]", icon: Check },
+          { value: failedActions || rendererResult.failed, label: "Failed", color: (failedActions || rendererResult.failed) > 0 ? "text-[var(--accent)]" : "text-[var(--text-disabled)]", icon: AlertTriangle },
+          { value: preservedActions.length || rendererResult.preserved, label: "Preserved", color: "text-[var(--text-secondary)]", icon: Shield },
         ].map(({ value, label, color, icon: Icon }, i) => (
           <motion.div
             key={label}
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.15 + i * 0.05 }}
-            className="flex flex-col items-center gap-1 rounded-sm border border-nd-border bg-nd-surface px-5 py-3"
+            className="flex flex-col items-center gap-1 rounded-sm border border-[var(--border)] bg-[var(--surface)] px-5 py-3"
           >
             <Icon className={`h-3.5 w-3.5 ${color} mb-0.5`} />
             <span className={`font-mono-metric text-2xl font-medium ${color}`}>{value}</span>
-            <span className="text-[10px] text-nd-text-disabled">{label}</span>
+            <span className="text-[10px] text-[var(--text-disabled)]">{label}</span>
           </motion.div>
         ))}
       </div>
@@ -264,10 +264,10 @@ export function ReportStep() {
           className="w-full max-w-md space-y-1.5"
         >
           {/* What was included */}
-          <div className="flex items-start gap-2 rounded-sm bg-nd-surface border border-nd-border-subtle px-3 py-2">
-            <Check className="mt-0.5 h-3 w-3 shrink-0 text-success-400" />
-            <p className="text-[10px] leading-relaxed text-nd-text-secondary">
-              <span className="font-medium text-nd-text-primary">{appliedPlaybookActions || pb.totalIncluded} actions</span> applied across {pb.phases.length} categories.
+          <div className="flex items-start gap-2 rounded-sm bg-[var(--surface)] border border-[var(--border)] px-3 py-2">
+            <Check className="mt-0.5 h-3 w-3 shrink-0 text-[var(--success)]" />
+            <p className="text-[10px] leading-relaxed text-[var(--text-secondary)]">
+              <span className="font-medium text-[var(--text-primary)]">{appliedPlaybookActions || pb.totalIncluded} actions</span> applied across {pb.phases.length} categories.
               {executionResult?.truthSource === "local" && (
                 <span className="ml-1 text-amber-400/70">(unverified — service ledger unavailable)</span>
               )}
@@ -276,10 +276,10 @@ export function ReportStep() {
 
           {/* What was preserved */}
           {preservedActions.length > 0 && (
-            <div className="flex items-start gap-2 rounded-sm bg-nd-surface border border-nd-border-subtle px-3 py-2">
+            <div className="flex items-start gap-2 rounded-sm bg-[var(--surface)] border border-[var(--border)] px-3 py-2">
               <Shield className="mt-0.5 h-3 w-3 shrink-0 text-amber-400" />
-              <p className="text-[10px] leading-relaxed text-nd-text-secondary">
-                <span className="font-medium text-nd-text-primary">{preservedActions.length} actions preserved</span>
+              <p className="text-[10px] leading-relaxed text-[var(--text-secondary)]">
+                <span className="font-medium text-[var(--text-primary)]">{preservedActions.length} actions preserved</span>
                 {userChoicePreserved.length > 0
                   ? ` — ${userChoicePreserved.length} skipped because of your answers.`
                   : detectedProfile?.isWorkPc
@@ -291,19 +291,19 @@ export function ReportStep() {
 
           {/* Expert-only actions skipped */}
           {pb.totalExpertOnly > 0 && (
-            <div className="flex items-start gap-2 rounded-sm bg-nd-surface border border-nd-border-subtle px-3 py-2">
+            <div className="flex items-start gap-2 rounded-sm bg-[var(--surface)] border border-[var(--border)] px-3 py-2">
               <Lock className="mt-0.5 h-3 w-3 shrink-0 text-purple-400" />
-              <p className="text-[10px] leading-relaxed text-nd-text-secondary">
-                <span className="font-medium text-nd-text-primary">{pb.totalExpertOnly} expert-only actions</span> skipped — pick "Expert" preset to unlock them.
+              <p className="text-[10px] leading-relaxed text-[var(--text-secondary)]">
+                <span className="font-medium text-[var(--text-primary)]">{pb.totalExpertOnly} expert-only actions</span> skipped — pick "Expert" preset to unlock them.
               </p>
             </div>
           )}
 
           {profileSafeguards.length > 0 && (
-            <div className="flex items-start gap-2 rounded-sm bg-nd-surface border border-nd-border-subtle px-3 py-2">
-              <Lock className="mt-0.5 h-3 w-3 shrink-0 text-nd-text-secondary" />
-              <p className="text-[10px] leading-relaxed text-nd-text-secondary">
-                <span className="font-medium text-nd-text-primary">{profileSafeguards.length} actions</span> blocked automatically — not compatible with your PC type or Windows version.
+            <div className="flex items-start gap-2 rounded-sm bg-[var(--surface)] border border-[var(--border)] px-3 py-2">
+              <Lock className="mt-0.5 h-3 w-3 shrink-0 text-[var(--text-secondary)]" />
+              <p className="text-[10px] leading-relaxed text-[var(--text-secondary)]">
+                <span className="font-medium text-[var(--text-primary)]">{profileSafeguards.length} actions</span> blocked automatically — not compatible with your PC type or Windows version.
               </p>
             </div>
           )}
@@ -326,15 +326,15 @@ export function ReportStep() {
         initial={{ opacity: 0, y: 6 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
-        className="w-full max-w-md rounded-sm border border-nd-border bg-nd-surface px-4 py-3"
+        className="w-full max-w-md rounded-sm border border-[var(--border)] bg-[var(--surface)] px-4 py-3"
       >
-        <p className="text-[11px] font-medium text-nd-text-primary mb-2">How to undo changes</p>
-        <div className="space-y-1.5 text-[10px] text-nd-text-secondary leading-relaxed">
-          <p><span className="text-nd-text-primary font-medium">System Restore:</span> Windows saved a restore point before we started. Open Start → type "Create a restore point" → System Restore → pick the point from today.</p>
-          <p><span className="text-nd-text-primary font-medium">Registry:</span> Every registry key we changed has its old value saved. Re-run redcore OS and it will detect previous changes.</p>
-          <p><span className="text-nd-text-primary font-medium">Services:</span> Open <span className="font-mono text-[9px] bg-nd-surface-raised px-1 rounded">services.msc</span> and set any service back to Automatic or Manual.</p>
-          <p><span className="text-nd-text-primary font-medium">Removed apps:</span> Open Microsoft Store and reinstall anything you want back.</p>
-          <p><span className="text-nd-text-primary font-medium">Full reset:</span> Settings → System → Recovery → Reset this PC keeps your files but restores all Windows defaults.</p>
+        <p className="text-[11px] font-medium text-[var(--text-primary)] mb-2">How to undo changes</p>
+        <div className="space-y-1.5 text-[10px] text-[var(--text-secondary)] leading-relaxed">
+          <p><span className="text-[var(--text-primary)] font-medium">System Restore:</span> Windows saved a restore point before we started. Open Start → type "Create a restore point" → System Restore → pick the point from today.</p>
+          <p><span className="text-[var(--text-primary)] font-medium">Registry:</span> Every registry key we changed has its old value saved. Re-run redcore OS and it will detect previous changes.</p>
+          <p><span className="text-[var(--text-primary)] font-medium">Services:</span> Open <span className="font-mono text-[9px] bg-[var(--surface-raised)] px-1 rounded">services.msc</span> and set any service back to Automatic or Manual.</p>
+          <p><span className="text-[var(--text-primary)] font-medium">Removed apps:</span> Open Microsoft Store and reinstall anything you want back.</p>
+          <p><span className="text-[var(--text-primary)] font-medium">Full reset:</span> Settings → System → Recovery → Reset this PC keeps your files but restores all Windows defaults.</p>
         </div>
       </motion.div>
 
@@ -344,7 +344,7 @@ export function ReportStep() {
         animate={{ opacity: 1 }}
         transition={{ delay: 0.5 }}
         onClick={handleFooterClick}
-        className="text-[10px] text-nd-text-disabled cursor-default select-none"
+        className="text-[10px] text-[var(--text-disabled)] cursor-default select-none"
       >
         Snapshots saved before each action
       </motion.p>

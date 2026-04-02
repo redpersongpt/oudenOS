@@ -64,11 +64,11 @@ export function FinalReviewStep() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3, ease: ND_EASE }}
-      className="flex h-full flex-col px-6 py-6 bg-nd-bg overflow-y-auto scrollbar-thin"
+      className="flex h-full flex-col px-6 py-6 bg-[var(--black)] overflow-y-auto scrollbar-thin"
     >
       <div className="mb-6">
-        <h2 className="font-display text-title text-nd-text-display">FINAL REVIEW</h2>
-        <p className="mt-2 nd-label text-nd-text-secondary">SNAPSHOT CREATED BEFORE EACH CHANGE</p>
+        <h2 className="font-display text-title text-[var(--text-display)]">FINAL REVIEW</h2>
+        <p className="mt-2 nd-label text-[var(--text-secondary)]">SNAPSHOT CREATED BEFORE EACH CHANGE</p>
       </div>
 
       {/* Data rows */}
@@ -79,10 +79,10 @@ export function FinalReviewStep() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.05 + i * 0.04, duration: 0.2, ease: ND_EASE }}
-            className="flex items-start justify-between gap-4 border-b border-nd-border-subtle px-4 py-3"
+            className="flex items-start justify-between gap-4 border-b border-[var(--border)] px-4 py-3"
           >
-            <span className="nd-label text-nd-text-disabled shrink-0 w-20">{label}</span>
-            <span className="font-mono text-caption tracking-label text-nd-text-primary text-right">{value}</span>
+            <span className="nd-label text-[var(--text-disabled)] shrink-0 w-20">{label}</span>
+            <span className="font-mono text-caption tracking-label text-[var(--text-primary)] text-right">{value}</span>
           </motion.div>
         ))}
       </div>
@@ -92,8 +92,8 @@ export function FinalReviewStep() {
         <div className="mt-4 w-full max-w-lg space-y-1">
           {pb.decisionSummary.warnings.slice(0, 3).map((warning) => (
             <div key={warning} className="flex items-start gap-2 px-4 py-1.5">
-              <AlertTriangle className="mt-0.5 h-3 w-3 shrink-0 text-warning-400" />
-              <span className="nd-label-sm text-warning-400 normal-case">{warning}</span>
+              <AlertTriangle className="mt-0.5 h-3 w-3 shrink-0 text-[var(--warning)]" />
+              <span className="nd-label-sm text-[var(--warning)] normal-case">{warning}</span>
             </div>
           ))}
         </div>
@@ -104,13 +104,13 @@ export function FinalReviewStep() {
         <button
           onClick={handleExportPackage}
           disabled={!detectedProfile || !resolvedPlaybook || exportState === "busy"}
-          className="flex items-center gap-2 border border-nd-border rounded-sm px-4 py-2 font-mono text-label tracking-label text-nd-text-secondary uppercase transition-colors duration-150 ease-nd hover:bg-nd-surface disabled:opacity-30 disabled:cursor-not-allowed"
+          className="flex items-center gap-2 border border-[var(--border)] rounded-sm px-4 py-2 font-mono text-label tracking-label text-[var(--text-secondary)] uppercase transition-colors duration-150 ease-nd hover:bg-[var(--surface)] disabled:opacity-30 disabled:cursor-not-allowed"
         >
           <Archive className="h-3.5 w-3.5" />
           {exportState === "busy" ? "SAVING..." : "SAVE PACKAGE"}
         </button>
         {exportMessage && (
-          <span className={`nd-status ${exportState === "error" ? "text-danger-400" : "text-success-400"}`}>
+          <span className={`nd-status ${exportState === "error" ? "text-[var(--accent)]" : "text-[var(--success)]"}`}>
             {exportMessage}
           </span>
         )}
