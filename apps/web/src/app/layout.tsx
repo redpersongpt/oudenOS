@@ -3,6 +3,7 @@ import { Space_Grotesk, Space_Mono, Doto } from "next/font/google";
 import "./globals.css";
 import { SmoothScrollProvider } from "@/components/providers/SmoothScrollProvider";
 import { SessionProvider } from "@/components/providers/SessionProvider";
+import { StarField } from "@/components/ui/StarField";
 
 const spaceGrotesk = Space_Grotesk({
   variable: "--font-space-grotesk",
@@ -130,6 +131,7 @@ export default function RootLayout({
         />
       </head>
       <body className="bg-[var(--black)] text-[var(--text-primary)] antialiased">
+        <StarField />
         <SessionProvider>
           <SmoothScrollProvider>{children}</SmoothScrollProvider>
         </SessionProvider>

@@ -205,7 +205,7 @@ function SectionHeader({ label, title, subtitle, inView, delay = 0 }: {
       >
         {label}
       </motion.p>
-      <h2 className="text-[clamp(1.7rem,3.2vw,2.6rem)] font-bold tracking-[-0.03em] leading-[1.1] text-[var(--text-primary)] max-w-[620px]">
+      <h2 className="text-[clamp(1.7rem,3.2vw,2.6rem)] font-bold tracking-[-0.03em] leading-[1.1] text-[var(--text-primary)] max-w-[620px]" style={{ fontFamily: "var(--font-display)" }}>
         {title}
       </h2>
       <p className="mt-5 text-[0.95rem] leading-[1.75] text-[var(--text-secondary)] max-w-[520px]">
@@ -288,7 +288,8 @@ function EcosystemIntro() {
             initial={{ opacity: 0, y: 24 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}
             transition={{ delay: 0.1, duration: 0.8, ease }}
-            className="text-[clamp(1.8rem,3.5vw,2.8rem)] font-bold tracking-[-0.035em] leading-[1.08] text-[var(--text-primary)] font-display"
+            className="text-[clamp(1.8rem,3.5vw,2.8rem)] font-bold tracking-[-0.035em] leading-[1.08] text-[var(--text-primary)]"
+            style={{ fontFamily: "var(--font-display)" }}
           >
             Two products. One system.
           </motion.h2>

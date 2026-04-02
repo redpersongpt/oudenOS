@@ -47,66 +47,106 @@ function DotGrid() {
   );
 }
 
-// Animated Ouden Mark for the right side
+// Workflow Visual for the right side
 
-function AnimatedOudenMark() {
-  const cx = 50;
-  const cy = 50;
-  const r = 32;
-
-  const gapStart = 310;
-  const gapEnd = 350;
-  const toRad = (deg: number) => (deg * Math.PI) / 180;
-
-  const x1 = cx + r * Math.cos(toRad(gapEnd));
-  const y1 = cy + r * Math.sin(toRad(gapEnd));
-  const x2 = cx + r * Math.cos(toRad(gapStart));
-  const y2 = cy + r * Math.sin(toRad(gapStart));
-
-  const arcPath = `M ${x1} ${y1} A ${r} ${r} 0 1 1 ${x2} ${y2}`;
-
-  const dotX = cx + r * Math.cos(toRad(gapStart));
-  const dotY = cy + r * Math.sin(toRad(gapStart));
+function WorkflowVisual() {
+  const steps = [
+    { label: "SCAN", status: "COMPLETE" },
+    { label: "CLASSIFY", status: "COMPLETE" },
+    { label: "PLAN", status: "COMPLETE" },
+    { label: "EXECUTE", status: "ACTIVE" },
+    { label: "VALIDATE", status: "PENDING" },
+  ];
 
   return (
-    <div className="relative flex items-center justify-center">
-      {/* Ambient glow */}
+    <div className="relative w-[280px]">
+      {/* Ouden mark at top */}
       <motion.div
-        className="absolute h-[240px] w-[240px] rounded-full"
-        style={{ background: "radial-gradient(circle, rgba(255,255,255,0.04), transparent 60%)" }}
-        animate={{ scale: [1, 1.08, 1], opacity: [0.5, 0.8, 0.5] }}
-        transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-      />
-
-      <svg
-        width={200}
-        height={200}
-        viewBox="0 0 100 100"
-        fill="none"
-        aria-hidden="true"
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.4, ease: "easeOut" }}
+        className="mb-6 flex justify-center"
       >
-        {/* Ring draws itself */}
-        <motion.path
-          d={arcPath}
-          stroke="#E8E8E8"
-          strokeWidth={5}
-          strokeLinecap="round"
-          fill="none"
-          initial={{ pathLength: 0, opacity: 0 }}
-          animate={{ pathLength: 1, opacity: 1 }}
-          transition={{ duration: 1.5, ease: [0.25, 0.1, 0.25, 1], delay: 0.3 }}
+        <svg width={48} height={48} viewBox="0 0 100 100" fill="none">
+          <motion.path
+            d="M 82.14 66.08 A 32 32 0 1 1 77.1 39.9"
+            stroke="#E8E8E8"
+            strokeWidth={7}
+            strokeLinecap="round"
+            fill="none"
+            initial={{ pathLength: 0 }}
+            animate={{ pathLength: 1 }}
+            transition={{ duration: 1.2, ease: [0.25, 0.1, 0.25, 1] }}
+          />
+          <motion.circle
+            cx="77.1" cy="39.9" r={4}
+            fill="#E8E8E8"
+            initial={{ opacity: 0, scale: 0 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 1.2, duration: 0.3 }}
+          />
+        </svg>
+      </motion.div>
+
+      {/* Workflow steps */}
+      <div className="space-y-0">
+        {steps.map((step, i) => (
+          <motion.div
+            key={step.label}
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.3 + i * 0.15, duration: 0.4, ease: "easeOut" }}
+            className="flex items-center gap-4 border-t border-[#222222] py-3 first:border-t-0"
+          >
+            {/* Status indicator */}
+            <div className="w-2 h-2 rounded-full shrink-0" style={{
+              background: step.status === "COMPLETE" ? "#E8E8E8" :
+                         step.status === "ACTIVE" ? "#FFFFFF" : "#333333",
+              boxShadow: step.status === "ACTIVE" ? "0 0 8px rgba(255,255,255,0.4)" : "none",
+            }} />
+            {/* Label */}
+            <span
+              className="font-mono text-[11px] tracking-[0.14em] uppercase"
+              style={{
+                color: step.status === "COMPLETE" ? "#666666" :
+                       step.status === "ACTIVE" ? "#FFFFFF" : "#333333",
+                fontFamily: "var(--font-display)",
+              }}
+            >
+              {step.label}
+            </span>
+            {/* Status text */}
+            <span className="ml-auto font-mono text-[9px] tracking-[0.1em] uppercase" style={{
+              color: step.status === "COMPLETE" ? "#444444" :
+                     step.status === "ACTIVE" ? "#E8E8E8" : "#222222",
+            }}>
+              {step.status === "ACTIVE" ? "RUNNING" : step.status}
+            </span>
+          </motion.div>
+        ))}
+      </div>
+
+      {/* Progress bar at bottom */}
+      <motion.div className="mt-4 h-[2px] bg-[#222222] rounded-full overflow-hidden">
+        <motion.div
+          className="h-full bg-[#E8E8E8]"
+          initial={{ width: "0%" }}
+          animate={{ width: "72%" }}
+          transition={{ delay: 1.0, duration: 1.5, ease: [0.25, 0.1, 0.25, 1] }}
         />
-        {/* Dot fades in after ring completes */}
-        <motion.circle
-          cx={dotX}
-          cy={dotY}
-          r={4}
-          fill="#E8E8E8"
-          initial={{ opacity: 0, scale: 0 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 1.8, duration: 0.4, ease: "easeOut" }}
-        />
-      </svg>
+      </motion.div>
+      <div className="flex justify-between mt-2">
+        <span className="font-mono text-[8px] text-[#444444] tracking-wider">PROGRESS</span>
+        <motion.span
+          className="font-mono text-[8px] text-[#666666] tracking-wider"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.5, duration: 0.3 }}
+          style={{ fontFamily: "var(--font-display)" }}
+        >
+          72%
+        </motion.span>
+      </div>
     </div>
   );
 }
@@ -161,24 +201,6 @@ export function HeroSection() {
         >
           {/* Left column -- text content */}
           <div className="max-w-[680px]">
-            {/* Animated logo mark with continuous pulse */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.4, ease: "easeOut" }}
-              className="mb-8"
-            >
-              <motion.div
-                animate={{ opacity: [0.7, 1, 0.7] }}
-                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-              >
-                <svg width={64} height={64} viewBox="0 0 100 100" fill="none">
-                  <path d="M 82.14 66.08 A 32 32 0 1 1 77.1 39.9" stroke="#E8E8E8" strokeWidth={7} strokeLinecap="round" fill="none" />
-                  <circle cx="77.1" cy="39.9" r={4} fill="#E8E8E8" />
-                </svg>
-              </motion.div>
-            </motion.div>
-
             <h1 className="font-bold leading-[0.96]" style={{ fontSize: "clamp(2.8rem, 5.5vw, 5.2rem)" }}>
               {/* clipPath reveal animation for headlines */}
               <motion.span
@@ -269,7 +291,7 @@ export function HeroSection() {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.4, duration: 0.8 }}
           >
-            <AnimatedOudenMark />
+            <WorkflowVisual />
           </motion.div>
         </motion.div>
       </div>

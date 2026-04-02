@@ -37,7 +37,7 @@ export function FinalCTASection() {
             Get started
           </motion.p>
 
-          <h2 className="text-[clamp(2.2rem,4.5vw,3.6rem)] font-bold tracking-[-0.038em] leading-[1.06] text-[var(--text-primary)] font-display">
+          <h2 className="text-[clamp(2.2rem,4.5vw,3.6rem)] font-bold tracking-[-0.038em] leading-[1.06] text-[var(--text-primary)]" style={{ fontFamily: "var(--font-display)" }}>
             Get started.
           </h2>
 
