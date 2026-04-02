@@ -2,12 +2,12 @@
 
 :root {
   /* ── Brand ──────────────────────────────────────────────────────────────── */
-  --color-brand-500: #D71921;
-  --color-brand-600: #B5141B;
-  --color-brand-700: #8E0F15;
-  --color-brand-hover: #E82029;
-  --color-brand-active: #B5141B;
-  --color-brand-disabled: #2D0A0C;
+  --color-brand-500: #D42A45;
+  --color-brand-600: #B52238;
+  --color-brand-700: #8E1A2C;
+  --color-brand-hover: #E03050;
+  --color-brand-active: #B52238;
+  --color-brand-disabled: #2D0A10;
 
   /* ── Surfaces (OLED Black) ──────────────────────────────────────────────── */
   --color-dark-950: #000000;
@@ -45,14 +45,14 @@
   /* ── Status ─────────────────────────────────────────────────────────────── */
   --color-success:    #4A9E5C;
   --color-warning:    #D4A843;
-  --color-error:      #D71921;
+  --color-error:      #D42A45;
   --color-info:       #5B9BF6;
 
   /* ── Risk ────────────────────────────────────────────────────────────────── */
   --color-risk-safe:    #4A9E5C;
   --color-risk-low:     #4A9E5C;
   --color-risk-medium:  #D4A843;
-  --color-risk-high:    #D71921;
+  --color-risk-high:    #D42A45;
   --color-risk-extreme: #FF3040;
 
   /* ── Typography ─────────────────────────────────────────────────────────── */
@@ -84,7 +84,7 @@
   --shadow-card:       none;
   --shadow-card-hover: none;
   --shadow-modal:      none;
-  --shadow-brand-glow: 0 0 0 1px rgba(215,25,33,0.15);
+  --shadow-brand-glow: 0 0 0 1px rgba(212,42,69,0.15);
   --shadow-amber-glow: 0 0 0 1px rgba(212,168,67,0.15);
 
   /* ── Layout ─────────────────────────────────────────────────────────────── */

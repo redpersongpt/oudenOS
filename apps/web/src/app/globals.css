@@ -16,16 +16,16 @@
   --color-ink-disabled: #333333;
 
   /* Ouden accent — pinkish red */
-  --color-accent: #E8254B;
-  --color-accent-bright: #FF4D6A;
-  --color-accent-dim: #C41E3E;
-  --color-accent-glow: rgba(232, 37, 75, 0.08);
+  --color-accent: #D42A45;
+  --color-accent-bright: #E03050;
+  --color-accent-dim: #B52238;
+  --color-accent-glow: rgba(212, 42, 69, 0.08);
   --color-success: #4A9E5C;
   --color-warning: #D4A843;
-  --color-brand-300: #FF6B82;
-  --color-brand-400: #FF4D6A;
-  --color-brand-500: #E8254B;
-  --color-brand-600: #C41E3E;
+  --color-brand-300: #F06070;
+  --color-brand-400: #E03050;
+  --color-brand-500: #D42A45;
+  --color-brand-600: #B52238;
 
   /* Semantic aliases */
   --color-surface-base: #000000;
@@ -43,20 +43,30 @@
 html {
   background: var(--color-bg);
   background-image:
-    radial-gradient(1px 1px at 10% 15%, rgba(255,255,255,0.08), transparent),
-    radial-gradient(1px 1px at 25% 82%, rgba(255,255,255,0.06), transparent),
-    radial-gradient(1px 1px at 47% 5%, rgba(255,255,255,0.09), transparent),
-    radial-gradient(1px 1px at 63% 38%, rgba(255,255,255,0.05), transparent),
-    radial-gradient(1px 1px at 78% 71%, rgba(255,255,255,0.07), transparent),
-    radial-gradient(1px 1px at 92% 22%, rgba(255,255,255,0.06), transparent),
-    radial-gradient(1px 1px at 15% 55%, rgba(255,255,255,0.07), transparent),
-    radial-gradient(1px 1px at 38% 92%, rgba(255,255,255,0.08), transparent),
-    radial-gradient(1px 1px at 55% 60%, rgba(255,255,255,0.04), transparent),
-    radial-gradient(1px 1px at 82% 8%, rgba(255,255,255,0.09), transparent),
-    radial-gradient(1px 1px at 5% 42%, rgba(255,255,255,0.06), transparent),
-    radial-gradient(1px 1px at 70% 95%, rgba(255,255,255,0.07), transparent),
-    radial-gradient(1.5px 1.5px at 33% 28%, rgba(255,255,255,0.1), transparent),
-    radial-gradient(1.5px 1.5px at 88% 52%, rgba(255,255,255,0.08), transparent);
+    radial-gradient(1px 1px at 3% 8%, rgba(255,255,255,0.12), transparent),
+    radial-gradient(1px 1px at 7% 45%, rgba(255,255,255,0.08), transparent),
+    radial-gradient(1px 1px at 12% 72%, rgba(255,255,255,0.1), transparent),
+    radial-gradient(1px 1px at 18% 23%, rgba(255,255,255,0.07), transparent),
+    radial-gradient(1px 1px at 24% 88%, rgba(255,255,255,0.11), transparent),
+    radial-gradient(1px 1px at 31% 55%, rgba(255,255,255,0.06), transparent),
+    radial-gradient(1px 1px at 38% 12%, rgba(255,255,255,0.09), transparent),
+    radial-gradient(1px 1px at 44% 67%, rgba(255,255,255,0.13), transparent),
+    radial-gradient(1px 1px at 51% 34%, rgba(255,255,255,0.07), transparent),
+    radial-gradient(1px 1px at 57% 91%, rgba(255,255,255,0.1), transparent),
+    radial-gradient(1px 1px at 63% 5%, rgba(255,255,255,0.08), transparent),
+    radial-gradient(1px 1px at 69% 48%, rgba(255,255,255,0.11), transparent),
+    radial-gradient(1px 1px at 75% 76%, rgba(255,255,255,0.06), transparent),
+    radial-gradient(1px 1px at 82% 19%, rgba(255,255,255,0.09), transparent),
+    radial-gradient(1px 1px at 88% 62%, rgba(255,255,255,0.12), transparent),
+    radial-gradient(1px 1px at 94% 38%, rgba(255,255,255,0.07), transparent),
+    radial-gradient(1px 1px at 2% 95%, rgba(255,255,255,0.08), transparent),
+    radial-gradient(1px 1px at 15% 3%, rgba(255,255,255,0.1), transparent),
+    radial-gradient(1px 1px at 35% 82%, rgba(255,255,255,0.06), transparent),
+    radial-gradient(1px 1px at 55% 15%, rgba(255,255,255,0.09), transparent),
+    radial-gradient(1px 1px at 72% 58%, rgba(255,255,255,0.07), transparent),
+    radial-gradient(1px 1px at 91% 85%, rgba(255,255,255,0.11), transparent),
+    radial-gradient(1px 1px at 48% 42%, rgba(255,255,255,0.05), transparent),
+    radial-gradient(1px 1px at 66% 28%, rgba(255,255,255,0.08), transparent);
   background-attachment: fixed;
   color: var(--color-ink-primary);
   scroll-behavior: smooth;
@@ -71,7 +81,7 @@ body {
 }
 
 ::selection {
-  background: rgba(232, 37, 75, 0.35);
+  background: rgba(212, 42, 69, 0.35);
   color: #fff;
 }
 

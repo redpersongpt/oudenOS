@@ -39,7 +39,7 @@ function ToggleRow({ label, desc, checked, disabled = false, onChange }: {
 // Preview
 
 function DesktopPreview({ prefs }: { prefs: PersonalizationPreferences }) {
-  const accent = prefs.brandAccent ? "#D71921" : "#444444";
+  const accent = prefs.brandAccent ? "#D42A45" : "#444444";
 
   return (
     <div

@@ -14,15 +14,10 @@ export function FinalCTASection() {
     <section ref={ref} className="relative py-32 lg:py-44 overflow-hidden">
       {/* Background */}
       <div className="pointer-events-none absolute inset-0">
-        {/* Center glow */}
-        <div
-          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[400px] w-[700px] rounded-full opacity-[0.05]"
-          style={{ background: "radial-gradient(ellipse, #E8254B, transparent 55%)" }}
-        />
         {/* Top edge accent */}
         <div
           className="absolute top-0 left-0 right-0 h-px opacity-20"
-          style={{ background: "linear-gradient(90deg, transparent 0%, #E8254B 30%, #E82029 50%, #E8254B 70%, transparent 100%)" }}
+          style={{ background: "linear-gradient(90deg, transparent 0%, #D42A45 30%, #D42A45 50%, #D42A45 70%, transparent 100%)" }}
         />
       </div>
 
@@ -43,11 +38,7 @@ export function FinalCTASection() {
           </motion.p>
 
           <h2 className="text-[clamp(2.2rem,4.5vw,3.6rem)] font-bold tracking-[-0.038em] leading-[1.06] text-[var(--text-primary)]">
-            Built for the machines
-            <br />
-            <span className="bg-gradient-to-r from-accent to-[#E82029] bg-clip-text text-transparent">
-              that matter to you.
-            </span>
+            Get started.
           </h2>
 
           <p className="mt-7 mx-auto max-w-[440px] text-[1rem] leading-[1.75] text-[var(--text-secondary)]">
@@ -65,11 +56,10 @@ export function FinalCTASection() {
             {/* Primary */}
             <motion.a
               href="/downloads"
-              className="group inline-flex items-center gap-2.5 rounded-lg bg-[var(--accent)] px-8 py-4 text-[0.92rem] font-semibold text-white relative overflow-hidden shadow-lg shadow-accent/25"
+              className="inline-flex items-center gap-2.5 rounded-full bg-[var(--accent)] px-8 py-4 text-[0.92rem] font-semibold text-white"
               whileHover={{ scale: 1.03, y: -2 }}
               whileTap={{ scale: 0.97 }}
             >
-              <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700" />
               <Download className="h-4 w-4" />
               Download Free
             </motion.a>
@@ -77,7 +67,7 @@ export function FinalCTASection() {
             {/* Secondary */}
             <motion.a
               href="/register"
-              className="inline-flex items-center gap-2 px-6 py-4 text-[0.88rem] font-medium text-[var(--text-disabled)] border border-[var(--border)] rounded-lg hover:border-[var(--border-visible)] hover:text-[var(--text-secondary)] transition-all duration-200"
+              className="inline-flex items-center gap-2 px-6 py-4 text-[0.88rem] font-medium text-[var(--text-disabled)] border border-[var(--border)] rounded-full hover:border-[var(--border-visible)] hover:text-[var(--text-secondary)] transition-all duration-200"
               whileHover={{ y: -1 }}
             >
               Create account

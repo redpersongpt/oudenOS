@@ -207,7 +207,7 @@ export function RegisterPage() {
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            "radial-gradient(ellipse 90% 55% at 50% -5%, rgba(215,25,33,0.07) 0%, transparent 65%)",
+            "radial-gradient(ellipse 90% 55% at 50% -5%, rgba(212,42,69,0.07) 0%, transparent 65%)",
         }}
       />
 
@@ -490,10 +490,10 @@ export function RegisterPage() {
                             onClick={() => setTermsAccepted((v) => !v)}
                             animate={{
                               backgroundColor: termsAccepted
-                                ? "#D71921"
+                                ? "#D42A45"
                                 : "rgba(255,255,255,0.05)",
                               borderColor: termsAccepted
-                                ? "#D71921"
+                                ? "#D42A45"
                                 : "rgba(255,255,255,0.12)",
                             }}
                             transition={{ duration: 0.15 }}
