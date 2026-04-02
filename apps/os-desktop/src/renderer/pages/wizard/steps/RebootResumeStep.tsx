@@ -87,7 +87,7 @@ export function RebootResumeStep() {
   if (!needsReboot) {
     return (
       <div className="flex h-full items-center justify-center">
-        <div className="h-4 w-4 rounded-full border-2 border-brand-500 border-t-transparent animate-spin" />
+        <div className="h-4 w-4 rounded-sm border-2 border-brand-500 border-t-transparent animate-spin" />
       </div>
     );
   }
@@ -266,14 +266,14 @@ export function RebootResumeStep() {
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="flex h-14 w-14 items-center justify-center rounded-full border border-brand-500/30 bg-brand-500/10"
+            className="flex h-14 w-14 items-center justify-center rounded-sm border border-brand-500/30 bg-brand-500/10"
           >
             <Loader2 className="h-7 w-7 text-brand-400 animate-spin" />
           </motion.div>
 
           <div className="flex flex-col items-center gap-1.5 text-center">
-            <h2 className="text-lg font-semibold text-ink">Resuming Execution</h2>
-            <p className="max-w-sm text-xs text-ink-secondary">
+            <h2 className="text-lg font-medium text-nd-text-primary">Resuming Execution</h2>
+            <p className="max-w-sm text-xs text-nd-text-secondary">
               Applying remaining actions from the service execution ledger
             </p>
           </div>
@@ -291,9 +291,9 @@ export function RebootResumeStep() {
                   <motion.div
                     animate={{ rotate: 360 }}
                     transition={{ duration: 0.9, ease: "linear", repeat: Infinity }}
-                    className="h-4 w-4 shrink-0 rounded-full border-2 border-brand-500 border-t-transparent"
+                    className="h-4 w-4 shrink-0 rounded-sm border-2 border-brand-500 border-t-transparent"
                   />
-                  <span className="flex-1 truncate text-[13px] font-medium text-ink">{currentAction}</span>
+                  <span className="flex-1 truncate text-[13px] font-medium text-nd-text-primary">{currentAction}</span>
                   <span className="shrink-0 font-mono-metric text-[10px] text-brand-500/60">
                     {resumeProgress.completed + resumeProgress.failed}/{resumeProgress.total}
                   </span>
@@ -304,14 +304,14 @@ export function RebootResumeStep() {
 
           {/* Progress bar */}
           <div className="w-full max-w-md">
-            <div className="relative h-1.5 overflow-hidden rounded-full bg-white/[0.06]">
+            <div className="relative h-1.5 overflow-hidden rounded-sm bg-white/[0.06]">
               <motion.div
-                className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-brand-600 to-brand-400"
+                className="absolute inset-y-0 left-0 rounded-sm bg-gradient-to-r from-brand-600 to-brand-400"
                 animate={{ width: `${resumeProgress.total > 0 ? Math.round(((resumeProgress.completed + resumeProgress.failed) / resumeProgress.total) * 100) : 0}%` }}
                 transition={{ type: "spring", stiffness: 280, damping: 28 }}
               />
             </div>
-            <div className="mt-2 flex justify-between text-[10px] text-ink-tertiary font-mono-metric">
+            <div className="mt-2 flex justify-between text-[10px] text-nd-text-secondary font-mono-metric">
               <span>{resumeProgress.completed} applied</span>
               {resumeProgress.failed > 0 && <span className="text-danger-400">{resumeProgress.failed} failed</span>}
               <span>{resumeProgress.total - resumeProgress.completed - resumeProgress.failed} remaining</span>
@@ -325,18 +325,18 @@ export function RebootResumeStep() {
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ type: "spring", stiffness: 340, damping: 16 }}
-            className="flex h-14 w-14 items-center justify-center rounded-full border border-amber-500/30 bg-amber-500/10"
+            className="flex h-14 w-14 items-center justify-center rounded-sm border border-amber-500/30 bg-amber-500/10"
           >
             <RotateCw className="h-7 w-7 text-amber-400" />
           </motion.div>
 
           <div className="flex flex-col items-center gap-1.5 text-center">
-            <h2 className="text-lg font-semibold text-ink">Restart Recommended</h2>
-            <p className="max-w-sm text-xs text-ink-secondary">
+            <h2 className="text-lg font-medium text-nd-text-primary">Restart Recommended</h2>
+            <p className="max-w-sm text-xs text-nd-text-secondary">
               Some optimizations require a restart to take effect. You can restart now or continue and restart later.
             </p>
             {resolvedPlaybook && (
-              <p className="max-w-sm text-[10px] text-ink-tertiary">
+              <p className="max-w-sm text-[10px] text-nd-text-secondary">
                 Resume chain: {journalState?.planId ?? buildRebootJournalContext(resolvedPlaybook, detectedProfile?.id).planId}
                 {" · "}
                 {journalState?.totalRemaining ?? (journalState?.pendingRebootProvenanceRefs.length ?? getPendingRebootProvenanceRefs(resolvedPlaybook, executionResult).length)} pending actions
@@ -345,7 +345,7 @@ export function RebootResumeStep() {
           </div>
 
           {rebootError && (
-            <div className="flex items-center gap-2 rounded-lg border border-danger-500/30 bg-danger-500/10 px-3 py-2 text-xs text-danger-400">
+            <div className="flex items-center gap-2 rounded-sm border border-danger-500/30 bg-danger-500/10 px-3 py-2 text-xs text-danger-400">
               <AlertCircle className="h-3.5 w-3.5 shrink-0" />
               {rebootError}
             </div>
@@ -360,7 +360,7 @@ export function RebootResumeStep() {
             </Button>
           </div>
 
-          <button onClick={handleSkip} className="text-[11px] text-ink-tertiary hover:text-ink-secondary transition-colors">
+          <button onClick={handleSkip} className="text-[11px] text-nd-text-secondary hover:text-nd-text-secondary transition-colors">
             Skip and restart later
           </button>
         </>
