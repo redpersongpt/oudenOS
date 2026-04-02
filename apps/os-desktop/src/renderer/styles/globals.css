@@ -1,12 +1,16 @@
+@import url('https://fonts.googleapis.com/css2?family=Doto:wght@400;500;600;700&family=Space+Grotesk:wght@300;400;500;700&family=Space+Mono:wght@400;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ── Nothing Design System — OLED Black + redcore Pink-Red ─────────────── */
 
 @layer base {
   *, *::before, *::after { box-sizing: border-box; }
 
   html {
-    font-family: "Inter", system-ui, -apple-system, sans-serif;
+    font-family: "Space Grotesk", system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
@@ -18,8 +22,8 @@
     padding: 0;
     overflow: hidden;
     user-select: text;
-    background: #1e1e22;
-    color: #f0f0f4;
+    background: #000000;
+    color: #E8E8E8;
   }
 
   button, [role="button"], .drag-region { user-select: none; }
@@ -27,67 +31,129 @@
   :root { color-scheme: dark; }
 }
 
-/* Scrollbar */
+/* ── Nothing Labels — Space Mono ALL CAPS ────────────────────────────── */
+
+@layer components {
+  .nd-label {
+    font-family: "Space Mono", ui-monospace, monospace;
+    font-size: 11px;
+    line-height: 1.3;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #999999;
+  }
+
+  .nd-label-sm {
+    font-family: "Space Mono", ui-monospace, monospace;
+    font-size: 9px;
+    line-height: 1.2;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #999999;
+  }
+}
+
+/* ── Nothing Dot Grid Background ─────────────────────────────────────── */
+
+@layer components {
+  .nd-dot-grid {
+    background-image: radial-gradient(circle, #333333 1px, transparent 1px);
+    background-size: 16px 16px;
+  }
+
+  .nd-dot-grid-subtle {
+    background-image: radial-gradient(circle, #222222 0.5px, transparent 0.5px);
+    background-size: 12px 12px;
+  }
+}
+
+/* ── Nothing Segmented Progress ──────────────────────────────────────── */
+
+@layer components {
+  .nd-segment {
+    height: 4px;
+    border-radius: 0;
+    background: #222222;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .nd-segment-fill {
+    height: 100%;
+    border-radius: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+    transition: width 250ms cubic-bezier(0.25, 0.1, 0.25, 1);
+  }
+}
+
+/* ── Nothing Status Text ─────────────────────────────────────────────── */
+
+@layer components {
+  .nd-status {
+    font-family: "Space Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+}
+
+/* ── Scrollbar ────────────────────────────────────────────────────────── */
+
 @layer utilities {
   .scrollbar-thin {
     scrollbar-width: thin;
     scrollbar-color: rgba(255,255,255,0.06) transparent;
   }
-  .scrollbar-thin::-webkit-scrollbar { width: 5px; }
+  .scrollbar-thin::-webkit-scrollbar { width: 3px; }
   .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
   .scrollbar-thin::-webkit-scrollbar-thumb {
-    background: rgba(255,255,255,0.06);
-    border-radius: 3px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 0;
   }
-  .scrollbar-thin::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.12); }
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.15); }
   .scrollbar-none { scrollbar-width: none; }
   .scrollbar-none::-webkit-scrollbar { display: none; }
 }
 
-/* Window drag regions (Tauri frameless window) */
+/* ── Window Drag (Tauri frameless) ────────────────────────────────────── */
+
 @layer utilities {
   .drag-region { -webkit-app-region: drag; }
   .no-drag { -webkit-app-region: no-drag; }
 }
 
-/* Typography */
+/* ── Nothing Typography Utilities ─────────────────────────────────────── */
+
 @layer utilities {
+  .font-display {
+    font-family: "Doto", monospace;
+  }
+
   .font-mono-metric {
-    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-family: "Space Mono", ui-monospace, monospace;
     font-variant-numeric: tabular-nums;
+  }
+
+  .tracking-label {
+    letter-spacing: 0.08em;
   }
 }
 
-/* Execution pulse */
+/* ── Animations ───────────────────────────────────────────────────────── */
+
 @keyframes executionPulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(232,69,60,0); }
-  50% { box-shadow: 0 0 16px 0 rgba(232,69,60,0.15); }
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
 }
 
-/* Error shake — for failed action feedback */
-@keyframes errorShake {
-  0%, 100% { transform: translateX(0); }
-  15%       { transform: translateX(-4px); }
-  30%       { transform: translateX(4px); }
-  45%       { transform: translateX(-2px); }
-  60%       { transform: translateX(2px); }
-  75%       { transform: translateX(-1px); }
-}
-
-/* Scanning border glow — active scan row */
-@keyframes scanBorderGlow {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(232, 69, 60, 0); }
-  50%       { box-shadow: 0 0 14px 0 rgba(232, 69, 60, 0.16); }
-}
-
-/* Success ripple ring */
-@keyframes successRipple {
-  from { transform: scale(1);   opacity: 0.35; }
-  to   { transform: scale(2.0); opacity: 0; }
+@keyframes scanLine {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100%); }
 }
 
 @layer utilities {
-  .error-shake      { animation: errorShake 0.38s ease-out; }
-  .scan-border-glow { animation: scanBorderGlow 1.8s ease-in-out infinite; }
-  .success-ripple   { animation: successRipple 1.6s ease-out infinite; }
+  .nd-pulse { animation: executionPulse 2s cubic-bezier(0.25, 0.1, 0.25, 1) infinite; }
+  .nd-scan { animation: scanLine 1.5s cubic-bezier(0.25, 0.1, 0.25, 1) infinite; }
 }
