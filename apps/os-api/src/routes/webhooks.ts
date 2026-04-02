@@ -148,7 +148,10 @@ export default async function webhookRoutes(app: FastifyInstance): Promise<void>
       }
     } catch (err) {
       console.error(`[webhook] Error handling ${event.type}:`, err);
-      // Still return 200 so Stripe doesn't retry
+      return reply.status(500).send({
+        success: false,
+        error: { code: 'WH_500', message: 'Webhook handler failed' },
+      });
     }
 
     return reply.status(200).send({ received: true });
