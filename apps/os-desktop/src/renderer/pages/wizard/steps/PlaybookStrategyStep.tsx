@@ -28,17 +28,17 @@ function Option({
   return (
     <button
       onClick={onClick}
-      className={`w-full text-left transition-colors duration-150 ease-nd border-b border-nd-border-subtle px-4 py-3 ${
+      className={`w-full text-left transition-colors duration-150 ease-nd border-b border-[var(--border)] px-4 py-3 ${
         selected
-          ? danger ? "bg-danger-500/[0.06]" : "bg-nd-surface-raised"
-          : "bg-nd-bg hover:bg-nd-surface"
+          ? danger ? "bg-danger-500/[0.06]" : "bg-[var(--surface-raised)]"
+          : "bg-[var(--black)] hover:bg-[var(--surface)]"
       }`}
     >
       <div className="flex items-start gap-3">
         {/* Indicator */}
         <div className="mt-1.5 shrink-0">
           {selected ? (
-            <div className={`w-3 h-0.5 ${danger ? "bg-danger-400" : "bg-brand-500"}`} />
+            <div className={`w-3 h-0.5 ${danger ? "bg-[var(--accent)]" : "bg-[var(--accent)]"}`} />
           ) : (
             <div className="w-2 h-px bg-nd-border" />
           )}
@@ -46,19 +46,19 @@ function Option({
         <div className="flex-1">
           <div className="flex flex-wrap items-center gap-2">
             <span className={`font-mono text-caption tracking-label ${
-              selected ? "text-nd-text-display" : "text-nd-text-secondary"
+              selected ? "text-[var(--text-display)]" : "text-[var(--text-secondary)]"
             }`}>
               {title.toUpperCase()}
             </span>
             {badge && (
               <span className={`px-1.5 py-px font-mono text-label tracking-label rounded-sm ${
-                badgeColor ?? "bg-nd-surface text-nd-text-disabled"
+                badgeColor ?? "bg-[var(--surface)] text-[var(--text-disabled)]"
               }`}>
                 {badge}
               </span>
             )}
           </div>
-          <p className="mt-1 text-caption text-nd-text-disabled leading-relaxed">{desc}</p>
+          <p className="mt-1 text-caption text-[var(--text-disabled)] leading-relaxed">{desc}</p>
         </div>
       </div>
     </button>
@@ -75,13 +75,13 @@ function Screen({
     <div className="flex h-full flex-col">
       <div className="px-6 pt-5 pb-4">
         <div className="mb-3 flex items-center gap-2">
-          <Icon className="h-3.5 w-3.5 text-brand-500" />
-          <span className="nd-label text-brand-500">{label.toUpperCase()}</span>
+          <Icon className="h-3.5 w-3.5 text-[var(--accent)]" />
+          <span className="nd-label text-[var(--accent)]">{label.toUpperCase()}</span>
         </div>
-        <h2 className="font-display text-title text-nd-text-display">{title.toUpperCase()}</h2>
-        <p className="mt-2 max-w-[560px] text-body-sm text-nd-text-secondary">{desc}</p>
+        <h2 className="font-display text-title text-[var(--text-display)]">{title.toUpperCase()}</h2>
+        <p className="mt-2 max-w-[560px] text-body-sm text-[var(--text-secondary)]">{desc}</p>
         {note && (
-          <div className="mt-3 flex items-start gap-2 nd-label-sm text-nd-text-disabled">
+          <div className="mt-3 flex items-start gap-2 nd-label-sm text-[var(--text-disabled)]">
             <Info className="mt-0.5 h-3 w-3 shrink-0" />
             <span className="leading-relaxed normal-case">{note}</span>
           </div>
@@ -140,8 +140,8 @@ export function PlaybookStrategyStep() {
 
   if (!current) {
     return (
-      <div className="flex h-full items-center justify-center bg-nd-bg">
-        <p className="nd-label text-nd-text-disabled">NO STRATEGY QUESTIONS FOR THIS MACHINE</p>
+      <div className="flex h-full items-center justify-center bg-[var(--black)]">
+        <p className="nd-label text-[var(--text-disabled)]">NO STRATEGY QUESTIONS FOR THIS MACHINE</p>
       </div>
     );
   }
@@ -152,14 +152,14 @@ export function PlaybookStrategyStep() {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="flex h-full flex-col bg-nd-bg"
+      className="flex h-full flex-col bg-[var(--black)]"
     >
       {/* Top bar */}
-      <div className="border-b border-nd-border-subtle px-6 py-3">
+      <div className="border-b border-[var(--border)] px-6 py-3">
         <div className="flex items-center justify-between gap-4">
           <div>
-            <p className="nd-label text-brand-500">STRATEGY REVIEW</p>
-            <p className="mt-1 font-mono text-label tracking-label text-nd-text-disabled">
+            <p className="nd-label text-[var(--accent)]">STRATEGY REVIEW</p>
+            <p className="mt-1 font-mono text-label tracking-label text-[var(--text-disabled)]">
               QUESTION {String(clampedIndex + 1).padStart(2, "0")} / {String(activeQuestions.length).padStart(2, "0")}
             </p>
           </div>
@@ -169,7 +169,7 @@ export function PlaybookStrategyStep() {
               {activeQuestions.map((_, i) => (
                 <div
                   key={i}
-                  className={`flex-1 h-1 ${i <= clampedIndex ? "bg-brand-500" : "bg-nd-border-subtle"}`}
+                  className={`flex-1 h-1 ${i <= clampedIndex ? "bg-[var(--accent)]" : "bg-nd-border-subtle"}`}
                 />
               ))}
             </div>
@@ -204,23 +204,23 @@ export function PlaybookStrategyStep() {
       </div>
 
       {/* Bottom bar */}
-      <div className="shrink-0 border-t border-nd-border-subtle px-5 py-3">
+      <div className="shrink-0 border-t border-[var(--border)] px-5 py-3">
         <div className="mb-2 flex flex-wrap items-center justify-between gap-3">
           <div className="flex flex-wrap items-center gap-4">
-            <span className="nd-label text-nd-text-secondary">
-              <span className="font-mono text-nd-text-display">{impact.estimatedActions}</span> ACTIONS
+            <span className="nd-label text-[var(--text-secondary)]">
+              <span className="font-mono text-[var(--text-display)]">{impact.estimatedActions}</span> ACTIONS
             </span>
             {impact.estimatedPreserved > 0 && (
-              <span className="nd-label text-warning-400">
+              <span className="nd-label text-[var(--warning)]">
                 <span className="font-mono">{impact.estimatedPreserved}</span> PRESERVED
               </span>
             )}
             {impact.rebootRequired && (
-              <span className="nd-label-sm text-warning-400">[REBOOT REQUIRED]</span>
+              <span className="nd-label-sm text-[var(--warning)]">[REBOOT REQUIRED]</span>
             )}
           </div>
           {impact.warnings.length > 0 && (
-            <span className="flex items-center gap-1 nd-label-sm text-danger-400">
+            <span className="flex items-center gap-1 nd-label-sm text-[var(--accent)]">
               <AlertTriangle className="h-2.5 w-2.5" />
               {impact.warnings.length} WARNING{impact.warnings.length > 1 ? "S" : ""}
             </span>
@@ -232,7 +232,7 @@ export function PlaybookStrategyStep() {
             onClick={() => setIndex((prev) => Math.max(0, prev - 1))}
             disabled={clampedIndex === 0}
             className={`flex items-center gap-1 nd-label ${
-              clampedIndex === 0 ? "text-nd-text-disabled" : "text-nd-text-secondary hover:text-nd-text-primary"
+              clampedIndex === 0 ? "text-[var(--text-disabled)]" : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
             } transition-colors duration-150 ease-nd`}
           >
             <ChevronLeft className="h-3.5 w-3.5" /> BACK
@@ -242,8 +242,8 @@ export function PlaybookStrategyStep() {
             disabled={clampedIndex >= activeQuestions.length - 1 || !currentAnswered}
             className={`flex items-center gap-1 nd-label ${
               clampedIndex >= activeQuestions.length - 1 || !currentAnswered
-                ? "text-nd-text-disabled"
-                : "text-nd-text-secondary hover:text-nd-text-primary"
+                ? "text-[var(--text-disabled)]"
+                : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
             } transition-colors duration-150 ease-nd`}
           >
             NEXT <ChevronRight className="h-3.5 w-3.5" />
