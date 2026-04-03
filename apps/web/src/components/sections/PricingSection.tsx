@@ -1,10 +1,26 @@
 "use client";
 
-import { motion, useInView } from "framer-motion";
-import { useRef } from "react";
-import { Heart, Download, Check, Zap, Shield } from "lucide-react";
+import { motion, useInView, useMotionValue, useTransform, animate } from "framer-motion";
+import { useRef, useEffect, useState } from "react";
+import { Heart, Download, Check } from "lucide-react";
 
 const ease = [0.16, 1, 0.3, 1] as const;
+
+function CountUpPrice({ value, prefix = "$", inView }: { value: number; prefix?: string; inView: boolean }) {
+  const motionVal = useMotionValue(0);
+  const rounded = useTransform(motionVal, (v) => Math.round(v));
+  const [display, setDisplay] = useState(0);
+
+  useEffect(() => {
+    if (inView) {
+      const controls = animate(motionVal, value, { duration: 1.2, ease: [0.16, 1, 0.3, 1] });
+      const unsub = rounded.on("change", (v) => setDisplay(v));
+      return () => { controls.stop(); unsub(); };
+    }
+  }, [inView, value, motionVal, rounded]);
+
+  return <>{prefix}{display}</>;
+}
 
 export function PricingSection() {
   const ref = useRef(null);
@@ -38,13 +54,14 @@ export function PricingSection() {
             initial={{ opacity: 0, y: 32 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}
             transition={{ delay: 0.1, duration: 0.7, ease }}
-            whileHover={{ y: -6, transition: { duration: 0.3 } }}
+            whileHover={{ rotateY: 2, scale: 1.01, transition: { type: "spring", stiffness: 200, damping: 20 } }}
+            style={{ perspective: 800 }}
             className="relative rounded-lg border border-[var(--border)] bg-[var(--surface)] p-9 lg:p-10 overflow-hidden"
           >
             <div className="relative">
               <div className="flex items-center gap-3 mb-6">
                 <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-ink-muted/20">
-                  <Shield className="h-5 w-5 text-[var(--text-secondary)]" />
+                  <svg width={20} height={20} viewBox="0 0 100 100" fill="none"><path d="M 82.14 66.08 A 32 32 0 1 1 77.1 39.9" stroke="currentColor" strokeWidth={8} strokeLinecap="round" fill="none"/><circle cx="77.1" cy="39.9" r={4} fill="currentColor"/></svg>
                 </div>
                 <div>
                   <p className="text-[0.95rem] font-bold text-[var(--text-primary)]">OudenOS</p>
@@ -53,7 +70,7 @@ export function PricingSection() {
               </div>
 
               <div className="flex items-baseline gap-1 mb-2">
-                <span className="text-[3rem] font-bold tracking-tight text-[var(--text-primary)] leading-none font-display">$0</span>
+                <span className="text-[3rem] font-bold tracking-tight text-[var(--text-primary)] leading-none font-display"><CountUpPrice value={0} inView={inView} /></span>
               </div>
               <p className="text-[0.78rem] text-[var(--text-disabled)] mb-8">
                 Full Windows optimization. No limits. No account required.
@@ -69,11 +86,17 @@ export function PricingSection() {
                   "Work PC preservation",
                   "Bloatware & telemetry removal",
                   "Full rollback support",
-                ].map((f) => (
-                  <li key={f} className="text-[0.82rem] text-[var(--text-secondary)] flex items-start gap-3">
+                ].map((f, i) => (
+                  <motion.li
+                    key={f}
+                    className="text-[0.82rem] text-[var(--text-secondary)] flex items-start gap-3"
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={inView ? { opacity: 1, x: 0 } : {}}
+                    transition={{ delay: 0.4 + i * 0.08, duration: 0.4, ease }}
+                  >
                     <Check className="h-4 w-4 mt-0.5 shrink-0 text-[var(--text-disabled)]" />
                     {f}
-                  </li>
+                  </motion.li>
                 ))}
               </ul>
 
@@ -104,7 +127,8 @@ export function PricingSection() {
             initial={{ opacity: 0, y: 32 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}
             transition={{ delay: 0.2, duration: 0.7, ease }}
-            whileHover={{ y: -6, transition: { duration: 0.3 } }}
+            whileHover={{ rotateY: 2, scale: 1.01, transition: { type: "spring", stiffness: 200, damping: 20 } }}
+            style={{ perspective: 800 }}
             className="relative rounded-lg border border-[var(--border)] bg-[var(--surface)] p-9 lg:p-10 overflow-hidden"
           >
             {/* Badge */}
@@ -120,7 +144,7 @@ export function PricingSection() {
             <div className="relative">
               <div className="flex items-center gap-3 mb-6">
                 <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/10 border border-[var(--color-border)]">
-                  <Zap className="h-5 w-5 text-white" />
+                  <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round"><path d="M12 3v4M12 17v4M3 12h4M17 12h4"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/></svg>
                 </div>
                 <div>
                   <p className="text-[0.95rem] font-bold text-[var(--text-primary)]">Ouden.Tuning</p>
@@ -129,7 +153,7 @@ export function PricingSection() {
               </div>
 
               <div className="flex items-baseline gap-1 mb-2">
-                <span className="text-[3rem] font-bold tracking-tight text-[var(--text-primary)] leading-none font-display">$12</span>
+                <span className="text-[3rem] font-bold tracking-tight text-[var(--text-primary)] leading-none font-display"><CountUpPrice value={12} inView={inView} /></span>
                 <span className="text-[1.5rem] font-bold text-[var(--text-disabled)] font-display">.99</span>
               </div>
               <p className="text-[0.78rem] text-[var(--text-disabled)] mb-8">
@@ -149,10 +173,16 @@ export function PricingSection() {
                   "Lifetime license key",
                   "Priority support",
                 ].map((f, i) => (
-                  <li key={f} className={`text-[0.82rem] flex items-start gap-3 ${i === 0 ? "font-semibold text-[var(--text-primary)]" : "text-[var(--text-secondary)]"}`}>
+                  <motion.li
+                    key={f}
+                    className={`text-[0.82rem] flex items-start gap-3 ${i === 0 ? "font-semibold text-[var(--text-primary)]" : "text-[var(--text-secondary)]"}`}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={inView ? { opacity: 1, x: 0 } : {}}
+                    transition={{ delay: 0.5 + i * 0.08, duration: 0.4, ease }}
+                  >
                     {i > 0 && <Check className="h-4 w-4 mt-0.5 shrink-0 text-white" />}
                     {f}
-                  </li>
+                  </motion.li>
                 ))}
               </ul>
 

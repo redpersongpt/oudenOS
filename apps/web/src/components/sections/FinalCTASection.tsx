@@ -37,9 +37,15 @@ export function FinalCTASection() {
             Get started
           </motion.p>
 
-          <h2 className="text-[clamp(2.2rem,4.5vw,3.6rem)] font-bold tracking-[-0.038em] leading-[1.06] text-[var(--text-primary)]" style={{ fontFamily: "var(--font-display)" }}>
+          <motion.h2
+            className="text-[clamp(2.2rem,4.5vw,3.6rem)] font-bold tracking-[-0.038em] leading-[1.06] text-[var(--text-primary)]"
+            style={{ fontFamily: "var(--font-display)" }}
+            initial={{ clipPath: "inset(0 100% 0 0)" }}
+            animate={inView ? { clipPath: "inset(0 0% 0 0)" } : {}}
+            transition={{ delay: 0.1, duration: 0.7, ease: [0.25, 0.1, 0.25, 1] }}
+          >
             Get started.
-          </h2>
+          </motion.h2>
 
           <p className="mt-7 mx-auto max-w-[440px] text-[1rem] leading-[1.75] text-[var(--text-secondary)]">
             Start with OS for free. Go deeper with Tuning when you are ready.
@@ -57,8 +63,9 @@ export function FinalCTASection() {
             <motion.a
               href="/downloads"
               className="inline-flex items-center gap-2.5 rounded-full bg-white px-8 py-4 text-[0.92rem] font-semibold text-black"
-              whileHover={{ scale: 1.03, y: -2 }}
-              whileTap={{ scale: 0.97 }}
+              whileHover={{ scale: 1.05, y: -2 }}
+              whileTap={{ scale: 0.95 }}
+              transition={{ type: "spring", stiffness: 400, damping: 20 }}
             >
               <Download className="h-4 w-4" />
               Download Free
@@ -68,7 +75,9 @@ export function FinalCTASection() {
             <motion.a
               href="/register"
               className="inline-flex items-center gap-2 px-6 py-4 text-[0.88rem] font-medium text-[var(--text-disabled)] border border-[var(--border)] rounded-full hover:border-[var(--border-visible)] hover:text-[var(--text-secondary)] transition-all duration-200"
-              whileHover={{ y: -1 }}
+              whileHover={{ scale: 1.03, y: -1 }}
+              whileTap={{ scale: 0.97 }}
+              transition={{ type: "spring", stiffness: 400, damping: 20 }}
             >
               Create account
               <ArrowRight className="h-3.5 w-3.5" />

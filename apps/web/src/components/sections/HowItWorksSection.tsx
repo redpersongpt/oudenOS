@@ -68,18 +68,31 @@ export function HowItWorksSection() {
         </motion.div>
 
         {/* Steps — editorial vertical list */}
-        <div className="space-y-0">
+        <div className="relative space-y-0">
+          {/* Vertical connecting line */}
+          <motion.div
+            className="absolute left-[27px] lg:left-[37px] top-0 bottom-0 w-px bg-gradient-to-b from-[var(--border)] via-[var(--color-ink-tertiary)] to-[var(--border)]"
+            initial={{ scaleY: 0, originY: 0 }}
+            animate={inView ? { scaleY: 1 } : {}}
+            transition={{ delay: 0.2, duration: 1.5, ease }}
+            style={{ opacity: 0.15 }}
+          />
+
           {steps.map((step, i) => (
             <motion.div
               key={step.num}
               initial={{ opacity: 0, x: -20 }}
               animate={inView ? { opacity: 1, x: 0 } : {}}
               transition={{ delay: 0.1 + 0.09 * i, duration: 0.6, ease }}
+              whileHover={{ x: 8, transition: { type: "spring", stiffness: 300, damping: 20 } }}
               className="group grid grid-cols-[60px_1fr] lg:grid-cols-[80px_180px_1fr] items-baseline border-t border-[var(--border)] py-7 hover:bg-[var(--surface-raised)]/30 transition-colors duration-200 rounded-sm -mx-3 px-3"
             >
-              <span className="font-display text-[0.7rem] font-bold text-[var(--color-ink-tertiary)] group-hover:text-[var(--color-ink-secondary)] transition-colors">
+              <motion.span
+                className="font-display text-[0.7rem] font-bold text-[var(--color-ink-tertiary)] group-hover:text-[var(--color-ink-secondary)] transition-colors"
+                whileHover={{ scale: 1.15, transition: { duration: 0.6, repeat: Infinity, repeatType: "reverse" } }}
+              >
                 {step.num}
-              </span>
+              </motion.span>
               <span className="text-[0.95rem] font-semibold text-[var(--text-primary)] lg:pr-8">
                 {step.title}
               </span>
