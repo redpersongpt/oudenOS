@@ -3,20 +3,7 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 import { Download } from "lucide-react";
-import dynamic from "next/dynamic";
-
-const HeroScene = dynamic(
-  () =>
-    import("@/components/ui/HeroScene").then((mod) => ({
-      default: mod.HeroScene,
-    })),
-  {
-    ssr: false,
-    loading: () => (
-      <div className="h-[420px] w-[420px] sm:h-[460px] sm:w-[460px] lg:h-[500px] lg:w-[500px] xl:h-[550px] xl:w-[550px]" />
-    ),
-  },
-);
+import { HeroScene } from "@/components/ui/HeroScene";
 
 function GithubIcon({ className }: { className?: string }) {
   return (
