@@ -146,6 +146,13 @@ You can read every line of what this tool will do to your system before you run 
 | VM | Everything | Telemetry only |
 | Budget Desktop | Essential drivers | Aggressive cleanup |
 
+## Before you install
+
+**You need the Visual C++ Runtime** — most PCs already have it, but if the app crashes on launch or tweaks don't apply, install this first:
+
+**[Download Visual C++ Redistributable (x64)](https://aka.ms/vs/17/release/vc_redist.x64.exe)** — direct Microsoft link, 24MB
+
+This is a Microsoft system library, not our software. Windows should ship it by default but often doesn't on clean installs.
 ## Requirements
 
 - Windows 10 (21H2+) or Windows 11
