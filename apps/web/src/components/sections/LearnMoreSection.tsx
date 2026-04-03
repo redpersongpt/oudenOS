@@ -2,8 +2,16 @@
 
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
-import { ArrowRight } from "lucide-react";
 import Link from "next/link";
+
+// Custom arrow icon — no lucide dependency for this
+function ArrowRightIcon({ className }: { className?: string }) {
+  return (
+    <svg width={14} height={14} viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <path d="M1 7h12M8 3l5 4-5 4" />
+    </svg>
+  );
+}
 
 const ease = [0.16, 1, 0.3, 1] as const;
 
@@ -63,14 +71,17 @@ export function LearnMoreSection() {
               initial={{ opacity: 0, y: 16 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ delay: 0.04 * i, duration: 0.5, ease }}
+              whileHover={{ y: -4, borderColor: "#444444", transition: { type: "spring", stiffness: 300, damping: 20 } }}
             >
               <Link
                 href={page.href}
-                className="group block border border-[var(--color-border-subtle)] rounded-lg bg-[var(--surface)] p-7 h-full transition-colors hover:bg-[var(--surface-raised)]"
+                className="group block border border-[var(--color-border-subtle)] rounded-lg bg-transparent p-7 h-full transition-colors hover:bg-[var(--surface-raised)]"
               >
                 <h3 className="text-[0.88rem] font-semibold text-[var(--text-primary)] group-hover:text-white transition-colors flex items-center gap-2">
                   {page.title}
-                  <ArrowRight className="h-3.5 w-3.5 text-[var(--text-disabled)] group-hover:text-white transition-colors" />
+                  <span className="inline-block transition-transform duration-200 group-hover:translate-x-1">
+                    <ArrowRightIcon className="h-3.5 w-3.5 text-[var(--text-disabled)] group-hover:text-white transition-colors" />
+                  </span>
                 </h3>
                 <p className="mt-2 text-[0.78rem] leading-[1.65] text-[var(--text-disabled)]">
                   {page.description}
