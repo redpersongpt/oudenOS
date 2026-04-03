@@ -60,12 +60,25 @@ export function WelcomeStep() {
 
         {/* PRIMARY — Logo mark + Doto title */}
         <div onClick={handleLogoClick} className="cursor-default select-none mb-8">
-          {/* Geometric mark: square border + inner square + circle */}
-          <div className="w-20 h-20 flex items-center justify-center" style={{ border: "1px solid var(--border-visible)" }}>
-            <div className="w-10 h-10 flex items-center justify-center" style={{ border: "1px solid var(--accent)" }}>
-              <div className="w-4 h-4 rounded-full" style={{ background: "var(--accent)" }} />
-            </div>
-          </div>
+          <svg width={80} height={80} viewBox="0 0 100 100" fill="none">
+            <motion.path
+              d="M 82.14 66.08 A 32 32 0 1 1 77.1 39.9"
+              stroke="var(--text-primary)"
+              strokeWidth={7}
+              strokeLinecap="round"
+              fill="none"
+              initial={{ pathLength: 0 }}
+              animate={{ pathLength: 1 }}
+              transition={{ duration: 1.5, ease: [0.25, 0.1, 0.25, 1] }}
+            />
+            <motion.circle
+              cx="77.1" cy="39.9" r={4}
+              fill="var(--text-primary)"
+              initial={{ opacity: 0, scale: 0 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 1.5, duration: 0.3 }}
+            />
+          </svg>
         </div>
 
         {/* Doto display — hero. 48px. The ONE thing you see first. */}
@@ -74,7 +87,7 @@ export function WelcomeStep() {
         </h1>
 
         {/* SECONDARY — label */}
-        <p className="nd-label mt-2" style={{ color: "var(--accent)" }}>
+        <p className="nd-label mt-2" style={{ color: "var(--text-secondary)" }}>
           OPERATING SYSTEM
         </p>
 
