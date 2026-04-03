@@ -125,11 +125,13 @@ actions:
     risk: low
     tier: free
     default: false
+    expertOnly: true
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
     blockedProfiles:
       - office_laptop
+      - gaming_laptop
       - work_pc
     serviceChanges:
       - name: bthserv
@@ -235,15 +237,17 @@ actions:
   - id: services.disable-touch-keyboard
     name: "Disable Touch Keyboard & Handwriting"
     description: "Disable TabletInputService — touch keyboard, handwriting, and pen input"
-    rationale: "On desktop systems without touch screens, this service loads input method editors and handwriting recognition unnecessarily."
+    rationale: "On desktop systems without touch screens, this service loads input method editors and handwriting recognition unnecessarily. Laptops with touchscreens need this."
     risk: low
     tier: free
-    default: true
+    default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
     blockedProfiles:
       - office_laptop
+      - gaming_laptop
+      - work_pc
     serviceChanges:
       - name: TabletInputService
         startupType: Disabled
