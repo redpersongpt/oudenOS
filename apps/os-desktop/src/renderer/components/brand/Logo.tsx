@@ -2,8 +2,8 @@
 // Scales from 14px to 64px
 
 export function LogoMark({ size = 20 }: { size?: number }) {
-  const sw = size >= 32 ? 8 : size >= 20 ? 6 : 5;
-  const dotR = size >= 32 ? 4.5 : 3.5;
+  const sw = size >= 32 ? 7 : size >= 20 ? 5 : 4;
+  const dotR = size >= 32 ? 4 : 3;
 
   return (
     <svg width={size} height={size} viewBox="0 0 100 100" fill="none">

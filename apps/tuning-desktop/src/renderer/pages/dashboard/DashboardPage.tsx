@@ -423,33 +423,39 @@ export function DashboardPage() {
           </div>
         </Card>
 
-        <MetricCard
-          label="CPU Temp"
-          value={cpuTemp ?? "—"}
-          unit={cpuTemp !== null ? "°C" : ""}
-          trend={
-            cpuTemp !== null ? (cpuTemp > 85 ? "down" : "neutral") : "neutral"
-          }
-        />
-        <MetricCard
-          label="GPU Temp"
-          value={gpuTemp ?? "—"}
-          unit={gpuTemp !== null ? "°C" : ""}
-          trend={
-            gpuTemp !== null ? (gpuTemp > 80 ? "down" : "neutral") : "neutral"
-          }
-        />
-        <MetricCard
-          label="System RAM"
-          value={
-            profile ? `${Math.round(profile.memory.totalMb / 1024)} GB` : "—"
-          }
-          unit=""
-          trend="neutral"
-          trendValue={
-            profile?.memory.type ? profile.memory.type : undefined
-          }
-        />
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, ease: [0.2, 0, 0, 1], delay: 0.05 }}>
+          <MetricCard
+            label="CPU Temp"
+            value={cpuTemp ?? "—"}
+            unit={cpuTemp !== null ? "°C" : ""}
+            trend={
+              cpuTemp !== null ? (cpuTemp > 85 ? "down" : "neutral") : "neutral"
+            }
+          />
+        </motion.div>
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, ease: [0.2, 0, 0, 1], delay: 0.10 }}>
+          <MetricCard
+            label="GPU Temp"
+            value={gpuTemp ?? "—"}
+            unit={gpuTemp !== null ? "°C" : ""}
+            trend={
+              gpuTemp !== null ? (gpuTemp > 80 ? "down" : "neutral") : "neutral"
+            }
+          />
+        </motion.div>
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, ease: [0.2, 0, 0, 1], delay: 0.15 }}>
+          <MetricCard
+            label="System RAM"
+            value={
+              profile ? `${Math.round(profile.memory.totalMb / 1024)} GB` : "—"
+            }
+            unit=""
+            trend="neutral"
+            trendValue={
+              profile?.memory.type ? profile.memory.type : undefined
+            }
+          />
+        </motion.div>
       </motion.div>
 
       {/* Row 2: Opportunities (2-col) + System/Thermal (1-col) */}
