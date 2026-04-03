@@ -54,15 +54,15 @@ export function ProfileStep() {
 
   return (
     <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.3, ease: ND_EASE }}
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35, ease: [0.25, 0.1, 0.25, 1] }}
       className="flex h-full flex-col items-center justify-center gap-6 px-8 bg-[var(--black)]"
     >
       {/* Machine name label */}
       <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1, duration: 0.3, ease: ND_EASE }}
         className="nd-label-sm text-[var(--text-disabled)]"
       >
@@ -181,10 +181,14 @@ export function ProfileStep() {
               className="overflow-hidden"
             >
               <div className="mt-3 flex flex-col gap-px">
-                {PROFILE_OPTIONS.map((opt) => {
+                {PROFILE_OPTIONS.map((opt, optIdx) => {
                   const isActive = p.id === opt.id;
                   return (
-                    <button
+                    <motion.button
+                      initial={{ opacity: 0, y: 6 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: optIdx * 0.04, duration: 0.2, ease: ND_EASE }}
+                      layout
                       key={opt.id}
                       onClick={() => {
                         if (isActive) return;
@@ -208,7 +212,7 @@ export function ProfileStep() {
                         <p className="nd-label-sm text-[var(--text-disabled)] mt-0.5">{opt.desc}</p>
                       </div>
                       {isActive && <div className="w-3 h-0.5 bg-[var(--accent)]" />}
-                    </button>
+                    </motion.button>
                   );
                 })}
               </div>

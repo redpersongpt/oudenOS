@@ -25,6 +25,7 @@ import { RegisterPage } from "./pages/auth/RegisterPage";
 import { ForgotPasswordPage } from "./pages/auth/ForgotPasswordPage";
 import { initAuthClient } from "./stores/auth-store";
 import { ErrorBoundary } from "./components/ErrorBoundary";
+import { StarField } from "./components/ui/StarField";
 
 // AnimatePresence requires a stable location key inside the router context.
 function AnimatedRoutes() {
@@ -103,6 +104,7 @@ export function App() {
   return (
     <ErrorBoundary>
       <BrowserRouter>
+        <StarField />
         <AnimatedRoutes />
       </BrowserRouter>
     </ErrorBoundary>

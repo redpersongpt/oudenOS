@@ -6,9 +6,24 @@ import { LogoMark } from "@/components/brand/Logo";
 
 type Phase = "logo" | "text" | "bar" | "exit";
 
+const QUOTES = [
+  "YOUR PC. YOUR RULES.",
+  "WHAT WINDOWS SHOULD HAVE BEEN.",
+  "LESS BLOAT. MORE FRAMES.",
+  "27GB FOR AN OS IS STILL INSANE.",
+  "NO SCRIPTS. JUST RESULTS.",
+  "MICROSOFT HATES THIS ONE TRICK.",
+];
+
 export function SplashPage() {
   const navigate = useNavigate();
   const [phase, setPhase] = useState<Phase>("logo");
+  const [quoteIdx, setQuoteIdx] = useState(0);
+
+  useEffect(() => {
+    const i = setInterval(() => setQuoteIdx(p => (p + 1) % QUOTES.length), 3000);
+    return () => clearInterval(i);
+  }, []);
 
   useEffect(() => {
     const t1 = setTimeout(() => setPhase("text"), 500);
@@ -94,6 +109,23 @@ export function SplashPage() {
             </motion.div>
           )}
         </AnimatePresence>
+
+        {/* Rotating quote */}
+        <div className="h-4 mt-4">
+          <AnimatePresence mode="wait">
+            <motion.p
+              key={quoteIdx}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.25 }}
+              className="font-mono text-[9px] tracking-[0.1em] uppercase text-center"
+              style={{ color: "var(--color-text-tertiary)" }}
+            >
+              {QUOTES[quoteIdx]}
+            </motion.p>
+          </AnimatePresence>
+        </div>
       </div>
 
       {/* Bottom loading bar */}
