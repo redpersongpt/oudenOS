@@ -155,18 +155,18 @@ function TimelineItem({ action }: { action: CompletedAction }) {
         {action.status === "applied" ? (
           <Check className="h-3.5 w-3.5 shrink-0 text-[var(--success)]" />
         ) : (
-          <AlertCircle className="h-3.5 w-3.5 shrink-0 text-[var(--accent)]" />
+          <AlertCircle className="h-3.5 w-3.5 shrink-0 text-[#FF6B6B]" />
         )}
         <span className="text-[11px] text-[var(--text-secondary)] break-words">{action.label}</span>
         <span className={`ml-auto shrink-0 text-[10px] font-medium ${
-          action.status === "applied" ? "text-[var(--success)]/60" : "text-[var(--accent)]/60"
+          action.status === "applied" ? "text-[var(--success)]/60" : "text-[#FF6B6B]/60"
         }`}>
           {action.status}
         </span>
       </div>
       {action.status === "failed" && action.errorMessage && (
         <span
-          className="text-[9px] text-[var(--accent)]/50 pl-6 break-words"
+          className="text-[9px] text-[#FF6B6B]/50 pl-6 break-words"
           title={action.errorMessage}
         >
           {action.errorMessage}
@@ -746,16 +746,16 @@ export function ExecutionStep() {
                 boxShadow: "0 0 0 0 rgba(232,69,60,0.0)",
                 animation: "executionPulse 1.5s ease-in-out infinite",
               }}
-              className="rounded-sm border border-brand-500/25 bg-[var(--surface)] px-5 py-3"
+              className="rounded-sm border border-[var(--border-visible)] bg-[var(--surface)] px-5 py-3"
             >
               <div className="flex items-center gap-3">
                 <motion.div
                   animate={{ rotate: 360 }}
                   transition={{ duration: 0.9, ease: "linear", repeat: Infinity }}
-                  className="h-4 w-4 shrink-0 rounded-sm border-2 border-brand-500 border-t-transparent"
+                  className="h-4 w-4 shrink-0 rounded-sm border-2 border-[var(--text-primary)] border-t-transparent"
                 />
                 <span className="flex-1 truncate text-[13px] font-medium text-[var(--text-primary)]">{currentAction}</span>
-                <span className="shrink-0 font-mono-metric text-[10px] text-[var(--accent)]/60">
+                <span className="shrink-0 font-mono-metric text-[10px] text-[var(--text-secondary)]">
                   {currentIdx + 1}/{totalActions}
                 </span>
               </div>
@@ -796,7 +796,7 @@ export function ExecutionStep() {
       <div className="w-full max-w-md">
         <div className="relative h-1.5 overflow-hidden rounded-sm bg-[var(--surface-raised)]">
           <motion.div
-            className="absolute inset-y-0 left-0 rounded-sm bg-gradient-to-r from-brand-600 to-brand-400"
+            className="absolute inset-y-0 left-0 rounded-sm bg-[var(--text-primary)]"
             animate={{ width: `${progress}%` }}
             transition={{ type: "spring", stiffness: 280, damping: 28 }}
           />
@@ -813,7 +813,7 @@ export function ExecutionStep() {
       <div className="flex gap-6 text-center">
         {[
           { label: "Applied",   value: applied,    color: "text-[var(--success)]"   },
-          { label: "Failed",    value: failCount,  color: "text-[var(--accent)]"    },
+          { label: "Failed",    value: failCount,  color: "text-[#FF6B6B]"          },
           { label: "Remaining", value: remaining,  color: "text-[var(--text-secondary)]" },
         ].map((stat) => (
           <div key={stat.label} className="flex flex-col items-center gap-0.5">

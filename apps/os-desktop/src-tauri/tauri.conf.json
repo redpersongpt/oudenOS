@@ -46,8 +46,8 @@
       "nsis": {
         "installMode": "perMachine",
         "installerIcon": "icons/icon.ico",
-        "headerImage": "icons/icon.ico",
-        "sidebarImage": "icons/icon.ico",
+        "headerImage": null,
+        "sidebarImage": null,
         "displayLanguageSelector": false,
         "template": null
       },

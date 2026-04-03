@@ -28,7 +28,7 @@ export function Button({
     primary:     { background: "var(--text-display)", color: "var(--black)", borderRadius: 999 },
     secondary:   { background: "transparent", color: "var(--text-primary)", border: "1px solid var(--border-visible)", borderRadius: 999 },
     ghost:       { background: "transparent", color: "var(--text-secondary)", borderRadius: 0 },
-    destructive: { background: "transparent", color: "var(--accent)", border: "1px solid var(--accent)", borderRadius: 999 },
+    destructive: { background: "transparent", color: "#FF6B6B", border: "1px solid #FF6B6B", borderRadius: 999 },
   };
 
   const sizes: Record<string, string> = {
