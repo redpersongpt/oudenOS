@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export function StarField() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -57,12 +58,36 @@ export function StarField() {
     };
   }, []);
 
+  useEffect(() => {
+    function onMouseMove(e: MouseEvent) {
+      setMousePos({ x: e.clientX, y: e.clientY });
+    }
+    window.addEventListener("mousemove", onMouseMove);
+    return () => window.removeEventListener("mousemove", onMouseMove);
+  }, []);
+
   return (
-    <canvas
-      ref={canvasRef}
-      className="pointer-events-none fixed inset-0"
-      style={{ imageRendering: "pixelated", zIndex: 1 }}
-      aria-hidden="true"
-    />
+    <>
+      <canvas
+        ref={canvasRef}
+        className="pointer-events-none fixed inset-0"
+        style={{ imageRendering: "pixelated", zIndex: 1 }}
+        aria-hidden="true"
+      />
+      <div
+        className="pointer-events-none fixed"
+        style={{
+          left: mousePos.x - 200,
+          top: mousePos.y - 200,
+          width: 400,
+          height: 400,
+          borderRadius: "50%",
+          background: "radial-gradient(circle, rgba(255,255,255,0.03) 0%, transparent 70%)",
+          zIndex: 1,
+          transition: "left 0.3s ease-out, top 0.3s ease-out",
+        }}
+        aria-hidden="true"
+      />
+    </>
   );
 }
