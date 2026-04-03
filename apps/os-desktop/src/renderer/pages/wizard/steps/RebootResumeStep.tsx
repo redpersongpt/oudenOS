@@ -87,7 +87,7 @@ export function RebootResumeStep() {
   if (!needsReboot) {
     return (
       <div className="flex h-full items-center justify-center">
-        <div className="h-4 w-4 rounded-sm border-2 border-brand-500 border-t-transparent animate-spin" />
+        <div className="h-4 w-4 rounded-sm border-2 border-[var(--text-primary)] border-t-transparent animate-spin" />
       </div>
     );
   }
@@ -266,9 +266,9 @@ export function RebootResumeStep() {
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="flex h-14 w-14 items-center justify-center rounded-sm border border-brand-500/30 bg-[var(--accent)]/10"
+            className="flex h-14 w-14 items-center justify-center rounded-sm border border-[var(--border-visible)] bg-white/5"
           >
-            <Loader2 className="h-7 w-7 text-[var(--accent)] animate-spin" />
+            <Loader2 className="h-7 w-7 text-[var(--text-primary)] animate-spin" />
           </motion.div>
 
           <div className="flex flex-col items-center gap-1.5 text-center">
@@ -285,16 +285,16 @@ export function RebootResumeStep() {
                 initial={{ opacity: 0, y: 4 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -4 }}
-                className="w-full max-w-md rounded-xl border border-brand-500/25 bg-[var(--accent)]/[0.06] px-5 py-3"
+                className="w-full max-w-md rounded-xl border border-[var(--border-visible)] bg-white/5 px-5 py-3"
               >
                 <div className="flex items-center gap-3">
                   <motion.div
                     animate={{ rotate: 360 }}
                     transition={{ duration: 0.9, ease: "linear", repeat: Infinity }}
-                    className="h-4 w-4 shrink-0 rounded-sm border-2 border-brand-500 border-t-transparent"
+                    className="h-4 w-4 shrink-0 rounded-sm border-2 border-[var(--text-primary)] border-t-transparent"
                   />
                   <span className="flex-1 truncate text-[13px] font-medium text-[var(--text-primary)]">{currentAction}</span>
-                  <span className="shrink-0 font-mono-metric text-[10px] text-[var(--accent)]/60">
+                  <span className="shrink-0 font-mono-metric text-[10px] text-[var(--text-secondary)]">
                     {resumeProgress.completed + resumeProgress.failed}/{resumeProgress.total}
                   </span>
                 </div>
@@ -306,14 +306,14 @@ export function RebootResumeStep() {
           <div className="w-full max-w-md">
             <div className="relative h-1.5 overflow-hidden rounded-sm bg-white/[0.06]">
               <motion.div
-                className="absolute inset-y-0 left-0 rounded-sm bg-gradient-to-r from-brand-600 to-brand-400"
+                className="absolute inset-y-0 left-0 rounded-sm bg-[var(--text-primary)]"
                 animate={{ width: `${resumeProgress.total > 0 ? Math.round(((resumeProgress.completed + resumeProgress.failed) / resumeProgress.total) * 100) : 0}%` }}
                 transition={{ type: "spring", stiffness: 280, damping: 28 }}
               />
             </div>
             <div className="mt-2 flex justify-between text-[10px] text-[var(--text-secondary)] font-mono-metric">
               <span>{resumeProgress.completed} applied</span>
-              {resumeProgress.failed > 0 && <span className="text-[var(--accent)]">{resumeProgress.failed} failed</span>}
+              {resumeProgress.failed > 0 && <span className="text-[#FF6B6B]">{resumeProgress.failed} failed</span>}
               <span>{resumeProgress.total - resumeProgress.completed - resumeProgress.failed} remaining</span>
             </div>
           </div>
@@ -345,7 +345,7 @@ export function RebootResumeStep() {
           </div>
 
           {rebootError && (
-            <div className="flex items-center gap-2 rounded-sm border border-danger-500/30 bg-danger-500/10 px-3 py-2 text-xs text-[var(--accent)]">
+            <div className="flex items-center gap-2 rounded-sm border border-danger-500/30 bg-danger-500/10 px-3 py-2 text-xs text-[#FF6B6B]">
               <AlertCircle className="h-3.5 w-3.5 shrink-0" />
               {rebootError}
             </div>
