@@ -3,6 +3,20 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
 import { Download } from "lucide-react";
+import dynamic from "next/dynamic";
+
+const HeroScene = dynamic(
+  () =>
+    import("@/components/ui/HeroScene").then((mod) => ({
+      default: mod.HeroScene,
+    })),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-[420px] w-[420px] sm:h-[460px] sm:w-[460px] lg:h-[500px] lg:w-[500px] xl:h-[550px] xl:w-[550px]" />
+    ),
+  },
+);
 
 function GithubIcon({ className }: { className?: string }) {
   return (
@@ -47,147 +61,6 @@ function DotGrid() {
   );
 }
 
-// App Mockup for the right side
-
-function AppMockup() {
-  const steps = [
-    { label: "SCAN", desc: "Analyzing hardware...", progress: 100 },
-    { label: "CLASSIFY", desc: "Gaming Desktop detected", progress: 100 },
-    { label: "PLAN", desc: "147 actions selected", progress: 100 },
-    { label: "EXECUTE", desc: "Applying changes...", progress: 72 },
-    { label: "VALIDATE", desc: "Waiting...", progress: 0 },
-  ];
-
-  return (
-    <motion.div
-      className="w-[440px] rounded-xl border border-[#222222] bg-[#0A0A0A] overflow-hidden"
-      initial={{ opacity: 0, y: 40 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.3, duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
-    >
-      {/* Title bar */}
-      <div className="flex items-center gap-2 px-4 py-2.5 border-b border-[#1A1A1A] bg-[#080808]">
-        <svg width={14} height={14} viewBox="0 0 100 100" fill="none">
-          <path d="M 82.14 66.08 A 32 32 0 1 1 77.1 39.9" stroke="#666" strokeWidth={8} strokeLinecap="round" fill="none"/>
-          <circle cx="77.1" cy="39.9" r={4} fill="#666"/>
-        </svg>
-        <span className="font-mono text-[10px] tracking-[0.1em] text-[#444444] uppercase">OudenOS</span>
-        <div className="ml-auto flex gap-1.5">
-          <div className="w-2 h-2 rounded-full bg-[#333333]" />
-          <div className="w-2 h-2 rounded-full bg-[#333333]" />
-        </div>
-      </div>
-
-      {/* Step rail + content area */}
-      <div className="flex">
-        {/* Left rail */}
-        <div className="w-[120px] border-r border-[#1A1A1A] py-3 px-2 shrink-0">
-          {steps.map((step, i) => (
-            <motion.div
-              key={step.label}
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.6 + i * 0.12, duration: 0.3 }}
-              className="flex items-center gap-2 py-2 px-2 rounded"
-              style={{ background: i === 3 ? "rgba(255,255,255,0.04)" : "transparent" }}
-            >
-              <div className="w-1.5 h-1.5 rounded-full shrink-0" style={{
-                background: step.progress === 100 ? "#E8E8E8" : i === 3 ? "#FFFFFF" : "#222222",
-                boxShadow: i === 3 ? "0 0 6px rgba(255,255,255,0.3)" : "none",
-              }} />
-              <span style={{
-                fontFamily: "var(--font-display)",
-                fontSize: "9px",
-                letterSpacing: "0.12em",
-                color: i === 3 ? "#FFFFFF" : step.progress === 100 ? "#555555" : "#222222",
-              }}>
-                {step.label}
-              </span>
-            </motion.div>
-          ))}
-        </div>
-
-        {/* Main content */}
-        <div className="flex-1 p-4">
-          {/* Active step header */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.0, duration: 0.4 }}
-          >
-            <div className="flex items-center gap-2 mb-1">
-              <span style={{ fontFamily: "var(--font-display)", fontSize: "11px", letterSpacing: "0.08em", color: "#E8E8E8" }}>
-                EXECUTE
-              </span>
-              <span className="font-mono text-[8px] text-[#444444] tracking-wider ml-auto">STEP 4/5</span>
-            </div>
-            <p className="font-mono text-[10px] text-[#666666] mb-4">Applying optimization plan...</p>
-          </motion.div>
-
-          {/* Action log */}
-          <div className="space-y-1.5">
-            {[
-              { action: "Disable telemetry endpoints", status: "done" },
-              { action: "Remove startup bloat", status: "done" },
-              { action: "Configure power plan", status: "done" },
-              { action: "Optimize services", status: "active" },
-              { action: "Privacy hardening", status: "pending" },
-            ].map((item, i) => (
-              <motion.div
-                key={item.action}
-                initial={{ opacity: 0, x: 8 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 1.2 + i * 0.15, duration: 0.3 }}
-                className="flex items-center gap-2"
-              >
-                {item.status === "done" ? (
-                  <svg width={10} height={10} viewBox="0 0 10 10" fill="none"><path d="M2 5l2 2 4-4" stroke="#555" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round"/></svg>
-                ) : item.status === "active" ? (
-                  <motion.div
-                    className="w-[10px] h-[10px] rounded-full border border-white/40"
-                    animate={{ opacity: [0.4, 1, 0.4] }}
-                    transition={{ duration: 1.5, repeat: Infinity }}
-                  />
-                ) : (
-                  <div className="w-[10px] h-[10px] rounded-full border border-[#222222]" />
-                )}
-                <span className="font-mono text-[9px]" style={{
-                  color: item.status === "done" ? "#444444" : item.status === "active" ? "#E8E8E8" : "#222222",
-                }}>
-                  {item.action}
-                </span>
-              </motion.div>
-            ))}
-          </div>
-
-          {/* Progress bar */}
-          <div className="mt-5">
-            <div className="flex justify-between mb-1">
-              <span className="font-mono text-[8px] text-[#444444]">PROGRESS</span>
-              <motion.span
-                className="text-[8px] text-[#666666]"
-                style={{ fontFamily: "var(--font-display)" }}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 2.0 }}
-              >
-                72%
-              </motion.span>
-            </div>
-            <div className="h-[3px] bg-[#1A1A1A] rounded-full overflow-hidden">
-              <motion.div
-                className="h-full bg-[#E8E8E8] rounded-full"
-                initial={{ width: "0%" }}
-                animate={{ width: "72%" }}
-                transition={{ delay: 1.5, duration: 2.0, ease: [0.25, 0.1, 0.25, 1] }}
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-    </motion.div>
-  );
-}
 
 // Hero Section
 
@@ -234,7 +107,7 @@ export function HeroSection() {
       {/* Main content -- 2-column grid on desktop */}
       <div className="relative z-10 mx-auto w-full max-w-[1440px] px-6 sm:px-8 lg:px-16 2xl:px-24">
         <motion.div
-          className="pt-24 lg:pt-32 grid grid-cols-1 lg:grid-cols-[1fr_auto] items-start gap-12 lg:gap-16"
+          className="pt-24 lg:pt-32 grid grid-cols-1 lg:grid-cols-[1fr_auto] items-center gap-12 lg:gap-16"
           style={{ opacity: contentOpacity }}
         >
           {/* Left column -- text content */}
@@ -322,14 +195,14 @@ export function HeroSection() {
             </motion.div>
           </div>
 
-          {/* Right column -- large animated Ouden mark (desktop only) */}
+          {/* Right column -- 3D Ouden ring (desktop only) */}
           <motion.div
-            className="hidden lg:flex items-start justify-center pt-8"
+            className="hidden lg:flex items-center justify-center"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.4, duration: 0.8 }}
           >
-            <AppMockup />
+            <HeroScene />
           </motion.div>
         </motion.div>
       </div>
