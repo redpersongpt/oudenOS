@@ -2,37 +2,126 @@
 
 import { motion, useInView } from "framer-motion";
 import { useReducedMotion } from "framer-motion";
-import { useRef } from "react";
-import {
-  Cpu, Gauge, RotateCcw, Wand2, BarChart3, Settings2,
-  Monitor, Shield, Paintbrush, Layers, Fingerprint, RefreshCcw,
-  ArrowUp
-} from "lucide-react";
+import React, { useRef } from "react";
+import { ArrowUp } from "lucide-react";
+
+// Custom SVG icons — 20x20, stroke-based, currentColor
+function IconCrosshair({ className }: { className?: string }) {
+  return (
+    <svg width={20} height={20} viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth={1.4} strokeLinecap="round" className={className}>
+      <circle cx="10" cy="10" r="6" /><circle cx="10" cy="10" r="2" /><path d="M10 2v4M10 14v4M2 10h4M14 10h4" />
+    </svg>
+  );
+}
+function IconLayers({ className }: { className?: string }) {
+  return (
+    <svg width={20} height={20} viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth={1.4} strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <path d="M10 2L2 7l8 5 8-5-8-5z" /><path d="M2 10l8 5 8-5" /><path d="M2 13l8 5 8-5" />
+    </svg>
+  );
+}
+function IconBarChart({ className }: { className?: string }) {
+  return (
+    <svg width={20} height={20} viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth={1.4} strokeLinecap="round" className={className}>
+      <path d="M4 16V10M8 16V6M12 16V8M16 16V4" />
+    </svg>
+  );
+}
+function IconRotate({ className }: { className?: string }) {
+  return (
+    <svg width={20} height={20} viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth={1.4} strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <path d="M4 10a6 6 0 0110.5-4" /><path d="M16 10a6 6 0 01-10.5 4" /><path d="M14.5 3v3h3" /><path d="M5.5 17v-3h-3" />
+    </svg>
+  );
+}
+function IconSteps({ className }: { className?: string }) {
+  return (
+    <svg width={20} height={20} viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth={1.4} strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <path d="M2 16h4v-4h4V8h4V4h4" /><circle cx="4" cy="16" r="1" fill="currentColor" /><circle cx="8" cy="12" r="1" fill="currentColor" /><circle cx="12" cy="8" r="1" fill="currentColor" /><circle cx="16" cy="4" r="1" fill="currentColor" />
+    </svg>
+  );
+}
+function IconTerminal({ className }: { className?: string }) {
+  return (
+    <svg width={20} height={20} viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth={1.4} strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <rect x="2" y="3" width="16" height="14" rx="2" /><path d="M5 10l3 2-3 2" /><path d="M10 14h5" />
+    </svg>
+  );
+}
+function IconMonitorCheck({ className }: { className?: string }) {
+  return (
+    <svg width={20} height={20} viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth={1.4} strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <rect x="2" y="3" width="16" height="11" rx="2" /><path d="M7 9l2 2 4-4" /><path d="M8 17h4" />
+    </svg>
+  );
+}
+function IconShieldLines({ className }: { className?: string }) {
+  return (
+    <svg width={20} height={20} viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth={1.4} strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <path d="M10 2L3 6v4c0 4.4 3 8 7 10 4-2 7-5.6 7-10V6l-7-4z" /><path d="M7 10h6M7 13h6" />
+    </svg>
+  );
+}
+function IconLock({ className }: { className?: string }) {
+  return (
+    <svg width={20} height={20} viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth={1.4} strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <rect x="4" y="9" width="12" height="8" rx="2" /><path d="M7 9V6a3 3 0 016 0v3" /><circle cx="10" cy="13" r="1" fill="currentColor" />
+    </svg>
+  );
+}
+function IconGrid({ className }: { className?: string }) {
+  return (
+    <svg width={20} height={20} viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth={1.4} strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <rect x="2" y="2" width="7" height="7" rx="1" /><rect x="11" y="2" width="7" height="7" rx="1" /><rect x="2" y="11" width="7" height="7" rx="1" /><rect x="11" y="11" width="7" height="7" rx="1" />
+    </svg>
+  );
+}
+function IconRewind({ className }: { className?: string }) {
+  return (
+    <svg width={20} height={20} viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth={1.4} strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <path d="M4 10a6 6 0 1112 0 6 6 0 01-12 0z" /><path d="M10 7v3l-2 1" /><path d="M4 4v3h3" />
+    </svg>
+  );
+}
+function IconPalette({ className }: { className?: string }) {
+  return (
+    <svg width={20} height={20} viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth={1.4} strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <path d="M10 2a8 8 0 00-1 15.9c1 .1 1.5-.5 1.5-1.2v-1c0-1 .7-1.5 1.2-1.2 2.3 1.2 5.3-.3 5.3-3.5A8 8 0 0010 2z" /><circle cx="7" cy="8" r="1.2" fill="currentColor" /><circle cx="12" cy="7" r="1.2" fill="currentColor" /><circle cx="7" cy="12" r="1.2" fill="currentColor" />
+    </svg>
+  );
+}
+function IconGauge({ className }: { className?: string }) {
+  return (
+    <svg width={20} height={20} viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth={1.4} strokeLinecap="round" className={className}>
+      <path d="M10 18a8 8 0 110-16 8 8 0 010 16z" /><path d="M10 10l3-5" /><circle cx="10" cy="10" r="1.5" fill="currentColor" />
+    </svg>
+  );
+}
 
 const ease = [0.16, 1, 0.3, 1] as const;
 
 const tuningFeatures = [
-  { icon: Cpu,      title: "Scans your actual hardware",    body: "Deep hardware and software analysis before any changes." },
-  { icon: Layers,   title: "15+ tuning modules",        body: "CPU, GPU, memory, storage, network, display, audio, and more." },
-  { icon: BarChart3,title: "Benchmark validation",       body: "Before/after performance comparison for every session." },
-  { icon: RotateCcw,title: "Rollback safety",            body: "Complete snapshots before every change, one-click restore." },
-  { icon: Wand2,    title: "Wizard-guided flow",         body: "Step-by-step optimization — scan, profile, plan, execute, verify." },
-  { icon: Settings2,title: "BIOS guidance",              body: "Profile-aware firmware recommendations for advanced users." },
+  { icon: IconCrosshair, title: "Scans your actual hardware",    body: "Deep hardware and software analysis before any changes." },
+  { icon: IconLayers,    title: "15+ tuning modules",        body: "CPU, GPU, memory, storage, network, display, audio, and more." },
+  { icon: IconBarChart,  title: "Benchmark validation",       body: "Before/after performance comparison for every session." },
+  { icon: IconRotate,    title: "Rollback safety",            body: "Complete snapshots before every change, one-click restore." },
+  { icon: IconSteps,     title: "Wizard-guided flow",         body: "Step-by-step optimization — scan, profile, plan, execute, verify." },
+  { icon: IconTerminal,  title: "BIOS guidance",              body: "Profile-aware firmware recommendations for advanced users." },
 ];
 
 const osFeatures = [
-  { icon: Monitor,     title: "No reinstall needed", body: "Reshape your current Windows — no ISO, no reinstall, no data loss." },
-  { icon: Shield,      title: "150+ reversible actions", body: "Staged cleanup across services, tasks, privacy, startup, and more." },
-  { icon: Fingerprint, title: "Work PC preservation",    body: "Print Spooler, RDP, SMB, Group Policy, VPN — automatically protected." },
-  { icon: Gauge,       title: "8 machine profiles",      body: "Gaming, workstation, office, laptop, low-spec — each gets a different path." },
-  { icon: RefreshCcw,  title: "Full rollback",            body: "Every change creates a snapshot, every action is reversible." },
-  { icon: Paintbrush,  title: "Visual personalization",   body: "Optional dark mode, accent system, taskbar, and Explorer cleanup." },
+  { icon: IconMonitorCheck, title: "No reinstall needed", body: "Reshape your current Windows — no ISO, no reinstall, no data loss." },
+  { icon: IconShieldLines,  title: "150+ reversible actions", body: "Staged cleanup across services, tasks, privacy, startup, and more." },
+  { icon: IconLock,         title: "Work PC preservation",    body: "Print Spooler, RDP, SMB, Group Policy, VPN — automatically protected." },
+  { icon: IconGrid,         title: "8 machine profiles",      body: "Gaming, workstation, office, laptop, low-spec — each gets a different path." },
+  { icon: IconRewind,       title: "Full rollback",            body: "Every change creates a snapshot, every action is reversible." },
+  { icon: IconPalette,      title: "Visual personalization",   body: "Optional dark mode, accent system, taskbar, and Explorer cleanup." },
 ];
 
 // Feature Card
 
 function FeatureCard({ icon: Icon, title, body, delay, inView }: {
-  icon: typeof Cpu;
+  icon: React.ComponentType<{ className?: string }>;
   title: string;
   body: string;
   delay: number;
@@ -43,12 +132,15 @@ function FeatureCard({ icon: Icon, title, body, delay, inView }: {
       initial={{ opacity: 0, y: 24 }}
       animate={inView ? { opacity: 1, y: 0 } : {}}
       transition={{ delay, duration: 0.6, ease }}
-      whileHover={{ y: -4, transition: { duration: 0.2 } }}
+      whileHover={{ y: -6, scale: 1.02, transition: { type: "spring", stiffness: 300, damping: 20 } }}
       className="group border border-[var(--color-border)] rounded-lg p-7 lg:p-8 cursor-default bg-transparent"
     >
-      <div className="mb-4 flex h-9 w-9 items-center justify-center rounded-lg border border-[var(--color-border-subtle)]">
+      <motion.div
+        className="mb-4 flex h-9 w-9 items-center justify-center rounded-lg border border-[var(--color-border-subtle)]"
+        whileHover={{ rotate: 5, transition: { type: "spring", stiffness: 300, damping: 15 } }}
+      >
         <Icon className="h-4 w-4 text-[var(--color-ink-tertiary)]" />
-      </div>
+      </motion.div>
       <h3 className="text-[0.88rem] font-semibold text-[var(--text-primary)] mb-2 group-hover:text-white transition-colors">
         {title}
       </h3>
@@ -285,9 +377,9 @@ function EcosystemIntro() {
             The ecosystem
           </motion.p>
           <motion.h2
-            initial={{ opacity: 0, y: 24 }}
-            animate={inView ? { opacity: 1, y: 0 } : {}}
-            transition={{ delay: 0.1, duration: 0.8, ease }}
+            initial={{ clipPath: "inset(0 100% 0 0)" }}
+            animate={inView ? { clipPath: "inset(0 0% 0 0)" } : {}}
+            transition={{ delay: 0.1, duration: 0.7, ease: [0.25, 0.1, 0.25, 1] }}
             className="text-[clamp(1.8rem,3.5vw,2.8rem)] font-bold tracking-[-0.035em] leading-[1.08] text-[var(--text-primary)]"
             style={{ fontFamily: "var(--font-display)" }}
           >
