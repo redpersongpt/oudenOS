@@ -1,9 +1,7 @@
 <svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="512" height="512" rx="96" fill="#1e1e22"/>
-  <path d="M256 80L432 182v168L256 452 80 350V182L256 80z" fill="#E8254B" opacity="0.15"/>
-  <path d="M256 80L432 182v168L256 452 80 350V182L256 80z" stroke="#E8254B" stroke-width="12" fill="none"/>
-  <circle cx="256" cy="266" r="120" stroke="#E8254B" stroke-width="14" fill="none" opacity="0.45"/>
-  <circle cx="256" cy="266" r="64" fill="#E8254B"/>
-  <path d="M352 172l24-14" stroke="#E8254B" stroke-width="10" stroke-linecap="round" opacity="0.6"/>
-  <path d="M136 172l-24-14" stroke="#E8254B" stroke-width="10" stroke-linecap="round" opacity="0.3"/>
+  <rect width="512" height="512" rx="96" fill="#000000"/>
+  <!-- Open ring arc (gap at ~5 o'clock) -->
+  <path d="M 410.7 330.4 A 163 163 0 1 1 385.5 199.5" stroke="#E8E8E8" stroke-width="40" stroke-linecap="round" fill="none"/>
+  <!-- Accent dot at gap terminus -->
+  <circle cx="385.5" cy="199.5" r="24" fill="#E8E8E8"/>
 </svg>
