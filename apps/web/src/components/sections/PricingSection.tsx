@@ -101,7 +101,7 @@ export function PricingSection() {
               </ul>
 
               <motion.a
-                href="https://github.com/redpersongpt/redcoreOS/releases/latest"
+                href="/downloads"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2.5 rounded-full bg-white px-6 py-4 text-[0.88rem] font-semibold text-black w-full justify-center hover:bg-[#E8E8E8] transition-colors"
