@@ -10,96 +10,98 @@
 
 ---
 
-## Before you start complaining
+## What this is
 
-This is not a "RAM cleaner." This is not a "FPS booster." This is not a batch script someone found on a forum in 2014.
+A 5MB tool that does what you'd spend 4 hours doing manually in regedit — except it won't brick your install because it actually knows what your hardware is before changing anything.
 
-OudenOS scans your machine, classifies your hardware, shows you every single change it plans to make, and lets you approve or reject each one. Creates a restore point before touching anything. Every action is reversible. 5MB installer. Built with Tauri + Rust, not Electron.
+Scans your machine. Classifies it. Shows you the full list. You pick what stays and what goes. Restore point before every change. Done.
 
-The entire source code is right here. Read it or don't.
+No account. No internet required. No background process. Closes when you close it.
 
 ## What it actually changes
 
-<details>
-<summary><b>Privacy</b> — 70+ telemetry endpoints blocked</summary>
+Most "optimization guides" on YouTube tell you to paste registry commands without explaining what they do. Here's what this tool touches, and why.
 
-- Kills DiagTrack, dmwappushservice, Connected User Experiences
+<details>
+<summary><b>Privacy</b> — because Windows ships with 70+ telemetry endpoints enabled by default and most people don't even know</summary>
+
+- Disables DiagTrack, dmwappushservice, Connected User Experiences
 - Removes Copilot, Recall, activity history, clipboard cloud sync
-- Blocks ~70 telemetry hostnames via hosts file
+- Blocks ~70 known telemetry hostnames via hosts file
 - Disables advertising ID, location tracking, speech data collection
-- Removes Start menu "suggestions" (ads)
+- Removes Start menu "suggestions" (they're ads, Microsoft just doesn't call them that)
 
-Registry keys under `HKLM\SOFTWARE\Policies\Microsoft\Windows\DataCollection`. Not magic. [See the playbooks.](https://github.com/redpersongpt/oudenECO/tree/main/playbooks/privacy)
+Registry keys under `HKLM\SOFTWARE\Policies\Microsoft\Windows\DataCollection`. [See the playbooks.](https://github.com/redpersongpt/oudenECO/tree/main/playbooks/privacy)
 </details>
 
 <details>
-<summary><b>Performance</b> — timer, scheduler, memory</summary>
+<summary><b>Performance</b> — the stuff that actually matters and nobody bothers to check</summary>
 
-- Timer resolution → 0.5ms (`bcdedit useplatformtick`)
-- Core parking disabled for consistent thread scheduling
-- MMCSS configured for multimedia/gaming priority
-- Memory compression disabled (trades RAM for CPU cycles)
-- NDU memory leak fixed (NetworkDataUsageMonitor)
-- SysMain/Superfetch disabled
-- High Performance power plan activated
+- Timer resolution → 0.5ms (your system runs at 15.6ms by default. Yes, really.)
+- Core parking disabled — Windows loves to park cores for "power savings" on desktop PCs that are plugged into a wall
+- MMCSS configured for multimedia/gaming thread priority
+- Memory compression disabled — a "feature" that trades your RAM speed for CPU cycles to "save memory" on machines with 32GB
+- NDU memory leak fixed — a known Windows bug that Microsoft hasn't patched since 2018
+- SysMain/Superfetch — preloads apps you "might" open. Great idea in 2008 with a hard drive. Pointless with an NVMe.
 
-Registry edits under `HKLM\SYSTEM\CurrentControlSet`. Nothing you couldn't do manually in regedit. This just does it without you fat-fingering a DWORD.
+`HKLM\SYSTEM\CurrentControlSet`. Standard registry edits. Nothing you couldn't do yourself if you knew where to look.
 </details>
 
 <details>
-<summary><b>Gaming</b> — GPU, input lag, overlays</summary>
+<summary><b>Gaming</b> — because Game Bar is recording your screen right now and you probably don't know</summary>
 
-- Game DVR/Game Bar background recording → off
-- Multi-Plane Overlay (MPO) → off (fixes stuttering on affected hardware, does nothing on unaffected — the tool tells you which)
+- Game DVR/Game Bar background recording → off (yes, it's on by default. Yes, it uses GPU resources.)
+- Multi-Plane Overlay (MPO) → off on affected hardware. Some GPU/monitor combos stutter with it. Others don't. The tool checks.
 - Legacy flip model for DirectX
-- GPU telemetry blocked (NVIDIA/AMD)
-- HAGS control
+- GPU telemetry blocked — your graphics driver phones home too
+- HAGS control — Hardware Accelerated GPU Scheduling. Sometimes helps. Sometimes doesn't. Depends on your GPU.
 
-MPO disable is controversial. Some people swear by it, some say it's placebo. If your hardware stutters with it on, turn it off. If it doesn't, leave it. The tool doesn't force anything.
+None of this is controversial. Most of it is in every "gaming optimization" guide. The difference is this tool checks your hardware first instead of blindly applying everything.
 </details>
 
 <details>
-<summary><b>Services</b> — 40+ background processes</summary>
+<summary><b>Services</b> — Windows runs 280+ services by default. You need about 60 of them.</summary>
 
-Examples:
-- `DiagTrack` — telemetry. Off.
-- `dmwappushservice` — WAP push routing. Off.
-- `WSearch` — Windows Search indexer. Optional.
-- `SysMain` — Superfetch. Off.
-- `MapsBroker`, `lfsvc`, `RetailDemo` — bloat. Off.
+Disables things like:
+- `DiagTrack` — telemetry collector
+- `dmwappushservice` — WAP push routing (you don't have a WAP phone)
+- `WSearch` — indexer that thrashes your disk to make Cortana search 0.2 seconds faster
+- `SysMain` — see above
+- `MapsBroker` — offline maps. For your desktop.
+- `RetailDemo` — turns your PC into a Best Buy display model
 
-**Windows Error Reporting (`WerSvc`)** — optional, off by default in the UI. Listed because some users want it gone. If you need crash reports, leave it on. The tool shows you what each service does before you decide. Nobody's forcing anything.
+**WerSvc (Windows Error Reporting)** — optional, off by default. Some people in comment sections lose their minds about this one. If you need crash reports, leave it on. It's a toggle, not a mandate.
 
-Work PC profiles keep Print Spooler, RDP, SMB, Group Policy running. Because we're not insane.
+Work PC profiles automatically keep Print Spooler, RDP, SMB, Group Policy, VPN services running. Because unlike some tools, this one checks what you actually need before removing it.
 </details>
 
 <details>
-<summary><b>Shell</b> — UI cleanup</summary>
+<summary><b>Shell</b> — the visual garbage</summary>
 
-- Removes Start menu ads
-- Restores classic right-click (Win11)
-- Hides widgets
-- Cleans taskbar (Chat, News, Search highlights → gone)
-- Optional dark mode, accent color, Explorer tweaks
+- Start menu ads → gone
+- Classic right-click restored (Win11 users know the pain)
+- Widgets panel → hidden
+- Taskbar: Chat, News, Search highlights → removed
+- Optional: dark mode, accent color, Explorer tweaks
 </details>
 
 <details>
-<summary><b>Network</b> — latency</summary>
+<summary><b>Network</b> — Nagle's algorithm is enabled by default. Look it up.</summary>
 
-- Nagle's algorithm → off
-- QoS packet scheduler adjusted
+- Nagle disabled — buffers your packets "for efficiency." Great for file transfers in 1984. Bad for gaming in 2026.
+- QoS adjusted
 - TCP/UDP offloading control
 - Network throttling index disabled
 </details>
 
 <details>
-<summary><b>Security</b> — expert only</summary>
+<summary><b>Security</b> — expert only, locked by default</summary>
 
-- VBS/HVCI control
+- VBS/HVCI control (costs 5-15% CPU performance on some systems. Microsoft doesn't mention this.)
 - Defender management
-- CPU mitigations toggle
+- CPU mitigations toggle (Spectre/Meltdown patches — the ones that cost 2-8% performance)
 
-Locked behind expert mode. If you don't know what VBS is, you won't see these options.
+If you don't know what VBS is, you won't see these options. They're behind an expert gate for a reason.
 </details>
 
 ## What it does NOT do
@@ -108,75 +110,60 @@ Locked behind expert mode. If you don't know what VBS is, you won't see these op
 - Install drivers
 - Touch your documents, apps, or games
 - Require internet
-- Phone home or collect any data
-- Run in the background after you close it
+- Collect any data whatsoever
+- Run in the background
 - Ask you to create an account
+- Claim it'll give you 200 extra FPS
 
-## Architecture
+## How it works
 
 ```
-5MB Tauri installer
-├── React UI (14-step wizard)
-└── Rust service (privileged)
-      Registry edits, service toggles,
-      restore points, rollback
+SCAN      → reads your hardware, services, startup items
+CLASSIFY  → figures out if you're a gaming PC, work laptop, VM, etc.
+PLAN      → builds an action list based on YOUR machine, not a generic preset
+EXECUTE   → applies changes one by one, restore point first
+VALIDATE  → confirms what changed, generates a report
 ```
 
-Not Electron. Not a 150MB web browser pretending to be a desktop app. Tauri compiles to native with a Rust backend. The privileged service runs as admin to make system changes. The UI is just a wizard.
+Built with Tauri (Rust backend, React frontend). 5MB installer. The privileged Rust service does the actual system modifications. The UI is just a wizard.
 
 ### Playbooks
 
-Every optimization is defined in [YAML playbooks](https://github.com/redpersongpt/oudenECO/tree/main/playbooks). 40 files:
+Every single optimization is defined in [readable YAML files](https://github.com/redpersongpt/oudenECO/tree/main/playbooks). 40 files across 10 categories. Every action documents: what it does, the risk level, and how to undo it.
 
-```
-playbooks/
-  appx/           Copilot, widgets, bloatware removal
-  networking/     TCP/UDP, Nagle, offloading
-  performance/    Timer, scheduler, memory, power
-  privacy/        Telemetry, tracking, ads
-  security/       VBS, Defender (expert-only)
-  services/       Background service management
-  shell/          Context menu, taskbar, Start menu
-  startup/        Boot optimization
-  tasks/          Scheduled task cleanup
-  personalization/ Dark mode, accent, Explorer
-```
-
-Every action has: what it does, risk level, category, and how to undo it. Nothing hidden. Read every line if you want.
+You can read every line of what this tool will do to your system before you run it. That's the point.
 
 ## 8 Profiles
 
-| Profile | Keeps | Removes |
-|---------|-------|---------|
-| Gaming Desktop | DirectX, GPU services | Everything non-essential |
-| Work PC | Print Spooler, RDP, SMB, VPN, Group Policy | Ads, telemetry only |
-| Workstation | Pro tools, Hyper-V | Consumer bloatware |
-| Office Laptop | Battery optimization, WiFi | Background drain |
-| Gaming Laptop | GPU + battery balance | Services, telemetry |
-| Low-spec | Nothing sacred | Everything possible |
-| VM | Minimal touch | Telemetry only |
-| Budget Desktop | Essential drivers | Bloatware, visual effects |
+| Profile | What it protects | How aggressive |
+|---------|-----------------|----------------|
+| Gaming Desktop | GPU services, DirectX | Full cleanup |
+| Work PC | Print, RDP, SMB, VPN, Group Policy | Conservative — telemetry + ads only |
+| Workstation | Pro tools, Hyper-V | Moderate |
+| Office Laptop | Battery, WiFi | Moderate + power optimization |
+| Gaming Laptop | GPU + battery balance | Moderate |
+| Low-spec | Nothing | Maximum cleanup |
+| VM | Everything | Telemetry only |
+| Budget Desktop | Essential drivers | Aggressive cleanup |
 
 ## Requirements
 
 - Windows 10 (21H2+) or Windows 11
-- x64
-- Admin privileges
-- 500 MB free disk
+- x64, admin, 500 MB free
 
-## FAQ
+## "But..."
 
-**"Is this AI-generated?"**
-Parts of it were written with AI. The Rust service that touches your system was written with care. The playbooks were manually researched against Microsoft documentation. The entire source is here — read it and decide for yourself. That's literally the point of open source.
+**"Is this AI code?"**
+Partially. The playbooks were researched against Microsoft documentation and tested on real hardware. The Rust backend was written carefully. The source is right here — that's what open source means.
 
-**"Why not Chris Titus / Schneegans / manual regedit?"**
-Use whatever works for you. This exists for people who want a guided wizard with per-action rollback instead of running scripts they can't easily undo.
-
-**"Why should I trust random software with admin access?"**
-You shouldn't. Read the [playbooks](https://github.com/redpersongpt/oudenECO/tree/main/playbooks). Read the [Rust service](https://github.com/redpersongpt/oudenECO/tree/main/services/os-service). Run it in a VM first. Or don't use it. Your machine, your choice.
+**"I use Chris Titus / Schneegans / manual regedit"**
+Good. Those work. This is for people who want guided per-action rollback instead of hoping a PowerShell script doesn't break something they need.
 
 **"No code signing?"**
-Costs $300+/year. Not there yet. SmartScreen will complain — right-click → Properties → Unblock, or "More info" → "Run anyway." Source is public if you want to build it yourself.
+$300/year. Not yet. SmartScreen will flag it. Right-click → Properties → Unblock. Or build from source.
+
+**"Why should I trust this?"**
+You shouldn't trust any software blindly. [Read the playbooks](https://github.com/redpersongpt/oudenECO/tree/main/playbooks). [Read the Rust service](https://github.com/redpersongpt/oudenECO/tree/main/services/os-service). Run it in a VM. Or don't. Your call.
 
 ## License
 
