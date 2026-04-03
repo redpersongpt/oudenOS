@@ -17,7 +17,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/redcore-logo.png",
+        url: "/og-image.png",
         width: 1200,
         height: 360,
         alt: "Ouden logo",
