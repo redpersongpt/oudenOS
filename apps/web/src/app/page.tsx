@@ -17,7 +17,7 @@ export default function Home() {
       <main className="relative" style={{ zIndex: 2 }}>
         <LandingChrome />
         <HeroSection />
-        <SectionSeparator label="How it works" note="Four steps, full control" />
+        <SectionSeparator label="How it works" note="Five steps, full control" />
         <HowItWorksSection />
         <SectionSeparator label="The ecosystem" note="Two products, one system" />
         <EcosystemSection />
