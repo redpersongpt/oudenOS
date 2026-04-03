@@ -13,10 +13,14 @@ actions:
     risk: low
     tier: premium
     default: false
+    expertOnly: true
     requiresReboot: false
     reversible: true
     estimatedSeconds: 3
-    blockedProfiles: []
+    blockedProfiles:
+      - office_laptop
+      - gaming_laptop
+      - work_pc
     registryChanges:
       - hive: HKLM
         path: "SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters\\Interfaces\\<Interface GUID>"
@@ -35,11 +39,16 @@ actions:
     rationale: "For typical online gaming (~300 KB/s), 1-2 queues is sufficient. Over-allocating RSS queues wastes CPU resources."
     risk: low
     tier: premium
-    default: true
+    default: false
+    expertOnly: true
     requiresReboot: false
     reversible: true
     estimatedSeconds: 3
-    blockedProfiles: []
+    blockedProfiles:
+      - office_laptop
+      - gaming_laptop
+      - work_pc
+      - low_spec_system
     registryChanges:
       - hive: HKLM
         path: "SYSTEM\\CurrentControlSet\\Control\\Class\\{4d36e972-e325-11ce-bfc1-08002be10318}\\<Adapter Index>"
@@ -50,8 +59,8 @@ actions:
   - id: network.disable-offloading
     name: "Disable NIC Offloading"
     description: "Disable TCP/UDP checksum offload, Large Send Offload, flow control, and power-saving features on the active NIC. Reduces packet processing latency at the cost of higher CPU usage."
-    rationale: "NIC offloading delegates packet processing to the NIC hardware, which adds latency. For competitive gaming and low-latency workloads, CPU-side processing is faster. Not recommended for general use."
-    risk: medium
+    rationale: "NIC offloading delegates packet processing to the NIC hardware, which adds latency. For competitive gaming and low-latency workloads, CPU-side processing is faster. WARNING: Can kill network connectivity on some hardware. Desktop-only."
+    risk: high
     tier: free
     default: false
     expertOnly: true
@@ -61,7 +70,10 @@ actions:
     blockedProfiles:
       - work_pc
       - office_laptop
+      - gaming_laptop
       - low_spec_system
+      - budget_desktop
+      - vm_cautious
     warningMessage: "Increases CPU usage during network activity. May cause connectivity issues on some NICs. Benchmark before and after. Revert immediately if you lose network connectivity."
     powerShellCommands:
       - |
