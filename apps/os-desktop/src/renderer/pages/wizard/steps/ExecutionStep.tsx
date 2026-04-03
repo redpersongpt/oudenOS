@@ -1,3 +1,7 @@
+// Execution Step
+// Live execution screen. No bottom bar (WizardShell suppresses it).
+// Reads included actions from resolvedPlaybook, executes each via IPC.
+// Calls execute.applyAction for each action via the platform service bridge.
 
 import { useEffect, useRef, useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -10,7 +14,10 @@ import { getActionRationale } from "@/lib/expert-rationale";
 import { resolveEffectivePersonalization } from "@/lib/personalization-resolution";
 import { buildExecutionJournalContext } from "@/lib/package-journal";
 
+// Spinning quotes — personality while you wait
+
 const SPINNING_QUOTES = [
+  // Windows roasts
   "petting windows gently...",
   "convincing Cortana to retire...",
   "teaching Windows what \"no\" means...",
@@ -41,6 +48,7 @@ const SPINNING_QUOTES = [
   "removing the widget panel of doom...",
   "no Clippy, I don't need help...",
 
+  // Funny tech
   "tweaking your package ( \u0361\u00b0 \u035c\u0296 \u0361\u00b0)",
   "optimizing bits and bytes...",
   "making your RAM feel appreciated...",
@@ -63,6 +71,7 @@ const SPINNING_QUOTES = [
   "rm -rf /bloat...",
   "git commit -m \"bye bloat\"...",
 
+  // Personality
   "im poor donate plz \ud83d\ude4f",
   "this is what freedom feels like...",
   "every byte counts when you're debloating...",
@@ -99,6 +108,8 @@ const SPINNING_QUOTES = [
   "plot twist: Windows was the malware all along...",
 ];
 
+// Types
+
 interface ExecutableAction {
   id: string;
   name: string;
@@ -120,6 +131,8 @@ interface AppInstallProgress {
   installed: number;
   failed: number;
 }
+
+// Timeline item
 
 function TimelineItem({ action }: { action: CompletedAction }) {
   const failed = action.status === "failed";
@@ -163,6 +176,8 @@ function TimelineItem({ action }: { action: CompletedAction }) {
   );
 }
 
+// Spinning Quote
+
 function SpinningQuote({ isActive }: { isActive: boolean }) {
   const [idx, setIdx] = useState(() => Math.floor(Math.random() * SPINNING_QUOTES.length));
 
@@ -196,6 +211,8 @@ function SpinningQuote({ isActive }: { isActive: boolean }) {
   );
 }
 
+// Component
+
 export function ExecutionStep() {
   const { detectedProfile, resolvedPlaybook, selectedAppIds, personalization, demoMode, completeStep, setExecutionResult, setResolvedPlaybook } = useWizardStore();
   const answers = useDecisionsStore((state) => state.answers);
@@ -205,6 +222,7 @@ export function ExecutionStep() {
     [answers, detectedProfile?.id, personalization],
   );
 
+  // Build action queue from resolved playbook
   const actionQueue = useMemo<ExecutableAction[]>(() => {
     if (!resolvedPlaybook) return [];
     const provenanceByAction = new Map(
@@ -262,6 +280,7 @@ export function ExecutionStep() {
 
       addLogEntry({ level: "info", category: "Execution", message: `Starting execution with ${actionQueue.length} actions, ${selectedAppIds.length} apps` });
 
+      // Create DB-backed execution plan (service ledger)
       const planId = playbook.packageRefs?.planId ?? `plan-${Date.now()}`;
       try {
         const ledgerActions = actionQueue.map((action, idx) => ({
@@ -300,6 +319,7 @@ export function ExecutionStep() {
         console.warn("[ExecutionStep] Failed to create DB ledger plan (non-fatal):", e);
       }
 
+      // Phase 1: Apply playbook actions
       for (let i = 0; i < actionQueue.length; i++) {
         if (controller.signal.aborted) return;
         const action = actionQueue[i];
@@ -310,6 +330,7 @@ export function ExecutionStep() {
         setCurrentActionId(action.id);
         setCurrentPhase(action.phase);
 
+        // Mark started in DB ledger
         serviceCall("ledger.markStarted", { planId, actionId: action.id }).catch(() => {});
 
         addLogEntry({ level: "info", category: "Action", message: `Starting: ${action.name}`, details: `actionId=${action.id}, phase=${action.phase}` });
@@ -328,6 +349,7 @@ export function ExecutionStep() {
           const nestedFailures = typeof result.data.failed === "number" ? result.data.failed : 0;
           status = rpcStatus === "success" && nestedFailures === 0 ? "applied" : "failed";
           if (status === "failed") {
+            // Extract the real error from service response
             errorMessage =
               (typeof result.data.error === "string" ? result.data.error : null)
               ?? (typeof result.data.message === "string" ? result.data.message : null)
@@ -335,6 +357,7 @@ export function ExecutionStep() {
               ?? `Action returned status="${rpcStatus}" with ${nestedFailures} nested failure(s)`;
           }
         } else if (demoMode) {
+          // Explicit demo mode only — never fake success in the real runtime.
           await new Promise<void>((resolve) => {
             timerRef.current = setTimeout(resolve, 80 + Math.random() * 120);
           });
@@ -352,6 +375,7 @@ export function ExecutionStep() {
           addLogEntry({ level: "success", category: "Action", message: `Applied: ${action.name}` });
         }
 
+        // Record result in DB ledger (fire-and-forget)
         serviceCall("ledger.recordResult", {
           planId,
           result: {
@@ -408,6 +432,7 @@ export function ExecutionStep() {
 
       if (controller.signal.aborted) return;
 
+      // Phase 2: Apply personalization
       addLogEntry({ level: "info", category: "Personalization", message: "Applying personalization settings" });
       let personalizationFailed = false;
       let personalizationApplied = false;
@@ -471,6 +496,7 @@ export function ExecutionStep() {
       ]);
       operationIndex += 1;
 
+      // Phase 3: Install selected apps
       if (selectedAppIds.length > 0) {
         addLogEntry({ level: "info", category: "Apps", message: `Installing ${selectedAppIds.length} selected apps` });
       }
@@ -581,8 +607,10 @@ export function ExecutionStep() {
 
       if (controller.signal.aborted) return;
 
+      // Done: complete ledger plan, then read authoritative final state
       await serviceCall("ledger.completePlan", { planId }).catch(() => {});
 
+      // Query ledger for authoritative final counts — fail loud if unavailable
       const ledgerResult = await serviceCall<{
         totalCompleted?: number;
         totalFailed?: number;
@@ -653,6 +681,7 @@ export function ExecutionStep() {
     exec().catch((err) => {
       console.error("[ExecutionStep] Unexpected execution error:", err);
       addLogEntry({ level: "error", category: "Execution", message: "Unexpected execution error", details: err instanceof Error ? err.message : String(err) });
+      // Treat as complete with all failed so the wizard can still advance
       setExecutionResult({
         applied: 0,
         failed: actionQueue.length,
@@ -675,8 +704,10 @@ export function ExecutionStep() {
       controller.abort();
       if (timerRef.current) clearTimeout(timerRef.current);
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // No playbook = nothing to execute (checked before useEffect starts)
   if (!resolvedPlaybook) {
     return (
       <div className="flex h-full flex-col items-center justify-center gap-3 px-8">
@@ -688,10 +719,10 @@ export function ExecutionStep() {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 8 }}
+      initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -8 }}
-      transition={{ duration: 0.22, ease: [0.0, 0.0, 0.2, 1.0] }}
+      transition={{ duration: 0.35, ease: [0.25, 0.1, 0.25, 1] }}
       className="flex h-full flex-col items-center justify-center gap-5 px-8"
     >
       {/* Header */}

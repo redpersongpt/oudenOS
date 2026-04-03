@@ -1,3 +1,11 @@
+// ─── redcore-os-service ─────────────────────────────────────────────────────
+// Privileged orchestration daemon for redcore-OS.
+// Communicates with the Electron shell via JSON-RPC over stdio.
+//
+// ARCHITECTURE:
+// - All privileged operations happen here (registry, WMI, services, AppX)
+// - The Electron renderer never touches system APIs
+// - State persisted in SQLite (assessments, classifications, rollback, audit)
 
 pub mod appbundle;
 mod assessor;
@@ -19,6 +27,8 @@ use tracing_subscriber::{fmt, EnvFilter};
 
 #[tokio::main]
 async fn main() -> Result<()> {
+    // Initialize structured logging — MUST write to stderr, not stdout.
+    // stdout is reserved exclusively for JSON-RPC responses to Electron.
     fmt()
         .with_writer(std::io::stderr)
         .with_env_filter(
@@ -31,11 +41,14 @@ async fn main() -> Result<()> {
 
     tracing::info!("redcore-os-service starting");
 
+    // Initialize database
     let db = db::Database::init()?;
     tracing::info!("Database initialized at {:?}", db.path());
 
+    // One-time migration: import legacy sidecar journal into DB ledger
     migrate::import_legacy_sidecar(&db);
 
+    // Start IPC server
     ipc::serve(db).await?;
 
     Ok(())

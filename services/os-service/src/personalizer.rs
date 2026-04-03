@@ -1,3 +1,7 @@
+// ─── Visual Personalization Engine ──────────────────────────────────────────
+// Applies safe, reversible visual customizations to Windows.
+// All changes are registry/API-based — no system file patching.
+// Every change is captured in a rollback snapshot BEFORE application.
 
 use crate::db::Database;
 use crate::rollback;
@@ -10,6 +14,8 @@ const REDCORE_ACCENT_BGR: u32 = 0x004B25E8;
 #[cfg(windows)]
 const REDCORE_DWM_ACCENT: u32 = 0xC44B25E8;
 
+/// Returns a JSON description of what personalization will be applied
+/// for the given device profile.
 pub fn get_personalization_options(profile: &str) -> Value {
     tracing::info!(profile = profile, "Querying personalization options");
 
@@ -62,6 +68,9 @@ pub fn get_personalization_options(profile: &str) -> Value {
     }
 }
 
+/// Apply visual personalization for the given profile.
+/// Creates a rollback snapshot BEFORE any changes, then applies each change.
+/// `options` can override which personalization features to apply.
 pub fn apply_personalization(
     db: &Database,
     profile: &str,
@@ -71,6 +80,7 @@ pub fn apply_personalization(
 
     let opts = get_personalization_options(profile);
 
+    // Merge caller overrides on top of profile defaults
     let dark_mode = options
         .get("darkMode")
         .and_then(|v| v.as_bool())
@@ -104,8 +114,11 @@ pub fn apply_personalization(
         transparency = false;
     }
 
+    // ── Phase 1: Collect current values for rollback ────────────────────
+
     let mut previous_values: Vec<rollback::PreviousValue> = Vec::new();
 
+    // Dark mode values
     if dark_mode {
         collect_registry_prev(
             &mut previous_values,
@@ -123,6 +136,7 @@ pub fn apply_personalization(
         );
     }
 
+    // Accent color values
     if brand_accent {
         collect_registry_prev(
             &mut previous_values,
@@ -161,6 +175,7 @@ pub fn apply_personalization(
         );
     }
 
+    // Wallpaper values
     if wallpaper {
         collect_registry_prev(
             &mut previous_values,
@@ -178,6 +193,7 @@ pub fn apply_personalization(
         );
     }
 
+    // Transparency
     if transparency {
         collect_registry_prev(
             &mut previous_values,
@@ -188,6 +204,7 @@ pub fn apply_personalization(
         );
     }
 
+    // Taskbar cleanup
     if taskbar_cleanup {
         collect_registry_prev(
             &mut previous_values,
@@ -219,6 +236,7 @@ pub fn apply_personalization(
         );
     }
 
+    // Explorer cleanup
     if explorer_cleanup {
         collect_registry_prev(
             &mut previous_values,
@@ -250,6 +268,8 @@ pub fn apply_personalization(
         );
     }
 
+    // ── Phase 2: Create rollback snapshot BEFORE making changes ─────────
+
     let snapshot_id = rollback::create_snapshot(
         db,
         "personalization",
@@ -263,10 +283,13 @@ pub fn apply_personalization(
         "Personalization rollback snapshot created"
     );
 
+    // ── Phase 3: Apply changes ──────────────────────────────────────────
+
     let mut results: Vec<Value> = Vec::new();
     let mut succeeded = 0u32;
     let mut failed = 0u32;
 
+    // Dark mode
     if dark_mode {
         apply_and_record(
             "darkMode",
@@ -277,6 +300,7 @@ pub fn apply_personalization(
         );
     }
 
+    // Accent color
     if brand_accent {
         apply_and_record(
             "brandAccent",
@@ -287,6 +311,7 @@ pub fn apply_personalization(
         );
     }
 
+    // Wallpaper
     if wallpaper {
         apply_and_record(
             "wallpaper",
@@ -297,6 +322,7 @@ pub fn apply_personalization(
         );
     }
 
+    // Transparency
     if transparency {
         apply_and_record(
             "transparency",
@@ -306,6 +332,7 @@ pub fn apply_personalization(
             apply_transparency(true),
         );
     } else if profile == "low_spec_system" {
+        // Explicitly disable transparency for low-spec to save GPU
         apply_and_record(
             "transparency",
             &mut results,
@@ -315,6 +342,7 @@ pub fn apply_personalization(
         );
     }
 
+    // Taskbar cleanup
     if taskbar_cleanup {
         apply_and_record(
             "taskbarCleanup",
@@ -325,6 +353,7 @@ pub fn apply_personalization(
         );
     }
 
+    // Explorer cleanup
     if explorer_cleanup {
         apply_and_record(
             "explorerCleanup",
@@ -344,6 +373,8 @@ pub fn apply_personalization(
             refresh_shell_ui(),
         );
     }
+
+    // ── Phase 4: Audit log ──────────────────────────────────────────────
 
     let status = if failed == 0 {
         "success"
@@ -388,6 +419,7 @@ pub fn apply_personalization(
     }))
 }
 
+/// Revert a personalization by restoring its rollback snapshot.
 pub fn revert_personalization(
     db: &Database,
     snapshot_id: &str,
@@ -398,6 +430,8 @@ pub fn revert_personalization(
     );
     rollback::restore_snapshot(db, snapshot_id)
 }
+
+// ─── Helpers ────────────────────────────────────────────────────────────────
 
 fn collect_registry_prev(
     previous_values: &mut Vec<rollback::PreviousValue>,
@@ -442,6 +476,8 @@ fn apply_and_record(
         }
     }
 }
+
+// ─── Windows implementations ────────────────────────────────────────────────
 
 #[cfg(windows)]
 fn apply_dark_mode() -> anyhow::Result<()> {
@@ -517,6 +553,8 @@ fn apply_accent_color() -> anyhow::Result<()> {
 
 #[cfg(windows)]
 fn apply_wallpaper() -> anyhow::Result<()> {
+    // Use a solid-color branded wallpaper path. The actual wallpaper file
+    // is bundled with the installer at a known location.
     let wallpaper_path = std::env::var("LOCALAPPDATA")
         .unwrap_or_else(|_| "C:\\ProgramData".to_string());
     let wallpaper_path = format!("{}\\redcore-os\\assets\\wallpaper.png", wallpaper_path);
@@ -759,6 +797,8 @@ fn read_registry_value(hive: &str, path: &str, value_name: &str) -> Option<Value
     }
 }
 
+// ─── Non-Windows simulation ─────────────────────────────────────────────────
+
 #[cfg(not(windows))]
 fn apply_dark_mode() -> anyhow::Result<()> {
     tracing::info!("[simulated] Would enable dark mode (AppsUseLightTheme=0, SystemUsesLightTheme=0)");
@@ -805,6 +845,8 @@ fn refresh_shell_ui() -> anyhow::Result<()> {
 fn read_registry_value(_hive: &str, _path: &str, _value_name: &str) -> Option<Value> {
     Some(serde_json::json!(1))
 }
+
+// ─── Tests ──────────────────────────────────────────────────────────────────
 
 #[cfg(test)]
 mod tests {

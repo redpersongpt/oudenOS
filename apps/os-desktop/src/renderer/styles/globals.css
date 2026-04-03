@@ -5,9 +5,9 @@
 @tailwind utilities;
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   redcore OS — Design System
+   OudenOS — Design System
 
-   OLED black (#000). White data. Red signal.
+   OLED black (#000). White data. Monochrome.
    Doto display. Space Grotesk body. Space Mono labels.
    No shadows. No gradients. No blur. Flat surfaces, border separation.
    ═══════════════════════════════════════════════════════════════════════════ */
@@ -22,8 +22,8 @@
   --text-secondary: #999999;
   --text-primary: #E8E8E8;
   --text-display: #FFFFFF;
-  --accent: #E8254B;
-  --accent-subtle: rgba(232,37,75,0.15);
+  --accent: #E8E8E8;
+  --accent-subtle: rgba(255,255,255,0.1);
   --success: #4A9E5C;
   --warning: #D4A843;
   --interactive: #5B9BF6;

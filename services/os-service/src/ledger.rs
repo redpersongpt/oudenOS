@@ -1,7 +1,13 @@
+// ─── Execution Ledger ───────────────────────────────────────────────────────
+// DB-backed execution plan, queue, and ledger.
+// This is the authoritative source of execution truth across reboot boundaries.
+// Replaces the JSON sidecar file (resume-journal.json) with real SQLite tables.
 
 use crate::db::Database;
 use anyhow::Result;
 use serde::{Deserialize, Serialize};
+
+// ─── Types ──────────────────────────────────────────────────────────────────
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PackageIdentity {
@@ -42,6 +48,8 @@ pub struct ActionResult {
     pub duration_ms: Option<i64>,
 }
 
+// ─── Plan creation ──────────────────────────────────────────────────────────
+
 pub fn create_plan(
     db: &Database,
     package: &PackageIdentity,
@@ -73,6 +81,7 @@ pub fn create_plan(
         ],
     )?;
 
+    // Insert all actions into the queue
     for action in actions {
         let id = format!("q-{}-{}", package.plan_id, action.action_id);
         let question_keys_json = serde_json::to_string(&action.question_keys)?;
@@ -106,6 +115,7 @@ pub fn create_plan(
             ],
         )?;
 
+        // Ledger: enqueued event
         append_ledger_event(
             db,
             &package.plan_id,
@@ -127,6 +137,8 @@ pub fn create_plan(
 
     Ok(package.plan_id.clone())
 }
+
+// ─── Record action result ───────────────────────────────────────────────────
 
 pub fn record_action_result(
     db: &Database,
@@ -186,6 +198,8 @@ pub fn record_action_result(
     Ok(())
 }
 
+// ─── Mark action as started ─────────────────────────────────────────────────
+
 pub fn mark_action_started(db: &Database, plan_id: &str, action_id: &str) -> Result<()> {
     let now = chrono::Utc::now().to_rfc3339();
 
@@ -199,14 +213,20 @@ pub fn mark_action_started(db: &Database, plan_id: &str, action_id: &str) -> Res
     Ok(())
 }
 
+// ─── Mark actions awaiting reboot ───────────────────────────────────────────
+
 pub fn mark_reboot_pending(db: &Database, plan_id: &str, reason: &str) -> Result<()> {
     let now = chrono::Utc::now().to_rfc3339();
 
+    // Mark the plan as paused_reboot
     db.conn().execute(
         "UPDATE execution_plans SET status = 'paused_reboot', reboot_reason = ?1, updated_at = ?2
          WHERE id = ?3",
         rusqlite::params![reason, now, plan_id],
     )?;
+
+    // All queued (remaining) actions stay as-is — they form the persisted remaining queue
+    // The service owns this queue and will re-dispatch on resume
 
     append_ledger_event(
         db,
@@ -223,6 +243,8 @@ pub fn mark_reboot_pending(db: &Database, plan_id: &str, reason: &str) -> Result
     tracing::info!(plan_id = plan_id, reason = reason, "Plan marked paused_reboot in DB ledger");
     Ok(())
 }
+
+// ─── Resume: get remaining queue ────────────────────────────────────────────
 
 pub fn get_remaining_queue(db: &Database, plan_id: &str) -> Result<Vec<QueueEntry>> {
     let mut stmt = db.conn().prepare(
@@ -276,9 +298,12 @@ pub struct QueueEntry {
     pub inclusion_reason: Option<String>,
 }
 
+// ─── Resume execution ───────────────────────────────────────────────────────
+
 pub fn resume_plan(db: &Database, plan_id: &str) -> Result<ResumeResult> {
     let now = chrono::Utc::now().to_rfc3339();
 
+    // Update plan status
     db.conn().execute(
         "UPDATE execution_plans SET status = 'running', last_resume_at = ?1, updated_at = ?1
          WHERE id = ?2",
@@ -287,6 +312,7 @@ pub fn resume_plan(db: &Database, plan_id: &str) -> Result<ResumeResult> {
 
     let remaining = get_remaining_queue(db, plan_id)?;
 
+    // Load package identity
     let package = load_plan_package(db, plan_id)?;
 
     append_ledger_event(
@@ -321,6 +347,8 @@ pub struct ResumeResult {
     pub package: Option<PackageIdentity>,
 }
 
+// ─── Complete plan ──────────────────────────────────────────────────────────
+
 pub fn complete_plan(db: &Database, plan_id: &str) -> Result<()> {
     let now = chrono::Utc::now().to_rfc3339();
 
@@ -334,6 +362,8 @@ pub fn complete_plan(db: &Database, plan_id: &str) -> Result<()> {
     Ok(())
 }
 
+// ─── Cancel plan ────────────────────────────────────────────────────────────
+
 pub fn cancel_plan(db: &Database, plan_id: &str) -> Result<()> {
     let now = chrono::Utc::now().to_rfc3339();
 
@@ -342,6 +372,7 @@ pub fn cancel_plan(db: &Database, plan_id: &str) -> Result<()> {
         rusqlite::params![now, plan_id],
     )?;
 
+    // Mark remaining queued actions as skipped
     db.conn().execute(
         "UPDATE execution_queue SET status = 'skipped', updated_at = ?1
          WHERE plan_id = ?2 AND status IN ('queued', 'running')",
@@ -351,6 +382,8 @@ pub fn cancel_plan(db: &Database, plan_id: &str) -> Result<()> {
     append_ledger_event(db, plan_id, "__plan__", "cancelled", "cancelled", None, None, None, None)?;
     Ok(())
 }
+
+// ─── Load active plan ───────────────────────────────────────────────────────
 
 pub fn load_active_plan(db: &Database) -> Result<Option<PlanState>> {
     let result = db.conn().query_row(
@@ -413,6 +446,8 @@ pub struct PlanState {
     pub last_resume_at: Option<String>,
 }
 
+// ─── Query full plan state (for journal.state IPC) ──────────────────────────
+
 pub fn query_plan_journal_state(db: &Database, plan_id: &str) -> Result<serde_json::Value> {
     let plan = db.conn().query_row(
         "SELECT id, package_id, package_role, package_version, package_source_ref,
@@ -441,6 +476,7 @@ pub fn query_plan_journal_state(db: &Database, plan_id: &str) -> Result<serde_js
     let (id, pkg_id, pkg_role, pkg_ver, pkg_src, prov_ref, journal_ref, src_commit,
          total, status, reboot_reason, last_resume) = plan;
 
+    // Load all queue entries for this plan
     let mut stmt = db.conn().prepare(
         "SELECT action_id, action_name, phase, queue_position, status,
                 package_source_ref, provenance_ref, question_keys, selected_values,
@@ -506,6 +542,7 @@ pub fn query_plan_journal_state(db: &Database, plan_id: &str) -> Result<serde_js
 
     let can_resume = status == "paused_reboot" && !remaining_refs.is_empty();
 
+    // Find current action (first running or first queued)
     let current = steps.iter().find(|s| s["status"] == "running")
         .or_else(|| steps.iter().find(|s| s["status"] == "queued"));
 
@@ -550,6 +587,8 @@ pub fn query_plan_journal_state(db: &Database, plan_id: &str) -> Result<serde_js
     }))
 }
 
+// ─── Query ledger for export/audit ──────────────────────────────────────────
+
 pub fn query_ledger_entries(db: &Database, plan_id: &str) -> Result<Vec<serde_json::Value>> {
     let mut stmt = db.conn().prepare(
         "SELECT id, action_id, event_type, status, detail, package_source_ref,
@@ -575,6 +614,8 @@ pub fn query_ledger_entries(db: &Database, plan_id: &str) -> Result<Vec<serde_js
 
     Ok(entries)
 }
+
+// ─── Internal helpers ───────────────────────────────────────────────────────
 
 fn load_plan_package(db: &Database, plan_id: &str) -> Result<Option<PackageIdentity>> {
     let result = db.conn().query_row(

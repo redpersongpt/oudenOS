@@ -1,9 +1,20 @@
+// ─── App Bundle System ──────────────────────────────────────────────────────
+// Loads profile-aware software bundles from playbooks/app-bundles/ and resolves
+// them into an install queue. Integrates as a playbook stage alongside the
+// existing cleanup/services/privacy/performance phases.
+//
+// Flow:
+//   1. UI calls `appbundle.getRecommended { profile }` to show the picker
+//   2. User toggles apps on/off
+//   3. UI calls `appbundle.resolve { profile, selectedApps }` to get install queue
 
 #[cfg(windows)]
 use crate::powershell;
 use serde::{Deserialize, Serialize};
 use std::collections::{HashMap, HashSet};
 use std::path::{Path, PathBuf};
+
+// ─── YAML schema types ─────────────────────────────────────────────────────
 
 #[derive(Debug, Clone, Deserialize)]
 struct BundleManifestFile {
@@ -35,6 +46,8 @@ struct CatalogEntry {
     #[serde(rename = "workSafe")]
     work_safe: bool,
 }
+
+// ─── Public types (returned to IPC callers) ─────────────────────────────────
 
 #[derive(Debug, Clone, Serialize)]
 pub struct AppBundleManifest {
@@ -78,11 +91,16 @@ pub struct InstallResult {
     pub error: Option<String>,
 }
 
+// ─── Internal loaded state ──────────────────────────────────────────────────
+
 struct LoadedBundles {
     manifest: BundleManifestFile,
     catalog: CatalogFile,
 }
 
+// ─── Loader ─────────────────────────────────────────────────────────────────
+
+/// Load both manifest.yaml and catalog.yaml from the app-bundles directory.
 fn load_bundles(playbook_dir: &Path) -> anyhow::Result<LoadedBundles> {
     let bundle_dir = playbook_dir.join("app-bundles");
 
@@ -109,6 +127,11 @@ fn load_bundles(playbook_dir: &Path) -> anyhow::Result<LoadedBundles> {
     Ok(LoadedBundles { manifest, catalog })
 }
 
+// ─── Resolver ───────────────────────────────────────────────────────────────
+
+/// Returns the recommended app list for a profile. Every app in the catalog is
+/// returned; those in the profile's bundle are marked `recommended: true` and
+/// `selected: true` by default.
 pub fn get_recommended(playbook_dir: &Path, profile: &str) -> anyhow::Result<serde_json::Value> {
     let loaded = load_bundles(playbook_dir)?;
 
@@ -126,6 +149,7 @@ pub fn get_recommended(playbook_dir: &Path, profile: &str) -> anyhow::Result<ser
 
     let mut apps: Vec<ResolvedApp> = Vec::new();
 
+    // First: add all recommended apps in bundle order (preserves intended ordering)
     if let Some(b) = bundle {
         for app_id in &b.apps {
             if let Some(entry) = loaded.catalog.apps.get(app_id) {
@@ -150,6 +174,7 @@ pub fn get_recommended(playbook_dir: &Path, profile: &str) -> anyhow::Result<ser
         }
     }
 
+    // Then: add remaining catalog apps (not in bundle) as unselected extras
     let mut remaining: Vec<(&String, &CatalogEntry)> = loaded
         .catalog
         .apps
@@ -188,6 +213,8 @@ pub fn get_recommended(playbook_dir: &Path, profile: &str) -> anyhow::Result<ser
     }))
 }
 
+/// Resolves the final install queue given a profile and the user's selected app IDs.
+/// Only apps present in the catalog are returned. Unknown IDs are logged and skipped.
 pub fn resolve(
     playbook_dir: &Path,
     profile: &str,
@@ -371,6 +398,8 @@ fn installer_cache_dir() -> anyhow::Result<PathBuf> {
     Ok(dir)
 }
 
+// ─── Tests ──────────────────────────────────────────────────────────────────
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -407,6 +436,7 @@ mod tests {
         let result = get_recommended(&dir, "gaming_desktop").unwrap();
         let apps = result["apps"].as_array().unwrap();
 
+        // Gaming bundle should recommend Steam and Discord
         let recommended: Vec<&str> = apps
             .iter()
             .filter(|a| a["recommended"].as_bool() == Some(true))
@@ -415,6 +445,7 @@ mod tests {
         assert!(recommended.contains(&"steam"), "Steam must be recommended for gaming");
         assert!(recommended.contains(&"discord"), "Discord must be recommended for gaming");
 
+        // All catalog apps should be present
         assert!(apps.len() >= 10);
     }
 
@@ -427,6 +458,7 @@ mod tests {
         let result = get_recommended(&dir, "work_pc").unwrap();
         let apps = result["apps"].as_array().unwrap();
 
+        // Work PC should NOT recommend gaming apps
         let recommended: Vec<&str> = apps
             .iter()
             .filter(|a| a["recommended"].as_bool() == Some(true))
@@ -463,6 +495,7 @@ mod tests {
         let result = get_recommended(&dir, "nonexistent_profile").unwrap();
         let apps = result["apps"].as_array().unwrap();
 
+        // All apps should be present but none recommended
         let recommended_count = apps
             .iter()
             .filter(|a| a["recommended"].as_bool() == Some(true))

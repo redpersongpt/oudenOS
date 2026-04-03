@@ -4,6 +4,7 @@ import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useWizardStore } from "@/stores/wizard-store";
 import type { WizardStepId } from "@/stores/wizard-store";
 import { platform } from "@/lib/platform";
+import { LogoMark } from "@/components/brand/Logo";
 
 const ND = { ease: [0.25, 0.1, 0.25, 1] as const };
 
@@ -24,6 +25,8 @@ const CTA: Partial<Record<WizardStepId, string>> = {
 
 const NO_BAR = new Set<WizardStepId>(["execution", "reboot-resume", "donation", "handoff"]);
 
+/* ── Sidebar rail — bracket-style nav, divider rows ─────────────────── */
+
 function Rail() {
   const { currentStep, steps } = useWizardStore();
   const ci = steps.findIndex((s) => s.id === currentStep);
@@ -35,9 +38,7 @@ function Rail() {
     >
       {/* Brand mark */}
       <div className="mb-6 flex items-center gap-2">
-        <div className="w-4 h-4 flex items-center justify-center" style={{ border: "1px solid var(--accent)" }}>
-          <div className="w-1.5 h-1.5" style={{ background: "var(--accent)" }} />
-        </div>
+        <LogoMark size={16} />
         <span className="nd-label" style={{ color: "var(--accent)" }}>SETUP</span>
       </div>
 
@@ -88,6 +89,8 @@ function Rail() {
     </aside>
   );
 }
+
+/* ── Bottom bar — segmented progress, pill CTA ──────────────────────── */
 
 function Bar() {
   const { currentStep, progress, canGoBack, canGoNext, goBack, goNext } = useWizardStore();
@@ -144,6 +147,8 @@ function Bar() {
   );
 }
 
+/* ── Title bar — minimal, --black bg ─────────────────────────────────── */
+
 function TitleBar() {
   return (
     <div
@@ -151,7 +156,7 @@ function TitleBar() {
       style={{ background: "var(--black)", borderBottom: "1px solid var(--border)" }}
     >
       <span className="nd-label-sm no-drag" style={{ color: "var(--text-disabled)" }}>
-        REDCORE · OS
+        OUDEN · OS
       </span>
       <div className="flex items-center no-drag">
         <button
@@ -176,6 +181,8 @@ function TitleBar() {
     </div>
   );
 }
+
+/* ── Shell ────────────────────────────────────────────────────────────── */
 
 export function WizardShell({ children }: { children: ReactNode }) {
   const { currentStep } = useWizardStore();

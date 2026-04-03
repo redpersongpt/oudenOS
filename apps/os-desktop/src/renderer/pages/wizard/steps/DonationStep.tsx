@@ -1,3 +1,4 @@
+// Donation Step — optional, accessible from report
 
 import { motion } from "framer-motion";
 import { Heart } from "lucide-react";
@@ -27,7 +28,7 @@ export function DonationStep() {
 
       <div className="flex gap-3">
         <button
-          onClick={() => platform().shell.openExternal("https://redcoreos.net/support")}
+          onClick={() => platform().shell.openExternal("https://ouden.cc/support")}
           className="flex items-center gap-2 bg-[var(--accent)] text-[var(--text-display)] px-6 py-2.5 rounded-sm font-mono text-label tracking-label uppercase transition-colors duration-150 ease-nd hover:bg-[var(--accent)]"
         >
           <Heart className="h-3.5 w-3.5" />

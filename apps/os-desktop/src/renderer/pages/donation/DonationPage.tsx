@@ -1,9 +1,13 @@
+// DonationPage
+// Post-wizard support page — amount selection, wall of fame, thank-you state.
 
 import { useState } from "react";
 import { motion, AnimatePresence, stagger, useAnimate } from "framer-motion";
 import { Heart, ExternalLink, ArrowLeft, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { platform } from "@/lib/platform";
+
+// Mock wall of fame
 
 const SUPPORTERS = [
   { name: "Stefan K.", amount: 25, flag: "🇩🇪" },
@@ -21,6 +25,8 @@ const SUPPORTERS = [
 ];
 
 const PRESET_AMOUNTS = [3, 5, 10, 25] as const;
+
+// Thank-you screen
 
 function ThankYouScreen({ amount, onBack }: { amount: number; onBack: () => void }) {
   return (
@@ -95,6 +101,8 @@ function ThankYouScreen({ amount, onBack }: { amount: number; onBack: () => void
   );
 }
 
+// Main component
+
 export function DonationPage() {
   const [selected, setSelected] = useState<number>(5);
   const [custom, setCustom] = useState("");
@@ -107,21 +115,23 @@ export function DonationPage() {
   const effectiveAmount = custom ? parseFloat(custom) || 0 : selected;
 
   function handleBack() {
-    platform().shell.openExternal("https://redcoreos.net");
+    platform().shell.openExternal("https://ouden.cc");
   }
 
   async function handleDonate() {
     if (effectiveAmount <= 0) return;
     setLoading(true);
 
+    // Stagger the supporter items out as a departure animation
     await animate(
       "li",
       { opacity: 0, y: -6, scale: 0.97 },
       { duration: 0.18, delay: stagger(0.03) },
     );
 
+    // Simulate async donate (open external URL)
     platform().shell.openExternal(
-      `https://redcoreos.net/donate?amount=${effectiveAmount}`,
+      `https://ouden.cc/donate?amount=${effectiveAmount}`,
     );
 
     setDonatedAmount(effectiveAmount);
@@ -159,7 +169,7 @@ export function DonationPage() {
                   <Heart className="h-5 w-5 text-red-400" />
                 </motion.div>
                 <div>
-                  <h2 className="text-base font-medium text-[var(--text-primary)]">Support redcore</h2>
+                  <h2 className="text-base font-medium text-[var(--text-primary)]">Support Ouden</h2>
                   <p className="text-xs text-[var(--text-secondary)]">
                     Help keep it free and open for everyone
                   </p>

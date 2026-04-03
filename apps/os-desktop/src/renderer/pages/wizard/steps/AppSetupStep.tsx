@@ -1,3 +1,4 @@
+// App Setup Step — software catalog with category sections
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
@@ -151,9 +152,9 @@ export function AppSetupStep() {
 
   return (
     <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.3, ease: ND_EASE }}
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35, ease: [0.25, 0.1, 0.25, 1] }}
       className="flex h-full flex-col bg-[var(--black)] overflow-y-auto scrollbar-thin"
     >
       {/* Header */}
@@ -185,9 +186,9 @@ export function AppSetupStep() {
           return (
             <motion.div
               key={category}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: catIdx * 0.03, duration: 0.2, ease: ND_EASE }}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: catIdx * 0.04, duration: 0.25, ease: ND_EASE }}
             >
               <div className="px-4 py-2 bg-[var(--surface)] border-b border-[var(--border)] flex items-center gap-3">
                 <span className="nd-label text-[var(--text-secondary)]">{meta.label}</span>
