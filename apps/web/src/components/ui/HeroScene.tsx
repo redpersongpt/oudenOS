@@ -50,7 +50,7 @@ export function HeroScene() {
   const offsetY = mouse.y * 6;
 
   return (
-    <div className="relative w-[580px] h-[580px] sm:w-[640px] sm:h-[640px] lg:w-[700px] lg:h-[700px] xl:w-[750px] xl:h-[750px] -mt-16">
+    <div className="relative w-[500px] h-[500px] lg:w-[560px] lg:h-[560px] xl:w-[620px] xl:h-[620px] -mt-8 -mr-8">
       <motion.svg
         viewBox="0 0 500 500"
         fill="none"
