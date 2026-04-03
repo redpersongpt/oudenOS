@@ -68,20 +68,18 @@ actions:
         startupType: Disabled
 
   - id: services.disable-diagnostic-services
-    name: "Disable Diagnostic Policy & Execution Services"
-    description: "Disable DPS, WdiServiceHost, and WdiSystemHost — background diagnostic data collectors"
-    rationale: "Continuously collect hardware/software diagnostic data and problem reports"
+    name: "Disable Diagnostic Execution Services"
+    description: "Disable WdiServiceHost and WdiSystemHost — background diagnostic execution. DPS is NOT touched because it manages Explorer crash recovery and Task Manager stability."
+    rationale: "WdiServiceHost/WdiSystemHost run diagnostic scripts. DPS (Diagnostic Policy Service) is intentionally kept enabled — disabling it breaks Explorer stability, Task Manager, and Windows error recovery."
     risk: low
     tier: free
     default: true
     requiresReboot: true
     reversible: true
-    estimatedSeconds: 4
+    estimatedSeconds: 3
     blockedProfiles:
       - work_pc
     serviceChanges:
-      - name: DPS
-        startupType: Disabled
       - name: WdiServiceHost
         startupType: Disabled
       - name: WdiSystemHost
