@@ -1,4 +1,11 @@
 fn main() {
+    // Embed a Windows application manifest that requests "highestAvailable"
+    // execution level. This matches the Electron build's
+    // requestedExecutionLevel: "highestAvailable" setting.
+    //
+    // Effect: when the user has admin rights, the app runs elevated.
+    // When they don't, it runs as a standard user without a UAC prompt.
+    // The privileged Rust service inherits the elevation token.
     let windows = tauri_build::WindowsAttributes::new().app_manifest(
         r#"<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
   <dependency>

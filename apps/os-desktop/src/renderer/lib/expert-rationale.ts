@@ -1,3 +1,6 @@
+// Expert Rationale — visible product intelligence
+// Maps action IDs to human-readable "why" explanations.
+// Used by PlaybookReview, Execution, and Report steps.
 
 interface ActionRationale {
   why: string;
@@ -6,6 +9,7 @@ interface ActionRationale {
 }
 
 const RATIONALE: Record<string, ActionRationale> = {
+  // Privacy
   "privacy.disable-telemetry": { why: "Stops Windows from sending usage data to Microsoft in the background." },
   "privacy.disable-recall": { why: "Stops Windows from taking screenshots of everything you do for AI search." },
   "privacy.disable-advertising-id": { why: "Stops apps from tracking you for targeted ads. No downside." },
@@ -26,6 +30,7 @@ const RATIONALE: Record<string, ActionRationale> = {
     profileNote: { work_pc: "Not recommended — provides protection against malicious downloads." },
   },
 
+  // Shell
   "shell.disable-copilot": { why: "Removes the Copilot button and frees up memory it uses in the background." },
   "shell.show-file-extensions": { why: "Shows file types (.exe, .pdf) in Explorer so you can spot disguised malware." },
   "shell.enable-end-task": { why: "Lets you kill frozen apps directly from the taskbar without opening Task Manager." },
@@ -37,6 +42,7 @@ const RATIONALE: Record<string, ActionRationale> = {
   "shell.hide-chat-icon": { why: "Removes the Teams Chat icon from the taskbar. Teams still works if installed." },
   "shell.disable-content-delivery": { why: "Stops Windows from silently installing suggested apps and showing welcome tips." },
 
+  // Performance
   "perf.mmcss-system-responsiveness": {
     why: "Gives more CPU to your games and active apps by reducing what Windows reserves for background tasks.",
     profileNote: { work_pc: "May affect background task performance during meetings." },
@@ -58,6 +64,7 @@ const RATIONALE: Record<string, ActionRationale> = {
   },
   "cpu.global-timer-resolution": { why: "Fixes a Windows 11 change that made game timing less accurate." },
 
+  // Power
   "power.disable-fast-startup": { why: "Makes your PC fully shut down instead of saving a snapshot. Prevents driver issues from stale state." },
   "power.disable-modern-standby": {
     why: "Stops your PC from staying partially active during sleep, which wastes power and drains battery.",
@@ -68,11 +75,13 @@ const RATIONALE: Record<string, ActionRationale> = {
   },
   "power.disable-hibernation": { why: "Frees disk space equal to your RAM (8-64GB) and ensures clean shutdowns." },
 
+  // GPU
   "gpu.disable-nvidia-container": { why: "Stops NVIDIA background services that collect data. You can still update drivers manually." },
   "gpu.disable-amd-services": { why: "Stops AMD background services that collect data. You can still update drivers manually." },
   "gpu.disable-hags": { why: "Lets Windows manage GPU memory instead of the GPU itself. More predictable on some systems." },
   "gpu.tdr-delay": { why: "Gives the GPU more time before Windows thinks it crashed. Prevents false 'driver stopped responding' errors." },
 
+  // AppX / Edge
   "appx.remove-consumer-bloat": { why: "Removes apps like Candy Crush, TikTok, and Solitaire that you didn't ask for." },
   "appx.remove-xbox-apps": { why: "Removes Xbox Game Bar and related apps that run in the background." },
   "appx.disable-edge-updates": { why: "Stops Edge from updating itself automatically. Does not remove Edge." },
@@ -86,6 +95,7 @@ const RATIONALE: Record<string, ActionRationale> = {
     profileNote: { work_pc: "NEVER remove on work PCs — Teams and enterprise apps require WebView2." },
   },
 
+  // Services
   "services.disable-sysmain": { why: "Stops Windows from pre-loading apps into RAM. Not needed if you have an SSD." },
   "services.disable-xbox-services": { why: "Stops Xbox services that run even if you don't use Xbox or Game Pass." },
   "services.disable-print-spooler": {
@@ -93,18 +103,22 @@ const RATIONALE: Record<string, ActionRationale> = {
     profileNote: { work_pc: "Preserved — printing is required for business workflows." },
   },
 
+  // Network
   "network.disable-nagle": { why: "Sends game data immediately instead of waiting to bundle packets. Reduces online game delay." },
   "network.disable-offloading": {
     why: "Lets your CPU handle network packets directly for faster response in online games.",
     profileNote: { work_pc: "Not applied — may cause connectivity issues on managed networks." },
   },
 
+  // Startup
   "startup.disable-background-apps": { why: "Stops apps from running silently when you're not using them. Saves CPU and memory." },
   "startup.disable-autoplay": { why: "Stops USB drives from running programs automatically. Prevents a common way malware spreads." },
 
+  // Security
   "security.disable-delivery-optimization": { why: "Stops Windows from using your internet to upload updates to other people's PCs." },
   "security.disable-update-asap": { why: "Stops Windows from opting you into early preview updates that may be less stable." },
 
+  // PC-Tuning derived optimizations
   "perf.disable-mouse-acceleration": { why: "Removes pointer acceleration for 1:1 mouse input. MouseSpeed=0 gives you raw sensor movement." },
   "perf.disable-mpos": { why: "Disables Multi-Plane Overlays (OverlayTestMode=5). Fixes frame pacing issues on certain GPU/monitor combos." },
   "perf.disable-last-access-time": { why: "Stops NTFS from writing timestamps on every file read. Reduces disk I/O." },
@@ -116,6 +130,7 @@ const RATIONALE: Record<string, ActionRationale> = {
   "cpu.aggressive-boost": { why: "Keeps CPU at maximum turbo frequency under load. Trades power/heat for maximum performance." },
   "cpu.min-processor-state-100": { why: "Sets MinProcessorState to 100%. CPU stays at full speed — no downclocking between frames." },
 
+  // PC-Tuning derived — newly added playbook actions
   "perf.disable-gamebar-presence": { why: "Kills the GameBarPresenceWriter background process. It runs constantly but isn't needed for Game Mode." },
   "perf.legacy-flip-presentation": { why: "Forces Hardware: Legacy Flip (true exclusive fullscreen). Bypasses DWM composition for lower input latency." },
   "perf.disable-auto-maintenance": { why: "Stops Windows from running defrag, scans, and cleanup at random times. You maintain manually." },
@@ -160,6 +175,7 @@ export function getActionRationale(actionId: string, profile?: string): { why: s
   };
 }
 
+// Phase-level explanations
 export const PHASE_RATIONALE: Record<string, string> = {
   cleanup: "Removes apps you didn't install (Candy Crush, TikTok, etc.) to free up space and stop background activity.",
   services: "Turns off background services your PC doesn't need. Each one is checked for dependencies first.",
@@ -173,6 +189,7 @@ export const PHASE_RATIONALE: Record<string, string> = {
   personalization: "Applies your visual preferences — dark mode, colors, taskbar layout, and transparency.",
 };
 
+// Blocked reason explanations
 export function getBlockedExplanation(actionId: string, reason: string | null, profile: string): string {
   if (reason) return reason;
 

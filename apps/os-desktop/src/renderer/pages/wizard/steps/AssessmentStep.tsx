@@ -28,7 +28,7 @@ type Status = "idle" | "scanning" | "done";
 
 const DEMO_PROFILE: DetectedProfile = {
   id: "gaming_desktop", label: "Gaming Desktop", confidence: 92,
-  isWorkPc: false, machineName: "REDCORE-PC",
+  isWorkPc: false, machineName: "OUDEN-PC",
   signals: ["Steam detected", "No domain join", "NVIDIA GPU", "32 GB RAM"],
   accentColor: "text-[var(--accent)]", windowsBuild: 22631,
 };
@@ -41,6 +41,8 @@ const PROFILE_LABELS: Record<string, string> = {
 };
 
 const ND_EASE = [0.25, 0.1, 0.25, 1] as const;
+
+// ── Helpers (unchanged logic) ───────────────────────────────────────────
 
 function isObject(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
@@ -118,7 +120,7 @@ function normalizeDetectedProfileFromService(assessmentValue: unknown, classific
       label: readString(assessmentValue.label) ?? "Gaming Desktop",
       confidence: normalizeConfidence(assessmentValue.confidence),
       isWorkPc: readBoolean(assessmentValue.isWorkPc) ?? false,
-      machineName: readString(assessmentValue.machineName) ?? "REDCORE-PC",
+      machineName: readString(assessmentValue.machineName) ?? "OUDEN-PC",
       signals: normalizeSignals(assessmentValue.signals),
       accentColor: readString(assessmentValue.accentColor) ?? "text-[var(--accent)]",
       windowsBuild: readWindowsBuild(assessmentValue),
@@ -130,7 +132,7 @@ function normalizeDetectedProfileFromService(assessmentValue: unknown, classific
   const workSignals = isObject(assessmentValue.workSignals) ? assessmentValue.workSignals : {};
   const profileId = readString(classification.primary) ?? "gaming_desktop";
   const isWorkPc = profileId === "work_pc" || readBoolean(workIndicators.isWorkPc) === true || readBoolean(workSignals.domainJoined) === true;
-  const machineName = readString(hardware.hostname) ?? readString(assessmentValue.machineName) ?? readString(assessmentValue.hostname) ?? "REDCORE-PC";
+  const machineName = readString(hardware.hostname) ?? readString(assessmentValue.machineName) ?? readString(assessmentValue.hostname) ?? "OUDEN-PC";
   const signals = [...normalizeSignals(classification.signals), ...normalizeSignals(workIndicators.indicators), ...deriveSignalsFromAssessment(assessmentValue, isWorkPc)];
   return {
     id: profileId,
@@ -140,6 +142,8 @@ function normalizeDetectedProfileFromService(assessmentValue: unknown, classific
     accentColor: "text-[var(--accent)]", windowsBuild: readWindowsBuild(assessmentValue),
   };
 }
+
+// ── Component ───────────────────────────────────────────────────────────
 
 export function AssessmentStep() {
   const { completeStep, setDetectedProfile, setDemoMode, setStepReady } = useWizardStore();
@@ -189,6 +193,7 @@ export function AssessmentStep() {
     };
     run();
     return () => { aborted = true; };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setStepReady]);
 
   const done = Object.values(statuses).filter((s) => s === "done").length;
@@ -209,11 +214,23 @@ export function AssessmentStep() {
 
   return (
     <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.3, ease: ND_EASE }}
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35, ease: [0.25, 0.1, 0.25, 1] }}
       className="flex h-full flex-col items-center justify-center gap-6 px-8 py-6 bg-[var(--black)]"
     >
+      {/* Spinning ring — scan indicator */}
+      {isScanning && (
+        <motion.svg
+          width={32} height={32} viewBox="0 0 100 100"
+          animate={{ rotate: 360 }}
+          transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+        >
+          <circle cx="50" cy="50" r="35" stroke="var(--border-visible)" strokeWidth={5} fill="none" />
+          <path d="M 50 15 A 35 35 0 0 1 85 50" stroke="var(--text-primary)" strokeWidth={5} strokeLinecap="round" fill="none" />
+        </motion.svg>
+      )}
+
       {/* Header */}
       <div className="text-center">
         <h2 className="font-display text-title text-[var(--text-display)]">
@@ -249,9 +266,9 @@ export function AssessmentStep() {
           return (
             <motion.div
               key={cat.id}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: i * 0.03, duration: 0.2, ease: ND_EASE }}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.04, duration: 0.25, ease: ND_EASE }}
               className={`flex items-center gap-4 border-b border-[var(--border)] px-4 py-2.5 transition-colors duration-150 ease-nd ${
                 st === "scanning" ? "bg-[var(--surface)]" : ""
               }`}

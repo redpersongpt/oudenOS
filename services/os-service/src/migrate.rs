@@ -1,3 +1,8 @@
+// ─── Legacy Sidecar Migration ───────────────────────────────────────────────
+// One-time import of resume-journal.json into the DB execution ledger.
+// Runs on service startup. If the sidecar file exists and the DB has no active
+// plan, imports the sidecar state, then deletes the file.
+// If the DB already has an active plan, the sidecar is stale — just delete it.
 
 use crate::db::Database;
 use crate::ledger;
@@ -83,6 +88,7 @@ pub fn import_legacy_sidecar(db: &Database) {
 
     tracing::info!(path = ?path, "Found legacy sidecar file — attempting migration");
 
+    // Check if DB already has an active plan
     match ledger::load_active_plan(db) {
         Ok(Some(plan)) => {
             tracing::info!(
@@ -100,9 +106,11 @@ pub fn import_legacy_sidecar(db: &Database) {
             return;
         }
         Ok(None) => {
+            // No active plan — proceed with import
         }
     }
 
+    // Read and parse sidecar
     let content = match std::fs::read(&path) {
         Ok(bytes) => bytes,
         Err(e) => {
@@ -120,6 +128,7 @@ pub fn import_legacy_sidecar(db: &Database) {
         }
     };
 
+    // Build package identity
     let package = sidecar.package.as_ref().map(|p| ledger::PackageIdentity {
         plan_id: p.plan_id.clone(),
         package_id: p.package_id.clone(),
@@ -140,6 +149,7 @@ pub fn import_legacy_sidecar(db: &Database) {
         }
     };
 
+    // Build action queue from all actions (completed + failed + pending)
     let mut all_actions: Vec<ledger::QueuedAction> = Vec::new();
     let mut pos = 0i32;
 
@@ -172,11 +182,13 @@ pub fn import_legacy_sidecar(db: &Database) {
         return;
     }
 
+    // Create the plan in DB ledger
     if let Err(e) = ledger::create_plan(db, &pkg, "unknown", "balanced", &all_actions) {
         tracing::error!(error = %e, "Failed to create plan from sidecar");
         return;
     }
 
+    // Record results for completed/failed actions
     for action in &sidecar.completed_actions {
         let status = if action.status == "completed" || action.status == "applied" {
             "success"
@@ -202,16 +214,19 @@ pub fn import_legacy_sidecar(db: &Database) {
         });
     }
 
+    // If there are pending reboot actions, mark plan as paused_reboot
     if !sidecar.pending_reboot_actions.is_empty() {
         if let Err(e) = ledger::mark_reboot_pending(db, &sidecar.plan_id, "migrated-from-sidecar") {
             tracing::error!(error = %e, "Failed to mark migrated plan as paused_reboot");
         }
     } else {
+        // All done — complete the plan
         if let Err(e) = ledger::complete_plan(db, &sidecar.plan_id) {
             tracing::error!(error = %e, "Failed to complete migrated plan");
         }
     }
 
+    // Delete the sidecar file
     if let Err(e) = std::fs::remove_file(&path) {
         tracing::warn!(error = %e, "Failed to delete migrated sidecar file");
     } else {

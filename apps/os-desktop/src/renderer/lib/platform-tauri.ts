@@ -1,3 +1,6 @@
+// Tauri platform backend
+// Canonical runtime for redcore OS desktop (since v0.2.0).
+// Uses Tauri v2 APIs via window.__TAURI__ (withGlobalTauri: true).
 
 import type { PlatformAPI, ServiceStatus, SaveResult, ExportResult } from "./platform";
 

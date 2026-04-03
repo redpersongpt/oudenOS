@@ -1,3 +1,7 @@
+// Service bridge: manages the privileged Rust service child process.
+// Communicates via line-delimited JSON-RPC over stdin/stdout.
+// This is the SAME protocol the Electron main process used — the service
+// binary is unchanged.
 
 use serde_json::Value;
 use std::collections::HashMap;
@@ -18,6 +22,8 @@ const REQUEST_TIMEOUT: Duration = Duration::from_secs(30);
 
 pub struct ServiceBridge {
     process: Option<Child>,
+    /// Buffered responses that arrived for other request IDs while we were
+    /// waiting for a specific one. Keyed by request ID.
     buffered: HashMap<u64, Result<Value, String>>,
     next_id: AtomicU64,
     admin: bool,
@@ -68,6 +74,7 @@ impl ServiceBridge {
 
         let mut child = cmd.spawn().map_err(|e| format!("Failed to spawn service: {e}"))?;
 
+        // Drain stderr to prevent pipe deadlock
         if let Some(stderr) = child.stderr.take() {
             std::thread::spawn(move || {
                 let reader = BufReader::new(stderr);
@@ -79,6 +86,7 @@ impl ServiceBridge {
             });
         }
 
+        // Read stdout responses in a background thread
         let (tx, rx) = mpsc::channel::<(u64, Result<Value, String>)>();
         if let Some(stdout) = child.stdout.take() {
             std::thread::spawn(move || {
@@ -147,15 +155,20 @@ impl ServiceBridge {
             .flush()
             .map_err(|e| format!("Failed to flush service stdin: {e}"))?;
 
+        // Evict stale buffered responses (from timed-out requests) to prevent
+        // unbounded memory growth. Keep only entries newer than the last 50 IDs.
         if self.buffered.len() > 50 {
             let min_id = id.saturating_sub(50);
             self.buffered.retain(|&k, _| k > min_id);
         }
 
+        // Check if the response was already buffered (from a previous call
+        // that received this ID's response while waiting for its own)
         if let Some(result) = self.buffered.remove(&id) {
             return result;
         }
 
+        // Wait for OUR response, buffering any others that arrive first
         let deadline = std::time::Instant::now() + REQUEST_TIMEOUT;
 
         loop {
@@ -165,6 +178,7 @@ impl ServiceBridge {
                         if resp_id == id {
                             return result;
                         }
+                        // Not our response — buffer it for the caller that owns it
                         self.buffered.insert(resp_id, result);
                     }
                     Err(mpsc::RecvTimeoutError::Timeout) => {
@@ -192,6 +206,10 @@ impl Drop for ServiceBridge {
         }
     }
 }
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
 
 fn detect_admin() -> bool {
     #[cfg(windows)]

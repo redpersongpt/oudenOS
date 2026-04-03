@@ -1,7 +1,16 @@
+// ─── System Assessor ────────────────────────────────────────────────────────
+// Collects comprehensive system information via PowerShell/WMI queries.
+// Produces an assessment JSON value for classification and transformation.
+//
+// On Windows: runs real CIM/WMI queries via powershell.exe and parses JSON.
+// On non-Windows: returns realistic simulated data for development.
 
 #[cfg(windows)]
 use crate::powershell;
 
+/// Run a full system assessment.
+/// Returns a JSON object with keys: windows, appx, startup, services,
+/// telemetryTasks, workSignals, vm, hardware, assessedAt, overallScore.
 pub async fn assess_system() -> anyhow::Result<serde_json::Value> {
     tracing::info!("Starting full system assessment");
 
@@ -13,6 +22,8 @@ pub async fn assess_system() -> anyhow::Result<serde_json::Value> {
 
     result
 }
+
+// ─── Windows assessment ─────────────────────────────────────────────────────
 
 #[cfg(windows)]
 async fn assess_windows() -> anyhow::Result<serde_json::Value> {
@@ -116,6 +127,8 @@ fn run_ps_json(label: &str, script: &str) -> anyhow::Result<serde_json::Value> {
     })
 }
 
+// ─── Non-Windows simulation ─────────────────────────────────────────────────
+
 #[cfg(not(windows))]
 async fn assess_simulated() -> anyhow::Result<serde_json::Value> {
     tracing::info!("[simulated] Returning simulated assessment data");
@@ -208,6 +221,8 @@ async fn assess_simulated() -> anyhow::Result<serde_json::Value> {
     }))
 }
 
+// ─── Score calculation ──────────────────────────────────────────────────────
+
 fn calculate_score(
     appx: &serde_json::Value,
     services: &serde_json::Value,
@@ -216,6 +231,7 @@ fn calculate_score(
 ) -> u32 {
     let mut score: i32 = 100;
 
+    // Penalty for bloat AppX packages (more than 30 = bloated)
     let appx_count = appx
         .get("count")
         .and_then(|v| v.as_u64())
@@ -224,6 +240,7 @@ fn calculate_score(
         score -= ((appx_count - 30) * 2).min(20);
     }
 
+    // Penalty for excessive running services (more than 80 is high)
     let running = services
         .get("running")
         .and_then(|v| v.as_u64())
@@ -232,6 +249,7 @@ fn calculate_score(
         score -= ((running - 80) / 5).min(15);
     }
 
+    // Penalty for startup items (more than 5 is cluttered)
     let startup_count = if startup.is_array() {
         startup.as_array().map(|a| a.len()).unwrap_or(0) as i32
     } else {
@@ -241,6 +259,7 @@ fn calculate_score(
         score -= ((startup_count - 5) * 3).min(15);
     }
 
+    // Penalty for active telemetry tasks
     let telemetry_count = if telemetry_tasks.is_array() {
         telemetry_tasks
             .as_array()

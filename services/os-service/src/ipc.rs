@@ -1,3 +1,6 @@
+// ─── JSON-RPC Server ────────────────────────────────────────────────────────
+// Communicates with the Electron main process over stdin/stdout.
+// Each line is a JSON-RPC request; each response is a single JSON line.
 
 use crate::db::Database;
 use crate::{appbundle, assessor, classifier, executor, ledger, personalizer, playbook, rollback, transformer};
@@ -28,6 +31,8 @@ struct RpcError {
     code: i32,
     message: String,
 }
+
+// Sidecar structs removed — DB-backed execution ledger is the only truth path.
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 struct RpcExecutionJournalContext {
@@ -85,6 +90,8 @@ impl RpcResponse {
     }
 }
 
+/// Serve JSON-RPC over stdio.
+/// The Electron main process spawns this binary and communicates via stdin/stdout.
 pub async fn serve(db: Database) -> Result<()> {
     let stdin = io::stdin();
     let mut stdout = io::stdout();
@@ -125,6 +132,7 @@ async fn dispatch(
     let params = &req.params;
 
     match req.method.as_str() {
+        // ── System status ───────────────────────────────────────────────
         "system.status" => {
             let uptime = start_time.elapsed().as_secs();
             RpcResponse::ok(
@@ -147,6 +155,7 @@ async fn dispatch(
                 .cloned()
                 .and_then(|value| serde_json::from_value::<RpcRebootJournalContext>(value).ok());
 
+            // Mark reboot in DB ledger if a plan exists
             if let Some(ref ctx) = reboot_context {
                 if let Err(e) = ledger::mark_reboot_pending(db, &ctx.plan_id, reason) {
                     tracing::error!(error = %e, "Failed to mark reboot in DB ledger");
@@ -171,12 +180,15 @@ async fn dispatch(
             }
         }
 
+        // ── Assessment ──────────────────────────────────────────────────
         "assess.full" => {
             tracing::info!("Full system assessment requested");
             match assessor::assess_system().await {
                 Ok(mut assessment) => {
+                    // Persist to database
                     match store_assessment(db, &assessment) {
                         Ok(assess_id) => {
+                            // Inject the DB id into the response so callers can reference it
                             if let Some(obj) = assessment.as_object_mut() {
                                 obj.insert("id".to_string(), serde_json::json!(assess_id));
                             }
@@ -199,11 +211,13 @@ async fn dispatch(
             }
         }
 
+        // ── Classification ──────────────────────────────────────────────
         "classify.machine" => {
             let assessment_id = params
                 .get("assessmentId")
                 .and_then(|v| v.as_str());
 
+            // Load assessment: by ID, inline, or latest from DB
             let assessment = if let Some(aid) = assessment_id {
                 match load_assessment(db, aid) {
                     Ok(a) => a,
@@ -214,6 +228,7 @@ async fn dispatch(
             } else if let Some(data) = params.get("assessment") {
                 data.clone()
             } else {
+                // No params — use the most recent assessment
                 match load_latest_assessment(db) {
                     Ok(a) => a,
                     Err(e) => {
@@ -236,6 +251,7 @@ async fn dispatch(
             }
         }
 
+        // ── Transformation plan ─────────────────────────────────────────
         "transform.plan" => {
             let classification_id = params
                 .get("classificationId")
@@ -259,6 +275,7 @@ async fn dispatch(
             } else if let Some(data) = params.get("classification") {
                 data.clone()
             } else if let Some(profile) = params.get("profile").and_then(|v| v.as_str()) {
+                // Allow passing profile directly for convenience
                 serde_json::json!({
                     "primary": profile,
                     "confidence": 1.0,
@@ -292,6 +309,7 @@ async fn dispatch(
             }
         }
 
+        // ── Action definitions ──────────────────────────────────────────
         "transform.getActions" => {
             let category = params.get("category").and_then(|v| v.as_str());
             tracing::info!(category = ?category, "Getting actions");
@@ -299,6 +317,7 @@ async fn dispatch(
             RpcResponse::ok(id, serde_json::json!(actions))
         }
 
+        // ── Execute action ──────────────────────────────────────────────
         "execute.applyAction" => {
             let action_id = match params.get("actionId").and_then(|v| v.as_str()) {
                 Some(aid) => aid,
@@ -307,6 +326,7 @@ async fn dispatch(
                 }
             };
 
+            // Look up action data from params or embedded definitions
             let action_data = if let Some(data) = params.get("actionData") {
                 data.clone()
             } else {
@@ -372,6 +392,7 @@ async fn dispatch(
 
                     let mut enriched_outcome = outcome.clone();
 
+                    // ── Record in DB-backed ledger (sole truth path) ──
                     if let Some(context) = journal_context.as_ref() {
                         let plan_id = &context.package.plan_id;
 
@@ -412,6 +433,7 @@ async fn dispatch(
                 Err(e) => {
                     tracing::error!(action_id = action_id, error = %e, "Action execution failed");
 
+                    // Record failure in DB ledger if context available
                     if let Some(context) = journal_context.as_ref() {
                         let _ = ledger::record_action_result(db, &context.package.plan_id, &ledger::ActionResult {
                             action_id: action_id.to_string(),
@@ -427,6 +449,7 @@ async fn dispatch(
             }
         }
 
+        // ── Rollback ────────────────────────────────────────────────────
         "rollback.list" => {
             match rollback::list_snapshots(db) {
                 Ok(snapshots) => RpcResponse::ok(id, serde_json::json!(snapshots)),
@@ -479,6 +502,7 @@ async fn dispatch(
             }
         }
 
+        // ── Journal / reboot-resume (DB-backed ledger — sole truth path) ──
         "journal.state" => {
             match ledger::load_active_plan(db) {
                 Ok(Some(plan)) => {
@@ -577,9 +601,11 @@ async fn dispatch(
             RpcResponse::ok(id, serde_json::json!({ "status": "cancelled" }))
         },
 
+        // ── Full pipeline: assess + classify + plan in one call ─────────
         "pipeline.assessClassifyPlan" => {
             let preset = params.get("preset").and_then(|v| v.as_str()).unwrap_or("conservative");
 
+            // Step 1: Assess
             let assessment = match assessor::assess_system().await {
                 Ok(mut a) => {
                     match store_assessment(db, &a) {
@@ -595,6 +621,7 @@ async fn dispatch(
                 Err(e) => return RpcResponse::err(id, -10, format!("Assessment failed: {}", e)),
             };
 
+            // Step 2: Classify
             let classification = match classifier::classify(&assessment) {
                 Ok(c) => {
                     let _ = store_classification(db, None, &c);
@@ -603,6 +630,7 @@ async fn dispatch(
                 Err(e) => return RpcResponse::err(id, -11, format!("Classification failed: {}", e)),
             };
 
+            // Step 3: Plan
             let plan = match transformer::generate_plan(&classification, preset) {
                 Ok(p) => {
                     let _ = store_plan(db, None, preset, &p);
@@ -626,6 +654,7 @@ async fn dispatch(
             }))
         }
 
+        // ── Personalization ──────────────────────────────────────────────
         "personalize.options" => {
             let profile = params
                 .get("profile")
@@ -692,6 +721,7 @@ async fn dispatch(
             }
         }
 
+        // ── Playbook: load and resolve ─────────────────────────────────
         "playbook.resolve" => {
             let profile = params.get("profile").and_then(|v| v.as_str()).unwrap_or("gaming_desktop");
             let preset = params.get("preset").and_then(|v| v.as_str()).unwrap_or("balanced");
@@ -715,6 +745,7 @@ async fn dispatch(
                 Ok(playbook) => {
                     let plan = crate::playbook::resolve_plan(&playbook, profile, preset, windows_build);
                     let mut result = plan.to_json();
+                    // Add manifest metadata
                     if let Some(obj) = result.as_object_mut() {
                         obj.insert("playbookName".to_string(), serde_json::json!(playbook.manifest.name));
                         obj.insert("playbookVersion".to_string(), serde_json::json!(playbook.manifest.version));
@@ -729,6 +760,7 @@ async fn dispatch(
             }
         }
 
+        // ── Verify registry value (read-back proof) ─────────────────────
         "verify.registryValue" => {
             let hive = match params.get("hive").and_then(|v| v.as_str()) {
                 Some(h) => h,
@@ -755,6 +787,7 @@ async fn dispatch(
             }))
         }
 
+        // ── App bundles: get recommended apps for a profile ─────────
         "appbundle.getRecommended" => {
             let profile = params
                 .get("profile")
@@ -779,6 +812,7 @@ async fn dispatch(
             }
         }
 
+        // ── App bundles: resolve install queue ────────────────────────
         "appbundle.resolve" => {
             let profile = params
                 .get("profile")
@@ -845,6 +879,7 @@ async fn dispatch(
             }
         }
 
+        // ── Execution Ledger: DB-backed plan/queue management ────────────
         "ledger.createPlan" => {
             let package = match serde_json::from_value::<ledger::PackageIdentity>(
                 params.get("package").cloned().unwrap_or(serde_json::Value::Null)
@@ -935,6 +970,7 @@ async fn dispatch(
         "ledger.query" => {
             let plan_id = params.get("planId").and_then(|v| v.as_str());
 
+            // If planId given, query that plan. Otherwise query the active plan.
             let target_plan_id = if let Some(pid) = plan_id {
                 pid.to_string()
             } else {
@@ -962,6 +998,7 @@ async fn dispatch(
             }
         }
 
+        // ── Unknown method ──────────────────────────────────────────────
         other => {
             tracing::warn!(method = other, "Unknown RPC method");
             RpcResponse::err(id, -1, format!("Unknown method: {}", other))
@@ -969,6 +1006,9 @@ async fn dispatch(
     }
 }
 
+// ─── Playbook directory resolution ──────────────────────────────────────────
+
+/// Resolve the playbook directory across packaged and dev layouts.
 fn resolve_playbook_dir() -> Option<std::path::PathBuf> {
     let mut candidates: Vec<std::path::PathBuf> = Vec::new();
 
@@ -1004,6 +1044,8 @@ fn resolve_playbook_dir() -> Option<std::path::PathBuf> {
 
     None
 }
+
+// ─── Helpers ────────────────────────────────────────────────────────────────
 
 fn append_audit_log(
     db: &Database,
@@ -1063,6 +1105,8 @@ async fn schedule_system_reboot(reason: &str, reboot_context: Option<RpcRebootJo
     }
 }
 
+// ─── Database helpers ───────────────────────────────────────────────────────
+
 fn store_assessment(db: &Database, assessment: &serde_json::Value) -> anyhow::Result<String> {
     let id = uuid::Uuid::new_v4().to_string();
     let now = chrono::Utc::now().to_rfc3339();
@@ -1109,6 +1153,7 @@ fn store_classification(
         .as_f64()
         .unwrap_or(0.0);
     let data = serde_json::to_string(classification)?;
+    // Use NULL when no stored assessment exists to avoid FK violation
     let aid: Option<&str> = assessment_id;
 
     db.conn().execute(
@@ -1146,6 +1191,7 @@ fn store_plan(
         .unwrap_or(&fallback_id)
         .to_string();
     let now = chrono::Utc::now().to_rfc3339();
+    // Use NULL when no stored classification exists to avoid FK violation
     let cid: Option<&str> = classification_id;
     let data = serde_json::to_string(plan)?;
 

@@ -1,3 +1,5 @@
+// Report Step
+// Optimization complete. Shows expert-grade summary from service ledger truth.
 
 import { useEffect, useMemo, useState, useCallback } from "react";
 import { motion } from "framer-motion";
@@ -10,6 +12,7 @@ import { platform } from "@/lib/platform";
 
 const RICKROLL_URL = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
 
+// Ledger query response shape (from ledger.query)
 interface LedgerStep {
   actionId: string;
   actionName: string;
@@ -56,6 +59,7 @@ export function ReportStep() {
   }, [footerClicks]);
   const exportLogAsText = useLogStore((state) => state.exportAsText);
 
+  // Primary truth: load from service ledger
   const [ledgerState, setLedgerState] = useState<LedgerQueryResult | null>(null);
   useEffect(() => {
     let cancelled = false;
@@ -67,12 +71,14 @@ export function ReportStep() {
           setLedgerState(result.data);
         }
       } catch {
+        // Ledger unavailable — fall back to renderer-local data
       }
     };
     loadLedger();
     return () => { cancelled = true; };
   }, []);
 
+  // Derive counts: ledger-first, renderer-fallback
   const rendererResult = executionResult ?? {
     applied: 0,
     failed: 0,
@@ -131,7 +137,9 @@ export function ReportStep() {
 
     const { serviceCall } = await import("@/lib/service");
 
+    // Primary: get ledger truth for export
     const ledgerQueryResult = await serviceCall<Record<string, unknown> | null>("ledger.query", { includeLedger: true });
+    // Fallback: legacy journal.state
     const serviceJournalResult = await serviceCall<Record<string, unknown> | null>("journal.state");
 
     const exportResult = await platform().wizard.exportPackage({
@@ -165,10 +173,10 @@ export function ReportStep() {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 6 }}
+      initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -6 }}
-      transition={{ duration: 0.22, ease: [0.0, 0.0, 0.2, 1.0] }}
+      transition={{ duration: 0.35, ease: [0.25, 0.1, 0.25, 1] }}
       className="flex h-full flex-col items-center justify-center gap-5 px-8"
     >
       {/* Success icon */}
@@ -323,7 +331,7 @@ export function ReportStep() {
         <p className="text-[11px] font-medium text-[var(--text-primary)] mb-2">How to undo changes</p>
         <div className="space-y-1.5 text-[10px] text-[var(--text-secondary)] leading-relaxed">
           <p><span className="text-[var(--text-primary)] font-medium">System Restore:</span> Windows saved a restore point before we started. Open Start → type "Create a restore point" → System Restore → pick the point from today.</p>
-          <p><span className="text-[var(--text-primary)] font-medium">Registry:</span> Every registry key we changed has its old value saved. Re-run redcore OS and it will detect previous changes.</p>
+          <p><span className="text-[var(--text-primary)] font-medium">Registry:</span> Every registry key we changed has its old value saved. Re-run OudenOS and it will detect previous changes.</p>
           <p><span className="text-[var(--text-primary)] font-medium">Services:</span> Open <span className="font-mono text-[9px] bg-[var(--surface-raised)] px-1 rounded">services.msc</span> and set any service back to Automatic or Manual.</p>
           <p><span className="text-[var(--text-primary)] font-medium">Removed apps:</span> Open Microsoft Store and reinstall anything you want back.</p>
           <p><span className="text-[var(--text-primary)] font-medium">Full reset:</span> Settings → System → Recovery → Reset this PC keeps your files but restores all Windows defaults.</p>

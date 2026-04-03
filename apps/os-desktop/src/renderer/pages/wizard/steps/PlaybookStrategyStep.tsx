@@ -150,8 +150,9 @@ export function PlaybookStrategyStep() {
 
   return (
     <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35, ease: [0.25, 0.1, 0.25, 1] }}
       className="flex h-full flex-col bg-[var(--black)]"
     >
       {/* Top bar */}
@@ -189,14 +190,20 @@ export function PlaybookStrategyStep() {
             className="h-full"
           >
             <Screen icon={Icon} label={current.label} title={current.title} desc={current.desc} note={current.note}>
-              {current.options.map((option) => (
-                <Option
+              {current.options.map((option, optIdx) => (
+                <motion.div
                   key={`${String(current.key)}-${String(option.value)}`}
-                  selected={currentAnswer === option.value}
-                  onClick={() => setAnswer(current.key, option.value as QuestionnaireAnswers[keyof QuestionnaireAnswers])}
-                  title={option.title} desc={option.desc}
-                  badge={option.badge} badgeColor={option.badgeColor} danger={option.danger}
-                />
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: optIdx * 0.04, duration: 0.25, ease: ND_EASE }}
+                >
+                  <Option
+                    selected={currentAnswer === option.value}
+                    onClick={() => setAnswer(current.key, option.value as QuestionnaireAnswers[keyof QuestionnaireAnswers])}
+                    title={option.title} desc={option.desc}
+                    badge={option.badge} badgeColor={option.badgeColor} danger={option.danger}
+                  />
+                </motion.div>
               ))}
             </Screen>
           </motion.div>

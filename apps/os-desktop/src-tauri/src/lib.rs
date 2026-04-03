@@ -6,9 +6,14 @@ use std::sync::Arc;
 use tauri::{Emitter, Manager};
 use tokio::sync::Mutex;
 
+// Managed state: the service bridge singleton
 struct AppState {
     bridge: Arc<Mutex<ServiceBridge>>,
 }
+
+// ---------------------------------------------------------------------------
+// Tauri commands — the renderer calls these via invoke()
+// ---------------------------------------------------------------------------
 
 #[tauri::command]
 async fn service_call(
@@ -85,6 +90,7 @@ async fn export_package(
 ) -> Result<serde_json::Value, String> {
     let resource_dir = app.path().resource_dir().unwrap_or_else(|_| std::path::PathBuf::from("."));
 
+    // Find playbook root and wizard.json
     let playbook_root = [resource_dir.join("playbooks"), std::path::PathBuf::from("../../playbooks")]
         .into_iter()
         .find(|p| p.is_dir());
@@ -112,6 +118,7 @@ async fn export_package(
         format!("redcore-os-user-package-{version}-{commit}.apbx")
     };
 
+    // Show save dialog
     let downloads = dirs::desktop_dir()
         .map(|d| d.parent().unwrap_or(&d).join("Downloads"))
         .unwrap_or_else(|| std::path::PathBuf::from("."));
@@ -136,6 +143,7 @@ async fn export_package(
     }
 }
 
+// Timestamp without pulling in chrono
 fn chrono_free_timestamp() -> String {
     let now = std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)
@@ -144,6 +152,7 @@ fn chrono_free_timestamp() -> String {
     format!("{now}")
 }
 
+// Desktop directory fallback
 mod dirs {
     use std::path::PathBuf;
 
@@ -162,6 +171,10 @@ mod dirs {
         }
     }
 }
+
+// ---------------------------------------------------------------------------
+// App setup
+// ---------------------------------------------------------------------------
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -189,6 +202,8 @@ pub fn run() {
 
             eprintln!("[Tauri] resource_dir = {}", resource_dir.display());
 
+            // Start the privileged service — block briefly to ensure it's ready
+            // before the renderer sends its first IPC call
             let bridge_clone = bridge.clone();
             let res_dir = resource_dir.clone();
             let win = app.get_webview_window("main");
@@ -199,6 +214,7 @@ pub fn run() {
                     Err(e) => {
                         eprintln!("[Tauri] CRITICAL: Failed to start service: {e}");
                         eprintln!("[Tauri] App will run in demo mode — no changes will be applied");
+                        // Emit event so renderer can show a warning
                         if let Some(ref w) = win {
                             let _ = w.emit("service-start-failed", e.clone());
                         }
@@ -206,6 +222,7 @@ pub fn run() {
                 }
             });
 
+            // Show window once webview is ready
             if let Some(win) = app.get_webview_window("main") {
                 let w = win.clone();
                 win.on_window_event(move |event| {
@@ -213,6 +230,7 @@ pub fn run() {
                         let _ = w.show();
                     }
                 });
+                // Show after a short delay to avoid white flash
                 let w2 = win.clone();
                 std::thread::spawn(move || {
                     std::thread::sleep(std::time::Duration::from_millis(150));

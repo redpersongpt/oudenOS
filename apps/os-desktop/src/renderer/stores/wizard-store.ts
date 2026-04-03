@@ -1,5 +1,9 @@
+// Wizard Store
+// 13-step OS transformation wizard. Playbook-native flow.
 
 import { create } from "zustand";
+
+// Step IDs
 
 export type WizardStepId =
   | "welcome"
@@ -17,11 +21,15 @@ export type WizardStepId =
   | "donation"
   | "handoff";
 
+// Step shape
+
 export interface WizardStep {
   id: WizardStepId;
   label: string;
   status: "locked" | "current" | "completed" | "skipped";
 }
+
+// Profile detection result
 
 export interface DetectedProfile {
   id: string;
@@ -33,6 +41,8 @@ export interface DetectedProfile {
   accentColor: string;
   windowsBuild: number;
 }
+
+// Playbook resolved plan
 
 export interface ResolvedPlaybook {
   playbookName: string;
@@ -104,6 +114,7 @@ export interface WizardPackageRefs {
   actionProvenanceRef: string;
   executionJournalRef: string;
   injectionMetadataRef: string;
+  // DB-backed ledger identity (used by ledger.createPlan)
   planId?: string;
   packageId?: string;
   packageRole?: string;
@@ -152,6 +163,8 @@ export interface ActionDecisionProvenance {
   executionResultRef: string | null;
 }
 
+// App bundle
+
 export interface RecommendedApp {
   id: string;
   name: string;
@@ -161,6 +174,8 @@ export interface RecommendedApp {
   selected: boolean;
   workSafe: boolean;
 }
+
+// Personalization
 
 export interface PersonalizationPreferences {
   darkMode: boolean;
@@ -202,6 +217,8 @@ export function getProfilePersonalizationDefaults(profileId?: string | null): Pe
 
 export const DEFAULT_PERSONALIZATION: PersonalizationPreferences = getProfilePersonalizationDefaults(null);
 
+// Execution result
+
 export interface AppInstallSummary {
   requested: number;
   installed: number;
@@ -236,8 +253,11 @@ export interface ExecutionResult {
   packageKind: "user-resolved";
   packageRefs: WizardPackageRefs | null;
   journal: ExecutionJournalEntry[];
+  /** Where final counts came from. "ledger" = DB service truth, "local" = renderer journal */
   truthSource?: "ledger" | "local";
 }
+
+// Store interface
 
 interface WizardState {
   currentStep: WizardStepId;
@@ -245,6 +265,7 @@ interface WizardState {
   stepReadiness: Record<WizardStepId, boolean>;
   demoMode: boolean;
 
+  // Data
   detectedProfile: DetectedProfile | null;
   playbookPreset: string;
   resolvedPlaybook: ResolvedPlaybook | null;
@@ -253,6 +274,7 @@ interface WizardState {
   executionResult: ExecutionResult | null;
   personalization: PersonalizationPreferences;
 
+  // Navigation
   canGoNext: boolean;
   canGoBack: boolean;
   progress: number;
@@ -264,6 +286,7 @@ interface WizardState {
   goBack: () => void;
   setStepReady: (step: WizardStepId, ready: boolean) => void;
 
+  // Data setters
   setDetectedProfile: (profile: DetectedProfile) => void;
   setPlaybookPreset: (preset: string) => void;
   setResolvedPlaybook: (playbook: ResolvedPlaybook) => void;
@@ -273,11 +296,15 @@ interface WizardState {
   setPersonalization: (prefs: Partial<PersonalizationPreferences>) => void;
   setDemoMode: (demo: boolean) => void;
 
+  /** Navigate to the optional donation step (bypasses lock — accessible from report). */
   gotoDonation: () => void;
+  /** Complete the donation step and navigate to handoff. */
   completeDonation: () => void;
 
   reset: () => void;
 }
+
+// Ordered step definitions
 
 const INITIAL_STEPS: WizardStep[] = [
   { id: "welcome",            label: "Welcome",           status: "current" },
@@ -313,6 +340,8 @@ const INITIAL_STEP_READINESS: Record<WizardStepId, boolean> = {
   handoff: false,
 };
 
+// Helpers
+
 function computeProgress(steps: WizardStep[]): number {
   const done = steps.filter((s) => s.status === "completed" || s.status === "skipped").length;
   return Math.round((done / steps.length) * 100);
@@ -329,6 +358,8 @@ function computeCanGoNext(
 function computeCanGoBack(_steps: WizardStep[], currentStep: WizardStepId): boolean {
   return STEP_ORDER.indexOf(currentStep) > 0;
 }
+
+// Store
 
 export const useWizardStore = create<WizardState>((set, get) => ({
   currentStep: "welcome",
@@ -428,6 +459,7 @@ export const useWizardStore = create<WizardState>((set, get) => ({
       const prevId = STEP_ORDER[idx - 1] as WizardStepId;
 
       const steps = state.steps.map((s) => {
+        // Mark the step we're leaving as completed (not locked) so we can return to it
         if (s.id === state.currentStep) return { ...s, status: "completed" as const };
         if (s.id === prevId) return { ...s, status: "current" as const };
         return s;
@@ -472,6 +504,9 @@ export const useWizardStore = create<WizardState>((set, get) => ({
     set((state) => ({ personalization: { ...state.personalization, ...prefs } })),
   setDemoMode: (demo) => set({ demoMode: demo }),
 
+  // Donation step is an optional side-trip — not in STEP_ORDER.
+  // Marks the previous step (report) as completed, navigates to donation.
+  // handoff stays locked until completeDonation is called.
   gotoDonation: () =>
     set((state) => {
       const steps = state.steps.map((s) => {
@@ -487,6 +522,8 @@ export const useWizardStore = create<WizardState>((set, get) => ({
       };
     }),
 
+  // Called when donation step is done (donated or skipped).
+  // Unlocks and navigates to handoff.
   completeDonation: () =>
     set((state) => {
       const steps = state.steps.map((s) => {

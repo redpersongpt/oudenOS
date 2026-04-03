@@ -1,6 +1,11 @@
+// ─── Transformation Engine ──────────────────────────────────────────────────
+// Generates tuning plans from classification data and embeds real safe actions.
+// All actions are profile-aware: certain actions are blocked for certain profiles.
 
 use serde_json::Value;
 
+/// Generate a tuning plan for the given classification and preset.
+/// Preset can be: "conservative", "balanced", "aggressive".
 pub fn generate_plan(classification: &Value, preset: &str) -> anyhow::Result<Value> {
     let profile = classification
         .get("primary")
@@ -25,6 +30,7 @@ pub fn generate_plan(classification: &Value, preset: &str) -> anyhow::Result<Val
         let action_id = action["id"].as_str().unwrap_or("");
         let category = action["category"].as_str().unwrap_or("");
 
+        // Profile-based blocking
         if is_blocked(action_id, profile, &preservation) {
             tracing::debug!(
                 action_id = action_id,
@@ -34,6 +40,8 @@ pub fn generate_plan(classification: &Value, preset: &str) -> anyhow::Result<Val
             continue;
         }
 
+        // Preset filtering: conservative only includes safe actions,
+        // balanced includes moderate, aggressive includes all
         let risk = action["risk"].as_str().unwrap_or("low");
         let include = match preset {
             "conservative" => risk == "safe" || risk == "low",
@@ -68,6 +76,7 @@ pub fn generate_plan(classification: &Value, preset: &str) -> anyhow::Result<Val
     }))
 }
 
+/// Get all embedded actions, optionally filtered by category.
 pub fn get_actions(category: Option<&str>) -> Vec<Value> {
     let all = embedded_actions();
     match category {
@@ -79,8 +88,10 @@ pub fn get_actions(category: Option<&str>) -> Vec<Value> {
     }
 }
 
+/// Check if an action is blocked for a given profile.
 fn is_blocked(action_id: &str, profile: &str, preservation: &Value) -> bool {
     match action_id {
+        // OneDrive tasks blocked on work_pc
         "tasks.disable-onedrive-tasks" => {
             profile == "work_pc"
                 || preservation
@@ -88,6 +99,7 @@ fn is_blocked(action_id: &str, profile: &str, preservation: &Value) -> bool {
                     .and_then(|v| v.as_bool())
                     .unwrap_or(false)
         }
+        // Your Phone blocked on work_pc (phone integration may be used)
         "appx.remove-your-phone" => {
             profile == "work_pc"
                 || profile == "vm_cautious"
@@ -96,6 +108,7 @@ fn is_blocked(action_id: &str, profile: &str, preservation: &Value) -> bool {
                     .and_then(|v| v.as_bool())
                     .unwrap_or(false)
         }
+        // AppX removals blocked on vm_cautious
         id if id.starts_with("appx.") => {
             profile == "vm_cautious"
                 || preservation
@@ -103,10 +116,14 @@ fn is_blocked(action_id: &str, profile: &str, preservation: &Value) -> bool {
                     .and_then(|v| v.as_bool())
                     .unwrap_or(false)
         }
+        // Search box reduction blocked on work_pc (business users expect default)
         "shell.reduce-search-box" => profile == "work_pc",
+        // Location disable blocked on work_pc
         "privacy.disable-location" => profile == "work_pc",
+        // Update orchestrator blocked on work_pc (managed updates)
         "tasks.disable-update-orchestrator" => profile == "work_pc",
 
+        // ── CPU/Latency power-related actions: blocked on office_laptop and low_spec (battery drain) ──
         "cpu.disable-dynamic-tick" => {
             profile == "office_laptop" || profile == "low_spec_system"
         }
@@ -120,49 +137,64 @@ fn is_blocked(action_id: &str, profile: &str, preservation: &Value) -> bool {
             profile == "office_laptop" || profile == "low_spec_system"
         }
 
+        // ── Power aggressive actions: blocked on office_laptop (battery) ──
         "power.high-performance-plan" => profile == "office_laptop",
         "power.disable-usb-selective-suspend" => profile == "office_laptop",
         "power.disable-pcie-link-state-pm" => profile == "office_laptop",
 
+        // ── GPU actions ──
         "gpu.nvidia-disable-dynamic-pstate" => {
             profile == "work_pc" || profile == "office_laptop" || profile == "vm_cautious"
         }
         "gpu.msi-mode" => profile == "vm_cautious",
 
+        // ── Service actions blocked on work_pc ──
         "services.disable-sysmain" => profile == "work_pc",
         "services.disable-print-spooler" => profile == "work_pc",
         "services.disable-remote-services" => profile == "work_pc",
 
+        // ── Security expert-only: blocked on work_pc, office_laptop, vm_cautious ──
         "security.reduce-ssbd-mitigation" => {
             profile == "work_pc" || profile == "office_laptop" || profile == "vm_cautious"
         }
 
+        // ── System extreme-risk: blocked on work_pc ──
         "system.disable-windows-update" => profile == "work_pc",
 
+        // ── Startup: gamebar-presence blocked on vm_cautious (doesn't exist in VM) ──
         "startup.disable-gamebar-presence" => profile == "vm_cautious",
 
+        // ── MMCSS system responsiveness blocked on work_pc (may affect business app responsiveness) ──
         "perf.mmcss-system-responsiveness" => profile == "work_pc",
 
+        // ── GPU energy driver disable blocked on vm_cautious (virtual GPU) ──
         "perf.gpu-energy-driver-disable" => profile == "vm_cautious",
 
+        // ── SmartScreen disable blocked on work_pc, vm_cautious (security-sensitive) ──
         "privacy.disable-smartscreen" => {
             profile == "work_pc" || profile == "vm_cautious"
         }
 
+        // ── HVCI disable blocked on work_pc, office_laptop, vm_cautious (security-critical) ──
         "security.disable-hvci" => {
             profile == "work_pc" || profile == "office_laptop" || profile == "vm_cautious"
         }
 
+        // ── Nvidia telemetry blocked on vm_cautious (no Nvidia in VMs) ──
         "gpu.disable-nvidia-telemetry" => profile == "vm_cautious",
 
+        // ── AMD telemetry blocked on vm_cautious (no AMD GPU in VMs) ──
         "gpu.disable-amd-telemetry" => profile == "vm_cautious",
 
+        // ── Fullscreen optimizations blocked on work_pc (not a gaming setting) ──
         "perf.disable-fullscreen-optimizations" => profile == "work_pc",
 
+        // ── Network security actions blocked on work_pc (enterprise networks may require these protocols) ──
         "network.disable-ipv6" => profile == "work_pc",
         "network.disable-llmnr" => profile == "work_pc",
         "network.disable-netbios" => profile == "work_pc",
 
+        // ── Windows Update granularity blocked on work_pc (enterprise manages update policies) ──
         "system.disable-update-auto-restart" => profile == "work_pc",
         "system.defer-feature-updates" => profile == "work_pc",
 
@@ -170,8 +202,10 @@ fn is_blocked(action_id: &str, profile: &str, preservation: &Value) -> bool {
     }
 }
 
+/// All embedded safe tuning actions.
 fn embedded_actions() -> Vec<Value> {
     vec![
+        // ── AppX Removal ────────────────────────────────────────────────
         serde_json::json!({
             "id": "appx.remove-consumer-bloat",
             "category": "appx",
@@ -230,6 +264,7 @@ fn embedded_actions() -> Vec<Value> {
             ]
         }),
 
+        // ── Task Disabling ──────────────────────────────────────────────
         serde_json::json!({
             "id": "tasks.disable-telemetry-tasks",
             "category": "tasks",
@@ -258,6 +293,7 @@ fn embedded_actions() -> Vec<Value> {
             ]
         }),
 
+        // ── Privacy ─────────────────────────────────────────────────────
         serde_json::json!({
             "id": "privacy.disable-telemetry",
             "category": "privacy",
@@ -304,6 +340,7 @@ fn embedded_actions() -> Vec<Value> {
             ]
         }),
 
+        // ── Startup ─────────────────────────────────────────────────────
         serde_json::json!({
             "id": "startup.disable-background-apps",
             "category": "startup",
@@ -329,6 +366,7 @@ fn embedded_actions() -> Vec<Value> {
             ]
         }),
 
+        // ── Shell Cleanup ─────────────────────────────────────────────────
         serde_json::json!({
             "id": "shell.hide-task-view",
             "category": "shell",
@@ -462,6 +500,7 @@ fn embedded_actions() -> Vec<Value> {
             "warningMessage": null
         }),
 
+        // ── More Privacy ──────────────────────────────────────────────────
         serde_json::json!({
             "id": "privacy.disable-location",
             "category": "privacy",
@@ -529,6 +568,7 @@ fn embedded_actions() -> Vec<Value> {
             "warningMessage": null
         }),
 
+        // ── More Startup/Tasks ────────────────────────────────────────────
         serde_json::json!({
             "id": "tasks.disable-update-orchestrator",
             "category": "tasks",
@@ -592,6 +632,7 @@ fn embedded_actions() -> Vec<Value> {
             "warningMessage": null
         }),
 
+        // ── More AppX ─────────────────────────────────────────────────────
         serde_json::json!({
             "id": "appx.remove-cortana",
             "category": "appx",
@@ -674,6 +715,7 @@ fn embedded_actions() -> Vec<Value> {
             "warningMessage": "AppX removal cannot be automatically reversed. Reinstall from Microsoft Store."
         }),
 
+        // ── Performance ───────────────────────────────────────────────────
         serde_json::json!({
             "id": "perf.disable-game-dvr",
             "category": "perf",
@@ -715,6 +757,13 @@ fn embedded_actions() -> Vec<Value> {
             "warningMessage": "Disabling Game DVR removes background recording and Game Bar capture features"
         }),
 
+        // ══════════════════════════════════════════════════════════════════════
+        // Actions 21–60: Aggressive performance/latency tuning
+        // Registry paths, power GUIDs, BCD elements, and service names are
+        // copied verbatim from redcore-Tuning/packages/tuning-modules.
+        // ══════════════════════════════════════════════════════════════════════
+
+        // ── 21. CPU: Disable Dynamic Tick ────────────────────────────────────
         serde_json::json!({
             "id": "cpu.disable-dynamic-tick",
             "name": "Disable Dynamic Tick and Enable Platform Timer",
@@ -748,6 +797,7 @@ fn embedded_actions() -> Vec<Value> {
             "warningMessage": null
         }),
 
+        // ── 22. CPU: Global Timer Resolution ─────────────────────────────────
         serde_json::json!({
             "id": "cpu.global-timer-resolution",
             "name": "Enable Global Timer Resolution Requests",
@@ -784,6 +834,7 @@ fn embedded_actions() -> Vec<Value> {
             "warningMessage": null
         }),
 
+        // ── 23. CPU: Win32PrioritySeparation ─────────────────────────────────
         serde_json::json!({
             "id": "cpu.win32-priority-separation",
             "name": "Win32PrioritySeparation -> 0x26 (Gaming)",
@@ -817,6 +868,7 @@ fn embedded_actions() -> Vec<Value> {
             "warningMessage": null
         }),
 
+        // ── 24. CPU: Disable Core Parking ────────────────────────────────────
         serde_json::json!({
             "id": "cpu.disable-core-parking",
             "name": "Disable CPU Core Parking",
@@ -849,6 +901,7 @@ fn embedded_actions() -> Vec<Value> {
             "warningMessage": null
         }),
 
+        // ── 25. CPU: Aggressive Boost Mode ───────────────────────────────────
         serde_json::json!({
             "id": "cpu.aggressive-boost-mode",
             "name": "Aggressive Processor Boost Mode",
@@ -881,6 +934,7 @@ fn embedded_actions() -> Vec<Value> {
             "warningMessage": null
         }),
 
+        // ── 26. CPU: Min Processor State 100% ────────────────────────────────
         serde_json::json!({
             "id": "cpu.min-processor-state-100",
             "name": "Set Minimum Processor State to 100%",
@@ -914,6 +968,7 @@ fn embedded_actions() -> Vec<Value> {
             "warningMessage": null
         }),
 
+        // ── 27. Scheduler: MMCSS Gaming Profile ─────────────────────────────
         serde_json::json!({
             "id": "scheduler.mmcss-gaming-profile",
             "name": "MMCSS Gaming Profile - Maximum Priority",
@@ -999,6 +1054,7 @@ fn embedded_actions() -> Vec<Value> {
             "warningMessage": null
         }),
 
+        // ── 28. Power: High Performance Plan ─────────────────────────────────
         serde_json::json!({
             "id": "power.high-performance-plan",
             "name": "Activate High Performance Power Plan",
@@ -1028,6 +1084,7 @@ fn embedded_actions() -> Vec<Value> {
             "warningMessage": null
         }),
 
+        // ── 29. Power: Disable Fast Startup ──────────────────────────────────
         serde_json::json!({
             "id": "power.disable-fast-startup",
             "name": "Disable Fast Startup (Hybrid Shutdown)",
@@ -1061,6 +1118,7 @@ fn embedded_actions() -> Vec<Value> {
             "warningMessage": null
         }),
 
+        // ── 30. Power: Disable Hibernation ───────────────────────────────────
         serde_json::json!({
             "id": "power.disable-hibernation",
             "name": "Disable Hibernation",
@@ -1098,6 +1156,7 @@ fn embedded_actions() -> Vec<Value> {
             "warningMessage": null
         }),
 
+        // ── 31. Power: Disable USB Selective Suspend ─────────────────────────
         serde_json::json!({
             "id": "power.disable-usb-selective-suspend",
             "name": "Disable USB Selective Suspend",
@@ -1126,6 +1185,7 @@ fn embedded_actions() -> Vec<Value> {
             "warningMessage": null
         }),
 
+        // ── 32. Power: Disable PCIe Link State PM ────────────────────────────
         serde_json::json!({
             "id": "power.disable-pcie-link-state-pm",
             "name": "Disable PCIe Link State Power Management",
@@ -1157,6 +1217,7 @@ fn embedded_actions() -> Vec<Value> {
             "warningMessage": null
         }),
 
+        // ── 33. GPU: Disable HAGS ────────────────────────────────────────────
         serde_json::json!({
             "id": "gpu.disable-hags",
             "name": "Disable Hardware-Accelerated GPU Scheduling (HAGS)",
@@ -1190,6 +1251,7 @@ fn embedded_actions() -> Vec<Value> {
             "warningMessage": null
         }),
 
+        // ── 34. GPU: NVIDIA Disable Dynamic P-State ──────────────────────────
         serde_json::json!({
             "id": "gpu.nvidia-disable-dynamic-pstate",
             "name": "Lock NVIDIA GPU to P-State 0 (Maximum Performance)",
@@ -1229,6 +1291,7 @@ fn embedded_actions() -> Vec<Value> {
             "warningMessage": "NVIDIA-only tweak. GPU will run at max clocks at all times, increasing power and temperature."
         }),
 
+        // ── 35. GPU: TDR Delay ───────────────────────────────────────────────
         serde_json::json!({
             "id": "gpu.tdr-delay",
             "name": "Increase TDR Timeout to 10 Seconds",
@@ -1269,6 +1332,7 @@ fn embedded_actions() -> Vec<Value> {
             "warningMessage": null
         }),
 
+        // ── 36. GPU: MSI Mode ────────────────────────────────────────────────
         serde_json::json!({
             "id": "gpu.msi-mode",
             "name": "Enable GPU MSI (Message Signaled Interrupts) Mode",
@@ -1305,6 +1369,7 @@ fn embedded_actions() -> Vec<Value> {
             "warningMessage": "GPU PCI device path must be detected at runtime. Incorrect path has no effect."
         }),
 
+        // ── 37. Network: Disable Nagle ───────────────────────────────────────
         serde_json::json!({
             "id": "network.disable-nagle",
             "name": "Disable Nagle's Algorithm (TCPNoDelay)",
@@ -1345,6 +1410,7 @@ fn embedded_actions() -> Vec<Value> {
             "warningMessage": null
         }),
 
+        // ── 38. Network: RSS Queues 2 ────────────────────────────────────────
         serde_json::json!({
             "id": "network.rss-queues-2",
             "name": "Set RSS Queues to 2",
@@ -1378,6 +1444,7 @@ fn embedded_actions() -> Vec<Value> {
             "warningMessage": null
         }),
 
+        // ── 39. Memory: Disable Compression ─────────────────────────────────
         serde_json::json!({
             "id": "memory.disable-compression",
             "name": "Disable Memory Compression",
@@ -1406,6 +1473,7 @@ fn embedded_actions() -> Vec<Value> {
             "warningMessage": null
         }),
 
+        // ── 40. Storage: Disable Last Access ─────────────────────────────────
         serde_json::json!({
             "id": "storage.disable-last-access",
             "name": "Disable NTFS Last Access Timestamp",
@@ -1439,6 +1507,7 @@ fn embedded_actions() -> Vec<Value> {
             "warningMessage": null
         }),
 
+        // ── 41. Storage: Disable 8.3 Filenames ──────────────────────────────
         serde_json::json!({
             "id": "storage.disable-8dot3-filenames",
             "name": "Disable 8.3 Short Filename Creation",
@@ -1475,6 +1544,7 @@ fn embedded_actions() -> Vec<Value> {
             "warningMessage": null
         }),
 
+        // ── 42. Storage: Enable Write Caching ────────────────────────────────
         serde_json::json!({
             "id": "storage.enable-write-caching",
             "name": "Enable Disk Write Caching",
@@ -1515,6 +1585,7 @@ fn embedded_actions() -> Vec<Value> {
             "warningMessage": null
         }),
 
+        // ── 43. Storage: Disable Indexing ────────────────────────────────────
         serde_json::json!({
             "id": "storage.disable-indexing",
             "name": "Disable Windows Search Indexing Service",
@@ -1545,6 +1616,7 @@ fn embedded_actions() -> Vec<Value> {
             "warningMessage": null
         }),
 
+        // ── 44. Services: Disable SysMain ────────────────────────────────────
         serde_json::json!({
             "id": "services.disable-sysmain",
             "name": "Disable SysMain (Superfetch)",
@@ -1575,6 +1647,7 @@ fn embedded_actions() -> Vec<Value> {
             "warningMessage": null
         }),
 
+        // ── 45. Services: Disable Print Spooler ──────────────────────────────
         serde_json::json!({
             "id": "services.disable-print-spooler",
             "name": "Disable Print Spooler",
@@ -1605,6 +1678,7 @@ fn embedded_actions() -> Vec<Value> {
             "warningMessage": null
         }),
 
+        // ── 46. Services: Disable Remote Services ────────────────────────────
         serde_json::json!({
             "id": "services.disable-remote-services",
             "name": "Disable Remote Access Services",
@@ -1646,6 +1720,7 @@ fn embedded_actions() -> Vec<Value> {
             "warningMessage": null
         }),
 
+        // ── 47. Audio: Disable Enhancements ──────────────────────────────────
         serde_json::json!({
             "id": "audio.disable-enhancements",
             "name": "Disable Audio Enhancements",
@@ -1682,6 +1757,7 @@ fn embedded_actions() -> Vec<Value> {
             "warningMessage": null
         }),
 
+        // ── 48. Audio: Exclusive Mode ────────────────────────────────────────
         serde_json::json!({
             "id": "audio.exclusive-mode",
             "name": "Configure WASAPI Exclusive Mode Priority",
@@ -1725,6 +1801,7 @@ fn embedded_actions() -> Vec<Value> {
             "warningMessage": null
         }),
 
+        // ── 49. Display: Disable Pointer Acceleration ────────────────────────
         serde_json::json!({
             "id": "display.disable-pointer-acceleration",
             "name": "Disable Mouse Pointer Acceleration",
@@ -1772,6 +1849,7 @@ fn embedded_actions() -> Vec<Value> {
             "warningMessage": null
         }),
 
+        // ── 50. Display: Disable Game Bar ────────────────────────────────────
         serde_json::json!({
             "id": "display.disable-game-bar",
             "name": "Disable Game Bar and Game DVR",
@@ -1822,6 +1900,7 @@ fn embedded_actions() -> Vec<Value> {
             "warningMessage": null
         }),
 
+        // ── 51. Privacy: Disable CEIP ────────────────────────────────────────
         serde_json::json!({
             "id": "privacy.disable-ceip",
             "name": "Disable Customer Experience Improvement Program",
@@ -1855,6 +1934,7 @@ fn embedded_actions() -> Vec<Value> {
             "warningMessage": null
         }),
 
+        // ── 52. Privacy: Disable Error Reporting ─────────────────────────────
         serde_json::json!({
             "id": "privacy.disable-error-reporting",
             "name": "Disable Windows Error Reporting",
@@ -1897,6 +1977,7 @@ fn embedded_actions() -> Vec<Value> {
             "warningMessage": null
         }),
 
+        // ── 53. Privacy: Disable Cloud Content ──────────────────────────────
         serde_json::json!({
             "id": "privacy.disable-cloud-content",
             "name": "Disable Cloud Content & Suggestions",
@@ -1951,6 +2032,7 @@ fn embedded_actions() -> Vec<Value> {
             "warningMessage": null
         }),
 
+        // ── 54. Privacy: Disable Clipboard History ───────────────────────────
         serde_json::json!({
             "id": "privacy.disable-clipboard-history",
             "name": "Disable Clipboard History & Cloud Sync",
@@ -1991,6 +2073,7 @@ fn embedded_actions() -> Vec<Value> {
             "warningMessage": null
         }),
 
+        // ── 55. Privacy: Disable Activity Feed ──────────────────────────────
         serde_json::json!({
             "id": "privacy.disable-activity-feed",
             "name": "Disable Activity History & Timeline",
@@ -2038,6 +2121,7 @@ fn embedded_actions() -> Vec<Value> {
             "warningMessage": null
         }),
 
+        // ── 56. Startup: Disable Automatic Maintenance ───────────────────────
         serde_json::json!({
             "id": "startup.disable-automatic-maintenance",
             "name": "Disable Automatic Maintenance",
@@ -2074,6 +2158,7 @@ fn embedded_actions() -> Vec<Value> {
             "warningMessage": null
         }),
 
+        // ── 57. Startup: Disable GameBar Presence Writer ─────────────────────
         serde_json::json!({
             "id": "startup.disable-gamebar-presence",
             "name": "Disable GameBarPresenceWriter",
@@ -2107,6 +2192,7 @@ fn embedded_actions() -> Vec<Value> {
             "warningMessage": null
         }),
 
+        // ── 58. Startup: Disable Cloud Notifications ─────────────────────────
         serde_json::json!({
             "id": "startup.disable-cloud-notifications",
             "name": "Disable Cloud Notification Network Usage",
@@ -2140,6 +2226,7 @@ fn embedded_actions() -> Vec<Value> {
             "warningMessage": null
         }),
 
+        // ── 59. Security: Reduce SSBD Mitigation (EXPERT-ONLY) ──────────────
         serde_json::json!({
             "id": "security.reduce-ssbd-mitigation",
             "name": "Reduce Speculative Store Bypass (SSBD) Mitigation",
@@ -2185,6 +2272,7 @@ fn embedded_actions() -> Vec<Value> {
             "warningMessage": "SECURITY RISK: Disables Spectre v4 mitigation. Only for isolated gaming/benchmark systems."
         }),
 
+        // ── 60. System: Disable Windows Update (EXTREME RISK) ────────────────
         serde_json::json!({
             "id": "system.disable-windows-update",
             "name": "Disable Windows Update (EXTREME RISK)",
@@ -2249,6 +2337,7 @@ fn embedded_actions() -> Vec<Value> {
             "warningMessage": "EXTREME RISK: All Windows updates including security patches will be disabled. Only for air-gapped/benchmark systems."
         }),
 
+        // ── AppX Removal (Atlas-derived) ─────────────────────────────────
         serde_json::json!({
             "id": "appx.remove-mail-calendar",
             "category": "appx",
@@ -2530,6 +2619,7 @@ fn embedded_actions() -> Vec<Value> {
             "warningMessage": "AppX removal cannot be automatically reversed. Reinstall from Microsoft Store."
         }),
 
+        // ── Performance (Atlas-derived) ──────────────────────────────────
         serde_json::json!({
             "id": "perf.mmcss-system-responsiveness",
             "category": "performance",
@@ -2690,6 +2780,7 @@ fn embedded_actions() -> Vec<Value> {
             "warningMessage": null
         }),
 
+        // ── Privacy (Atlas-derived) ──────────────────────────────────────
         serde_json::json!({
             "id": "privacy.disable-app-launch-tracking",
             "category": "privacy",
@@ -2863,6 +2954,7 @@ fn embedded_actions() -> Vec<Value> {
             "warningMessage": null
         }),
 
+        // ── Shell / QoL (Atlas-derived) ──────────────────────────────────
         serde_json::json!({
             "id": "shell.disable-copilot",
             "category": "shell",
@@ -2963,6 +3055,7 @@ fn embedded_actions() -> Vec<Value> {
             "warningMessage": null
         }),
 
+        // ── Startup / Shutdown (Atlas-derived) ──────────────────────────
         serde_json::json!({
             "id": "shutdown.decrease-shutdown-time",
             "category": "startup",
@@ -3044,6 +3137,7 @@ fn embedded_actions() -> Vec<Value> {
             "warningMessage": null
         }),
 
+        // ── Privacy: Disable Windows Recall AI ─────────────────────────────
         serde_json::json!({
             "id": "privacy.disable-recall",
             "category": "privacy",
@@ -3078,6 +3172,7 @@ fn embedded_actions() -> Vec<Value> {
             "warningMessage": null
         }),
 
+        // ── Performance: Disable Fullscreen Optimizations ──────────────────
         serde_json::json!({
             "id": "perf.disable-fullscreen-optimizations",
             "category": "performance",
@@ -3112,6 +3207,7 @@ fn embedded_actions() -> Vec<Value> {
             "warningMessage": null
         }),
 
+        // ── Network: Disable Teredo Tunneling ──────────────────────────────
         serde_json::json!({
             "id": "network.disable-teredo",
             "category": "infrastructure",
@@ -3146,6 +3242,7 @@ fn embedded_actions() -> Vec<Value> {
             "warningMessage": null
         }),
 
+        // ── GPU: Disable Nvidia Telemetry ──────────────────────────────────
         serde_json::json!({
             "id": "gpu.disable-nvidia-telemetry",
             "category": "performance",
@@ -3174,6 +3271,7 @@ fn embedded_actions() -> Vec<Value> {
             "warningMessage": null
         }),
 
+        // ── GPU: Disable AMD Telemetry ─────────────────────────────────────
         serde_json::json!({
             "id": "gpu.disable-amd-telemetry",
             "category": "performance",
@@ -3202,6 +3300,7 @@ fn embedded_actions() -> Vec<Value> {
             "warningMessage": null
         }),
 
+        // ── Privacy: Disable SmartScreen Filter ────────────────────────────
         serde_json::json!({
             "id": "privacy.disable-smartscreen",
             "category": "privacy",
@@ -3236,6 +3335,7 @@ fn embedded_actions() -> Vec<Value> {
             "warningMessage": "Disabling SmartScreen removes a layer of protection. Only disable if you have alternative security software."
         }),
 
+        // ── Performance: Disable Window Transparency ───────────────────────
         serde_json::json!({
             "id": "perf.disable-transparency",
             "category": "performance",
@@ -3270,6 +3370,7 @@ fn embedded_actions() -> Vec<Value> {
             "warningMessage": null
         }),
 
+        // ── Privacy: Block App Reprovisioning ──────────────────────────────
         serde_json::json!({
             "id": "privacy.block-app-reprovisioning",
             "category": "privacy",
@@ -3296,6 +3397,7 @@ fn embedded_actions() -> Vec<Value> {
             "warningMessage": null
         }),
 
+        // ── Security: Disable HVCI (Core Isolation) ────────────────────────
         serde_json::json!({
             "id": "security.disable-hvci",
             "category": "advanced",
@@ -3330,6 +3432,7 @@ fn embedded_actions() -> Vec<Value> {
             "warningMessage": "Disabling HVCI reduces security. Only recommended for dedicated gaming PCs with no sensitive data."
         }),
 
+        // ── Network Security: Disable IPv6 ──────────────────────────────────
         serde_json::json!({
             "id": "network.disable-ipv6",
             "category": "network",
@@ -3364,6 +3467,7 @@ fn embedded_actions() -> Vec<Value> {
             "warningMessage": "Some networks require IPv6. Only disable on networks where IPv4 is sufficient."
         }),
 
+        // ── Network Security: Disable LLMNR ─────────────────────────────────
         serde_json::json!({
             "id": "network.disable-llmnr",
             "category": "network",
@@ -3398,6 +3502,7 @@ fn embedded_actions() -> Vec<Value> {
             "warningMessage": null
         }),
 
+        // ── Network Security: Disable NetBIOS ───────────────────────────────
         serde_json::json!({
             "id": "network.disable-netbios",
             "category": "network",
@@ -3439,6 +3544,7 @@ fn embedded_actions() -> Vec<Value> {
             "warningMessage": null
         }),
 
+        // ── Shell QoL: Disable Web Search ────────────────────────────────────
         serde_json::json!({
             "id": "shell.disable-web-search",
             "category": "shell",
@@ -3473,6 +3579,7 @@ fn embedded_actions() -> Vec<Value> {
             "warningMessage": null
         }),
 
+        // ── Shell QoL: Disable Lock Screen Tips ─────────────────────────────
         serde_json::json!({
             "id": "shell.disable-lock-screen-tips",
             "category": "shell",
@@ -3514,6 +3621,7 @@ fn embedded_actions() -> Vec<Value> {
             "warningMessage": null
         }),
 
+        // ── Shell QoL: Disable Start Menu Suggestions ───────────────────────
         serde_json::json!({
             "id": "shell.disable-start-menu-suggestions",
             "category": "shell",
@@ -3555,6 +3663,7 @@ fn embedded_actions() -> Vec<Value> {
             "warningMessage": null
         }),
 
+        // ── System: Disable Update Auto-Restart ─────────────────────────────
         serde_json::json!({
             "id": "system.disable-update-auto-restart",
             "category": "system",
@@ -3589,6 +3698,7 @@ fn embedded_actions() -> Vec<Value> {
             "warningMessage": null
         }),
 
+        // ── System: Defer Feature Updates ────────────────────────────────────
         serde_json::json!({
             "id": "system.defer-feature-updates",
             "category": "system",
@@ -3631,6 +3741,8 @@ fn embedded_actions() -> Vec<Value> {
         }),
     ]
 }
+
+// ─── Tests ──────────────────────────────────────────────────────────────────
 
 #[cfg(test)]
 mod tests {
@@ -3675,6 +3787,7 @@ mod tests {
         let plan = generate_plan(&classification, "conservative").unwrap();
 
         let actions = plan["actions"].as_array().unwrap();
+        // Conservative should only include "safe" or "low" risk actions
         for action in actions {
             let risk = action["risk"].as_str().unwrap();
             assert!(
@@ -3683,6 +3796,7 @@ mod tests {
                 risk
             );
         }
+        // Should have at least some actions
         assert!(
             !actions.is_empty(),
             "Conservative plan should have at least one action"
@@ -3752,6 +3866,7 @@ mod tests {
 
     #[test]
     fn test_competitive_mode_allows_aggressive() {
+        // gaming_desktop conservative plan should include these low-risk actions
         let classification = make_classification("gaming_desktop");
         let plan = generate_plan(&classification, "conservative").unwrap();
 
@@ -3804,6 +3919,7 @@ mod tests {
         let actions = plan["actions"].as_array().unwrap();
         let ids: Vec<&str> = actions.iter().filter_map(|a| a["id"].as_str()).collect();
 
+        // Must be blocked for work_pc
         assert!(!ids.contains(&"perf.mmcss-system-responsiveness"), "MMCSS must be blocked on work_pc");
         assert!(!ids.contains(&"services.disable-print-spooler"), "Print spooler must be blocked on work_pc");
         assert!(!ids.contains(&"services.disable-remote-services"), "Remote services must be blocked on work_pc");
@@ -3811,6 +3927,7 @@ mod tests {
         assert!(!ids.contains(&"system.disable-windows-update"), "Windows Update must be blocked on work_pc");
         assert!(!ids.contains(&"security.reduce-ssbd-mitigation"), "SSBD must be blocked on work_pc");
 
+        // Must be allowed for work_pc
         assert!(ids.contains(&"perf.disable-service-host-split"), "Service host split must be allowed on work_pc");
         assert!(ids.contains(&"shell.disable-copilot"), "Copilot disable must be allowed on work_pc");
         assert!(ids.contains(&"shutdown.decrease-shutdown-time"), "Shutdown time must be allowed on work_pc");
@@ -3824,13 +3941,16 @@ mod tests {
         let actions = plan["actions"].as_array().unwrap();
         let ids: Vec<&str> = actions.iter().filter_map(|a| a["id"].as_str()).collect();
 
+        // GPU energy driver must be blocked on vm_cautious
         assert!(!ids.contains(&"perf.gpu-energy-driver-disable"), "GPU energy driver must be blocked on vm_cautious");
         assert!(!ids.contains(&"gpu.msi-mode"), "GPU MSI mode must be blocked on vm_cautious");
         assert!(!ids.contains(&"startup.disable-gamebar-presence"), "GameBar presence must be blocked on vm_cautious");
 
+        // No appx.* actions should be in vm_cautious plan
         let appx_count = ids.iter().filter(|id| id.starts_with("appx.")).count();
         assert_eq!(appx_count, 0, "vm_cautious must block all AppX removal actions");
 
+        // But privacy and shell actions should still be allowed
         assert!(ids.contains(&"privacy.disable-advertising-id"), "Privacy actions must be allowed on vm_cautious");
         assert!(ids.contains(&"shell.disable-copilot"), "Shell actions must be allowed on vm_cautious");
     }

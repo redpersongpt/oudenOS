@@ -1,7 +1,17 @@
+// ─── Playbook System ────────────────────────────────────────────────────────
+// Loads, parses, validates, and merges YAML playbook files into an executable
+// transformation plan. This replaces the hardcoded embedded_actions() approach.
+//
+// Architecture:
+//   manifest.yaml → phases → modules (*.yaml) → actions
+//   profiles/*.yaml → blockedActions, optionalActions, preservationFlags
+//   The loader produces a PlaybookPlan that the executor consumes.
 
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 use std::path::{Path, PathBuf};
+
+// ─── Schema types ───────────────────────────────────────────────────────────
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PlaybookManifest {
@@ -180,6 +190,8 @@ pub struct ProfileOverride {
     pub preservation_flags: Vec<String>,
 }
 
+// ─── Loaded playbook (merged result) ────────────────────────────────────────
+
 #[derive(Debug, Clone, Serialize)]
 pub struct LoadedPlaybook {
     pub manifest: PlaybookManifest,
@@ -196,6 +208,8 @@ pub struct LoadedPhase {
     pub is_builtin: bool,
     pub actions: Vec<PlaybookAction>,
 }
+
+// ─── Resolved plan (after profile + preset filtering) ───────────────────────
 
 #[derive(Debug, Clone, Serialize)]
 pub struct ResolvedPlan {
@@ -238,6 +252,9 @@ pub struct BlockedAction {
     pub reason: String,
 }
 
+// ─── Loader ─────────────────────────────────────────────────────────────────
+
+/// Load the playbook from a directory containing manifest.yaml + module files.
 pub fn load_playbook(playbook_dir: &Path) -> anyhow::Result<LoadedPlaybook> {
     let manifest_path = playbook_dir.join("manifest.yaml");
     let manifest_text = std::fs::read_to_string(&manifest_path)
@@ -261,6 +278,7 @@ pub fn load_playbook(playbook_dir: &Path) -> anyhow::Result<LoadedPlaybook> {
 
         if !is_builtin {
             for module_path in &phase.modules {
+                // Guard against path traversal (e.g. "../../etc/passwd")
                 if module_path.contains("..") {
                     tracing::error!(
                         path = module_path.as_str(),
@@ -299,6 +317,7 @@ pub fn load_playbook(playbook_dir: &Path) -> anyhow::Result<LoadedPlaybook> {
         });
     }
 
+    // Load profile overrides
     let mut profiles: Vec<ProfileOverride> = Vec::new();
     for (profile_id, profile_ref) in &manifest.profiles {
         if let Some(override_path) = &profile_ref.overrides {
@@ -422,12 +441,16 @@ fn load_profile_override(path: &Path) -> anyhow::Result<ProfileOverride> {
     Ok(po)
 }
 
+// ─── Resolver ───────────────────────────────────────────────────────────────
+
+/// Resolve a loaded playbook into an executable plan for a specific profile and preset.
 pub fn resolve_plan(
     playbook: &LoadedPlaybook,
     profile: &str,
     preset: &str,
     windows_build: Option<u32>,
 ) -> ResolvedPlan {
+    // Find profile override
     let profile_override = playbook.profiles.iter().find(|p| p.profile == profile);
     let blocked_set: HashSet<&str> = profile_override
         .map(|po| po.blocked_actions.iter().map(|s| s.as_str()).collect())
@@ -453,10 +476,12 @@ pub fn resolve_plan(
         let mut resolved_actions: Vec<ResolvedAction> = Vec::new();
 
         for action in &phase.actions {
+            // Check wildcard blocks (e.g., "appx.*")
             let is_wildcard_blocked = blocked_set.iter().any(|pattern| {
                 pattern.ends_with(".*") && action.id.starts_with(&pattern[..pattern.len() - 2])
             });
 
+            // Determine status
             let (status, reason) = if is_wildcard_blocked || blocked_set.contains(action.id.as_str())
                 || action.blocked_profiles.contains(&profile.to_string())
             {
@@ -471,6 +496,7 @@ pub fn resolve_plan(
                 determine_inclusion(&action, preset, &optional_set)
             };
 
+            // Preset risk filtering
             let risk_allowed = match preset {
                 "conservative" => action.risk == "safe" || action.risk == "low",
                 "balanced" => action.risk != "high" && action.risk != "extreme",
@@ -541,6 +567,8 @@ fn determine_inclusion(
     }
 }
 
+// ─── JSON serialization for IPC ─────────────────────────────────────────────
+
 impl ResolvedPlan {
     pub fn to_json(&self) -> serde_json::Value {
         serde_json::json!({
@@ -580,6 +608,8 @@ impl ResolvedPlan {
         })
     }
 }
+
+// ─── Tests ──────────────────────────────────────────────────────────────────
 
 #[cfg(test)]
 mod tests {
@@ -626,6 +656,7 @@ mod tests {
         let playbook = load_playbook(&dir).unwrap();
         let plan = resolve_plan(&playbook, "work_pc", "conservative", Some(22631));
 
+        // Verify work_pc blocks are applied
         let included_ids: HashSet<String> = plan.phases.iter()
             .flat_map(|p| p.actions.iter())
             .filter(|a| a.status == ActionStatus::Included)
@@ -637,6 +668,7 @@ mod tests {
         assert!(!included_ids.contains("shell.reduce-search-box"),
             "Search box reduction must be blocked for work_pc");
 
+        // But safe privacy actions should be included
         assert!(included_ids.contains("privacy.disable-advertising-id"),
             "Advertising ID disable should be included for work_pc");
 

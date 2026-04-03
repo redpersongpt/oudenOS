@@ -9,6 +9,15 @@ type Props = {
   loading?: boolean;
 } & Omit<ButtonHTMLAttributes<HTMLButtonElement>, "children">;
 
+/*
+  Spec:
+  Primary   → --text-display bg, --black text, pill (999px)
+  Secondary → transparent, 1px border --border-visible, --text-primary, pill
+  Ghost     → transparent, no border, --text-secondary, 0 radius
+  Destructive → transparent, 1px border --accent, --accent text, pill
+  All: Space Mono, 13px, ALL CAPS, letter-spacing 0.06em, min-height 44px
+*/
+
 export function Button({
   variant = "primary", size = "md", children, icon,
   iconPosition = "left", loading, disabled, className = "", style, ...props

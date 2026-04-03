@@ -1,3 +1,9 @@
+// APBX bundle creator — Rust port of apps/os-desktop/src/main/lib/apbx.ts
+// Creates ZIP-based .apbx packages containing playbooks, wizard state,
+// resolved configuration, manifest with checksums, and execution provenance.
+//
+// This runs in the Tauri backend (unprivileged). It does NOT perform
+// system mutations — it only reads playbook files and serializes state.
 
 use sha2::{Digest, Sha256};
 use std::fs;
@@ -61,6 +67,7 @@ pub fn create_bundle(
         format!("redcore-os-template-{version}-{commit}")
     };
 
+    // Build the bundle in a temp directory, then ZIP it
     let temp_dir = std::env::temp_dir().join(format!("redcore-os-apbx-{}", std::process::id()));
     let pkg_dir = temp_dir.join(&package_stem);
 
@@ -75,11 +82,14 @@ pub fn create_bundle(
         fs::create_dir_all(d).map_err(|e| format!("mkdir failed: {e}"))?;
     }
 
+    // wizard.json
     write_json(&wizard_dir.join("wizard.json"), wizard_metadata)?;
 
+    // Configuration/main.yml
     let config_yml = render_resolved_config(wizard_metadata, state, package_kind);
     fs::write(config_dir.join("main.yml"), config_yml).map_err(|e| e.to_string())?;
 
+    // injection/staging.json
     let staging = serde_json::json!({
         "supportsISO": wizard_metadata.get("supportsISO").and_then(|v| v.as_bool()).unwrap_or(false),
         "supportsOffline": true,
@@ -91,6 +101,7 @@ pub fn create_bundle(
     });
     write_json(&injection_dir.join("staging.json"), &staging)?;
 
+    // meta/release.json
     let artifact_name = output_path.file_name().map(|f| f.to_string_lossy().to_string()).unwrap_or_default();
     let release = serde_json::json!({
         "product": "redcore-os",
@@ -104,8 +115,10 @@ pub fn create_bundle(
     });
     write_json(&meta_dir.join("release.json"), &release)?;
 
+    // Copy playbooks
     copy_dir_recursive(playbook_root, &payload_dir).map_err(|e| format!("copy playbooks: {e}"))?;
 
+    // Write state files
     if has_state {
         write_json(&state_dir.join("answers.json"), &val_or_null(&state.answers))?;
         write_json(&state_dir.join("profile.json"), &val_or_null(&state.detected_profile))?;
@@ -121,6 +134,7 @@ pub fn create_bundle(
         }
     }
 
+    // Compute checksums for all files in the package
     let all_files = list_files_recursive(&pkg_dir);
     let checksums: Vec<serde_json::Value> = all_files
         .iter()
@@ -136,6 +150,7 @@ pub fn create_bundle(
         })
         .collect();
 
+    // Build manifest
     let action_provenance = &state.action_provenance;
     let execution_journal = &state.execution_journal;
     let manifest = build_manifest(
@@ -144,6 +159,7 @@ pub fn create_bundle(
     );
     write_json(&pkg_dir.join("manifest.json"), &manifest)?;
 
+    // Create ZIP
     if let Some(parent) = output_path.parent() {
         fs::create_dir_all(parent).map_err(|e| e.to_string())?;
     }
@@ -152,6 +168,7 @@ pub fn create_bundle(
     let sha256 = sha256_file(output_path).unwrap_or_default();
     let size = fs::metadata(output_path).map(|m| m.len()).unwrap_or(0);
 
+    // Cleanup temp
     let _ = fs::remove_dir_all(&temp_dir);
 
     Ok(ExportResult::ok(
@@ -160,6 +177,10 @@ pub fn create_bundle(
         size,
     ))
 }
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
 
 fn write_json(path: &Path, value: &serde_json::Value) -> Result<(), String> {
     let content = serde_json::to_string_pretty(value).map_err(|e| e.to_string())?;
@@ -344,17 +365,20 @@ fn chrono_free_iso() -> String {
         .duration_since(std::time::UNIX_EPOCH)
         .unwrap_or_default()
         .as_secs();
+    // Simple ISO-ish timestamp without pulling in chrono
     let secs_per_day = 86400u64;
     let days = now / secs_per_day;
     let rem = now % secs_per_day;
     let h = rem / 3600;
     let m = (rem % 3600) / 60;
     let s = rem % 60;
+    // Approximate date from epoch days (good enough for bundle timestamps)
     let (y, mo, d) = epoch_days_to_date(days);
     format!("{y:04}-{mo:02}-{d:02}T{h:02}:{m:02}:{s:02}Z")
 }
 
 fn epoch_days_to_date(days: u64) -> (u64, u64, u64) {
+    // Simplified date calculation from epoch days
     let mut y = 1970;
     let mut remaining = days;
     loop {

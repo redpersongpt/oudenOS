@@ -1756,6 +1756,7 @@ class RpcClient {
         }
         pending.resolve((payload.result ?? {}) as Record<string, unknown>);
       } catch (error) {
+        // Ignore malformed stderr-adjacent output from the service.
         console.warn("[verification] Ignoring non-JSON RPC line", error);
       }
     });

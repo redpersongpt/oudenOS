@@ -1,3 +1,7 @@
+// ─── Rollback Engine ────────────────────────────────────────────────────────
+// Creates snapshots before tuning actions and restores them on demand.
+// Snapshots include: registry values, service states, task states, appx notes.
+// Restoration uses the PowerShell bridge for all system mutations.
 
 use crate::db::Database;
 #[cfg(windows)]
@@ -24,6 +28,7 @@ pub struct PreviousValue {
     pub action_id: String,
 }
 
+/// Create a snapshot of current values before applying a set of changes.
 pub fn create_snapshot(
     db: &Database,
     scope: &str,
@@ -47,6 +52,7 @@ pub fn create_snapshot(
         rusqlite::params![id, scope, now, data],
     )?;
 
+    // Audit log entry
     let audit_id = uuid::Uuid::new_v4().to_string();
     db.conn().execute(
         "INSERT INTO audit_log (id, timestamp, category, action, detail, severity)
@@ -64,6 +70,7 @@ pub fn create_snapshot(
     Ok(id)
 }
 
+/// List all available snapshots, newest first.
 pub fn list_snapshots(db: &Database) -> anyhow::Result<Vec<Snapshot>> {
     let mut stmt = db.conn().prepare(
         "SELECT data FROM rollback_snapshots ORDER BY created_at DESC",
@@ -80,6 +87,7 @@ pub fn list_snapshots(db: &Database) -> anyhow::Result<Vec<Snapshot>> {
     Ok(snapshots)
 }
 
+/// Detail of a single restore operation within a snapshot restoration.
 #[derive(Debug, Serialize)]
 struct RestoreDetail {
     #[serde(rename = "type")]
@@ -91,6 +99,7 @@ struct RestoreDetail {
     error: Option<String>,
 }
 
+/// Restore a snapshot by re-applying all previous values captured at snapshot time.
 pub fn restore_snapshot(
     db: &Database,
     snapshot_id: &str,
@@ -117,6 +126,7 @@ pub fn restore_snapshot(
             "bcd" => restore_bcd(prev),
             "power" => restore_power(prev),
             "appx" => {
+                // AppX packages cannot be automatically reinstalled -- note the limitation
                 tracing::info!(
                     package = prev.path.as_str(),
                     "AppX package was removed; reinstall from Microsoft Store if needed"
@@ -177,6 +187,7 @@ pub fn restore_snapshot(
         "partial"
     };
 
+    // Audit log entry
     let now = chrono::Utc::now().to_rfc3339();
     let audit_id = uuid::Uuid::new_v4().to_string();
     db.conn().execute(
@@ -201,6 +212,8 @@ pub fn restore_snapshot(
         "details": serde_json::to_value(&details)?,
     }))
 }
+
+// ─── Windows restore implementations ───────────────────────────────────────
 
 #[cfg(windows)]
 fn restore_registry(prev: &PreviousValue) -> anyhow::Result<()> {
@@ -255,6 +268,7 @@ fn restore_service(prev: &PreviousValue) -> anyhow::Result<()> {
         .and_then(|v| v.as_str())
         .unwrap_or("Manual");
 
+    // Validate and escape inputs before interpolation
     let safe_path = powershell::validate_safe_arg(&prev.path, "service name")?;
     let safe_start_type = powershell::validate_safe_arg(start_type, "start type")?;
     let escaped_path = powershell::escape_ps_string(safe_path);
@@ -356,6 +370,8 @@ fn restore_power(prev: &PreviousValue) -> anyhow::Result<()> {
     }
     Ok(())
 }
+
+// ─── Non-Windows simulation ─────────────────────────────────────────────────
 
 #[cfg(not(windows))]
 fn restore_bcd(prev: &PreviousValue) -> anyhow::Result<()> {
