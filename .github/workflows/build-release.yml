@@ -1,0 +1,79 @@
+name: Build & Release OudenOS
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version (e.g. 0.2.0)'
+        required: true
+        default: '0.2.0'
+
+jobs:
+  build:
+    name: Build OudenOS Installer
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: redpersongpt/oudenECO
+          token: ${{ secrets.ECO_PAT }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build OS service
+        working-directory: services/os-service
+        run: cargo build --release
+
+      - name: Build renderer
+        working-directory: apps/os-desktop
+        run: pnpm build
+
+      - name: Install Tauri CLI
+        run: cargo install tauri-cli --version "^2" --locked
+
+      - name: Build Tauri installer
+        working-directory: apps/os-desktop
+        run: cargo tauri build --config src-tauri/tauri.conf.production.json
+
+      - name: Find installer
+        id: find
+        shell: pwsh
+        run: |
+          $exe = Get-ChildItem -Path "apps/os-desktop/src-tauri/target/release/bundle/nsis/*.exe" | Select-Object -First 1
+          if (-not $exe) { throw "No installer found" }
+          Copy-Item $exe.FullName "OudenOS-setup.exe"
+          $size = (Get-Item "OudenOS-setup.exe").Length
+          $sha = (Get-FileHash "OudenOS-setup.exe" -Algorithm SHA256).Hash.ToLower()
+          echo "SIZE=$size" >> $env:GITHUB_OUTPUT
+          echo "SHA=$sha" >> $env:GITHUB_OUTPUT
+          Write-Host "Installer: $size bytes, SHA256: $sha"
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ inputs.version }}
+          name: "OudenOS v${{ inputs.version }}"
+          body: |
+            ## OudenOS v${{ inputs.version }}
+
+            Monochrome Windows optimization — scans first, acts second.
+
+            **${{ steps.find.outputs.SIZE }}** bytes | SHA256: `${{ steps.find.outputs.SHA }}`
+
+            ### Requirements
+            - Windows 10 (21H2+) or Windows 11
+            - x64, Administrator, 500 MB free
+          files: OudenOS-setup.exe
+          token: ${{ secrets.GITHUB_TOKEN }}
