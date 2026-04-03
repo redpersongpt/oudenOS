@@ -50,10 +50,11 @@ export const metadata: Metadata = {
   publisher: "Ouden",
   icons: {
     icon: [
-      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icon.svg", type: "image/svg+xml" },
       { url: "/icon.png", type: "image/png", sizes: "512x512" },
+      { url: "/favicon.ico", sizes: "32x32" },
     ],
-    shortcut: ["/favicon.ico"],
+    shortcut: ["/icon.svg"],
     apple: "/apple-icon.png",
   },
   openGraph: {
@@ -104,6 +105,8 @@ export default function RootLayout({
       className={`${spaceGrotesk.variable} ${spaceMono.variable} ${doto.variable}`}
     >
       <head>
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#000000" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -112,7 +115,7 @@ export default function RootLayout({
               "@type": "Organization",
               name: "Ouden",
               url: "https://ouden.cc",
-              logo: "https://ouden.cc/redcore-logo.png",
+              logo: "https://ouden.cc/icon.png",
               description:
                 "Hardware-based Windows optimization and optimization tools.",
             }),
