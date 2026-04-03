@@ -66,19 +66,19 @@ export const metadata: Metadata = {
     url: "https://ouden.cc",
     images: [
       {
-        url: "/redcore-logo.png",
-        width: 1200,
-        height: 360,
-        alt: "Ouden logo",
+        url: "/og-image.png",
+        width: 1280,
+        height: 640,
+        alt: "OudenOS — Windows Optimization",
       },
     ],
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: "Ouden — Windows Optimization",
     description:
       "Hardware-based Windows optimization. Free OS optimization + paid Tuning",
-    images: ["/redcore-logo.png"],
+    images: ["/og-image.png"],
   },
   robots: {
     index: true,
