@@ -105,6 +105,7 @@ export default function RootLayout({
       className={`${spaceGrotesk.variable} ${spaceMono.variable} ${doto.variable}`}
     >
       <head>
+        <meta name="google-site-verification" content="99czZc4vYEuUq8fZ6TGkIU7riaIUt8Qznyb4XpWnc2Y" />
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#000000" />
         <script
