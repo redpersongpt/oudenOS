@@ -94,7 +94,7 @@ export function HeroSection() {
       {/* Main content -- 2-column grid on desktop */}
       <div className="relative z-10 mx-auto w-full max-w-[1440px] px-6 sm:px-8 lg:px-16 2xl:px-24">
         <motion.div
-          className="pt-24 lg:pt-32 grid grid-cols-1 lg:grid-cols-[1fr_auto] items-center gap-12 lg:gap-16"
+          className="pt-28 lg:pt-36 grid grid-cols-1 lg:grid-cols-[1fr_auto] items-start gap-12 lg:gap-8"
           style={{ opacity: contentOpacity }}
         >
           {/* Left column -- text content */}
