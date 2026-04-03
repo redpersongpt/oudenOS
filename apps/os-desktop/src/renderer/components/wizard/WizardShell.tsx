@@ -4,6 +4,7 @@ import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useWizardStore } from "@/stores/wizard-store";
 import type { WizardStepId } from "@/stores/wizard-store";
 import { platform } from "@/lib/platform";
+import { LogoMark } from "@/components/brand/Logo";
 
 const ND = { ease: [0.25, 0.1, 0.25, 1] as const };
 
@@ -37,9 +38,7 @@ function Rail() {
     >
       {/* Brand mark */}
       <div className="mb-6 flex items-center gap-2">
-        <div className="w-4 h-4 flex items-center justify-center" style={{ border: "1px solid var(--accent)" }}>
-          <div className="w-1.5 h-1.5" style={{ background: "var(--accent)" }} />
-        </div>
+        <LogoMark size={16} />
         <span className="nd-label" style={{ color: "var(--accent)" }}>SETUP</span>
       </div>
 

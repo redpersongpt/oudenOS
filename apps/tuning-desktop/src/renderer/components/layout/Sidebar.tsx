@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -58,6 +58,7 @@ const navGroups = [
 
 export function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
+  const didMount = useRef(false);
   const location = useLocation();
   const navigate = useNavigate();
   const user = useAuthStore((s) => s.user);
@@ -104,7 +105,9 @@ export function Sidebar() {
 
       {/* Navigation */}
       <nav className="flex-1 px-2 py-2 overflow-hidden">
-        {navGroups.map((group) => (
+        {(() => {
+          let flatIdx = 0;
+          return navGroups.map((group) => (
           <div key={group.label} className="space-y-0.5">
             {/* Group label — hidden when collapsed */}
             <AnimatePresence initial={false}>
@@ -127,9 +130,17 @@ export function Sidebar() {
             {group.items.map((item) => {
               const isActive = location.pathname === item.path;
               const Icon = item.icon;
+              const itemDelay = didMount.current ? 0 : 0.05 + flatIdx * 0.05;
+              flatIdx++;
               return (
-                <NavLink
+                <motion.div
                   key={item.path}
+                  initial={didMount.current ? false : { opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.25, ease: [0.2, 0, 0, 1], delay: itemDelay }}
+                  onAnimationComplete={() => { didMount.current = true; }}
+                >
+                <NavLink
                   to={item.path}
                   title={collapsed ? item.label : undefined}
                   className="relative flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm transition-colors"
@@ -164,10 +175,12 @@ export function Sidebar() {
                     )}
                   </AnimatePresence>
                 </NavLink>
+                </motion.div>
               );
             })}
           </div>
-        ))}
+          ));
+        })()}
       </nav>
 
       {/* Bottom section */}
