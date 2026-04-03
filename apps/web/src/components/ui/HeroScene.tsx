@@ -1,62 +1,59 @@
 "use client";
 
-import { useRef, useMemo, useState } from "react";
+import { useRef, useMemo, useCallback } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { Environment } from "@react-three/drei";
 import * as THREE from "three";
 
 /* ═══════════════════════════════════════════════════════════════════════
-   OUDEN HERO — Premium 3D Scene
+   OUDEN HERO — Glowing open ring with environment reflections
 
-   A chrome open ring (the Ouden mark) with volumetric particles,
-   subtle mouse-reactive camera, rim lighting, and depth-of-field feel.
-   No cheap Float/bounce. Smooth, cinematic, Apple-grade.
+   Key changes from v1:
+   - Environment map for real reflections (not fake metalness)
+   - Thicker ring with visible chrome surface
+   - Bloom-style glow via additive transparent shells
+   - Mouse parallax on the whole scene (not orbit)
+   - Particles as sharp points, not blurry spheres
    ═══════════════════════════════════════════════════════════════════════ */
 
-// ── Mouse-reactive camera ───────────────────────────────────────────────
-function CameraRig() {
-  const { camera } = useThree();
+function useMouseParallax() {
   const mouse = useRef({ x: 0, y: 0 });
-  const target = useRef({ x: 0, y: 0 });
+  const smooth = useRef({ x: 0, y: 0 });
 
-  // Track mouse relative to viewport center
+  const onMove = useCallback((e: MouseEvent) => {
+    mouse.current.x = (e.clientX / window.innerWidth - 0.5) * 2;
+    mouse.current.y = -(e.clientY / window.innerHeight - 0.5) * 2;
+  }, []);
+
   if (typeof window !== "undefined") {
-    if (!(window as unknown as Record<string, boolean>).__oudenMouseInit) {
-      (window as unknown as Record<string, boolean>).__oudenMouseInit = true;
-      window.addEventListener("mousemove", (e) => {
-        mouse.current.x = (e.clientX / window.innerWidth - 0.5) * 2;
-        mouse.current.y = -(e.clientY / window.innerHeight - 0.5) * 2;
-      });
-    }
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    useMemo(() => {
+      window.addEventListener("mousemove", onMove);
+      return () => window.removeEventListener("mousemove", onMove);
+    }, [onMove]);
   }
 
-  useFrame(() => {
-    // Smooth lerp toward mouse position
-    target.current.x += (mouse.current.x * 0.4 - target.current.x) * 0.02;
-    target.current.y += (mouse.current.y * 0.3 - target.current.y) * 0.02;
-    camera.position.x = target.current.x;
-    camera.position.y = target.current.y + 0.3;
-    camera.lookAt(0, 0, 0);
-  });
-
-  return null;
+  return { mouse, smooth };
 }
 
-// ── The Ring — chrome open torus, slow elegant rotation ─────────────────
-function Ring() {
+// ── The Ring — thick chrome torus with environment reflections ───────────
+function ChromeRing() {
   const groupRef = useRef<THREE.Group>(null);
-  const ringRef = useRef<THREE.Mesh>(null);
-  const dotRef = useRef<THREE.Mesh>(null);
-  const glowRef = useRef<THREE.Mesh>(null);
+  const { mouse, smooth } = useMouseParallax();
 
-  // Open torus — 88% of full circle
-  const geometry = useMemo(
-    () => new THREE.TorusGeometry(2, 0.12, 64, 200, Math.PI * 1.76),
+  // Thicker ring — visible chrome surface
+  const ringGeo = useMemo(
+    () => new THREE.TorusGeometry(1.6, 0.22, 128, 256, Math.PI * 1.78),
     [],
   );
 
-  // Larger torus for subtle glow/bloom effect
-  const glowGeo = useMemo(
-    () => new THREE.TorusGeometry(2, 0.35, 32, 100, Math.PI * 1.76),
+  // Glow shells — multiple additive layers
+  const glowGeo1 = useMemo(
+    () => new THREE.TorusGeometry(1.6, 0.5, 32, 128, Math.PI * 1.78),
+    [],
+  );
+  const glowGeo2 = useMemo(
+    () => new THREE.TorusGeometry(1.6, 0.9, 32, 128, Math.PI * 1.78),
     [],
   );
 
@@ -64,116 +61,146 @@ function Ring() {
     if (!groupRef.current) return;
     const t = state.clock.elapsedTime;
 
-    // Ultra-slow, cinematic Y rotation — NO wobble, NO bounce
-    groupRef.current.rotation.y = t * 0.08;
-    // Very subtle tilt breathing
-    groupRef.current.rotation.x = 0.15 + Math.sin(t * 0.15) * 0.03;
-    groupRef.current.rotation.z = Math.sin(t * 0.1) * 0.02;
+    // Smooth mouse parallax
+    smooth.current.x += (mouse.current.x - smooth.current.x) * 0.03;
+    smooth.current.y += (mouse.current.y - smooth.current.y) * 0.03;
+
+    // Scene rotation: slow Y spin + mouse tilt
+    groupRef.current.rotation.y = t * 0.06 + smooth.current.x * 0.3;
+    groupRef.current.rotation.x = 0.4 + smooth.current.y * 0.2;
+    groupRef.current.rotation.z = Math.sin(t * 0.08) * 0.03;
   });
 
   return (
     <group ref={groupRef}>
-      {/* Glow layer — soft bloom around the ring */}
-      <mesh ref={glowRef} geometry={glowGeo}>
+      {/* Outer glow — very soft */}
+      <mesh geometry={glowGeo2}>
         <meshBasicMaterial
           color="#ffffff"
           transparent
-          opacity={0.015}
+          opacity={0.008}
           side={THREE.DoubleSide}
           depthWrite={false}
+          blending={THREE.AdditiveBlending}
         />
       </mesh>
 
-      {/* Main ring — brushed chrome */}
-      <mesh ref={ringRef} geometry={geometry}>
+      {/* Inner glow */}
+      <mesh geometry={glowGeo1}>
+        <meshBasicMaterial
+          color="#ffffff"
+          transparent
+          opacity={0.02}
+          side={THREE.DoubleSide}
+          depthWrite={false}
+          blending={THREE.AdditiveBlending}
+        />
+      </mesh>
+
+      {/* Main chrome ring */}
+      <mesh geometry={ringGeo}>
         <meshPhysicalMaterial
-          color="#d4d4d4"
-          roughness={0.08}
+          color="#b8b8b8"
+          roughness={0.05}
           metalness={1}
           clearcoat={1}
-          clearcoatRoughness={0.05}
+          clearcoatRoughness={0.02}
+          envMapIntensity={2.5}
           reflectivity={1}
-          envMapIntensity={1.5}
         />
       </mesh>
 
-      {/* Accent sphere at gap terminus */}
-      <mesh ref={dotRef} position={[1.72, -0.92, 0]}>
-        <sphereGeometry args={[0.1, 64, 64]} />
+      {/* Accent dot — bright emissive sphere at gap end */}
+      <mesh position={[1.36, -0.86, 0]}>
+        <sphereGeometry args={[0.09, 64, 64]} />
         <meshPhysicalMaterial
           color="#ffffff"
-          roughness={0.02}
+          roughness={0}
           metalness={1}
-          clearcoat={1}
           emissive="#ffffff"
-          emissiveIntensity={0.3}
+          emissiveIntensity={2}
+          clearcoat={1}
+        />
+      </mesh>
+
+      {/* Dot glow */}
+      <mesh position={[1.36, -0.86, 0]}>
+        <sphereGeometry args={[0.3, 32, 32]} />
+        <meshBasicMaterial
+          color="#ffffff"
+          transparent
+          opacity={0.06}
+          depthWrite={false}
+          blending={THREE.AdditiveBlending}
         />
       </mesh>
     </group>
   );
 }
 
-// ── Particle field — tiny specks that drift, not orbit ──────────────────
-function DustField({ count = 300 }: { count?: number }) {
-  const meshRef = useRef<THREE.InstancedMesh>(null);
-  const dummy = useMemo(() => new THREE.Object3D(), []);
+// ── Point particles — sharp square points, not blurry spheres ───────────
+function StarPoints({ count = 400 }: { count?: number }) {
+  const ref = useRef<THREE.Points>(null);
 
-  const particles = useMemo(() => {
-    const arr = [];
+  const [positions, sizes, phases] = useMemo(() => {
+    const pos = new Float32Array(count * 3);
+    const sz = new Float32Array(count);
+    const ph = new Float32Array(count);
     for (let i = 0; i < count; i++) {
-      // Distribute in a wide sphere, biased toward the ring plane
       const theta = Math.random() * Math.PI * 2;
       const phi = Math.acos(2 * Math.random() - 1);
-      const r = 1.5 + Math.random() * 5;
-      arr.push({
-        x: r * Math.sin(phi) * Math.cos(theta),
-        y: (r * Math.sin(phi) * Math.sin(theta)) * 0.4, // flatten Y
-        z: r * Math.cos(phi),
-        size: 0.005 + Math.random() * 0.015,
-        drift: 0.02 + Math.random() * 0.06,
-        phase: Math.random() * Math.PI * 2,
-        brightness: 0.15 + Math.random() * 0.6,
-      });
+      const r = 2 + Math.random() * 6;
+      pos[i * 3] = r * Math.sin(phi) * Math.cos(theta);
+      pos[i * 3 + 1] = (r * Math.sin(phi) * Math.sin(theta)) * 0.5;
+      pos[i * 3 + 2] = r * Math.cos(phi);
+      sz[i] = 0.5 + Math.random() * 2;
+      ph[i] = Math.random() * Math.PI * 2;
     }
-    return arr;
+    return [pos, sz, ph];
   }, [count]);
 
   useFrame((state) => {
-    if (!meshRef.current) return;
+    if (!ref.current) return;
     const t = state.clock.elapsedTime;
-    particles.forEach((p, i) => {
-      dummy.position.set(
-        p.x + Math.sin(t * p.drift + p.phase) * 0.15,
-        p.y + Math.cos(t * p.drift * 0.7 + p.phase) * 0.1,
-        p.z + Math.sin(t * p.drift * 0.5) * 0.08,
-      );
-      // Subtle twinkle
-      const twinkle = 0.7 + Math.sin(t * 2 + p.phase) * 0.3;
-      dummy.scale.setScalar(p.size * twinkle);
-      dummy.updateMatrix();
-      meshRef.current!.setMatrixAt(i, dummy.matrix);
-    });
-    meshRef.current.instanceMatrix.needsUpdate = true;
+    // Slow rotation
+    ref.current.rotation.y = t * 0.01;
+    // Twinkle via material opacity
+    const mat = ref.current.material as THREE.PointsMaterial;
+    mat.opacity = 0.5 + Math.sin(t * 0.5) * 0.1;
   });
 
   return (
-    <instancedMesh ref={meshRef} args={[undefined, undefined, count]}>
-      <sphereGeometry args={[1, 6, 6]} />
-      <meshBasicMaterial color="#ffffff" transparent opacity={0.5} />
-    </instancedMesh>
+    <points ref={ref}>
+      <bufferGeometry>
+        <bufferAttribute
+          attach="attributes-position"
+          array={positions}
+          count={count}
+          itemSize={3}
+        />
+      </bufferGeometry>
+      <pointsMaterial
+        color="#ffffff"
+        size={1.2}
+        sizeAttenuation
+        transparent
+        opacity={0.5}
+        depthWrite={false}
+        blending={THREE.AdditiveBlending}
+      />
+    </points>
   );
 }
 
-// ── Orbital lines — thin wireframe circles around the ring ──────────────
-function OrbitalLines() {
-  const ref1 = useRef<THREE.LineLoop>(null);
-  const ref2 = useRef<THREE.LineLoop>(null);
-  const ref3 = useRef<THREE.LineLoop>(null);
+// ── Thin orbital rings — wireframe ──────────────────────────────────────
+function Orbitals() {
+  const g1 = useRef<THREE.Group>(null);
+  const g2 = useRef<THREE.Group>(null);
 
-  const circle = useMemo(() => {
-    const pts = [];
-    for (let i = 0; i <= 128; i++) {
-      const a = (i / 128) * Math.PI * 2;
+  const circleGeo = useMemo(() => {
+    const pts: THREE.Vector3[] = [];
+    for (let i = 0; i <= 256; i++) {
+      const a = (i / 256) * Math.PI * 2;
       pts.push(new THREE.Vector3(Math.cos(a), Math.sin(a), 0));
     }
     return new THREE.BufferGeometry().setFromPoints(pts);
@@ -181,75 +208,70 @@ function OrbitalLines() {
 
   useFrame((state) => {
     const t = state.clock.elapsedTime;
-    if (ref1.current) {
-      ref1.current.rotation.x = 0.8 + Math.sin(t * 0.05) * 0.02;
-      ref1.current.rotation.y = t * 0.03;
+    if (g1.current) {
+      g1.current.rotation.x = 1.1;
+      g1.current.rotation.y = t * 0.02;
     }
-    if (ref2.current) {
-      ref2.current.rotation.x = 1.2;
-      ref2.current.rotation.y = t * 0.02 + 1;
-    }
-    if (ref3.current) {
-      ref3.current.rotation.x = 0.4;
-      ref3.current.rotation.z = t * 0.015 + 2;
+    if (g2.current) {
+      g2.current.rotation.x = 0.6;
+      g2.current.rotation.z = t * 0.015 + 1.5;
     }
   });
 
   return (
     <>
-      <lineLoop ref={ref1} geometry={circle} scale={3.2}>
-        <lineBasicMaterial color="#ffffff" transparent opacity={0.04} />
-      </lineLoop>
-      <lineLoop ref={ref2} geometry={circle} scale={3.8}>
-        <lineBasicMaterial color="#ffffff" transparent opacity={0.025} />
-      </lineLoop>
-      <lineLoop ref={ref3} geometry={circle} scale={4.5}>
-        <lineBasicMaterial color="#ffffff" transparent opacity={0.015} />
-      </lineLoop>
+      <group ref={g1}>
+        <lineLoop geometry={circleGeo} scale={2.8}>
+          <lineBasicMaterial color="#ffffff" transparent opacity={0.06} />
+        </lineLoop>
+      </group>
+      <group ref={g2}>
+        <lineLoop geometry={circleGeo} scale={3.5}>
+          <lineBasicMaterial color="#ffffff" transparent opacity={0.03} />
+        </lineLoop>
+      </group>
     </>
   );
 }
 
-// ── Lighting rig — cinematic 3-point + rim ──────────────────────────────
-function Lighting() {
+// ── Lighting — studio setup ─────────────────────────────────────────────
+function StudioLights() {
   return (
     <>
-      {/* Key light — warm white from upper right */}
-      <directionalLight position={[4, 3, 5]} intensity={1.2} color="#ffffff" />
-      {/* Fill — cool dim from left */}
-      <directionalLight position={[-4, 1, 3]} intensity={0.4} color="#b0b0b0" />
-      {/* Rim/back light — strong from behind for edge highlights */}
-      <directionalLight position={[0, 2, -5]} intensity={0.8} color="#ffffff" />
-      {/* Bottom fill — very subtle */}
-      <directionalLight position={[0, -3, 2]} intensity={0.15} color="#888888" />
-      {/* Ambient — keep shadows from going pure black */}
-      <ambientLight intensity={0.12} />
+      {/* Key — strong from upper right */}
+      <directionalLight position={[5, 4, 4]} intensity={2} color="#ffffff" />
+      {/* Fill — softer from left */}
+      <directionalLight position={[-4, 1, 3]} intensity={0.6} color="#e0e0e0" />
+      {/* Rim — from behind for edge definition */}
+      <directionalLight position={[0, 3, -6]} intensity={1.5} color="#ffffff" />
+      {/* Under fill */}
+      <directionalLight position={[0, -4, 2]} intensity={0.3} color="#999999" />
+      <ambientLight intensity={0.08} />
     </>
   );
 }
 
 // ── Exported scene ──────────────────────────────────────────────────────
 export function HeroScene() {
-  const [hovered, setHovered] = useState(false);
-
   return (
-    <div
-      className="h-[420px] w-[420px] sm:h-[460px] sm:w-[460px] lg:h-[500px] lg:w-[500px] xl:h-[550px] xl:w-[550px]"
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      style={{ cursor: hovered ? "grab" : "default" }}
-    >
+    <div className="h-[420px] w-[420px] sm:h-[460px] sm:w-[460px] lg:h-[500px] lg:w-[500px] xl:h-[550px] xl:w-[550px]">
       <Canvas
-        camera={{ position: [0, 0.3, 5.5], fov: 40 }}
+        camera={{ position: [0, 0.2, 4.8], fov: 38 }}
         style={{ background: "transparent" }}
-        gl={{ alpha: true, antialias: true, toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.2 }}
+        gl={{
+          alpha: true,
+          antialias: true,
+          toneMapping: THREE.ACESFilmicToneMapping,
+          toneMappingExposure: 1.4,
+        }}
         dpr={[1, 2]}
       >
-        <Lighting />
-        <CameraRig />
-        <Ring />
-        <DustField count={250} />
-        <OrbitalLines />
+        <StudioLights />
+        {/* Environment map — THIS is what makes chrome look real */}
+        <Environment preset="city" environmentIntensity={0.8} />
+        <ChromeRing />
+        <StarPoints count={350} />
+        <Orbitals />
       </Canvas>
     </div>
   );
