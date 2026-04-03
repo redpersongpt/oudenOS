@@ -8,6 +8,9 @@ on:
         required: true
         default: '0.2.0'
 
+permissions:
+  contents: write
+
 jobs:
   build:
     name: Build OudenOS Installer
