@@ -199,7 +199,7 @@ export function DonationPage() {
                     transition={{ type: "spring", stiffness: 550, damping: 32 }}
                     className={`relative flex-1 rounded-sm border py-2.5 text-sm font-medium transition-colors ${
                       selected === amt && !custom
-                        ? "border-brand-500/60 bg-[var(--accent)]/15 text-[var(--accent)]"
+                        ? "border-white/40 bg-white/10 text-white"
                         : "border-white/[0.08] bg-[var(--surface-raised)] text-[var(--text-secondary)] hover:border-white/[0.14] hover:bg-white/[0.07] hover:text-[var(--text-primary)]"
                     }`}
                   >

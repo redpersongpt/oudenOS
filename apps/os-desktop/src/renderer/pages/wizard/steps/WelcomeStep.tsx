@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, AlertTriangle } from "lucide-react";
+import { AlertTriangle } from "lucide-react";
 import { useWizardStore } from "@/stores/wizard-store";
 import { platform } from "@/lib/platform";
 
@@ -150,7 +150,7 @@ export function WelcomeStep() {
           style={{ background: "var(--text-display)", color: "var(--black)", borderRadius: 999, minHeight: 44 }}
         >
           BEGIN ASSESSMENT
-          <ArrowRight className="h-4 w-4" />
+          <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </motion.button>
 
         {/* Tertiary footer */}
