@@ -42,7 +42,7 @@ actions:
     rationale: "Preloads app data into RAM via background I/O; negligible benefit on SSD"
     risk: low
     tier: free
-    default: true
+    default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 3
@@ -73,7 +73,7 @@ actions:
     rationale: "WdiServiceHost/WdiSystemHost run diagnostic scripts. DPS (Diagnostic Policy Service) is intentionally kept enabled — disabling it breaks Explorer stability, Task Manager, and Windows error recovery."
     risk: low
     tier: free
-    default: true
+    default: false
     requiresReboot: true
     reversible: true
     estimatedSeconds: 3
@@ -91,7 +91,7 @@ actions:
     rationale: "Intercepts every program launch to check compatibility; no benefit on modern systems"
     risk: low
     tier: free
-    default: true
+    default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
