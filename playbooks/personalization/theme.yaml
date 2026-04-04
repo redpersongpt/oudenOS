@@ -94,28 +94,6 @@ actions:
         value: 1
         valueType: DWord
 
-  - id: personalize.preserve-cleartype
-    name: "Preserve ClearType Font Smoothing"
-    description: "Ensure ClearType and font smoothing remain enabled for crisp text rendering"
-    risk: safe
-    tier: free
-    default: true
-    requiresReboot: false
-    reversible: true
-    estimatedSeconds: 1
-    blockedProfiles: []
-    registryChanges:
-      - hive: HKCU
-        path: "Control Panel\\Desktop"
-        valueName: FontSmoothing
-        value: "2"
-        valueType: String
-      - hive: HKCU
-        path: "Control Panel\\Desktop"
-        valueName: FontSmoothingType
-        value: 2
-        valueType: DWord
-
   - id: personalize.max-refresh-rate
     name: "Set Monitor to Maximum Refresh Rate"
     description: "Detect connected monitor's maximum supported refresh rate and set it. Many users have 144Hz/165Hz/240Hz monitors running at 60Hz without knowing."

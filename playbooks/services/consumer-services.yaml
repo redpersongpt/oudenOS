@@ -268,9 +268,9 @@ actions:
 
   - id: services.disable-push-notifications
     name: "Disable Windows Push Notification Service"
-    description: "Disable WpnService and WpnUserService — cloud push notification infrastructure"
-    rationale: "WPN services maintain a persistent connection to Microsoft notification servers. Disabling prevents push notifications from Store apps."
-    risk: medium
+    description: "Disable WpnUserService — per-user push notification relay. WpnService (system) is kept to prevent Explorer notification crashes."
+    rationale: "WPN user service relays cloud push notifications from Store apps. The system WpnService must stay enabled as Explorer's notification system depends on it."
+    risk: low
     tier: free
     default: false
     requiresReboot: true
@@ -280,5 +280,5 @@ actions:
       - work_pc
       - office_laptop
     serviceChanges:
-      - name: WpnService
+      - name: WpnUserService
         startupType: Disabled
