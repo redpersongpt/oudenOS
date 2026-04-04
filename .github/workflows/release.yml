@@ -118,6 +118,9 @@ jobs:
       - name: Prepare open-source export
         run: bash scripts/prepare-redcore-os-open-source.sh ./public-os-export
 
+      - name: Remove README from export (oudenOS has its own)
+        run: rm -f public-os-export/README.md
+
       - name: Push to oudenOS repo
         uses: cpina/github-action-push-to-another-repository@main
         env:
