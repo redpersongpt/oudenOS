@@ -1,48 +1,9 @@
 # Networking: Protocol Optimization
+# IPv6 disable and Teredo disable REMOVED — breaks connectivity on many ISPs.
 
 module: networking.protocols
 name: "Protocol Optimization"
-description: "Disable unnecessary network protocols: IPv6 and Teredo tunneling"
+description: "Protocol tweaks — currently disabled for safety"
 category: networking
 
-actions:
-  - id: network.disable-ipv6
-    name: "Disable IPv6 Protocol Stack"
-    description: "Disable the IPv6 protocol stack by setting DisabledComponents to 0xFF, preventing all IPv6 components from loading"
-    rationale: "IPv6 expands the attack surface with additional protocols (NDP, SLAAC) that can be exploited for man-in-the-middle attacks. Most home networks operate purely on IPv4."
-    risk: medium
-    tier: free
-    default: false
-    requiresReboot: true
-    reversible: true
-    estimatedSeconds: 2
-    blockedProfiles:
-      - work_pc
-    registryChanges:
-      - hive: HKLM
-        path: "SYSTEM\\CurrentControlSet\\Services\\Tcpip6\\Parameters"
-        valueName: DisabledComponents
-        value: 255
-        valueType: DWord
-
-  - id: network.disable-teredo
-    name: "Disable Teredo Tunneling"
-    description: "Disable Teredo IPv6 tunneling which encapsulates IPv6 packets within IPv4 UDP datagrams, adding latency overhead"
-    rationale: "Teredo tunneling adds network overhead and latency. Most modern networks have native IPv6 or do not need Teredo."
-    risk: safe
-    tier: free
-    default: true
-    requiresReboot: false
-    reversible: true
-    estimatedSeconds: 3
-    blockedProfiles: []
-    registryChanges:
-      - hive: HKLM
-        path: "SYSTEM\\CurrentControlSet\\Services\\Tcpip6\\Parameters"
-        valueName: DisabledComponents
-        value: 1
-        valueType: DWord
-    powerShellCommands:
-      - "netsh interface teredo set state disabled"
-
-  # NetBIOS disable moved to networking/security.yaml to avoid duplicate IDs
+actions: []
