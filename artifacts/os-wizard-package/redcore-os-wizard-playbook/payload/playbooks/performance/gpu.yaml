@@ -1,5 +1,4 @@
-# ─── Performance: GPU Optimization ────────────────────────────────────────────
-# GPU energy driver, HAGS, NVIDIA/AMD P-state, TDR, MSI mode, telemetry, Game DVR, fullscreen, transparency.
+# Performance: GPU Optimization
 
 module: performance.gpu
 name: "GPU Performance Optimization"
@@ -248,4 +247,49 @@ actions:
         path: "SYSTEM\\CurrentControlSet\\Services\\AUEPLauncher"
         valueName: Start
         value: 4
+        valueType: DWord
+
+  - id: perf.disable-gamebar-presence
+    name: "Disable GameBar Presence Writer"
+    description: "Disable the GameBarPresenceWriter background process"
+    rationale: "GameBarPresenceWriter runs persistently without being required for Game Mode or Game Bar to function. Disabling it removes unnecessary CPU overhead."
+    risk: safe
+    tier: free
+    default: true
+    expertOnly: false
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKLM
+        path: "SOFTWARE\\Microsoft\\WindowsRuntime\\ActivatableClassId\\Windows.Gaming.GameBar.PresenceServer.Internal.PresenceWriter"
+        valueName: ActivationType
+        value: 0
+        valueType: DWord
+
+  - id: perf.legacy-flip-presentation
+    name: "Force Legacy Flip Presentation"
+    description: "Force games to use Hardware: Legacy Flip (exclusive fullscreen) instead of composed flip"
+    rationale: "Legacy Flip bypasses DWM composition entirely for lower input latency. Composed flip adds a frame of latency via the DWM layer."
+    risk: moderate
+    tier: free
+    default: false
+    expertOnly: false
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles:
+      - vm_cautious
+      - work_pc
+    registryChanges:
+      - hive: HKCU
+        path: "System\\GameConfigStore"
+        valueName: GameDVR_DXGIHonorFSEWindowsCompatible
+        value: 1
+        valueType: DWord
+      - hive: HKCU
+        path: "System\\GameConfigStore"
+        valueName: GameDVR_FSEBehavior
+        value: 2
         valueType: DWord

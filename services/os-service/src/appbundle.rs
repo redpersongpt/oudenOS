@@ -308,8 +308,18 @@ fn install_catalog_entry(app_id: &str, entry: &CatalogEntry) -> anyhow::Result<I
          $ext = [System.IO.Path]::GetExtension($uriObject.AbsolutePath); \
          if ([string]::IsNullOrWhiteSpace($ext)) {{ $ext = '.exe' }}; \
          $downloadPath = Join-Path $downloadDir ($appId + $ext); \
-         Invoke-WebRequest -Uri $uri -OutFile $downloadPath -MaximumRedirection 5 -UseBasicParsing; \
-         if (-not (Test-Path $downloadPath)) {{ throw 'Installer download failed.' }}; \
+         $attempt = 0; $maxRetry = 2; $downloaded = $false; \
+         while ($attempt -le $maxRetry -and -not $downloaded) {{ \
+             try {{ \
+                 Invoke-WebRequest -Uri $uri -OutFile $downloadPath -MaximumRedirection 5 -UseBasicParsing -TimeoutSec 120; \
+                 if (Test-Path $downloadPath) {{ $downloaded = $true }} \
+             }} catch {{ \
+                 $attempt++; \
+                 if ($attempt -gt $maxRetry) {{ throw \"Download failed after $($maxRetry+1) attempts: $_\" }}; \
+                 Start-Sleep -Seconds 3 \
+             }} \
+         }}; \
+         if (-not $downloaded) {{ throw 'Installer download failed.' }}; \
          $installerPath = $downloadPath; \
          if ($ext -ieq '.zip') {{ \
              $extractDir = Join-Path $downloadDir ($appId + '-extract'); \

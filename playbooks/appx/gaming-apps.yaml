@@ -16,6 +16,7 @@ actions:
     requiresReboot: false
     reversible: false
     estimatedSeconds: 10
+    minWindowsBuild: 22000
     blockedProfiles:
       - vm_cautious
     packages:

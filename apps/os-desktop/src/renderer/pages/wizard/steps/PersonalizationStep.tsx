@@ -114,6 +114,7 @@ export function PersonalizationStep() {
     const changed =
       resolved.darkMode !== personalization.darkMode ||
       resolved.brandAccent !== personalization.brandAccent ||
+      resolved.wallpaper !== personalization.wallpaper ||
       resolved.taskbarCleanup !== personalization.taskbarCleanup ||
       resolved.explorerCleanup !== personalization.explorerCleanup ||
       resolved.transparency !== personalization.transparency;
@@ -125,7 +126,8 @@ export function PersonalizationStep() {
 
   const toggles = [
     { label: "DARK MODE",        desc: "DARK THEME FOR APPS AND SYSTEM",     key: "darkMode" as const,        disabled: false },
-    { label: "BRAND ACCENT",     desc: "OUDEN RED ACCENT COLOR",             key: "brandAccent" as const,     disabled: false },
+    { label: "BRAND ACCENT",     desc: "BLACK ACCENT — MONOCHROME THEME",    key: "brandAccent" as const,     disabled: false },
+    { label: "OUDEN WALLPAPER",  desc: "STARFIELD + OUDEN LOGO DESKTOP",     key: "wallpaper" as const,       disabled: false },
     { label: "TRANSPARENCY",     desc: "WINDOW TRANSPARENCY EFFECTS",        key: "transparency" as const,    disabled: isLowSpec || transparencyForcedOff },
     { label: "TASKBAR CLEANUP",  desc: "HIDE TASK VIEW, WIDGETS, CHAT",      key: "taskbarCleanup" as const,  disabled: isWorkPc },
     { label: "EXPLORER CLEANUP", desc: "SHOW EXTENSIONS, HIDE RECENTS",      key: "explorerCleanup" as const, disabled: isWorkPc },

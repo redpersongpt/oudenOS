@@ -447,12 +447,20 @@ pub fn execute_action(
 #[cfg(windows)]
 fn remove_appx_package(package_name: &str) -> anyhow::Result<()> {
     let script = format!(
-        "Get-AppxPackage -AllUsers -Name '{}' | Remove-AppxPackage -AllUsers",
+        "$pkg = Get-AppxPackage -AllUsers -Name '{}' -ErrorAction SilentlyContinue; \
+         if (-not $pkg) {{ Write-Host 'SKIPPED: package not installed'; exit 0 }}; \
+         $pkg | Remove-AppxPackage -AllUsers -ErrorAction Stop; \
+         Write-Host 'OK: package removed'",
         powershell::escape_ps_string(package_name),
     );
     let result = powershell::execute(&script)?;
     if !result.success {
-        anyhow::bail!("Remove-AppxPackage failed: {}", result.stderr.trim());
+        let stderr = result.stderr.trim();
+        if stderr.contains("not found") || stderr.contains("does not exist") || stderr.contains("not installed") {
+            tracing::warn!(package = package_name, "AppX package not found — skipped");
+            return Ok(());
+        }
+        anyhow::bail!("Remove-AppxPackage failed: {}", stderr);
     }
     Ok(())
 }
@@ -460,13 +468,24 @@ fn remove_appx_package(package_name: &str) -> anyhow::Result<()> {
 #[cfg(windows)]
 fn disable_scheduled_task(task_name: &str, task_path: &str) -> anyhow::Result<()> {
     let script = format!(
-        "Disable-ScheduledTask -TaskName '{}' -TaskPath '{}' -ErrorAction Stop",
+        "$task = Get-ScheduledTask -TaskName '{}' -TaskPath '{}' -ErrorAction SilentlyContinue; \
+         if (-not $task) {{ Write-Host 'SKIPPED: task not found'; exit 0 }}; \
+         if ($task.State -eq 'Disabled') {{ Write-Host 'SKIPPED: already disabled'; exit 0 }}; \
+         Disable-ScheduledTask -TaskName '{}' -TaskPath '{}' -ErrorAction Stop; \
+         Write-Host 'OK: task disabled'",
+        powershell::escape_ps_string(task_name),
+        powershell::escape_ps_string(task_path),
         powershell::escape_ps_string(task_name),
         powershell::escape_ps_string(task_path),
     );
     let result = powershell::execute(&script)?;
     if !result.success {
-        anyhow::bail!("Disable-ScheduledTask failed: {}", result.stderr.trim());
+        let stderr = result.stderr.trim();
+        if stderr.contains("does not exist") || stderr.contains("not found") {
+            tracing::warn!(task = task_name, "Scheduled task not found — skipped");
+            return Ok(());
+        }
+        anyhow::bail!("Disable-ScheduledTask failed: {}", stderr);
     }
     Ok(())
 }
@@ -508,21 +527,33 @@ fn apply_registry_change(
 
 #[cfg(windows)]
 fn apply_service_change(service_name: &str, startup_type: &str) -> anyhow::Result<()> {
+    // Never touch Task Manager critical services
+    const PROTECTED_SERVICES: &[&str] = &["Taskmgr", "DcomLaunch", "RpcSs", "RpcEptMapper", "DPS"];
+    if PROTECTED_SERVICES.iter().any(|s| s.eq_ignore_ascii_case(service_name)) {
+        tracing::warn!(service = service_name, "Protected service — skipped to preserve Task Manager/system stability");
+        return Ok(());
+    }
     // Validate inputs before interpolation
     powershell::validate_safe_arg(service_name, "service name")?;
     powershell::validate_safe_arg(startup_type, "startup type")?;
     let escaped_name = powershell::escape_ps_string(service_name);
 
-    // Gracefully handle missing or already-configured services
+    // Gracefully handle missing, already-configured, or Tamper Protected services
     let script = format!(
         "$svc = Get-Service -Name '{}' -ErrorAction SilentlyContinue; \
          if (-not $svc) {{ Write-Host 'SKIPPED: service not found'; exit 0 }}; \
          $current = (Get-WmiObject Win32_Service -Filter \"Name='{}'\").StartMode; \
          if ($current -eq '{}') {{ Write-Host 'SKIPPED: already configured'; exit 0 }}; \
+         $defenderSvcs = @('WinDefend','WdFilter','WdBoot','WdNisSvc','WdNisDrv','SecurityHealthService','wscsvc','Sense','MsSecCore'); \
+         if ($defenderSvcs -contains '{}') {{ \
+             $tp = (Get-ItemProperty 'HKLM:\\SOFTWARE\\Microsoft\\Windows Defender\\Features' -Name TamperProtection -ErrorAction SilentlyContinue).TamperProtection; \
+             if ($tp -eq 5) {{ Write-Host 'SKIPPED: Tamper Protection is ON — disable it manually in Windows Security first'; exit 0 }} \
+         }}; \
          Set-Service -Name '{}' -StartupType {} -ErrorAction Stop; \
          if ('{}' -eq 'Disabled') {{ Stop-Service -Name '{}' -Force -ErrorAction SilentlyContinue }}; \
          Write-Host 'OK: service changed'",
         escaped_name, escaped_name, startup_type,
+        escaped_name,
         escaped_name, startup_type, startup_type, escaped_name,
     );
     let result = powershell::execute(&script)?;

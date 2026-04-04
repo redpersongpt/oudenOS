@@ -249,26 +249,6 @@ actions:
         value: 4
         valueType: DWord
 
-  - id: perf.disable-mpos
-    name: "Disable Multi-Plane Overlays (MPO)"
-    description: "Force DWM out of MPO/Hardware Composed Independent Flip presentation mode"
-    rationale: "MPOs can cause frame pacing issues, stuttering, and stuck-in-iFlip problems on certain GPU/monitor combinations. OverlayTestMode=5 forces classic DWM composition."
-    risk: moderate
-    tier: free
-    default: false
-    expertOnly: false
-    requiresReboot: false
-    reversible: true
-    estimatedSeconds: 2
-    blockedProfiles:
-      - vm_cautious
-    registryChanges:
-      - hive: HKLM
-        path: "SOFTWARE\\Microsoft\\Windows\\Dwm"
-        valueName: OverlayTestMode
-        value: 5
-        valueType: DWord
-
   - id: perf.disable-gamebar-presence
     name: "Disable GameBar Presence Writer"
     description: "Disable the GameBarPresenceWriter background process"

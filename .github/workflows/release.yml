@@ -107,3 +107,24 @@ jobs:
           prerelease: ${{ contains(steps.version.outputs.VERSION, 'alpha') || contains(steps.version.outputs.VERSION, 'beta') || contains(steps.version.outputs.VERSION, 'rc') }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  sync-open-source:
+    needs: release
+    runs-on: ubuntu-latest
+    if: ${{ !contains(github.ref_name, 'alpha') && !contains(github.ref_name, 'beta') }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Prepare open-source export
+        run: bash scripts/prepare-redcore-os-open-source.sh ./public-os-export
+
+      - name: Push to oudenOS repo
+        uses: cpina/github-action-push-to-another-repository@main
+        env:
+          SSH_DEPLOY_KEY: ${{ secrets.OUDENSO_DEPLOY_KEY }}
+        with:
+          source-directory: public-os-export
+          destination-github-username: redpersongpt
+          destination-repository-name: oudenOS
+          target-branch: main
+          commit-message: "sync: ${{ github.ref_name }} from redcoreECO"
