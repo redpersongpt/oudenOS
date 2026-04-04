@@ -180,6 +180,7 @@ export interface RecommendedApp {
 export interface PersonalizationPreferences {
   darkMode: boolean;
   brandAccent: boolean;
+  wallpaper: boolean;
   taskbarCleanup: boolean;
   explorerCleanup: boolean;
   transparency: boolean;
@@ -191,6 +192,7 @@ export function getProfilePersonalizationDefaults(profileId?: string | null): Pe
       return {
         darkMode: true,
         brandAccent: true,
+        wallpaper: true,
         taskbarCleanup: false,
         explorerCleanup: false,
         transparency: true,
@@ -200,6 +202,7 @@ export function getProfilePersonalizationDefaults(profileId?: string | null): Pe
       return {
         darkMode: true,
         brandAccent: true,
+        wallpaper: true,
         taskbarCleanup: true,
         explorerCleanup: true,
         transparency: false,
@@ -208,6 +211,7 @@ export function getProfilePersonalizationDefaults(profileId?: string | null): Pe
       return {
         darkMode: true,
         brandAccent: true,
+        wallpaper: true,
         taskbarCleanup: true,
         explorerCleanup: true,
         transparency: true,

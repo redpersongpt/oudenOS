@@ -60,7 +60,7 @@ apps:
     name: "OBS Studio"
     category: streaming
     description: "Screen recording and streaming"
-    url: "https://github.com/obsproject/obs-studio/releases/latest/download/OBS-Studio-31.0.1-Windows-Installer.exe"
+    url: "https://cdn-fastly.obsproject.com/downloads/OBS-Studio-31.0.2-Windows-Installer.exe"
     silentArgs: "/S"
     workSafe: true
 
@@ -84,8 +84,8 @@ apps:
     name: "Riot Client"
     category: gaming
     description: "For Valorant and League of Legends you femboy :)"
-    url: "https://valorant.secure.dyn.riotcdn.net/channels/public/x/installer/current/live.live.eu.exe"
-    silentArgs: ""
+    url: "https://lol.secure.dyn.riotcdn.net/channels/public/x/installer/current/live.live.na.exe"
+    silentArgs: "--skip-to-install"
     workSafe: false
 
   battlenet:

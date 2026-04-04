@@ -1942,13 +1942,12 @@ export async function runWindowsCertification(options: {
     });
   }
 
-  const effectivePersonalization: PersonalizationPreferences & { wallpaper: boolean } = {
+  const effectivePersonalization: PersonalizationPreferences = {
     ...resolveEffectivePersonalization(
       options.profile,
       getProfilePersonalizationDefaults(options.profile),
       answers,
     ),
-    wallpaper: false,
   };
 
   const personalizationBaseline = capturePersonalizationState();

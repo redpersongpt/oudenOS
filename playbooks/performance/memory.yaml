@@ -30,7 +30,7 @@ actions:
     rationale: "Memory compression trades CPU cycles for reduced page file I/O. On systems with ample RAM (16GB+), disabling reduces CPU overhead and micro-stutter. On low-RAM systems, keep enabled."
     risk: low
     tier: free
-    default: true
+    default: false
     requiresReboot: true
     reversible: true
     estimatedSeconds: 5
@@ -83,7 +83,7 @@ actions:
     rationale: "Prefetch creates .pf files and performs background I/O during boot. On NVMe/SSD systems, app launch is already fast enough that prefetch adds overhead without benefit."
     risk: low
     tier: free
-    default: true
+    default: false
     requiresReboot: true
     reversible: true
     estimatedSeconds: 3
@@ -107,7 +107,7 @@ actions:
     rationale: "Windows splits services into separate svchost.exe processes based on available RAM. On 8GB+ systems, this creates many small processes. Raising the threshold reduces process count and context-switch overhead."
     risk: low
     tier: free
-    default: true
+    default: false
     requiresReboot: true
     reversible: true
     estimatedSeconds: 2

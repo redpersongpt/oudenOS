@@ -1,5 +1,4 @@
-# ─── redcore · OS Playbook Manifest ──────────────────────────────────────────
-# Root manifest that defines the playbook structure, load order, and metadata.
+# redcore · OS Playbook Manifest
 # The Rust service reads this manifest, loads all referenced playbook modules,
 # merges them with profile overrides, and produces an executable plan.
 
@@ -11,8 +10,7 @@ minWindowsBuild: 19041  # Windows 10 2004+
 maxWindowsBuild: 99999
 wizardConfig: "wizard.json"
 
-# ─── Phases ──────────────────────────────────────────────────────────────────
-# Ordered execution phases. Each phase loads one or more playbook modules.
+# Phases
 # The wizard step rail maps directly to these phases.
 
 phases:
@@ -35,19 +33,22 @@ phases:
       - appx/gaming-apps.yaml
       - appx/third-party-bloat.yaml
       - appx/edge-removal.yaml
+      - appx/ai-copilot-removal.yaml
 
   - id: services
     name: "Background Services"
-    description: "Disable unnecessary background services"
+    description: "Disable unnecessary background services, update services, and system daemons"
     modules:
       - services/telemetry-services.yaml
       - services/consumer-services.yaml
+      - services/windows-update-services.yaml
 
   - id: tasks
     name: "Scheduled Tasks"
-    description: "Disable unnecessary scheduled tasks and telemetry jobs"
+    description: "Disable telemetry, consumer, maintenance, and background scheduled tasks"
     modules:
       - tasks/telemetry-tasks.yaml
+      - tasks/consumer-tasks.yaml
 
   - id: privacy
     name: "Privacy Hardening"
@@ -69,6 +70,7 @@ phases:
       - performance/latency.yaml
       - performance/power.yaml
       - performance/storage.yaml
+      - performance/gaming.yaml
 
   - id: shell
     name: "Shell & Explorer"
@@ -102,20 +104,37 @@ phases:
     modules:
       - security/mitigations.yaml
       - security/update-control.yaml
+      - security/defender-control.yaml
 
   - id: personalization
     name: "Visual Personalization"
-    description: "Dark mode, accent color, taskbar cleanup, explorer cleanup"
-    type: builtin  # handled by personalizer.rs
+    description: "Dark mode, accent color, wallpaper, refresh rate"
+    modules:
+      - personalization/theme.yaml
+      - personalization/wallpaper.yaml
 
-# ─── Profile Definitions ─────────────────────────────────────────────────────
-# Each profile can override action defaults, block actions, or add actions.
+# Profile Definitions
 
 profiles:
   gaming_desktop:
     label: "Gaming Desktop"
     preset: aggressive
     overrides: profiles/gaming-desktop.yaml
+
+  gaming_laptop:
+    label: "Gaming Laptop"
+    preset: balanced
+    overrides: profiles/gaming-laptop.yaml
+
+  budget_desktop:
+    label: "Budget Desktop"
+    preset: aggressive
+    overrides: profiles/budget-desktop.yaml
+
+  high_end_workstation:
+    label: "High-end Workstation"
+    preset: balanced
+    overrides: profiles/high-end-workstation.yaml
 
   office_laptop:
     label: "Office Laptop"
@@ -129,7 +148,7 @@ profiles:
 
   low_spec_system:
     label: "Low-Spec System"
-    preset: balanced
+    preset: aggressive
     overrides: profiles/low-spec.yaml
 
   vm_cautious:
