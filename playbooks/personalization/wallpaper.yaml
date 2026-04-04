@@ -21,77 +21,115 @@ actions:
     blockedProfiles: []
     powerShellCommands:
       - |
-        # Get screen resolution
-        Add-Type -AssemblyName System.Windows.Forms
-        $screen = [System.Windows.Forms.Screen]::PrimaryScreen.Bounds
-        $w = $screen.Width
-        $h = $screen.Height
-        Write-Host "Resolution: ${w}x${h}"
+        $ErrorActionPreference = 'SilentlyContinue'
+        try {
+          # Get screen resolution
+          Add-Type -AssemblyName System.Windows.Forms
+          $screen = [System.Windows.Forms.Screen]::PrimaryScreen.Bounds
+          $w = $screen.Width
+          $h = $screen.Height
+          Write-Host "Resolution: ${w}x${h}"
 
-        # Create wallpaper using GDI+
-        Add-Type -AssemblyName System.Drawing
-        $bmp = New-Object System.Drawing.Bitmap($w, $h)
-        $g = [System.Drawing.Graphics]::FromImage($bmp)
-        $g.Clear([System.Drawing.Color]::Black)
+          # Ensure output directory exists
+          $wallpaperDir = "$env:LOCALAPPDATA\OudenOS"
+          if (!(Test-Path $wallpaperDir)) { New-Item -ItemType Directory -Path $wallpaperDir -Force | Out-Null }
+          $wallpaperPath = "$wallpaperDir\wallpaper.bmp"
 
-        # Draw pixel stars
-        $rand = New-Object System.Random(42)
-        $starCount = [math]::Min([math]::Floor($w * $h / 5000), 1200)
-        for ($i = 0; $i -lt $starCount; $i++) {
-          $sx = $rand.Next(0, $w)
-          $sy = $rand.Next(0, $h)
-          $opacity = [int](40 + $rand.Next(0, 100))
-          $size = if ($rand.NextDouble() -gt 0.85) { 2 } else { 1 }
-          $color = [System.Drawing.Color]::FromArgb($opacity, 255, 255, 255)
-          $brush = New-Object System.Drawing.SolidBrush($color)
-          $g.FillRectangle($brush, $sx, $sy, $size, $size)
-          $brush.Dispose()
+          # Try to create wallpaper using GDI+
+          $bitmapCreated = $false
+          try {
+            Add-Type -AssemblyName System.Drawing
+            $bmp = New-Object System.Drawing.Bitmap($w, $h)
+            $g = [System.Drawing.Graphics]::FromImage($bmp)
+            $g.Clear([System.Drawing.Color]::Black)
+
+            # Draw pixel stars
+            $rand = New-Object System.Random(42)
+            $starCount = [math]::Min([math]::Floor($w * $h / 5000), 1200)
+            for ($i = 0; $i -lt $starCount; $i++) {
+              $sx = $rand.Next(0, $w)
+              $sy = $rand.Next(0, $h)
+              $opacity = [int](40 + $rand.Next(0, 100))
+              $size = if ($rand.NextDouble() -gt 0.85) { 2 } else { 1 }
+              $color = [System.Drawing.Color]::FromArgb($opacity, 255, 255, 255)
+              $brush = New-Object System.Drawing.SolidBrush($color)
+              $g.FillRectangle($brush, $sx, $sy, $size, $size)
+              $brush.Dispose()
+            }
+
+            # Draw Ouden logo (open ring arc) in center
+            $cx = $w / 2
+            $cy = $h / 2
+            $logoSize = [math]::Min($w, $h) * 0.12
+            $pen = New-Object System.Drawing.Pen([System.Drawing.Color]::FromArgb(200, 255, 255, 255), [float]($logoSize * 0.06))
+            $pen.StartCap = [System.Drawing.Drawing2D.LineCap]::Round
+            $pen.EndCap = [System.Drawing.Drawing2D.LineCap]::Round
+            $rect = New-Object System.Drawing.RectangleF(($cx - $logoSize), ($cy - $logoSize), ($logoSize * 2), ($logoSize * 2))
+            $g.SmoothingMode = [System.Drawing.Drawing2D.SmoothingMode]::HighQuality
+            $g.DrawArc($pen, $rect, -50, 320)
+            $pen.Dispose()
+
+            # Draw accent dot at end of arc
+            $dotAngle = [math]::PI * (-50) / 180
+            $dotX = $cx + $logoSize * [math]::Cos($dotAngle)
+            $dotY = $cy + $logoSize * [math]::Sin($dotAngle)
+            $dotR = $logoSize * 0.05
+            $dotBrush = New-Object System.Drawing.SolidBrush([System.Drawing.Color]::FromArgb(230, 255, 255, 255))
+            $g.FillEllipse($dotBrush, [float]($dotX - $dotR), [float]($dotY - $dotR), [float]($dotR * 2), [float]($dotR * 2))
+            $dotBrush.Dispose()
+            $g.Dispose()
+
+            $bmp.Save($wallpaperPath, [System.Drawing.Imaging.ImageFormat]::Bmp)
+            $bmp.Dispose()
+            $bitmapCreated = $true
+            Write-Host "Wallpaper saved: $wallpaperPath"
+          } catch {
+            Write-Host "GDI+ bitmap creation failed, falling back to solid black wallpaper"
+            # Fallback: create a minimal solid black BMP (54-byte header + pixels)
+            # Use .NET to create a 1x1 black BMP and let Windows stretch it
+            try {
+              Add-Type -AssemblyName System.Drawing
+              $bmp = New-Object System.Drawing.Bitmap(1, 1)
+              $bmp.SetPixel(0, 0, [System.Drawing.Color]::Black)
+              $bmp.Save($wallpaperPath, [System.Drawing.Imaging.ImageFormat]::Bmp)
+              $bmp.Dispose()
+              $bitmapCreated = $true
+              Write-Host "Fallback black wallpaper saved"
+            } catch {
+              Write-Host "Fallback also failed — setting registry to solid color only"
+            }
+          }
+
+          # Set as desktop wallpaper via SystemParametersInfo
+          Add-Type -TypeDefinition @"
+using System;
+using System.Runtime.InteropServices;
+public class WallpaperHelper {
+  [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+  public static extern int SystemParametersInfo(int uAction, int uParam, string lpvParam, int fuWinIni);
+}
+"@ -ErrorAction SilentlyContinue
+
+          if ($bitmapCreated) {
+            [WallpaperHelper]::SystemParametersInfo(0x0014, 0, $wallpaperPath, 0x01 -bor 0x02) | Out-Null
+          } else {
+            # No bitmap — set empty string to force solid color
+            [WallpaperHelper]::SystemParametersInfo(0x0014, 0, "", 0x01 -bor 0x02) | Out-Null
+          }
+
+          # Set wallpaper style to Fill (stretch to fill) and solid background to black
+          Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name WallpaperStyle -Value "10" -Force
+          Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name TileWallpaper -Value "0" -Force
+          Set-ItemProperty -Path "HKCU:\Control Panel\Colors" -Name Background -Value "0 0 0" -Force
+
+          Write-Host "Desktop wallpaper applied (${w}x${h})"
+        } catch {
+          Write-Host "Wallpaper setup encountered an error: $_"
+          # Best-effort: set desktop background color to black via registry
+          try {
+            Set-ItemProperty -Path "HKCU:\Control Panel\Colors" -Name Background -Value "0 0 0" -Force
+            Write-Host "Fallback: desktop background color set to black"
+          } catch {
+            Write-Host "Could not set background color"
+          }
         }
-
-        # Draw Ouden logo (open ring arc) in center
-        $cx = $w / 2
-        $cy = $h / 2
-        $logoSize = [math]::Min($w, $h) * 0.12
-        $pen = New-Object System.Drawing.Pen([System.Drawing.Color]::FromArgb(200, 255, 255, 255), [float]($logoSize * 0.06))
-        $pen.StartCap = [System.Drawing.Drawing2D.LineCap]::Round
-        $pen.EndCap = [System.Drawing.Drawing2D.LineCap]::Round
-        $rect = New-Object System.Drawing.RectangleF(($cx - $logoSize), ($cy - $logoSize), ($logoSize * 2), ($logoSize * 2))
-        $g.SmoothingMode = [System.Drawing.Drawing2D.SmoothingMode]::HighQuality
-        $g.DrawArc($pen, $rect, -50, 320)
-        $pen.Dispose()
-
-        # Draw accent dot at end of arc
-        $dotAngle = [math]::PI * (-50) / 180
-        $dotX = $cx + $logoSize * [math]::Cos($dotAngle)
-        $dotY = $cy + $logoSize * [math]::Sin($dotAngle)
-        $dotR = $logoSize * 0.05
-        $dotBrush = New-Object System.Drawing.SolidBrush([System.Drawing.Color]::FromArgb(230, 255, 255, 255))
-        $g.FillEllipse($dotBrush, [float]($dotX - $dotR), [float]($dotY - $dotR), [float]($dotR * 2), [float]($dotR * 2))
-        $dotBrush.Dispose()
-
-        $g.Dispose()
-
-        # Save wallpaper
-        $wallpaperDir = "$env:LOCALAPPDATA\OudenOS"
-        if (!(Test-Path $wallpaperDir)) { New-Item -ItemType Directory -Path $wallpaperDir -Force | Out-Null }
-        $wallpaperPath = "$wallpaperDir\wallpaper.png"
-        $bmp.Save($wallpaperPath, [System.Drawing.Imaging.ImageFormat]::Png)
-        $bmp.Dispose()
-        Write-Host "Wallpaper saved: $wallpaperPath"
-
-        # Set as desktop wallpaper via SystemParametersInfo
-        Add-Type @"
-        using System;
-        using System.Runtime.InteropServices;
-        public class WallpaperHelper {
-          [DllImport("user32.dll", CharSet = CharSet.Unicode)]
-          public static extern int SystemParametersInfo(int uAction, int uParam, string lpvParam, int fuWinIni);
-        }
-"@
-        [WallpaperHelper]::SystemParametersInfo(0x0014, 0, $wallpaperPath, 0x01 -bor 0x02) | Out-Null
-
-        # Set wallpaper style to Fill (stretch to fill)
-        Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name WallpaperStyle -Value "10" -Force
-        Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name TileWallpaper -Value "0" -Force
-
-        Write-Host "Desktop wallpaper set to Ouden theme (${w}x${h})"
