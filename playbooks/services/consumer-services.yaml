@@ -125,7 +125,6 @@ actions:
     risk: low
     tier: free
     default: false
-    expertOnly: true
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
@@ -268,7 +267,6 @@ actions:
         startupType: Disabled
 
   - id: services.disable-push-notifications
-    expertOnly: true
     name: "Disable Windows Push Notification Service"
     description: "Disable WpnService and WpnUserService — cloud push notification infrastructure"
     rationale: "WPN services maintain a persistent connection to Microsoft notification servers. Disabling prevents push notifications from Store apps."
