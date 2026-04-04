@@ -60,8 +60,9 @@ apps:
     name: "OBS Studio"
     category: streaming
     description: "Screen recording and streaming"
-    url: "https://cdn-fastly.obsproject.com/downloads/OBS-Studio-30.2.3-Windows-Installer.exe"
-    silentArgs: "/S"
+    installMethod: winget
+    wingetId: "OBSProject.OBSStudio"
+    wingetArgs: "--accept-source-agreements --accept-package-agreements"
     workSafe: true
 
   hwinfo:
@@ -84,8 +85,9 @@ apps:
     name: "Riot Client"
     category: gaming
     description: "For Valorant and League of Legends you femboy :)"
-    url: "https://valorant.secure.dyn.riotcdn.net/channels/public/x/installer.exe"
-    silentArgs: ""
+    installMethod: winget
+    wingetId: "RiotGames.RiotClient"
+    wingetArgs: "--accept-source-agreements --accept-package-agreements"
     workSafe: false
 
   battlenet:

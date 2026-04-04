@@ -36,7 +36,7 @@ actions:
     risk: safe
     tier: free
     default: true
-    requiresReboot: false
+    requiresReboot: true
     reversible: true
     estimatedSeconds: 2
     blockedProfiles: []
@@ -107,59 +107,17 @@ actions:
     blockedProfiles: []
     powerShellCommands:
       - |
-        # Detect and set maximum refresh rate
-        $displays = Get-CimInstance -Namespace root\wmi -ClassName WmiMonitorListedSupportedSourceModes -ErrorAction SilentlyContinue
-        if ($displays) {
-          foreach ($display in $displays) {
-            $maxRate = ($display.MonitorSourceModes | ForEach-Object {
-              [math]::Round($_.VerticalActivePixels * $_.HorizontalActivePixels * $_.VerticalRefreshRateNumerator / $_.VerticalRefreshRateDenominator / ($_.VerticalActivePixels * $_.HorizontalActivePixels), 0)
-            } | Sort-Object -Descending | Select-Object -First 1)
-            # Log the finding — actual application happens via display settings API
-            Write-Host "Monitor max refresh rate: ${maxRate}Hz"
-          }
-        }
-        # Use CCD API to set refresh rate (requires SetDisplayConfig)
-        $code = @"
-        Add-Type -TypeDefinition @'
-        using System;
-        using System.Runtime.InteropServices;
-        public class DisplayHelper {
-          [DllImport("user32.dll")]
-          public static extern int EnumDisplaySettingsW(string deviceName, int modeNum, ref DEVMODEW devMode);
-          [DllImport("user32.dll")]
-          public static extern int ChangeDisplaySettingsW(ref DEVMODEW devMode, int flags);
-          [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
-          public struct DEVMODEW {
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)] public string dmDeviceName;
-            public short dmSpecVersion; public short dmDriverVersion; public short dmSize; public short dmDriverExtra;
-            public int dmFields; public int dmPositionX; public int dmPositionY; public int dmDisplayOrientation; public int dmDisplayFixedOutput;
-            public short dmColor; public short dmDuplex; public short dmYResolution; public short dmTTOption; public short dmCollate;
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)] public string dmFormName;
-            public short dmLogPixels; public int dmBitsPerPel; public int dmPelsWidth; public int dmPelsHeight;
-            public int dmDisplayFlags; public int dmDisplayFrequency;
-            public int dmICMMethod; public int dmICMIntent; public int dmMediaType; public int dmDitherType;
-            public int dmReserved1; public int dmReserved2; public int dmPanningWidth; public int dmPanningHeight;
-          }
-        }
-        '@
-        "@ -ErrorAction SilentlyContinue
-        $dm = New-Object DisplayHelper+DEVMODEW
-        $dm.dmSize = [System.Runtime.InteropServices.Marshal]::SizeOf($dm)
-        $maxHz = 0
-        $modeNum = 0
-        while ([DisplayHelper]::EnumDisplaySettingsW($null, $modeNum, [ref]$dm) -ne 0) {
-          if ($dm.dmDisplayFrequency -gt $maxHz) { $maxHz = $dm.dmDisplayFrequency }
-          $modeNum++
-        }
-        if ($maxHz -gt 60) {
-          [DisplayHelper]::EnumDisplaySettingsW($null, -1, [ref]$dm) | Out-Null
-          $currentHz = $dm.dmDisplayFrequency
-          if ($currentHz -lt $maxHz) {
-            $dm.dmDisplayFrequency = $maxHz
-            $dm.dmFields = 0x400000
-            [DisplayHelper]::ChangeDisplaySettingsW([ref]$dm, 0) | Out-Null
-            Write-Host "Changed refresh rate: ${currentHz}Hz -> ${maxHz}Hz"
+        try {
+          $dm = (Get-CimInstance -ClassName Win32_VideoController -ErrorAction Stop | Select-Object -First 1)
+          $currentHz = $dm.CurrentRefreshRate
+          $maxHz = $dm.MaxRefreshRate
+          if ($maxHz -gt $currentHz -and $maxHz -gt 60) {
+            # Use rundll32 to open display settings — safest approach
+            Write-Host "Monitor: ${currentHz}Hz current, ${maxHz}Hz max available"
+            Write-Host "NOTICE: Open Settings > Display > Advanced display to change refresh rate"
           } else {
-            Write-Host "Already at max: ${currentHz}Hz"
+            Write-Host "Already at optimal refresh rate: ${currentHz}Hz"
           }
+        } catch {
+          Write-Host "Could not detect refresh rate"
         }

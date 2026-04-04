@@ -118,7 +118,7 @@ actions:
       - work_pc
       - office_laptop
       - vm_cautious
-    warningMessage: "THIS REMOVES ALL ANTIVIRUS PROTECTION. Your system will have zero malware defense. Only use on air-gapped or dedicated gaming PCs. Tamper Protection must be disabled manually in Windows Security settings first."
+    warningMessage: "THIS REMOVES ALL ANTIVIRUS PROTECTION. Your system will have zero malware defense. Only use on air-gapped or dedicated gaming PCs. Tamper Protection must be disabled manually in Windows Security settings first — otherwise service changes will be blocked by TrustedInstaller and this action will time out. On Windows 10 22H2+ and Windows 11, Tamper Protection may prevent service disabling entirely even with this action applied."
     registryChanges:
       # Defender policy disable
       - hive: HKLM
