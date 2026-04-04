@@ -110,7 +110,7 @@ export function FinalReviewStep() {
           {exportState === "busy" ? "SAVING..." : "SAVE PACKAGE"}
         </button>
         {exportMessage && (
-          <span className={`nd-status ${exportState === "error" ? "text-[var(--accent)]" : "text-[var(--success)]"}`}>
+          <span className={`nd-status ${exportState === "error" ? "text-[#FF6B6B]" : "text-[var(--success)]"}`}>
             {exportMessage}
           </span>
         )}
