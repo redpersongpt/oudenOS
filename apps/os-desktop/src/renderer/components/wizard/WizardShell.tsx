@@ -25,8 +25,6 @@ const CTA: Partial<Record<WizardStepId, string>> = {
 
 const NO_BAR = new Set<WizardStepId>(["execution", "reboot-resume", "donation", "handoff"]);
 
-/* ── Sidebar rail — bracket-style nav, divider rows ─────────────────── */
-
 function Rail() {
   const { currentStep, steps } = useWizardStore();
   const ci = steps.findIndex((s) => s.id === currentStep);
@@ -90,8 +88,6 @@ function Rail() {
   );
 }
 
-/* ── Bottom bar — segmented progress, pill CTA ──────────────────────── */
-
 function Bar() {
   const { currentStep, progress, canGoBack, canGoNext, goBack, goNext } = useWizardStore();
   if (NO_BAR.has(currentStep)) return null;
@@ -147,8 +143,6 @@ function Bar() {
   );
 }
 
-/* ── Title bar — minimal, --black bg ─────────────────────────────────── */
-
 function TitleBar() {
   return (
     <div
@@ -181,8 +175,6 @@ function TitleBar() {
     </div>
   );
 }
-
-/* ── Shell ────────────────────────────────────────────────────────────── */
 
 export function WizardShell({ children }: { children: ReactNode }) {
   const { currentStep } = useWizardStore();

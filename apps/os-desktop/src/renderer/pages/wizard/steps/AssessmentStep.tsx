@@ -42,8 +42,6 @@ const PROFILE_LABELS: Record<string, string> = {
 
 const ND_EASE = [0.25, 0.1, 0.25, 1] as const;
 
-// ── Helpers (unchanged logic) ───────────────────────────────────────────
-
 function isObject(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
 }
@@ -143,8 +141,6 @@ function normalizeDetectedProfileFromService(assessmentValue: unknown, classific
   };
 }
 
-// ── Component ───────────────────────────────────────────────────────────
-
 export function AssessmentStep() {
   const { completeStep, setDetectedProfile, setDemoMode, setStepReady } = useWizardStore();
   const [statuses, setStatuses] = useState<Record<string, Status>>(
@@ -193,7 +189,6 @@ export function AssessmentStep() {
     };
     run();
     return () => { aborted = true; };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setStepReady]);
 
   const done = Object.values(statuses).filter((s) => s === "done").length;

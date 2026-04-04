@@ -1,7 +1,5 @@
 import type { Config } from "tailwindcss";
 
-// Harfi harfine token spec'e uygun. Siyah, beyaz, gri — saf monokrom.
-
 export default {
   darkMode: "class",
   content: [
@@ -35,7 +33,6 @@ export default {
       "body-sm":    ["14px", { lineHeight: "1.5", letterSpacing: "0.01em" }],
       "caption":    ["12px", { lineHeight: "1.4", letterSpacing: "0.04em" }],
       "label":      ["11px", { lineHeight: "1.2", letterSpacing: "0.08em" }],
-      // compat
       "xs": ["11px", { lineHeight: "1.2" }],
       "sm": ["14px", { lineHeight: "1.5" }],
       "base": ["16px", { lineHeight: "1.5" }],
@@ -46,7 +43,6 @@ export default {
     },
     extend: {
       colors: {
-        // Exact token spec — NO grays outside this list
         nd: {
           black:          "#000000",
           surface:        "#111111",
@@ -63,7 +59,6 @@ export default {
           warning:        "#D4A843",
           interactive:    "#5B9BF6",
         },
-        // Semantic shortcuts
         brand: {
           300: "#F5F5F5", 400: "#F0F0F0", 500: "#E8E8E8",
           600: "#CCCCCC", 700: "#999999",

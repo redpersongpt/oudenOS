@@ -1,7 +1,3 @@
-// ─── Database ───────────────────────────────────────────────────────────────
-// SQLite state store for redcore-OS service.
-// Tables: assessments, classifications, transform_plans, action_outcomes,
-//         rollback_snapshots, audit_log.
 
 use anyhow::Result;
 use rusqlite::Connection;

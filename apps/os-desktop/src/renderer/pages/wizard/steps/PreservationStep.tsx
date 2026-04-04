@@ -1,4 +1,3 @@
-// Preservation Step — Work PC only. Auto-skips for non-work profiles.
 
 import { useEffect } from "react";
 import { motion } from "framer-motion";

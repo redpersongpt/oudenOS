@@ -1,6 +1,3 @@
-// Playbook Review Step
-// Optimization manifest review. Shows the resolved playbook plan grouped by
-// phase with action statuses. Premium installer-grade density.
 
 import { useEffect, useMemo, useState } from "react";
 import type { ReactNode } from "react";
@@ -13,10 +10,6 @@ import { applyQuestionnaireOverrides } from "@/lib/wizard-question-model";
 import { getActionRationale, PHASE_RATIONALE, getBlockedExplanation } from "@/lib/expert-rationale";
 import { buildMockResolvedPlaybook } from "@/lib/mock-playbook";
 import technicalDetails from "@/lib/generated-technical-details.json";
-
-// ---------------------------------------------------------------------------
-// Technical details types & helpers
-// ---------------------------------------------------------------------------
 
 interface RegistryChange {
   hive: string;
@@ -62,10 +55,6 @@ interface ActionTechnicalDetails {
 const techLookup = technicalDetails as Record<string, ActionTechnicalDetails>;
 
 const TEMPLATE_RE = /<[^>]+>/;
-
-// ---------------------------------------------------------------------------
-// TechnicalDetails — expandable per-action panel
-// ---------------------------------------------------------------------------
 
 function TechnicalDetails({ actionId }: { actionId: string }) {
   const [expanded, setExpanded] = useState(false);
@@ -199,8 +188,6 @@ function TechnicalDetails({ actionId }: { actionId: string }) {
   );
 }
 
-// Risk dot
-
 const riskDot: Record<string, string> = {
   safe:   "bg-green-400",
   low:    "bg-yellow-400",
@@ -219,8 +206,6 @@ function RiskDot({ risk }: { risk?: string }) {
     />
   );
 }
-
-// Status badge
 
 function StatusBadge({ status }: { status: string }) {
   const styles: Record<string, string> = {
@@ -243,8 +228,6 @@ function StatusBadge({ status }: { status: string }) {
     </span>
   );
 }
-
-// Phase section
 
 function PhaseSection({ phase, defaultOpen, profile }: { phase: PlaybookPhase; defaultOpen: boolean; profile: string }) {
   const [open, setOpen] = useState(defaultOpen);
@@ -359,8 +342,6 @@ function PhaseSection({ phase, defaultOpen, profile }: { phase: PlaybookPhase; d
   );
 }
 
-// Skeleton loader
-
 function PlaybookSkeleton() {
   return (
     <div className="flex h-full flex-col px-6 py-5">
@@ -375,8 +356,6 @@ function PlaybookSkeleton() {
     </div>
   );
 }
-
-// Component
 
 export function PlaybookReviewStep() {
   const { detectedProfile, playbookPreset, demoMode, setResolvedPlaybook, setStepReady } = useWizardStore();

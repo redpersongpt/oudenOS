@@ -1,14 +1,4 @@
-// Platform abstraction layer
-// Centralizes all desktop shell interactions behind a transport-neutral
-// interface. The renderer never calls Tauri invoke directly — it calls
-// these functions instead.
-//
-// Canonical runtime: Tauri (since v0.2.0)
-// The Electron backend was removed during the Tauri cutover.
 
-// ---------------------------------------------------------------------------
-// Types
-// ---------------------------------------------------------------------------
 
 export interface ServiceStatus {
   running: boolean;
@@ -32,10 +22,6 @@ export interface ExportResult {
   [key: string]: unknown;
 }
 
-// ---------------------------------------------------------------------------
-// Platform API — the single interface components depend on
-// ---------------------------------------------------------------------------
-
 export interface PlatformAPI {
   service: {
     call: <T = unknown>(method: string, params?: Record<string, unknown>) => Promise<T>;
@@ -57,10 +43,6 @@ export interface PlatformAPI {
     exportPackage: (state: Record<string, unknown>) => Promise<ExportResult>;
   };
 }
-
-// ---------------------------------------------------------------------------
-// Platform singleton — Tauri backend is set in main.tsx at startup
-// ---------------------------------------------------------------------------
 
 let _platform: PlatformAPI | null = null;
 

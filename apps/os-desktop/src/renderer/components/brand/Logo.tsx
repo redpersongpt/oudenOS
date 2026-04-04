@@ -1,5 +1,3 @@
-// Ouden mark — open ring with accent dot
-// Scales from 14px to 64px
 
 export function LogoMark({ size = 20 }: { size?: number }) {
   const sw = size >= 32 ? 7 : size >= 20 ? 5 : 4;

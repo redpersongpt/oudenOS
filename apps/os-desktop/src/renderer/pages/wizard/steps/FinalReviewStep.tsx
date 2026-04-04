@@ -1,4 +1,3 @@
-// Final Review Step — last check before apply
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";

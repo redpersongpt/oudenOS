@@ -4,9 +4,6 @@ import { WizardPage } from "./pages/wizard/WizardPage";
 import { DonationPage } from "./pages/donation/DonationPage";
 import { StarField } from "@/components/ui/StarField";
 
-// Error Boundary
-// Catches unhandled renderer crashes and shows recovery UI instead of black screen
-
 interface ErrorState {
   hasError: boolean;
   error: string;
@@ -67,8 +64,6 @@ class ErrorBoundary extends Component<{ children: ReactNode }, ErrorState> {
     return this.props.children;
   }
 }
-
-// App
 
 export function App() {
   return (

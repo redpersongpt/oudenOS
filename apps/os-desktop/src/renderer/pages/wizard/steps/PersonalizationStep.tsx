@@ -1,4 +1,3 @@
-// Personalization Step — theme toggles with live preview
 
 import { useEffect } from "react";
 import { motion } from "framer-motion";
@@ -8,8 +7,6 @@ import { useDecisionsStore } from "@/stores/decisions-store";
 import { resolveEffectivePersonalization } from "@/lib/personalization-resolution";
 
 const ND_EASE = [0.25, 0.1, 0.25, 1] as const;
-
-// Toggle row
 
 function ToggleRow({ label, desc, checked, disabled = false, onChange }: {
   label: string; desc: string; checked: boolean; disabled?: boolean; onChange: (v: boolean) => void;
@@ -35,8 +32,6 @@ function ToggleRow({ label, desc, checked, disabled = false, onChange }: {
     </button>
   );
 }
-
-// Preview
 
 function DesktopPreview({ prefs }: { prefs: PersonalizationPreferences }) {
   const accent = prefs.brandAccent ? "#E8E8E8" : "#444444";
@@ -114,6 +109,7 @@ export function PersonalizationStep() {
     const changed =
       resolved.darkMode !== personalization.darkMode ||
       resolved.brandAccent !== personalization.brandAccent ||
+      resolved.wallpaper !== personalization.wallpaper ||
       resolved.taskbarCleanup !== personalization.taskbarCleanup ||
       resolved.explorerCleanup !== personalization.explorerCleanup ||
       resolved.transparency !== personalization.transparency;
@@ -125,7 +121,8 @@ export function PersonalizationStep() {
 
   const toggles = [
     { label: "DARK MODE",        desc: "DARK THEME FOR APPS AND SYSTEM",     key: "darkMode" as const,        disabled: false },
-    { label: "BRAND ACCENT",     desc: "OUDEN RED ACCENT COLOR",             key: "brandAccent" as const,     disabled: false },
+    { label: "BRAND ACCENT",     desc: "BLACK ACCENT — MONOCHROME THEME",    key: "brandAccent" as const,     disabled: false },
+    { label: "OUDEN WALLPAPER",  desc: "STARFIELD + OUDEN LOGO DESKTOP",     key: "wallpaper" as const,       disabled: false },
     { label: "TRANSPARENCY",     desc: "WINDOW TRANSPARENCY EFFECTS",        key: "transparency" as const,    disabled: isLowSpec || transparencyForcedOff },
     { label: "TASKBAR CLEANUP",  desc: "HIDE TASK VIEW, WIDGETS, CHAT",      key: "taskbarCleanup" as const,  disabled: isWorkPc },
     { label: "EXPLORER CLEANUP", desc: "SHOW EXTENSIONS, HIDE RECENTS",      key: "explorerCleanup" as const, disabled: isWorkPc },

@@ -1,4 +1,3 @@
-// App Setup Step — software catalog with category sections
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";

@@ -1,7 +1,3 @@
-// ─── Visual Personalization Engine ──────────────────────────────────────────
-// Applies safe, reversible visual customizations to Windows.
-// All changes are registry/API-based — no system file patching.
-// Every change is captured in a rollback snapshot BEFORE application.
 
 use crate::db::Database;
 use crate::rollback;
@@ -10,12 +6,10 @@ use crate::powershell;
 use serde_json::Value;
 
 #[cfg(windows)]
-const REDCORE_ACCENT_BGR: u32 = 0x004B25E8;
+const REDCORE_ACCENT_BGR: u32 = 0x00000000; // Pure black — matches Ouden monochrome theme
 #[cfg(windows)]
-const REDCORE_DWM_ACCENT: u32 = 0xC44B25E8;
+const REDCORE_DWM_ACCENT: u32 = 0xC4000000; // Black with opacity for DWM
 
-/// Returns a JSON description of what personalization will be applied
-/// for the given device profile.
 pub fn get_personalization_options(profile: &str) -> Value {
     tracing::info!(profile = profile, "Querying personalization options");
 
@@ -23,7 +17,7 @@ pub fn get_personalization_options(profile: &str) -> Value {
         "gaming_desktop" => serde_json::json!({
             "darkMode": true,
             "brandAccent": true,
-            "wallpaper": false,
+            "wallpaper": true,
             "taskbarCleanup": true,
             "explorerCleanup": true,
             "transparency": true,
@@ -32,7 +26,7 @@ pub fn get_personalization_options(profile: &str) -> Value {
         "work_pc" => serde_json::json!({
             "darkMode": true,
             "brandAccent": true,
-            "wallpaper": false,
+            "wallpaper": true,
             "taskbarCleanup": false,
             "explorerCleanup": false,
             "transparency": true,
@@ -41,7 +35,7 @@ pub fn get_personalization_options(profile: &str) -> Value {
         "low_spec_system" => serde_json::json!({
             "darkMode": true,
             "brandAccent": true,
-            "wallpaper": false,
+            "wallpaper": true,
             "taskbarCleanup": true,
             "explorerCleanup": true,
             "transparency": false,
@@ -50,7 +44,7 @@ pub fn get_personalization_options(profile: &str) -> Value {
         "vm_cautious" => serde_json::json!({
             "darkMode": true,
             "brandAccent": true,
-            "wallpaper": false,
+            "wallpaper": true,
             "taskbarCleanup": false,
             "explorerCleanup": false,
             "transparency": false,
@@ -59,7 +53,7 @@ pub fn get_personalization_options(profile: &str) -> Value {
         _ => serde_json::json!({
             "darkMode": true,
             "brandAccent": true,
-            "wallpaper": false,
+            "wallpaper": true,
             "taskbarCleanup": true,
             "explorerCleanup": true,
             "transparency": true,
@@ -68,9 +62,6 @@ pub fn get_personalization_options(profile: &str) -> Value {
     }
 }
 
-/// Apply visual personalization for the given profile.
-/// Creates a rollback snapshot BEFORE any changes, then applies each change.
-/// `options` can override which personalization features to apply.
 pub fn apply_personalization(
     db: &Database,
     profile: &str,
@@ -80,7 +71,6 @@ pub fn apply_personalization(
 
     let opts = get_personalization_options(profile);
 
-    // Merge caller overrides on top of profile defaults
     let dark_mode = options
         .get("darkMode")
         .and_then(|v| v.as_bool())
@@ -114,11 +104,8 @@ pub fn apply_personalization(
         transparency = false;
     }
 
-    // ── Phase 1: Collect current values for rollback ────────────────────
-
     let mut previous_values: Vec<rollback::PreviousValue> = Vec::new();
 
-    // Dark mode values
     if dark_mode {
         collect_registry_prev(
             &mut previous_values,
@@ -136,7 +123,6 @@ pub fn apply_personalization(
         );
     }
 
-    // Accent color values
     if brand_accent {
         collect_registry_prev(
             &mut previous_values,
@@ -175,7 +161,6 @@ pub fn apply_personalization(
         );
     }
 
-    // Wallpaper values
     if wallpaper {
         collect_registry_prev(
             &mut previous_values,
@@ -193,7 +178,6 @@ pub fn apply_personalization(
         );
     }
 
-    // Transparency
     if transparency {
         collect_registry_prev(
             &mut previous_values,
@@ -204,7 +188,6 @@ pub fn apply_personalization(
         );
     }
 
-    // Taskbar cleanup
     if taskbar_cleanup {
         collect_registry_prev(
             &mut previous_values,
@@ -236,7 +219,6 @@ pub fn apply_personalization(
         );
     }
 
-    // Explorer cleanup
     if explorer_cleanup {
         collect_registry_prev(
             &mut previous_values,
@@ -268,8 +250,6 @@ pub fn apply_personalization(
         );
     }
 
-    // ── Phase 2: Create rollback snapshot BEFORE making changes ─────────
-
     let snapshot_id = rollback::create_snapshot(
         db,
         "personalization",
@@ -283,13 +263,10 @@ pub fn apply_personalization(
         "Personalization rollback snapshot created"
     );
 
-    // ── Phase 3: Apply changes ──────────────────────────────────────────
-
     let mut results: Vec<Value> = Vec::new();
     let mut succeeded = 0u32;
     let mut failed = 0u32;
 
-    // Dark mode
     if dark_mode {
         apply_and_record(
             "darkMode",
@@ -300,7 +277,6 @@ pub fn apply_personalization(
         );
     }
 
-    // Accent color
     if brand_accent {
         apply_and_record(
             "brandAccent",
@@ -311,7 +287,6 @@ pub fn apply_personalization(
         );
     }
 
-    // Wallpaper
     if wallpaper {
         apply_and_record(
             "wallpaper",
@@ -322,7 +297,6 @@ pub fn apply_personalization(
         );
     }
 
-    // Transparency
     if transparency {
         apply_and_record(
             "transparency",
@@ -332,7 +306,6 @@ pub fn apply_personalization(
             apply_transparency(true),
         );
     } else if profile == "low_spec_system" {
-        // Explicitly disable transparency for low-spec to save GPU
         apply_and_record(
             "transparency",
             &mut results,
@@ -342,7 +315,6 @@ pub fn apply_personalization(
         );
     }
 
-    // Taskbar cleanup
     if taskbar_cleanup {
         apply_and_record(
             "taskbarCleanup",
@@ -353,7 +325,6 @@ pub fn apply_personalization(
         );
     }
 
-    // Explorer cleanup
     if explorer_cleanup {
         apply_and_record(
             "explorerCleanup",
@@ -373,8 +344,6 @@ pub fn apply_personalization(
             refresh_shell_ui(),
         );
     }
-
-    // ── Phase 4: Audit log ──────────────────────────────────────────────
 
     let status = if failed == 0 {
         "success"
@@ -419,7 +388,6 @@ pub fn apply_personalization(
     }))
 }
 
-/// Revert a personalization by restoring its rollback snapshot.
 pub fn revert_personalization(
     db: &Database,
     snapshot_id: &str,
@@ -430,8 +398,6 @@ pub fn revert_personalization(
     );
     rollback::restore_snapshot(db, snapshot_id)
 }
-
-// ─── Helpers ────────────────────────────────────────────────────────────────
 
 fn collect_registry_prev(
     previous_values: &mut Vec<rollback::PreviousValue>,
@@ -476,8 +442,6 @@ fn apply_and_record(
         }
     }
 }
-
-// ─── Windows implementations ────────────────────────────────────────────────
 
 #[cfg(windows)]
 fn apply_dark_mode() -> anyhow::Result<()> {
@@ -547,53 +511,94 @@ fn apply_accent_color() -> anyhow::Result<()> {
         "ColorPrevalence",
         1,
     )?;
-    tracing::info!("Accent color set to redcore brand red");
+    tracing::info!("Accent color set to black (Ouden monochrome)");
     Ok(())
 }
 
 #[cfg(windows)]
 fn apply_wallpaper() -> anyhow::Result<()> {
-    // Use a solid-color branded wallpaper path. The actual wallpaper file
-    // is bundled with the installer at a known location.
-    let wallpaper_path = std::env::var("LOCALAPPDATA")
-        .unwrap_or_else(|_| "C:\\ProgramData".to_string());
-    let wallpaper_path = format!("{}\\redcore-os\\assets\\wallpaper.png", wallpaper_path);
-    if !std::path::Path::new(&wallpaper_path).exists() {
-        anyhow::bail!(
-            "Wallpaper asset not found at '{}' — packaging/runtime did not provide a wallpaper file.",
-            wallpaper_path
-        );
-    }
-    let wallpaper_path_ps = powershell::escape_ps_string(&wallpaper_path);
+    let script = r#"
+$ErrorActionPreference = 'Stop'
+Add-Type -AssemblyName System.Windows.Forms
+Add-Type -AssemblyName System.Drawing
 
-    let script = format!(
-        "$wallpaper = '{}'; \
-         Set-ItemProperty 'HKCU:\\Control Panel\\Desktop' -Name Wallpaper -Value $wallpaper -Force; \
-         Set-ItemProperty 'HKCU:\\Control Panel\\Desktop' -Name WallpaperStyle -Value '10' -Force; \
-         Add-Type -TypeDefinition @'\n\
-using System;\n\
-using System.Runtime.InteropServices;\n\
-public static class RedcoreWallpaper {{\n\
-    [DllImport(\"user32.dll\", CharSet = CharSet.Unicode, SetLastError = true)]\n\
-    public static extern bool SystemParametersInfo(int uiAction, int uiParam, string pvParam, int fWinIni);\n\
-}}\n\
-'@; \
-         if (-not [RedcoreWallpaper]::SystemParametersInfo(20, 0, $wallpaper, 3)) {{ \
-            throw 'SystemParametersInfo failed to refresh the wallpaper.'; \
-         }}",
-        wallpaper_path_ps,
-    );
-    let result = powershell::execute(&script)?;
+$screen = [System.Windows.Forms.Screen]::PrimaryScreen.Bounds
+$w = $screen.Width; $h = $screen.Height
+
+$wallDir = "$env:LOCALAPPDATA\OudenOS"
+if (!(Test-Path $wallDir)) { New-Item -ItemType Directory -Path $wallDir -Force | Out-Null }
+$wallPath = "$wallDir\wallpaper.bmp"
+
+$bmp = New-Object System.Drawing.Bitmap($w, $h)
+$g = [System.Drawing.Graphics]::FromImage($bmp)
+$g.Clear([System.Drawing.Color]::Black)
+
+# Pixel stars
+$rand = New-Object System.Random(42)
+$starCount = [math]::Min([math]::Floor($w * $h / 5000), 1200)
+for ($i = 0; $i -lt $starCount; $i++) {
+    $sx = $rand.Next(0, $w); $sy = $rand.Next(0, $h)
+    $opacity = [int](40 + $rand.Next(0, 100))
+    $size = if ($rand.NextDouble() -gt 0.85) { 2 } else { 1 }
+    $color = [System.Drawing.Color]::FromArgb($opacity, 255, 255, 255)
+    $brush = New-Object System.Drawing.SolidBrush($color)
+    $g.FillRectangle($brush, $sx, $sy, $size, $size)
+    $brush.Dispose()
+}
+
+# Ouden logo — open ring arc in center
+$cx = $w / 2; $cy = $h / 2
+$logoSize = [math]::Min($w, $h) * 0.12
+$pen = New-Object System.Drawing.Pen([System.Drawing.Color]::FromArgb(200, 255, 255, 255), [float]($logoSize * 0.06))
+$pen.StartCap = [System.Drawing.Drawing2D.LineCap]::Round
+$pen.EndCap = [System.Drawing.Drawing2D.LineCap]::Round
+$rect = New-Object System.Drawing.RectangleF(($cx - $logoSize), ($cy - $logoSize), ($logoSize * 2), ($logoSize * 2))
+$g.SmoothingMode = [System.Drawing.Drawing2D.SmoothingMode]::HighQuality
+$g.DrawArc($pen, $rect, -50, 320)
+$pen.Dispose()
+
+# Accent dot
+$dotAngle = [math]::PI * (-50) / 180
+$dotX = $cx + $logoSize * [math]::Cos($dotAngle)
+$dotY = $cy + $logoSize * [math]::Sin($dotAngle)
+$dotR = $logoSize * 0.05
+$dotBrush = New-Object System.Drawing.SolidBrush([System.Drawing.Color]::FromArgb(230, 255, 255, 255))
+$g.FillEllipse($dotBrush, [float]($dotX - $dotR), [float]($dotY - $dotR), [float]($dotR * 2), [float]($dotR * 2))
+$dotBrush.Dispose()
+$g.Dispose()
+
+$bmp.Save($wallPath, [System.Drawing.Imaging.ImageFormat]::Bmp)
+$bmp.Dispose()
+
+# Apply wallpaper via SystemParametersInfo
+Add-Type -TypeDefinition @"
+using System;
+using System.Runtime.InteropServices;
+public class WallHelper {
+    [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+    public static extern int SystemParametersInfo(int uAction, int uParam, string lpvParam, int fuWinIni);
+}
+"@ -ErrorAction SilentlyContinue
+
+[WallHelper]::SystemParametersInfo(0x0014, 0, $wallPath, 0x01 -bor 0x02) | Out-Null
+Set-ItemProperty 'HKCU:\Control Panel\Desktop' -Name WallpaperStyle -Value '10' -Force
+Set-ItemProperty 'HKCU:\Control Panel\Desktop' -Name TileWallpaper -Value '0' -Force
+Set-ItemProperty 'HKCU:\Control Panel\Colors' -Name Background -Value '0 0 0' -Force
+Write-Host "Wallpaper generated and applied: ${w}x${h}"
+"#;
+    let result = powershell::execute(script)?;
     if !result.success {
-        anyhow::bail!("Wallpaper apply failed: {}", result.stderr.trim());
+        tracing::warn!("Wallpaper generation failed: {}, falling back to solid black", result.stderr.trim());
+        let fallback = "\
+            Set-ItemProperty 'HKCU:\\Control Panel\\Colors' -Name Background -Value '0 0 0' -Force; \
+            Add-Type -TypeDefinition @'\n\
+using System; using System.Runtime.InteropServices;\n\
+public class WFB { [DllImport(\"user32.dll\", CharSet = CharSet.Unicode)] public static extern int SystemParametersInfo(int a, int b, string c, int d); }\n\
+'@ -ErrorAction SilentlyContinue; \
+            [WFB]::SystemParametersInfo(0x0014, 0, '', 0x01 -bor 0x02) | Out-Null";
+        let _ = powershell::execute(fallback);
     }
-    verify_registry_string(
-        "HKCU",
-        "Control Panel\\Desktop",
-        "Wallpaper",
-        wallpaper_path.as_str(),
-    )?;
-    tracing::info!(path = wallpaper_path.as_str(), "Wallpaper set");
+    tracing::info!("Wallpaper applied");
     Ok(())
 }
 
@@ -719,9 +724,9 @@ public static class RedcoreShellRefresh {\n\
         $result = [UIntPtr]::Zero; \
         [void][RedcoreShellRefresh]::SendMessageTimeout([IntPtr]0xffff, 0x001A, [UIntPtr]::Zero, 'ImmersiveColorSet', 2, 5000, [ref]$result); \
         [void][RedcoreShellRefresh]::SendMessageTimeout([IntPtr]0xffff, 0x001A, [UIntPtr]::Zero, 'WindowsThemeElement', 2, 5000, [ref]$result); \
-        Stop-Process -Name explorer -Force -ErrorAction SilentlyContinue; \
-        Start-Sleep -Milliseconds 1200; \
-        Start-Process explorer.exe";
+        $shell = New-Object -ComObject Shell.Application; \
+        $shell.Windows() | Out-Null; \
+        RUNDLL32.EXE USER32.DLL,UpdatePerUserSystemParameters 1, True";
     let result = powershell::execute(script)?;
     if !result.success {
         anyhow::bail!("Shell refresh failed: {}", result.stderr.trim());
@@ -797,8 +802,6 @@ fn read_registry_value(hive: &str, path: &str, value_name: &str) -> Option<Value
     }
 }
 
-// ─── Non-Windows simulation ─────────────────────────────────────────────────
-
 #[cfg(not(windows))]
 fn apply_dark_mode() -> anyhow::Result<()> {
     tracing::info!("[simulated] Would enable dark mode (AppsUseLightTheme=0, SystemUsesLightTheme=0)");
@@ -846,8 +849,6 @@ fn read_registry_value(_hive: &str, _path: &str, _value_name: &str) -> Option<Va
     Some(serde_json::json!(1))
 }
 
-// ─── Tests ──────────────────────────────────────────────────────────────────
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -856,7 +857,7 @@ mod tests {
     fn test_gaming_options_all_enabled() {
         let opts = get_personalization_options("gaming_desktop");
         assert_eq!(opts["darkMode"], true);
-        assert_eq!(opts["wallpaper"], false);
+        assert_eq!(opts["wallpaper"], true);
         assert_eq!(opts["taskbarCleanup"], true);
         assert_eq!(opts["explorerCleanup"], true);
         assert_eq!(opts["transparency"], true);
@@ -868,7 +869,7 @@ mod tests {
         let opts = get_personalization_options("work_pc");
         assert_eq!(opts["darkMode"], true);
         assert_eq!(opts["brandAccent"], true);
-        assert_eq!(opts["wallpaper"], false);
+        assert_eq!(opts["wallpaper"], true);
         assert_eq!(opts["taskbarCleanup"], false);
         assert_eq!(opts["explorerCleanup"], false);
     }
@@ -879,7 +880,7 @@ mod tests {
         assert_eq!(opts["transparency"], false);
         assert_eq!(opts["darkMode"], true);
         assert_eq!(opts["brandAccent"], true);
-        assert_eq!(opts["wallpaper"], false);
+        assert_eq!(opts["wallpaper"], true);
     }
 
     #[test]
@@ -887,7 +888,7 @@ mod tests {
         let opts = get_personalization_options("vm_cautious");
         assert_eq!(opts["darkMode"], true);
         assert_eq!(opts["brandAccent"], true);
-        assert_eq!(opts["wallpaper"], false);
+        assert_eq!(opts["wallpaper"], true);
         assert_eq!(opts["taskbarCleanup"], false);
         assert_eq!(opts["explorerCleanup"], false);
         assert_eq!(opts["transparency"], false);

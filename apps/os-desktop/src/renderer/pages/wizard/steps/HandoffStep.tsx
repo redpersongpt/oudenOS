@@ -1,4 +1,3 @@
-// Handoff Step — final: handoff to Ouden.Tuning
 
 import { motion } from "framer-motion";
 import { Zap } from "lucide-react";

@@ -1,5 +1,3 @@
-// Report Step
-// Optimization complete. Shows expert-grade summary from service ledger truth.
 
 import { useEffect, useMemo, useState, useCallback } from "react";
 import { motion } from "framer-motion";
@@ -12,7 +10,6 @@ import { platform } from "@/lib/platform";
 
 const RICKROLL_URL = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
 
-// Ledger query response shape (from ledger.query)
 interface LedgerStep {
   actionId: string;
   actionName: string;
@@ -59,7 +56,6 @@ export function ReportStep() {
   }, [footerClicks]);
   const exportLogAsText = useLogStore((state) => state.exportAsText);
 
-  // Primary truth: load from service ledger
   const [ledgerState, setLedgerState] = useState<LedgerQueryResult | null>(null);
   useEffect(() => {
     let cancelled = false;
@@ -71,14 +67,12 @@ export function ReportStep() {
           setLedgerState(result.data);
         }
       } catch {
-        // Ledger unavailable — fall back to renderer-local data
       }
     };
     loadLedger();
     return () => { cancelled = true; };
   }, []);
 
-  // Derive counts: ledger-first, renderer-fallback
   const rendererResult = executionResult ?? {
     applied: 0,
     failed: 0,
@@ -137,9 +131,7 @@ export function ReportStep() {
 
     const { serviceCall } = await import("@/lib/service");
 
-    // Primary: get ledger truth for export
     const ledgerQueryResult = await serviceCall<Record<string, unknown> | null>("ledger.query", { includeLedger: true });
-    // Fallback: legacy journal.state
     const serviceJournalResult = await serviceCall<Record<string, unknown> | null>("journal.state");
 
     const exportResult = await platform().wizard.exportPackage({

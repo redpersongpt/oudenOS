@@ -1,6 +1,3 @@
-// Reboot / Resume Step
-// If any executed action requires reboot, shows restart prompt.
-// On resume, loads remainingActions from DB ledger and re-dispatches them.
 
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -53,12 +50,10 @@ export function RebootResumeStep() {
   const [resumeProgress, setResumeProgress] = useState({ completed: 0, total: 0, failed: 0 });
   const abortRef = useRef<AbortController | null>(null);
 
-  // Check if any included action requires reboot
   const needsReboot = resolvedPlaybook?.phases.some((phase) =>
     phase.actions.some((a) => a.status === "Included" && a.requiresReboot)
   ) ?? false;
 
-  // Auto-skip if no reboot needed
   useEffect(() => {
     if (!needsReboot) {
       const t = setTimeout(() => skipStep("reboot-resume"), 150);
@@ -77,7 +72,6 @@ export function RebootResumeStep() {
           setJournalState(result.data);
         }
       } catch {
-        // Non-fatal
       }
     };
     loadJournalState();
@@ -114,7 +108,6 @@ export function RebootResumeStep() {
     completeStep("reboot-resume");
   };
 
-  // True resume: load remaining actions from DB ledger and re-dispatch
   const handleResume = async () => {
     setResumePhase("resuming");
     const controller = new AbortController();
@@ -123,7 +116,6 @@ export function RebootResumeStep() {
     try {
       const { serviceCall } = await import("@/lib/service");
 
-      // Call journal.resume — returns remainingActions from DB ledger
       const resumeResult = await serviceCall<ResumeResponse>("journal.resume");
       if (!resumeResult.ok) {
         setResumePhase("done");
@@ -133,14 +125,12 @@ export function RebootResumeStep() {
 
       const { remainingActions, planId } = resumeResult.data;
 
-      // If no remaining actions, resume is complete
       if (!remainingActions || remainingActions.length === 0) {
         setResumePhase("done");
         completeStep("reboot-resume");
         return;
       }
 
-      // Re-dispatch remaining actions through execute.applyAction
       setResumePhase("executing");
       setResumeProgress({ completed: 0, total: remainingActions.length, failed: 0 });
 
@@ -153,7 +143,6 @@ export function RebootResumeStep() {
 
         setCurrentAction(action.actionName);
 
-        // Mark started in DB ledger
         serviceCall("ledger.markStarted", {
           planId,
           actionId: action.actionId,
@@ -161,7 +150,6 @@ export function RebootResumeStep() {
 
         const startedAt = new Date().toISOString();
 
-        // Execute the action via the Rust service
         const execResult = await serviceCall<Record<string, unknown>>("execute.applyAction", {
           actionId: action.actionId,
           journalContext: planId ? {
@@ -203,7 +191,6 @@ export function RebootResumeStep() {
           localFailed++;
         }
 
-        // Record in DB ledger (fire-and-forget — execute.applyAction already dual-writes)
         resumeJournal.push({
           id: `journal.resume.${action.actionId}`,
           kind: "playbook-action",
@@ -227,12 +214,10 @@ export function RebootResumeStep() {
 
       setCurrentAction(null);
 
-      // Complete the plan in DB ledger
       if (planId) {
         serviceCall("ledger.completePlan", { planId }).catch(() => {});
       }
 
-      // Merge resume journal into existing execution result
       const existing = executionResult;
       if (existing) {
         setExecutionResult({

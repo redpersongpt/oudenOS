@@ -1756,7 +1756,6 @@ class RpcClient {
         }
         pending.resolve((payload.result ?? {}) as Record<string, unknown>);
       } catch (error) {
-        // Ignore malformed stderr-adjacent output from the service.
         console.warn("[verification] Ignoring non-JSON RPC line", error);
       }
     });
@@ -1942,13 +1941,12 @@ export async function runWindowsCertification(options: {
     });
   }
 
-  const effectivePersonalization: PersonalizationPreferences & { wallpaper: boolean } = {
+  const effectivePersonalization: PersonalizationPreferences = {
     ...resolveEffectivePersonalization(
       options.profile,
       getProfilePersonalizationDefaults(options.profile),
       answers,
     ),
-    wallpaper: false,
   };
 
   const personalizationBaseline = capturePersonalizationState();
