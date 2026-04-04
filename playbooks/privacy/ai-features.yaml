@@ -74,6 +74,7 @@ actions:
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
+    minWindowsBuild: 22000
     blockedProfiles: []
     registryChanges:
       - hive: HKLM
