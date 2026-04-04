@@ -513,16 +513,29 @@ fn apply_service_change(service_name: &str, startup_type: &str) -> anyhow::Resul
     powershell::validate_safe_arg(startup_type, "startup type")?;
     let escaped_name = powershell::escape_ps_string(service_name);
 
+    // Gracefully handle missing or already-configured services
     let script = format!(
-        "Set-Service -Name '{}' -StartupType {} -ErrorAction Stop; \
-         if ('{}' -eq 'Disabled') {{ Stop-Service -Name '{}' -Force -ErrorAction SilentlyContinue }}",
+        "$svc = Get-Service -Name '{}' -ErrorAction SilentlyContinue; \
+         if (-not $svc) {{ Write-Host 'SKIPPED: service not found'; exit 0 }}; \
+         $current = (Get-WmiObject Win32_Service -Filter \"Name='{}'\").StartMode; \
+         if ($current -eq '{}') {{ Write-Host 'SKIPPED: already configured'; exit 0 }}; \
+         Set-Service -Name '{}' -StartupType {} -ErrorAction Stop; \
+         if ('{}' -eq 'Disabled') {{ Stop-Service -Name '{}' -Force -ErrorAction SilentlyContinue }}; \
+         Write-Host 'OK: service changed'",
+        escaped_name, escaped_name, startup_type,
         escaped_name, startup_type, startup_type, escaped_name,
     );
     let result = powershell::execute(&script)?;
     if !result.success {
+        // Check if it's a "not found" or "access denied" — don't fail hard
+        let stderr = result.stderr.trim();
+        if stderr.contains("not found") || stderr.contains("does not exist") {
+            tracing::warn!(service = service_name, "Service not found — skipped");
+            return Ok(());
+        }
         anyhow::bail!(
             "Service change failed for {}: {}",
-            service_name, result.stderr.trim()
+            service_name, stderr
         );
     }
     Ok(())
