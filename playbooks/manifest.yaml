@@ -108,8 +108,10 @@ phases:
 
   - id: personalization
     name: "Visual Personalization"
-    description: "Dark mode, accent color, taskbar cleanup, explorer cleanup"
-    type: builtin  # handled by personalizer.rs
+    description: "Dark mode, accent color, wallpaper, refresh rate"
+    modules:
+      - personalization/theme.yaml
+      - personalization/wallpaper.yaml
 
 # Profile Definitions
 
