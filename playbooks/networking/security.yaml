@@ -1,18 +1,19 @@
 # Networking: Security Hardening
+# Only keeping tweaks that CANNOT break connectivity.
 
 module: networking.security
 name: "Network Security Hardening"
-description: "Disable insecure protocols (LLMNR, NetBIOS, SMBv1, WPAD) and harden network stack"
+description: "Disable insecure protocols that cannot break connectivity"
 category: networking
 
 actions:
   - id: network.disable-llmnr
-    name: "Disable Link-Local Multicast Name Resolution"
-    description: "Disable LLMNR — prevents the system from responding to or sending LLMNR multicast queries"
-    rationale: "LLMNR is vulnerable to poisoning attacks where an attacker responds to name resolution queries to capture NTLMv2 hashes. Disabling forces DNS-only resolution."
-    risk: low
+    name: "Disable LLMNR"
+    description: "Disable Link-Local Multicast Name Resolution — prevents NTLM hash capture attacks"
+    risk: safe
     tier: free
-    default: true
+    default: false
+    expertOnly: true
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
@@ -25,37 +26,13 @@ actions:
         value: 0
         valueType: DWord
 
-  - id: network.disable-netbios
-    name: "Disable NetBIOS over TCP/IP"
-    description: "Disable NetBIOS name service on all network adapters"
-    rationale: "NetBIOS is a legacy protocol from the 1980s. It exposes name resolution (UDP 137/138) and session services (TCP 139) to the network. Modern Windows uses DNS and SMB directly over TCP 445."
-    risk: low
-    tier: free
-    default: true
-    requiresReboot: false
-    reversible: true
-    estimatedSeconds: 3
-    blockedProfiles:
-      - work_pc
-    registryChanges:
-      - hive: HKLM
-        path: "SYSTEM\\CurrentControlSet\\Services\\NetBT\\Parameters"
-        valueName: NodeType
-        value: 2
-        valueType: DWord
-      - hive: HKLM
-        path: "SYSTEM\\CurrentControlSet\\Services\\NetBT\\Parameters\\Interfaces"
-        valueName: NetbiosOptions
-        value: 2
-        valueType: DWord
-
   - id: network.disable-smbv1
     name: "Disable SMBv1 Protocol"
-    description: "Disable the legacy SMBv1 file sharing protocol"
-    rationale: "SMBv1 is the protocol exploited by WannaCry and NotPetya. Microsoft has deprecated it since 2018. SMBv2/v3 are the modern replacements. Disabling eliminates a major attack vector."
+    description: "Disable the legacy SMBv1 file sharing protocol (WannaCry vector)"
     risk: low
     tier: free
-    default: true
+    default: false
+    expertOnly: true
     requiresReboot: true
     reversible: true
     estimatedSeconds: 3
@@ -67,82 +44,13 @@ actions:
         valueName: SMB1
         value: 0
         valueType: DWord
-      - hive: HKLM
-        path: "SYSTEM\\CurrentControlSet\\Services\\mrxsmb10"
-        valueName: Start
-        value: 4
-        valueType: DWord
-
-  - id: network.disable-wpad
-    name: "Disable Web Proxy Auto-Discovery (WPAD)"
-    description: "Disable WPAD — automatic proxy detection via DNS/DHCP"
-    rationale: "WPAD queries can be intercepted to redirect traffic through malicious proxies. Unless your network requires WPAD for proxy configuration, disabling it prevents this attack."
-    risk: low
-    tier: free
-    default: true
-    requiresReboot: false
-    reversible: true
-    estimatedSeconds: 2
-    blockedProfiles:
-      - work_pc
-    registryChanges:
-      - hive: HKCU
-        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Internet Settings\\Wpad"
-        valueName: WpadOverride
-        value: 1
-        valueType: DWord
-      - hive: HKLM
-        path: "SYSTEM\\CurrentControlSet\\Services\\WinHttpAutoProxySvc"
-        valueName: Start
-        value: 4
-        valueType: DWord
-
-  - id: network.disable-mdns
-    name: "Disable Multicast DNS (mDNS)"
-    description: "Disable mDNS responder — local network device discovery protocol"
-    rationale: "mDNS (Bonjour-style) announces the machine on the local network. On systems that don't need local network discovery, disabling reduces broadcast traffic and information exposure."
-    risk: low
-    tier: free
-    default: false
-    requiresReboot: false
-    reversible: true
-    estimatedSeconds: 2
-    blockedProfiles:
-      - work_pc
-      - office_laptop
-    registryChanges:
-      - hive: HKLM
-        path: "SYSTEM\\CurrentControlSet\\Services\\Dnscache\\Parameters"
-        valueName: EnableMDNS
-        value: 0
-        valueType: DWord
-
-  - id: network.disable-network-location-wizard
-    name: "Disable Network Location Wizard"
-    description: "Disable the 'Set Network Location' prompt that asks Public/Private on new networks"
-    rationale: "The Network Location Wizard popup interrupts workflow and can be confusing. Defaulting to Public (more restrictive) is safer."
-    risk: safe
-    tier: free
-    default: true
-    requiresReboot: false
-    reversible: true
-    estimatedSeconds: 2
-    blockedProfiles:
-      - work_pc
-    registryChanges:
-      - hive: HKLM
-        path: "SYSTEM\\CurrentControlSet\\Control\\Network\\NewNetworkWindowOff"
-        valueName: ""
-        value: ""
-        valueType: String
 
   - id: network.harden-windows-firewall-defaults
     name: "Harden Windows Firewall Defaults"
-    description: "Set default firewall policy to block inbound, allow outbound on all profiles"
-    rationale: "Ensures that the Windows Firewall defaults to blocking unsolicited inbound connections on Public, Private, and Domain profiles."
+    description: "Block inbound, allow outbound on all firewall profiles"
     risk: safe
     tier: free
-    default: true
+    default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 3
@@ -158,3 +66,8 @@ actions:
         valueName: DefaultInboundAction
         value: 1
         valueType: DWord
+
+# REMOVED: NetBIOS disable — breaks ethernet on some systems
+# REMOVED: WPAD disable — breaks internet on corporate/proxy networks  
+# REMOVED: mDNS disable — breaks local network discovery
+# REMOVED: Network Location Wizard disable — confuses network setup
