@@ -23,7 +23,8 @@ actions:
         valueType: DWord
 
   - id: shell.hide-widgets-button
-    name: "Hide Widgets Button"
+    name: "Hide Widgets Button (Win11)"
+    minWindowsBuild: 22000
     description: "Remove the Widgets button from the taskbar"
     risk: safe
     tier: free
@@ -57,7 +58,8 @@ actions:
         valueType: DWord
 
   - id: shell.disable-copilot
-    name: "Disable Windows Copilot"
+    name: "Disable Windows Copilot (Win11)"
+    minWindowsBuild: 22000
     description: "Disable the Copilot AI sidebar and remove the taskbar button"
     risk: safe
     tier: free
