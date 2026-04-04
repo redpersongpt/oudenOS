@@ -1,23 +1,30 @@
 # Shell: Context Menu Cleanup
+# WARNING: Shell extension modifications can crash Explorer on some Windows builds.
+# Only safe operations (Shell Extensions\Blocked registry) are default-enabled.
+# ContextMenuHandlers and InprocServer32 modifications are expert-only.
 
 module: shell.context-menu
 name: "Context Menu Cleanup"
-description: "Restore classic context menu, remove clutter entries, and clean shell extensions"
+description: "Remove unnecessary context menu entries using safe blocking methods"
 category: shell
 
 actions:
   - id: shell.restore-classic-context-menu
-    name: "Restore Classic Context Menu"
-    description: "Restore the full classic right-click context menu on Windows 11, removing the truncated modern menu"
-    rationale: "Windows 11 hides most context menu entries behind 'Show more options'. Restoring the classic menu gives instant access to all entries without an extra click."
-    risk: low
+    name: "Restore Classic Context Menu (Win11)"
+    description: "Restore the full classic right-click context menu on Windows 11. WARNING: This modifies a shell CLSID InprocServer32 key. On some Windows builds, this can cause Explorer to crash repeatedly. Only use if you know how to revert via registry."
+    rationale: "Windows 11 hides most context menu entries behind 'Show more options'. This restores the classic menu but carries risk of Explorer instability."
+    risk: high
     tier: free
-    default: true
+    default: false
+    expertOnly: true
     requiresReboot: true
     reversible: true
     estimatedSeconds: 2
     minWindowsBuild: 22000
-    blockedProfiles: []
+    blockedProfiles:
+      - work_pc
+      - office_laptop
+    warningMessage: "This can crash File Explorer on some Windows builds. If Explorer stops responding after reboot, open CMD as admin and run: reg delete \"HKCU\\Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a8}\" /f"
     registryChanges:
       - hive: HKCU
         path: "Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a8}\\InprocServer32"
@@ -25,47 +32,10 @@ actions:
         value: ""
         valueType: String
 
-  - id: shell.remove-share-context
-    name: "Remove 'Share' from Context Menu"
-    description: "Remove the 'Share' shell extension from the right-click context menu"
-    rationale: "The Share context menu entry invokes the Windows Share charm. Most users never use this for file sharing and it adds visual clutter."
-    risk: safe
-    tier: free
-    default: true
-    requiresReboot: false
-    reversible: true
-    estimatedSeconds: 2
-    blockedProfiles: []
-    registryChanges:
-      - hive: HKCU
-        path: "SOFTWARE\\Classes\\*\\shellex\\ContextMenuHandlers\\ModernSharing"
-        valueName: ""
-        value: ""
-        valueType: String
-
-  - id: shell.remove-give-access-to
-    name: "Remove 'Give access to' from Context Menu"
-    description: "Remove the 'Give access to' (formerly 'Share with') network sharing entry"
-    rationale: "Give access to provides quick network file sharing setup. On systems not using Windows file sharing, it is unused clutter."
-    risk: safe
-    tier: free
-    default: true
-    requiresReboot: false
-    reversible: true
-    estimatedSeconds: 2
-    blockedProfiles:
-      - work_pc
-    registryChanges:
-      - hive: HKCU
-        path: "SOFTWARE\\Classes\\*\\shellex\\ContextMenuHandlers\\Sharing"
-        valueName: ""
-        value: ""
-        valueType: String
-
   - id: shell.remove-cast-to-device
     name: "Remove 'Cast to Device' from Context Menu"
     description: "Remove the 'Cast to Device' / 'Play To' media streaming entry from right-click menu"
-    rationale: "Cast to Device invokes DLNA/Miracast streaming. Rarely used on desktop systems and adds context menu clutter."
+    rationale: "Uses the safe Shell Extensions\\Blocked method — does not modify shell handlers directly."
     risk: safe
     tier: free
     default: true
@@ -80,29 +50,10 @@ actions:
         value: "Play To menu"
         valueType: String
 
-  - id: shell.remove-include-in-library
-    name: "Remove 'Include in library' from Context Menu"
-    description: "Remove the 'Include in library' folder context menu entry"
-    rationale: "Windows Libraries are a legacy organizational feature that most users have replaced with pinned Quick Access folders."
-    risk: safe
-    tier: free
-    default: true
-    requiresReboot: false
-    reversible: true
-    estimatedSeconds: 2
-    blockedProfiles:
-      - work_pc
-    registryChanges:
-      - hive: HKCU
-        path: "SOFTWARE\\Classes\\Folder\\shellex\\ContextMenuHandlers\\Library Location"
-        valueName: ""
-        value: ""
-        valueType: String
-
   - id: shell.remove-troubleshoot-compatibility
     name: "Remove 'Troubleshoot compatibility' from Context Menu"
-    description: "Remove the 'Troubleshoot compatibility' entry from .exe right-click menu"
-    rationale: "The compatibility troubleshooter is rarely useful on modern systems and adds an unnecessary entry for every executable."
+    description: "Remove the compatibility troubleshooter from .exe right-click menu"
+    rationale: "Uses the safe Shell Extensions\\Blocked method."
     risk: safe
     tier: free
     default: true
@@ -120,8 +71,8 @@ actions:
 
   - id: shell.remove-edit-with-paint3d
     name: "Remove 'Edit with Paint 3D' from Context Menu"
-    description: "Remove the 'Edit with Paint 3D' context menu entry for image files"
-    rationale: "Paint 3D is deprecated and being removed from Windows. The context menu entry persists even after Paint 3D uninstallation."
+    description: "Hide the deprecated Paint 3D context menu entry for image files"
+    rationale: "Uses ProgrammaticAccessOnly — safe, does not remove any shell extensions."
     risk: safe
     tier: free
     default: true
@@ -145,3 +96,12 @@ actions:
         valueName: "ProgrammaticAccessOnly"
         value: ""
         valueType: String
+
+  # REMOVED: shell.remove-share-context — modifying ContextMenuHandlers\ModernSharing
+  # can crash Explorer on some Windows builds. Not worth the risk for removing one menu entry.
+
+  # REMOVED: shell.remove-give-access-to — modifying ContextMenuHandlers\Sharing
+  # can crash Explorer. Network sharing handler is critical on some systems.
+
+  # REMOVED: shell.remove-include-in-library — modifying ContextMenuHandlers\Library Location
+  # can destabilize Explorer shell extension loading.
