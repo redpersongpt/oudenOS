@@ -31,7 +31,7 @@ Most "optimization guides" on YouTube tell you to paste registry commands withou
 - Disables advertising ID, location tracking, speech data collection
 - Removes Start menu "suggestions" (they're ads, Microsoft just doesn't call them that)
 
-Registry keys under `HKLM\SOFTWARE\Policies\Microsoft\Windows\DataCollection`. [See the playbooks.](https://github.com/redpersongpt/oudenECO/tree/main/playbooks/privacy)
+Registry keys under `HKLM\SOFTWARE\Policies\Microsoft\Windows\DataCollection`. [See the playbooks.](playbooks/privacy)
 </details>
 
 <details>
@@ -40,9 +40,7 @@ Registry keys under `HKLM\SOFTWARE\Policies\Microsoft\Windows\DataCollection`. [
 - Timer resolution → 0.5ms (your system runs at 15.6ms by default. Yes, really.)
 - Core parking disabled — Windows loves to park cores for "power savings" on desktop PCs that are plugged into a wall
 - MMCSS configured for multimedia/gaming thread priority
-- Memory compression disabled — a "feature" that trades your RAM speed for CPU cycles to "save memory" on machines with 32GB
 - NDU memory leak fixed — a known Windows bug that Microsoft hasn't patched since 2018
-- SysMain/Superfetch — preloads apps you "might" open. Great idea in 2008 with a hard drive. Pointless with an NVMe.
 
 `HKLM\SYSTEM\CurrentControlSet`. Standard registry edits. Nothing you couldn't do yourself if you knew where to look.
 </details>
@@ -51,7 +49,6 @@ Registry keys under `HKLM\SOFTWARE\Policies\Microsoft\Windows\DataCollection`. [
 <summary><b>Gaming</b> — because Game Bar is recording your screen right now and you probably don't know</summary>
 
 - Game DVR/Game Bar background recording → off (yes, it's on by default. Yes, it uses GPU resources.)
-- Multi-Plane Overlay (MPO) → off on affected hardware. Some GPU/monitor combos stutter with it. Others don't. The tool checks.
 - Legacy flip model for DirectX
 - GPU telemetry blocked — your graphics driver phones home too
 - HAGS control — Hardware Accelerated GPU Scheduling. Sometimes helps. Sometimes doesn't. Depends on your GPU.
@@ -66,23 +63,21 @@ Disables things like:
 - `DiagTrack` — telemetry collector
 - `dmwappushservice` — WAP push routing (you don't have a WAP phone)
 - `WSearch` — indexer that thrashes your disk to make Cortana search 0.2 seconds faster
-- `SysMain` — see above
 - `MapsBroker` — offline maps. For your desktop.
 - `RetailDemo` — turns your PC into a Best Buy display model
 
-**WerSvc (Windows Error Reporting)** — optional, off by default. Some people in comment sections lose their minds about this one. If you need crash reports, leave it on. It's a toggle, not a mandate.
-
 Work PC profiles automatically keep Print Spooler, RDP, SMB, Group Policy, VPN services running. Because unlike some tools, this one checks what you actually need before removing it.
+
+**Task Manager, Explorer, and critical system services are protected** — they can never be disabled regardless of profile or expert mode.
 </details>
 
 <details>
 <summary><b>Shell</b> — the visual garbage</summary>
 
 - Start menu ads → gone
-- Classic right-click restored (Win11 users know the pain)
-- Widgets panel → hidden
+- Widgets panel → hidden (Win11 only — Win10 users won't see this option)
 - Taskbar: Chat, News, Search highlights → removed
-- Optional: dark mode, accent color, Explorer tweaks
+- Optional: dark mode, Ouden wallpaper (starfield + logo at your resolution), accent color
 </details>
 
 <details>
@@ -98,7 +93,7 @@ Work PC profiles automatically keep Print Spooler, RDP, SMB, Group Policy, VPN s
 <summary><b>Security</b> — expert only, locked by default</summary>
 
 - VBS/HVCI control (costs 5-15% CPU performance on some systems. Microsoft doesn't mention this.)
-- Defender management
+- Defender management (Tamper Protection detected → skips cleanly instead of timing out)
 - CPU mitigations toggle (Spectre/Meltdown patches — the ones that cost 2-8% performance)
 
 If you don't know what VBS is, you won't see these options. They're behind an expert gate for a reason.
@@ -107,13 +102,14 @@ If you don't know what VBS is, you won't see these options. They're behind an ex
 ## What it does NOT do
 
 - Modify system files or DLLs
+- Break Explorer or Task Manager (ever)
 - Install drivers
 - Touch your documents, apps, or games
 - Require internet
 - Collect any data whatsoever
 - Run in the background
 - Ask you to create an account
-- Claim it'll give you 200 extra FPS
+- Show Win11-only options on Win10
 
 ## How it works
 
@@ -127,9 +123,16 @@ VALIDATE  → confirms what changed, generates a report
 
 Built with Tauri (Rust backend, React frontend). 5MB installer. The privileged Rust service does the actual system modifications. The UI is just a wizard.
 
+### Personalization
+
+- **Wallpaper** — generates an Ouden-branded wallpaper (black + starfield + logo) at your native resolution via GDI+
+- **Accent color** — pure black for monochrome Ctrl+Alt+Del, shutdown, and login screens
+- **Refresh rate** — auto-detects and sets your monitor's max Hz via ChangeDisplaySettingsEx
+- **ClearType** — font smoothing is always preserved, never broken
+
 ### Playbooks
 
-Every single optimization is defined in [readable YAML files](https://github.com/redpersongpt/oudenECO/tree/main/playbooks). 40 files across 10 categories. Every action documents: what it does, the risk level, and how to undo it.
+Every single optimization is defined in [readable YAML files](playbooks). 40 files across 10 categories. Every action documents: what it does, the risk level, and how to undo it.
 
 You can read every line of what this tool will do to your system before you run it. That's the point.
 
@@ -152,7 +155,6 @@ You can read every line of what this tool will do to your system before you run 
 
 **[Download Visual C++ Redistributable (x64)](https://aka.ms/vs/17/release/vc_redist.x64.exe)** — direct Microsoft link, 24MB
 
-This is a Microsoft system library, not our software. Windows should ship it by default but often doesn't on clean installs.
 ## Requirements
 
 - Windows 10 (21H2+) or Windows 11
@@ -170,7 +172,7 @@ Good. Those work. This is for people who want guided per-action rollback instead
 $300/year. Not yet. SmartScreen will flag it. Right-click → Properties → Unblock. Or build from source.
 
 **"Why should I trust this?"**
-You shouldn't trust any software blindly. [Read the playbooks](https://github.com/redpersongpt/oudenECO/tree/main/playbooks). [Read the Rust service](https://github.com/redpersongpt/oudenECO/tree/main/services/os-service). Run it in a VM. Or don't. Your call.
+You shouldn't trust any software blindly. [Read the playbooks](playbooks). [Read the Rust service](services/os-service). Run it in a VM. Or don't. Your call.
 
 ## License
 
