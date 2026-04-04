@@ -94,6 +94,28 @@ actions:
         value: 1
         valueType: DWord
 
+  - id: personalize.preserve-cleartype
+    name: "Preserve ClearType Font Smoothing"
+    description: "Ensure ClearType and font smoothing remain enabled for crisp text rendering"
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 1
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKCU
+        path: "Control Panel\\Desktop"
+        valueName: FontSmoothing
+        value: "2"
+        valueType: String
+      - hive: HKCU
+        path: "Control Panel\\Desktop"
+        valueName: FontSmoothingType
+        value: 2
+        valueType: DWord
+
   - id: personalize.max-refresh-rate
     name: "Set Monitor to Maximum Refresh Rate"
     description: "Detect connected monitor's maximum supported refresh rate and set it. Many users have 144Hz/165Hz/240Hz monitors running at 60Hz without knowing."
@@ -108,16 +130,66 @@ actions:
     powerShellCommands:
       - |
         try {
-          $dm = (Get-CimInstance -ClassName Win32_VideoController -ErrorAction Stop | Select-Object -First 1)
-          $currentHz = $dm.CurrentRefreshRate
-          $maxHz = $dm.MaxRefreshRate
-          if ($maxHz -gt $currentHz -and $maxHz -gt 60) {
-            # Use rundll32 to open display settings — safest approach
-            Write-Host "Monitor: ${currentHz}Hz current, ${maxHz}Hz max available"
-            Write-Host "NOTICE: Open Settings > Display > Advanced display to change refresh rate"
+          Add-Type @"
+        using System;
+        using System.Runtime.InteropServices;
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
+        public struct DEVMODE {
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)] public string dmDeviceName;
+            public short dmSpecVersion; public short dmDriverVersion; public short dmSize;
+            public short dmDriverExtra; public int dmFields;
+            public int dmPositionX; public int dmPositionY;
+            public int dmDisplayOrientation; public int dmDisplayFixedOutput;
+            public short dmColor; public short dmDuplex; public short dmYResolution;
+            public short dmTTOption; public short dmCollate;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)] public string dmFormName;
+            public short dmLogPixels; public int dmBitsPerPel;
+            public int dmPelsWidth; public int dmPelsHeight;
+            public int dmDisplayFlags; public int dmDisplayFrequency;
+            public int dmICMMethod; public int dmICMIntent; public int dmMediaType;
+            public int dmDitherType; public int dmReserved1; public int dmReserved2;
+            public int dmPanningWidth; public int dmPanningHeight;
+        }
+        public class DisplayHelper {
+            [DllImport("user32.dll")] public static extern int EnumDisplaySettings(string dev, int mode, ref DEVMODE dm);
+            [DllImport("user32.dll")] public static extern int ChangeDisplaySettings(ref DEVMODE dm, int flags);
+        }
+        "@ -ErrorAction SilentlyContinue
+
+          # Find the max Hz supported at current resolution
+          $dm = New-Object DEVMODE
+          $dm.dmSize = [System.Runtime.InteropServices.Marshal]::SizeOf($dm)
+          $maxHz = 0; $bestMode = $null; $idx = 0
+          # Get current resolution
+          [DisplayHelper]::EnumDisplaySettings($null, -1, [ref]$dm) | Out-Null
+          $curW = $dm.dmPelsWidth; $curH = $dm.dmPelsHeight; $curHz = $dm.dmDisplayFrequency
+
+          while ([DisplayHelper]::EnumDisplaySettings($null, $idx, [ref]$dm) -ne 0) {
+            if ($dm.dmPelsWidth -eq $curW -and $dm.dmPelsHeight -eq $curH -and $dm.dmDisplayFrequency -gt $maxHz) {
+              $maxHz = $dm.dmDisplayFrequency
+              $bestMode = $dm.PSObject.Copy()
+            }
+            $idx++
+            $dm = New-Object DEVMODE
+            $dm.dmSize = [System.Runtime.InteropServices.Marshal]::SizeOf($dm)
+          }
+
+          if ($maxHz -gt $curHz -and $maxHz -gt 60) {
+            # Apply the best mode
+            $apply = New-Object DEVMODE
+            $apply.dmSize = [System.Runtime.InteropServices.Marshal]::SizeOf($apply)
+            [DisplayHelper]::EnumDisplaySettings($null, -1, [ref]$apply) | Out-Null
+            $apply.dmDisplayFrequency = $maxHz
+            $apply.dmFields = 0x400000  # DM_DISPLAYFREQUENCY
+            $ret = [DisplayHelper]::ChangeDisplaySettings([ref]$apply, 0)
+            if ($ret -eq 0) {
+              Write-Host "Refresh rate changed: ${curHz}Hz -> ${maxHz}Hz"
+            } else {
+              Write-Host "ChangeDisplaySettings returned $ret — refresh rate unchanged"
+            }
           } else {
-            Write-Host "Already at optimal refresh rate: ${currentHz}Hz"
+            Write-Host "Already at optimal refresh rate: ${curHz}Hz"
           }
         } catch {
-          Write-Host "Could not detect refresh rate"
+          Write-Host "Could not set refresh rate: $_"
         }
