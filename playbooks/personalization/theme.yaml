@@ -1,0 +1,165 @@
+# Personalization: System Theme
+# Applied automatically during the personalization step.
+
+module: personalization.theme
+name: "System Theme"
+description: "Set system colors, login screen, and shutdown screen to match Ouden dark theme"
+category: personalization
+
+actions:
+  - id: personalize.dark-mode
+    name: "Enable System Dark Mode"
+    description: "Set Windows system theme and app theme to dark mode"
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKCU
+        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize"
+        valueName: SystemUsesLightTheme
+        value: 0
+        valueType: DWord
+      - hive: HKCU
+        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize"
+        valueName: AppsUseLightTheme
+        value: 0
+        valueType: DWord
+
+  - id: personalize.accent-color-black
+    name: "Set Accent Color to Black"
+    description: "Set the Windows accent color to pure black (#000000) so Ctrl+Alt+Del screen, shutdown screen, and login screen use black instead of a colored theme"
+    rationale: "Windows uses the accent color for the lock screen, Ctrl+Alt+Del screen, and shutdown overlay. Setting it to black matches the Ouden monochrome theme and prevents jarring color flashes."
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      # Accent color = black (0x00000000 in ABGR format)
+      - hive: HKCU
+        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Accent"
+        valueName: AccentColorMenu
+        value: 0
+        valueType: DWord
+      - hive: HKCU
+        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Accent"
+        valueName: StartColorMenu
+        value: 0
+        valueType: DWord
+      # Show accent color on title bars and window borders = off
+      - hive: HKCU
+        path: "SOFTWARE\\Microsoft\\Windows\\DWM"
+        valueName: ColorPrevalence
+        value: 0
+        valueType: DWord
+      # Show accent color on Start and taskbar = off (keeps it black)
+      - hive: HKCU
+        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize"
+        valueName: ColorPrevalence
+        value: 0
+        valueType: DWord
+
+  - id: personalize.login-screen-dark
+    name: "Dark Login Screen"
+    description: "Set the Windows login/lock screen background to solid dark color instead of Windows Spotlight images"
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      # Disable Windows Spotlight on lock screen
+      - hive: HKCU
+        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager"
+        valueName: RotatingLockScreenEnabled
+        value: 0
+        valueType: DWord
+      - hive: HKCU
+        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager"
+        valueName: RotatingLockScreenOverlayEnabled
+        value: 0
+        valueType: DWord
+      # Use solid color for lock screen background
+      - hive: HKLM
+        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\System"
+        valueName: DisableLockScreenImage
+        value: 1
+        valueType: DWord
+
+  - id: personalize.max-refresh-rate
+    name: "Set Monitor to Maximum Refresh Rate"
+    description: "Detect connected monitor's maximum supported refresh rate and set it. Many users have 144Hz/165Hz/240Hz monitors running at 60Hz without knowing."
+    rationale: "Windows sometimes defaults to 60Hz even on high-refresh-rate monitors. This ensures you get the full refresh rate your hardware supports."
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 3
+    blockedProfiles: []
+    powerShellCommands:
+      - |
+        # Detect and set maximum refresh rate
+        $displays = Get-CimInstance -Namespace root\wmi -ClassName WmiMonitorListedSupportedSourceModes -ErrorAction SilentlyContinue
+        if ($displays) {
+          foreach ($display in $displays) {
+            $maxRate = ($display.MonitorSourceModes | ForEach-Object {
+              [math]::Round($_.VerticalActivePixels * $_.HorizontalActivePixels * $_.VerticalRefreshRateNumerator / $_.VerticalRefreshRateDenominator / ($_.VerticalActivePixels * $_.HorizontalActivePixels), 0)
+            } | Sort-Object -Descending | Select-Object -First 1)
+            # Log the finding — actual application happens via display settings API
+            Write-Host "Monitor max refresh rate: ${maxRate}Hz"
+          }
+        }
+        # Use CCD API to set refresh rate (requires SetDisplayConfig)
+        $code = @"
+        Add-Type -TypeDefinition @'
+        using System;
+        using System.Runtime.InteropServices;
+        public class DisplayHelper {
+          [DllImport("user32.dll")]
+          public static extern int EnumDisplaySettingsW(string deviceName, int modeNum, ref DEVMODEW devMode);
+          [DllImport("user32.dll")]
+          public static extern int ChangeDisplaySettingsW(ref DEVMODEW devMode, int flags);
+          [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+          public struct DEVMODEW {
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)] public string dmDeviceName;
+            public short dmSpecVersion; public short dmDriverVersion; public short dmSize; public short dmDriverExtra;
+            public int dmFields; public int dmPositionX; public int dmPositionY; public int dmDisplayOrientation; public int dmDisplayFixedOutput;
+            public short dmColor; public short dmDuplex; public short dmYResolution; public short dmTTOption; public short dmCollate;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)] public string dmFormName;
+            public short dmLogPixels; public int dmBitsPerPel; public int dmPelsWidth; public int dmPelsHeight;
+            public int dmDisplayFlags; public int dmDisplayFrequency;
+            public int dmICMMethod; public int dmICMIntent; public int dmMediaType; public int dmDitherType;
+            public int dmReserved1; public int dmReserved2; public int dmPanningWidth; public int dmPanningHeight;
+          }
+        }
+        '@
+        "@ -ErrorAction SilentlyContinue
+        $dm = New-Object DisplayHelper+DEVMODEW
+        $dm.dmSize = [System.Runtime.InteropServices.Marshal]::SizeOf($dm)
+        $maxHz = 0
+        $modeNum = 0
+        while ([DisplayHelper]::EnumDisplaySettingsW($null, $modeNum, [ref]$dm) -ne 0) {
+          if ($dm.dmDisplayFrequency -gt $maxHz) { $maxHz = $dm.dmDisplayFrequency }
+          $modeNum++
+        }
+        if ($maxHz -gt 60) {
+          [DisplayHelper]::EnumDisplaySettingsW($null, -1, [ref]$dm) | Out-Null
+          $currentHz = $dm.dmDisplayFrequency
+          if ($currentHz -lt $maxHz) {
+            $dm.dmDisplayFrequency = $maxHz
+            $dm.dmFields = 0x400000
+            [DisplayHelper]::ChangeDisplaySettingsW([ref]$dm, 0) | Out-Null
+            Write-Host "Changed refresh rate: ${currentHz}Hz -> ${maxHz}Hz"
+          } else {
+            Write-Host "Already at max: ${currentHz}Hz"
+          }
+        }
