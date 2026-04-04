@@ -622,6 +622,19 @@ public class WallHelper {
 Set-ItemProperty 'HKCU:\Control Panel\Desktop' -Name WallpaperStyle -Value '10' -Force
 Set-ItemProperty 'HKCU:\Control Panel\Desktop' -Name TileWallpaper -Value '0' -Force
 Set-ItemProperty 'HKCU:\Control Panel\Colors' -Name Background -Value '0 0 0' -Force
+
+# Lock screen / login screen
+try {
+    $lockDir = "$env:LOCALAPPDATA\OudenOS\LockScreen"
+    if (!(Test-Path $lockDir)) { New-Item -ItemType Directory -Path $lockDir -Force | Out-Null }
+    Copy-Item $wallPath "$lockDir\lockscreen.bmp" -Force
+    New-Item -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization' -Force | Out-Null
+    Set-ItemProperty 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization' -Name LockScreenImage -Value "$lockDir\lockscreen.bmp" -Force
+    New-Item -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Authentication\LogonUI\Background' -Force | Out-Null
+    Set-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Authentication\LogonUI\Background' -Name OEMBackground -Value 1 -Type DWord -Force
+    Write-Host 'Lock screen set'
+} catch { Write-Host "Lock screen failed (non-critical): $_" }
+
 Write-Host "Wallpaper generated and applied: ${w}x${h}"
 "#;
     let result = powershell::execute(script)?;

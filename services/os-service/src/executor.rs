@@ -527,8 +527,26 @@ fn apply_registry_change(
 
 #[cfg(windows)]
 fn apply_service_change(service_name: &str, startup_type: &str) -> anyhow::Result<()> {
-    // Never touch Task Manager critical services
-    const PROTECTED_SERVICES: &[&str] = &["Taskmgr", "DcomLaunch", "RpcSs", "RpcEptMapper", "DPS"];
+    // Never touch Explorer/TaskManager/shell critical services
+    const PROTECTED_SERVICES: &[&str] = &[
+        "DcomLaunch", "RpcSs", "RpcEptMapper", "DPS",          // Core RPC/diagnostics
+        "Themes", "UxSms",                                       // Shell visual rendering
+        "ShellHWDetection",                                      // Shell hardware detection
+        "FontCache",                                             // Font rendering (Explorer text)
+        "Schedule",                                              // Task scheduler (shell background ops)
+        "gpsvc",                                                 // Group policy (shell extensions)
+        "EventSystem",                                           // COM+ events (Explorer notifications)
+        "ProfSvc", "UserManager",                                // User profile (Explorer identity)
+        "StateRepository",                                       // App state (Store/UWP shell integration)
+        "TokenBroker",                                           // Auth tokens (Explorer cloud files)
+        "StorSvc",                                               // Storage service (Explorer drives)
+        "ClipSVC", "AppXSvc", "LicenseManager",                  // AppX/Store (Start menu, UWP)
+        "BFE", "mpssvc",                                         // Base Filtering Engine + Firewall
+        "NlaSvc",                                                // Network Location (taskbar flyouts)
+        "EventLog",                                              // Event log (anti-cheat depends on it)
+        "CryptSvc",                                              // Crypto services (BattlEye/EAC)
+        "DeviceInstall",                                         // Driver install (GPU/WiFi/BT)
+    ];
     if PROTECTED_SERVICES.iter().any(|s| s.eq_ignore_ascii_case(service_name)) {
         tracing::warn!(service = service_name, "Protected service — skipped to preserve Task Manager/system stability");
         return Ok(());
