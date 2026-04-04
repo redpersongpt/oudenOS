@@ -72,7 +72,7 @@ const SPINNING_QUOTES = [
   "git commit -m \"bye bloat\"...",
 
   // Personality
-  "im poor donate plz \ud83d\ude4f",
+  "im poor donate plz ( \u0361\u00b0 \u035c\u0296 \u0361\u00b0)",
   "this is what freedom feels like...",
   "every byte counts when you're debloating...",
   "removing digital cholesterol...",
@@ -214,7 +214,7 @@ function SpinningQuote({ isActive }: { isActive: boolean }) {
 // Component
 
 export function ExecutionStep() {
-  const { detectedProfile, resolvedPlaybook, selectedAppIds, personalization, demoMode, completeStep, setExecutionResult, setResolvedPlaybook } = useWizardStore();
+  const { detectedProfile, resolvedPlaybook, selectedAppIds, personalization, demoMode, completeStep, goNext, setExecutionResult, setResolvedPlaybook } = useWizardStore();
   const answers = useDecisionsStore((state) => state.answers);
   const addLogEntry = useLogStore((state) => state.addEntry);
   const effectivePersonalization = useMemo(
@@ -675,7 +675,11 @@ export function ExecutionStep() {
         details: `truthSource=${ledgerIsAuthoritative ? "ledger" : "local"}`,
       });
 
-      timerRef.current = setTimeout(() => completeStep("execution"), 800);
+      timerRef.current = setTimeout(() => {
+        completeStep("execution");
+        // Auto-advance to reboot step after a short delay
+        setTimeout(() => goNext(), 1200);
+      }, 800);
     };
 
     exec().catch((err) => {
@@ -783,7 +787,7 @@ export function ExecutionStep() {
                 <span className="text-sm font-medium text-[var(--success)]">All actions complete</span>
               </div>
               <span className="text-[10px] text-[var(--success)]/40 italic">
-                {failCount === 0 ? "debloated your load ( \u0361\u00b0 \u035c\u0296 \u0361\u00b0)" : "mostly debloated your load \ud83d\ude05"}
+                {failCount === 0 ? "debloated your load ( \u0361\u00b0 \u035c\u0296 \u0361\u00b0)" : "mostly debloated your load ( \u0361\u00b0 \u035c\u0296 \u0361\u00b0)"}
               </span>
             </motion.div>
           ) : (
