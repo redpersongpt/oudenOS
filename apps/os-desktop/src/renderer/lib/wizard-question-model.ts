@@ -953,20 +953,8 @@ export const strategyQuestions: StrategyQuestionDefinition[] = [
       visibility: { minPreset: "aggressive" },
     },
   ),
-  makeBooleanQuestion(
-    "disableIpv6",
-    "Globe",
-    "IPv6",
-    "Disable IPv6?",
-    "Most home networks don't use IPv6 yet. Disabling it simplifies your network stack, but some ISPs require it.",
-    "Yes — disable IPv6",
-    "Simpler network stack. Only if your network doesn't need it.",
-    "No — keep IPv6",
-    "Recommended unless you're sure your ISP and apps don't need it.",
-    {
-      visibility: { minPreset: "aggressive" },
-    },
-  ),
+  // IPv6 disable question removed — no backing playbook action exists,
+  // and disabling IPv6 breaks many ISPs and modern services.
   makeBooleanQuestion(
     "disableTeredo",
     "Globe",
@@ -1878,16 +1866,7 @@ const QUESTION_BEHAVIORS: Record<keyof QuestionnaireAnswers, StrategyQuestionBeh
       },
     },
   ),
-  disableIpv6: createBooleanBehavior(
-    ["network.disable-ipv6"],
-    "You chose to keep IPv6 enabled.",
-    {
-      onTrue: {
-        warnings: ["Aggressive network tuning is hardware-sensitive. Verify games, VPNs, and voice chat after apply."],
-        riskLevel: "aggressive",
-      },
-    },
-  ),
+  // disableIpv6 behavior removed — no backing action
   disableTeredo: createBooleanBehavior(
     ["network.disable-teredo"],
     "You chose to keep Teredo tunneling enabled.",
