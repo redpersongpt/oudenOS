@@ -2967,7 +2967,7 @@
       ]
     }
   ],
-  "profileRules": {
+  "profiles": {
     "gaming_desktop": {
       "blockedActions": [],
       "optionalActions": []
