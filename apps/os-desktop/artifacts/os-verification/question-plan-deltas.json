@@ -13,16 +13,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 127,
-        "totalBlocked": 2,
-        "totalOptional": 18,
+        "totalIncluded": 156,
+        "totalBlocked": 5,
+        "totalOptional": 46,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 126,
-        "totalBlocked": 3,
-        "totalOptional": 18,
+        "totalIncluded": 155,
+        "totalBlocked": 6,
+        "totalOptional": 46,
         "requiresReboot": true
       }
     ]
@@ -41,16 +41,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 127,
-        "totalBlocked": 2,
-        "totalOptional": 18,
+        "totalIncluded": 156,
+        "totalBlocked": 5,
+        "totalOptional": 46,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 126,
-        "totalBlocked": 3,
-        "totalOptional": 18,
+        "totalIncluded": 155,
+        "totalBlocked": 6,
+        "totalOptional": 46,
         "requiresReboot": true
       }
     ]
@@ -69,16 +69,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 127,
-        "totalBlocked": 2,
-        "totalOptional": 18,
+        "totalIncluded": 156,
+        "totalBlocked": 5,
+        "totalOptional": 46,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 126,
-        "totalBlocked": 3,
-        "totalOptional": 18,
+        "totalIncluded": 155,
+        "totalBlocked": 6,
+        "totalOptional": 46,
         "requiresReboot": true
       }
     ]
@@ -97,16 +97,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 127,
-        "totalBlocked": 2,
-        "totalOptional": 18,
+        "totalIncluded": 156,
+        "totalBlocked": 5,
+        "totalOptional": 46,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 126,
-        "totalBlocked": 3,
-        "totalOptional": 18,
+        "totalIncluded": 155,
+        "totalBlocked": 6,
+        "totalOptional": 46,
         "requiresReboot": true
       }
     ]
@@ -125,16 +125,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 127,
-        "totalBlocked": 2,
-        "totalOptional": 18,
+        "totalIncluded": 156,
+        "totalBlocked": 5,
+        "totalOptional": 46,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 126,
-        "totalBlocked": 3,
-        "totalOptional": 18,
+        "totalIncluded": 155,
+        "totalBlocked": 6,
+        "totalOptional": 46,
         "requiresReboot": true
       }
     ]
@@ -153,16 +153,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 128,
-        "totalBlocked": 2,
-        "totalOptional": 17,
+        "totalIncluded": 157,
+        "totalBlocked": 5,
+        "totalOptional": 45,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 127,
-        "totalBlocked": 3,
-        "totalOptional": 17,
+        "totalIncluded": 156,
+        "totalBlocked": 6,
+        "totalOptional": 45,
         "requiresReboot": true
       }
     ]
@@ -181,16 +181,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 127,
-        "totalBlocked": 2,
-        "totalOptional": 18,
+        "totalIncluded": 156,
+        "totalBlocked": 5,
+        "totalOptional": 46,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 126,
-        "totalBlocked": 3,
-        "totalOptional": 18,
+        "totalIncluded": 155,
+        "totalBlocked": 6,
+        "totalOptional": 46,
         "requiresReboot": true
       }
     ]
@@ -209,16 +209,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 127,
-        "totalBlocked": 2,
-        "totalOptional": 18,
+        "totalIncluded": 156,
+        "totalBlocked": 5,
+        "totalOptional": 46,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 126,
-        "totalBlocked": 3,
-        "totalOptional": 18,
+        "totalIncluded": 155,
+        "totalBlocked": 6,
+        "totalOptional": 46,
         "requiresReboot": true
       }
     ]
@@ -232,21 +232,25 @@
       "windowsBuild": 22631
     },
     "changedActionIds": [
-      "memory.disable-compression"
+      "memory.disable-compression",
+      "perf.disable-ndu",
+      "perf.disable-page-combining",
+      "perf.disable-prefetch",
+      "perf.svchost-split-threshold"
     ],
     "variants": [
       {
         "value": true,
-        "totalIncluded": 127,
-        "totalBlocked": 2,
-        "totalOptional": 18,
+        "totalIncluded": 160,
+        "totalBlocked": 5,
+        "totalOptional": 43,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 126,
-        "totalBlocked": 3,
-        "totalOptional": 18,
+        "totalIncluded": 155,
+        "totalBlocked": 10,
+        "totalOptional": 43,
         "requiresReboot": true
       }
     ]
@@ -265,16 +269,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 127,
-        "totalBlocked": 2,
-        "totalOptional": 18,
+        "totalIncluded": 156,
+        "totalBlocked": 5,
+        "totalOptional": 46,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 126,
-        "totalBlocked": 3,
-        "totalOptional": 18,
+        "totalIncluded": 155,
+        "totalBlocked": 6,
+        "totalOptional": 46,
         "requiresReboot": true
       }
     ]
@@ -294,16 +298,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 127,
-        "totalBlocked": 2,
-        "totalOptional": 18,
+        "totalIncluded": 156,
+        "totalBlocked": 5,
+        "totalOptional": 46,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 125,
-        "totalBlocked": 4,
-        "totalOptional": 18,
+        "totalIncluded": 154,
+        "totalBlocked": 7,
+        "totalOptional": 46,
         "requiresReboot": true
       }
     ]
@@ -322,16 +326,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 128,
-        "totalBlocked": 2,
-        "totalOptional": 17,
+        "totalIncluded": 157,
+        "totalBlocked": 5,
+        "totalOptional": 45,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 127,
-        "totalBlocked": 3,
-        "totalOptional": 17,
+        "totalIncluded": 156,
+        "totalBlocked": 6,
+        "totalOptional": 45,
         "requiresReboot": true
       }
     ]
@@ -350,16 +354,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 127,
-        "totalBlocked": 2,
-        "totalOptional": 18,
+        "totalIncluded": 156,
+        "totalBlocked": 5,
+        "totalOptional": 46,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 126,
-        "totalBlocked": 3,
-        "totalOptional": 18,
+        "totalIncluded": 155,
+        "totalBlocked": 6,
+        "totalOptional": 46,
         "requiresReboot": true
       }
     ]
@@ -378,16 +382,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 127,
-        "totalBlocked": 2,
-        "totalOptional": 18,
+        "totalIncluded": 156,
+        "totalBlocked": 5,
+        "totalOptional": 46,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 126,
-        "totalBlocked": 3,
-        "totalOptional": 18,
+        "totalIncluded": 155,
+        "totalBlocked": 6,
+        "totalOptional": 46,
         "requiresReboot": true
       }
     ]
@@ -409,16 +413,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 127,
-        "totalBlocked": 2,
-        "totalOptional": 18,
+        "totalIncluded": 156,
+        "totalBlocked": 5,
+        "totalOptional": 46,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 123,
-        "totalBlocked": 6,
-        "totalOptional": 18,
+        "totalIncluded": 152,
+        "totalBlocked": 9,
+        "totalOptional": 46,
         "requiresReboot": true
       }
     ]
@@ -437,16 +441,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 126,
-        "totalBlocked": 3,
-        "totalOptional": 18,
+        "totalIncluded": 156,
+        "totalBlocked": 6,
+        "totalOptional": 45,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 127,
-        "totalBlocked": 2,
-        "totalOptional": 18,
+        "totalIncluded": 157,
+        "totalBlocked": 5,
+        "totalOptional": 45,
         "requiresReboot": true
       }
     ]
@@ -465,16 +469,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 126,
-        "totalBlocked": 3,
-        "totalOptional": 18,
+        "totalIncluded": 156,
+        "totalBlocked": 6,
+        "totalOptional": 45,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 127,
-        "totalBlocked": 2,
-        "totalOptional": 18,
+        "totalIncluded": 157,
+        "totalBlocked": 5,
+        "totalOptional": 45,
         "requiresReboot": true
       }
     ]
@@ -493,16 +497,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 128,
-        "totalBlocked": 2,
-        "totalOptional": 18,
+        "totalIncluded": 157,
+        "totalBlocked": 5,
+        "totalOptional": 46,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 127,
-        "totalBlocked": 3,
-        "totalOptional": 18,
+        "totalIncluded": 156,
+        "totalBlocked": 6,
+        "totalOptional": 46,
         "requiresReboot": true
       }
     ]
@@ -521,16 +525,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 127,
-        "totalBlocked": 3,
-        "totalOptional": 18,
+        "totalIncluded": 156,
+        "totalBlocked": 6,
+        "totalOptional": 46,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 128,
-        "totalBlocked": 2,
-        "totalOptional": 18,
+        "totalIncluded": 157,
+        "totalBlocked": 5,
+        "totalOptional": 46,
         "requiresReboot": true
       }
     ]
@@ -549,16 +553,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 127,
-        "totalBlocked": 2,
-        "totalOptional": 18,
+        "totalIncluded": 156,
+        "totalBlocked": 5,
+        "totalOptional": 46,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 126,
-        "totalBlocked": 3,
-        "totalOptional": 18,
+        "totalIncluded": 155,
+        "totalBlocked": 6,
+        "totalOptional": 46,
         "requiresReboot": true
       }
     ]
@@ -577,16 +581,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 129,
+        "totalIncluded": 161,
         "totalBlocked": 0,
-        "totalOptional": 18,
+        "totalOptional": 46,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 128,
+        "totalIncluded": 160,
         "totalBlocked": 1,
-        "totalOptional": 18,
+        "totalOptional": 46,
         "requiresReboot": true
       }
     ]
@@ -605,16 +609,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 129,
+        "totalIncluded": 161,
         "totalBlocked": 0,
-        "totalOptional": 18,
+        "totalOptional": 46,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 128,
+        "totalIncluded": 160,
         "totalBlocked": 1,
-        "totalOptional": 18,
+        "totalOptional": 46,
         "requiresReboot": true
       }
     ]
@@ -628,23 +632,21 @@
       "windowsBuild": 22631
     },
     "changedActionIds": [
-      "privacy.disable-edge-ai",
-      "privacy.disable-notepad-ai",
-      "privacy.disable-paint-ai"
+      "privacy.disable-edge-ai"
     ],
     "variants": [
       {
         "value": true,
-        "totalIncluded": 127,
-        "totalBlocked": 2,
-        "totalOptional": 18,
+        "totalIncluded": 156,
+        "totalBlocked": 5,
+        "totalOptional": 46,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 124,
-        "totalBlocked": 5,
-        "totalOptional": 18,
+        "totalIncluded": 155,
+        "totalBlocked": 6,
+        "totalOptional": 46,
         "requiresReboot": true
       }
     ]
@@ -663,16 +665,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 127,
-        "totalBlocked": 2,
-        "totalOptional": 18,
+        "totalIncluded": 156,
+        "totalBlocked": 5,
+        "totalOptional": 46,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 126,
-        "totalBlocked": 3,
-        "totalOptional": 18,
+        "totalIncluded": 155,
+        "totalBlocked": 6,
+        "totalOptional": 46,
         "requiresReboot": true
       }
     ]
@@ -692,16 +694,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 127,
-        "totalBlocked": 2,
-        "totalOptional": 18,
+        "totalIncluded": 156,
+        "totalBlocked": 5,
+        "totalOptional": 46,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 125,
-        "totalBlocked": 4,
-        "totalOptional": 18,
+        "totalIncluded": 154,
+        "totalBlocked": 7,
+        "totalOptional": 46,
         "requiresReboot": true
       }
     ]
@@ -721,16 +723,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 127,
-        "totalBlocked": 2,
-        "totalOptional": 18,
+        "totalIncluded": 156,
+        "totalBlocked": 5,
+        "totalOptional": 46,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 125,
-        "totalBlocked": 4,
-        "totalOptional": 18,
+        "totalIncluded": 154,
+        "totalBlocked": 7,
+        "totalOptional": 46,
         "requiresReboot": true
       }
     ]
@@ -751,16 +753,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 127,
-        "totalBlocked": 2,
-        "totalOptional": 18,
+        "totalIncluded": 156,
+        "totalBlocked": 5,
+        "totalOptional": 46,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 124,
-        "totalBlocked": 5,
-        "totalOptional": 18,
+        "totalIncluded": 153,
+        "totalBlocked": 8,
+        "totalOptional": 46,
         "requiresReboot": true
       }
     ]
@@ -781,16 +783,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 127,
-        "totalBlocked": 2,
-        "totalOptional": 18,
+        "totalIncluded": 156,
+        "totalBlocked": 5,
+        "totalOptional": 46,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 124,
-        "totalBlocked": 5,
-        "totalOptional": 18,
+        "totalIncluded": 153,
+        "totalBlocked": 8,
+        "totalOptional": 46,
         "requiresReboot": true
       }
     ]
@@ -809,16 +811,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 128,
-        "totalBlocked": 2,
-        "totalOptional": 17,
+        "totalIncluded": 157,
+        "totalBlocked": 5,
+        "totalOptional": 45,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 127,
-        "totalBlocked": 3,
-        "totalOptional": 17,
+        "totalIncluded": 156,
+        "totalBlocked": 6,
+        "totalOptional": 45,
         "requiresReboot": true
       }
     ]
@@ -837,16 +839,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 130,
+        "totalIncluded": 162,
         "totalBlocked": 0,
-        "totalOptional": 18,
+        "totalOptional": 46,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 129,
+        "totalIncluded": 161,
         "totalBlocked": 1,
-        "totalOptional": 18,
+        "totalOptional": 46,
         "requiresReboot": true
       }
     ]
@@ -865,16 +867,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 130,
+        "totalIncluded": 162,
         "totalBlocked": 0,
-        "totalOptional": 18,
+        "totalOptional": 46,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 129,
+        "totalIncluded": 161,
         "totalBlocked": 1,
-        "totalOptional": 18,
+        "totalOptional": 46,
         "requiresReboot": true
       }
     ]
@@ -888,21 +890,22 @@
       "windowsBuild": 22631
     },
     "changedActionIds": [
-      "network.disable-llmnr"
+      "network.disable-llmnr",
+      "network.disable-smbv1"
     ],
     "variants": [
       {
         "value": true,
-        "totalIncluded": 127,
-        "totalBlocked": 2,
-        "totalOptional": 18,
+        "totalIncluded": 158,
+        "totalBlocked": 5,
+        "totalOptional": 46,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 126,
-        "totalBlocked": 3,
-        "totalOptional": 18,
+        "totalIncluded": 156,
+        "totalBlocked": 7,
+        "totalOptional": 46,
         "requiresReboot": true
       }
     ]
@@ -915,22 +918,20 @@
       "aggressionPreset": "aggressive",
       "windowsBuild": 22631
     },
-    "changedActionIds": [
-      "network.disable-ipv6"
-    ],
+    "changedActionIds": [],
     "variants": [
       {
         "value": true,
-        "totalIncluded": 128,
-        "totalBlocked": 2,
-        "totalOptional": 17,
+        "totalIncluded": 156,
+        "totalBlocked": 5,
+        "totalOptional": 46,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 127,
-        "totalBlocked": 3,
-        "totalOptional": 17,
+        "totalIncluded": 156,
+        "totalBlocked": 5,
+        "totalOptional": 46,
         "requiresReboot": true
       }
     ]
@@ -949,16 +950,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 127,
-        "totalBlocked": 2,
-        "totalOptional": 18,
+        "totalIncluded": 157,
+        "totalBlocked": 5,
+        "totalOptional": 45,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 126,
-        "totalBlocked": 3,
-        "totalOptional": 18,
+        "totalIncluded": 156,
+        "totalBlocked": 6,
+        "totalOptional": 45,
         "requiresReboot": true
       }
     ]
@@ -977,16 +978,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 127,
-        "totalBlocked": 2,
-        "totalOptional": 18,
+        "totalIncluded": 157,
+        "totalBlocked": 5,
+        "totalOptional": 45,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 126,
-        "totalBlocked": 3,
-        "totalOptional": 18,
+        "totalIncluded": 156,
+        "totalBlocked": 6,
+        "totalOptional": 45,
         "requiresReboot": true
       }
     ]
@@ -1005,16 +1006,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 127,
-        "totalBlocked": 2,
-        "totalOptional": 18,
+        "totalIncluded": 157,
+        "totalBlocked": 5,
+        "totalOptional": 45,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 126,
-        "totalBlocked": 3,
-        "totalOptional": 18,
+        "totalIncluded": 156,
+        "totalBlocked": 6,
+        "totalOptional": 45,
         "requiresReboot": true
       }
     ]
@@ -1028,23 +1029,21 @@
       "windowsBuild": 22631
     },
     "changedActionIds": [
-      "network.disable-offloading",
-      "network.rss-queues-2",
-      "network.tcp-autotuning-normal"
+      "network.rss-queues-2"
     ],
     "variants": [
       {
         "value": true,
-        "totalIncluded": 128,
-        "totalBlocked": 2,
-        "totalOptional": 18,
+        "totalIncluded": 157,
+        "totalBlocked": 5,
+        "totalOptional": 45,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 125,
-        "totalBlocked": 5,
-        "totalOptional": 18,
+        "totalIncluded": 156,
+        "totalBlocked": 6,
+        "totalOptional": 45,
         "requiresReboot": true
       }
     ]
@@ -1058,21 +1057,22 @@
       "windowsBuild": 22631
     },
     "changedActionIds": [
-      "security.disable-delivery-optimization"
+      "security.disable-delivery-optimization",
+      "services.disable-delivery-optimization"
     ],
     "variants": [
       {
         "value": true,
-        "totalIncluded": 127,
-        "totalBlocked": 2,
-        "totalOptional": 18,
+        "totalIncluded": 156,
+        "totalBlocked": 5,
+        "totalOptional": 46,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 126,
-        "totalBlocked": 3,
-        "totalOptional": 18,
+        "totalIncluded": 154,
+        "totalBlocked": 7,
+        "totalOptional": 46,
         "requiresReboot": true
       }
     ]
@@ -1091,16 +1091,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 127,
-        "totalBlocked": 2,
-        "totalOptional": 18,
+        "totalIncluded": 156,
+        "totalBlocked": 5,
+        "totalOptional": 46,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 126,
-        "totalBlocked": 3,
-        "totalOptional": 18,
+        "totalIncluded": 155,
+        "totalBlocked": 6,
+        "totalOptional": 46,
         "requiresReboot": true
       }
     ]
@@ -1119,16 +1119,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 127,
-        "totalBlocked": 2,
-        "totalOptional": 18,
+        "totalIncluded": 156,
+        "totalBlocked": 5,
+        "totalOptional": 46,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 126,
-        "totalBlocked": 3,
-        "totalOptional": 18,
+        "totalIncluded": 155,
+        "totalBlocked": 6,
+        "totalOptional": 46,
         "requiresReboot": true
       }
     ]
@@ -1147,16 +1147,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 127,
-        "totalBlocked": 2,
-        "totalOptional": 18,
+        "totalIncluded": 156,
+        "totalBlocked": 5,
+        "totalOptional": 46,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 126,
-        "totalBlocked": 3,
-        "totalOptional": 18,
+        "totalIncluded": 155,
+        "totalBlocked": 6,
+        "totalOptional": 46,
         "requiresReboot": true
       }
     ]
@@ -1175,16 +1175,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 127,
-        "totalBlocked": 2,
-        "totalOptional": 18,
+        "totalIncluded": 156,
+        "totalBlocked": 5,
+        "totalOptional": 46,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 126,
-        "totalBlocked": 3,
-        "totalOptional": 18,
+        "totalIncluded": 155,
+        "totalBlocked": 6,
+        "totalOptional": 46,
         "requiresReboot": true
       }
     ]
@@ -1203,16 +1203,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 127,
-        "totalBlocked": 2,
-        "totalOptional": 18,
+        "totalIncluded": 156,
+        "totalBlocked": 5,
+        "totalOptional": 46,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 126,
-        "totalBlocked": 3,
-        "totalOptional": 18,
+        "totalIncluded": 155,
+        "totalBlocked": 6,
+        "totalOptional": 46,
         "requiresReboot": true
       }
     ]
@@ -1231,16 +1231,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 127,
-        "totalBlocked": 2,
-        "totalOptional": 18,
+        "totalIncluded": 156,
+        "totalBlocked": 5,
+        "totalOptional": 46,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 126,
-        "totalBlocked": 3,
-        "totalOptional": 18,
+        "totalIncluded": 155,
+        "totalBlocked": 6,
+        "totalOptional": 46,
         "requiresReboot": true
       }
     ]
@@ -1254,21 +1254,24 @@
       "windowsBuild": 22631
     },
     "changedActionIds": [
+      "shell.remove-cast-to-device",
+      "shell.remove-edit-with-paint3d",
+      "shell.remove-troubleshoot-compatibility",
       "shell.restore-classic-context-menu"
     ],
     "variants": [
       {
         "value": true,
-        "totalIncluded": 127,
-        "totalBlocked": 2,
-        "totalOptional": 18,
+        "totalIncluded": 157,
+        "totalBlocked": 5,
+        "totalOptional": 45,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 126,
-        "totalBlocked": 3,
-        "totalOptional": 18,
+        "totalIncluded": 153,
+        "totalBlocked": 9,
+        "totalOptional": 45,
         "requiresReboot": true
       }
     ]
@@ -1287,16 +1290,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 127,
-        "totalBlocked": 2,
-        "totalOptional": 18,
+        "totalIncluded": 156,
+        "totalBlocked": 5,
+        "totalOptional": 46,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 126,
-        "totalBlocked": 3,
-        "totalOptional": 18,
+        "totalIncluded": 155,
+        "totalBlocked": 6,
+        "totalOptional": 46,
         "requiresReboot": true
       }
     ]
@@ -1315,16 +1318,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 127,
-        "totalBlocked": 2,
-        "totalOptional": 18,
+        "totalIncluded": 156,
+        "totalBlocked": 5,
+        "totalOptional": 46,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 126,
-        "totalBlocked": 3,
-        "totalOptional": 18,
+        "totalIncluded": 155,
+        "totalBlocked": 6,
+        "totalOptional": 46,
         "requiresReboot": true
       }
     ]
@@ -1343,16 +1346,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 127,
-        "totalBlocked": 2,
-        "totalOptional": 18,
+        "totalIncluded": 156,
+        "totalBlocked": 5,
+        "totalOptional": 46,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 126,
-        "totalBlocked": 3,
-        "totalOptional": 18,
+        "totalIncluded": 155,
+        "totalBlocked": 6,
+        "totalOptional": 46,
         "requiresReboot": true
       }
     ]
@@ -1371,16 +1374,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 127,
-        "totalBlocked": 2,
-        "totalOptional": 18,
+        "totalIncluded": 156,
+        "totalBlocked": 5,
+        "totalOptional": 46,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 126,
-        "totalBlocked": 3,
-        "totalOptional": 18,
+        "totalIncluded": 155,
+        "totalBlocked": 6,
+        "totalOptional": 46,
         "requiresReboot": true
       }
     ]
@@ -1399,16 +1402,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 127,
-        "totalBlocked": 2,
-        "totalOptional": 18,
+        "totalIncluded": 156,
+        "totalBlocked": 5,
+        "totalOptional": 46,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 126,
-        "totalBlocked": 3,
-        "totalOptional": 18,
+        "totalIncluded": 155,
+        "totalBlocked": 6,
+        "totalOptional": 46,
         "requiresReboot": true
       }
     ]
@@ -1421,20 +1424,24 @@
       "aggressionPreset": "balanced",
       "windowsBuild": 22631
     },
-    "changedActionIds": [],
+    "changedActionIds": [
+      "security.disable-defender-cloud",
+      "security.disable-defender-realtime",
+      "security.disable-vbs"
+    ],
     "variants": [
       {
         "value": true,
-        "totalIncluded": 127,
-        "totalBlocked": 2,
-        "totalOptional": 18,
+        "totalIncluded": 159,
+        "totalBlocked": 5,
+        "totalOptional": 46,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 127,
-        "totalBlocked": 2,
-        "totalOptional": 18,
+        "totalIncluded": 156,
+        "totalBlocked": 8,
+        "totalOptional": 46,
         "requiresReboot": true
       }
     ]
@@ -1447,20 +1454,27 @@
       "aggressionPreset": "balanced",
       "windowsBuild": 22631
     },
-    "changedActionIds": [],
+    "changedActionIds": [
+      "services.disable-bits",
+      "services.disable-delivery-optimization",
+      "services.disable-update-orchestrator-svc",
+      "services.disable-waasmedic",
+      "services.disable-wuauserv",
+      "tasks.disable-update-tasks"
+    ],
     "variants": [
       {
         "value": true,
-        "totalIncluded": 127,
-        "totalBlocked": 2,
-        "totalOptional": 18,
+        "totalIncluded": 161,
+        "totalBlocked": 5,
+        "totalOptional": 45,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 127,
-        "totalBlocked": 2,
-        "totalOptional": 18,
+        "totalIncluded": 155,
+        "totalBlocked": 11,
+        "totalOptional": 45,
         "requiresReboot": true
       }
     ]
@@ -1473,20 +1487,22 @@
       "aggressionPreset": "balanced",
       "windowsBuild": 22631
     },
-    "changedActionIds": [],
+    "changedActionIds": [
+      "perf.disable-pointer-acceleration"
+    ],
     "variants": [
       {
         "value": true,
-        "totalIncluded": 127,
-        "totalBlocked": 2,
-        "totalOptional": 18,
+        "totalIncluded": 156,
+        "totalBlocked": 5,
+        "totalOptional": 46,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 127,
-        "totalBlocked": 2,
-        "totalOptional": 18,
+        "totalIncluded": 155,
+        "totalBlocked": 6,
+        "totalOptional": 46,
         "requiresReboot": true
       }
     ]
@@ -1505,16 +1521,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 127,
-        "totalBlocked": 2,
-        "totalOptional": 18,
+        "totalIncluded": 156,
+        "totalBlocked": 5,
+        "totalOptional": 46,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 126,
-        "totalBlocked": 3,
-        "totalOptional": 18,
+        "totalIncluded": 155,
+        "totalBlocked": 6,
+        "totalOptional": 46,
         "requiresReboot": true
       }
     ]
@@ -1527,22 +1543,20 @@
       "aggressionPreset": "balanced",
       "windowsBuild": 22631
     },
-    "changedActionIds": [
-      "perf.disable-fault-tolerant-heap"
-    ],
+    "changedActionIds": [],
     "variants": [
       {
         "value": true,
-        "totalIncluded": 127,
-        "totalBlocked": 2,
-        "totalOptional": 18,
+        "totalIncluded": 156,
+        "totalBlocked": 5,
+        "totalOptional": 46,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 126,
-        "totalBlocked": 3,
-        "totalOptional": 18,
+        "totalIncluded": 156,
+        "totalBlocked": 5,
+        "totalOptional": 46,
         "requiresReboot": true
       }
     ]
@@ -1559,16 +1573,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 127,
-        "totalBlocked": 2,
-        "totalOptional": 18,
+        "totalIncluded": 156,
+        "totalBlocked": 5,
+        "totalOptional": 46,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 127,
-        "totalBlocked": 2,
-        "totalOptional": 18,
+        "totalIncluded": 156,
+        "totalBlocked": 5,
+        "totalOptional": 46,
         "requiresReboot": true
       }
     ]
@@ -1587,16 +1601,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 127,
-        "totalBlocked": 2,
-        "totalOptional": 18,
+        "totalIncluded": 156,
+        "totalBlocked": 5,
+        "totalOptional": 46,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 126,
-        "totalBlocked": 3,
-        "totalOptional": 18,
+        "totalIncluded": 155,
+        "totalBlocked": 6,
+        "totalOptional": 46,
         "requiresReboot": true
       }
     ]
@@ -1609,20 +1623,22 @@
       "aggressionPreset": "balanced",
       "windowsBuild": 22631
     },
-    "changedActionIds": [],
+    "changedActionIds": [
+      "power.disable-device-power-saving"
+    ],
     "variants": [
       {
         "value": true,
-        "totalIncluded": 127,
-        "totalBlocked": 2,
-        "totalOptional": 18,
+        "totalIncluded": 157,
+        "totalBlocked": 5,
+        "totalOptional": 45,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 127,
-        "totalBlocked": 2,
-        "totalOptional": 18,
+        "totalIncluded": 156,
+        "totalBlocked": 6,
+        "totalOptional": 45,
         "requiresReboot": true
       }
     ]
@@ -1635,20 +1651,22 @@
       "aggressionPreset": "balanced",
       "windowsBuild": 22631
     },
-    "changedActionIds": [],
+    "changedActionIds": [
+      "perf.legacy-flip-presentation"
+    ],
     "variants": [
       {
         "value": true,
-        "totalIncluded": 127,
-        "totalBlocked": 2,
-        "totalOptional": 18,
+        "totalIncluded": 157,
+        "totalBlocked": 5,
+        "totalOptional": 45,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 127,
-        "totalBlocked": 2,
-        "totalOptional": 18,
+        "totalIncluded": 156,
+        "totalBlocked": 6,
+        "totalOptional": 45,
         "requiresReboot": true
       }
     ]
@@ -1661,20 +1679,22 @@
       "aggressionPreset": "balanced",
       "windowsBuild": 22631
     },
-    "changedActionIds": [],
+    "changedActionIds": [
+      "perf.disable-store-auto-updates"
+    ],
     "variants": [
       {
         "value": true,
-        "totalIncluded": 127,
-        "totalBlocked": 2,
-        "totalOptional": 18,
+        "totalIncluded": 157,
+        "totalBlocked": 5,
+        "totalOptional": 45,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 127,
-        "totalBlocked": 2,
-        "totalOptional": 18,
+        "totalIncluded": 156,
+        "totalBlocked": 6,
+        "totalOptional": 45,
         "requiresReboot": true
       }
     ]
@@ -1687,20 +1707,22 @@
       "aggressionPreset": "balanced",
       "windowsBuild": 22631
     },
-    "changedActionIds": [],
+    "changedActionIds": [
+      "perf.disable-auto-maintenance"
+    ],
     "variants": [
       {
         "value": true,
-        "totalIncluded": 127,
-        "totalBlocked": 2,
-        "totalOptional": 18,
+        "totalIncluded": 157,
+        "totalBlocked": 5,
+        "totalOptional": 45,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 127,
-        "totalBlocked": 2,
-        "totalOptional": 18,
+        "totalIncluded": 156,
+        "totalBlocked": 6,
+        "totalOptional": 45,
         "requiresReboot": true
       }
     ]
@@ -1713,20 +1735,22 @@
       "aggressionPreset": "balanced",
       "windowsBuild": 22631
     },
-    "changedActionIds": [],
+    "changedActionIds": [
+      "security.full-defender-disable"
+    ],
     "variants": [
       {
         "value": true,
-        "totalIncluded": 127,
-        "totalBlocked": 2,
-        "totalOptional": 18,
+        "totalIncluded": 157,
+        "totalBlocked": 5,
+        "totalOptional": 46,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 127,
-        "totalBlocked": 2,
-        "totalOptional": 18,
+        "totalIncluded": 156,
+        "totalBlocked": 6,
+        "totalOptional": 46,
         "requiresReboot": true
       }
     ]
@@ -1739,20 +1763,22 @@
       "aggressionPreset": "balanced",
       "windowsBuild": 22631
     },
-    "changedActionIds": [],
+    "changedActionIds": [
+      "security.disable-vulnerable-driver-blocklist"
+    ],
     "variants": [
       {
         "value": true,
-        "totalIncluded": 127,
-        "totalBlocked": 2,
-        "totalOptional": 18,
+        "totalIncluded": 157,
+        "totalBlocked": 5,
+        "totalOptional": 46,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 127,
-        "totalBlocked": 2,
-        "totalOptional": 18,
+        "totalIncluded": 156,
+        "totalBlocked": 6,
+        "totalOptional": 46,
         "requiresReboot": true
       }
     ]
@@ -1765,20 +1791,22 @@
       "aggressionPreset": "balanced",
       "windowsBuild": 22631
     },
-    "changedActionIds": [],
+    "changedActionIds": [
+      "security.disable-cpu-mitigations"
+    ],
     "variants": [
       {
         "value": true,
-        "totalIncluded": 127,
-        "totalBlocked": 2,
-        "totalOptional": 18,
+        "totalIncluded": 157,
+        "totalBlocked": 5,
+        "totalOptional": 46,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 127,
-        "totalBlocked": 2,
-        "totalOptional": 18,
+        "totalIncluded": 156,
+        "totalBlocked": 6,
+        "totalOptional": 46,
         "requiresReboot": true
       }
     ]
@@ -1799,23 +1827,23 @@
     "variants": [
       {
         "value": "keep",
-        "totalIncluded": 124,
-        "totalBlocked": 5,
-        "totalOptional": 18,
+        "totalIncluded": 153,
+        "totalBlocked": 8,
+        "totalOptional": 46,
         "requiresReboot": true
       },
       {
         "value": "suppress",
-        "totalIncluded": 126,
-        "totalBlocked": 3,
-        "totalOptional": 18,
+        "totalIncluded": 155,
+        "totalBlocked": 6,
+        "totalOptional": 46,
         "requiresReboot": true
       },
       {
         "value": "suppress-and-freeze",
-        "totalIncluded": 127,
-        "totalBlocked": 2,
-        "totalOptional": 18,
+        "totalIncluded": 156,
+        "totalBlocked": 5,
+        "totalOptional": 46,
         "requiresReboot": true
       }
     ]
@@ -1832,28 +1860,29 @@
       "privacy.disable-ceip",
       "privacy.disable-error-reporting",
       "privacy.disable-siuf",
-      "privacy.disable-telemetry"
+      "privacy.disable-telemetry",
+      "services.disable-wer-service"
     ],
     "variants": [
       {
         "value": "keep",
-        "totalIncluded": 123,
-        "totalBlocked": 6,
-        "totalOptional": 18,
+        "totalIncluded": 152,
+        "totalBlocked": 9,
+        "totalOptional": 46,
         "requiresReboot": true
       },
       {
         "value": "reduce",
-        "totalIncluded": 126,
-        "totalBlocked": 3,
-        "totalOptional": 18,
+        "totalIncluded": 156,
+        "totalBlocked": 6,
+        "totalOptional": 45,
         "requiresReboot": true
       },
       {
         "value": "aggressive",
-        "totalIncluded": 127,
-        "totalBlocked": 2,
-        "totalOptional": 18,
+        "totalIncluded": 157,
+        "totalBlocked": 5,
+        "totalOptional": 45,
         "requiresReboot": true
       }
     ]
@@ -1870,30 +1899,30 @@
     "variants": [
       {
         "value": "conservative",
-        "totalIncluded": 127,
-        "totalBlocked": 2,
-        "totalOptional": 18,
+        "totalIncluded": 156,
+        "totalBlocked": 5,
+        "totalOptional": 46,
         "requiresReboot": true
       },
       {
         "value": "balanced",
-        "totalIncluded": 127,
-        "totalBlocked": 2,
-        "totalOptional": 18,
+        "totalIncluded": 156,
+        "totalBlocked": 5,
+        "totalOptional": 46,
         "requiresReboot": true
       },
       {
         "value": "aggressive",
-        "totalIncluded": 127,
-        "totalBlocked": 2,
-        "totalOptional": 18,
+        "totalIncluded": 156,
+        "totalBlocked": 5,
+        "totalOptional": 46,
         "requiresReboot": true
       },
       {
         "value": "expert",
-        "totalIncluded": 127,
-        "totalBlocked": 2,
-        "totalOptional": 18,
+        "totalIncluded": 156,
+        "totalBlocked": 5,
+        "totalOptional": 46,
         "requiresReboot": true
       }
     ]
