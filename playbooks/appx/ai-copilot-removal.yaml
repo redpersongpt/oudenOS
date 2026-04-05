@@ -12,7 +12,7 @@ actions:
     rationale: "Background cloud connections, interaction data collection, persistent sidebar/taskbar presence"
     risk: safe
     tier: free
-    default: true
+    default: false
     requiresReboot: false
     reversible: false
     estimatedSeconds: 10
@@ -39,7 +39,7 @@ actions:
     rationale: "Takes periodic screenshots and indexes them locally with AI"
     risk: safe
     tier: free
-    default: true
+    default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 5
@@ -63,7 +63,7 @@ actions:
     rationale: "Pre-installed video editor, rarely used"
     risk: safe
     tier: free
-    default: true
+    default: false
     requiresReboot: false
     reversible: false
     estimatedSeconds: 8
@@ -78,7 +78,7 @@ actions:
     rationale: "Auto-starts, runs in background. Work users install from org portal"
     risk: low
     tier: free
-    default: true
+    default: false
     requiresReboot: false
     reversible: false
     estimatedSeconds: 10
@@ -94,7 +94,7 @@ actions:
     rationale: "Parental controls app, unused on personal/gaming machines"
     risk: safe
     tier: free
-    default: true
+    default: false
     requiresReboot: false
     reversible: false
     estimatedSeconds: 8
@@ -109,7 +109,7 @@ actions:
     rationale: "Ad-driven news feed integrated into Start Menu and taskbar"
     risk: safe
     tier: free
-    default: true
+    default: false
     requiresReboot: false
     reversible: false
     estimatedSeconds: 8
@@ -125,7 +125,7 @@ actions:
     rationale: "3D apps are rarely used and have been deprecated in newer Windows versions"
     risk: safe
     tier: free
-    default: true
+    default: false
     requiresReboot: false
     reversible: false
     estimatedSeconds: 10

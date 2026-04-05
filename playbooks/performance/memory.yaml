@@ -6,24 +6,6 @@ description: "Optimize memory subsystem: NDU leak fix, prefetch, compression, sv
 category: performance
 
 actions:
-  - id: perf.disable-ndu
-    name: "Disable Network Data Usage Monitor (NDU)"
-    description: "Disable the NDU driver that tracks per-process network data usage and leaks non-paged pool memory over time"
-    rationale: "NDU (ndu.sys) accumulates tracking data in non-paged pool. On long-running systems, this causes a persistent memory leak measured in hundreds of MB. Microsoft has acknowledged this driver as a memory leak source."
-    risk: safe
-    tier: free
-    default: true
-    requiresReboot: true
-    reversible: true
-    estimatedSeconds: 3
-    blockedProfiles: []
-    registryChanges:
-      - hive: HKLM
-        path: "SYSTEM\\CurrentControlSet\\Services\\Ndu"
-        valueName: Start
-        value: 4
-        valueType: DWord
-
   - id: memory.disable-compression
     name: "Disable Memory Compression"
     description: "Disable the Windows memory compression agent that compresses idle pages instead of writing to page file"
@@ -39,25 +21,6 @@ actions:
       - vm_cautious
     powerShellCommands:
       - "Disable-MMAgent -MemoryCompression"
-
-  - id: perf.large-system-cache
-    name: "Optimize System Cache for Desktop"
-    description: "Set LargeSystemCache to 0 (desktop mode) to prioritize application memory over file system cache"
-    rationale: "Desktop mode ensures applications get priority access to physical memory instead of file system caching."
-    risk: safe
-    tier: free
-    default: true
-    requiresReboot: true
-    reversible: true
-    estimatedSeconds: 2
-    blockedProfiles:
-      - high_end_workstation
-    registryChanges:
-      - hive: HKLM
-        path: "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management"
-        valueName: LargeSystemCache
-        value: 0
-        valueType: DWord
 
   - id: perf.clear-page-file-on-shutdown
     name: "Clear Page File on Shutdown"

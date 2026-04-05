@@ -13,17 +13,17 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 146,
+        "totalIncluded": 63,
         "totalBlocked": 5,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 126,
+        "requiresReboot": false
       },
       {
         "value": false,
-        "totalIncluded": 145,
+        "totalIncluded": 62,
         "totalBlocked": 6,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 126,
+        "requiresReboot": false
       }
     ]
   },
@@ -41,17 +41,17 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 146,
+        "totalIncluded": 62,
         "totalBlocked": 5,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 127,
+        "requiresReboot": false
       },
       {
         "value": false,
-        "totalIncluded": 145,
+        "totalIncluded": 61,
         "totalBlocked": 6,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 127,
+        "requiresReboot": false
       }
     ]
   },
@@ -69,17 +69,17 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 146,
+        "totalIncluded": 62,
         "totalBlocked": 5,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 127,
+        "requiresReboot": false
       },
       {
         "value": false,
-        "totalIncluded": 145,
+        "totalIncluded": 61,
         "totalBlocked": 6,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 127,
+        "requiresReboot": false
       }
     ]
   },
@@ -97,73 +97,17 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 146,
+        "totalIncluded": 62,
         "totalBlocked": 5,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 127,
+        "requiresReboot": false
       },
       {
         "value": false,
-        "totalIncluded": 145,
+        "totalIncluded": 61,
         "totalBlocked": 6,
-        "totalOptional": 51,
-        "requiresReboot": true
-      }
-    ]
-  },
-  {
-    "questionKey": "globalTimerResolution",
-    "scenario": {
-      "profile": "gaming_desktop",
-      "preset": "balanced",
-      "aggressionPreset": "balanced",
-      "windowsBuild": 22631
-    },
-    "changedActionIds": [
-      "cpu.global-timer-resolution"
-    ],
-    "variants": [
-      {
-        "value": true,
-        "totalIncluded": 146,
-        "totalBlocked": 5,
-        "totalOptional": 51,
-        "requiresReboot": true
-      },
-      {
-        "value": false,
-        "totalIncluded": 145,
-        "totalBlocked": 6,
-        "totalOptional": 51,
-        "requiresReboot": true
-      }
-    ]
-  },
-  {
-    "questionKey": "disableDynamicTick",
-    "scenario": {
-      "profile": "gaming_desktop",
-      "preset": "aggressive",
-      "aggressionPreset": "aggressive",
-      "windowsBuild": 22631
-    },
-    "changedActionIds": [
-      "cpu.disable-dynamic-tick"
-    ],
-    "variants": [
-      {
-        "value": true,
-        "totalIncluded": 147,
-        "totalBlocked": 5,
-        "totalOptional": 50,
-        "requiresReboot": true
-      },
-      {
-        "value": false,
-        "totalIncluded": 146,
-        "totalBlocked": 6,
-        "totalOptional": 50,
-        "requiresReboot": true
+        "totalOptional": 127,
+        "requiresReboot": false
       }
     ]
   },
@@ -181,17 +125,17 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 146,
+        "totalIncluded": 62,
         "totalBlocked": 5,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 127,
+        "requiresReboot": false
       },
       {
         "value": false,
-        "totalIncluded": 145,
+        "totalIncluded": 61,
         "totalBlocked": 6,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 127,
+        "requiresReboot": false
       }
     ]
   },
@@ -209,77 +153,17 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 146,
+        "totalIncluded": 62,
         "totalBlocked": 5,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 127,
+        "requiresReboot": false
       },
       {
         "value": false,
-        "totalIncluded": 145,
+        "totalIncluded": 61,
         "totalBlocked": 6,
-        "totalOptional": 51,
-        "requiresReboot": true
-      }
-    ]
-  },
-  {
-    "questionKey": "disableMemoryCompression",
-    "scenario": {
-      "profile": "gaming_desktop",
-      "preset": "balanced",
-      "aggressionPreset": "balanced",
-      "windowsBuild": 22631
-    },
-    "changedActionIds": [
-      "memory.disable-compression",
-      "perf.disable-ndu",
-      "perf.disable-page-combining",
-      "perf.disable-prefetch",
-      "perf.svchost-split-threshold"
-    ],
-    "variants": [
-      {
-        "value": true,
-        "totalIncluded": 150,
-        "totalBlocked": 5,
-        "totalOptional": 48,
-        "requiresReboot": true
-      },
-      {
-        "value": false,
-        "totalIncluded": 145,
-        "totalBlocked": 10,
-        "totalOptional": 48,
-        "requiresReboot": true
-      }
-    ]
-  },
-  {
-    "questionKey": "disableHags",
-    "scenario": {
-      "profile": "gaming_desktop",
-      "preset": "balanced",
-      "aggressionPreset": "balanced",
-      "windowsBuild": 22631
-    },
-    "changedActionIds": [
-      "gpu.disable-hags"
-    ],
-    "variants": [
-      {
-        "value": true,
-        "totalIncluded": 146,
-        "totalBlocked": 5,
-        "totalOptional": 51,
-        "requiresReboot": true
-      },
-      {
-        "value": false,
-        "totalIncluded": 145,
-        "totalBlocked": 6,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 127,
+        "requiresReboot": false
       }
     ]
   },
@@ -298,17 +182,17 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 146,
+        "totalIncluded": 62,
         "totalBlocked": 5,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 127,
+        "requiresReboot": false
       },
       {
         "value": false,
-        "totalIncluded": 144,
+        "totalIncluded": 60,
         "totalBlocked": 7,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 127,
+        "requiresReboot": false
       }
     ]
   },
@@ -326,17 +210,17 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 147,
+        "totalIncluded": 63,
         "totalBlocked": 5,
-        "totalOptional": 50,
-        "requiresReboot": true
+        "totalOptional": 126,
+        "requiresReboot": false
       },
       {
         "value": false,
-        "totalIncluded": 146,
+        "totalIncluded": 62,
         "totalBlocked": 6,
-        "totalOptional": 50,
-        "requiresReboot": true
+        "totalOptional": 126,
+        "requiresReboot": false
       }
     ]
   },
@@ -354,17 +238,17 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 146,
+        "totalIncluded": 62,
         "totalBlocked": 5,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 127,
+        "requiresReboot": false
       },
       {
         "value": false,
-        "totalIncluded": 145,
+        "totalIncluded": 61,
         "totalBlocked": 6,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 127,
+        "requiresReboot": false
       }
     ]
   },
@@ -382,17 +266,17 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 146,
+        "totalIncluded": 62,
         "totalBlocked": 5,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 127,
+        "requiresReboot": false
       },
       {
         "value": false,
-        "totalIncluded": 145,
+        "totalIncluded": 61,
         "totalBlocked": 6,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 127,
+        "requiresReboot": false
       }
     ]
   },
@@ -413,17 +297,17 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 146,
+        "totalIncluded": 62,
         "totalBlocked": 5,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 127,
+        "requiresReboot": false
       },
       {
         "value": false,
-        "totalIncluded": 142,
+        "totalIncluded": 58,
         "totalBlocked": 9,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 127,
+        "requiresReboot": false
       }
     ]
   },
@@ -441,17 +325,17 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 146,
+        "totalIncluded": 62,
         "totalBlocked": 6,
-        "totalOptional": 50,
-        "requiresReboot": true
+        "totalOptional": 126,
+        "requiresReboot": false
       },
       {
         "value": false,
-        "totalIncluded": 147,
+        "totalIncluded": 63,
         "totalBlocked": 5,
-        "totalOptional": 50,
-        "requiresReboot": true
+        "totalOptional": 126,
+        "requiresReboot": false
       }
     ]
   },
@@ -469,17 +353,17 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 146,
+        "totalIncluded": 62,
         "totalBlocked": 6,
-        "totalOptional": 50,
-        "requiresReboot": true
+        "totalOptional": 126,
+        "requiresReboot": false
       },
       {
         "value": false,
-        "totalIncluded": 147,
+        "totalIncluded": 63,
         "totalBlocked": 5,
-        "totalOptional": 50,
-        "requiresReboot": true
+        "totalOptional": 126,
+        "requiresReboot": false
       }
     ]
   },
@@ -497,17 +381,17 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 147,
+        "totalIncluded": 63,
         "totalBlocked": 5,
-        "totalOptional": 51,
+        "totalOptional": 127,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 146,
+        "totalIncluded": 62,
         "totalBlocked": 6,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 127,
+        "requiresReboot": false
       }
     ]
   },
@@ -525,16 +409,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 146,
+        "totalIncluded": 62,
         "totalBlocked": 6,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 127,
+        "requiresReboot": false
       },
       {
         "value": false,
-        "totalIncluded": 147,
+        "totalIncluded": 63,
         "totalBlocked": 5,
-        "totalOptional": 51,
+        "totalOptional": 127,
         "requiresReboot": true
       }
     ]
@@ -553,17 +437,17 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 146,
+        "totalIncluded": 62,
         "totalBlocked": 5,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 127,
+        "requiresReboot": false
       },
       {
         "value": false,
-        "totalIncluded": 145,
+        "totalIncluded": 61,
         "totalBlocked": 6,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 127,
+        "requiresReboot": false
       }
     ]
   },
@@ -581,17 +465,17 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 151,
+        "totalIncluded": 66,
         "totalBlocked": 0,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 128,
+        "requiresReboot": false
       },
       {
         "value": false,
-        "totalIncluded": 150,
+        "totalIncluded": 65,
         "totalBlocked": 1,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 128,
+        "requiresReboot": false
       }
     ]
   },
@@ -609,17 +493,17 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 151,
+        "totalIncluded": 66,
         "totalBlocked": 0,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 128,
+        "requiresReboot": false
       },
       {
         "value": false,
-        "totalIncluded": 150,
+        "totalIncluded": 65,
         "totalBlocked": 1,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 128,
+        "requiresReboot": false
       }
     ]
   },
@@ -637,17 +521,17 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 146,
+        "totalIncluded": 62,
         "totalBlocked": 5,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 127,
+        "requiresReboot": false
       },
       {
         "value": false,
-        "totalIncluded": 145,
+        "totalIncluded": 61,
         "totalBlocked": 6,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 127,
+        "requiresReboot": false
       }
     ]
   },
@@ -665,17 +549,17 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 146,
+        "totalIncluded": 62,
         "totalBlocked": 5,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 127,
+        "requiresReboot": false
       },
       {
         "value": false,
-        "totalIncluded": 145,
+        "totalIncluded": 61,
         "totalBlocked": 6,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 127,
+        "requiresReboot": false
       }
     ]
   },
@@ -694,17 +578,17 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 146,
+        "totalIncluded": 62,
         "totalBlocked": 5,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 127,
+        "requiresReboot": false
       },
       {
         "value": false,
-        "totalIncluded": 144,
+        "totalIncluded": 60,
         "totalBlocked": 7,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 127,
+        "requiresReboot": false
       }
     ]
   },
@@ -723,17 +607,17 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 146,
+        "totalIncluded": 62,
         "totalBlocked": 5,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 127,
+        "requiresReboot": false
       },
       {
         "value": false,
-        "totalIncluded": 144,
+        "totalIncluded": 60,
         "totalBlocked": 7,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 127,
+        "requiresReboot": false
       }
     ]
   },
@@ -753,17 +637,17 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 146,
+        "totalIncluded": 62,
         "totalBlocked": 5,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 127,
+        "requiresReboot": false
       },
       {
         "value": false,
-        "totalIncluded": 143,
+        "totalIncluded": 59,
         "totalBlocked": 8,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 127,
+        "requiresReboot": false
       }
     ]
   },
@@ -783,17 +667,17 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 146,
+        "totalIncluded": 63,
         "totalBlocked": 5,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 126,
+        "requiresReboot": false
       },
       {
         "value": false,
-        "totalIncluded": 143,
+        "totalIncluded": 60,
         "totalBlocked": 8,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 126,
+        "requiresReboot": false
       }
     ]
   },
@@ -811,17 +695,17 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 147,
+        "totalIncluded": 63,
         "totalBlocked": 5,
-        "totalOptional": 50,
-        "requiresReboot": true
+        "totalOptional": 126,
+        "requiresReboot": false
       },
       {
         "value": false,
-        "totalIncluded": 146,
+        "totalIncluded": 62,
         "totalBlocked": 6,
-        "totalOptional": 50,
-        "requiresReboot": true
+        "totalOptional": 126,
+        "requiresReboot": false
       }
     ]
   },
@@ -839,17 +723,17 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 152,
+        "totalIncluded": 67,
         "totalBlocked": 0,
-        "totalOptional": 51,
+        "totalOptional": 128,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 151,
+        "totalIncluded": 66,
         "totalBlocked": 1,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 128,
+        "requiresReboot": false
       }
     ]
   },
@@ -867,17 +751,17 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 152,
+        "totalIncluded": 67,
         "totalBlocked": 0,
-        "totalOptional": 51,
+        "totalOptional": 128,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 151,
+        "totalIncluded": 66,
         "totalBlocked": 1,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 128,
+        "requiresReboot": false
       }
     ]
   },
@@ -896,155 +780,17 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 148,
+        "totalIncluded": 64,
         "totalBlocked": 5,
-        "totalOptional": 51,
+        "totalOptional": 127,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 146,
+        "totalIncluded": 62,
         "totalBlocked": 7,
-        "totalOptional": 51,
-        "requiresReboot": true
-      }
-    ]
-  },
-  {
-    "questionKey": "disableIpv6",
-    "scenario": {
-      "profile": "gaming_desktop",
-      "preset": "aggressive",
-      "aggressionPreset": "aggressive",
-      "windowsBuild": 22631
-    },
-    "changedActionIds": [],
-    "variants": [
-      {
-        "value": true,
-        "totalIncluded": 146,
-        "totalBlocked": 5,
-        "totalOptional": 51,
-        "requiresReboot": true
-      },
-      {
-        "value": false,
-        "totalIncluded": 146,
-        "totalBlocked": 5,
-        "totalOptional": 51,
-        "requiresReboot": true
-      }
-    ]
-  },
-  {
-    "questionKey": "disableTeredo",
-    "scenario": {
-      "profile": "gaming_desktop",
-      "preset": "aggressive",
-      "aggressionPreset": "aggressive",
-      "windowsBuild": 22631
-    },
-    "changedActionIds": [
-      "network.disable-teredo"
-    ],
-    "variants": [
-      {
-        "value": true,
-        "totalIncluded": 147,
-        "totalBlocked": 5,
-        "totalOptional": 50,
-        "requiresReboot": true
-      },
-      {
-        "value": false,
-        "totalIncluded": 146,
-        "totalBlocked": 6,
-        "totalOptional": 50,
-        "requiresReboot": true
-      }
-    ]
-  },
-  {
-    "questionKey": "disableNetbios",
-    "scenario": {
-      "profile": "gaming_desktop",
-      "preset": "aggressive",
-      "aggressionPreset": "aggressive",
-      "windowsBuild": 22631
-    },
-    "changedActionIds": [
-      "network.disable-netbios"
-    ],
-    "variants": [
-      {
-        "value": true,
-        "totalIncluded": 147,
-        "totalBlocked": 5,
-        "totalOptional": 50,
-        "requiresReboot": true
-      },
-      {
-        "value": false,
-        "totalIncluded": 146,
-        "totalBlocked": 6,
-        "totalOptional": 50,
-        "requiresReboot": true
-      }
-    ]
-  },
-  {
-    "questionKey": "disableNagle",
-    "scenario": {
-      "profile": "gaming_desktop",
-      "preset": "aggressive",
-      "aggressionPreset": "aggressive",
-      "windowsBuild": 22631
-    },
-    "changedActionIds": [
-      "network.disable-nagle"
-    ],
-    "variants": [
-      {
-        "value": true,
-        "totalIncluded": 147,
-        "totalBlocked": 5,
-        "totalOptional": 50,
-        "requiresReboot": true
-      },
-      {
-        "value": false,
-        "totalIncluded": 146,
-        "totalBlocked": 6,
-        "totalOptional": 50,
-        "requiresReboot": true
-      }
-    ]
-  },
-  {
-    "questionKey": "disableNicOffloading",
-    "scenario": {
-      "profile": "gaming_desktop",
-      "preset": "aggressive",
-      "aggressionPreset": "aggressive",
-      "windowsBuild": 22631
-    },
-    "changedActionIds": [
-      "network.rss-queues-2"
-    ],
-    "variants": [
-      {
-        "value": true,
-        "totalIncluded": 147,
-        "totalBlocked": 5,
-        "totalOptional": 50,
-        "requiresReboot": true
-      },
-      {
-        "value": false,
-        "totalIncluded": 146,
-        "totalBlocked": 6,
-        "totalOptional": 50,
-        "requiresReboot": true
+        "totalOptional": 127,
+        "requiresReboot": false
       }
     ]
   },
@@ -1057,23 +803,22 @@
       "windowsBuild": 22631
     },
     "changedActionIds": [
-      "security.disable-delivery-optimization",
-      "services.disable-delivery-optimization"
+      "security.disable-delivery-optimization"
     ],
     "variants": [
       {
         "value": true,
-        "totalIncluded": 146,
+        "totalIncluded": 63,
         "totalBlocked": 5,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 126,
+        "requiresReboot": false
       },
       {
         "value": false,
-        "totalIncluded": 144,
-        "totalBlocked": 7,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalIncluded": 62,
+        "totalBlocked": 6,
+        "totalOptional": 126,
+        "requiresReboot": false
       }
     ]
   },
@@ -1091,17 +836,17 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 146,
+        "totalIncluded": 63,
         "totalBlocked": 5,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 126,
+        "requiresReboot": false
       },
       {
         "value": false,
-        "totalIncluded": 145,
+        "totalIncluded": 62,
         "totalBlocked": 6,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 126,
+        "requiresReboot": false
       }
     ]
   },
@@ -1119,17 +864,17 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 146,
+        "totalIncluded": 63,
         "totalBlocked": 5,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 126,
+        "requiresReboot": false
       },
       {
         "value": false,
-        "totalIncluded": 145,
+        "totalIncluded": 62,
         "totalBlocked": 6,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 126,
+        "requiresReboot": false
       }
     ]
   },
@@ -1147,17 +892,17 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 146,
+        "totalIncluded": 63,
         "totalBlocked": 5,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 126,
+        "requiresReboot": false
       },
       {
         "value": false,
-        "totalIncluded": 145,
+        "totalIncluded": 62,
         "totalBlocked": 6,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 126,
+        "requiresReboot": false
       }
     ]
   },
@@ -1175,17 +920,17 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 146,
+        "totalIncluded": 63,
         "totalBlocked": 5,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 126,
+        "requiresReboot": false
       },
       {
         "value": false,
-        "totalIncluded": 145,
+        "totalIncluded": 62,
         "totalBlocked": 6,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 126,
+        "requiresReboot": false
       }
     ]
   },
@@ -1203,17 +948,17 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 146,
+        "totalIncluded": 63,
         "totalBlocked": 5,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 126,
+        "requiresReboot": false
       },
       {
         "value": false,
-        "totalIncluded": 145,
+        "totalIncluded": 62,
         "totalBlocked": 6,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 126,
+        "requiresReboot": false
       }
     ]
   },
@@ -1231,17 +976,17 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 146,
+        "totalIncluded": 63,
         "totalBlocked": 5,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 126,
+        "requiresReboot": false
       },
       {
         "value": false,
-        "totalIncluded": 145,
+        "totalIncluded": 62,
         "totalBlocked": 6,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 126,
+        "requiresReboot": false
       }
     ]
   },
@@ -1261,17 +1006,17 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 146,
+        "totalIncluded": 62,
         "totalBlocked": 5,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 127,
+        "requiresReboot": false
       },
       {
         "value": false,
-        "totalIncluded": 143,
+        "totalIncluded": 59,
         "totalBlocked": 8,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 127,
+        "requiresReboot": false
       }
     ]
   },
@@ -1289,17 +1034,17 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 146,
+        "totalIncluded": 62,
         "totalBlocked": 5,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 127,
+        "requiresReboot": false
       },
       {
         "value": false,
-        "totalIncluded": 145,
+        "totalIncluded": 61,
         "totalBlocked": 6,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 127,
+        "requiresReboot": false
       }
     ]
   },
@@ -1317,17 +1062,17 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 146,
+        "totalIncluded": 63,
         "totalBlocked": 5,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 126,
+        "requiresReboot": false
       },
       {
         "value": false,
-        "totalIncluded": 145,
+        "totalIncluded": 62,
         "totalBlocked": 6,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 126,
+        "requiresReboot": false
       }
     ]
   },
@@ -1345,17 +1090,17 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 146,
+        "totalIncluded": 63,
         "totalBlocked": 5,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 126,
+        "requiresReboot": false
       },
       {
         "value": false,
-        "totalIncluded": 145,
+        "totalIncluded": 62,
         "totalBlocked": 6,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 126,
+        "requiresReboot": false
       }
     ]
   },
@@ -1373,17 +1118,17 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 146,
+        "totalIncluded": 63,
         "totalBlocked": 5,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 126,
+        "requiresReboot": false
       },
       {
         "value": false,
-        "totalIncluded": 145,
+        "totalIncluded": 62,
         "totalBlocked": 6,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 126,
+        "requiresReboot": false
       }
     ]
   },
@@ -1401,17 +1146,17 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 146,
+        "totalIncluded": 62,
         "totalBlocked": 5,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 127,
+        "requiresReboot": false
       },
       {
         "value": false,
-        "totalIncluded": 145,
+        "totalIncluded": 61,
         "totalBlocked": 6,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 127,
+        "requiresReboot": false
       }
     ]
   },
@@ -1431,50 +1176,17 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 149,
+        "totalIncluded": 65,
         "totalBlocked": 5,
-        "totalOptional": 51,
+        "totalOptional": 127,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 146,
+        "totalIncluded": 62,
         "totalBlocked": 8,
-        "totalOptional": 51,
-        "requiresReboot": true
-      }
-    ]
-  },
-  {
-    "questionKey": "disableWindowsUpdate",
-    "scenario": {
-      "profile": "gaming_desktop",
-      "preset": "balanced",
-      "aggressionPreset": "balanced",
-      "windowsBuild": 22631
-    },
-    "changedActionIds": [
-      "services.disable-bits",
-      "services.disable-delivery-optimization",
-      "services.disable-update-orchestrator-svc",
-      "services.disable-waasmedic",
-      "services.disable-wuauserv",
-      "tasks.disable-update-tasks"
-    ],
-    "variants": [
-      {
-        "value": true,
-        "totalIncluded": 151,
-        "totalBlocked": 5,
-        "totalOptional": 50,
-        "requiresReboot": true
-      },
-      {
-        "value": false,
-        "totalIncluded": 145,
-        "totalBlocked": 11,
-        "totalOptional": 50,
-        "requiresReboot": true
+        "totalOptional": 127,
+        "requiresReboot": false
       }
     ]
   },
@@ -1492,17 +1204,17 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 146,
+        "totalIncluded": 62,
         "totalBlocked": 5,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 127,
+        "requiresReboot": false
       },
       {
         "value": false,
-        "totalIncluded": 145,
+        "totalIncluded": 61,
         "totalBlocked": 6,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 127,
+        "requiresReboot": false
       }
     ]
   },
@@ -1520,69 +1232,17 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 146,
+        "totalIncluded": 62,
         "totalBlocked": 5,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 127,
+        "requiresReboot": false
       },
       {
         "value": false,
-        "totalIncluded": 145,
+        "totalIncluded": 61,
         "totalBlocked": 6,
-        "totalOptional": 51,
-        "requiresReboot": true
-      }
-    ]
-  },
-  {
-    "questionKey": "disableFaultTolerantHeap",
-    "scenario": {
-      "profile": "gaming_desktop",
-      "preset": "balanced",
-      "aggressionPreset": "balanced",
-      "windowsBuild": 22631
-    },
-    "changedActionIds": [],
-    "variants": [
-      {
-        "value": true,
-        "totalIncluded": 146,
-        "totalBlocked": 5,
-        "totalOptional": 51,
-        "requiresReboot": true
-      },
-      {
-        "value": false,
-        "totalIncluded": 146,
-        "totalBlocked": 5,
-        "totalOptional": 51,
-        "requiresReboot": true
-      }
-    ]
-  },
-  {
-    "questionKey": "disableMPOs",
-    "scenario": {
-      "profile": "gaming_desktop",
-      "preset": "balanced",
-      "aggressionPreset": "balanced",
-      "windowsBuild": 22631
-    },
-    "changedActionIds": [],
-    "variants": [
-      {
-        "value": true,
-        "totalIncluded": 146,
-        "totalBlocked": 5,
-        "totalOptional": 51,
-        "requiresReboot": true
-      },
-      {
-        "value": false,
-        "totalIncluded": 146,
-        "totalBlocked": 5,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 127,
+        "requiresReboot": false
       }
     ]
   },
@@ -1600,17 +1260,17 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 146,
+        "totalIncluded": 62,
         "totalBlocked": 5,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 127,
+        "requiresReboot": false
       },
       {
         "value": false,
-        "totalIncluded": 145,
+        "totalIncluded": 61,
         "totalBlocked": 6,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 127,
+        "requiresReboot": false
       }
     ]
   },
@@ -1628,17 +1288,17 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 147,
+        "totalIncluded": 63,
         "totalBlocked": 5,
-        "totalOptional": 50,
-        "requiresReboot": true
+        "totalOptional": 126,
+        "requiresReboot": false
       },
       {
         "value": false,
-        "totalIncluded": 146,
+        "totalIncluded": 62,
         "totalBlocked": 6,
-        "totalOptional": 50,
-        "requiresReboot": true
+        "totalOptional": 126,
+        "requiresReboot": false
       }
     ]
   },
@@ -1656,17 +1316,17 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 147,
+        "totalIncluded": 63,
         "totalBlocked": 5,
-        "totalOptional": 50,
-        "requiresReboot": true
+        "totalOptional": 126,
+        "requiresReboot": false
       },
       {
         "value": false,
-        "totalIncluded": 146,
+        "totalIncluded": 62,
         "totalBlocked": 6,
-        "totalOptional": 50,
-        "requiresReboot": true
+        "totalOptional": 126,
+        "requiresReboot": false
       }
     ]
   },
@@ -1684,17 +1344,17 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 147,
+        "totalIncluded": 63,
         "totalBlocked": 5,
-        "totalOptional": 50,
-        "requiresReboot": true
+        "totalOptional": 126,
+        "requiresReboot": false
       },
       {
         "value": false,
-        "totalIncluded": 146,
+        "totalIncluded": 62,
         "totalBlocked": 6,
-        "totalOptional": 50,
-        "requiresReboot": true
+        "totalOptional": 126,
+        "requiresReboot": false
       }
     ]
   },
@@ -1712,17 +1372,17 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 147,
+        "totalIncluded": 63,
         "totalBlocked": 5,
-        "totalOptional": 50,
-        "requiresReboot": true
+        "totalOptional": 126,
+        "requiresReboot": false
       },
       {
         "value": false,
-        "totalIncluded": 146,
+        "totalIncluded": 62,
         "totalBlocked": 6,
-        "totalOptional": 50,
-        "requiresReboot": true
+        "totalOptional": 126,
+        "requiresReboot": false
       }
     ]
   },
@@ -1740,17 +1400,17 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 147,
+        "totalIncluded": 63,
         "totalBlocked": 5,
-        "totalOptional": 51,
+        "totalOptional": 127,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 146,
+        "totalIncluded": 62,
         "totalBlocked": 6,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 127,
+        "requiresReboot": false
       }
     ]
   },
@@ -1768,17 +1428,17 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 147,
+        "totalIncluded": 63,
         "totalBlocked": 5,
-        "totalOptional": 51,
+        "totalOptional": 127,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 146,
+        "totalIncluded": 62,
         "totalBlocked": 6,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 127,
+        "requiresReboot": false
       }
     ]
   },
@@ -1796,17 +1456,17 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 147,
+        "totalIncluded": 63,
         "totalBlocked": 5,
-        "totalOptional": 51,
+        "totalOptional": 127,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 146,
+        "totalIncluded": 62,
         "totalBlocked": 6,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 127,
+        "requiresReboot": false
       }
     ]
   },
@@ -1826,24 +1486,24 @@
     "variants": [
       {
         "value": "keep",
-        "totalIncluded": 143,
+        "totalIncluded": 62,
         "totalBlocked": 8,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 124,
+        "requiresReboot": false
       },
       {
         "value": "suppress",
-        "totalIncluded": 145,
+        "totalIncluded": 64,
         "totalBlocked": 6,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 124,
+        "requiresReboot": false
       },
       {
         "value": "suppress-and-freeze",
-        "totalIncluded": 146,
+        "totalIncluded": 65,
         "totalBlocked": 5,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 124,
+        "requiresReboot": false
       }
     ]
   },
@@ -1860,29 +1520,39 @@
       "privacy.disable-error-reporting",
       "privacy.disable-siuf",
       "privacy.disable-telemetry",
-      "services.disable-wer-service"
+      "services.disable-diagtrack",
+      "services.disable-dmwappushservice",
+      "services.disable-wer-service",
+      "tasks.disable-cloud-content-tasks",
+      "tasks.disable-device-census",
+      "tasks.disable-diagnostic-tasks",
+      "tasks.disable-feedback-tasks",
+      "tasks.disable-flighting-tasks",
+      "tasks.disable-maps-tasks",
+      "tasks.disable-speech-tasks",
+      "tasks.disable-telemetry-tasks"
     ],
     "variants": [
       {
         "value": "keep",
-        "totalIncluded": 142,
+        "totalIncluded": 58,
         "totalBlocked": 9,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 127,
+        "requiresReboot": false
       },
       {
         "value": "reduce",
-        "totalIncluded": 146,
+        "totalIncluded": 67,
         "totalBlocked": 6,
-        "totalOptional": 50,
-        "requiresReboot": true
+        "totalOptional": 121,
+        "requiresReboot": false
       },
       {
         "value": "aggressive",
-        "totalIncluded": 147,
+        "totalIncluded": 73,
         "totalBlocked": 5,
-        "totalOptional": 50,
-        "requiresReboot": true
+        "totalOptional": 116,
+        "requiresReboot": false
       }
     ]
   },
@@ -1898,31 +1568,31 @@
     "variants": [
       {
         "value": "conservative",
-        "totalIncluded": 146,
+        "totalIncluded": 62,
         "totalBlocked": 5,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 127,
+        "requiresReboot": false
       },
       {
         "value": "balanced",
-        "totalIncluded": 146,
+        "totalIncluded": 62,
         "totalBlocked": 5,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 127,
+        "requiresReboot": false
       },
       {
         "value": "aggressive",
-        "totalIncluded": 146,
+        "totalIncluded": 62,
         "totalBlocked": 5,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 127,
+        "requiresReboot": false
       },
       {
         "value": "expert",
-        "totalIncluded": 146,
+        "totalIncluded": 62,
         "totalBlocked": 5,
-        "totalOptional": 51,
-        "requiresReboot": true
+        "totalOptional": 127,
+        "requiresReboot": false
       }
     ]
   }

@@ -6,94 +6,13 @@ description: "Control Windows Update behavior: disable updates, prevent auto-res
 category: security
 
 actions:
-  - id: system.disable-windows-update
-    name: "Full Windows Update Disable (PC-Tuning method)"
-    description: "Completely disable Windows Update using the full PC-Tuning approach: redirect WU servers to blank, disable access, block OS upgrades, disable auto-update, and stop all related services (wuauserv, UsoSvc, WaaSMedicSvc, BITS). WARNING: Breaks Microsoft Store."
-    rationale: "The most thorough WU disable. Redirects WU/Status servers to blank strings, blocks internet locations, disables UI access, and kills all 4 update services. PC-Tuning uses this for benchmark/gaming rigs. Microsoft Store will stop working."
-    risk: extreme
-    tier: premium
-    default: false
-    expertOnly: true
-    requiresReboot: true
-    reversible: true
-    estimatedSeconds: 10
-    blockedProfiles:
-      - work_pc
-      - office_laptop
-    warningMessage: "THIS STOPS ALL UPDATES INCLUDING SECURITY PATCHES. Microsoft Store will also stop working. Only use on air-gapped or dedicated gaming PCs. You can still install .msi/.exe software manually."
-    registryChanges:
-      # Redirect WU servers to blank
-      - hive: HKLM
-        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate"
-        valueName: WUServer
-        value: " "
-        valueType: String
-      - hive: HKLM
-        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate"
-        valueName: WUStatusServer
-        value: " "
-        valueType: String
-      - hive: HKLM
-        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate"
-        valueName: UpdateServiceUrlAlternate
-        value: " "
-        valueType: String
-      # Disable access and connections
-      - hive: HKLM
-        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate"
-        valueName: DisableWindowsUpdateAccess
-        value: 1
-        valueType: DWord
-      - hive: HKLM
-        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate"
-        valueName: DoNotConnectToWindowsUpdateInternetLocations
-        value: 1
-        valueType: DWord
-      - hive: HKLM
-        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate"
-        valueName: SetDisableUXWUAccess
-        value: 1
-        valueType: DWord
-      # Block OS upgrade
-      - hive: HKLM
-        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate"
-        valueName: DisableOSUpgrade
-        value: 1
-        valueType: DWord
-      # Exclude driver updates
-      - hive: HKLM
-        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate"
-        valueName: ExcludeWUDriversInQualityUpdate
-        value: 1
-        valueType: DWord
-      # Auto-update off + use (blank) WU server
-      - hive: HKLM
-        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate\\AU"
-        valueName: NoAutoUpdate
-        value: 1
-        valueType: DWord
-      - hive: HKLM
-        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate\\AU"
-        valueName: UseWUServer
-        value: 1
-        valueType: DWord
-    serviceChanges:
-      - name: wuauserv
-        startupType: Disabled
-      - name: UsoSvc
-        startupType: Disabled
-      - name: WaaSMedicSvc
-        startupType: Disabled
-      - name: BITS
-        startupType: Disabled
-
   - id: security.disable-update-asap
     name: "Disable Early Access Updates"
     description: "Prevent Windows from opting in to early access / continuous innovation updates"
     rationale: "IsContinuousInnovationOptedIn pushes preview-quality updates to production machines"
     risk: safe
     tier: free
-    default: true
+    default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
@@ -111,7 +30,7 @@ actions:
     rationale: "Delivery optimization uploads update data to other PCs, consuming bandwidth"
     risk: low
     tier: free
-    default: true
+    default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
@@ -148,7 +67,7 @@ actions:
     rationale: "Windows Update can forcibly restart the system during active use, causing data loss in unsaved work and interrupting gaming sessions."
     risk: low
     tier: free
-    default: true
+    default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2

@@ -12,7 +12,7 @@ actions:
     rationale: "Windows silently installs promoted apps and games through background scheduled tasks. Disabling prevents unwanted app installation."
     risk: safe
     tier: free
-    default: true
+    default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 4
@@ -31,7 +31,7 @@ actions:
     rationale: "SSD TRIM is handled by the storage driver, not defragmentation. On HDD systems, re-enable if needed."
     risk: low
     tier: free
-    default: true
+    default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
@@ -47,7 +47,7 @@ actions:
     rationale: ".NET NGEN tasks pre-compile assemblies in the background. On systems with modern .NET, these legacy tasks add CPU overhead."
     risk: low
     tier: free
-    default: true
+    default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 3
@@ -83,7 +83,7 @@ actions:
     rationale: "Power efficiency diagnostics consume CPU cycles to analyze energy usage patterns. Results are rarely viewed by users."
     risk: safe
     tier: free
-    default: true
+    default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
@@ -114,7 +114,7 @@ actions:
     rationale: "Device Census collects detailed hardware and software inventory data and sends it to Microsoft as part of the telemetry pipeline."
     risk: safe
     tier: free
-    default: true
+    default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
