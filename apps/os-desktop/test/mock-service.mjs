@@ -91,34 +91,6 @@ function handleMethod(method, params) {
     case "playbook.resolve":
       return buildResolvedPlaybook(params?.profile ?? "gaming_desktop", params?.preset ?? "balanced");
 
-    case "appbundle.getRecommended":
-      return { apps: buildRecommendedApps(params?.profile ?? "gaming_desktop") };
-
-    case "appbundle.resolve":
-      return {
-        profile: params?.profile ?? "gaming_desktop",
-        installQueue: (params?.selectedApps ?? []).map((id) => ({
-          id,
-          name: APP_CATALOG[id]?.name ?? id,
-          url: APP_CATALOG[id]?.url ?? "https://example.com",
-          silentArgs: APP_CATALOG[id]?.silentArgs ?? "/S",
-          selected: true,
-          recommended: true,
-        })),
-        skipped: [],
-        totalQueued: (params?.selectedApps ?? []).length,
-      };
-
-    case "appbundle.install":
-      return {
-        id: params?.appId ?? "unknown",
-        name: APP_CATALOG[params?.appId]?.name ?? params?.appId ?? "unknown",
-        status: "installed",
-        downloadedPath: `C:\\Users\\mock\\Downloads\\${params?.appId ?? "unknown"}.exe`,
-        exitCode: 0,
-        error: null,
-      };
-
     // ─── Execution & rollback ─────────────────────────────────────────
 
     case "execute.applyAction":
@@ -303,36 +275,3 @@ function buildActionStatus(action, profile, preset, rules, windowsBuild) {
   };
 }
 
-// ─── App catalog & recommendations ────────────────────────────────────────────
-
-const APP_CATALOG = {
-  steam: { name: "Steam", category: "gaming", description: "Game distribution platform", url: "https://cdn.cloudflare.steamstatic.com/client/installer/SteamSetup.exe", silentArgs: "/S", workSafe: false },
-  discord: { name: "Discord", category: "communication", description: "Voice and text chat for gamers", url: "https://discord.com/api/downloads/distributions/app/installers/latest?platform=win", silentArgs: "-s", workSafe: false },
-  brave: { name: "Brave Browser", category: "browser", description: "Privacy-focused web browser", url: "https://laptop-updates.brave.com/latest/winx64", silentArgs: "--silent --install", workSafe: true },
-  "7zip": { name: "7-Zip", category: "utility", description: "File archiver with high compression", url: "https://www.7-zip.org/a/7z2301-x64.exe", silentArgs: "/S", workSafe: true },
-  vlc: { name: "VLC", category: "media", description: "Free open-source media player", url: "https://get.videolan.org/vlc/last/win64/", silentArgs: "/S /L=1033", workSafe: true },
-  everything: { name: "Everything", category: "utility", description: "Instant file search", url: "https://www.voidtools.com/Everything-1.4.1.1024.x64-Setup.exe", silentArgs: "/S", workSafe: true },
-  notepadpp: { name: "Notepad++", category: "development", description: "Source code editor", url: "https://notepad-plus-plus.org/", silentArgs: "/S", workSafe: true },
-  hwinfo: { name: "HWiNFO", category: "monitoring", description: "Hardware monitoring and reporting", url: "https://www.hwinfo.com/", silentArgs: "/SILENT", workSafe: false },
-};
-
-const PROFILE_BUNDLES = {
-  gaming_desktop: ["steam", "discord", "brave", "7zip", "everything", "hwinfo"],
-  work_pc: ["brave", "7zip", "everything", "notepadpp"],
-  office_laptop: ["brave", "7zip", "vlc", "everything", "notepadpp"],
-  low_spec_system: ["brave", "7zip", "everything"],
-  vm_cautious: ["7zip", "notepadpp"],
-};
-
-function buildRecommendedApps(profile) {
-  const bundleIds = PROFILE_BUNDLES[profile] ?? PROFILE_BUNDLES.gaming_desktop;
-  return Object.entries(APP_CATALOG).map(([id, app]) => ({
-    id,
-    name: app.name,
-    category: app.category,
-    description: app.description,
-    recommended: bundleIds.includes(id),
-    selected: bundleIds.includes(id),
-    workSafe: app.workSafe,
-  }));
-}

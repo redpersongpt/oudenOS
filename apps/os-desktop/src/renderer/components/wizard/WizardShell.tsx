@@ -12,14 +12,14 @@ const LABELS: Record<WizardStepId, string> = {
   welcome: "WELCOME", assessment: "ASSESSMENT", profile: "PROFILE",
   preservation: "PRESERVATION", "playbook-strategy": "STRATEGY",
   "playbook-review": "PLAYBOOK", personalization: "PERSONALIZE",
-  "app-setup": "APP SETUP", "final-review": "REVIEW",
+  "final-review": "REVIEW",
   execution: "APPLY", "reboot-resume": "REBOOT",
   report: "COMPLETE", donation: "SUPPORT", handoff: "NEXT STEPS",
 };
 
 const CTA: Partial<Record<WizardStepId, string>> = {
   welcome: "BEGIN", "playbook-strategy": "REVIEW",
-  "playbook-review": "PERSONALIZE", "app-setup": "REVIEW",
+  "playbook-review": "PERSONALIZE",
   "final-review": "APPLY", report: "NEXT STEPS", profile: "CONFIGURE",
 };
 

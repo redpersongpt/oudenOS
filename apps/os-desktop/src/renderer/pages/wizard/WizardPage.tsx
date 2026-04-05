@@ -12,7 +12,6 @@ import { PreservationStep }     from "./steps/PreservationStep";
 import { PlaybookStrategyStep } from "./steps/PlaybookStrategyStep";
 import { PlaybookReviewStep }   from "./steps/PlaybookReviewStep";
 import { PersonalizationStep }  from "./steps/PersonalizationStep";
-import { AppSetupStep }         from "./steps/AppSetupStep";
 import { FinalReviewStep }      from "./steps/FinalReviewStep";
 import { ExecutionStep }        from "./steps/ExecutionStep";
 import { RebootResumeStep }     from "./steps/RebootResumeStep";
@@ -33,7 +32,6 @@ export function WizardPage() {
         {currentStep === "playbook-strategy"  && <PlaybookStrategyStep key="playbook-strategy"  />}
         {currentStep === "playbook-review"    && <PlaybookReviewStep   key="playbook-review"    />}
         {currentStep === "personalization"    && <PersonalizationStep  key="personalization"    />}
-        {currentStep === "app-setup"          && <AppSetupStep         key="app-setup"          />}
         {currentStep === "final-review"       && <FinalReviewStep      key="final-review"       />}
         {currentStep === "execution"          && <ExecutionStep        key="execution"          />}
         {currentStep === "reboot-resume"      && <RebootResumeStep     key="reboot-resume"      />}

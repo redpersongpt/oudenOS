@@ -11187,13 +11187,13 @@
       {
         "kind": "registry",
         "target": "HKLM\\SYSTEM\\\\CurrentControlSet\\\\Control\\WaitToKillServiceTimeout",
-        "expected": "2000 (String)"
+        "expected": "3000 (String)"
       }
     ],
     "readbackMethods": [
       {
         "kind": "registry",
-        "detail": "Read HKLM\\SYSTEM\\\\CurrentControlSet\\\\Control\\WaitToKillServiceTimeout and compare to 2000."
+        "detail": "Read HKLM\\SYSTEM\\\\CurrentControlSet\\\\Control\\WaitToKillServiceTimeout and compare to 3000."
       }
     ],
     "rollbackMethod": "Restore the snapshot captured immediately before apply, then read back the same targets and compare against baseline.",
