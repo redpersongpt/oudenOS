@@ -112,6 +112,46 @@ pub fn execute_action(
 ) -> anyhow::Result<Value> {
     tracing::info!(action_id = action_id, "Executing action");
 
+    let manual_only = action_data
+        .get("manualOnly")
+        .and_then(|value| value.as_bool())
+        .unwrap_or(false);
+
+    if manual_only {
+        let now = chrono::Utc::now().to_rfc3339();
+        let audit_id = uuid::Uuid::new_v4().to_string();
+        db.conn().execute(
+            "INSERT INTO audit_log (id, timestamp, category, action, detail, severity)
+             VALUES (?1, ?2, 'executor', 'manual_action_recorded', ?3, 'info')",
+            rusqlite::params![
+                audit_id,
+                now,
+                format!(
+                    "Guide advisory action '{}' recorded with no automatic mutation{}",
+                    action_id,
+                    audit_context
+                        .map(|detail| format!(" · {}", detail))
+                        .unwrap_or_default()
+                ),
+            ],
+        )?;
+
+        return Ok(serde_json::json!({
+            "actionId": action_id,
+            "actionType": "manual",
+            "snapshotId": null,
+            "rollbackSnapshotId": null,
+            "status": "success",
+            "succeeded": 0,
+            "failed": 0,
+            "results": [{
+                "type": "manual",
+                "status": "success",
+                "note": "Guide advisory action recorded only. No automatic system mutation was performed."
+            }],
+        }));
+    }
+
     let action_type = action_data["actionType"].as_str().unwrap_or("unknown");
 
     // ── Phase 1: Collect previous values for rollback ───────────────────
