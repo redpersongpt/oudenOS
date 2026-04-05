@@ -432,6 +432,7 @@ export const strategyQuestions: StrategyQuestionDefinition[] = [
     "Disables Copilot via TurnOffWindowsCopilot policy. Frees ~200MB RAM. Your taskbar can finally breathe.",
     "No — keep Copilot available",
     "Keeps Copilot available on the taskbar. It's actually useful sometimes... apparently.",
+    { visibility: { minWindowsBuild: 22000 } },
   ),
   makeBooleanQuestion(
     "disableRecall",
@@ -628,6 +629,7 @@ export const strategyQuestions: StrategyQuestionDefinition[] = [
     "Full right-click menu with all options visible instantly.",
     "No — keep compact menu",
     "Keeps the compact Windows 11 right-click menu.",
+    { visibility: { minWindowsBuild: 22000 } },
   ),
   makeBooleanQuestion(
     "enableEndTask",
