@@ -130,8 +130,8 @@ fn load_bundles(playbook_dir: &Path) -> anyhow::Result<LoadedBundles> {
 // ─── Resolver ───────────────────────────────────────────────────────────────
 
 /// Returns the recommended app list for a profile. Every app in the catalog is
-/// returned; those in the profile's bundle are marked `recommended: true` and
-/// `selected: true` by default.
+/// returned; those in the profile's bundle are marked `recommended: true`.
+/// All apps default to `selected: false` — user must explicitly opt in.
 pub fn get_recommended(playbook_dir: &Path, profile: &str) -> anyhow::Result<serde_json::Value> {
     let loaded = load_bundles(playbook_dir)?;
 
@@ -149,7 +149,14 @@ pub fn get_recommended(playbook_dir: &Path, profile: &str) -> anyhow::Result<ser
 
     let mut apps: Vec<ResolvedApp> = Vec::new();
 
-    // First: add all recommended apps in bundle order (preserves intended ordering)
+    // First: add all recommended apps in bundle order (preserves intended ordering).
+    // SAFETY: selected defaults to false. App installs register RunOnce / Active Setup
+    // entries that run during the next Windows logon *before* Explorer starts. If any
+    // installer (Brave, Discord, VS Code, etc.) is silently installed and then the
+    // machine reboots, the "Setting up personalized settings for <app>" phase can
+    // wedge Winlogon and produce a black screen with no taskbar. By defaulting to
+    // opt-in, we prevent any app from entering the install queue unless the user
+    // explicitly selects it in the App Setup step.
     if let Some(b) = bundle {
         for app_id in &b.apps {
             if let Some(entry) = loaded.catalog.apps.get(app_id) {
@@ -161,7 +168,7 @@ pub fn get_recommended(playbook_dir: &Path, profile: &str) -> anyhow::Result<ser
                     url: entry.url.clone(),
                     silent_args: entry.silent_args.clone(),
                     work_safe: entry.work_safe,
-                    selected: true,
+                    selected: false,
                     recommended: true,
                 });
             } else {

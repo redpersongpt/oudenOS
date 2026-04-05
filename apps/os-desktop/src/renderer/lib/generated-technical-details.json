@@ -2296,7 +2296,7 @@
   "services.disable-push-notifications": {
     "serviceChanges": [
       {
-        "name": "WpnService",
+        "name": "WpnUserService",
         "startupType": "Disabled"
       }
     ]

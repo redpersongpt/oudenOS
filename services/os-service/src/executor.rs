@@ -579,6 +579,7 @@ fn apply_service_change(service_name: &str, startup_type: &str) -> anyhow::Resul
         "EventLog",                                              // Event log (anti-cheat depends on it)
         "CryptSvc",                                              // Crypto services (BattlEye/EAC)
         "DeviceInstall",                                         // Driver install (GPU/WiFi/BT)
+        "WpnService",                                            // Push notification broker (shell toasts)
     ];
     if PROTECTED_SERVICES.iter().any(|s| s.eq_ignore_ascii_case(service_name)) {
         tracing::warn!(service = service_name, "Protected service — skipped to preserve Task Manager/system stability");
