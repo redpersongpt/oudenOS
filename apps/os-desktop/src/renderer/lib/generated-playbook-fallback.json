@@ -16,28 +16,13 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "vm_cautious",
-            "Microsoft.BingNews",
-            "Microsoft.BingWeather",
-            "Microsoft.MicrosoftSolitaireCollection",
-            "Microsoft.People",
-            "Microsoft.WindowsMaps",
-            "Microsoft.WindowsFeedbackHub",
-            "Microsoft.GetHelp",
-            "Microsoft.Getstarted",
-            "Microsoft.Todos",
-            "Microsoft.549981C3F5F10",
-            "Microsoft.MixedReality.Portal",
-            "Microsoft.SkypeApp"
+            "vm_cautious"
           ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "packages"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "appx.remove-cortana",
-          "name": "Remove Cortana App",
+          "name": "Remove TRASH Cortana App",
           "description": "Remove the Cortana UWP application",
           "risk": "low",
           "default": true,
@@ -45,13 +30,9 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "vm_cautious",
-            "Microsoft.549981C3F5F10"
+            "vm_cautious"
           ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "packages"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "appx.remove-office-hub",
@@ -63,13 +44,9 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "vm_cautious",
-            "Microsoft.MicrosoftOfficeHub"
+            "vm_cautious"
           ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "packages"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "appx.remove-your-phone",
@@ -82,13 +59,9 @@
           "warningMessage": null,
           "blockedProfiles": [
             "work_pc",
-            "vm_cautious",
-            "Microsoft.YourPhone"
+            "vm_cautious"
           ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "packages"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "appx.remove-mail-calendar",
@@ -100,13 +73,9 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "vm_cautious",
-            "microsoft.windowscommunicationsapps"
+            "vm_cautious"
           ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "packages"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "appx.remove-camera",
@@ -118,13 +87,9 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "vm_cautious",
-            "Microsoft.WindowsCamera"
+            "vm_cautious"
           ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "packages"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "appx.remove-alarms",
@@ -136,13 +101,9 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "vm_cautious",
-            "Microsoft.WindowsAlarms"
+            "vm_cautious"
           ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "packages"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "appx.remove-sound-recorder",
@@ -154,13 +115,9 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "vm_cautious",
-            "Microsoft.WindowsSoundRecorder"
+            "vm_cautious"
           ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "packages"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "appx.remove-sticky-notes",
@@ -172,13 +129,9 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "vm_cautious",
-            "Microsoft.MicrosoftStickyNotes"
+            "vm_cautious"
           ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "packages"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "appx.remove-feedback-hub",
@@ -190,13 +143,9 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "vm_cautious",
-            "Microsoft.WindowsFeedbackHub"
+            "vm_cautious"
           ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "packages"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "appx.remove-maps",
@@ -208,13 +157,9 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "vm_cautious",
-            "Microsoft.WindowsMaps"
+            "vm_cautious"
           ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "packages"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "appx.remove-get-help",
@@ -226,13 +171,9 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "vm_cautious",
-            "Microsoft.GetHelp"
+            "vm_cautious"
           ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "packages"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "appx.remove-power-automate",
@@ -244,17 +185,13 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "vm_cautious",
-            "Microsoft.PowerAutomateDesktop"
+            "vm_cautious"
           ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "packages"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "appx.remove-solitaire",
-          "name": "Remove Solitaire",
+          "name": "Remove Solitaire lmfao",
           "description": "Remove the Solitaire Collection app (Microsoft.MicrosoftSolitaireCollection)",
           "risk": "safe",
           "default": true,
@@ -262,13 +199,9 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "vm_cautious",
-            "Microsoft.MicrosoftSolitaireCollection"
+            "vm_cautious"
           ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "packages"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "appx.remove-widgets",
@@ -280,15 +213,9 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "vm_cautious",
-            "MicrosoftWindows.Client.WebExperience",
-            "hive: HKLM"
+            "vm_cautious"
           ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "packages",
-            "registryChanges"
-          ]
+          "minWindowsBuild": 22000
         },
         {
           "id": "appx.remove-xbox-apps",
@@ -300,17 +227,9 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "vm_cautious",
-            "Microsoft.XboxApp",
-            "Microsoft.XboxGamingOverlay",
-            "Microsoft.Xbox.TCUI",
-            "Microsoft.XboxGameCallableUI",
-            "Microsoft.XboxSpeechToTextOverlay"
+            "vm_cautious"
           ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "packages"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "appx.remove-social-media",
@@ -322,18 +241,9 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "vm_cautious",
-            "Facebook",
-            "Instagram",
-            "BytedancePte.Ltd.TikTok",
-            "Twitter",
-            "LinkedIn",
-            "Flipboard"
+            "vm_cautious"
           ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "packages"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "appx.remove-streaming-trials",
@@ -345,18 +255,9 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "vm_cautious",
-            "SpotifyAB.SpotifyMusic",
-            "HULLLC.HULUPLUS",
-            "Disney",
-            "AmazonVideo.PrimeVideo",
-            "Netflix",
-            "iHeartRadio"
+            "vm_cautious"
           ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "packages"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "appx.remove-casual-games",
@@ -368,22 +269,9 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "vm_cautious",
-            "king.com.CandyCrushSaga",
-            "king.com.CandyCrushSodaSaga",
-            "king.com.CandyCrushFriends",
-            "king.com.BubbleWitch3Saga",
-            "king.com.FarmHeroesSaga",
-            "DisneyMagicKingdoms",
-            "Asphalt8Airborne",
-            "HiddenCity",
-            "FarmVille2CountryEscape",
-            "CaesarsSlotsFreeCasino"
+            "vm_cautious"
           ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "packages"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "appx.remove-oem-utilities",
@@ -395,21 +283,9 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "vm_cautious",
-            "AdobeSystemsIncorporated.AdobePhotoshopExpress",
-            "Duolingo-LearnLanguagesforFree",
-            "fitbit",
-            "DrawboardPDF",
-            "CyberLinkMediaSuiteEssentials",
-            "AutodeskSketchBook",
-            "ACGMediaPlayer",
-            "ActiproSoftwareLLC",
-            "EclipseManager"
+            "vm_cautious"
           ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "packages"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "appx.remove-shopping-amazon",
@@ -421,14 +297,9 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "vm_cautious",
-            "Amazon.com.Amazon",
-            "AmazonVideo.PrimeVideo"
+            "vm_cautious"
           ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "packages"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "appx.remove-ms-extended-bloat",
@@ -440,37 +311,9 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "vm_cautious",
-            "Clipchamp.Clipchamp",
-            "Microsoft.MicrosoftJournal",
-            "Microsoft.PCManager",
-            "MicrosoftTeams",
-            "MSTeams",
-            "Microsoft.Windows.DevHome",
-            "MicrosoftCorporationII.QuickAssist",
-            "Microsoft.News",
-            "Microsoft.Office.OneNote",
-            "Microsoft.Office.Sway",
-            "Microsoft.OneConnect",
-            "Microsoft.3DBuilder",
-            "Microsoft.NetworkSpeedTest",
-            "Microsoft.MicrosoftPowerBIForWindows",
-            "Microsoft.ZuneVideo",
-            "MicrosoftCorporationII.MicrosoftFamily",
-            "Microsoft.Print3D",
-            "Microsoft.Microsoft3DViewer",
-            "Microsoft.Messaging",
-            "Microsoft.BingFinance",
-            "Microsoft.BingSports",
-            "Microsoft.BingTranslator",
-            "Microsoft.BingFoodAndDrink",
-            "Microsoft.BingHealthAndFitness",
-            "Microsoft.BingTravel"
+            "vm_cautious"
           ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "packages"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "appx.remove-copilot-app",
@@ -482,26 +325,19 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "packages"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "appx.disable-edge-updates",
           "name": "Disable Edge Auto-Updates",
-          "description": "Prevent Edge from auto-updating and reinstalling itself via the Microsoft Edge Update service. Registry policy only — does not remove Edge.",
+          "description": "Prevent Edge from auto-updating and reinstalling itself via the Microsoft Edge Update service. Registry policy only \u2014 does not remove Edge.",
           "risk": "safe",
           "default": true,
           "expertOnly": false,
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges",
-            "serviceChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "appx.disable-edge-preload",
@@ -513,10 +349,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "appx.disable-edge-default-nag",
@@ -528,29 +361,23 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "appx.remove-edge",
           "name": "Remove Microsoft Edge",
-          "description": "Permanently uninstall Microsoft Edge using the setup.exe force-uninstall flag and remove AppX provisioning to prevent reinstallation. This action cannot be undone — Edge must be reinstalled from microsoft.com if needed.",
+          "description": "Permanently uninstall Microsoft Edge using the setup.exe force-uninstall flag and remove AppX provisioning to prevent reinstallation. This action cannot be undone \u2014 Edge must be reinstalled from microsoft.com if needed.",
           "risk": "high",
           "default": false,
           "expertOnly": true,
           "requiresReboot": true,
-          "warningMessage": "This permanently removes Microsoft Edge. It cannot be undone from within Windows — you must download Edge from microsoft.com to reinstall. Some Windows features that open web links via Edge (Help, Feedback, some Settings pages) will fail to open. Ensure you have an alternative browser installed before proceeding.",
+          "warningMessage": "This permanently removes Microsoft Edge. It cannot be undone from within Windows \u2014 you must download Edge from microsoft.com to reinstall. Some Windows features that open web links via Edge (Help, Feedback, some Settings pages) will fail to open. Ensure you have an alternative browser installed before proceeding.",
           "blockedProfiles": [
             "work_pc",
             "office_laptop",
             "vm_cautious"
           ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "powerShellCommands"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "appx.remove-edge-webview",
@@ -560,19 +387,124 @@
           "default": false,
           "expertOnly": true,
           "requiresReboot": true,
-          "warningMessage": "WebView2 is a shared system component. Removing it WILL break: Microsoft Teams, Windows Widgets, some installer UIs, some Electron apps, and any app using embedded web views. This cannot be undone — you must manually download and reinstall WebView2 from developer.microsoft.com. Do NOT remove this unless you are certain no app on your system depends on it.",
+          "warningMessage": "WebView2 is a shared system component. Removing it WILL break: Microsoft Teams, Windows Widgets, some installer UIs, some Electron apps, and any app using embedded web views. This cannot be undone \u2014 you must manually download and reinstall WebView2 from developer.microsoft.com. Do NOT remove this unless you are certain no app on your system depends on it.",
           "blockedProfiles": [
             "work_pc",
             "office_laptop",
             "vm_cautious",
             "low_spec_system",
-            "gaming_laptop",
-            "|"
+            "gaming_laptop"
           ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "powerShellCommands"
-          ]
+          "minWindowsBuild": null
+        },
+        {
+          "id": "appx.remove-copilot",
+          "name": "Remove Microsoft BloatPilot",
+          "description": "Remove the Microsoft Copilot app and disable Copilot integration points",
+          "risk": "safe",
+          "default": true,
+          "expertOnly": false,
+          "requiresReboot": false,
+          "warningMessage": null,
+          "blockedProfiles": [],
+          "minWindowsBuild": 22000
+        },
+        {
+          "id": "appx.remove-recall",
+          "name": "Disable Windows Recall",
+          "description": "Disable Windows Recall \u2014 AI-powered screenshot-based activity history",
+          "risk": "safe",
+          "default": true,
+          "expertOnly": false,
+          "requiresReboot": false,
+          "warningMessage": null,
+          "blockedProfiles": [],
+          "minWindowsBuild": 26100
+        },
+        {
+          "id": "appx.remove-clipchamp",
+          "name": "Remove Clipchamp",
+          "description": "Remove Microsoft's trash video editor",
+          "risk": "safe",
+          "default": true,
+          "expertOnly": false,
+          "requiresReboot": false,
+          "warningMessage": null,
+          "blockedProfiles": [
+            "vm_cautious"
+          ],
+          "minWindowsBuild": null
+        },
+        {
+          "id": "appx.remove-teams-consumer",
+          "name": "Remove Microsoft Teams (Consumer)",
+          "description": "Remove the consumer version of Microsoft Teams pre-installed in Windows 11",
+          "risk": "low",
+          "default": true,
+          "expertOnly": false,
+          "requiresReboot": false,
+          "warningMessage": null,
+          "blockedProfiles": [
+            "work_pc"
+          ],
+          "minWindowsBuild": null
+        },
+        {
+          "id": "appx.remove-family-safety",
+          "name": "Remove Microsoft Family",
+          "description": "Remove Microsoft Family Safety / Family app",
+          "risk": "safe",
+          "default": true,
+          "expertOnly": false,
+          "requiresReboot": false,
+          "warningMessage": null,
+          "blockedProfiles": [
+            "vm_cautious"
+          ],
+          "minWindowsBuild": null
+        },
+        {
+          "id": "appx.remove-news",
+          "name": "Remove Microsoft News / Start",
+          "description": "Remove Microsoft News and MSN news feed integration",
+          "risk": "safe",
+          "default": true,
+          "expertOnly": false,
+          "requiresReboot": false,
+          "warningMessage": null,
+          "blockedProfiles": [
+            "vm_cautious"
+          ],
+          "minWindowsBuild": null
+        },
+        {
+          "id": "appx.remove-3d-apps",
+          "name": "Remove 3D Viewer & Paint 3D",
+          "description": "Remove 3D Viewer, Paint 3D, and 3D Builder",
+          "risk": "safe",
+          "default": true,
+          "expertOnly": false,
+          "requiresReboot": false,
+          "warningMessage": null,
+          "blockedProfiles": [
+            "vm_cautious"
+          ],
+          "minWindowsBuild": null
+        },
+        {
+          "id": "appx.remove-outlook-new",
+          "name": "Remove New Bloatlook",
+          "description": "Remove the new Outlook bloat Windows app that replaces Mail & Calendar",
+          "risk": "low",
+          "default": false,
+          "expertOnly": false,
+          "requiresReboot": false,
+          "warningMessage": null,
+          "blockedProfiles": [
+            "work_pc",
+            "office_laptop"
+          ],
+          "minWindowsBuild": null
         }
       ]
     },
@@ -581,92 +513,395 @@
       "name": "Background Services",
       "actions": [
         {
-          "id": "services.disable-sysmain",
-          "name": "Disable SysMain (Superfetch)",
-          "description": "Disable the SysMain service (formerly Superfetch) which preloads frequently used applications into memory",
-          "risk": "low",
-          "default": true,
-          "expertOnly": false,
-          "requiresReboot": false,
-          "warningMessage": null,
-          "blockedProfiles": [
-            "work_pc",
-            "name: SysMain"
-          ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "serviceChanges"
-          ]
-        },
-        {
-          "id": "perf.disable-sleep-study",
-          "name": "Disable Sleep Study",
-          "description": "Disable the SleepStudy service that logs energy usage data during sleep/standby",
+          "id": "services.disable-diagtrack",
+          "name": "Disable Connected User Experiences (DiagTrack)",
+          "description": "Disable the Connected User Experiences and Telemetry service (DiagTrack) \u2014 primary Windows telemetry pipeline",
           "risk": "safe",
           "default": true,
           "expertOnly": false,
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "serviceChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
-          "id": "services.disable-print-spooler",
-          "name": "Disable Print Spooler",
-          "description": "Disable the Print Spooler service which manages print queues. Safe to disable on gaming systems with no printers.",
-          "risk": "low",
+          "id": "services.disable-dmwappushservice",
+          "name": "Disable WAP Push Message Routing",
+          "description": "Disable dmwappushservice \u2014 routes telemetry data from DiagTrack to Microsoft",
+          "risk": "safe",
           "default": true,
           "expertOnly": false,
           "requiresReboot": false,
           "warningMessage": null,
-          "blockedProfiles": [
-            "work_pc",
-            "name: Spooler"
-          ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "serviceChanges"
-          ]
+          "blockedProfiles": [],
+          "minWindowsBuild": null
         },
         {
-          "id": "services.disable-remote-services",
-          "name": "Disable Remote Access Services",
-          "description": "Disable Remote Desktop, Remote Registry, and Remote Assistance services that allow external connections to this PC",
+          "id": "services.disable-sysmain",
+          "name": "Disable SysMain (Superfetch)",
+          "description": "Disable the SysMain service (formerly Superfetch) which preloads frequently used applications into memory",
+          "risk": "low",
+          "default": false,
+          "expertOnly": false,
+          "requiresReboot": false,
+          "warningMessage": null,
+          "blockedProfiles": [
+            "work_pc"
+          ],
+          "minWindowsBuild": null
+        },
+        {
+          "id": "services.disable-sleep-study",
+          "name": "Disable Sleep Study",
+          "description": "Disable SleepStudy service that logs energy usage data during sleep/standby",
+          "risk": "safe",
+          "default": true,
+          "expertOnly": false,
+          "requiresReboot": false,
+          "warningMessage": null,
+          "blockedProfiles": [],
+          "minWindowsBuild": null
+        },
+        {
+          "id": "services.disable-tiledatamodelsvc",
+          "name": "Disable Tile Data Model Server",
+          "description": "Disable tiledatamodelsvc \u2014 indexes Start Menu tile data",
+          "risk": "safe",
+          "default": true,
+          "expertOnly": false,
+          "requiresReboot": false,
+          "warningMessage": null,
+          "blockedProfiles": [],
+          "minWindowsBuild": null
+        },
+        {
+          "id": "services.disable-wisvc",
+          "name": "Disable Windows Insider Service",
+          "description": "Disable wisvc \u2014 Windows Insider Program flight/preview management",
+          "risk": "safe",
+          "default": true,
+          "expertOnly": false,
+          "requiresReboot": false,
+          "warningMessage": null,
+          "blockedProfiles": [],
+          "minWindowsBuild": null
+        },
+        {
+          "id": "services.disable-retaildemo",
+          "name": "Disable Retail Demo Service",
+          "description": "Disable RetailDemo \u2014 retail store demo experience management",
+          "risk": "safe",
+          "default": true,
+          "expertOnly": false,
+          "requiresReboot": false,
+          "warningMessage": null,
+          "blockedProfiles": [],
+          "minWindowsBuild": null
+        },
+        {
+          "id": "services.disable-map-services",
+          "name": "Disable Map Download & Broker",
+          "description": "Disable MapsBroker and lfsvc \u2014 offline map data download and geolocation",
           "risk": "safe",
           "default": true,
           "expertOnly": false,
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "work_pc",
-            "hive: HKLM"
+            "office_laptop"
           ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges",
-            "serviceChanges"
-          ]
+          "minWindowsBuild": null
+        },
+        {
+          "id": "services.disable-print-spooler",
+          "name": "Disable Print Spooler",
+          "description": "Disable Print Spooler \u2014 manages print queues. Safe to disable on systems with no printers.",
+          "risk": "low",
+          "default": false,
+          "expertOnly": false,
+          "requiresReboot": false,
+          "warningMessage": null,
+          "blockedProfiles": [
+            "work_pc",
+            "office_laptop"
+          ],
+          "minWindowsBuild": null
+        },
+        {
+          "id": "services.disable-remote-services",
+          "name": "Disable Remote Access Services",
+          "description": "Disable Remote Desktop, Remote Registry, and Remote Assistance \u2014 external connection listeners",
+          "risk": "safe",
+          "default": false,
+          "expertOnly": false,
+          "requiresReboot": false,
+          "warningMessage": null,
+          "blockedProfiles": [
+            "work_pc"
+          ],
+          "minWindowsBuild": null
         },
         {
           "id": "services.disable-xbox-services",
           "name": "Disable Xbox Background Services",
-          "description": "Disable Xbox Live Auth Manager, Xbox Live Game Save, and Xbox Accessory Management services",
+          "description": "Disable Xbox Live Auth, Game Save, Networking, and Accessory services",
+          "risk": "low",
+          "default": false,
+          "expertOnly": false,
+          "requiresReboot": false,
+          "warningMessage": null,
+          "blockedProfiles": [
+            "vm_cautious"
+          ],
+          "minWindowsBuild": null
+        },
+        {
+          "id": "services.disable-fax",
+          "name": "Disable Fax Service",
+          "description": "Disable the Fax service \u2014 legacy fax modem support",
+          "risk": "safe",
+          "default": false,
+          "expertOnly": false,
+          "requiresReboot": false,
+          "warningMessage": null,
+          "blockedProfiles": [
+            "work_pc"
+          ],
+          "minWindowsBuild": null
+        },
+        {
+          "id": "services.disable-phone-service",
+          "name": "Disable Phone Service",
+          "description": "Disable PhoneSvc \u2014 telephony state management for Your Phone / Phone Link",
+          "risk": "safe",
+          "default": true,
+          "expertOnly": false,
+          "requiresReboot": false,
+          "warningMessage": null,
+          "blockedProfiles": [
+            "work_pc"
+          ],
+          "minWindowsBuild": null
+        },
+        {
+          "id": "services.disable-wallet-service",
+          "name": "Disable Wallet Service",
+          "description": "Disable WalletService \u2014 NFC tap-to-pay and wallet credential management",
+          "risk": "safe",
+          "default": true,
+          "expertOnly": false,
+          "requiresReboot": false,
+          "warningMessage": null,
+          "blockedProfiles": [],
+          "minWindowsBuild": null
+        },
+        {
+          "id": "services.disable-bluetooth-support",
+          "name": "Disable Bluetooth Support Service",
+          "description": "Disable bthserv \u2014 Bluetooth device discovery and pairing",
+          "risk": "low",
+          "default": false,
+          "expertOnly": false,
+          "requiresReboot": false,
+          "warningMessage": null,
+          "blockedProfiles": [
+            "office_laptop",
+            "gaming_laptop",
+            "work_pc"
+          ],
+          "minWindowsBuild": null
+        },
+        {
+          "id": "services.disable-alljoyn-router",
+          "name": "Disable AllJoyn Router",
+          "description": "Disable AllJoyn Router Service \u2014 IoT device communication protocol",
+          "risk": "safe",
+          "default": false,
+          "expertOnly": false,
+          "requiresReboot": false,
+          "warningMessage": null,
+          "blockedProfiles": [],
+          "minWindowsBuild": null
+        },
+        {
+          "id": "services.disable-mixed-reality",
+          "name": "Disable Windows Mixed Reality",
+          "description": "Disable MixedRealityOpenXRSvc and Windows Perception services",
+          "risk": "safe",
+          "default": true,
+          "expertOnly": false,
+          "requiresReboot": false,
+          "warningMessage": null,
+          "blockedProfiles": [],
+          "minWindowsBuild": null
+        },
+        {
+          "id": "services.disable-geolocation",
+          "name": "Disable Geolocation Service",
+          "description": "Disable lfsvc \u2014 Windows location framework service",
+          "risk": "safe",
+          "default": false,
+          "expertOnly": false,
+          "requiresReboot": false,
+          "warningMessage": null,
+          "blockedProfiles": [
+            "office_laptop"
+          ],
+          "minWindowsBuild": null
+        },
+        {
+          "id": "services.disable-wmp-network-sharing",
+          "name": "Disable Windows Media Player Network Sharing",
+          "description": "Disable WMPNetworkSvc \u2014 DLNA/UPnP media server",
+          "risk": "safe",
+          "default": true,
+          "expertOnly": false,
+          "requiresReboot": false,
+          "warningMessage": null,
+          "blockedProfiles": [],
+          "minWindowsBuild": null
+        },
+        {
+          "id": "services.disable-smart-card",
+          "name": "Disable Smart Card Services",
+          "description": "Disable SCardSvr and ScDeviceEnum \u2014 smart card reader support",
+          "risk": "safe",
+          "default": true,
+          "expertOnly": false,
+          "requiresReboot": false,
+          "warningMessage": null,
+          "blockedProfiles": [
+            "work_pc"
+          ],
+          "minWindowsBuild": null
+        },
+        {
+          "id": "services.disable-secondary-logon",
+          "name": "Disable Secondary Logon",
+          "description": "Disable seclogon \u2014 'Run as different user' support",
+          "risk": "low",
+          "default": false,
+          "expertOnly": false,
+          "requiresReboot": false,
+          "warningMessage": null,
+          "blockedProfiles": [
+            "work_pc"
+          ],
+          "minWindowsBuild": null
+        },
+        {
+          "id": "services.disable-touch-keyboard",
+          "name": "Disable Touch Keyboard & Handwriting",
+          "description": "Disable TabletInputService \u2014 touch keyboard, handwriting, and pen input",
+          "risk": "low",
+          "default": false,
+          "expertOnly": false,
+          "requiresReboot": false,
+          "warningMessage": null,
+          "blockedProfiles": [
+            "office_laptop",
+            "gaming_laptop",
+            "work_pc"
+          ],
+          "minWindowsBuild": null
+        },
+        {
+          "id": "services.disable-wer-service",
+          "name": "Disable Windows Error Reporting Service",
+          "description": "Disable WerSvc \u2014 crash dump collection and upload",
+          "risk": "safe",
+          "default": false,
+          "expertOnly": false,
+          "requiresReboot": false,
+          "warningMessage": null,
+          "blockedProfiles": [],
+          "minWindowsBuild": null
+        },
+        {
+          "id": "services.disable-push-notifications",
+          "name": "Disable Windows Push Notification Service",
+          "description": "Disable WpnUserService \u2014 per-user push notification relay. WpnService (system) is kept to prevent Explorer notification crashes.",
+          "risk": "low",
+          "default": false,
+          "expertOnly": false,
+          "requiresReboot": true,
+          "warningMessage": null,
+          "blockedProfiles": [
+            "work_pc",
+            "office_laptop"
+          ],
+          "minWindowsBuild": null
+        },
+        {
+          "id": "services.disable-delivery-optimization",
+          "name": "Disable Delivery Optimization",
+          "description": "Disable DoSvc \u2014 peer-to-peer update sharing and background content delivery",
           "risk": "low",
           "default": true,
           "expertOnly": false,
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "vm_cautious",
-            "name: XblAuthManager"
+            "work_pc"
           ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "serviceChanges"
-          ]
+          "minWindowsBuild": null
+        },
+        {
+          "id": "services.disable-wuauserv",
+          "name": "Disable Windows Update Service",
+          "description": "Disable wuauserv \u2014 automatic Windows Update download and installation",
+          "risk": "high",
+          "default": false,
+          "expertOnly": true,
+          "requiresReboot": false,
+          "warningMessage": null,
+          "blockedProfiles": [
+            "work_pc",
+            "office_laptop"
+          ],
+          "minWindowsBuild": null
+        },
+        {
+          "id": "services.disable-update-orchestrator-svc",
+          "name": "Disable Update Orchestrator Service",
+          "description": "Disable UsoSvc \u2014 manages update scan scheduling and download orchestration",
+          "risk": "medium",
+          "default": false,
+          "expertOnly": true,
+          "requiresReboot": false,
+          "warningMessage": null,
+          "blockedProfiles": [
+            "work_pc"
+          ],
+          "minWindowsBuild": null
+        },
+        {
+          "id": "services.disable-bits",
+          "name": "Disable Background Intelligent Transfer",
+          "description": "Disable BITS \u2014 background file transfer service used by Windows Update",
+          "risk": "medium",
+          "default": false,
+          "expertOnly": true,
+          "requiresReboot": false,
+          "warningMessage": null,
+          "blockedProfiles": [
+            "work_pc"
+          ],
+          "minWindowsBuild": null
+        },
+        {
+          "id": "services.disable-waasmedic",
+          "name": "Disable Windows Update Medic",
+          "description": "Disable WaaSMedicSvc \u2014 re-enables Windows Update components if they are disabled",
+          "risk": "medium",
+          "default": false,
+          "expertOnly": true,
+          "requiresReboot": false,
+          "warningMessage": null,
+          "blockedProfiles": [
+            "work_pc"
+          ],
+          "minWindowsBuild": null
         }
       ]
     },
@@ -676,39 +911,68 @@
       "actions": [
         {
           "id": "tasks.disable-telemetry-tasks",
-          "name": "Disable Telemetry Tasks",
-          "description": "Disable Application Experience and Customer Experience Improvement Program scheduled tasks",
-          "risk": "low",
+          "name": "Disable Telemetry Collector Tasks",
+          "description": "Disable Application Experience, CEIP, and Compatibility Appraiser scheduled tasks",
+          "risk": "safe",
           "default": true,
           "expertOnly": false,
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "tasks"
-          ]
+          "minWindowsBuild": null
+        },
+        {
+          "id": "tasks.disable-diagnostic-tasks",
+          "name": "Disable Diagnostic Data Tasks",
+          "description": "Disable DiskDiagnostic, MemoryDiagnostic, and other diagnostic data tasks",
+          "risk": "safe",
+          "default": true,
+          "expertOnly": false,
+          "requiresReboot": false,
+          "warningMessage": null,
+          "blockedProfiles": [],
+          "minWindowsBuild": null
+        },
+        {
+          "id": "tasks.disable-feedback-tasks",
+          "name": "Disable Feedback & Error Reporting Tasks",
+          "description": "Disable Windows Error Reporting and Feedback scheduled tasks",
+          "risk": "safe",
+          "default": true,
+          "expertOnly": false,
+          "requiresReboot": false,
+          "warningMessage": null,
+          "blockedProfiles": [],
+          "minWindowsBuild": null
+        },
+        {
+          "id": "tasks.disable-cloud-content-tasks",
+          "name": "Disable Cloud Content & Spotlight Tasks",
+          "description": "Disable Windows Spotlight, cloud content delivery, and lock screen suggestion tasks",
+          "risk": "safe",
+          "default": true,
+          "expertOnly": false,
+          "requiresReboot": false,
+          "warningMessage": null,
+          "blockedProfiles": [],
+          "minWindowsBuild": null
         },
         {
           "id": "tasks.disable-onedrive-tasks",
           "name": "Disable OneDrive Sync Tasks",
-          "description": "Disable OneDrive automatic sync scheduled tasks (blocked on work_pc profile)",
+          "description": "Disable OneDrive automatic sync and reporting scheduled tasks",
           "risk": "medium",
           "default": false,
           "expertOnly": false,
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "work_pc",
-            "name: \"OneDrive Reporting Task"
+            "work_pc"
           ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "tasks"
-          ]
+          "minWindowsBuild": null
         },
         {
-          "id": "tasks.disable-update-orchestrator",
+          "id": "tasks.disable-update-tasks",
           "name": "Disable Update Orchestrator Tasks",
           "description": "Disable Windows Update Orchestrator scheduled tasks to reduce background update activity",
           "risk": "medium",
@@ -717,13 +981,154 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "work_pc",
-            "name: \"Schedule Scan"
+            "work_pc"
           ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "tasks"
-          ]
+          "minWindowsBuild": null
+        },
+        {
+          "id": "tasks.disable-defender-tasks",
+          "name": "Disable Windows Defender Scheduled Scans",
+          "description": "Disable automatic Defender scan scheduling (manual scans still work)",
+          "risk": "medium",
+          "default": false,
+          "expertOnly": true,
+          "requiresReboot": false,
+          "warningMessage": null,
+          "blockedProfiles": [
+            "work_pc",
+            "office_laptop"
+          ],
+          "minWindowsBuild": null
+        },
+        {
+          "id": "tasks.disable-maps-tasks",
+          "name": "Disable Offline Maps Tasks",
+          "description": "Disable offline map data download and update tasks",
+          "risk": "safe",
+          "default": true,
+          "expertOnly": false,
+          "requiresReboot": false,
+          "warningMessage": null,
+          "blockedProfiles": [
+            "office_laptop"
+          ],
+          "minWindowsBuild": null
+        },
+        {
+          "id": "tasks.disable-speech-tasks",
+          "name": "Disable Speech & Handwriting Tasks",
+          "description": "Disable speech model and handwriting data collection tasks",
+          "risk": "safe",
+          "default": true,
+          "expertOnly": false,
+          "requiresReboot": false,
+          "warningMessage": null,
+          "blockedProfiles": [],
+          "minWindowsBuild": null
+        },
+        {
+          "id": "tasks.disable-flighting-tasks",
+          "name": "Disable Windows Insider & Flighting Tasks",
+          "description": "Disable Windows Insider Program telemetry and flighting tasks",
+          "risk": "safe",
+          "default": true,
+          "expertOnly": false,
+          "requiresReboot": false,
+          "warningMessage": null,
+          "blockedProfiles": [],
+          "minWindowsBuild": null
+        },
+        {
+          "id": "tasks.disable-app-suggestion-tasks",
+          "name": "Disable App Suggestion & Install Tasks",
+          "description": "Disable Store app auto-install, CloudContent, and pre-installed app provisioning tasks",
+          "risk": "safe",
+          "default": true,
+          "expertOnly": false,
+          "requiresReboot": false,
+          "warningMessage": null,
+          "blockedProfiles": [],
+          "minWindowsBuild": null
+        },
+        {
+          "id": "tasks.disable-defrag-tasks",
+          "name": "Disable Automatic Disk Defragmentation",
+          "description": "Disable ScheduledDefrag \u2014 automatic disk defragmentation and optimization",
+          "risk": "low",
+          "default": true,
+          "expertOnly": false,
+          "requiresReboot": false,
+          "warningMessage": null,
+          "blockedProfiles": [
+            "work_pc"
+          ],
+          "minWindowsBuild": null
+        },
+        {
+          "id": "tasks.disable-dotnet-tasks",
+          "name": "Disable .NET Framework Tasks",
+          "description": "Disable .NET NGEN and telemetry background tasks",
+          "risk": "low",
+          "default": true,
+          "expertOnly": false,
+          "requiresReboot": false,
+          "warningMessage": null,
+          "blockedProfiles": [
+            "work_pc"
+          ],
+          "minWindowsBuild": null
+        },
+        {
+          "id": "tasks.disable-maintenance-tasks",
+          "name": "Disable Automatic Maintenance",
+          "description": "Disable automatic maintenance scheduler that wakes PC for updates",
+          "risk": "low",
+          "default": false,
+          "expertOnly": false,
+          "requiresReboot": false,
+          "warningMessage": null,
+          "blockedProfiles": [
+            "work_pc"
+          ],
+          "minWindowsBuild": null
+        },
+        {
+          "id": "tasks.disable-power-efficiency-tasks",
+          "name": "Disable Power Efficiency Diagnostics",
+          "description": "Disable AnalyzeSystem \u2014 background power efficiency diagnostic collection",
+          "risk": "safe",
+          "default": true,
+          "expertOnly": false,
+          "requiresReboot": false,
+          "warningMessage": null,
+          "blockedProfiles": [],
+          "minWindowsBuild": null
+        },
+        {
+          "id": "tasks.disable-chkdsk-tasks",
+          "name": "Disable Automatic CHKDSK",
+          "description": "Disable ProactiveScan \u2014 background disk health monitoring and automatic chkdsk",
+          "risk": "low",
+          "default": false,
+          "expertOnly": false,
+          "requiresReboot": false,
+          "warningMessage": null,
+          "blockedProfiles": [
+            "work_pc"
+          ],
+          "minWindowsBuild": null
+        },
+        {
+          "id": "tasks.disable-device-census",
+          "name": "Disable Device Census",
+          "description": "Disable Device Census \u2014 hardware/software inventory collection for Microsoft",
+          "risk": "safe",
+          "default": true,
+          "expertOnly": false,
+          "requiresReboot": false,
+          "warningMessage": null,
+          "blockedProfiles": [],
+          "minWindowsBuild": null
         }
       ]
     },
@@ -741,10 +1146,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "privacy.disable-ceip",
@@ -756,10 +1158,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "privacy.disable-error-reporting",
@@ -771,10 +1170,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "privacy.disable-advertising-id",
@@ -786,10 +1182,45 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
+        },
+        {
+          "id": "privacy.powershell-telemetry-optout",
+          "name": "Opt Out of PowerShell Telemetry",
+          "description": "Set POWERSHELL_TELEMETRY_OPTOUT environment variable",
+          "risk": "safe",
+          "default": true,
+          "expertOnly": false,
+          "requiresReboot": true,
+          "warningMessage": null,
+          "blockedProfiles": [],
+          "minWindowsBuild": null
+        },
+        {
+          "id": "privacy.disable-typing-insights",
+          "name": "Disable Typing Insights",
+          "description": "Disable typing analytics collection",
+          "risk": "safe",
+          "default": true,
+          "expertOnly": false,
+          "requiresReboot": false,
+          "warningMessage": null,
+          "blockedProfiles": [],
+          "minWindowsBuild": null
+        },
+        {
+          "id": "privacy.disable-msrt",
+          "name": "Disable MSRT Windows Update Delivery",
+          "description": "Prevent Malicious Software Removal Tool from being offered via Windows Update",
+          "risk": "moderate",
+          "default": false,
+          "expertOnly": false,
+          "requiresReboot": false,
+          "warningMessage": null,
+          "blockedProfiles": [
+            "work_pc"
+          ],
+          "minWindowsBuild": null
         },
         {
           "id": "privacy.disable-app-launch-tracking",
@@ -801,10 +1232,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "privacy.disable-tailored-experiences",
@@ -816,10 +1244,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "privacy.disable-online-tips",
@@ -831,10 +1256,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "privacy.disable-clipboard-history",
@@ -846,10 +1268,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "privacy.disable-activity-feed",
@@ -861,10 +1280,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "privacy.disable-cloud-content",
@@ -876,10 +1292,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "privacy.disable-location",
@@ -891,13 +1304,9 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "work_pc",
-            "hive: HKLM"
+            "work_pc"
           ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "privacy.disable-input-personalization",
@@ -909,10 +1318,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "privacy.disable-device-monitoring",
@@ -924,10 +1330,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "privacy.block-app-reprovisioning",
@@ -939,10 +1342,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "powerShellCommands"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "privacy.disable-online-speech",
@@ -954,10 +1354,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "privacy.disable-tipc",
@@ -969,10 +1366,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "privacy.disable-harvest-contacts",
@@ -984,10 +1378,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "privacy.disable-siuf",
@@ -999,10 +1390,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "privacy.disable-find-my-device",
@@ -1014,10 +1402,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "privacy.disable-smartscreen",
@@ -1030,13 +1415,9 @@
           "warningMessage": null,
           "blockedProfiles": [
             "work_pc",
-            "vm_cautious",
-            "hive: HKLM"
+            "vm_cautious"
           ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "privacy.disable-recall",
@@ -1048,10 +1429,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": 26100,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": 26100
         },
         {
           "id": "privacy.disable-click-to-do",
@@ -1063,10 +1441,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": 26100,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": 26100
         },
         {
           "id": "privacy.disable-ai-svc-autostart",
@@ -1078,10 +1453,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": 22000
         },
         {
           "id": "privacy.disable-edge-ai",
@@ -1093,10 +1465,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": 22000
         },
         {
           "id": "privacy.disable-paint-ai",
@@ -1108,10 +1477,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": 26100
         },
         {
           "id": "privacy.disable-notepad-ai",
@@ -1123,10 +1489,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": 26100
         },
         {
           "id": "privacy.disable-smart-app-control",
@@ -1138,10 +1501,7 @@
           "requiresReboot": true,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": 22000
         }
       ]
     },
@@ -1161,70 +1521,19 @@
           "blockedProfiles": [
             "work_pc"
           ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
-        },
-        {
-          "id": "perf.disable-service-host-split",
-          "name": "Disable Service Host Splitting",
-          "description": "Group services into fewer svchost processes to reduce memory overhead",
-          "risk": "low",
-          "default": true,
-          "expertOnly": false,
-          "requiresReboot": true,
-          "warningMessage": null,
-          "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
-        },
-        {
-          "id": "perf.disable-paging-executive",
-          "name": "Disable Paging Executive",
-          "description": "Keep kernel-mode drivers and system code in RAM",
-          "risk": "low",
-          "default": true,
-          "expertOnly": false,
-          "requiresReboot": true,
-          "warningMessage": null,
-          "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
-        },
-        {
-          "id": "perf.disable-fault-tolerant-heap",
-          "name": "Disable Fault Tolerant Heap",
-          "description": "Prevent Windows from auto-applying crash mitigations to applications that crash repeatedly",
-          "risk": "low",
-          "default": true,
-          "expertOnly": false,
-          "requiresReboot": false,
-          "warningMessage": null,
-          "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "perf.disable-sticky-keys",
           "name": "Disable Sticky Keys Shortcut",
-          "description": "Disable the Shift×5 sticky keys shortcut that interrupts gameplay",
+          "description": "Disable the Shift\u00d75 sticky keys shortcut that interrupts gameplay",
           "risk": "safe",
           "default": true,
           "expertOnly": false,
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "perf.disable-driver-updates-via-wu",
@@ -1238,10 +1547,7 @@
           "blockedProfiles": [
             "work_pc"
           ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "cpu.win32-priority-separation",
@@ -1253,25 +1559,143 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
-          "id": "memory.disable-compression",
-          "name": "Disable Memory Compression",
-          "description": "Disable the Windows memory compression agent that compresses in-memory pages to fit more data in RAM, trading CPU cycles for capacity",
-          "risk": "low",
+          "id": "perf.disable-auto-maintenance",
+          "name": "Disable Automatic Maintenance",
+          "description": "Disable Windows Automatic Maintenance scheduler",
+          "risk": "moderate",
+          "default": false,
+          "expertOnly": false,
+          "requiresReboot": false,
+          "warningMessage": null,
+          "blockedProfiles": [
+            "work_pc"
+          ],
+          "minWindowsBuild": null
+        },
+        {
+          "id": "perf.disable-auto-sign-on",
+          "name": "Disable Auto-Restart Sign-On",
+          "description": "Prevent Windows from auto-signing in after restart",
+          "risk": "safe",
+          "default": true,
+          "expertOnly": false,
+          "requiresReboot": false,
+          "warningMessage": null,
+          "blockedProfiles": [],
+          "minWindowsBuild": null
+        },
+        {
+          "id": "perf.disable-store-auto-updates",
+          "name": "Disable Store Auto-Updates",
+          "description": "Prevent Microsoft Store from automatically downloading app updates",
+          "risk": "moderate",
+          "default": false,
+          "expertOnly": false,
+          "requiresReboot": false,
+          "warningMessage": null,
+          "blockedProfiles": [
+            "work_pc"
+          ],
+          "minWindowsBuild": null
+        },
+        {
+          "id": "perf.disable-ndu",
+          "name": "Disable Network Data Usage Monitor (NDU)",
+          "description": "Disable the NDU driver that tracks per-process network data usage and leaks non-paged pool memory over time",
+          "risk": "safe",
           "default": true,
           "expertOnly": false,
           "requiresReboot": true,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "powerShellCommands"
-          ]
+          "minWindowsBuild": null
+        },
+        {
+          "id": "memory.disable-compression",
+          "name": "Disable Memory Compression",
+          "description": "Disable the Windows memory compression agent that compresses idle pages instead of writing to page file",
+          "risk": "low",
+          "default": false,
+          "expertOnly": false,
+          "requiresReboot": true,
+          "warningMessage": null,
+          "blockedProfiles": [
+            "low_spec_system",
+            "vm_cautious"
+          ],
+          "minWindowsBuild": null
+        },
+        {
+          "id": "perf.large-system-cache",
+          "name": "Optimize System Cache for Desktop",
+          "description": "Set LargeSystemCache to 0 (desktop mode) to prioritize application memory over file system cache",
+          "risk": "safe",
+          "default": true,
+          "expertOnly": false,
+          "requiresReboot": true,
+          "warningMessage": null,
+          "blockedProfiles": [
+            "high_end_workstation"
+          ],
+          "minWindowsBuild": null
+        },
+        {
+          "id": "perf.clear-page-file-on-shutdown",
+          "name": "Clear Page File on Shutdown",
+          "description": "Zero out the page file contents on shutdown to prevent data remnants in virtual memory",
+          "risk": "safe",
+          "default": false,
+          "expertOnly": false,
+          "requiresReboot": false,
+          "warningMessage": null,
+          "blockedProfiles": [],
+          "minWindowsBuild": null
+        },
+        {
+          "id": "perf.disable-prefetch",
+          "name": "Disable Prefetch",
+          "description": "Disable Prefetch/ReadyBoot subsystem that preloads application data on boot",
+          "risk": "low",
+          "default": false,
+          "expertOnly": false,
+          "requiresReboot": true,
+          "warningMessage": null,
+          "blockedProfiles": [
+            "work_pc"
+          ],
+          "minWindowsBuild": null
+        },
+        {
+          "id": "perf.svchost-split-threshold",
+          "name": "Optimize Svchost Split Threshold",
+          "description": "Raise SvcHostSplitThresholdInKB to reduce the number of svchost.exe process instances",
+          "risk": "low",
+          "default": false,
+          "expertOnly": false,
+          "requiresReboot": true,
+          "warningMessage": null,
+          "blockedProfiles": [
+            "vm_cautious"
+          ],
+          "minWindowsBuild": null
+        },
+        {
+          "id": "perf.disable-page-combining",
+          "name": "Disable Page Combining",
+          "description": "Disable memory page combining/deduplication to reduce CPU overhead",
+          "risk": "low",
+          "default": false,
+          "expertOnly": true,
+          "requiresReboot": true,
+          "warningMessage": null,
+          "blockedProfiles": [
+            "low_spec_system",
+            "vm_cautious"
+          ],
+          "minWindowsBuild": null
         },
         {
           "id": "perf.gpu-energy-driver-disable",
@@ -1283,13 +1707,9 @@
           "requiresReboot": true,
           "warningMessage": null,
           "blockedProfiles": [
-            "vm_cautious",
-            "hive: HKLM"
+            "vm_cautious"
           ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "gpu.disable-hags",
@@ -1301,10 +1721,7 @@
           "requiresReboot": true,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "gpu.nvidia-disable-dynamic-pstate",
@@ -1318,13 +1735,9 @@
           "blockedProfiles": [
             "work_pc",
             "office_laptop",
-            "vm_cautious",
-            "hive: HKLM"
+            "vm_cautious"
           ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "gpu.tdr-delay",
@@ -1336,10 +1749,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "gpu.msi-mode",
@@ -1351,13 +1761,9 @@
           "requiresReboot": true,
           "warningMessage": null,
           "blockedProfiles": [
-            "vm_cautious",
-            "hive: HKLM"
+            "vm_cautious"
           ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "gpu.disable-nvidia-telemetry",
@@ -1369,13 +1775,9 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "vm_cautious",
-            "name: NvTelemetryContainer"
+            "vm_cautious"
           ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "serviceChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "gpu.disable-amd-telemetry",
@@ -1387,13 +1789,9 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "vm_cautious",
-            "name: \"AMD External Events Utility"
+            "vm_cautious"
           ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "serviceChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "perf.disable-game-dvr",
@@ -1405,10 +1803,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "perf.disable-fullscreen-optimizations",
@@ -1420,13 +1815,9 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "work_pc",
-            "hive: HKCU"
+            "work_pc"
           ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "perf.disable-transparency",
@@ -1438,10 +1829,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "gpu.disable-nvidia-container",
@@ -1453,13 +1841,9 @@
           "requiresReboot": false,
           "warningMessage": "GeForce Experience overlay (Alt+Z), ShadowPlay recording, and automatic driver updates will stop working. Manual driver updates via nvidia.com will still work.",
           "blockedProfiles": [
-            "vm_cautious",
-            "name: NVDisplay.ContainerLocalSystem"
+            "vm_cautious"
           ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "serviceChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "gpu.disable-amd-services",
@@ -1471,13 +1855,36 @@
           "requiresReboot": false,
           "warningMessage": "AMD Adrenalin overlay, crash reporting, and automatic driver updates will stop working. Manual driver updates via amd.com will still work.",
           "blockedProfiles": [
-            "vm_cautious",
-            "hive: HKLM"
+            "vm_cautious"
           ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
+        },
+        {
+          "id": "perf.disable-gamebar-presence",
+          "name": "Disable GameBar Presence Writer",
+          "description": "Disable the GameBarPresenceWriter background process",
+          "risk": "safe",
+          "default": true,
+          "expertOnly": false,
+          "requiresReboot": false,
+          "warningMessage": null,
+          "blockedProfiles": [],
+          "minWindowsBuild": null
+        },
+        {
+          "id": "perf.legacy-flip-presentation",
+          "name": "Force Legacy Flip Presentation",
+          "description": "Force games to use Hardware: Legacy Flip (exclusive fullscreen) instead of composed flip",
+          "risk": "moderate",
+          "default": false,
+          "expertOnly": false,
+          "requiresReboot": false,
+          "warningMessage": null,
+          "blockedProfiles": [
+            "vm_cautious",
+            "work_pc"
+          ],
+          "minWindowsBuild": null
         },
         {
           "id": "cpu.disable-dynamic-tick",
@@ -1490,13 +1897,9 @@
           "warningMessage": null,
           "blockedProfiles": [
             "office_laptop",
-            "low_spec_system",
-            "element: disabledynamictick"
+            "low_spec_system"
           ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "bcdChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "cpu.global-timer-resolution",
@@ -1508,10 +1911,7 @@
           "requiresReboot": true,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "cpu.disable-core-parking",
@@ -1524,13 +1924,9 @@
           "warningMessage": null,
           "blockedProfiles": [
             "office_laptop",
-            "low_spec_system",
-            "settingPath: \"54533251-82be-4824-96c1-47b60b740d00/0cc5b647-c1df-4637-891a-dec35c318583"
+            "low_spec_system"
           ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "powerChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "cpu.aggressive-boost-mode",
@@ -1543,13 +1939,9 @@
           "warningMessage": null,
           "blockedProfiles": [
             "office_laptop",
-            "low_spec_system",
-            "settingPath: \"54533251-82be-4824-96c1-47b60b740d00/be337238-0d82-4146-a960-4f3749d470c7"
+            "low_spec_system"
           ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "powerChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "cpu.min-processor-state-100",
@@ -1562,13 +1954,9 @@
           "warningMessage": null,
           "blockedProfiles": [
             "office_laptop",
-            "low_spec_system",
-            "settingPath: \"54533251-82be-4824-96c1-47b60b740d00/893dee8e-2bef-41e0-89c6-b55d0929964c"
+            "low_spec_system"
           ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "powerChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "scheduler.mmcss-gaming-profile",
@@ -1580,10 +1968,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "power.high-performance-plan",
@@ -1595,13 +1980,9 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "office_laptop",
-            "settingPath: \"SCHEME_CURRENT\\\\SUB_PROCESSOR\\\\PROCTHROTTLEMIN"
+            "office_laptop"
           ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "powerChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "power.disable-fast-startup",
@@ -1613,10 +1994,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "power.disable-hibernation",
@@ -1628,10 +2006,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "power.disable-usb-selective-suspend",
@@ -1643,13 +2018,9 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "office_laptop",
-            "settingPath: \"2a737441-1930-4402-8d77-b2bebba308a3/48e6b7a6-50f5-4782-a5d4-53bb8f07e226"
+            "office_laptop"
           ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "powerChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "power.disable-pcie-link-state-pm",
@@ -1661,13 +2032,9 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "office_laptop",
-            "settingPath: \"501a4d13-42af-4429-9fd1-a8218c268e20/ee12f906-d277-404b-b6da-e5fa1a576df5"
+            "office_laptop"
           ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "powerChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "power.disable-modern-standby",
@@ -1681,13 +2048,24 @@
           "blockedProfiles": [
             "office_laptop",
             "gaming_laptop",
-            "low_spec_system",
-            "hive: HKLM"
+            "low_spec_system"
           ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
+        },
+        {
+          "id": "power.disable-device-power-saving",
+          "name": "Disable Device Power Saving",
+          "description": "Disable power management for USB, NIC, and PCI devices",
+          "risk": "low",
+          "default": false,
+          "expertOnly": false,
+          "requiresReboot": false,
+          "warningMessage": null,
+          "blockedProfiles": [
+            "office_laptop",
+            "gaming_laptop"
+          ],
+          "minWindowsBuild": null
         },
         {
           "id": "storage.disable-last-access",
@@ -1699,10 +2077,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "storage.disable-8dot3-filenames",
@@ -1714,10 +2089,7 @@
           "requiresReboot": true,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "storage.enable-write-caching",
@@ -1729,10 +2101,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "storage.disable-indexing",
@@ -1744,10 +2113,59 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "serviceChanges"
-          ]
+          "minWindowsBuild": null
+        },
+        {
+          "id": "perf.csrss-high-priority",
+          "name": "Elevate CSRSS Process Priority",
+          "description": "Set CsrssHighPriority to ensure the Client/Server Runtime Subsystem runs at elevated priority",
+          "risk": "low",
+          "default": true,
+          "expertOnly": false,
+          "requiresReboot": true,
+          "warningMessage": null,
+          "blockedProfiles": [],
+          "minWindowsBuild": null
+        },
+        {
+          "id": "perf.mmcss-deep-tuning",
+          "name": "MMCSS Deep Scheduler Tuning",
+          "description": "Configure the Multimedia Class Scheduler Service for tighter gaming thread priority and lower system responsiveness ceiling",
+          "risk": "low",
+          "default": true,
+          "expertOnly": false,
+          "requiresReboot": false,
+          "warningMessage": null,
+          "blockedProfiles": [
+            "work_pc"
+          ],
+          "minWindowsBuild": null
+        },
+        {
+          "id": "perf.ntfs-optimization",
+          "name": "NTFS Filesystem Optimization",
+          "description": "Disable NTFS 8.3 filename generation, last access timestamp, and enable large system awareness for reduced filesystem overhead",
+          "risk": "low",
+          "default": true,
+          "expertOnly": false,
+          "requiresReboot": true,
+          "warningMessage": null,
+          "blockedProfiles": [
+            "work_pc"
+          ],
+          "minWindowsBuild": null
+        },
+        {
+          "id": "perf.disable-pointer-acceleration",
+          "name": "Disable Mouse Pointer Acceleration",
+          "description": "Set mouse acceleration to 1:1 (6/11 speed, no acceleration curve)",
+          "risk": "safe",
+          "default": true,
+          "expertOnly": false,
+          "requiresReboot": false,
+          "warningMessage": null,
+          "blockedProfiles": [],
+          "minWindowsBuild": null
         }
       ]
     },
@@ -1765,14 +2183,11 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "shell.hide-widgets-button",
-          "name": "Hide Widgets Button",
+          "name": "Hide Widgets Button (Win11)",
           "description": "Remove the Widgets button from the taskbar",
           "risk": "safe",
           "default": true,
@@ -1780,10 +2195,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": 22000
         },
         {
           "id": "shell.reduce-search-box",
@@ -1797,14 +2209,11 @@
           "blockedProfiles": [
             "work_pc"
           ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "shell.disable-copilot",
-          "name": "Disable Windows Copilot",
+          "name": "Disable Windows Copilot (Win11)",
           "description": "Disable the Copilot AI sidebar and remove the taskbar button",
           "risk": "safe",
           "default": true,
@@ -1812,10 +2221,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": 22000
         },
         {
           "id": "shell.hide-chat-icon",
@@ -1827,10 +2233,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": 22000
         },
         {
           "id": "shell.enable-end-task",
@@ -1842,10 +2245,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": 22631,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": 22631
         },
         {
           "id": "shell.disable-meet-now",
@@ -1857,25 +2257,57 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "shell.restore-classic-context-menu",
           "name": "Restore Classic Context Menu",
           "description": "Restore the full classic right-click context menu on Windows 11",
           "risk": "low",
-          "default": true,
+          "default": false,
           "expertOnly": false,
-          "requiresReboot": true,
+          "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": 22000
+        },
+        {
+          "id": "shell.remove-cast-to-device",
+          "name": "Remove 'Cast to Device'",
+          "description": "Remove Cast to Device from right-click menu",
+          "risk": "safe",
+          "default": true,
+          "expertOnly": false,
+          "requiresReboot": false,
+          "warningMessage": null,
+          "blockedProfiles": [],
+          "minWindowsBuild": null
+        },
+        {
+          "id": "shell.remove-troubleshoot-compatibility",
+          "name": "Remove 'Troubleshoot compatibility'",
+          "description": "Remove compatibility troubleshooter from .exe right-click",
+          "risk": "safe",
+          "default": true,
+          "expertOnly": false,
+          "requiresReboot": false,
+          "warningMessage": null,
+          "blockedProfiles": [
+            "work_pc"
+          ],
+          "minWindowsBuild": null
+        },
+        {
+          "id": "shell.remove-edit-with-paint3d",
+          "name": "Remove 'Edit with Paint 3D'",
+          "description": "Hide deprecated Paint 3D context menu entry",
+          "risk": "safe",
+          "default": true,
+          "expertOnly": false,
+          "requiresReboot": false,
+          "warningMessage": null,
+          "blockedProfiles": [],
+          "minWindowsBuild": null
         },
         {
           "id": "shell.disable-search-highlights",
@@ -1887,10 +2319,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "shell.disable-search-history",
@@ -1902,10 +2331,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "shell.show-file-extensions",
@@ -1917,10 +2343,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "shell.show-hidden-files",
@@ -1932,10 +2355,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "shell.explorer-default-this-pc",
@@ -1947,10 +2367,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "shell.disable-web-search",
@@ -1962,10 +2379,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "shell.disable-lock-screen-tips",
@@ -1977,10 +2391,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "shell.disable-start-menu-suggestions",
@@ -1992,25 +2403,19 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "shell.disable-content-delivery",
           "name": "Disable Content Delivery Subscriptions",
-          "description": "Remove all Windows content delivery ads — welcome experience, tips, suggested content",
+          "description": "Remove all Windows content delivery ads \u2014 welcome experience, tips, suggested content",
           "risk": "safe",
           "default": true,
           "expertOnly": false,
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "shell.disable-account-notifications",
@@ -2022,10 +2427,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "shell.disable-suggested-notifications",
@@ -2037,10 +2439,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "shell.disable-sync-provider-ads",
@@ -2052,10 +2451,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "shell.disable-phone-link-suggestions",
@@ -2067,10 +2463,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "shell.disable-desktop-spotlight",
@@ -2082,10 +2475,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "shell.disable-edge-ads",
@@ -2097,10 +2487,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "shell.disable-settings-ads",
@@ -2112,10 +2499,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
         }
       ]
     },
@@ -2133,10 +2517,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "startup.disable-cortana",
@@ -2148,10 +2529,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "startup.disable-automatic-maintenance",
@@ -2163,10 +2541,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "startup.disable-gamebar-presence",
@@ -2178,13 +2553,9 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "vm_cautious",
-            "hive: HKLM"
+            "vm_cautious"
           ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "startup.disable-autoplay",
@@ -2196,10 +2567,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "startup.enable-game-mode",
@@ -2211,10 +2579,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "startup.disable-cloud-notifications",
@@ -2226,25 +2591,19 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "shutdown.decrease-shutdown-time",
           "name": "Decrease Shutdown Time",
-          "description": "Reduce app kill timeouts for faster shutdown",
+          "description": "Reduce app kill timeouts for faster shutdown. Does NOT auto-end tasks \u2014 Windows will still ask before killing hung apps.",
           "risk": "low",
           "default": true,
           "expertOnly": false,
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "shutdown.force-end-apps",
@@ -2256,10 +2615,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "display.disable-game-bar",
@@ -2271,10 +2627,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "display.disable-pointer-acceleration",
@@ -2286,10 +2639,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "audio.disable-enhancements",
@@ -2301,10 +2651,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "audio.exclusive-mode",
@@ -2316,10 +2663,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
         }
       ]
     },
@@ -2328,139 +2672,96 @@
       "name": "Network Security",
       "actions": [
         {
-          "id": "network.disable-ipv6",
-          "name": "Disable IPv6 Protocol Stack",
-          "description": "Disable the IPv6 protocol stack by setting DisabledComponents to 0xFF, preventing all IPv6 components from loading",
-          "risk": "medium",
+          "id": "network.disable-llmnr",
+          "name": "Disable LLMNR",
+          "description": "Disable Link-Local Multicast Name Resolution \u2014 prevents NTLM hash capture attacks",
+          "risk": "safe",
           "default": false,
-          "expertOnly": false,
+          "expertOnly": true,
+          "requiresReboot": false,
+          "warningMessage": null,
+          "blockedProfiles": [
+            "work_pc"
+          ],
+          "minWindowsBuild": null
+        },
+        {
+          "id": "network.disable-smbv1",
+          "name": "Disable SMBv1 Protocol",
+          "description": "Disable the legacy SMBv1 file sharing protocol (WannaCry vector)",
+          "risk": "low",
+          "default": false,
+          "expertOnly": true,
           "requiresReboot": true,
           "warningMessage": null,
           "blockedProfiles": [
-            "work_pc",
-            "hive: HKLM"
+            "work_pc"
           ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
+        },
+        {
+          "id": "network.harden-windows-firewall-defaults",
+          "name": "Harden Windows Firewall Defaults",
+          "description": "Block inbound, allow outbound on all firewall profiles",
+          "risk": "safe",
+          "default": false,
+          "expertOnly": false,
+          "requiresReboot": false,
+          "warningMessage": null,
+          "blockedProfiles": [],
+          "minWindowsBuild": null
         },
         {
           "id": "network.disable-teredo",
           "name": "Disable Teredo Tunneling",
-          "description": "Disable Teredo IPv6 tunneling which encapsulates IPv6 packets within IPv4 UDP datagrams, adding latency overhead",
+          "description": "Disable Teredo IPv6 tunneling which adds latency overhead",
           "risk": "safe",
-          "default": true,
+          "default": false,
           "expertOnly": false,
           "requiresReboot": false,
           "warningMessage": null,
-          "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges",
-            "powerShellCommands"
-          ]
+          "blockedProfiles": [
+            "work_pc"
+          ],
+          "minWindowsBuild": null
         },
         {
           "id": "network.disable-netbios",
           "name": "Disable NetBIOS over TCP/IP",
-          "description": "Disable NetBIOS over TCP/IP by setting NodeType to P-node (2) and NetbiosOptions to disabled (2), preventing NetBIOS name resolution and session services",
+          "description": "Disable NetBIOS name resolution and session services",
           "risk": "low",
-          "default": true,
+          "default": false,
           "expertOnly": false,
-          "requiresReboot": true,
+          "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "work_pc",
-            "hive: HKLM"
+            "work_pc"
           ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "network.disable-nagle",
-          "name": "Disable Nagle's Algorithm (TCPNoDelay)",
-          "description": "Disable Nagle's algorithm and set TCP acknowledgement frequency to 1, sending small packets immediately instead of buffering them",
+          "name": "Disable Nagle's Algorithm",
+          "description": "Disable TCP packet coalescing for lower network latency",
           "risk": "low",
-          "default": true,
+          "default": false,
           "expertOnly": false,
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "network.rss-queues-2",
           "name": "Set RSS Queues to 2",
-          "description": "Configure Receive Side Scaling to use 2 RSS queues, distributing NIC interrupt processing across 2 CPU cores without over-allocating",
+          "description": "Configure Receive Side Scaling to use 2 queues for balanced network processing",
           "risk": "low",
-          "default": true,
-          "expertOnly": false,
-          "requiresReboot": false,
-          "warningMessage": null,
-          "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
-        },
-        {
-          "id": "network.disable-offloading",
-          "name": "Disable NIC Offloading",
-          "description": "Disable TCP/UDP checksum offload, Large Send Offload, flow control, and power-saving features on the active NIC. Reduces packet processing latency at the cost of higher CPU usage.",
-          "risk": "medium",
           "default": false,
-          "expertOnly": true,
-          "requiresReboot": false,
-          "warningMessage": "Increases CPU usage during network activity. May cause connectivity issues on some NICs. Benchmark before and after. Revert immediately if you lose network connectivity.",
-          "blockedProfiles": [
-            "work_pc",
-            "office_laptop",
-            "low_spec_system",
-            "|"
-          ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "powerShellCommands"
-          ]
-        },
-        {
-          "id": "network.tcp-autotuning-normal",
-          "name": "Set TCP Auto-Tuning to Normal",
-          "description": "Set TCP receive window auto-tuning level to normal for optimal throughput negotiation",
-          "risk": "safe",
-          "default": true,
           "expertOnly": false,
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "powerShellCommands"
-          ]
-        },
-        {
-          "id": "network.disable-llmnr",
-          "name": "Disable Link-Local Multicast Name Resolution",
-          "description": "Disable LLMNR by setting EnableMulticast to 0, preventing the system from responding to or sending LLMNR queries",
-          "risk": "low",
-          "default": true,
-          "expertOnly": false,
-          "requiresReboot": false,
-          "warningMessage": null,
-          "blockedProfiles": [
-            "work_pc",
-            "hive: HKLM"
-          ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
         }
       ]
     },
@@ -2480,13 +2781,9 @@
           "blockedProfiles": [
             "work_pc",
             "office_laptop",
-            "vm_cautious",
-            "hive: HKLM"
+            "vm_cautious"
           ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "security.disable-hvci",
@@ -2500,32 +2797,41 @@
           "blockedProfiles": [
             "work_pc",
             "office_laptop",
-            "vm_cautious",
-            "hive: HKLM"
+            "vm_cautious"
           ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
+        },
+        {
+          "id": "security.disable-cpu-mitigations",
+          "name": "Disable CPU Microcode Mitigations (Spectre/Meltdown)",
+          "description": "Disable Spectre/Meltdown CPU mitigations by renaming the microcode update DLLs. Affects mcupdate_GenuineIntel.dll (Intel) or mcupdate_AuthenticAMD.dll (AMD). Requires TrustedInstaller privileges.",
+          "risk": "extreme",
+          "default": false,
+          "expertOnly": true,
+          "requiresReboot": true,
+          "warningMessage": "EXTREME SECURITY RISK. Disabling CPU mitigations exposes your system to Spectre, Meltdown, MDS, and L1TF attacks. Only appropriate for air-gapped dedicated gaming PCs. Requires TrustedInstaller elevation.",
+          "blockedProfiles": [
+            "work_pc",
+            "office_laptop",
+            "vm_cautious",
+            "low_spec_system"
+          ],
+          "minWindowsBuild": null
         },
         {
           "id": "system.disable-windows-update",
-          "name": "Disable Windows Update (EXTREME RISK)",
-          "description": "Completely disable the Windows Update service and all related update mechanisms. This stops ALL updates including security patches.",
+          "name": "Full Windows Update Disable (PC-Tuning method)",
+          "description": "Completely disable Windows Update using the full PC-Tuning approach: redirect WU servers to blank, disable access, block OS upgrades, disable auto-update, and stop all related services (wuauserv, UsoSvc, WaaSMedicSvc, BITS). WARNING: Breaks Microsoft Store.",
           "risk": "extreme",
           "default": false,
-          "expertOnly": false,
+          "expertOnly": true,
           "requiresReboot": true,
-          "warningMessage": null,
+          "warningMessage": "THIS STOPS ALL UPDATES INCLUDING SECURITY PATCHES. Microsoft Store will also stop working. Only use on air-gapped or dedicated gaming PCs. You can still install .msi/.exe software manually.",
           "blockedProfiles": [
             "work_pc",
-            "hive: HKLM"
+            "office_laptop"
           ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges",
-            "serviceChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "security.disable-update-asap",
@@ -2537,10 +2843,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "security.disable-delivery-optimization",
@@ -2552,10 +2855,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "security.disable-bitlocker-auto-encrypt",
@@ -2567,10 +2867,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "system.disable-update-auto-restart",
@@ -2582,13 +2879,9 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "work_pc",
-            "hive: HKLM"
+            "work_pc"
           ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
         },
         {
           "id": "system.defer-feature-updates",
@@ -2600,19 +2893,158 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "work_pc",
-            "hive: HKLM"
+            "work_pc"
           ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
+          "minWindowsBuild": null
+        },
+        {
+          "id": "security.disable-defender-realtime",
+          "name": "Disable Defender Real-Time Protection",
+          "description": "Disable Windows Defender real-time scanning via Tamper Protection bypass. Eliminates the MsMpEng.exe background scanning overhead.",
+          "risk": "high",
+          "default": false,
+          "expertOnly": true,
+          "requiresReboot": true,
+          "warningMessage": "Disabling Defender removes the last real-time malware guardrail. Only appropriate for dedicated gaming PCs with no web browsing or untrusted downloads.",
+          "blockedProfiles": [
+            "work_pc",
+            "office_laptop",
+            "vm_cautious"
+          ],
+          "minWindowsBuild": null
+        },
+        {
+          "id": "security.disable-defender-cloud",
+          "name": "Disable Defender Cloud Protection",
+          "description": "Disable Defender cloud-delivered protection and automatic sample submission",
+          "risk": "medium",
+          "default": false,
+          "expertOnly": true,
+          "requiresReboot": false,
+          "warningMessage": null,
+          "blockedProfiles": [
+            "work_pc"
+          ],
+          "minWindowsBuild": null
+        },
+        {
+          "id": "security.disable-vbs",
+          "name": "Disable Virtualization-Based Security (VBS)",
+          "description": "Disable VBS \u2014 the hypervisor layer that enables HVCI, Credential Guard, and other virtualization-backed security features",
+          "risk": "high",
+          "default": false,
+          "expertOnly": true,
+          "requiresReboot": true,
+          "warningMessage": "VBS is required for anti-cheat systems like Vanguard. Disabling may prevent some games from launching.",
+          "blockedProfiles": [
+            "work_pc",
+            "office_laptop",
+            "vm_cautious"
+          ],
+          "minWindowsBuild": null
+        },
+        {
+          "id": "security.full-defender-disable",
+          "name": "Full Windows Defender Disable (Services + Drivers)",
+          "description": "Completely disable Windows Defender at the service level \u2014 WinDefend, WdFilter, WdBoot, WdNisSvc, WdNisDrv, SecurityHealthService, wscsvc, Sense, MsSecCore. Also disables SmartScreen, WTDS, and removes startup entries.",
+          "risk": "extreme",
+          "default": false,
+          "expertOnly": true,
+          "requiresReboot": true,
+          "warningMessage": "THIS REMOVES ALL ANTIVIRUS PROTECTION. Your system will have zero malware defense. Only use on air-gapped or dedicated gaming PCs. Tamper Protection must be disabled manually in Windows Security settings first \u2014 otherwise service changes will be blocked by TrustedInstaller and this action will time out. On Windows 10 22H2+ and Windows 11, Tamper Protection may prevent service disabling entirely even with this action applied.",
+          "blockedProfiles": [
+            "work_pc",
+            "office_laptop",
+            "vm_cautious"
+          ],
+          "minWindowsBuild": null
+        },
+        {
+          "id": "security.disable-vulnerable-driver-blocklist",
+          "name": "Disable Vulnerable Driver Blocklist",
+          "description": "Disable the Microsoft Vulnerable Driver Blocklist that prevents certain drivers from loading",
+          "risk": "high",
+          "default": false,
+          "expertOnly": true,
+          "requiresReboot": true,
+          "warningMessage": "Allows potentially vulnerable drivers to load. Only disable if you need specific kernel tools like RW-Everything for XHCI IMOD or MSI utility.",
+          "blockedProfiles": [
+            "work_pc",
+            "office_laptop"
+          ],
+          "minWindowsBuild": null
+        }
+      ]
+    },
+    {
+      "id": "personalization",
+      "name": "Visual Personalization",
+      "actions": [
+        {
+          "id": "personalize.dark-mode",
+          "name": "Enable System Dark Mode",
+          "description": "Set Windows system theme and app theme to dark mode",
+          "risk": "safe",
+          "default": true,
+          "expertOnly": false,
+          "requiresReboot": false,
+          "warningMessage": null,
+          "blockedProfiles": [],
+          "minWindowsBuild": null
+        },
+        {
+          "id": "personalize.accent-color-black",
+          "name": "Set Accent Color to Black",
+          "description": "Set the Windows accent color to pure black (#000000) so Ctrl+Alt+Del screen, shutdown screen, and login screen use black instead of a colored theme",
+          "risk": "safe",
+          "default": true,
+          "expertOnly": false,
+          "requiresReboot": true,
+          "warningMessage": null,
+          "blockedProfiles": [],
+          "minWindowsBuild": null
+        },
+        {
+          "id": "personalize.login-screen-dark",
+          "name": "Dark Login Screen",
+          "description": "Set the Windows login/lock screen background to solid dark color instead of Windows Spotlight images",
+          "risk": "safe",
+          "default": true,
+          "expertOnly": false,
+          "requiresReboot": false,
+          "warningMessage": null,
+          "blockedProfiles": [],
+          "minWindowsBuild": null
+        },
+        {
+          "id": "personalize.max-refresh-rate",
+          "name": "Set Monitor to Maximum Refresh Rate",
+          "description": "Detect connected monitor's maximum supported refresh rate and set it. Many users have 144Hz/165Hz/240Hz monitors running at 60Hz without knowing.",
+          "risk": "safe",
+          "default": true,
+          "expertOnly": false,
+          "requiresReboot": false,
+          "warningMessage": null,
+          "blockedProfiles": [],
+          "minWindowsBuild": null
         }
       ]
     }
   ],
   "profiles": {
     "gaming_desktop": {
+      "blockedActions": [],
+      "optionalActions": []
+    },
+    "gaming_laptop": {
+      "blockedActions": [],
+      "optionalActions": []
+    },
+    "budget_desktop": {
+      "blockedActions": [],
+      "optionalActions": []
+    },
+    "high_end_workstation": {
       "blockedActions": [],
       "optionalActions": []
     },

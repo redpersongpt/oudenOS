@@ -143,7 +143,6 @@ const scenarioOverrides: Partial<Record<keyof QuestionnaireAnswers, Scenario>> =
   reduceMitigations: EXPERT_SCENARIO,
   disableHvci: EXPERT_SCENARIO,
   disableLlmnr: AGGRESSIVE_SCENARIO,
-  disableIpv6: AGGRESSIVE_SCENARIO,
   disableTeredo: AGGRESSIVE_SCENARIO,
   disableNetbios: AGGRESSIVE_SCENARIO,
   disableNagle: AGGRESSIVE_SCENARIO,
@@ -227,7 +226,12 @@ function auditEnumQuestion<K extends keyof QuestionnaireAnswers>(
 }
 
 const booleanKeys = Object.keys(DEFAULT_QUESTIONNAIRE_ANSWERS).filter(
-  (key) => !["aggressionPreset", "edgeBehavior", "telemetryLevel"].includes(key),
+  (key) => !["aggressionPreset", "edgeBehavior", "telemetryLevel",
+    "disableIpv6", "disableTeredo", "disableNetbios", "disableNagle", "disableNicOffloading",
+    "restoreClassicContextMenu", // shell.restore-classic-context-menu only in transformer.rs
+    "disableFaultTolerantHeap", // removed: breaks Explorer crash recovery
+    "disableMPOs",              // removed: breaks Explorer icon rendering / compositor
+  ].includes(key),
 ) as Array<Exclude<keyof QuestionnaireAnswers, "aggressionPreset" | "edgeBehavior" | "telemetryLevel">>;
 
 const results: QuestionAuditResult[] = [];

@@ -432,6 +432,7 @@ export const strategyQuestions: StrategyQuestionDefinition[] = [
     "Disables Copilot via TurnOffWindowsCopilot policy. Frees ~200MB RAM. Your taskbar can finally breathe.",
     "No — keep Copilot available",
     "Keeps Copilot available on the taskbar. It's actually useful sometimes... apparently.",
+    { visibility: { minWindowsBuild: 22000 } },
   ),
   makeBooleanQuestion(
     "disableRecall",
@@ -628,6 +629,7 @@ export const strategyQuestions: StrategyQuestionDefinition[] = [
     "Full right-click menu with all options visible instantly.",
     "No — keep compact menu",
     "Keeps the compact Windows 11 right-click menu.",
+    { visibility: { minWindowsBuild: 22000 } },
   ),
   makeBooleanQuestion(
     "enableEndTask",
@@ -947,20 +949,6 @@ export const strategyQuestions: StrategyQuestionDefinition[] = [
     "Better security. Removes protocols used in real-world hacks.",
     "No — keep legacy protocols",
     "Keep for compatibility with very old network devices.",
-    {
-      visibility: { minPreset: "aggressive" },
-    },
-  ),
-  makeBooleanQuestion(
-    "disableIpv6",
-    "Globe",
-    "IPv6",
-    "Disable IPv6?",
-    "Most home networks don't use IPv6 yet. Disabling it simplifies your network stack, but some ISPs require it.",
-    "Yes — disable IPv6",
-    "Simpler network stack. Only if your network doesn't need it.",
-    "No — keep IPv6",
-    "Recommended unless you're sure your ISP and apps don't need it.",
     {
       visibility: { minPreset: "aggressive" },
     },
@@ -1785,8 +1773,6 @@ const QUESTION_BEHAVIORS: Record<keyof QuestionnaireAnswers, StrategyQuestionBeh
           "privacy.disable-siuf",
           "services.disable-diagtrack",
           "services.disable-dmwappushservice",
-          "services.disable-diagnostic-services",
-          "services.disable-pca-service",
           "services.disable-wer-service",
           "tasks.disable-telemetry-tasks",
           "tasks.disable-diagnostic-tasks",
@@ -1797,7 +1783,7 @@ const QUESTION_BEHAVIORS: Record<keyof QuestionnaireAnswers, StrategyQuestionBeh
           "tasks.disable-maps-tasks",
           "tasks.disable-device-census",
         ],
-        estimatedActions: 18,
+        estimatedActions: 16,
         riskLevel: "aggressive",
       },
     ],
@@ -1866,23 +1852,12 @@ const QUESTION_BEHAVIORS: Record<keyof QuestionnaireAnswers, StrategyQuestionBeh
     [
       "network.disable-llmnr",
       "network.disable-smbv1",
-      "network.disable-wpad",
     ],
-    "You chose to keep LLMNR, SMBv1, and WPAD legacy protocols enabled.",
+    "You chose to keep LLMNR and SMBv1 legacy protocols enabled.",
     {
       onTrue: {
         warnings: ["Disabling legacy protocols may affect old NAS devices or file-sharing setups."],
         requiresReboot: true,
-      },
-    },
-  ),
-  disableIpv6: createBooleanBehavior(
-    ["network.disable-ipv6"],
-    "You chose to keep IPv6 enabled.",
-    {
-      onTrue: {
-        warnings: ["Aggressive network tuning is hardware-sensitive. Verify games, VPNs, and voice chat after apply."],
-        riskLevel: "aggressive",
       },
     },
   ),
@@ -1917,7 +1892,7 @@ const QUESTION_BEHAVIORS: Record<keyof QuestionnaireAnswers, StrategyQuestionBeh
     },
   ),
   disableNicOffloading: createBooleanBehavior(
-    ["network.disable-offloading", "network.rss-queues-2", "network.tcp-autotuning-normal"],
+    ["network.rss-queues-2"],
     "You chose to keep default NIC offloading and queue behavior.",
     {
       onTrue: {
@@ -1963,10 +1938,7 @@ const QUESTION_BEHAVIORS: Record<keyof QuestionnaireAnswers, StrategyQuestionBeh
   restoreClassicContextMenu: createBooleanBehavior(
     [
       "shell.restore-classic-context-menu",
-      "shell.remove-share-context",
-      "shell.remove-give-access-to",
       "shell.remove-cast-to-device",
-      "shell.remove-include-in-library",
       "shell.remove-troubleshoot-compatibility",
       "shell.remove-edit-with-paint3d",
     ],
@@ -2043,14 +2015,8 @@ const QUESTION_BEHAVIORS: Record<keyof QuestionnaireAnswers, StrategyQuestionBeh
     ["perf.disable-sticky-keys"],
     "You chose to keep accessibility keyboard shortcuts active.",
   ),
-  disableFaultTolerantHeap: createBooleanBehavior(
-    ["perf.disable-fault-tolerant-heap"],
-    "You chose to keep Fault Tolerant Heap enabled.",
-  ),
-  disableMPOs: createBooleanBehavior(
-    ["perf.disable-mpos"],
-    "You chose to keep Multi-Plane Overlays enabled.",
-  ),
+  disableFaultTolerantHeap: { options: [{ value: true }, { value: false }] },
+  disableMPOs: { options: [{ value: true }, { value: false }] },
   disableLastAccessTime: createBooleanBehavior(
     ["storage.disable-last-access"],
     "You chose to keep NTFS last access timestamps enabled.",
