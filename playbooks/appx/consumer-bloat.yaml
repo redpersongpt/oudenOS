@@ -12,7 +12,7 @@ actions:
     rationale: "Frees disk space and removes background processes from unused pre-installed apps"
     risk: low
     tier: free
-    default: true
+    default: false
     requiresReboot: false
     reversible: false
     estimatedSeconds: 15
@@ -38,7 +38,7 @@ actions:
     rationale: "Frees resources and removes a rarely-used voice assistant"
     risk: low
     tier: free
-    default: true
+    default: false
     requiresReboot: false
     reversible: false
     estimatedSeconds: 10
@@ -53,7 +53,7 @@ actions:
     rationale: "Removes a pure advertising/upsell app with no functional value"
     risk: low
     tier: free
-    default: true
+    default: false
     requiresReboot: false
     reversible: false
     estimatedSeconds: 8
@@ -68,7 +68,7 @@ actions:
     rationale: "Removes background phone sync that most users do not use"
     risk: low
     tier: free
-    default: true
+    default: false
     requiresReboot: false
     reversible: false
     estimatedSeconds: 8

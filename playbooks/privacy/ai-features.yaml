@@ -184,22 +184,3 @@ actions:
         valueName: DisableAIFeatures
         value: 1
         valueType: DWord
-
-  - id: privacy.disable-smart-app-control
-    name: "Disable Smart App Control"
-    minWindowsBuild: 22000
-    description: "Disable cloud-based app reputation checking"
-    rationale: "Smart App Control sends app execution data to Microsoft cloud"
-    risk: low
-    tier: free
-    default: true
-    requiresReboot: true
-    reversible: true
-    estimatedSeconds: 2
-    blockedProfiles: []
-    registryChanges:
-      - hive: HKLM
-        path: "SYSTEM\\CurrentControlSet\\Control\\CI\\Policy"
-        valueName: VerifiedAndReputablePolicyState
-        value: 0
-        valueType: DWord

@@ -25,7 +25,6 @@ blockedActions:
   - security.reduce-ssbd-mitigation
   - security.disable-hvci
   # System — enterprise manages updates
-  - system.disable-windows-update
   - system.disable-update-auto-restart
   - system.defer-feature-updates
   # Network — may break enterprise network

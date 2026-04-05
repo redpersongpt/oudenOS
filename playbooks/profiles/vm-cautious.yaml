@@ -13,7 +13,6 @@ blockedActions:
   - gpu.msi-mode
   - gpu.disable-nvidia-telemetry
   - gpu.disable-amd-telemetry
-  - gpu.disable-hags
   - gpu.nvidia-disable-dynamic-pstate
   - gpu.tdr-delay
   # Startup — no Game Bar in VM

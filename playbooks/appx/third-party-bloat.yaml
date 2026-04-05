@@ -12,7 +12,7 @@ actions:
     rationale: "OEMs preinstall social media apps that consume storage and run background tasks"
     risk: safe
     tier: free
-    default: true
+    default: false
     requiresReboot: false
     reversible: false
     estimatedSeconds: 15
@@ -32,7 +32,7 @@ actions:
     rationale: "Trial/ad versions of streaming apps that users can install themselves if wanted"
     risk: safe
     tier: free
-    default: true
+    default: false
     requiresReboot: false
     reversible: false
     estimatedSeconds: 15
@@ -52,7 +52,7 @@ actions:
     rationale: "Ad-supported freemium games preinstalled by OEMs. Consume storage and show notifications."
     risk: safe
     tier: free
-    default: true
+    default: false
     requiresReboot: false
     reversible: false
     estimatedSeconds: 20
@@ -76,7 +76,7 @@ actions:
     rationale: "Trial/limited editions of apps that most users don't need"
     risk: safe
     tier: free
-    default: true
+    default: false
     requiresReboot: false
     reversible: false
     estimatedSeconds: 15
@@ -99,7 +99,7 @@ actions:
     rationale: "OEM deal apps that are essentially advertisements"
     risk: safe
     tier: free
-    default: true
+    default: false
     requiresReboot: false
     reversible: false
     estimatedSeconds: 8
@@ -115,7 +115,7 @@ actions:
     rationale: "These Microsoft apps are rarely used by most consumers and run background services"
     risk: low
     tier: free
-    default: true
+    default: false
     requiresReboot: false
     reversible: false
     estimatedSeconds: 25
@@ -154,7 +154,7 @@ actions:
     rationale: "Copilot is already disabled via registry policy. This removes the residual app package."
     risk: safe
     tier: free
-    default: true
+    default: false
     requiresReboot: false
     reversible: false
     estimatedSeconds: 8

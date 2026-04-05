@@ -32,6 +32,29 @@ struct RpcError {
     message: String,
 }
 
+fn is_retired_unsafe_action(action_id: &str) -> bool {
+    matches!(
+        action_id,
+        "cpu.disable-dynamic-tick"
+            | "cpu.global-timer-resolution"
+            | "gpu.disable-hags"
+            | "memory.disable-compression"
+            | "perf.disable-ndu"
+            | "perf.large-system-cache"
+            | "perf.disable-prefetch"
+            | "perf.svchost-split-threshold"
+            | "perf.disable-page-combining"
+            | "privacy.disable-smart-app-control"
+            | "storage.disable-8dot3-filenames"
+            | "system.disable-windows-update"
+            | "services.disable-wuauserv"
+            | "services.disable-update-orchestrator-svc"
+            | "services.disable-bits"
+            | "services.disable-waasmedic"
+            | "services.disable-delivery-optimization"
+    )
+}
+
 // Sidecar structs removed — DB-backed execution ledger is the only truth path.
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -325,6 +348,14 @@ async fn dispatch(
                     return RpcResponse::err(id, -3, "Missing required param: actionId".into());
                 }
             };
+
+            if is_retired_unsafe_action(action_id) {
+                return RpcResponse::err(
+                    id,
+                    -21,
+                    format!("Action retired for Windows stability: {}", action_id),
+                );
+            }
 
             // Look up action data from params or embedded definitions
             let action_data = if let Some(data) = params.get("actionData") {
