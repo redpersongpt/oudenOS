@@ -21,17 +21,20 @@ pipeline:
       - "appx/gaming-apps.yaml"
       - "appx/third-party-bloat.yaml"
       - "appx/edge-removal.yaml"
+      - "appx/ai-copilot-removal.yaml"
   - id: services
     name: "Background Services"
     builtin: false
     modules:
       - "services/telemetry-services.yaml"
       - "services/consumer-services.yaml"
+      - "services/windows-update-services.yaml"
   - id: tasks
     name: "Scheduled Tasks"
     builtin: false
     modules:
       - "tasks/telemetry-tasks.yaml"
+      - "tasks/consumer-tasks.yaml"
   - id: privacy
     name: "Privacy Hardening"
     builtin: false
@@ -51,6 +54,7 @@ pipeline:
       - "performance/latency.yaml"
       - "performance/power.yaml"
       - "performance/storage.yaml"
+      - "performance/gaming.yaml"
   - id: shell
     name: "Shell & Explorer"
     builtin: false
@@ -80,14 +84,24 @@ pipeline:
     modules:
       - "security/mitigations.yaml"
       - "security/update-control.yaml"
-  - id: personalization
-    name: "Visual Personalization"
-    builtin: true
+      - "security/defender-control.yaml"
 profiles:
   - id: gaming_desktop
     label: "Gaming Desktop"
     preset: "aggressive"
     overrides: "profiles/gaming-desktop.yaml"
+  - id: gaming_laptop
+    label: "Gaming Laptop"
+    preset: "balanced"
+    overrides: "profiles/gaming-laptop.yaml"
+  - id: budget_desktop
+    label: "Budget Desktop"
+    preset: "aggressive"
+    overrides: "profiles/budget-desktop.yaml"
+  - id: high_end_workstation
+    label: "High-end Workstation"
+    preset: "balanced"
+    overrides: "profiles/high-end-workstation.yaml"
   - id: office_laptop
     label: "Office Laptop"
     preset: "balanced"
@@ -98,7 +112,7 @@ profiles:
     overrides: "profiles/work-pc.yaml"
   - id: low_spec_system
     label: "Low-Spec System"
-    preset: "balanced"
+    preset: "aggressive"
     overrides: "profiles/low-spec.yaml"
   - id: vm_cautious
     label: "Virtual Machine"

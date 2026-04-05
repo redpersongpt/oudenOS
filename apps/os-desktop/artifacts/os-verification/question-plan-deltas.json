@@ -13,16 +13,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 156,
+        "totalIncluded": 146,
         "totalBlocked": 5,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 155,
+        "totalIncluded": 145,
         "totalBlocked": 6,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       }
     ]
@@ -41,16 +41,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 156,
+        "totalIncluded": 146,
         "totalBlocked": 5,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 155,
+        "totalIncluded": 145,
         "totalBlocked": 6,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       }
     ]
@@ -69,16 +69,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 156,
+        "totalIncluded": 146,
         "totalBlocked": 5,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 155,
+        "totalIncluded": 145,
         "totalBlocked": 6,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       }
     ]
@@ -97,16 +97,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 156,
+        "totalIncluded": 146,
         "totalBlocked": 5,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 155,
+        "totalIncluded": 145,
         "totalBlocked": 6,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       }
     ]
@@ -125,16 +125,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 156,
+        "totalIncluded": 146,
         "totalBlocked": 5,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 155,
+        "totalIncluded": 145,
         "totalBlocked": 6,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       }
     ]
@@ -153,16 +153,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 157,
+        "totalIncluded": 147,
         "totalBlocked": 5,
-        "totalOptional": 45,
+        "totalOptional": 50,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 156,
+        "totalIncluded": 146,
         "totalBlocked": 6,
-        "totalOptional": 45,
+        "totalOptional": 50,
         "requiresReboot": true
       }
     ]
@@ -181,16 +181,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 156,
+        "totalIncluded": 146,
         "totalBlocked": 5,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 155,
+        "totalIncluded": 145,
         "totalBlocked": 6,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       }
     ]
@@ -209,16 +209,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 156,
+        "totalIncluded": 146,
         "totalBlocked": 5,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 155,
+        "totalIncluded": 145,
         "totalBlocked": 6,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       }
     ]
@@ -241,16 +241,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 160,
+        "totalIncluded": 150,
         "totalBlocked": 5,
-        "totalOptional": 43,
+        "totalOptional": 48,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 155,
+        "totalIncluded": 145,
         "totalBlocked": 10,
-        "totalOptional": 43,
+        "totalOptional": 48,
         "requiresReboot": true
       }
     ]
@@ -269,16 +269,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 156,
+        "totalIncluded": 146,
         "totalBlocked": 5,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 155,
+        "totalIncluded": 145,
         "totalBlocked": 6,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       }
     ]
@@ -298,16 +298,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 156,
+        "totalIncluded": 146,
         "totalBlocked": 5,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 154,
+        "totalIncluded": 144,
         "totalBlocked": 7,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       }
     ]
@@ -326,16 +326,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 157,
+        "totalIncluded": 147,
         "totalBlocked": 5,
-        "totalOptional": 45,
+        "totalOptional": 50,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 156,
+        "totalIncluded": 146,
         "totalBlocked": 6,
-        "totalOptional": 45,
+        "totalOptional": 50,
         "requiresReboot": true
       }
     ]
@@ -354,16 +354,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 156,
+        "totalIncluded": 146,
         "totalBlocked": 5,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 155,
+        "totalIncluded": 145,
         "totalBlocked": 6,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       }
     ]
@@ -382,16 +382,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 156,
+        "totalIncluded": 146,
         "totalBlocked": 5,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 155,
+        "totalIncluded": 145,
         "totalBlocked": 6,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       }
     ]
@@ -413,16 +413,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 156,
+        "totalIncluded": 146,
         "totalBlocked": 5,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 152,
+        "totalIncluded": 142,
         "totalBlocked": 9,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       }
     ]
@@ -441,16 +441,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 156,
+        "totalIncluded": 146,
         "totalBlocked": 6,
-        "totalOptional": 45,
+        "totalOptional": 50,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 157,
+        "totalIncluded": 147,
         "totalBlocked": 5,
-        "totalOptional": 45,
+        "totalOptional": 50,
         "requiresReboot": true
       }
     ]
@@ -469,16 +469,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 156,
+        "totalIncluded": 146,
         "totalBlocked": 6,
-        "totalOptional": 45,
+        "totalOptional": 50,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 157,
+        "totalIncluded": 147,
         "totalBlocked": 5,
-        "totalOptional": 45,
+        "totalOptional": 50,
         "requiresReboot": true
       }
     ]
@@ -497,16 +497,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 157,
+        "totalIncluded": 147,
         "totalBlocked": 5,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 156,
+        "totalIncluded": 146,
         "totalBlocked": 6,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       }
     ]
@@ -525,16 +525,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 156,
+        "totalIncluded": 146,
         "totalBlocked": 6,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 157,
+        "totalIncluded": 147,
         "totalBlocked": 5,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       }
     ]
@@ -553,16 +553,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 156,
+        "totalIncluded": 146,
         "totalBlocked": 5,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 155,
+        "totalIncluded": 145,
         "totalBlocked": 6,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       }
     ]
@@ -581,16 +581,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 161,
+        "totalIncluded": 151,
         "totalBlocked": 0,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 160,
+        "totalIncluded": 150,
         "totalBlocked": 1,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       }
     ]
@@ -609,16 +609,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 161,
+        "totalIncluded": 151,
         "totalBlocked": 0,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 160,
+        "totalIncluded": 150,
         "totalBlocked": 1,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       }
     ]
@@ -637,16 +637,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 156,
+        "totalIncluded": 146,
         "totalBlocked": 5,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 155,
+        "totalIncluded": 145,
         "totalBlocked": 6,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       }
     ]
@@ -665,16 +665,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 156,
+        "totalIncluded": 146,
         "totalBlocked": 5,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 155,
+        "totalIncluded": 145,
         "totalBlocked": 6,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       }
     ]
@@ -694,16 +694,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 156,
+        "totalIncluded": 146,
         "totalBlocked": 5,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 154,
+        "totalIncluded": 144,
         "totalBlocked": 7,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       }
     ]
@@ -723,16 +723,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 156,
+        "totalIncluded": 146,
         "totalBlocked": 5,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 154,
+        "totalIncluded": 144,
         "totalBlocked": 7,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       }
     ]
@@ -753,16 +753,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 156,
+        "totalIncluded": 146,
         "totalBlocked": 5,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 153,
+        "totalIncluded": 143,
         "totalBlocked": 8,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       }
     ]
@@ -783,16 +783,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 156,
+        "totalIncluded": 146,
         "totalBlocked": 5,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 153,
+        "totalIncluded": 143,
         "totalBlocked": 8,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       }
     ]
@@ -811,16 +811,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 157,
+        "totalIncluded": 147,
         "totalBlocked": 5,
-        "totalOptional": 45,
+        "totalOptional": 50,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 156,
+        "totalIncluded": 146,
         "totalBlocked": 6,
-        "totalOptional": 45,
+        "totalOptional": 50,
         "requiresReboot": true
       }
     ]
@@ -839,16 +839,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 162,
+        "totalIncluded": 152,
         "totalBlocked": 0,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 161,
+        "totalIncluded": 151,
         "totalBlocked": 1,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       }
     ]
@@ -867,16 +867,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 162,
+        "totalIncluded": 152,
         "totalBlocked": 0,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 161,
+        "totalIncluded": 151,
         "totalBlocked": 1,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       }
     ]
@@ -896,16 +896,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 158,
+        "totalIncluded": 148,
         "totalBlocked": 5,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 156,
+        "totalIncluded": 146,
         "totalBlocked": 7,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       }
     ]
@@ -922,16 +922,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 156,
+        "totalIncluded": 146,
         "totalBlocked": 5,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 156,
+        "totalIncluded": 146,
         "totalBlocked": 5,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       }
     ]
@@ -950,16 +950,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 157,
+        "totalIncluded": 147,
         "totalBlocked": 5,
-        "totalOptional": 45,
+        "totalOptional": 50,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 156,
+        "totalIncluded": 146,
         "totalBlocked": 6,
-        "totalOptional": 45,
+        "totalOptional": 50,
         "requiresReboot": true
       }
     ]
@@ -978,16 +978,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 157,
+        "totalIncluded": 147,
         "totalBlocked": 5,
-        "totalOptional": 45,
+        "totalOptional": 50,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 156,
+        "totalIncluded": 146,
         "totalBlocked": 6,
-        "totalOptional": 45,
+        "totalOptional": 50,
         "requiresReboot": true
       }
     ]
@@ -1006,16 +1006,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 157,
+        "totalIncluded": 147,
         "totalBlocked": 5,
-        "totalOptional": 45,
+        "totalOptional": 50,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 156,
+        "totalIncluded": 146,
         "totalBlocked": 6,
-        "totalOptional": 45,
+        "totalOptional": 50,
         "requiresReboot": true
       }
     ]
@@ -1034,16 +1034,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 157,
+        "totalIncluded": 147,
         "totalBlocked": 5,
-        "totalOptional": 45,
+        "totalOptional": 50,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 156,
+        "totalIncluded": 146,
         "totalBlocked": 6,
-        "totalOptional": 45,
+        "totalOptional": 50,
         "requiresReboot": true
       }
     ]
@@ -1063,16 +1063,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 156,
+        "totalIncluded": 146,
         "totalBlocked": 5,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 154,
+        "totalIncluded": 144,
         "totalBlocked": 7,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       }
     ]
@@ -1091,16 +1091,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 156,
+        "totalIncluded": 146,
         "totalBlocked": 5,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 155,
+        "totalIncluded": 145,
         "totalBlocked": 6,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       }
     ]
@@ -1119,16 +1119,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 156,
+        "totalIncluded": 146,
         "totalBlocked": 5,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 155,
+        "totalIncluded": 145,
         "totalBlocked": 6,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       }
     ]
@@ -1147,16 +1147,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 156,
+        "totalIncluded": 146,
         "totalBlocked": 5,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 155,
+        "totalIncluded": 145,
         "totalBlocked": 6,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       }
     ]
@@ -1175,16 +1175,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 156,
+        "totalIncluded": 146,
         "totalBlocked": 5,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 155,
+        "totalIncluded": 145,
         "totalBlocked": 6,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       }
     ]
@@ -1203,16 +1203,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 156,
+        "totalIncluded": 146,
         "totalBlocked": 5,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 155,
+        "totalIncluded": 145,
         "totalBlocked": 6,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       }
     ]
@@ -1231,16 +1231,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 156,
+        "totalIncluded": 146,
         "totalBlocked": 5,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 155,
+        "totalIncluded": 145,
         "totalBlocked": 6,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       }
     ]
@@ -1256,22 +1256,21 @@
     "changedActionIds": [
       "shell.remove-cast-to-device",
       "shell.remove-edit-with-paint3d",
-      "shell.remove-troubleshoot-compatibility",
-      "shell.restore-classic-context-menu"
+      "shell.remove-troubleshoot-compatibility"
     ],
     "variants": [
       {
         "value": true,
-        "totalIncluded": 157,
+        "totalIncluded": 146,
         "totalBlocked": 5,
-        "totalOptional": 45,
+        "totalOptional": 51,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 153,
-        "totalBlocked": 9,
-        "totalOptional": 45,
+        "totalIncluded": 143,
+        "totalBlocked": 8,
+        "totalOptional": 51,
         "requiresReboot": true
       }
     ]
@@ -1290,16 +1289,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 156,
+        "totalIncluded": 146,
         "totalBlocked": 5,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 155,
+        "totalIncluded": 145,
         "totalBlocked": 6,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       }
     ]
@@ -1318,16 +1317,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 156,
+        "totalIncluded": 146,
         "totalBlocked": 5,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 155,
+        "totalIncluded": 145,
         "totalBlocked": 6,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       }
     ]
@@ -1346,16 +1345,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 156,
+        "totalIncluded": 146,
         "totalBlocked": 5,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 155,
+        "totalIncluded": 145,
         "totalBlocked": 6,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       }
     ]
@@ -1374,16 +1373,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 156,
+        "totalIncluded": 146,
         "totalBlocked": 5,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 155,
+        "totalIncluded": 145,
         "totalBlocked": 6,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       }
     ]
@@ -1402,16 +1401,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 156,
+        "totalIncluded": 146,
         "totalBlocked": 5,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 155,
+        "totalIncluded": 145,
         "totalBlocked": 6,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       }
     ]
@@ -1432,16 +1431,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 159,
+        "totalIncluded": 149,
         "totalBlocked": 5,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 156,
+        "totalIncluded": 146,
         "totalBlocked": 8,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       }
     ]
@@ -1465,16 +1464,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 161,
+        "totalIncluded": 151,
         "totalBlocked": 5,
-        "totalOptional": 45,
+        "totalOptional": 50,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 155,
+        "totalIncluded": 145,
         "totalBlocked": 11,
-        "totalOptional": 45,
+        "totalOptional": 50,
         "requiresReboot": true
       }
     ]
@@ -1493,16 +1492,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 156,
+        "totalIncluded": 146,
         "totalBlocked": 5,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 155,
+        "totalIncluded": 145,
         "totalBlocked": 6,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       }
     ]
@@ -1521,16 +1520,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 156,
+        "totalIncluded": 146,
         "totalBlocked": 5,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 155,
+        "totalIncluded": 145,
         "totalBlocked": 6,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       }
     ]
@@ -1547,16 +1546,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 156,
+        "totalIncluded": 146,
         "totalBlocked": 5,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 156,
+        "totalIncluded": 146,
         "totalBlocked": 5,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       }
     ]
@@ -1573,16 +1572,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 156,
+        "totalIncluded": 146,
         "totalBlocked": 5,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 156,
+        "totalIncluded": 146,
         "totalBlocked": 5,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       }
     ]
@@ -1601,16 +1600,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 156,
+        "totalIncluded": 146,
         "totalBlocked": 5,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 155,
+        "totalIncluded": 145,
         "totalBlocked": 6,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       }
     ]
@@ -1629,16 +1628,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 157,
+        "totalIncluded": 147,
         "totalBlocked": 5,
-        "totalOptional": 45,
+        "totalOptional": 50,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 156,
+        "totalIncluded": 146,
         "totalBlocked": 6,
-        "totalOptional": 45,
+        "totalOptional": 50,
         "requiresReboot": true
       }
     ]
@@ -1657,16 +1656,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 157,
+        "totalIncluded": 147,
         "totalBlocked": 5,
-        "totalOptional": 45,
+        "totalOptional": 50,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 156,
+        "totalIncluded": 146,
         "totalBlocked": 6,
-        "totalOptional": 45,
+        "totalOptional": 50,
         "requiresReboot": true
       }
     ]
@@ -1685,16 +1684,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 157,
+        "totalIncluded": 147,
         "totalBlocked": 5,
-        "totalOptional": 45,
+        "totalOptional": 50,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 156,
+        "totalIncluded": 146,
         "totalBlocked": 6,
-        "totalOptional": 45,
+        "totalOptional": 50,
         "requiresReboot": true
       }
     ]
@@ -1713,16 +1712,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 157,
+        "totalIncluded": 147,
         "totalBlocked": 5,
-        "totalOptional": 45,
+        "totalOptional": 50,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 156,
+        "totalIncluded": 146,
         "totalBlocked": 6,
-        "totalOptional": 45,
+        "totalOptional": 50,
         "requiresReboot": true
       }
     ]
@@ -1741,16 +1740,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 157,
+        "totalIncluded": 147,
         "totalBlocked": 5,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 156,
+        "totalIncluded": 146,
         "totalBlocked": 6,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       }
     ]
@@ -1769,16 +1768,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 157,
+        "totalIncluded": 147,
         "totalBlocked": 5,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 156,
+        "totalIncluded": 146,
         "totalBlocked": 6,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       }
     ]
@@ -1797,16 +1796,16 @@
     "variants": [
       {
         "value": true,
-        "totalIncluded": 157,
+        "totalIncluded": 147,
         "totalBlocked": 5,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       },
       {
         "value": false,
-        "totalIncluded": 156,
+        "totalIncluded": 146,
         "totalBlocked": 6,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       }
     ]
@@ -1827,23 +1826,23 @@
     "variants": [
       {
         "value": "keep",
-        "totalIncluded": 153,
+        "totalIncluded": 143,
         "totalBlocked": 8,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       },
       {
         "value": "suppress",
-        "totalIncluded": 155,
+        "totalIncluded": 145,
         "totalBlocked": 6,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       },
       {
         "value": "suppress-and-freeze",
-        "totalIncluded": 156,
+        "totalIncluded": 146,
         "totalBlocked": 5,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       }
     ]
@@ -1866,23 +1865,23 @@
     "variants": [
       {
         "value": "keep",
-        "totalIncluded": 152,
+        "totalIncluded": 142,
         "totalBlocked": 9,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       },
       {
         "value": "reduce",
-        "totalIncluded": 156,
+        "totalIncluded": 146,
         "totalBlocked": 6,
-        "totalOptional": 45,
+        "totalOptional": 50,
         "requiresReboot": true
       },
       {
         "value": "aggressive",
-        "totalIncluded": 157,
+        "totalIncluded": 147,
         "totalBlocked": 5,
-        "totalOptional": 45,
+        "totalOptional": 50,
         "requiresReboot": true
       }
     ]
@@ -1899,30 +1898,30 @@
     "variants": [
       {
         "value": "conservative",
-        "totalIncluded": 156,
+        "totalIncluded": 146,
         "totalBlocked": 5,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       },
       {
         "value": "balanced",
-        "totalIncluded": 156,
+        "totalIncluded": 146,
         "totalBlocked": 5,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       },
       {
         "value": "aggressive",
-        "totalIncluded": 156,
+        "totalIncluded": 146,
         "totalBlocked": 5,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       },
       {
         "value": "expert",
-        "totalIncluded": 156,
+        "totalIncluded": 146,
         "totalBlocked": 5,
-        "totalOptional": 46,
+        "totalOptional": 51,
         "requiresReboot": true
       }
     ]

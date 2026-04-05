@@ -1,0 +1,21 @@
+# Profile: Budget Desktop
+# Aggressive service/task disabling, aggressive AppX removal.
+# Preserves core functionality.
+
+profile: budget_desktop
+inherits: gaming_desktop
+
+override:
+  services.disable-sysmain:
+    default: true       # Definitely disable on budget hardware — saves RAM
+  services.disable-delivery-optimization:
+    default: true       # Save bandwidth on potentially metered connections
+  tasks.disable-defrag-tasks:
+    default: true       # Free up I/O on potentially slow storage
+  tasks.disable-dotnet-tasks:
+    default: true       # Save CPU cycles
+  services.disable-push-notifications:
+    default: true       # Save resources
+
+preserve:
+  - print_spooler       # Budget desktops often have printers

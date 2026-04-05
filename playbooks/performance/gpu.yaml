@@ -12,7 +12,7 @@ actions:
     rationale: "GpuEnergyDrv is a known source of DPC latency; disabling it improves real-time audio/video performance"
     risk: low
     tier: free
-    default: true
+    default: false
     requiresReboot: true
     reversible: true
     estimatedSeconds: 2

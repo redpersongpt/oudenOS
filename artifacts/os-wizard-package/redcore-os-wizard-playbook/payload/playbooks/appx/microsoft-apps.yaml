@@ -1,5 +1,4 @@
-# ─── AppX: Microsoft Apps Removal ─────────────────────────────────────────────
-# Removes built-in Microsoft apps that most users replace with alternatives.
+# AppX: Microsoft Apps Removal
 
 module: appx.microsoft-apps
 name: "Microsoft Apps Removal"
@@ -143,7 +142,7 @@ actions:
       - Microsoft.PowerAutomateDesktop
 
   - id: appx.remove-solitaire
-    name: "Remove Solitaire"
+    name: "Remove Solitaire lmfao"
     description: "Remove the Solitaire Collection app (Microsoft.MicrosoftSolitaireCollection)"
     rationale: "Removes ad-supported game app that runs background processes"
     risk: safe

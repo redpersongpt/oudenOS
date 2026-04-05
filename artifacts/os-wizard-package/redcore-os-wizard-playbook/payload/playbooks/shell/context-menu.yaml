@@ -1,26 +1,74 @@
-# ─── Shell: Context Menu ──────────────────────────────────────────────────────
-# Restores classic Windows right-click context menu.
+# Shell: Context Menu Cleanup
+# Only using SAFE Shell Extensions\Blocked method.
+# NO InprocServer32 or ContextMenuHandlers modifications.
 
 module: shell.context-menu
-name: "Classic Context Menu"
-description: "Restore the full classic right-click context menu on Windows 11"
+name: "Context Menu Cleanup"
+description: "Remove unnecessary context menu entries using safe methods only"
 category: shell
 
 actions:
-  - id: shell.restore-classic-context-menu
-    name: "Restore Classic Context Menu"
-    description: "Restore the full classic right-click context menu on Windows 11"
-    rationale: "Restores full right-click context menu on Win11, removing the need to click 'Show more options'"
-    risk: low
+  - id: shell.remove-cast-to-device
+    name: "Remove 'Cast to Device'"
+    description: "Remove Cast to Device from right-click menu"
+    risk: safe
     tier: free
     default: true
-    requiresReboot: true
+    requiresReboot: false
     reversible: true
     estimatedSeconds: 2
     blockedProfiles: []
     registryChanges:
-      - hive: HKCU
-        path: "Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a8}\\InprocServer32"
-        valueName: ""
+      - hive: HKLM
+        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Shell Extensions\\Blocked"
+        valueName: "{7AD84985-87B4-4a16-BE58-8B72A5B390F7}"
+        value: "Play To menu"
+        valueType: String
+
+  - id: shell.remove-troubleshoot-compatibility
+    name: "Remove 'Troubleshoot compatibility'"
+    description: "Remove compatibility troubleshooter from .exe right-click"
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles:
+      - work_pc
+    registryChanges:
+      - hive: HKLM
+        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Shell Extensions\\Blocked"
+        valueName: "{1d27f844-3a1f-4410-85ac-14651078412d}"
+        value: "Compatibility troubleshooter"
+        valueType: String
+
+  - id: shell.remove-edit-with-paint3d
+    name: "Remove 'Edit with Paint 3D'"
+    description: "Hide deprecated Paint 3D context menu entry"
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKLM
+        path: "SOFTWARE\\Classes\\SystemFileAssociations\\.bmp\\Shell\\3D Edit"
+        valueName: "ProgrammaticAccessOnly"
         value: ""
         valueType: String
+      - hive: HKLM
+        path: "SOFTWARE\\Classes\\SystemFileAssociations\\.jpg\\Shell\\3D Edit"
+        valueName: "ProgrammaticAccessOnly"
+        value: ""
+        valueType: String
+      - hive: HKLM
+        path: "SOFTWARE\\Classes\\SystemFileAssociations\\.png\\Shell\\3D Edit"
+        valueName: "ProgrammaticAccessOnly"
+        value: ""
+        valueType: String
+
+# REMOVED: Classic context menu restore — crashes Explorer on many Windows builds
+# REMOVED: Share/Give Access/Library handler mods — crashes Explorer
