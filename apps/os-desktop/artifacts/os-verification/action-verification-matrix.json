@@ -4975,178 +4975,6 @@
     "currentProofReason": "Immediate readback is possible, but full trust for this action still requires a post-reboot assertion."
   },
   {
-    "actionId": "personalize.accent-color-black",
-    "name": "Set Accent Color to Black",
-    "phaseId": "personalization",
-    "phaseName": "Visual Personalization",
-    "module": "personalization.theme",
-    "category": "personalization",
-    "risk": "safe",
-    "expertOnly": false,
-    "requiresReboot": true,
-    "reversible": true,
-    "executionKinds": [
-      "registryChanges"
-    ],
-    "verificationTier": "tier1",
-    "expectedStateChanges": [],
-    "readbackMethods": [],
-    "rollbackMethod": "Restore the snapshot captured immediately before apply, then read back the same targets and compare against baseline.",
-    "profileRestrictions": {
-      "blockedProfiles": [],
-      "profileRuleHits": []
-    },
-    "questionDependencies": [],
-    "currentProofStatus": "requires reboot to verify fully",
-    "currentProofReason": "Immediate readback is possible, but full trust for this action still requires a post-reboot assertion."
-  },
-  {
-    "actionId": "personalize.dark-mode",
-    "name": "Enable System Dark Mode",
-    "phaseId": "personalization",
-    "phaseName": "Visual Personalization",
-    "module": "personalization.theme",
-    "category": "personalization",
-    "risk": "safe",
-    "expertOnly": false,
-    "requiresReboot": false,
-    "reversible": true,
-    "executionKinds": [
-      "registryChanges"
-    ],
-    "verificationTier": "tier1",
-    "expectedStateChanges": [
-      {
-        "kind": "registry",
-        "target": "HKCU\\SOFTWARE\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\Themes\\\\Personalize\\SystemUsesLightTheme",
-        "expected": "0 (DWord)"
-      },
-      {
-        "kind": "registry",
-        "target": "HKCU\\SOFTWARE\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\Themes\\\\Personalize\\AppsUseLightTheme",
-        "expected": "0 (DWord)"
-      }
-    ],
-    "readbackMethods": [
-      {
-        "kind": "registry",
-        "detail": "Read HKCU\\SOFTWARE\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\Themes\\\\Personalize\\SystemUsesLightTheme and compare to 0."
-      },
-      {
-        "kind": "registry",
-        "detail": "Read HKCU\\SOFTWARE\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\Themes\\\\Personalize\\AppsUseLightTheme and compare to 0."
-      }
-    ],
-    "rollbackMethod": "Restore the snapshot captured immediately before apply, then read back the same targets and compare against baseline.",
-    "profileRestrictions": {
-      "blockedProfiles": [],
-      "profileRuleHits": []
-    },
-    "questionDependencies": [],
-    "currentProofStatus": "partially verified on real Windows",
-    "currentProofReason": "This action has a defined readback and rollback strategy, but consumer-Windows certification still depends on running the harness."
-  },
-  {
-    "actionId": "personalize.login-screen-dark",
-    "name": "Dark Login Screen",
-    "phaseId": "personalization",
-    "phaseName": "Visual Personalization",
-    "module": "personalization.theme",
-    "category": "personalization",
-    "risk": "safe",
-    "expertOnly": false,
-    "requiresReboot": false,
-    "reversible": true,
-    "executionKinds": [
-      "registryChanges"
-    ],
-    "verificationTier": "tier1",
-    "expectedStateChanges": [],
-    "readbackMethods": [],
-    "rollbackMethod": "Restore the snapshot captured immediately before apply, then read back the same targets and compare against baseline.",
-    "profileRestrictions": {
-      "blockedProfiles": [],
-      "profileRuleHits": []
-    },
-    "questionDependencies": [],
-    "currentProofStatus": "partially verified on real Windows",
-    "currentProofReason": "This action has a defined readback and rollback strategy, but consumer-Windows certification still depends on running the harness."
-  },
-  {
-    "actionId": "personalize.max-refresh-rate",
-    "name": "Set Monitor to Maximum Refresh Rate",
-    "phaseId": "personalization",
-    "phaseName": "Visual Personalization",
-    "module": "personalization.theme",
-    "category": "personalization",
-    "risk": "safe",
-    "expertOnly": false,
-    "requiresReboot": false,
-    "reversible": true,
-    "executionKinds": [
-      "powerShellCommands"
-    ],
-    "verificationTier": "tier1",
-    "expectedStateChanges": [
-      {
-        "kind": "powershell",
-        "target": "personalize.max-refresh-rate",
-        "expected": "try {"
-      }
-    ],
-    "readbackMethods": [
-      {
-        "kind": "powershell",
-        "detail": "No generic PowerShell readback exists; this action needs an explicit verifier."
-      }
-    ],
-    "rollbackMethod": "Restore the snapshot captured immediately before apply, then read back the same targets and compare against baseline.",
-    "profileRestrictions": {
-      "blockedProfiles": [],
-      "profileRuleHits": []
-    },
-    "questionDependencies": [],
-    "currentProofStatus": "executable but readback not yet implemented",
-    "currentProofReason": "Pure PowerShell action with no generic state reader and no action-specific verifier."
-  },
-  {
-    "actionId": "personalize.ouden-wallpaper",
-    "name": "Set Ouden Desktop Wallpaper",
-    "phaseId": "personalization",
-    "phaseName": "Visual Personalization",
-    "module": "personalization.wallpaper",
-    "category": "personalization",
-    "risk": "safe",
-    "expertOnly": false,
-    "requiresReboot": false,
-    "reversible": true,
-    "executionKinds": [
-      "powerShellCommands"
-    ],
-    "verificationTier": "tier1",
-    "expectedStateChanges": [
-      {
-        "kind": "powershell",
-        "target": "personalize.ouden-wallpaper",
-        "expected": "$ErrorActionPreference = 'SilentlyContinue'"
-      }
-    ],
-    "readbackMethods": [
-      {
-        "kind": "powershell",
-        "detail": "No generic PowerShell readback exists; this action needs an explicit verifier."
-      }
-    ],
-    "rollbackMethod": "Restore the snapshot captured immediately before apply, then read back the same targets and compare against baseline.",
-    "profileRestrictions": {
-      "blockedProfiles": [],
-      "profileRuleHits": []
-    },
-    "questionDependencies": [],
-    "currentProofStatus": "executable but readback not yet implemented",
-    "currentProofReason": "Pure PowerShell action with no generic state reader and no action-specific verifier."
-  },
-  {
     "actionId": "power.disable-device-power-saving",
     "name": "Disable Device Power Saving",
     "phaseId": "performance",
@@ -10896,7 +10724,7 @@
           {
             "value": false,
             "status": "Blocked",
-            "blockedReason": "You chose to keep the default Windows 11 compact context menu and shell clutter."
+            "blockedReason": "You chose to keep the stock Windows context menu entries."
           }
         ],
         "changesPlanReboot": false,
@@ -10975,7 +10803,7 @@
           {
             "value": false,
             "status": "Blocked",
-            "blockedReason": "You chose to keep the default Windows 11 compact context menu and shell clutter."
+            "blockedReason": "You chose to keep the stock Windows context menu entries."
           }
         ],
         "changesPlanReboot": false,
@@ -11038,7 +10866,7 @@
           {
             "value": false,
             "status": "Blocked",
-            "blockedReason": "You chose to keep the default Windows 11 compact context menu and shell clutter."
+            "blockedReason": "You chose to keep the stock Windows context menu entries."
           }
         ],
         "changesPlanReboot": false,

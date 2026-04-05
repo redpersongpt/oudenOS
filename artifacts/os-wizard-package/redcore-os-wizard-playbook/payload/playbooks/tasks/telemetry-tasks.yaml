@@ -1,17 +1,16 @@
-# ─── Tasks: Telemetry Tasks ───────────────────────────────────────────────────
-# Disables telemetry, OneDrive, and Update Orchestrator scheduled tasks.
+# Tasks: Telemetry & Diagnostic Tasks
 
 module: tasks.telemetry-tasks
 name: "Telemetry Task Disabling"
-description: "Disable telemetry, OneDrive sync, and Update Orchestrator scheduled tasks"
+description: "Disable telemetry, diagnostic, and data collection scheduled tasks"
 category: tasks
 
 actions:
   - id: tasks.disable-telemetry-tasks
-    name: "Disable Telemetry Tasks"
-    description: "Disable Application Experience and Customer Experience Improvement Program scheduled tasks"
+    name: "Disable Telemetry Collector Tasks"
+    description: "Disable Application Experience, CEIP, and Compatibility Appraiser scheduled tasks"
     rationale: "These tasks collect and upload diagnostic data in the background, consuming CPU and network resources"
-    risk: low
+    risk: safe
     tier: free
     default: true
     requiresReboot: false
@@ -23,6 +22,10 @@ actions:
         path: "\\Microsoft\\Windows\\Application Experience\\"
       - name: "ProgramDataUpdater"
         path: "\\Microsoft\\Windows\\Application Experience\\"
+      - name: "AitAgent"
+        path: "\\Microsoft\\Windows\\Application Experience\\"
+      - name: "StartupAppTask"
+        path: "\\Microsoft\\Windows\\Application Experience\\"
       - name: "Consolidator"
         path: "\\Microsoft\\Windows\\Customer Experience Improvement Program\\"
       - name: "UsbCeip"
@@ -30,9 +33,64 @@ actions:
       - name: "KernelCeipTask"
         path: "\\Microsoft\\Windows\\Customer Experience Improvement Program\\"
 
+  - id: tasks.disable-diagnostic-tasks
+    name: "Disable Diagnostic Data Tasks"
+    description: "Disable DiskDiagnostic, MemoryDiagnostic, and other diagnostic data tasks"
+    rationale: "Diagnostic tasks run periodic system scans that consume I/O and CPU for data Microsoft uses for product improvement"
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 4
+    blockedProfiles: []
+    tasks:
+      - name: "Microsoft-Windows-DiskDiagnosticDataCollector"
+        path: "\\Microsoft\\Windows\\DiskDiagnostic\\"
+      - name: "Diagnostics"
+        path: "\\Microsoft\\Windows\\DiskFootprint\\"
+      - name: "StorageSense"
+        path: "\\Microsoft\\Windows\\DiskFootprint\\"
+      - name: "RunFullMemoryDiagnostic"
+        path: "\\Microsoft\\Windows\\MemoryDiagnostic\\"
+
+  - id: tasks.disable-feedback-tasks
+    name: "Disable Feedback & Error Reporting Tasks"
+    description: "Disable Windows Error Reporting and Feedback scheduled tasks"
+    rationale: "Error reporting tasks collect crash data and feedback prompts. Disabling prevents background crash data upload."
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 3
+    blockedProfiles: []
+    tasks:
+      - name: "QueueReporting"
+        path: "\\Microsoft\\Windows\\Windows Error Reporting\\"
+      - name: "BrowserReporting"
+        path: "\\Microsoft\\Windows\\Windows Error Reporting\\"
+
+  - id: tasks.disable-cloud-content-tasks
+    name: "Disable Cloud Content & Spotlight Tasks"
+    description: "Disable Windows Spotlight, cloud content delivery, and lock screen suggestion tasks"
+    rationale: "Cloud content tasks download promotional content, lock screen suggestions, and app suggestions from Microsoft servers"
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 3
+    blockedProfiles: []
+    tasks:
+      - name: "CloudExperienceHostLauncher"
+        path: "\\Microsoft\\Windows\\CloudExperienceHost\\"
+      - name: "CreateObjectTask"
+        path: "\\Microsoft\\Windows\\CloudExperienceHost\\"
+
   - id: tasks.disable-onedrive-tasks
     name: "Disable OneDrive Sync Tasks"
-    description: "Disable OneDrive automatic sync scheduled tasks (blocked on work_pc profile)"
+    description: "Disable OneDrive automatic sync and reporting scheduled tasks"
     rationale: "OneDrive sync tasks consume bandwidth and disk I/O in the background"
     risk: medium
     tier: free
@@ -48,7 +106,7 @@ actions:
       - name: "OneDrive Standalone Update Task"
         path: "\\Microsoft\\Windows\\OneDrive\\"
 
-  - id: tasks.disable-update-orchestrator
+  - id: tasks.disable-update-tasks
     name: "Disable Update Orchestrator Tasks"
     description: "Disable Windows Update Orchestrator scheduled tasks to reduce background update activity"
     rationale: "Prevents unexpected update downloads and restarts during use"
@@ -67,3 +125,85 @@ actions:
         path: "\\Microsoft\\Windows\\UpdateOrchestrator\\"
       - name: "USO_UxBroker"
         path: "\\Microsoft\\Windows\\UpdateOrchestrator\\"
+      - name: "Schedule Work"
+        path: "\\Microsoft\\Windows\\UpdateOrchestrator\\"
+      - name: "Schedule Wake To Work"
+        path: "\\Microsoft\\Windows\\UpdateOrchestrator\\"
+
+  - id: tasks.disable-defender-tasks
+    name: "Disable Windows Defender Scheduled Scans"
+    description: "Disable automatic Defender scan scheduling (manual scans still work)"
+    rationale: "Defender scheduled scans can cause significant I/O load. Disabling auto-scheduling allows manual scan control."
+    risk: medium
+    tier: free
+    default: false
+    expertOnly: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 4
+    blockedProfiles:
+      - work_pc
+      - office_laptop
+    tasks:
+      - name: "Windows Defender Scheduled Scan"
+        path: "\\Microsoft\\Windows\\Windows Defender\\"
+      - name: "Windows Defender Cache Maintenance"
+        path: "\\Microsoft\\Windows\\Windows Defender\\"
+      - name: "Windows Defender Cleanup"
+        path: "\\Microsoft\\Windows\\Windows Defender\\"
+      - name: "Windows Defender Verification"
+        path: "\\Microsoft\\Windows\\Windows Defender\\"
+
+  - id: tasks.disable-maps-tasks
+    name: "Disable Offline Maps Tasks"
+    description: "Disable offline map data download and update tasks"
+    rationale: "Maps tasks periodically check for and download offline map data in the background"
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles:
+      - office_laptop
+    tasks:
+      - name: "MapsToastTask"
+        path: "\\Microsoft\\Windows\\Maps\\"
+      - name: "MapsUpdateTask"
+        path: "\\Microsoft\\Windows\\Maps\\"
+
+  - id: tasks.disable-speech-tasks
+    name: "Disable Speech & Handwriting Tasks"
+    description: "Disable speech model and handwriting data collection tasks"
+    rationale: "Speech tasks collect and process speech/handwriting samples for Microsoft personalization"
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    tasks:
+      - name: "SpeechModelDownloadTask"
+        path: "\\Microsoft\\Windows\\Speech\\"
+      - name: "HeadsetButtonPress"
+        path: "\\Microsoft\\Windows\\Speech\\"
+
+  - id: tasks.disable-flighting-tasks
+    name: "Disable Windows Insider & Flighting Tasks"
+    description: "Disable Windows Insider Program telemetry and flighting tasks"
+    rationale: "Flighting tasks check for preview builds and collect flight-specific telemetry. Unnecessary unless enrolled in Windows Insider."
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 3
+    blockedProfiles: []
+    tasks:
+      - name: "FlightAgentTask"
+        path: "\\Microsoft\\Windows\\Flighting\\FeatureConfig\\"
+      - name: "OneSettings"
+        path: "\\Microsoft\\Windows\\Flighting\\OneSettings\\"
+      - name: "RefreshCache"
+        path: "\\Microsoft\\Windows\\Flighting\\OneSettings\\"

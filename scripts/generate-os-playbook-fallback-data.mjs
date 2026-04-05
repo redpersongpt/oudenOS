@@ -19,6 +19,72 @@ const supportedExecutionKinds = [
   "packages",
   "tasks",
 ];
+const transformerFallbackAdditions = [
+  {
+    phaseId: "networking",
+    action: {
+      id: "network.disable-teredo",
+      name: "Disable Teredo Tunneling",
+      description: "Disable Teredo IPv6 tunneling which encapsulates IPv6 packets within IPv4 UDP datagrams, adding latency overhead.",
+      risk: "safe",
+      default: false,
+      expertOnly: false,
+      requiresReboot: false,
+      warningMessage: null,
+      blockedProfiles: [],
+      minWindowsBuild: null,
+      executionKinds: ["registryChanges", "powerShellCommands"],
+    },
+  },
+  {
+    phaseId: "networking",
+    action: {
+      id: "network.disable-netbios",
+      name: "Disable NetBIOS over TCP/IP",
+      description: "Disable NetBIOS over TCP/IP by setting NodeType to P-node (2) and NetbiosOptions to disabled (2), preventing NetBIOS name resolution and session services.",
+      risk: "low",
+      default: false,
+      expertOnly: false,
+      requiresReboot: true,
+      warningMessage: null,
+      blockedProfiles: ["work_pc"],
+      minWindowsBuild: null,
+      executionKinds: ["registryChanges"],
+    },
+  },
+  {
+    phaseId: "networking",
+    action: {
+      id: "network.disable-nagle",
+      name: "Disable Nagle's Algorithm (TCPNoDelay)",
+      description: "Disable Nagle's algorithm and set TCP acknowledgement frequency to 1, sending small packets immediately instead of buffering them.",
+      risk: "low",
+      default: false,
+      expertOnly: false,
+      requiresReboot: false,
+      warningMessage: null,
+      blockedProfiles: [],
+      minWindowsBuild: null,
+      executionKinds: ["registryChanges"],
+    },
+  },
+  {
+    phaseId: "networking",
+    action: {
+      id: "network.rss-queues-2",
+      name: "Set RSS Queues to 2",
+      description: "Configure Receive Side Scaling to use 2 RSS queues, distributing NIC interrupt processing across 2 CPU cores without over-allocating.",
+      risk: "low",
+      default: false,
+      expertOnly: false,
+      requiresReboot: false,
+      warningMessage: null,
+      blockedProfiles: [],
+      minWindowsBuild: null,
+      executionKinds: ["registryChanges"],
+    },
+  },
+];
 
 function stripQuotes(value) {
   return value.replace(/^"/, "").replace(/"$/, "").replace(/^'/, "").replace(/'$/, "");
@@ -325,6 +391,13 @@ function main() {
     if (serializedPhase.actions.length > 0) {
       output.phases.push(serializedPhase);
     }
+  }
+
+  for (const { phaseId, action } of transformerFallbackAdditions) {
+    const phase = output.phases.find((entry) => entry.id === phaseId);
+    if (!phase) continue;
+    if (phase.actions.some((entry) => entry.id === action.id)) continue;
+    phase.actions.push(action);
   }
 
   fs.writeFileSync(outputPath, `${JSON.stringify(output, null, 2)}\n`);

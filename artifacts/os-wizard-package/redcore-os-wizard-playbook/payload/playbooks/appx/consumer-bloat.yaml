@@ -1,5 +1,4 @@
-# ─── AppX: Consumer Bloat Removal ─────────────────────────────────────────────
-# Removes pre-installed consumer bloatware, Cortana, Office Hub, and Phone Link.
+# AppX: Consumer Bloat Removal
 
 module: appx.consumer-bloat
 name: "Consumer Bloat Removal"
@@ -34,7 +33,7 @@ actions:
       - Microsoft.SkypeApp
 
   - id: appx.remove-cortana
-    name: "Remove Cortana App"
+    name: "Remove TRASH Cortana App"
     description: "Remove the Cortana UWP application"
     rationale: "Frees resources and removes a rarely-used voice assistant"
     risk: low

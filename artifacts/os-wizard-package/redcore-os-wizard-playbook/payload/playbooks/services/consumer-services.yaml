@@ -1,35 +1,35 @@
-# ─── Services: Consumer Services ──────────────────────────────────────────────
-# Disables Print Spooler, Remote Access, and Xbox services.
+# Services: Consumer & Background Services
 
 module: services.consumer-services
 name: "Consumer Service Reduction"
-description: "Disable Print Spooler, Remote Access, and Xbox services to reduce attack surface and resource usage"
+description: "Disable consumer, gaming, media, and background services to reduce attack surface and resource usage"
 category: services
 
 actions:
   - id: services.disable-print-spooler
     name: "Disable Print Spooler"
-    description: "Disable the Print Spooler service which manages print queues. Safe to disable on gaming systems with no printers."
-    rationale: "The Print Spooler loads multiple DLLs and has been the target of multiple critical security vulnerabilities (PrintNightmare CVE-2021-34527)."
+    description: "Disable Print Spooler — manages print queues. Safe to disable on systems with no printers."
+    rationale: "Print Spooler loads multiple DLLs and has been the target of critical security vulnerabilities (PrintNightmare CVE-2021-34527). Disabling eliminates this attack surface."
     risk: low
     tier: free
-    default: true
+    default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
     blockedProfiles:
       - work_pc
+      - office_laptop
     serviceChanges:
       - name: Spooler
         startupType: Disabled
 
   - id: services.disable-remote-services
     name: "Disable Remote Access Services"
-    description: "Disable Remote Desktop, Remote Registry, and Remote Assistance services that allow external connections to this PC"
-    rationale: "Remote access services listen for incoming connections and maintain authentication state. On a dedicated gaming PC, these represent unnecessary attack surface."
+    description: "Disable Remote Desktop, Remote Registry, and Remote Assistance — external connection listeners"
+    rationale: "Remote access services maintain listening sockets and authentication state. On a dedicated PC without remote administration needs, they are pure attack surface."
     risk: safe
     tier: free
-    default: true
+    default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 3
@@ -51,11 +51,11 @@ actions:
 
   - id: services.disable-xbox-services
     name: "Disable Xbox Background Services"
-    description: "Disable Xbox Live Auth Manager, Xbox Live Game Save, and Xbox Accessory Management services"
-    rationale: "Xbox services run in the background even without Xbox hardware or Game Pass. They consume resources and maintain network connections to Xbox Live."
+    description: "Disable Xbox Live Auth, Game Save, Networking, and Accessory services"
+    rationale: "Xbox services run in the background even without Xbox hardware or Game Pass. They consume resources and maintain network connections."
     risk: low
     tier: free
-    default: true
+    default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 3
@@ -69,4 +69,216 @@ actions:
       - name: XboxNetApiSvc
         startupType: Disabled
       - name: XboxGipSvc
+        startupType: Disabled
+
+  - id: services.disable-fax
+    name: "Disable Fax Service"
+    description: "Disable the Fax service — legacy fax modem support"
+    rationale: "Fax service is a legacy holdover. It loads COM objects and maintains network listeners for fax reception."
+    risk: safe
+    tier: free
+    default: false
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles:
+      - work_pc
+    serviceChanges:
+      - name: Fax
+        startupType: Disabled
+
+  - id: services.disable-phone-service
+    name: "Disable Phone Service"
+    description: "Disable PhoneSvc — telephony state management for Your Phone / Phone Link"
+    rationale: "PhoneSvc manages telephony state for the Phone Link companion app. Unnecessary unless actively using Phone Link."
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles:
+      - work_pc
+    serviceChanges:
+      - name: PhoneSvc
+        startupType: Disabled
+
+  - id: services.disable-wallet-service
+    name: "Disable Wallet Service"
+    description: "Disable WalletService — NFC tap-to-pay and wallet credential management"
+    rationale: "WalletService manages NFC payment credentials. Desktops have no NFC hardware, laptops rarely use it."
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    serviceChanges:
+      - name: WalletService
+        startupType: Disabled
+
+  - id: services.disable-bluetooth-support
+    name: "Disable Bluetooth Support Service"
+    description: "Disable bthserv — Bluetooth device discovery and pairing"
+    rationale: "On desktop systems without Bluetooth hardware, this service runs idle. On systems with Bluetooth, enable manually."
+    risk: low
+    tier: free
+    default: false
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles:
+      - office_laptop
+      - gaming_laptop
+      - work_pc
+    serviceChanges:
+      - name: bthserv
+        startupType: Disabled
+
+  - id: services.disable-alljoyn-router
+    name: "Disable AllJoyn Router"
+    description: "Disable AllJoyn Router Service — IoT device communication protocol"
+    rationale: "AllJoyn is an IoT protocol rarely used on desktop Windows. The router service listens for device advertisements."
+    risk: safe
+    tier: free
+    default: false
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    serviceChanges:
+      - name: AJRouter
+        startupType: Disabled
+
+  - id: services.disable-mixed-reality
+    name: "Disable Windows Mixed Reality"
+    description: "Disable MixedRealityOpenXRSvc and Windows Perception services"
+    rationale: "Windows Mixed Reality services run idle on systems without VR headsets. They load perception-related DLLs unnecessarily."
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 3
+    blockedProfiles: []
+    serviceChanges:
+      - name: MixedRealityOpenXRSvc
+        startupType: Disabled
+      - name: spectrum
+        startupType: Disabled
+
+  - id: services.disable-geolocation
+    name: "Disable Geolocation Service"
+    description: "Disable lfsvc — Windows location framework service"
+    rationale: "Geolocation service provides location data to apps. On desktops this typically uses IP-based geolocation with limited accuracy and a privacy cost."
+    risk: safe
+    tier: free
+    default: false
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles:
+      - office_laptop
+    serviceChanges:
+      - name: lfsvc
+        startupType: Disabled
+
+  - id: services.disable-wmp-network-sharing
+    name: "Disable Windows Media Player Network Sharing"
+    description: "Disable WMPNetworkSvc — DLNA/UPnP media server"
+    rationale: "WMP Network Sharing acts as a media server, exposing media files over the local network. Unnecessary unless streaming media to other devices."
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    serviceChanges:
+      - name: WMPNetworkSvc
+        startupType: Disabled
+
+  - id: services.disable-smart-card
+    name: "Disable Smart Card Services"
+    description: "Disable SCardSvr and ScDeviceEnum — smart card reader support"
+    rationale: "Smart card services maintain reader device state. Unnecessary on systems without smart card hardware."
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles:
+      - work_pc
+    serviceChanges:
+      - name: SCardSvr
+        startupType: Disabled
+      - name: ScDeviceEnum
+        startupType: Disabled
+
+  - id: services.disable-secondary-logon
+    name: "Disable Secondary Logon"
+    description: "Disable seclogon — 'Run as different user' support"
+    rationale: "Secondary Logon allows running processes under alternate credentials. On single-user systems, this is unnecessary attack surface."
+    risk: low
+    tier: free
+    default: false
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles:
+      - work_pc
+    serviceChanges:
+      - name: seclogon
+        startupType: Disabled
+
+  - id: services.disable-touch-keyboard
+    name: "Disable Touch Keyboard & Handwriting"
+    description: "Disable TabletInputService — touch keyboard, handwriting, and pen input"
+    rationale: "On desktop systems without touch screens, this service loads input method editors and handwriting recognition unnecessarily. Laptops with touchscreens need this."
+    risk: low
+    tier: free
+    default: false
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles:
+      - office_laptop
+      - gaming_laptop
+      - work_pc
+    serviceChanges:
+      - name: TabletInputService
+        startupType: Disabled
+
+  - id: services.disable-wer-service
+    name: "Disable Windows Error Reporting Service"
+    description: "Disable WerSvc — crash dump collection and upload"
+    rationale: "WerSvc collects crash dumps and uploads them to Microsoft. Disabling prevents automatic crash data exfiltration while keeping local crash handling intact."
+    risk: safe
+    tier: free
+    default: false
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    serviceChanges:
+      - name: WerSvc
+        startupType: Disabled
+
+  - id: services.disable-push-notifications
+    name: "Disable Windows Push Notification Service"
+    description: "Disable WpnUserService — per-user push notification relay. WpnService (system) is kept to prevent Explorer notification crashes."
+    rationale: "WPN user service relays cloud push notifications from Store apps. The system WpnService must stay enabled as Explorer's notification system depends on it."
+    risk: low
+    tier: free
+    default: false
+    requiresReboot: true
+    reversible: true
+    estimatedSeconds: 3
+    blockedProfiles:
+      - work_pc
+      - office_laptop
+    serviceChanges:
+      - name: WpnUserService
         startupType: Disabled

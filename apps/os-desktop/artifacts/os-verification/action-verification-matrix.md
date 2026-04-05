@@ -82,11 +82,6 @@
 | perf.mmcss-system-responsiveness | tier3 | requires reboot to verify fully | registry | snapshot |
 | perf.ntfs-optimization | tier3 | requires reboot to verify fully | registry, registry, registry, registry | snapshot |
 | perf.svchost-split-threshold | tier3 | requires reboot to verify fully | registry | snapshot |
-| personalize.accent-color-black | tier1 | requires reboot to verify fully | none | snapshot |
-| personalize.dark-mode | tier1 | partially verified on real Windows | registry, registry | snapshot |
-| personalize.login-screen-dark | tier1 | partially verified on real Windows | none | snapshot |
-| personalize.max-refresh-rate | tier1 | executable but readback not yet implemented | powershell | snapshot |
-| personalize.ouden-wallpaper | tier1 | executable but readback not yet implemented | powershell | snapshot |
 | power.disable-device-power-saving | tier3 | blocked by profile by design | power | snapshot |
 | power.disable-fast-startup | tier3 | partially verified on real Windows | registry | snapshot |
 | power.disable-hibernation | tier3 | partially verified on real Windows | registry | snapshot |

@@ -1,5 +1,4 @@
-# ─── Privacy: Input Collection ────────────────────────────────────────────────
-# Disables input personalization, device monitoring, app reprovisioning, and SmartScreen.
+# Privacy: Input Collection
 
 module: privacy.input-collection
 name: "Input & Data Collection Reduction"
@@ -51,7 +50,7 @@ actions:
   - id: privacy.block-app-reprovisioning
     name: "Block Removed Apps from Reinstalling"
     description: "Block previously removed AppX packages from being reinstalled by Windows Update by creating the Deprovisioned registry key"
-    rationale: "Windows Update can silently reinstall removed AppX packages during feature updates. Creating the Deprovisioned key prevents this reprovisioning behavior."
+    rationale: "Windows Update can silently reinstall removed AppX packages during feature updates"
     risk: low
     tier: free
     default: true

@@ -50,7 +50,7 @@ export default async function updateRoutes(app: FastifyInstance): Promise<void> 
     const { version, platform } = parsed.data;
 
     // Latest version from env or default
-    const latestVersion = process.env.LATEST_APP_VERSION ?? '0.1.0';
+    const latestVersion = process.env.LATEST_APP_VERSION ?? '0.1.1';
     const downloadBaseUrl =
       process.env.UPDATE_DOWNLOAD_URL ?? 'https://releases.redcore-os.com';
     const isCritical = process.env.CRITICAL_UPDATE === 'true';

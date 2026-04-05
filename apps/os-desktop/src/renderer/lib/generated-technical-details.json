@@ -348,68 +348,6 @@
       "Microsoft.Windows.AIHub"
     ]
   },
-  "network.disable-nagle": {
-    "registryChanges": [
-      {
-        "hive": "HKLM",
-        "path": "SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters\\Interfaces\\<Interface GUID>",
-        "valueName": "TcpAckFrequency",
-        "value": 1,
-        "valueType": "DWord"
-      },
-      {
-        "hive": "HKLM",
-        "path": "SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters\\Interfaces\\<Interface GUID>",
-        "valueName": "TCPNoDelay",
-        "value": 1,
-        "valueType": "DWord"
-      }
-    ]
-  },
-  "network.rss-queues-2": {
-    "registryChanges": [
-      {
-        "hive": "HKLM",
-        "path": "SYSTEM\\CurrentControlSet\\Control\\Class\\{4d36e972-e325-11ce-bfc1-08002be10318}\\<Adapter Index>",
-        "valueName": "*NumRssQueues",
-        "value": 2,
-        "valueType": "DWord"
-      }
-    ]
-  },
-  "network.qos-dscp-fix": {
-    "registryChanges": [
-      {
-        "hive": "HKLM",
-        "path": "SYSTEM\\CurrentControlSet\\Services\\Tcpip\\QoS",
-        "valueName": "Do not use NLA",
-        "value": "1",
-        "valueType": "String"
-      }
-    ]
-  },
-  "network.disable-ipv6": {
-    "registryChanges": [
-      {
-        "hive": "HKLM",
-        "path": "SYSTEM\\CurrentControlSet\\Services\\Tcpip6\\Parameters",
-        "valueName": "DisabledComponents",
-        "value": 255,
-        "valueType": "DWord"
-      }
-    ]
-  },
-  "network.disable-teredo": {
-    "registryChanges": [
-      {
-        "hive": "HKLM",
-        "path": "SYSTEM\\CurrentControlSet\\Services\\Tcpip6\\Parameters",
-        "valueName": "DisabledComponents",
-        "value": 1,
-        "valueType": "DWord"
-      }
-    ]
-  },
   "network.disable-llmnr": {
     "registryChanges": [
       {
@@ -417,24 +355,6 @@
         "path": "SOFTWARE\\Policies\\Microsoft\\Windows NT\\DNSClient",
         "valueName": "EnableMulticast",
         "value": 0,
-        "valueType": "DWord"
-      }
-    ]
-  },
-  "network.disable-netbios": {
-    "registryChanges": [
-      {
-        "hive": "HKLM",
-        "path": "SYSTEM\\CurrentControlSet\\Services\\NetBT\\Parameters",
-        "valueName": "NodeType",
-        "value": 2,
-        "valueType": "DWord"
-      },
-      {
-        "hive": "HKLM",
-        "path": "SYSTEM\\CurrentControlSet\\Services\\NetBT\\Parameters\\Interfaces",
-        "valueName": "NetbiosOptions",
-        "value": 2,
         "valueType": "DWord"
       }
     ]
@@ -447,53 +367,6 @@
         "valueName": "SMB1",
         "value": 0,
         "valueType": "DWord"
-      },
-      {
-        "hive": "HKLM",
-        "path": "SYSTEM\\CurrentControlSet\\Services\\mrxsmb10",
-        "valueName": "Start",
-        "value": 4,
-        "valueType": "DWord"
-      }
-    ]
-  },
-  "network.disable-wpad": {
-    "registryChanges": [
-      {
-        "hive": "HKCU",
-        "path": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Internet Settings\\Wpad",
-        "valueName": "WpadOverride",
-        "value": 1,
-        "valueType": "DWord"
-      },
-      {
-        "hive": "HKLM",
-        "path": "SYSTEM\\CurrentControlSet\\Services\\WinHttpAutoProxySvc",
-        "valueName": "Start",
-        "value": 4,
-        "valueType": "DWord"
-      }
-    ]
-  },
-  "network.disable-mdns": {
-    "registryChanges": [
-      {
-        "hive": "HKLM",
-        "path": "SYSTEM\\CurrentControlSet\\Services\\Dnscache\\Parameters",
-        "valueName": "EnableMDNS",
-        "value": 0,
-        "valueType": "DWord"
-      }
-    ]
-  },
-  "network.disable-network-location-wizard": {
-    "registryChanges": [
-      {
-        "hive": "HKLM",
-        "path": "SYSTEM\\CurrentControlSet\\Control\\Network\\NewNetworkWindowOff",
-        "valueName": "",
-        "value": "",
-        "valueType": "String"
       }
     ]
   },
@@ -522,39 +395,6 @@
         "path": "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile",
         "valueName": "SystemResponsiveness",
         "value": 10,
-        "valueType": "DWord"
-      }
-    ]
-  },
-  "perf.disable-service-host-split": {
-    "registryChanges": [
-      {
-        "hive": "HKLM",
-        "path": "SYSTEM\\CurrentControlSet\\Control",
-        "valueName": "SvcHostSplitThresholdInKB",
-        "value": 4294967295,
-        "valueType": "DWord"
-      }
-    ]
-  },
-  "perf.disable-paging-executive": {
-    "registryChanges": [
-      {
-        "hive": "HKLM",
-        "path": "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management",
-        "valueName": "DisablePagingExecutive",
-        "value": 1,
-        "valueType": "DWord"
-      }
-    ]
-  },
-  "perf.disable-fault-tolerant-heap": {
-    "registryChanges": [
-      {
-        "hive": "HKLM",
-        "path": "SOFTWARE\\Microsoft\\FTH",
-        "valueName": "Enabled",
-        "value": 0,
         "valueType": "DWord"
       }
     ]
@@ -901,17 +741,6 @@
       }
     ]
   },
-  "perf.disable-mpos": {
-    "registryChanges": [
-      {
-        "hive": "HKLM",
-        "path": "SOFTWARE\\Microsoft\\Windows\\Dwm",
-        "valueName": "OverlayTestMode",
-        "value": 5,
-        "valueType": "DWord"
-      }
-    ]
-  },
   "perf.disable-gamebar-presence": {
     "registryChanges": [
       {
@@ -1240,6 +1069,56 @@
       {
         "name": "WSearch",
         "startupType": "Disabled"
+      }
+    ]
+  },
+  "personalize.dark-mode": {
+    "registryChanges": [
+      {
+        "hive": "HKCU",
+        "path": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize",
+        "valueName": "SystemUsesLightTheme",
+        "value": 0,
+        "valueType": "DWord"
+      },
+      {
+        "hive": "HKCU",
+        "path": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize",
+        "valueName": "AppsUseLightTheme",
+        "value": 0,
+        "valueType": "DWord"
+      }
+    ]
+  },
+  "personalize.accent-color-black": {
+    "registryChanges": [
+      {
+        "hive": "HKCU",
+        "path": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Accent",
+        "valueName": "AccentColorMenu",
+        "value": 0,
+        "valueType": "DWord"
+      },
+      {
+        "hive": "HKCU",
+        "path": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Accent",
+        "valueName": "StartColorMenu",
+        "value": 0,
+        "valueType": "DWord"
+      },
+      {
+        "hive": "HKCU",
+        "path": "SOFTWARE\\Microsoft\\Windows\\DWM",
+        "valueName": "ColorPrevalence",
+        "value": 0,
+        "valueType": "DWord"
+      },
+      {
+        "hive": "HKCU",
+        "path": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize",
+        "valueName": "ColorPrevalence",
+        "value": 0,
+        "valueType": "DWord"
       }
     ]
   },
@@ -2333,30 +2212,6 @@
       }
     ]
   },
-  "services.disable-diagnostic-services": {
-    "serviceChanges": [
-      {
-        "name": "DPS",
-        "startupType": "Disabled"
-      },
-      {
-        "name": "WdiServiceHost",
-        "startupType": "Disabled"
-      },
-      {
-        "name": "WdiSystemHost",
-        "startupType": "Disabled"
-      }
-    ]
-  },
-  "services.disable-pca-service": {
-    "serviceChanges": [
-      {
-        "name": "PcaSvc",
-        "startupType": "Disabled"
-      }
-    ]
-  },
   "services.disable-tiledatamodelsvc": {
     "serviceChanges": [
       {
@@ -2715,39 +2570,6 @@
       }
     ]
   },
-  "shell.restore-classic-context-menu": {
-    "registryChanges": [
-      {
-        "hive": "HKCU",
-        "path": "Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a8}\\InprocServer32",
-        "valueName": "",
-        "value": "",
-        "valueType": "String"
-      }
-    ]
-  },
-  "shell.remove-share-context": {
-    "registryChanges": [
-      {
-        "hive": "HKCU",
-        "path": "SOFTWARE\\Classes\\*\\shellex\\ContextMenuHandlers\\ModernSharing",
-        "valueName": "",
-        "value": "",
-        "valueType": "String"
-      }
-    ]
-  },
-  "shell.remove-give-access-to": {
-    "registryChanges": [
-      {
-        "hive": "HKCU",
-        "path": "SOFTWARE\\Classes\\*\\shellex\\ContextMenuHandlers\\Sharing",
-        "valueName": "",
-        "value": "",
-        "valueType": "String"
-      }
-    ]
-  },
   "shell.remove-cast-to-device": {
     "registryChanges": [
       {
@@ -2755,17 +2577,6 @@
         "path": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Shell Extensions\\Blocked",
         "valueName": "{7AD84985-87B4-4a16-BE58-8B72A5B390F7}",
         "value": "Play To menu",
-        "valueType": "String"
-      }
-    ]
-  },
-  "shell.remove-include-in-library": {
-    "registryChanges": [
-      {
-        "hive": "HKCU",
-        "path": "SOFTWARE\\Classes\\Folder\\shellex\\ContextMenuHandlers\\Library Location",
-        "valueName": "",
-        "value": "",
         "valueType": "String"
       }
     ]
@@ -3055,7 +2866,7 @@
         "hive": "HKLM",
         "path": "SYSTEM\\CurrentControlSet\\Control",
         "valueName": "WaitToKillServiceTimeout",
-        "value": "2000",
+        "value": "3000",
         "valueType": "String"
       }
     ]

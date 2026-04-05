@@ -1,13 +1,12 @@
 {
   "questionCount": 67,
-  "actionCount": 222,
+  "actionCount": 217,
   "proofStatusCounts": {
-    "partially verified on real Windows": 106,
+    "partially verified on real Windows": 104,
     "not safely machine-verifiable yet": 32,
     "blocked by profile by design": 45,
-    "requires reboot to verify fully": 30,
-    "expert-only / intentionally not broadly verified yet": 7,
-    "executable but readback not yet implemented": 2
+    "requires reboot to verify fully": 29,
+    "expert-only / intentionally not broadly verified yet": 7
   },
   "unsupportedActions": []
 }

@@ -1,5 +1,4 @@
-# ─── Performance: Power Configuration ─────────────────────────────────────────
-# High Performance plan, disable fast startup, hibernation, USB suspend, PCIe PM.
+# Performance: Power Configuration
 
 module: performance.power
 name: "Power Configuration"
@@ -115,3 +114,22 @@ actions:
         valueName: PlatformAoAcOverride
         value: 0
         valueType: DWord
+
+  - id: power.disable-device-power-saving
+    name: "Disable Device Power Saving"
+    description: "Disable power management for USB, NIC, and PCI devices"
+    rationale: "Power-saving modes on devices add wake-up latency (1-5ms). Disabling ensures USB polling, network packets, and PCI devices respond without delay."
+    risk: low
+    tier: free
+    default: false
+    expertOnly: false
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 5
+    blockedProfiles:
+      - office_laptop
+      - gaming_laptop
+    powerChanges:
+      - settingPath: "device_power_management"
+        value: "disabled"
+        scope: "all_devices"

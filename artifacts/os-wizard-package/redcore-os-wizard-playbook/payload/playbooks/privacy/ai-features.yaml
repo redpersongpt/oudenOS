@@ -1,5 +1,4 @@
-# ─── Privacy: AI Features ────────────────────────────────────────────────────
-# Comprehensive AI feature control from the redcore internal research set.
+# Privacy: AI Features
 
 module: privacy.ai
 name: "AI Feature Control"
@@ -75,6 +74,7 @@ actions:
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
+    minWindowsBuild: 22000
     blockedProfiles: []
     registryChanges:
       - hive: HKLM
@@ -93,6 +93,7 @@ actions:
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
+    minWindowsBuild: 22000
     blockedProfiles: []
     registryChanges:
       - hive: HKLM
@@ -128,6 +129,7 @@ actions:
 
   - id: privacy.disable-paint-ai
     name: "Disable Paint AI Features"
+    minWindowsBuild: 26100
     description: "Disable AI-powered Cocreator, Image Creator, and Generative tools in Paint"
     rationale: "Paint AI features send image data to cloud for processing"
     risk: safe
@@ -166,6 +168,7 @@ actions:
 
   - id: privacy.disable-notepad-ai
     name: "Disable Notepad AI Features"
+    minWindowsBuild: 26100
     description: "Disable AI-powered text generation and rewriting in Notepad"
     rationale: "Notepad AI features send text content to cloud"
     risk: safe
@@ -184,6 +187,7 @@ actions:
 
   - id: privacy.disable-smart-app-control
     name: "Disable Smart App Control"
+    minWindowsBuild: 22000
     description: "Disable cloud-based app reputation checking"
     rationale: "Smart App Control sends app execution data to Microsoft cloud"
     risk: low

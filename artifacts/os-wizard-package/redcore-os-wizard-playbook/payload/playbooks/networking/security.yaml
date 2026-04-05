@@ -1,19 +1,19 @@
-# ─── Networking: Security Hardening ───────────────────────────────────────────
-# Disables LLMNR to prevent poisoning attacks.
+# Networking: Security Hardening
+# Only keeping tweaks that CANNOT break connectivity.
 
 module: networking.security
 name: "Network Security Hardening"
-description: "Disable insecure network protocols: LLMNR"
+description: "Disable insecure protocols that cannot break connectivity"
 category: networking
 
 actions:
   - id: network.disable-llmnr
-    name: "Disable Link-Local Multicast Name Resolution"
-    description: "Disable LLMNR by setting EnableMulticast to 0, preventing the system from responding to or sending LLMNR queries"
-    rationale: "LLMNR is vulnerable to poisoning attacks where an attacker responds to name resolution queries to capture credentials (NTLMv2 hashes). Disabling it forces DNS-only resolution."
-    risk: low
+    name: "Disable LLMNR"
+    description: "Disable Link-Local Multicast Name Resolution — prevents NTLM hash capture attacks"
+    risk: safe
     tier: free
-    default: true
+    default: false
+    expertOnly: true
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
@@ -25,3 +25,49 @@ actions:
         valueName: EnableMulticast
         value: 0
         valueType: DWord
+
+  - id: network.disable-smbv1
+    name: "Disable SMBv1 Protocol"
+    description: "Disable the legacy SMBv1 file sharing protocol (WannaCry vector)"
+    risk: low
+    tier: free
+    default: false
+    expertOnly: true
+    requiresReboot: true
+    reversible: true
+    estimatedSeconds: 3
+    blockedProfiles:
+      - work_pc
+    registryChanges:
+      - hive: HKLM
+        path: "SYSTEM\\CurrentControlSet\\Services\\LanmanServer\\Parameters"
+        valueName: SMB1
+        value: 0
+        valueType: DWord
+
+  - id: network.harden-windows-firewall-defaults
+    name: "Harden Windows Firewall Defaults"
+    description: "Block inbound, allow outbound on all firewall profiles"
+    risk: safe
+    tier: free
+    default: false
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 3
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKLM
+        path: "SYSTEM\\CurrentControlSet\\Services\\SharedAccess\\Parameters\\FirewallPolicy\\PublicProfile"
+        valueName: DefaultInboundAction
+        value: 1
+        valueType: DWord
+      - hive: HKLM
+        path: "SYSTEM\\CurrentControlSet\\Services\\SharedAccess\\Parameters\\FirewallPolicy\\StandardProfile"
+        valueName: DefaultInboundAction
+        value: 1
+        valueType: DWord
+
+# REMOVED: NetBIOS disable — breaks ethernet on some systems
+# REMOVED: WPAD disable — breaks internet on corporate/proxy networks  
+# REMOVED: mDNS disable — breaks local network discovery
+# REMOVED: Network Location Wizard disable — confuses network setup
