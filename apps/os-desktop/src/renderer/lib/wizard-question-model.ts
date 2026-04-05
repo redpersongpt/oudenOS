@@ -623,12 +623,12 @@ export const strategyQuestions: StrategyQuestionDefinition[] = [
     "restoreClassicContextMenu",
     "Wrench",
     "Right-Click Menu",
-    "Restore the full right-click menu?",
-    "Windows 11 hides most options behind 'Show more options'. This brings back the classic full menu and removes clutter entries.",
-    "Yes — restore full menu",
-    "Full right-click menu with all options visible instantly.",
-    "No — keep compact menu",
-    "Keeps the compact Windows 11 right-click menu.",
+    "Clean up extra right-click menu clutter?",
+    "Keeps the stock Windows 11 context menu style but removes a few noisy legacy entries using the safe Shell Extensions Blocked path only.",
+    "Yes — clean up extra entries",
+    "Hides low-value items like Cast to Device and Paint 3D without using the crash-prone classic-menu hack.",
+    "No — keep every stock entry",
+    "Leaves the default Windows context menu entries alone.",
     { visibility: { minWindowsBuild: 22000 } },
   ),
   makeBooleanQuestion(
@@ -1938,12 +1938,11 @@ const QUESTION_BEHAVIORS: Record<keyof QuestionnaireAnswers, StrategyQuestionBeh
   ),
   restoreClassicContextMenu: createBooleanBehavior(
     [
-      "shell.restore-classic-context-menu",
       "shell.remove-cast-to-device",
       "shell.remove-troubleshoot-compatibility",
       "shell.remove-edit-with-paint3d",
     ],
-    "You chose to keep the default Windows 11 compact context menu and shell clutter.",
+    "You chose to keep the stock Windows context menu entries.",
   ),
   enableEndTask: createBooleanBehavior(
     ["shell.enable-end-task"],
@@ -2205,4 +2204,3 @@ export function resolveQuestionnairePersonalization(
 
   return resolved;
 }
-

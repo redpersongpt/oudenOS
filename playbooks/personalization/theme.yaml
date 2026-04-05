@@ -3,7 +3,7 @@
 
 module: personalization.theme
 name: "System Theme"
-description: "Set system colors, login screen, and shutdown screen to match Ouden dark theme"
+description: "Set desktop system colors to match the Ouden dark theme"
 category: personalization
 
 actions:
@@ -63,35 +63,6 @@ actions:
         path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize"
         valueName: ColorPrevalence
         value: 0
-        valueType: DWord
-
-  - id: personalize.login-screen-dark
-    name: "Dark Login Screen"
-    description: "Set the Windows login/lock screen background to solid dark color instead of Windows Spotlight images"
-    risk: safe
-    tier: free
-    default: true
-    requiresReboot: false
-    reversible: true
-    estimatedSeconds: 2
-    blockedProfiles: []
-    registryChanges:
-      # Disable Windows Spotlight on lock screen
-      - hive: HKCU
-        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager"
-        valueName: RotatingLockScreenEnabled
-        value: 0
-        valueType: DWord
-      - hive: HKCU
-        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager"
-        valueName: RotatingLockScreenOverlayEnabled
-        value: 0
-        valueType: DWord
-      # Use solid color for lock screen background
-      - hive: HKLM
-        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\System"
-        valueName: DisableLockScreenImage
-        value: 1
         valueType: DWord
 
   - id: personalize.max-refresh-rate

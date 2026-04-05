@@ -166,30 +166,30 @@ export function getProfilePersonalizationDefaults(profileId?: string | null): Pe
     case "work_pc":
       return {
         darkMode: true,
-        brandAccent: true,
+        brandAccent: false,
         wallpaper: true,
         taskbarCleanup: false,
         explorerCleanup: false,
-        transparency: true,
+        transparency: false,
       };
     case "low_spec_system":
     case "low_spec":
       return {
         darkMode: true,
-        brandAccent: true,
+        brandAccent: false,
         wallpaper: true,
-        taskbarCleanup: true,
-        explorerCleanup: true,
+        taskbarCleanup: false,
+        explorerCleanup: false,
         transparency: false,
       };
     default:
       return {
         darkMode: true,
-        brandAccent: true,
+        brandAccent: false,
         wallpaper: true,
-        taskbarCleanup: true,
-        explorerCleanup: true,
-        transparency: true,
+        taskbarCleanup: false,
+        explorerCleanup: false,
+        transparency: false,
       };
   }
 }

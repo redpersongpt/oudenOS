@@ -13,7 +13,7 @@ actions:
     rationale: "CSRSS handles raw input, window management, and thread scheduling. Elevating its priority reduces input processing latency and window compositor delay."
     risk: low
     tier: free
-    default: true
+    default: false
     requiresReboot: true
     reversible: true
     estimatedSeconds: 2
@@ -36,7 +36,7 @@ actions:
     rationale: "MMCSS manages thread priority for multimedia/gaming workloads. Reducing SystemResponsiveness to 0 dedicates more CPU time to MMCSS-registered game threads."
     risk: low
     tier: free
-    default: true
+    default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 3
@@ -80,7 +80,7 @@ actions:
     rationale: "8.3 filenames are a DOS-era compatibility layer that adds overhead to every file creation. Last access timestamps cause a write on every file read. Both are unnecessary on modern gaming systems."
     risk: low
     tier: free
-    default: true
+    default: false
     requiresReboot: true
     reversible: true
     estimatedSeconds: 3

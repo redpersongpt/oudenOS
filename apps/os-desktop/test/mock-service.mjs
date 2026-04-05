@@ -28,7 +28,7 @@ rl.on("line", (line) => {
 function handleMethod(method, params) {
   switch (method) {
     case "system.status":
-      return { status: "running", uptimeSeconds: 42, version: "0.1.0" };
+      return { status: "running", uptimeSeconds: 42, version: "0.10.1" };
 
     case "system.reboot":
       return { status: "ok" };
@@ -117,10 +117,10 @@ function handleMethod(method, params) {
     case "personalize.options":
       return {
         darkMode: true,
-        brandAccent: true,
-        taskbarCleanup: true,
-        explorerCleanup: true,
-        wallpaper: false,
+        brandAccent: false,
+        taskbarCleanup: false,
+        explorerCleanup: false,
+        wallpaper: true,
         transparency: false
       };
 
@@ -274,4 +274,3 @@ function buildActionStatus(action, profile, preset, rules, windowsBuild) {
     blockedReason: null,
   };
 }
-
