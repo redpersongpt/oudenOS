@@ -292,7 +292,6 @@ const supportedRegistryPlaceholders = [
 ];
 
 const QUESTION_SCENARIOS: Partial<Record<keyof QuestionnaireAnswers, QuestionScenario>> = {
-  disableDynamicTick: { profile: "gaming_desktop", preset: "aggressive", aggressionPreset: "aggressive", windowsBuild: 22631 },
   disableSmartScreen: { profile: "gaming_desktop", preset: "aggressive", aggressionPreset: "aggressive", windowsBuild: 22631 },
   removeEdge: { profile: "gaming_desktop", preset: "aggressive", aggressionPreset: "aggressive", windowsBuild: 22631 },
   preserveWebView2: { profile: "gaming_desktop", preset: "aggressive", aggressionPreset: "aggressive", windowsBuild: 22631 },
@@ -837,7 +836,23 @@ function resolveForAnswer<K extends keyof QuestionnaireAnswers>(
 export function buildQuestionPlanDeltas(): QuestionPlanDelta[] {
   const deltas: QuestionPlanDelta[] = [];
   const booleanKeys = Object.keys(DEFAULT_QUESTIONNAIRE_ANSWERS).filter(
-    (key) => !["aggressionPreset", "edgeBehavior", "telemetryLevel"].includes(key),
+    (key) => ![
+      "aggressionPreset",
+      "edgeBehavior",
+      "telemetryLevel",
+      "globalTimerResolution",
+      "disableDynamicTick",
+      "disableMemoryCompression",
+      "disableHags",
+      "disableIpv6",
+      "disableTeredo",
+      "disableNetbios",
+      "disableNagle",
+      "disableNicOffloading",
+      "disableWindowsUpdate",
+      "disableFaultTolerantHeap",
+      "disableMPOs",
+    ].includes(key),
   ) as Array<Exclude<keyof QuestionnaireAnswers, "aggressionPreset" | "edgeBehavior" | "telemetryLevel">>;
 
   for (const key of booleanKeys) {
@@ -1290,7 +1305,6 @@ export function loadAnswers(answersPath?: string): QuestionnaireAnswers {
       aggressionPreset: "balanced",
       highPerformancePlan: true,
       optimizeThreadPriority: true,
-      globalTimerResolution: true,
       disableGameDvr: true,
       disableFullscreenOptimizations: true,
       stripSearchWebNoise: true,

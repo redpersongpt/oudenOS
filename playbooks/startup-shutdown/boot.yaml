@@ -12,7 +12,7 @@ actions:
     rationale: "Game Bar injects a capture hook into every DirectX application, and Game DVR maintains a background recording buffer consuming GPU encode resources."
     risk: safe
     tier: free
-    default: true
+    default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 3
@@ -40,7 +40,7 @@ actions:
     rationale: "Pointer acceleration applies a non-linear multiplier to mouse movement based on speed, making precise aiming inconsistent in games."
     risk: safe
     tier: free
-    default: true
+    default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
@@ -68,7 +68,7 @@ actions:
     rationale: "Audio enhancements add DSP processing stages in the audio pipeline, increasing DPC latency from audio drivers."
     risk: safe
     tier: free
-    default: true
+    default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
@@ -86,7 +86,7 @@ actions:
     rationale: "WASAPI exclusive mode gives an application direct access to the audio hardware, bypassing the Windows Audio Session mixer, eliminating resampling and mixing latency."
     risk: low
     tier: premium
-    default: true
+    default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2

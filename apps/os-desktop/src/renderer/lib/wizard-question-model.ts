@@ -321,23 +321,6 @@ export const strategyQuestions: StrategyQuestionDefinition[] = [
     },
   ),
   makeBooleanQuestion(
-    "globalTimerResolution",
-    "Clock",
-    "Timer Fix",
-    "Fix the Windows timer for better game performance?",
-    "Windows 11 changed timer resolution to per-process (24H2+). This sets GlobalTimerResolutionRequests=1 to restore the global 0.5ms timer that games rely on for consistent frame pacing.",
-    "Yes — restore global timer behavior",
-    "Sets kernel GlobalTimerResolutionRequests=1. Reduces timer jitter from ~15.6ms to ~0.5ms. Directly improves frame pacing.",
-    "No — keep modern per-app timer",
-    "Keeps per-process timer. Some games may have inconsistent frame times.",
-    {
-      note: "Registry: HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\kernel. Only effective on Win11 22H2+ / Server 2022+.",
-      visibility: { minPreset: "balanced" },
-      yesBadge: "Latency",
-      yesBadgeColor: "bg-brand-500/15 text-brand-400",
-    },
-  ),
-  makeBooleanQuestion(
     "disableIndexing",
     "HardDrive",
     "Search Indexing",
@@ -747,34 +730,6 @@ export const strategyQuestions: StrategyQuestionDefinition[] = [
     },
   ),
   makeBooleanQuestion(
-    "disableMemoryCompression",
-    "Cpu",
-    "Memory",
-    "Optimize memory management?",
-    "Disables memory compression (Disable-MMAgent -MemoryCompression), fixes the known NDU driver memory leak (ndu.sys Start=4), and disables SysMain/Superfetch service.",
-    "Yes — optimize memory",
-    "Runs Disable-MMAgent, sets NDU Start=4, disables SysMain. Saves CPU overhead on 16GB+ systems. Fixes the ndu.sys leak that causes RAM usage to climb over uptime.",
-    "No — keep defaults",
-    "Keeps Windows default memory handling. Memory compression and SysMain stay active.",
-    {
-      visibility: { minPreset: "balanced" },
-    },
-  ),
-  makeBooleanQuestion(
-    "disableHags",
-    "Gamepad2",
-    "GPU Scheduling",
-    "Disable Hardware Accelerated GPU Scheduling (HAGS)?",
-    "HAGS (HwSchMode) offloads GPU memory scheduling to the GPU firmware. It reduces CPU overhead but can increase frame time variance and cause micro-stutters on some hardware.",
-    "Yes — disable HAGS",
-    "Sets HwSchMode=1 in registry. More predictable frame times. Preferred for competitive/esports titles.",
-    "No — keep HAGS enabled",
-    "Keeps HwSchMode=2. Can reduce CPU overhead but may cause inconsistent frame pacing.",
-    {
-      visibility: { minPreset: "balanced" },
-    },
-  ),
-  makeBooleanQuestion(
     "disableGpuTelemetry",
     "Gamepad2",
     "GPU Telemetry",
@@ -814,23 +769,6 @@ export const strategyQuestions: StrategyQuestionDefinition[] = [
     "Keeps the Windows compatibility layer.",
     {
       visibility: { minPreset: "balanced" },
-    },
-  ),
-  makeBooleanQuestion(
-    "disableDynamicTick",
-    "Clock",
-    "Dynamic Tick",
-    "Disable dynamic tick for lower latency?",
-    "Windows adjusts its internal timer dynamically. Fixing it gives more consistent timing, but uses slightly more power.",
-    "Yes — disable dynamic tick",
-    "More consistent timing. Good for competitive gaming.",
-    "No — keep dynamic tick",
-    "Keeps the power-saving timer behavior.",
-    {
-      note: "Advanced tweak. Best for dedicated gaming desktops only.",
-      visibility: { minPreset: "aggressive", excludeLaptop: true },
-      yesBadge: "Advanced",
-      yesBadgeColor: "bg-amber-500/15 text-amber-400",
     },
   ),
   makeBooleanQuestion(
@@ -917,24 +855,6 @@ export const strategyQuestions: StrategyQuestionDefinition[] = [
       note: "Cannot be easily re-enabled. Only for isolated gaming PCs that never browse or run unknown software.",
       visibility: { onlyPreset: "expert", excludeWorkPc: true },
       yesBadge: "Extreme Risk",
-      yesBadgeColor: "bg-red-500/15 text-red-400",
-      yesDanger: true,
-    },
-  ),
-  makeBooleanQuestion(
-    "disableWindowsUpdate",
-    "Shield",
-    "Windows Update",
-    "Stop all Windows updates?",
-    "Disables Windows Update completely. You will NOT receive security patches, bug fixes, or driver updates unless you manually re-enable it.",
-    "Yes — stop all updates",
-    "Full control. No surprise downloads or reboots.",
-    "No — keep updates",
-    "Keep updates. Security patches are important.",
-    {
-      note: "This disables 5 services. It's the honest version of what many debloat tools do silently.",
-      visibility: { minPreset: "aggressive", excludeWorkPc: true },
-      yesBadge: "High Risk",
       yesBadgeColor: "bg-red-500/15 text-red-400",
       yesDanger: true,
     },
@@ -1556,24 +1476,10 @@ const QUESTION_BEHAVIORS: Record<keyof QuestionnaireAnswers, StrategyQuestionBeh
     ["cpu.win32-priority-separation"],
     "You chose to keep default Windows thread scheduling behavior.",
   ),
-  globalTimerResolution: createBooleanBehavior(
-    ["cpu.global-timer-resolution"],
-    "You chose to keep modern per-process timer behavior.",
-    {
-      onTrue: {
-        requiresReboot: true,
-      },
-    },
-  ),
-  disableDynamicTick: createBooleanBehavior(
-    ["cpu.disable-dynamic-tick"],
-    "You chose to keep Windows dynamic tick enabled.",
-    {
-      onTrue: {
-        requiresReboot: true,
-      },
-    },
-  ),
+  // Retired for Windows stability. These Oneclick-style timer/BCD tweaks are
+  // kept in schema only so persisted state and audits remain backward compatible.
+  globalTimerResolution: { options: [{ value: true }, { value: false }] },
+  disableDynamicTick: { options: [{ value: true }, { value: false }] },
   disableCoreParking: createBooleanBehavior(
     ["cpu.disable-core-parking"],
     "You chose to keep CPU core parking behavior.",
@@ -1582,25 +1488,8 @@ const QUESTION_BEHAVIORS: Record<keyof QuestionnaireAnswers, StrategyQuestionBeh
     ["scheduler.mmcss-gaming-profile"],
     "You chose not to harden the MMCSS gaming profile.",
   ),
-  disableMemoryCompression: createBooleanBehavior(
-    [
-      "memory.disable-compression",
-      "perf.disable-ndu",
-      "perf.disable-prefetch",
-      "perf.svchost-split-threshold",
-      "perf.disable-page-combining",
-    ],
-    "You chose to keep Windows memory compression and related memory subsystem defaults.",
-    {
-      onTrue: {
-        requiresReboot: true,
-      },
-    },
-  ),
-  disableHags: createBooleanBehavior(
-    ["gpu.disable-hags"],
-    "You chose to keep HAGS at the Windows default.",
-  ),
+  disableMemoryCompression: { options: [{ value: true }, { value: false }] },
+  disableHags: { options: [{ value: true }, { value: false }] },
   disableGpuTelemetry: createBooleanBehavior(
     ["gpu.disable-nvidia-telemetry", "gpu.disable-amd-telemetry"],
     "You chose to keep GPU driver telemetry services active.",
@@ -1907,7 +1796,7 @@ const QUESTION_BEHAVIORS: Record<keyof QuestionnaireAnswers, StrategyQuestionBeh
     },
   ),
   disableDeliveryOptimization: createBooleanBehavior(
-    ["security.disable-delivery-optimization", "services.disable-delivery-optimization"],
+    ["security.disable-delivery-optimization"],
     "You chose to keep Delivery Optimization enabled.",
   ),
   disableFastStartup: createBooleanBehavior(
@@ -1991,26 +1880,7 @@ const QUESTION_BEHAVIORS: Record<keyof QuestionnaireAnswers, StrategyQuestionBeh
       },
     },
   ),
-  disableWindowsUpdate: createBooleanBehavior(
-    [
-      "services.disable-wuauserv",
-      "services.disable-update-orchestrator-svc",
-      "services.disable-waasmedic",
-      "services.disable-bits",
-      "services.disable-delivery-optimization",
-      "tasks.disable-update-tasks",
-    ],
-    "You chose to keep Windows Update services running.",
-    {
-      onTrue: {
-        warnings: [
-          "Stopping Windows Update means no security patches will be installed automatically.",
-          "You must manually re-enable these services to receive updates.",
-        ],
-        riskLevel: "aggressive",
-      },
-    },
-  ),
+  disableWindowsUpdate: { options: [{ value: true }, { value: false }] },
   disableMouseAcceleration: createBooleanBehavior(
     ["perf.disable-pointer-acceleration"],
     "You chose to keep Windows mouse acceleration enabled.",

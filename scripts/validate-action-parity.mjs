@@ -49,6 +49,11 @@ const TRANSFORMER_ONLY_ACTIONS = new Map([
 
 const COMPATIBILITY_ANSWER_KEYS = new Set([
   "disableIpv6",
+  "globalTimerResolution",
+  "disableDynamicTick",
+  "disableMemoryCompression",
+  "disableHags",
+  "disableWindowsUpdate",
 ]);
 
 // ─── Helpers ────────────────────────────────────────────────────────────────

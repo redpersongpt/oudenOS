@@ -20,7 +20,7 @@ actions:
     rationale: "Edge Update runs background checks and can reinstall Edge components. Disabling it stops this without affecting Edge functionality."
     risk: safe
     tier: free
-    default: true
+    default: false
     expertOnly: false
     requiresReboot: false
     reversible: true
@@ -51,7 +51,7 @@ actions:
     rationale: "Edge preloads into memory at login even if you never open it. Startup boost keeps Edge processes resident after closing. This reclaims 100-300 MB of RAM."
     risk: safe
     tier: free
-    default: true
+    default: false
     expertOnly: false
     requiresReboot: false
     reversible: true
@@ -80,7 +80,7 @@ actions:
     rationale: "Edge aggressively promotes itself as default browser on every launch and after updates. These policies silence the prompts."
     risk: safe
     tier: free
-    default: true
+    default: false
     expertOnly: false
     requiresReboot: false
     reversible: true

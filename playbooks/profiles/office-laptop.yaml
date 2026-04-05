@@ -7,7 +7,6 @@ preset: balanced
 
 blockedActions:
   # CPU latency actions - drain battery
-  - cpu.disable-dynamic-tick
   - cpu.disable-core-parking
   - cpu.aggressive-boost-mode
   - cpu.min-processor-state-100

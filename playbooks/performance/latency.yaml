@@ -6,43 +6,6 @@ description: "Optimize CPU and scheduler settings for lowest latency: dynamic ti
 category: performance
 
 actions:
-  - id: cpu.disable-dynamic-tick
-    name: "Disable Dynamic Tick and Enable Platform Timer"
-    description: "Disable the Windows dynamic tick mechanism via BCD, forcing a fixed timer interrupt interval. Enable the platform hardware timer (HPET/TSC) as the tick source to provide the lowest possible timer jitter."
-    rationale: "Dynamic tick allows Windows to skip timer interrupts during idle periods to save power. This creates variable timer resolution that can cause micro-stutter in latency-sensitive workloads."
-    risk: medium
-    tier: premium
-    default: false
-    requiresReboot: true
-    reversible: true
-    estimatedSeconds: 5
-    blockedProfiles:
-      - office_laptop
-      - low_spec_system
-    bcdChanges:
-      - element: disabledynamictick
-        newValue: "yes"
-      - element: useplatformtick
-        newValue: "yes"
-
-  - id: cpu.global-timer-resolution
-    name: "Enable Global Timer Resolution Requests"
-    description: "Set the GlobalTimerResolutionRequests registry key to restore system-wide timer resolution behavior on Windows 11+"
-    rationale: "Starting with Windows 10 2004, timer resolution requests became per-process instead of global. The GlobalTimerResolutionRequests registry key (Windows 11+ / Server 2022+) restores the pre-2004 global behavior."
-    risk: low
-    tier: premium
-    default: true
-    requiresReboot: true
-    reversible: true
-    estimatedSeconds: 3
-    blockedProfiles: []
-    registryChanges:
-      - hive: HKLM
-        path: "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\kernel"
-        valueName: GlobalTimerResolutionRequests
-        value: 1
-        valueType: DWord
-
   - id: cpu.disable-core-parking
     name: "Disable CPU Core Parking"
     description: "Set minimum processor cores to 100% on AC power, preventing Windows from parking cores during low load. Parked cores introduce 1-5 ms wake latency."

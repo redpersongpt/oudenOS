@@ -91,7 +91,7 @@ actions:
     tier: free
     default: true
     expertOnly: false
-    requiresReboot: true
+    requiresReboot: false
     reversible: true
     estimatedSeconds: 2
     blockedProfiles: []

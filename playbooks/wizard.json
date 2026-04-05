@@ -197,51 +197,6 @@
       ]
     },
     {
-      "key": "globalTimerResolution",
-      "icon": "Clock",
-      "label": "Timer Fix",
-      "title": "Fix the Windows timer for better game performance?",
-      "desc": "Windows 11 changed timer resolution to per-process (24H2+). This sets GlobalTimerResolutionRequests=1 to restore the global 0.5ms timer that games rely on for consistent frame pacing.",
-      "note": "Registry: HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\kernel. Only effective on Win11 22H2+ / Server 2022+.",
-      "visibility": {
-        "minPreset": "balanced"
-      },
-      "options": [
-        {
-          "value": true,
-          "title": "Yes — restore global timer behavior",
-          "desc": "Sets kernel GlobalTimerResolutionRequests=1. Reduces timer jitter from ~15.6ms to ~0.5ms. Directly improves frame pacing.",
-          "badge": "Latency",
-          "badgeColor": "bg-brand-500/15 text-brand-400",
-          "danger": false,
-          "behavior": {
-            "value": true,
-            "includeActions": [
-              "cpu.global-timer-resolution"
-            ],
-            "estimatedActions": 1,
-            "requiresReboot": true
-          }
-        },
-        {
-          "value": false,
-          "title": "No — keep modern per-app timer",
-          "desc": "Keeps per-process timer. Some games may have inconsistent frame times.",
-          "badge": null,
-          "badgeColor": null,
-          "danger": false,
-          "behavior": {
-            "value": false,
-            "blockActions": [
-              "cpu.global-timer-resolution"
-            ],
-            "blockReason": "You chose to keep modern per-process timer behavior.",
-            "estimatedBlocked": 1
-          }
-        }
-      ]
-    },
-    {
       "key": "disableIndexing",
       "icon": "HardDrive",
       "label": "Search Indexing",
@@ -1633,103 +1588,6 @@
       ]
     },
     {
-      "key": "disableMemoryCompression",
-      "icon": "Cpu",
-      "label": "Memory",
-      "title": "Optimize memory management?",
-      "desc": "Disables memory compression (Disable-MMAgent -MemoryCompression), fixes the known NDU driver memory leak (ndu.sys Start=4), and disables SysMain/Superfetch service.",
-      "note": null,
-      "visibility": {
-        "minPreset": "balanced"
-      },
-      "options": [
-        {
-          "value": true,
-          "title": "Yes — optimize memory",
-          "desc": "Runs Disable-MMAgent, sets NDU Start=4, disables SysMain. Saves CPU overhead on 16GB+ systems. Fixes the ndu.sys leak that causes RAM usage to climb over uptime.",
-          "badge": null,
-          "badgeColor": null,
-          "danger": false,
-          "behavior": {
-            "value": true,
-            "includeActions": [
-              "memory.disable-compression",
-              "perf.disable-ndu",
-              "perf.disable-prefetch",
-              "perf.svchost-split-threshold",
-              "perf.disable-page-combining"
-            ],
-            "estimatedActions": 5,
-            "requiresReboot": true
-          }
-        },
-        {
-          "value": false,
-          "title": "No — keep defaults",
-          "desc": "Keeps Windows default memory handling. Memory compression and SysMain stay active.",
-          "badge": null,
-          "badgeColor": null,
-          "danger": false,
-          "behavior": {
-            "value": false,
-            "blockActions": [
-              "memory.disable-compression",
-              "perf.disable-ndu",
-              "perf.disable-prefetch",
-              "perf.svchost-split-threshold",
-              "perf.disable-page-combining"
-            ],
-            "blockReason": "You chose to keep Windows memory compression and related memory subsystem defaults.",
-            "estimatedBlocked": 5
-          }
-        }
-      ]
-    },
-    {
-      "key": "disableHags",
-      "icon": "Gamepad2",
-      "label": "GPU Scheduling",
-      "title": "Disable Hardware Accelerated GPU Scheduling (HAGS)?",
-      "desc": "HAGS (HwSchMode) offloads GPU memory scheduling to the GPU firmware. It reduces CPU overhead but can increase frame time variance and cause micro-stutters on some hardware.",
-      "note": null,
-      "visibility": {
-        "minPreset": "balanced"
-      },
-      "options": [
-        {
-          "value": true,
-          "title": "Yes — disable HAGS",
-          "desc": "Sets HwSchMode=1 in registry. More predictable frame times. Preferred for competitive/esports titles.",
-          "badge": null,
-          "badgeColor": null,
-          "danger": false,
-          "behavior": {
-            "value": true,
-            "includeActions": [
-              "gpu.disable-hags"
-            ],
-            "estimatedActions": 1
-          }
-        },
-        {
-          "value": false,
-          "title": "No — keep HAGS enabled",
-          "desc": "Keeps HwSchMode=2. Can reduce CPU overhead but may cause inconsistent frame pacing.",
-          "badge": null,
-          "badgeColor": null,
-          "danger": false,
-          "behavior": {
-            "value": false,
-            "blockActions": [
-              "gpu.disable-hags"
-            ],
-            "blockReason": "You chose to keep HAGS at the Windows default.",
-            "estimatedBlocked": 1
-          }
-        }
-      ]
-    },
-    {
       "key": "disableGpuTelemetry",
       "icon": "Gamepad2",
       "label": "GPU Telemetry",
@@ -1858,52 +1716,6 @@
               "perf.disable-fullscreen-optimizations"
             ],
             "blockReason": "You chose to keep Windows fullscreen optimizations enabled.",
-            "estimatedBlocked": 1
-          }
-        }
-      ]
-    },
-    {
-      "key": "disableDynamicTick",
-      "icon": "Clock",
-      "label": "Dynamic Tick",
-      "title": "Disable dynamic tick for lower latency?",
-      "desc": "Windows adjusts its internal timer dynamically. Fixing it gives more consistent timing, but uses slightly more power.",
-      "note": "Advanced tweak. Best for dedicated gaming desktops only.",
-      "visibility": {
-        "minPreset": "aggressive",
-        "excludeLaptop": true
-      },
-      "options": [
-        {
-          "value": true,
-          "title": "Yes — disable dynamic tick",
-          "desc": "More consistent timing. Good for competitive gaming.",
-          "badge": "Advanced",
-          "badgeColor": "bg-amber-500/15 text-amber-400",
-          "danger": false,
-          "behavior": {
-            "value": true,
-            "includeActions": [
-              "cpu.disable-dynamic-tick"
-            ],
-            "estimatedActions": 1,
-            "requiresReboot": true
-          }
-        },
-        {
-          "value": false,
-          "title": "No — keep dynamic tick",
-          "desc": "Keeps the power-saving timer behavior.",
-          "badge": null,
-          "badgeColor": null,
-          "danger": false,
-          "behavior": {
-            "value": false,
-            "blockActions": [
-              "cpu.disable-dynamic-tick"
-            ],
-            "blockReason": "You chose to keep Windows dynamic tick enabled.",
             "estimatedBlocked": 1
           }
         }
@@ -2158,66 +1970,6 @@
             ],
             "blockReason": "You chose to keep Windows Defender and VBS active.",
             "estimatedBlocked": 3
-          }
-        }
-      ]
-    },
-    {
-      "key": "disableWindowsUpdate",
-      "icon": "Shield",
-      "label": "Windows Update",
-      "title": "Stop all Windows updates?",
-      "desc": "Disables Windows Update completely. You will NOT receive security patches, bug fixes, or driver updates unless you manually re-enable it.",
-      "note": "This disables 5 services. It's the honest version of what many debloat tools do silently.",
-      "visibility": {
-        "minPreset": "aggressive",
-        "excludeWorkPc": true
-      },
-      "options": [
-        {
-          "value": true,
-          "title": "Yes — stop all updates",
-          "desc": "Full control. No surprise downloads or reboots.",
-          "badge": "High Risk",
-          "badgeColor": "bg-red-500/15 text-red-400",
-          "danger": true,
-          "behavior": {
-            "value": true,
-            "includeActions": [
-              "services.disable-wuauserv",
-              "services.disable-update-orchestrator-svc",
-              "services.disable-waasmedic",
-              "services.disable-bits",
-              "services.disable-delivery-optimization",
-              "tasks.disable-update-tasks"
-            ],
-            "estimatedActions": 6,
-            "warnings": [
-              "Stopping Windows Update means no security patches will be installed automatically.",
-              "You must manually re-enable these services to receive updates."
-            ],
-            "riskLevel": "aggressive"
-          }
-        },
-        {
-          "value": false,
-          "title": "No — keep updates",
-          "desc": "Keep updates. Security patches are important.",
-          "badge": null,
-          "badgeColor": null,
-          "danger": false,
-          "behavior": {
-            "value": false,
-            "blockActions": [
-              "services.disable-wuauserv",
-              "services.disable-update-orchestrator-svc",
-              "services.disable-waasmedic",
-              "services.disable-bits",
-              "services.disable-delivery-optimization",
-              "tasks.disable-update-tasks"
-            ],
-            "blockReason": "You chose to keep Windows Update services running.",
-            "estimatedBlocked": 6
           }
         }
       ]
@@ -2485,10 +2237,9 @@
           "behavior": {
             "value": true,
             "includeActions": [
-              "security.disable-delivery-optimization",
-              "services.disable-delivery-optimization"
+              "security.disable-delivery-optimization"
             ],
-            "estimatedActions": 2
+            "estimatedActions": 1
           }
         },
         {
@@ -2501,11 +2252,10 @@
           "behavior": {
             "value": false,
             "blockActions": [
-              "security.disable-delivery-optimization",
-              "services.disable-delivery-optimization"
+              "security.disable-delivery-optimization"
             ],
             "blockReason": "You chose to keep Delivery Optimization enabled.",
-            "estimatedBlocked": 2
+            "estimatedBlocked": 1
           }
         }
       ]
@@ -3115,7 +2865,7 @@
       "type": "RadioPage",
       "description": "This decides how many changes we make. Start safe, or go deeper if you know what you're doing.",
       "isRequired": true,
-      "defaultOption": "aggressionPreset__conservative",
+      "defaultOption": "aggressionPreset__balanced",
       "questionKey": "aggressionPreset",
       "visibility": null,
       "options": [
@@ -3179,7 +2929,7 @@
       "type": "RadioPage",
       "description": "This stops Windows from slowing down your CPU to save power. Your PC will respond faster. Sets powercfg to High Performance scheme and adjusts processor idle states.",
       "isRequired": true,
-      "defaultOption": "highPerformancePlan__true",
+      "defaultOption": "highPerformancePlan__false",
       "questionKey": "highPerformancePlan",
       "visibility": null,
       "options": [
@@ -3222,7 +2972,7 @@
       "type": "RadioPage",
       "description": "Adjusts Win32PrioritySeparation to favor foreground processes. Makes the scheduler give your active app (game, editor) more quantum time than background services.",
       "isRequired": true,
-      "defaultOption": "optimizeThreadPriority__true",
+      "defaultOption": "optimizeThreadPriority__false",
       "questionKey": "optimizeThreadPriority",
       "visibility": {
         "minPreset": "balanced"
@@ -3265,55 +3015,9 @@
     },
     {
       "type": "RadioPage",
-      "description": "Windows 11 changed timer resolution to per-process (24H2+). This sets GlobalTimerResolutionRequests=1 to restore the global 0.5ms timer that games rely on for consistent frame pacing.",
-      "isRequired": true,
-      "defaultOption": "globalTimerResolution__true",
-      "questionKey": "globalTimerResolution",
-      "visibility": {
-        "minPreset": "balanced"
-      },
-      "options": [
-        {
-          "text": "Yes — restore global timer behavior",
-          "name": "globalTimerResolution__true",
-          "value": true,
-          "desc": "Sets kernel GlobalTimerResolutionRequests=1. Reduces timer jitter from ~15.6ms to ~0.5ms. Directly improves frame pacing.",
-          "badge": "Latency",
-          "badgeColor": "bg-brand-500/15 text-brand-400",
-          "danger": false,
-          "behavior": {
-            "value": true,
-            "includeActions": [
-              "cpu.global-timer-resolution"
-            ],
-            "estimatedActions": 1,
-            "requiresReboot": true
-          }
-        },
-        {
-          "text": "No — keep modern per-app timer",
-          "name": "globalTimerResolution__false",
-          "value": false,
-          "desc": "Keeps per-process timer. Some games may have inconsistent frame times.",
-          "badge": null,
-          "badgeColor": null,
-          "danger": false,
-          "behavior": {
-            "value": false,
-            "blockActions": [
-              "cpu.global-timer-resolution"
-            ],
-            "blockReason": "You chose to keep modern per-process timer behavior.",
-            "estimatedBlocked": 1
-          }
-        }
-      ]
-    },
-    {
-      "type": "RadioPage",
       "description": "WSearch service constantly scans files in the background. Disabling it stops the indexer, reduces disk I/O, and frees ~100-200MB RAM.",
       "isRequired": true,
-      "defaultOption": "disableIndexing__true",
+      "defaultOption": "disableIndexing__false",
       "questionKey": "disableIndexing",
       "visibility": null,
       "options": [
@@ -3356,7 +3060,7 @@
       "type": "RadioPage",
       "description": "Removes web results, search highlights, and the oversized search bar from the taskbar.",
       "isRequired": true,
-      "defaultOption": "stripSearchWebNoise__true",
+      "defaultOption": "stripSearchWebNoise__false",
       "questionKey": "stripSearchWebNoise",
       "visibility": null,
       "options": [
@@ -3405,7 +3109,7 @@
       "type": "RadioPage",
       "description": "If you don't print, we can safely disable the print service. This also removes a known security vulnerability.",
       "isRequired": true,
-      "defaultOption": "keepPrinterSupport__true",
+      "defaultOption": "keepPrinterSupport__false",
       "questionKey": "keepPrinterSupport",
       "visibility": null,
       "options": [
@@ -3449,7 +3153,7 @@
       "type": "RadioPage",
       "description": "Remote Desktop lets others control your PC over the network. If nobody needs to access this PC remotely, we can disable it for better security.",
       "isRequired": true,
-      "defaultOption": "keepRemoteAccess__true",
+      "defaultOption": "keepRemoteAccess__false",
       "questionKey": "keepRemoteAccess",
       "visibility": null,
       "options": [
@@ -3493,7 +3197,7 @@
       "type": "RadioPage",
       "description": "Edge runs 3-5 background processes even when closed, pre-loads at boot, and nags you to switch from your preferred browser. It's like that friend who won't leave your party.",
       "isRequired": true,
-      "defaultOption": "edgeBehavior__keep",
+      "defaultOption": "edgeBehavior__suppress",
       "questionKey": "edgeBehavior",
       "visibility": null,
       "options": [
@@ -3563,7 +3267,7 @@
       "type": "RadioPage",
       "description": "Copilot is Microsoft's AI assistant wedged into the taskbar. Uses 150-300MB RAM sitting idle and phones home to Bing. Nobody asked for this.",
       "isRequired": true,
-      "defaultOption": "disableCopilot__true",
+      "defaultOption": "disableCopilot__false",
       "questionKey": "disableCopilot",
       "visibility": {
         "minWindowsBuild": 22000
@@ -3608,7 +3312,7 @@
       "type": "RadioPage",
       "description": "Recall takes screenshots of your screen every few seconds so AI can search your history. Yes, really. It stores everything locally but the concept is... concerning.",
       "isRequired": true,
-      "defaultOption": "disableRecall__true",
+      "defaultOption": "disableRecall__false",
       "questionKey": "disableRecall",
       "visibility": {
         "minWindowsBuild": 26100
@@ -3653,7 +3357,7 @@
       "type": "RadioPage",
       "description": "Click to Do is a Windows 11 AI feature that analyzes what's on your screen and suggests actions.",
       "isRequired": true,
-      "defaultOption": "disableClickToDo__true",
+      "defaultOption": "disableClickToDo__false",
       "questionKey": "disableClickToDo",
       "visibility": {
         "minWindowsBuild": 26100
@@ -3698,7 +3402,7 @@
       "type": "RadioPage",
       "description": "Microsoft added AI to several built-in apps. These send your data to the cloud for processing.",
       "isRequired": true,
-      "defaultOption": "disableAiApps__true",
+      "defaultOption": "disableAiApps__false",
       "questionKey": "disableAiApps",
       "visibility": null,
       "options": [
@@ -3745,7 +3449,7 @@
       "type": "RadioPage",
       "description": "Windows sends usage data, app crash reports, typing/inking data, and browsing patterns to Microsoft via DiagTrack service and scheduled tasks.",
       "isRequired": true,
-      "defaultOption": "telemetryLevel__keep",
+      "defaultOption": "telemetryLevel__reduce",
       "questionKey": "telemetryLevel",
       "visibility": null,
       "options": [
@@ -3835,7 +3539,7 @@
       "type": "RadioPage",
       "description": "Windows can save everything you copy and sync it across devices. If you don't use this, it's just extra tracking.",
       "isRequired": true,
-      "defaultOption": "disableClipboardHistory__true",
+      "defaultOption": "disableClipboardHistory__false",
       "questionKey": "disableClipboardHistory",
       "visibility": null,
       "options": [
@@ -3878,7 +3582,7 @@
       "type": "RadioPage",
       "description": "Windows tracks what files you open and apps you use, then shows this in a 'timeline'. This data is also sent to the cloud.",
       "isRequired": true,
-      "defaultOption": "disableActivityFeed__true",
+      "defaultOption": "disableActivityFeed__false",
       "questionKey": "disableActivityFeed",
       "visibility": null,
       "options": [
@@ -3923,7 +3627,7 @@
       "type": "RadioPage",
       "description": "Windows tracks your location for maps, weather, and Find My Device. On a desktop, this is usually unnecessary.",
       "isRequired": true,
-      "defaultOption": "disableLocation__true",
+      "defaultOption": "disableLocation__false",
       "questionKey": "disableLocation",
       "visibility": null,
       "options": [
@@ -3968,7 +3672,7 @@
       "type": "RadioPage",
       "description": "Windows uses your activity to show targeted tips, app suggestions, and literal ads in the Start menu. Your OS is an ad platform. Let that sink in.",
       "isRequired": true,
-      "defaultOption": "disableTailoredExperiences__true",
+      "defaultOption": "disableTailoredExperiences__false",
       "questionKey": "disableTailoredExperiences",
       "visibility": null,
       "options": [
@@ -4015,7 +3719,7 @@
       "type": "RadioPage",
       "description": "Windows can send your voice and typing patterns to Microsoft to improve their AI. If you don't use dictation, there's no reason for this.",
       "isRequired": true,
-      "defaultOption": "disableSpeechPersonalization__true",
+      "defaultOption": "disableSpeechPersonalization__false",
       "questionKey": "disableSpeechPersonalization",
       "visibility": null,
       "options": [
@@ -4062,7 +3766,7 @@
       "type": "RadioPage",
       "description": "SmartScreen checks files you download against Microsoft's database. It protects you, but also sends data about everything you download.",
       "isRequired": true,
-      "defaultOption": "disableSmartScreen__true",
+      "defaultOption": "disableSmartScreen__false",
       "questionKey": "disableSmartScreen",
       "visibility": {
         "minPreset": "aggressive"
@@ -4111,7 +3815,7 @@
       "type": "RadioPage",
       "description": "Fast Startup (HiberbootEnabled) hibernates the kernel instead of doing a full shutdown. This means drivers and services don't reinitialize, causing stale state bugs and dual-boot filesystem issues.",
       "isRequired": true,
-      "defaultOption": "disableFastStartup__true",
+      "defaultOption": "disableFastStartup__false",
       "questionKey": "disableFastStartup",
       "visibility": null,
       "options": [
@@ -4154,7 +3858,7 @@
       "type": "RadioPage",
       "description": "Hibernation saves your session to disk when sleeping. It uses disk space equal to your RAM (8-64GB).",
       "isRequired": true,
-      "defaultOption": "disableHibernation__true",
+      "defaultOption": "disableHibernation__false",
       "questionKey": "disableHibernation",
       "visibility": null,
       "options": [
@@ -4197,7 +3901,7 @@
       "type": "RadioPage",
       "description": "Windows applies sound effects (bass boost, loudness equalization) that can distort audio. Turning them off gives you cleaner sound.",
       "isRequired": true,
-      "defaultOption": "disableAudioEnhancements__true",
+      "defaultOption": "disableAudioEnhancements__false",
       "questionKey": "disableAudioEnhancements",
       "visibility": null,
       "options": [
@@ -4244,7 +3948,7 @@
       "type": "RadioPage",
       "description": "This gives one app at a time direct access to your speakers for lower latency. Other apps won't make sound while it's active.",
       "isRequired": true,
-      "defaultOption": "enableAudioExclusiveMode__true",
+      "defaultOption": "enableAudioExclusiveMode__false",
       "questionKey": "enableAudioExclusiveMode",
       "visibility": null,
       "options": [
@@ -4287,7 +3991,7 @@
       "type": "RadioPage",
       "description": "Keeps the stock Windows 11 context menu style but removes a few noisy legacy entries using the safe Shell Extensions Blocked path only.",
       "isRequired": true,
-      "defaultOption": "restoreClassicContextMenu__true",
+      "defaultOption": "restoreClassicContextMenu__false",
       "questionKey": "restoreClassicContextMenu",
       "visibility": {
         "minWindowsBuild": 22000
@@ -4336,7 +4040,7 @@
       "type": "RadioPage",
       "description": "When an app freezes, you can kill it directly from the taskbar instead of opening Task Manager.",
       "isRequired": true,
-      "defaultOption": "enableEndTask__true",
+      "defaultOption": "enableEndTask__false",
       "questionKey": "enableEndTask",
       "visibility": {
         "minWindowsBuild": 22631
@@ -4381,7 +4085,7 @@
       "type": "RadioPage",
       "description": "Many apps keep running silently even when you're not using them, eating CPU and memory.",
       "isRequired": true,
-      "defaultOption": "disableBackgroundApps__true",
+      "defaultOption": "disableBackgroundApps__false",
       "questionKey": "disableBackgroundApps",
       "visibility": null,
       "options": [
@@ -4424,7 +4128,7 @@
       "type": "RadioPage",
       "description": "Windows runs cleanup and optimization tasks when your PC is idle. This can cause unexpected activity and wake-ups.",
       "isRequired": true,
-      "defaultOption": "disableAutomaticMaintenance__true",
+      "defaultOption": "disableAutomaticMaintenance__false",
       "questionKey": "disableAutomaticMaintenance",
       "visibility": null,
       "options": [
@@ -4467,7 +4171,7 @@
       "type": "RadioPage",
       "description": "Game Mode tells Windows to prioritize games over background tasks. A small but real improvement.",
       "isRequired": true,
-      "defaultOption": "enableGameMode__true",
+      "defaultOption": "enableGameMode__false",
       "questionKey": "enableGameMode",
       "visibility": null,
       "options": [
@@ -4510,7 +4214,7 @@
       "type": "RadioPage",
       "description": "The see-through blur effects on windows and taskbar use GPU resources. Turning them off makes the desktop feel snappier.",
       "isRequired": true,
-      "defaultOption": "disableTransparency__true",
+      "defaultOption": "disableTransparency__false",
       "questionKey": "disableTransparency",
       "visibility": null,
       "options": [
@@ -4556,7 +4260,7 @@
       "type": "RadioPage",
       "description": "Keeps your CPU running at higher speeds under load instead of backing off to save power.",
       "isRequired": true,
-      "defaultOption": "aggressiveBoostMode__true",
+      "defaultOption": "aggressiveBoostMode__false",
       "questionKey": "aggressiveBoostMode",
       "visibility": {
         "minPreset": "balanced"
@@ -4601,7 +4305,7 @@
       "type": "RadioPage",
       "description": "Prevents your CPU from slowing down between tasks. Reduces the tiny delays when the CPU needs to speed up again.",
       "isRequired": true,
-      "defaultOption": "minProcessorState100__true",
+      "defaultOption": "minProcessorState100__false",
       "questionKey": "minProcessorState100",
       "visibility": {
         "minPreset": "balanced"
@@ -4646,7 +4350,7 @@
       "type": "RadioPage",
       "description": "Windows parks idle CPU cores (C6 state). Unparking takes 1-5ms which causes micro-stutters in games. Sets MinProcessorState to 100% and disables core parking via powercfg.",
       "isRequired": true,
-      "defaultOption": "disableCoreParking__true",
+      "defaultOption": "disableCoreParking__false",
       "questionKey": "disableCoreParking",
       "visibility": {
         "minPreset": "balanced"
@@ -4691,7 +4395,7 @@
       "type": "RadioPage",
       "description": "Adjusts how Windows schedules game and media threads to give them higher priority.",
       "isRequired": true,
-      "defaultOption": "gamingMmcss__true",
+      "defaultOption": "gamingMmcss__false",
       "questionKey": "gamingMmcss",
       "visibility": {
         "minPreset": "balanced"
@@ -4734,108 +4438,9 @@
     },
     {
       "type": "RadioPage",
-      "description": "Disables memory compression (Disable-MMAgent -MemoryCompression), fixes the known NDU driver memory leak (ndu.sys Start=4), and disables SysMain/Superfetch service.",
-      "isRequired": true,
-      "defaultOption": "disableMemoryCompression__true",
-      "questionKey": "disableMemoryCompression",
-      "visibility": {
-        "minPreset": "balanced"
-      },
-      "options": [
-        {
-          "text": "Yes — optimize memory",
-          "name": "disableMemoryCompression__true",
-          "value": true,
-          "desc": "Runs Disable-MMAgent, sets NDU Start=4, disables SysMain. Saves CPU overhead on 16GB+ systems. Fixes the ndu.sys leak that causes RAM usage to climb over uptime.",
-          "badge": null,
-          "badgeColor": null,
-          "danger": false,
-          "behavior": {
-            "value": true,
-            "includeActions": [
-              "memory.disable-compression",
-              "perf.disable-ndu",
-              "perf.disable-prefetch",
-              "perf.svchost-split-threshold",
-              "perf.disable-page-combining"
-            ],
-            "estimatedActions": 5,
-            "requiresReboot": true
-          }
-        },
-        {
-          "text": "No — keep defaults",
-          "name": "disableMemoryCompression__false",
-          "value": false,
-          "desc": "Keeps Windows default memory handling. Memory compression and SysMain stay active.",
-          "badge": null,
-          "badgeColor": null,
-          "danger": false,
-          "behavior": {
-            "value": false,
-            "blockActions": [
-              "memory.disable-compression",
-              "perf.disable-ndu",
-              "perf.disable-prefetch",
-              "perf.svchost-split-threshold",
-              "perf.disable-page-combining"
-            ],
-            "blockReason": "You chose to keep Windows memory compression and related memory subsystem defaults.",
-            "estimatedBlocked": 5
-          }
-        }
-      ]
-    },
-    {
-      "type": "RadioPage",
-      "description": "HAGS (HwSchMode) offloads GPU memory scheduling to the GPU firmware. It reduces CPU overhead but can increase frame time variance and cause micro-stutters on some hardware.",
-      "isRequired": true,
-      "defaultOption": "disableHags__true",
-      "questionKey": "disableHags",
-      "visibility": {
-        "minPreset": "balanced"
-      },
-      "options": [
-        {
-          "text": "Yes — disable HAGS",
-          "name": "disableHags__true",
-          "value": true,
-          "desc": "Sets HwSchMode=1 in registry. More predictable frame times. Preferred for competitive/esports titles.",
-          "badge": null,
-          "badgeColor": null,
-          "danger": false,
-          "behavior": {
-            "value": true,
-            "includeActions": [
-              "gpu.disable-hags"
-            ],
-            "estimatedActions": 1
-          }
-        },
-        {
-          "text": "No — keep HAGS enabled",
-          "name": "disableHags__false",
-          "value": false,
-          "desc": "Keeps HwSchMode=2. Can reduce CPU overhead but may cause inconsistent frame pacing.",
-          "badge": null,
-          "badgeColor": null,
-          "danger": false,
-          "behavior": {
-            "value": false,
-            "blockActions": [
-              "gpu.disable-hags"
-            ],
-            "blockReason": "You chose to keep HAGS at the Windows default.",
-            "estimatedBlocked": 1
-          }
-        }
-      ]
-    },
-    {
-      "type": "RadioPage",
       "description": "NVIDIA and AMD drivers run background services that collect usage data. Disabling them doesn't affect your graphics.",
       "isRequired": true,
-      "defaultOption": "disableGpuTelemetry__true",
+      "defaultOption": "disableGpuTelemetry__false",
       "questionKey": "disableGpuTelemetry",
       "visibility": {
         "minPreset": "balanced"
@@ -4882,7 +4487,7 @@
       "type": "RadioPage",
       "description": "Game DVR (GameBarPresenceWriter + AppCaptureEnabled) silently records gameplay. It hooks into the GPU pipeline and causes measurable frame time spikes, especially on mid-range GPUs.",
       "isRequired": true,
-      "defaultOption": "disableGameDvr__true",
+      "defaultOption": "disableGameDvr__false",
       "questionKey": "disableGameDvr",
       "visibility": {
         "minPreset": "balanced"
@@ -4927,7 +4532,7 @@
       "type": "RadioPage",
       "description": "Windows adds a compatibility layer to fullscreen apps. Disabling it gives you true fullscreen with lower input lag.",
       "isRequired": true,
-      "defaultOption": "disableFullscreenOptimizations__true",
+      "defaultOption": "disableFullscreenOptimizations__false",
       "questionKey": "disableFullscreenOptimizations",
       "visibility": {
         "minPreset": "balanced"
@@ -4970,56 +4575,9 @@
     },
     {
       "type": "RadioPage",
-      "description": "Windows adjusts its internal timer dynamically. Fixing it gives more consistent timing, but uses slightly more power.",
-      "isRequired": true,
-      "defaultOption": "disableDynamicTick__true",
-      "questionKey": "disableDynamicTick",
-      "visibility": {
-        "minPreset": "aggressive",
-        "excludeLaptop": true
-      },
-      "options": [
-        {
-          "text": "Yes — disable dynamic tick",
-          "name": "disableDynamicTick__true",
-          "value": true,
-          "desc": "More consistent timing. Good for competitive gaming.",
-          "badge": "Advanced",
-          "badgeColor": "bg-amber-500/15 text-amber-400",
-          "danger": false,
-          "behavior": {
-            "value": true,
-            "includeActions": [
-              "cpu.disable-dynamic-tick"
-            ],
-            "estimatedActions": 1,
-            "requiresReboot": true
-          }
-        },
-        {
-          "text": "No — keep dynamic tick",
-          "name": "disableDynamicTick__false",
-          "value": false,
-          "desc": "Keeps the power-saving timer behavior.",
-          "badge": null,
-          "badgeColor": null,
-          "danger": false,
-          "behavior": {
-            "value": false,
-            "blockActions": [
-              "cpu.disable-dynamic-tick"
-            ],
-            "blockReason": "You chose to keep Windows dynamic tick enabled.",
-            "estimatedBlocked": 1
-          }
-        }
-      ]
-    },
-    {
-      "type": "RadioPage",
       "description": "This permanently deletes Edge from your system. This cannot be undone from within Windows.",
       "isRequired": true,
-      "defaultOption": "removeEdge__true",
+      "defaultOption": "removeEdge__false",
       "questionKey": "removeEdge",
       "visibility": {
         "minPreset": "aggressive"
@@ -5069,7 +4627,7 @@
       "type": "RadioPage",
       "description": "WebView2 is a hidden component that many apps (Teams, Widgets, Electron apps) need to work. Removing it WILL break these apps.",
       "isRequired": true,
-      "defaultOption": "preserveWebView2__true",
+      "defaultOption": "preserveWebView2__false",
       "questionKey": "preserveWebView2",
       "visibility": {
         "minPreset": "aggressive"
@@ -5119,7 +4677,7 @@
       "type": "RadioPage",
       "description": "Disabling Spectre mitigations can give 5-10% more performance, but removes important security protections.",
       "isRequired": true,
-      "defaultOption": "reduceMitigations__true",
+      "defaultOption": "reduceMitigations__false",
       "questionKey": "reduceMitigations",
       "visibility": {
         "onlyPreset": "expert",
@@ -5170,7 +4728,7 @@
       "type": "RadioPage",
       "description": "HVCI is a security feature that verifies code running in the Windows kernel. Disabling it may improve performance but weakens security.",
       "isRequired": true,
-      "defaultOption": "disableHvci__true",
+      "defaultOption": "disableHvci__false",
       "questionKey": "disableHvci",
       "visibility": {
         "onlyPreset": "expert",
@@ -5221,7 +4779,7 @@
       "type": "RadioPage",
       "description": "This removes ALL antivirus protection. Your PC will have zero malware scanning. This is the most aggressive option in the entire wizard.",
       "isRequired": true,
-      "defaultOption": "disableDefender__true",
+      "defaultOption": "disableDefender__false",
       "questionKey": "disableDefender",
       "visibility": {
         "onlyPreset": "expert",
@@ -5275,70 +4833,9 @@
     },
     {
       "type": "RadioPage",
-      "description": "Disables Windows Update completely. You will NOT receive security patches, bug fixes, or driver updates unless you manually re-enable it.",
-      "isRequired": true,
-      "defaultOption": "disableWindowsUpdate__true",
-      "questionKey": "disableWindowsUpdate",
-      "visibility": {
-        "minPreset": "aggressive",
-        "excludeWorkPc": true
-      },
-      "options": [
-        {
-          "text": "Yes — stop all updates",
-          "name": "disableWindowsUpdate__true",
-          "value": true,
-          "desc": "Full control. No surprise downloads or reboots.",
-          "badge": "High Risk",
-          "badgeColor": "bg-red-500/15 text-red-400",
-          "danger": true,
-          "behavior": {
-            "value": true,
-            "includeActions": [
-              "services.disable-wuauserv",
-              "services.disable-update-orchestrator-svc",
-              "services.disable-waasmedic",
-              "services.disable-bits",
-              "services.disable-delivery-optimization",
-              "tasks.disable-update-tasks"
-            ],
-            "estimatedActions": 6,
-            "warnings": [
-              "Stopping Windows Update means no security patches will be installed automatically.",
-              "You must manually re-enable these services to receive updates."
-            ],
-            "riskLevel": "aggressive"
-          }
-        },
-        {
-          "text": "No — keep updates",
-          "name": "disableWindowsUpdate__false",
-          "value": false,
-          "desc": "Keep updates. Security patches are important.",
-          "badge": null,
-          "badgeColor": null,
-          "danger": false,
-          "behavior": {
-            "value": false,
-            "blockActions": [
-              "services.disable-wuauserv",
-              "services.disable-update-orchestrator-svc",
-              "services.disable-waasmedic",
-              "services.disable-bits",
-              "services.disable-delivery-optimization",
-              "tasks.disable-update-tasks"
-            ],
-            "blockReason": "You chose to keep Windows Update services running.",
-            "estimatedBlocked": 6
-          }
-        }
-      ]
-    },
-    {
-      "type": "RadioPage",
       "description": "Removes old, vulnerable network protocols (LLMNR, SMBv1, WPAD) that are commonly exploited in attacks.",
       "isRequired": true,
-      "defaultOption": "disableLlmnr__true",
+      "defaultOption": "disableLlmnr__false",
       "questionKey": "disableLlmnr",
       "visibility": {
         "minPreset": "aggressive"
@@ -5389,7 +4886,7 @@
       "type": "RadioPage",
       "description": "Teredo is an old workaround for IPv6 compatibility. Almost nothing uses it anymore.",
       "isRequired": true,
-      "defaultOption": "disableTeredo__true",
+      "defaultOption": "disableTeredo__false",
       "questionKey": "disableTeredo",
       "visibility": {
         "minPreset": "aggressive"
@@ -5438,7 +4935,7 @@
       "type": "RadioPage",
       "description": "NetBIOS is an old way for computers to find each other on a network. Modern networks don't need it, but very old printers or NAS devices might.",
       "isRequired": true,
-      "defaultOption": "disableNetbios__true",
+      "defaultOption": "disableNetbios__false",
       "questionKey": "disableNetbios",
       "visibility": {
         "minPreset": "aggressive"
@@ -5487,7 +4984,7 @@
       "type": "RadioPage",
       "description": "Nagle's algorithm batches small TCP packets to reduce overhead, but adds 40-200ms delay per send. Disabling it (TcpAckFrequency=1, TCPNoDelay=1) sends each packet immediately. Important for competitive gaming and VoIP.",
       "isRequired": true,
-      "defaultOption": "disableNagle__true",
+      "defaultOption": "disableNagle__false",
       "questionKey": "disableNagle",
       "visibility": {
         "minPreset": "aggressive"
@@ -5536,7 +5033,7 @@
       "type": "RadioPage",
       "description": "Lets your CPU handle network processing directly instead of your network card. Faster for gaming, but uses slightly more CPU.",
       "isRequired": true,
-      "defaultOption": "disableNicOffloading__true",
+      "defaultOption": "disableNicOffloading__false",
       "questionKey": "disableNicOffloading",
       "visibility": {
         "minPreset": "aggressive"
@@ -5585,7 +5082,7 @@
       "type": "RadioPage",
       "description": "Windows uploads parts of updates to other computers, using your internet bandwidth in the background.",
       "isRequired": true,
-      "defaultOption": "disableDeliveryOptimization__true",
+      "defaultOption": "disableDeliveryOptimization__false",
       "questionKey": "disableDeliveryOptimization",
       "visibility": {
         "minPreset": "aggressive"
@@ -5602,10 +5099,9 @@
           "behavior": {
             "value": true,
             "includeActions": [
-              "security.disable-delivery-optimization",
-              "services.disable-delivery-optimization"
+              "security.disable-delivery-optimization"
             ],
-            "estimatedActions": 2
+            "estimatedActions": 1
           }
         },
         {
@@ -5619,11 +5115,10 @@
           "behavior": {
             "value": false,
             "blockActions": [
-              "security.disable-delivery-optimization",
-              "services.disable-delivery-optimization"
+              "security.disable-delivery-optimization"
             ],
             "blockReason": "You chose to keep Delivery Optimization enabled.",
-            "estimatedBlocked": 2
+            "estimatedBlocked": 1
           }
         }
       ]
@@ -5632,7 +5127,7 @@
       "type": "RadioPage",
       "description": "Windows puts USB devices to sleep to save power. This can cause your mouse, keyboard, or headset to briefly disconnect.",
       "isRequired": true,
-      "defaultOption": "disableUsbSelectiveSuspend__true",
+      "defaultOption": "disableUsbSelectiveSuspend__false",
       "questionKey": "disableUsbSelectiveSuspend",
       "visibility": {
         "minPreset": "aggressive",
@@ -5678,7 +5173,7 @@
       "type": "RadioPage",
       "description": "Your GPU and SSD connect through PCIe. Power saving mode adds tiny delays when they wake up from idle. On desktops, disabling this is safe.",
       "isRequired": true,
-      "defaultOption": "disablePcieLinkStatePm__true",
+      "defaultOption": "disablePcieLinkStatePm__false",
       "questionKey": "disablePcieLinkStatePm",
       "visibility": {
         "minPreset": "aggressive",
@@ -5724,7 +5219,7 @@
       "type": "RadioPage",
       "description": "Windows applies pointer acceleration (EnhancedPointerPrecision) that scales mouse movement non-linearly. Competitive gamers need 1:1 input where physical distance = cursor distance, regardless of speed.",
       "isRequired": true,
-      "defaultOption": "disableMouseAcceleration__true",
+      "defaultOption": "disableMouseAcceleration__false",
       "questionKey": "disableMouseAcceleration",
       "visibility": {
         "minPreset": "balanced"
@@ -5769,7 +5264,7 @@
       "type": "RadioPage",
       "description": "Pressing Shift 5 times triggers a Sticky Keys popup. Filter Keys and Toggle Keys have similar shortcuts. Every gamer has been interrupted by this at least once during the worst possible moment.",
       "isRequired": true,
-      "defaultOption": "disableStickyKeys__true",
+      "defaultOption": "disableStickyKeys__false",
       "questionKey": "disableStickyKeys",
       "visibility": null,
       "options": [
@@ -5812,7 +5307,7 @@
       "type": "RadioPage",
       "description": "FTH monitors crashing apps and silently applies heap mitigations (extra padding, delayed frees) to \"fix\" them. This adds memory overhead and hides real bugs instead of fixing them. Gamers don't need Windows babysitting their heap.",
       "isRequired": true,
-      "defaultOption": "disableFaultTolerantHeap__true",
+      "defaultOption": "disableFaultTolerantHeap__false",
       "questionKey": "disableFaultTolerantHeap",
       "visibility": {
         "minPreset": "aggressive"
@@ -5848,7 +5343,7 @@
       "type": "RadioPage",
       "description": "MPOs (iFlip) let the GPU compositor use hardware overlay planes for rendering. On some GPU/monitor combos, this causes frame pacing issues, black screen flickers, and inconsistent frame times. Disabling forces classic single-plane composition.",
       "isRequired": true,
-      "defaultOption": "disableMPOs__true",
+      "defaultOption": "disableMPOs__false",
       "questionKey": "disableMPOs",
       "visibility": {
         "minPreset": "aggressive"
@@ -5884,7 +5379,7 @@
       "type": "RadioPage",
       "description": "NTFS updates the last access time on every file read. That's a write operation for every read — an absurd default. Disabling it reduces disk writes noticeably on HDDs and marginally on SSDs.",
       "isRequired": true,
-      "defaultOption": "disableLastAccessTime__true",
+      "defaultOption": "disableLastAccessTime__false",
       "questionKey": "disableLastAccessTime",
       "visibility": {
         "minPreset": "balanced"
@@ -5929,7 +5424,7 @@
       "type": "RadioPage",
       "description": "Windows puts USB controllers, network adapters, and PCI devices into low-power states when idle. This adds wake latency (1-10ms) that causes input lag, network hiccups, and audio dropouts on desktops.",
       "isRequired": true,
-      "defaultOption": "disableDevicePowerSaving__true",
+      "defaultOption": "disableDevicePowerSaving__false",
       "questionKey": "disableDevicePowerSaving",
       "visibility": {
         "minPreset": "balanced",
@@ -5975,7 +5470,7 @@
       "type": "RadioPage",
       "description": "Modern Windows uses composed flip (DWM adds a frame of latency). Legacy Flip bypasses DWM entirely for the lowest possible input-to-display latency. This is what competitive gamers use.",
       "isRequired": true,
-      "defaultOption": "legacyFlipPresentation__true",
+      "defaultOption": "legacyFlipPresentation__false",
       "questionKey": "legacyFlipPresentation",
       "visibility": {
         "minPreset": "aggressive"
@@ -6020,7 +5515,7 @@
       "type": "RadioPage",
       "description": "Microsoft Store downloads and installs app updates in the background without asking. This consumes bandwidth, CPU, and can happen during gaming sessions.",
       "isRequired": true,
-      "defaultOption": "disableStoreAutoUpdates__true",
+      "defaultOption": "disableStoreAutoUpdates__false",
       "questionKey": "disableStoreAutoUpdates",
       "visibility": {
         "minPreset": "balanced"
@@ -6065,7 +5560,7 @@
       "type": "RadioPage",
       "description": "Windows runs defrag, security scans, and cleanup tasks on a schedule. These tasks can cause sudden CPU/disk spikes during gaming or work, and wake your PC from sleep.",
       "isRequired": true,
-      "defaultOption": "disableAutoMaintenance__true",
+      "defaultOption": "disableAutoMaintenance__false",
       "questionKey": "disableAutoMaintenance",
       "visibility": {
         "minPreset": "balanced"
@@ -6110,7 +5605,7 @@
       "type": "RadioPage",
       "description": "The nuclear option. Disables WinDefend, WdFilter, WdBoot, WdNisSvc, SecurityHealthService, wscsvc, Sense, MsSecCore — all 9 Defender services plus SmartScreen, WTDS, and cloud protection. Zero antivirus. Zero overhead. You must disable Tamper Protection in Windows Security settings first.",
       "isRequired": true,
-      "defaultOption": "fullDefenderDisable__true",
+      "defaultOption": "fullDefenderDisable__false",
       "questionKey": "fullDefenderDisable",
       "visibility": {
         "minPreset": "expert"
@@ -6155,7 +5650,7 @@
       "type": "RadioPage",
       "description": "Microsoft blocks drivers with known vulnerabilities from loading. Disabling this allows kernel tools like RW-Everything (used for XHCI IMOD tuning) and older hardware drivers that Microsoft has blacklisted.",
       "isRequired": true,
-      "defaultOption": "disableVulnerableDriverBlocklist__true",
+      "defaultOption": "disableVulnerableDriverBlocklist__false",
       "questionKey": "disableVulnerableDriverBlocklist",
       "visibility": {
         "minPreset": "expert"
@@ -6200,7 +5695,7 @@
       "type": "RadioPage",
       "description": "Modern CPUs have hardware mitigations for Spectre V1/V2/V4, Meltdown, MDS, and L1TF. These add 2-15% performance overhead on syscall-heavy workloads. Disabling them renames the microcode update DLL (requires TrustedInstaller) and sets FeatureSettingsOverride=3.",
       "isRequired": true,
-      "defaultOption": "disableCpuMitigations__true",
+      "defaultOption": "disableCpuMitigations__false",
       "questionKey": "disableCpuMitigations",
       "visibility": {
         "minPreset": "expert"

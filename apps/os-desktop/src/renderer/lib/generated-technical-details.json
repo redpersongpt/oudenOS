@@ -597,17 +597,6 @@
       }
     ]
   },
-  "gpu.disable-hags": {
-    "registryChanges": [
-      {
-        "hive": "HKLM",
-        "path": "SYSTEM\\CurrentControlSet\\Control\\GraphicsDrivers",
-        "valueName": "HwSchMode",
-        "value": 1,
-        "valueType": "DWord"
-      }
-    ]
-  },
   "gpu.nvidia-disable-dynamic-pstate": {
     "registryChanges": [
       {
@@ -770,29 +759,6 @@
       }
     ]
   },
-  "cpu.disable-dynamic-tick": {
-    "bcdChanges": [
-      {
-        "element": "disabledynamictick",
-        "newValue": "yes"
-      },
-      {
-        "element": "useplatformtick",
-        "newValue": "yes"
-      }
-    ]
-  },
-  "cpu.global-timer-resolution": {
-    "registryChanges": [
-      {
-        "hive": "HKLM",
-        "path": "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\kernel",
-        "valueName": "GlobalTimerResolutionRequests",
-        "value": 1,
-        "valueType": "DWord"
-      }
-    ]
-  },
   "cpu.disable-core-parking": {
     "powerChanges": [
       {
@@ -877,28 +843,6 @@
         "path": "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile",
         "valueName": "SystemResponsiveness",
         "value": 10,
-        "valueType": "DWord"
-      }
-    ]
-  },
-  "perf.disable-ndu": {
-    "registryChanges": [
-      {
-        "hive": "HKLM",
-        "path": "SYSTEM\\CurrentControlSet\\Services\\Ndu",
-        "valueName": "Start",
-        "value": 4,
-        "valueType": "DWord"
-      }
-    ]
-  },
-  "perf.large-system-cache": {
-    "registryChanges": [
-      {
-        "hive": "HKLM",
-        "path": "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management",
-        "valueName": "LargeSystemCache",
-        "value": 0,
         "valueType": "DWord"
       }
     ]
@@ -1031,17 +975,6 @@
         "path": "SYSTEM\\CurrentControlSet\\Control\\FileSystem",
         "valueName": "NtfsDisableLastAccessUpdate",
         "value": 2147483651,
-        "valueType": "DWord"
-      }
-    ]
-  },
-  "storage.disable-8dot3-filenames": {
-    "registryChanges": [
-      {
-        "hive": "HKLM",
-        "path": "SYSTEM\\CurrentControlSet\\Control\\FileSystem",
-        "valueName": "NtfsDisable8dot3NameCreation",
-        "value": 1,
         "valueType": "DWord"
       }
     ]
@@ -1394,17 +1327,6 @@
         "path": "SOFTWARE\\Policies\\WindowsNotepad",
         "valueName": "DisableAIFeatures",
         "value": 1,
-        "valueType": "DWord"
-      }
-    ]
-  },
-  "privacy.disable-smart-app-control": {
-    "registryChanges": [
-      {
-        "hive": "HKLM",
-        "path": "SYSTEM\\CurrentControlSet\\Control\\CI\\Policy",
-        "valueName": "VerifiedAndReputablePolicyState",
-        "value": 0,
         "valueType": "DWord"
       }
     ]
@@ -1861,98 +1783,6 @@
       }
     ]
   },
-  "system.disable-windows-update": {
-    "registryChanges": [
-      {
-        "hive": "HKLM",
-        "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate",
-        "valueName": "WUServer",
-        "value": " ",
-        "valueType": "String"
-      },
-      {
-        "hive": "HKLM",
-        "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate",
-        "valueName": "WUStatusServer",
-        "value": " ",
-        "valueType": "String"
-      },
-      {
-        "hive": "HKLM",
-        "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate",
-        "valueName": "UpdateServiceUrlAlternate",
-        "value": " ",
-        "valueType": "String"
-      },
-      {
-        "hive": "HKLM",
-        "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate",
-        "valueName": "DisableWindowsUpdateAccess",
-        "value": 1,
-        "valueType": "DWord"
-      },
-      {
-        "hive": "HKLM",
-        "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate",
-        "valueName": "DoNotConnectToWindowsUpdateInternetLocations",
-        "value": 1,
-        "valueType": "DWord"
-      },
-      {
-        "hive": "HKLM",
-        "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate",
-        "valueName": "SetDisableUXWUAccess",
-        "value": 1,
-        "valueType": "DWord"
-      },
-      {
-        "hive": "HKLM",
-        "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate",
-        "valueName": "DisableOSUpgrade",
-        "value": 1,
-        "valueType": "DWord"
-      },
-      {
-        "hive": "HKLM",
-        "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate",
-        "valueName": "ExcludeWUDriversInQualityUpdate",
-        "value": 1,
-        "valueType": "DWord"
-      },
-      {
-        "hive": "HKLM",
-        "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate\\AU",
-        "valueName": "NoAutoUpdate",
-        "value": 1,
-        "valueType": "DWord"
-      },
-      {
-        "hive": "HKLM",
-        "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate\\AU",
-        "valueName": "UseWUServer",
-        "value": 1,
-        "valueType": "DWord"
-      }
-    ],
-    "serviceChanges": [
-      {
-        "name": "wuauserv",
-        "startupType": "Disabled"
-      },
-      {
-        "name": "UsoSvc",
-        "startupType": "Disabled"
-      },
-      {
-        "name": "WaaSMedicSvc",
-        "startupType": "Disabled"
-      },
-      {
-        "name": "BITS",
-        "startupType": "Disabled"
-      }
-    ]
-  },
   "security.disable-update-asap": {
     "registryChanges": [
       {
@@ -2244,46 +2074,6 @@
       },
       {
         "name": "lfsvc",
-        "startupType": "Disabled"
-      }
-    ]
-  },
-  "services.disable-delivery-optimization": {
-    "serviceChanges": [
-      {
-        "name": "DoSvc",
-        "startupType": "Disabled"
-      }
-    ]
-  },
-  "services.disable-wuauserv": {
-    "serviceChanges": [
-      {
-        "name": "wuauserv",
-        "startupType": "Disabled"
-      }
-    ]
-  },
-  "services.disable-update-orchestrator-svc": {
-    "serviceChanges": [
-      {
-        "name": "UsoSvc",
-        "startupType": "Disabled"
-      }
-    ]
-  },
-  "services.disable-bits": {
-    "serviceChanges": [
-      {
-        "name": "BITS",
-        "startupType": "Disabled"
-      }
-    ]
-  },
-  "services.disable-waasmedic": {
-    "serviceChanges": [
-      {
-        "name": "WaaSMedicSvc",
         "startupType": "Disabled"
       }
     ]

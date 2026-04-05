@@ -12,7 +12,7 @@ actions:
     rationale: "Background UWP apps consume CPU, memory, and network resources even when not in use"
     risk: low
     tier: free
-    default: true
+    default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
@@ -35,7 +35,7 @@ actions:
     rationale: "Reduces startup time and background resource usage"
     risk: low
     tier: free
-    default: true
+    default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
@@ -53,7 +53,7 @@ actions:
     rationale: "Automatic Maintenance activates during what Windows considers idle time, but can overlap with gaming sessions, causing CPU, disk, and network spikes."
     risk: low
     tier: free
-    default: true
+    default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
@@ -71,7 +71,7 @@ actions:
     rationale: "GameBarPresenceWriter is a COM-activated background process that monitors game presence for Xbox social features."
     risk: safe
     tier: free
-    default: true
+    default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
@@ -90,7 +90,7 @@ actions:
     rationale: "AutoPlay/AutoRun is a security risk (malware spreads via USB) and an annoyance"
     risk: safe
     tier: free
-    default: true
+    default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
@@ -113,7 +113,7 @@ actions:
     rationale: "Game Mode tells Windows to deprioritize background tasks and Windows Update during gameplay"
     risk: safe
     tier: free
-    default: true
+    default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
@@ -131,7 +131,7 @@ actions:
     rationale: "The Windows Push Notification service (WNS) maintains persistent connections to Microsoft servers. Blocking cloud notifications eliminates this traffic while local app notifications continue to work."
     risk: safe
     tier: free
-    default: true
+    default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2

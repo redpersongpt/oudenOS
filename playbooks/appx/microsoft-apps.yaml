@@ -12,7 +12,7 @@ actions:
     rationale: "Frees resources and removes unused inbox app; most users prefer Outlook or webmail"
     risk: low
     tier: free
-    default: true
+    default: false
     requiresReboot: false
     reversible: false
     estimatedSeconds: 8
@@ -27,7 +27,7 @@ actions:
     rationale: "Removes unused camera app; third-party camera apps or video call apps provide their own capture"
     risk: low
     tier: free
-    default: true
+    default: false
     requiresReboot: false
     reversible: false
     estimatedSeconds: 8
@@ -42,7 +42,7 @@ actions:
     rationale: "Removes rarely-used timer/alarm app to reduce bloat"
     risk: low
     tier: free
-    default: true
+    default: false
     requiresReboot: false
     reversible: false
     estimatedSeconds: 8
@@ -57,7 +57,7 @@ actions:
     rationale: "Removes rarely-used audio recording app; dedicated audio software is preferred"
     risk: low
     tier: free
-    default: true
+    default: false
     requiresReboot: false
     reversible: false
     estimatedSeconds: 8
@@ -72,7 +72,7 @@ actions:
     rationale: "Removes background-syncing notes app; alternatives like Notion or Obsidian preferred"
     risk: low
     tier: free
-    default: true
+    default: false
     requiresReboot: false
     reversible: false
     estimatedSeconds: 8
@@ -87,7 +87,7 @@ actions:
     rationale: "Removes telemetry feedback app that most users never open"
     risk: safe
     tier: free
-    default: true
+    default: false
     requiresReboot: false
     reversible: false
     estimatedSeconds: 8
@@ -102,7 +102,7 @@ actions:
     rationale: "Removes unused mapping app; web-based maps are preferred on desktop"
     risk: safe
     tier: free
-    default: true
+    default: false
     requiresReboot: false
     reversible: false
     estimatedSeconds: 8
@@ -117,7 +117,7 @@ actions:
     rationale: "Removes rarely-used help app; online support resources are more comprehensive"
     risk: safe
     tier: free
-    default: true
+    default: false
     requiresReboot: false
     reversible: false
     estimatedSeconds: 8
@@ -132,7 +132,7 @@ actions:
     rationale: "Removes unused automation app that most home users never configure"
     risk: safe
     tier: free
-    default: true
+    default: false
     requiresReboot: false
     reversible: false
     estimatedSeconds: 8
@@ -147,7 +147,7 @@ actions:
     rationale: "Removes ad-supported game app that runs background processes"
     risk: safe
     tier: free
-    default: true
+    default: false
     requiresReboot: false
     reversible: false
     estimatedSeconds: 8

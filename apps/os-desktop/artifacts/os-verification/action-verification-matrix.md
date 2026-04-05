@@ -42,15 +42,12 @@
 | audio.exclusive-mode | tier2 | partially verified on real Windows | registry, registry | snapshot |
 | cpu.aggressive-boost-mode | tier3 | blocked by profile by design | power | snapshot |
 | cpu.disable-core-parking | tier3 | blocked by profile by design | power | snapshot |
-| cpu.disable-dynamic-tick | tier3 | requires reboot to verify fully | bcd, bcd | snapshot |
-| cpu.global-timer-resolution | tier3 | requires reboot to verify fully | registry | snapshot |
 | cpu.min-processor-state-100 | tier3 | blocked by profile by design | power, power | snapshot |
 | cpu.win32-priority-separation | tier3 | partially verified on real Windows | registry | snapshot |
 | display.disable-game-bar | tier2 | partially verified on real Windows | registry, registry, registry | snapshot |
 | display.disable-pointer-acceleration | tier2 | partially verified on real Windows | registry, registry, registry | snapshot |
 | gpu.disable-amd-services | tier3 | blocked by profile by design | registry, registry, registry | snapshot |
 | gpu.disable-amd-telemetry | tier3 | blocked by profile by design | service | snapshot |
-| gpu.disable-hags | tier3 | requires reboot to verify fully | registry | snapshot |
 | gpu.disable-nvidia-container | tier3 | blocked by profile by design | service, service | snapshot |
 | gpu.disable-nvidia-telemetry | tier3 | blocked by profile by design | service | snapshot |
 | gpu.msi-mode | tier3 | requires reboot to verify fully | registry | snapshot |
@@ -68,7 +65,6 @@
 | perf.disable-fullscreen-optimizations | tier3 | blocked by profile by design | registry | snapshot |
 | perf.disable-game-dvr | tier3 | partially verified on real Windows | registry, registry | snapshot |
 | perf.disable-gamebar-presence | tier3 | partially verified on real Windows | registry | snapshot |
-| perf.disable-ndu | tier3 | requires reboot to verify fully | registry | snapshot |
 | perf.disable-page-combining | tier3 | requires reboot to verify fully | registry | snapshot |
 | perf.disable-pointer-acceleration | tier3 | partially verified on real Windows | registry, registry, registry | snapshot |
 | perf.disable-prefetch | tier3 | requires reboot to verify fully | registry, registry | snapshot |
@@ -76,7 +72,6 @@
 | perf.disable-store-auto-updates | tier3 | blocked by profile by design | registry | snapshot |
 | perf.disable-transparency | tier3 | partially verified on real Windows | registry | snapshot |
 | perf.gpu-energy-driver-disable | tier3 | requires reboot to verify fully | registry | snapshot |
-| perf.large-system-cache | tier3 | requires reboot to verify fully | registry | snapshot |
 | perf.legacy-flip-presentation | tier3 | blocked by profile by design | registry, registry | snapshot |
 | perf.mmcss-deep-tuning | tier3 | blocked by profile by design | registry, registry, registry, registry, registry, registry | snapshot |
 | perf.mmcss-system-responsiveness | tier3 | requires reboot to verify fully | registry | snapshot |
@@ -112,13 +107,12 @@
 | privacy.disable-paint-ai | tier1 | partially verified on real Windows | registry, registry, registry, registry, registry | snapshot |
 | privacy.disable-recall | tier1 | partially verified on real Windows | registry, registry, registry, registry | snapshot |
 | privacy.disable-siuf | tier1 | partially verified on real Windows | registry | snapshot |
-| privacy.disable-smart-app-control | tier1 | requires reboot to verify fully | registry | snapshot |
 | privacy.disable-smartscreen | tier1 | blocked by profile by design | registry | snapshot |
 | privacy.disable-tailored-experiences | tier1 | partially verified on real Windows | registry | snapshot |
 | privacy.disable-telemetry | tier1 | partially verified on real Windows | registry, registry | snapshot |
 | privacy.disable-tipc | tier1 | partially verified on real Windows | registry | snapshot |
 | privacy.disable-typing-insights | tier1 | partially verified on real Windows | registry | snapshot |
-| privacy.powershell-telemetry-optout | tier1 | requires reboot to verify fully | registry | snapshot |
+| privacy.powershell-telemetry-optout | tier1 | partially verified on real Windows | registry | snapshot |
 | scheduler.mmcss-gaming-profile | tier3 | partially verified on real Windows | registry, registry, registry, registry, registry, registry, registry, registry | snapshot |
 | security.disable-bitlocker-auto-encrypt | tier3 | partially verified on real Windows | registry | snapshot |
 | security.disable-cpu-mitigations | tier3 | requires reboot to verify fully | none | snapshot |
@@ -132,9 +126,7 @@
 | security.full-defender-disable | tier3 | requires reboot to verify fully | service, service, service, service, service, service, service, service, service | snapshot |
 | security.reduce-ssbd-mitigation | tier3 | requires reboot to verify fully | registry, registry | snapshot |
 | services.disable-alljoyn-router | tier2 | partially verified on real Windows | service | snapshot |
-| services.disable-bits | tier2 | expert-only / intentionally not broadly verified yet | service | snapshot |
 | services.disable-bluetooth-support | tier2 | blocked by profile by design | service | snapshot |
-| services.disable-delivery-optimization | tier2 | blocked by profile by design | service | snapshot |
 | services.disable-diagtrack | tier2 | partially verified on real Windows | service | snapshot |
 | services.disable-dmwappushservice | tier2 | partially verified on real Windows | service | snapshot |
 | services.disable-fax | tier2 | blocked by profile by design | service | snapshot |
@@ -152,13 +144,10 @@
 | services.disable-sysmain | tier2 | blocked by profile by design | service | snapshot |
 | services.disable-tiledatamodelsvc | tier2 | partially verified on real Windows | service | snapshot |
 | services.disable-touch-keyboard | tier2 | blocked by profile by design | service | snapshot |
-| services.disable-update-orchestrator-svc | tier2 | expert-only / intentionally not broadly verified yet | service | snapshot |
-| services.disable-waasmedic | tier2 | expert-only / intentionally not broadly verified yet | service | snapshot |
 | services.disable-wallet-service | tier2 | partially verified on real Windows | service | snapshot |
 | services.disable-wer-service | tier2 | partially verified on real Windows | service | snapshot |
 | services.disable-wisvc | tier2 | partially verified on real Windows | service | snapshot |
 | services.disable-wmp-network-sharing | tier2 | partially verified on real Windows | service | snapshot |
-| services.disable-wuauserv | tier2 | expert-only / intentionally not broadly verified yet | service | snapshot |
 | services.disable-xbox-services | tier2 | blocked by profile by design | service, service, service, service | snapshot |
 | shell.disable-account-notifications | tier1 | partially verified on real Windows | registry, registry, registry | snapshot |
 | shell.disable-content-delivery | tier1 | partially verified on real Windows | registry, registry, registry, registry, registry, registry, registry, registry | snapshot |
@@ -195,13 +184,11 @@
 | startup.disable-cortana | tier2 | partially verified on real Windows | registry | snapshot |
 | startup.disable-gamebar-presence | tier2 | blocked by profile by design | registry | snapshot |
 | startup.enable-game-mode | tier2 | partially verified on real Windows | registry | snapshot |
-| storage.disable-8dot3-filenames | tier3 | requires reboot to verify fully | registry | snapshot |
 | storage.disable-indexing | tier2 | partially verified on real Windows | service | snapshot |
 | storage.disable-last-access | tier3 | partially verified on real Windows | registry | snapshot |
 | storage.enable-write-caching | tier3 | partially verified on real Windows | registry, registry | snapshot |
 | system.defer-feature-updates | tier3 | blocked by profile by design | registry, registry | snapshot |
 | system.disable-update-auto-restart | tier3 | blocked by profile by design | registry | snapshot |
-| system.disable-windows-update | tier3 | requires reboot to verify fully | service, service, service, service | snapshot |
 | tasks.disable-app-suggestion-tasks | tier2 | partially verified on real Windows | task, task, task | snapshot |
 | tasks.disable-chkdsk-tasks | tier2 | blocked by profile by design | task | snapshot |
 | tasks.disable-cloud-content-tasks | tier2 | partially verified on real Windows | task, task | snapshot |

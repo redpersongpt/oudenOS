@@ -41,7 +41,6 @@ phases:
     modules:
       - services/telemetry-services.yaml
       - services/consumer-services.yaml
-      - services/windows-update-services.yaml
 
   - id: tasks
     name: "Scheduled Tasks"

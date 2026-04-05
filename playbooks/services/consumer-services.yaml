@@ -93,7 +93,7 @@ actions:
     rationale: "PhoneSvc manages telephony state for the Phone Link companion app. Unnecessary unless actively using Phone Link."
     risk: safe
     tier: free
-    default: true
+    default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
@@ -109,7 +109,7 @@ actions:
     rationale: "WalletService manages NFC payment credentials. Desktops have no NFC hardware, laptops rarely use it."
     risk: safe
     tier: free
-    default: true
+    default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
@@ -157,7 +157,7 @@ actions:
     rationale: "Windows Mixed Reality services run idle on systems without VR headsets. They load perception-related DLLs unnecessarily."
     risk: safe
     tier: free
-    default: true
+    default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 3
@@ -190,7 +190,7 @@ actions:
     rationale: "WMP Network Sharing acts as a media server, exposing media files over the local network. Unnecessary unless streaming media to other devices."
     risk: safe
     tier: free
-    default: true
+    default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
@@ -205,7 +205,7 @@ actions:
     rationale: "Smart card services maintain reader device state. Unnecessary on systems without smart card hardware."
     risk: safe
     tier: free
-    default: true
+    default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
