@@ -41,7 +41,7 @@ function buildWizardJsonPayload() {
     type: "RadioPage",
     description: question.desc,
     isRequired: true,
-    defaultOption: `${String(question.key)}__${String(question.options[0]?.value ?? "")}`,
+    defaultOption: getDefaultOption(question),
     questionKey: question.key,
     visibility: question.visibility,
     options: question.options.map((option) => ({
@@ -61,6 +61,30 @@ function buildWizardJsonPayload() {
     desktopQuestions,
     featurePages,
   };
+}
+
+function getDefaultOption(question: {
+  key: string;
+  options: Array<{ value: unknown; badge?: string | null }>;
+}) {
+  const booleanFalse = question.options.find((option) => option.value === false);
+  if (booleanFalse) {
+    return `${String(question.key)}__false`;
+  }
+
+  const recommended = question.options.find((option) => option.badge === "Recommended");
+  if (recommended) {
+    return `${String(question.key)}__${String(recommended.value)}`;
+  }
+
+  if (question.key === "aggressionPreset") {
+    const balanced = question.options.find((option) => option.value === "balanced");
+    if (balanced) {
+      return `${String(question.key)}__balanced`;
+    }
+  }
+
+  return `${String(question.key)}__${String(question.options[0]?.value ?? "")}`;
 }
 
 const payload = buildWizardJsonPayload();

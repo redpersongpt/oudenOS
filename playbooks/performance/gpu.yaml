@@ -25,24 +25,6 @@ actions:
         value: 4
         valueType: DWord
 
-  - id: gpu.disable-hags
-    name: "Disable Hardware-Accelerated GPU Scheduling (HAGS)"
-    description: "Disable HAGS by setting HwSchMode to 1. HAGS moves GPU scheduling from the CPU to the GPU itself, but can hurt frame time consistency on many systems."
-    rationale: "HAGS improves frame time consistency on some systems but worsens it on others. Disabling provides more predictable behavior."
-    risk: low
-    tier: premium
-    default: true
-    requiresReboot: true
-    reversible: true
-    estimatedSeconds: 3
-    blockedProfiles: []
-    registryChanges:
-      - hive: HKLM
-        path: "SYSTEM\\CurrentControlSet\\Control\\GraphicsDrivers"
-        valueName: HwSchMode
-        value: 1
-        valueType: DWord
-
   - id: gpu.nvidia-disable-dynamic-pstate
     name: "Lock NVIDIA GPU to P-State 0 (Maximum Performance)"
     description: "Disable dynamic P-State switching on NVIDIA GPUs by setting DisableDynamicPstate=1, forcing the GPU to remain at maximum clocks at all times"

@@ -12,7 +12,7 @@ actions:
     rationale: "Main telemetry pipeline — collects diagnostic data, usage patterns, and crash reports, uploads to Microsoft"
     risk: safe
     tier: free
-    default: true
+    default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 3
@@ -27,7 +27,7 @@ actions:
     rationale: "Secondary telemetry relay for DiagTrack, can still upload data independently"
     risk: safe
     tier: free
-    default: true
+    default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
@@ -58,7 +58,7 @@ actions:
     rationale: "Removes unnecessary background energy logging service that provides no user-facing benefit"
     risk: safe
     tier: free
-    default: true
+    default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
@@ -73,7 +73,7 @@ actions:
     rationale: "Legacy Live Tiles indexer, deprecated in Windows 11"
     risk: safe
     tier: free
-    default: true
+    default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
@@ -88,7 +88,7 @@ actions:
     rationale: "Keeps background connections for Windows Insider preview builds when not enrolled"
     risk: safe
     tier: free
-    default: true
+    default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
@@ -103,7 +103,7 @@ actions:
     rationale: "Only used in retail store display mode"
     risk: safe
     tier: free
-    default: true
+    default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
@@ -118,7 +118,7 @@ actions:
     rationale: "Downloads offline map data and provides geolocation; unused on desktops"
     risk: safe
     tier: free
-    default: true
+    default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 3

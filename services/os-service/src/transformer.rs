@@ -4,6 +4,18 @@
 
 use serde_json::Value;
 
+fn is_retired_unsafe_action(action_id: &str) -> bool {
+    matches!(
+        action_id,
+        "cpu.disable-dynamic-tick"
+            | "cpu.global-timer-resolution"
+            | "gpu.disable-hags"
+            | "privacy.disable-smart-app-control"
+            | "storage.disable-8dot3-filenames"
+            | "system.disable-windows-update"
+    )
+}
+
 /// Generate a tuning plan for the given classification and preset.
 /// Preset can be: "conservative", "balanced", "aggressive".
 pub fn generate_plan(classification: &Value, preset: &str) -> anyhow::Result<Value> {
@@ -29,6 +41,10 @@ pub fn generate_plan(classification: &Value, preset: &str) -> anyhow::Result<Val
     for action in &all_actions {
         let action_id = action["id"].as_str().unwrap_or("");
         let category = action["category"].as_str().unwrap_or("");
+
+        if is_retired_unsafe_action(action_id) {
+            continue;
+        }
 
         // Profile-based blocking
         if is_blocked(action_id, profile, &preservation) {
@@ -83,8 +99,12 @@ pub fn get_actions(category: Option<&str>) -> Vec<Value> {
         Some(cat) => all
             .into_iter()
             .filter(|a| a["category"].as_str() == Some(cat))
+            .filter(|a| !is_retired_unsafe_action(a["id"].as_str().unwrap_or_default()))
             .collect(),
-        None => all,
+        None => all
+            .into_iter()
+            .filter(|a| !is_retired_unsafe_action(a["id"].as_str().unwrap_or_default()))
+            .collect(),
     }
 }
 
@@ -3800,11 +3820,11 @@ mod tests {
 
     #[test]
     fn test_action_count() {
-        let all = embedded_actions();
+        let all = get_actions(None);
         assert_eq!(
             all.len(),
-            101,
-            "Expected exactly 101 embedded actions, got {}",
+            95,
+            "Expected exactly 95 embedded actions, got {}",
             all.len()
         );
     }

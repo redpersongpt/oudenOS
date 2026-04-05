@@ -12,7 +12,7 @@ actions:
     rationale: "The Balanced power plan dynamically scales CPU frequency and allows C-state transitions, introducing latency when the CPU must ramp up. High Performance keeps the CPU at maximum frequency."
     risk: low
     tier: premium
-    default: true
+    default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 3
@@ -30,7 +30,7 @@ actions:
     rationale: "Fast Startup saves the kernel session to the hibernation file on shutdown. This causes stale driver state, prevents clean driver reinitialization, and can lead to hardware initialization issues."
     risk: safe
     tier: free
-    default: true
+    default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
@@ -48,7 +48,7 @@ actions:
     rationale: "On systems with Fast Startup already disabled, hibernation provides no benefit and consumes significant disk space. Disabling it ensures a clean kernel initialization on every boot."
     risk: safe
     tier: free
-    default: true
+    default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 3
@@ -66,7 +66,7 @@ actions:
     rationale: "USB selective suspend saves power by suspending idle USB devices, but causes input latency spikes when mice, keyboards, and controllers must wake from suspended state."
     risk: low
     tier: premium
-    default: true
+    default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 3
@@ -82,7 +82,7 @@ actions:
     rationale: "PCIe ASPM transitions power down the PCIe link between the CPU and devices. Re-entering the active state adds latency (1-10 us typical, up to several ms). Disabling ASPM eliminates this class of intermittent latency spike."
     risk: low
     tier: premium
-    default: true
+    default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 3

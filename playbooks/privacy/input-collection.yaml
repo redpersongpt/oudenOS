@@ -12,7 +12,7 @@ actions:
     rationale: "Prevents Windows from collecting typing and inking patterns to build a local user profile"
     risk: safe
     tier: free
-    default: true
+    default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
@@ -35,7 +35,7 @@ actions:
     rationale: "Prevents automatic restore point creation during device driver installs, reducing disk I/O"
     risk: safe
     tier: free
-    default: true
+    default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
@@ -53,7 +53,7 @@ actions:
     rationale: "Windows Update can silently reinstall removed AppX packages during feature updates"
     risk: low
     tier: free
-    default: true
+    default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 3

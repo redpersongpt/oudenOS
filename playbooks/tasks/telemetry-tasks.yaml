@@ -12,7 +12,7 @@ actions:
     rationale: "These tasks collect and upload diagnostic data in the background, consuming CPU and network resources"
     risk: safe
     tier: free
-    default: true
+    default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 5
@@ -39,7 +39,7 @@ actions:
     rationale: "Diagnostic tasks run periodic system scans that consume I/O and CPU for data Microsoft uses for product improvement"
     risk: safe
     tier: free
-    default: true
+    default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 4
@@ -60,7 +60,7 @@ actions:
     rationale: "Error reporting tasks collect crash data and feedback prompts. Disabling prevents background crash data upload."
     risk: safe
     tier: free
-    default: true
+    default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 3
@@ -77,7 +77,7 @@ actions:
     rationale: "Cloud content tasks download promotional content, lock screen suggestions, and app suggestions from Microsoft servers"
     risk: safe
     tier: free
-    default: true
+    default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 3
@@ -160,7 +160,7 @@ actions:
     rationale: "Maps tasks periodically check for and download offline map data in the background"
     risk: safe
     tier: free
-    default: true
+    default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
@@ -178,7 +178,7 @@ actions:
     rationale: "Speech tasks collect and process speech/handwriting samples for Microsoft personalization"
     risk: safe
     tier: free
-    default: true
+    default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
@@ -195,7 +195,7 @@ actions:
     rationale: "Flighting tasks check for preview builds and collect flight-specific telemetry. Unnecessary unless enrolled in Windows Insider."
     risk: safe
     tier: free
-    default: true
+    default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 3

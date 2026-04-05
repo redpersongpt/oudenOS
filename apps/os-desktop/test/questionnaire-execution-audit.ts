@@ -134,7 +134,6 @@ const EXPERT_SCENARIO: Scenario = {
 };
 
 const scenarioOverrides: Partial<Record<keyof QuestionnaireAnswers, Scenario>> = {
-  disableDynamicTick: AGGRESSIVE_SCENARIO,
   disableSmartScreen: AGGRESSIVE_SCENARIO,
   removeEdge: AGGRESSIVE_SCENARIO,
   preserveWebView2: AGGRESSIVE_SCENARIO,
@@ -230,7 +229,12 @@ const booleanKeys = Object.keys(DEFAULT_QUESTIONNAIRE_ANSWERS).filter(
   (key) => !["aggressionPreset", "edgeBehavior", "telemetryLevel",
     // Questions with no backing playbook action — either removed for shell safety
     // or only exist in legacy transformer.rs embedded actions
+    "globalTimerResolution",
+    "disableDynamicTick",
+    "disableMemoryCompression",
+    "disableHags",
     "disableIpv6", "disableTeredo", "disableNetbios", "disableNagle", "disableNicOffloading",
+    "disableWindowsUpdate",
     "disableFaultTolerantHeap", // removed: breaks Explorer crash recovery
     "disableMPOs",              // removed: breaks Explorer icon rendering / compositor
   ].includes(key),
