@@ -57,36 +57,21 @@
 | gpu.nvidia-disable-dynamic-pstate | tier3 | requires reboot to verify fully | registry | snapshot |
 | gpu.tdr-delay | tier3 | partially verified on real Windows | registry, registry | snapshot |
 | memory.disable-compression | tier3 | requires reboot to verify fully | powershell-specialized | snapshot |
-| network.disable-ipv6 | tier3 | requires reboot to verify fully | registry | snapshot |
-| network.disable-llmnr | tier3 | blocked by profile by design | registry | snapshot |
-| network.disable-mdns | tier3 | blocked by profile by design | registry | snapshot |
-| network.disable-nagle | tier3 | partially verified on real Windows | registry, registry | snapshot |
-| network.disable-netbios | tier3 | blocked by profile by design | registry, registry | snapshot |
-| network.disable-network-location-wizard | tier3 | blocked by profile by design | registry | snapshot |
-| network.disable-offloading | tier3 | expert-only / intentionally not broadly verified yet | powershell-specialized | snapshot |
-| network.disable-smbv1 | tier3 | requires reboot to verify fully | registry, registry | snapshot |
-| network.disable-teredo | tier3 | partially verified on real Windows | registry, powershell | snapshot |
-| network.disable-wpad | tier3 | blocked by profile by design | registry, registry | snapshot |
+| network.disable-llmnr | tier3 | expert-only / intentionally not broadly verified yet | registry | snapshot |
+| network.disable-smbv1 | tier3 | requires reboot to verify fully | registry | snapshot |
 | network.harden-windows-firewall-defaults | tier3 | partially verified on real Windows | registry, registry | snapshot |
-| network.qos-dscp-fix | tier3 | partially verified on real Windows | registry | snapshot |
-| network.rss-queues-2 | tier3 | partially verified on real Windows | registry | snapshot |
-| network.tcp-autotuning-normal | tier3 | partially verified on real Windows | powershell-specialized | snapshot |
 | perf.clear-page-file-on-shutdown | tier3 | partially verified on real Windows | registry | snapshot |
 | perf.csrss-high-priority | tier3 | requires reboot to verify fully | registry, registry | snapshot |
 | perf.disable-auto-maintenance | tier3 | blocked by profile by design | registry | snapshot |
 | perf.disable-auto-sign-on | tier3 | partially verified on real Windows | registry | snapshot |
 | perf.disable-driver-updates-via-wu | tier3 | blocked by profile by design | registry | snapshot |
-| perf.disable-fault-tolerant-heap | tier3 | partially verified on real Windows | registry | snapshot |
 | perf.disable-fullscreen-optimizations | tier3 | blocked by profile by design | registry | snapshot |
 | perf.disable-game-dvr | tier3 | partially verified on real Windows | registry, registry | snapshot |
 | perf.disable-gamebar-presence | tier3 | partially verified on real Windows | registry | snapshot |
-| perf.disable-mpos | tier3 | blocked by profile by design | registry | snapshot |
 | perf.disable-ndu | tier3 | requires reboot to verify fully | registry | snapshot |
 | perf.disable-page-combining | tier3 | requires reboot to verify fully | registry | snapshot |
-| perf.disable-paging-executive | tier3 | requires reboot to verify fully | registry | snapshot |
 | perf.disable-pointer-acceleration | tier3 | partially verified on real Windows | registry, registry, registry | snapshot |
 | perf.disable-prefetch | tier3 | requires reboot to verify fully | registry, registry | snapshot |
-| perf.disable-service-host-split | tier3 | requires reboot to verify fully | registry | snapshot |
 | perf.disable-sticky-keys | tier3 | partially verified on real Windows | registry | snapshot |
 | perf.disable-store-auto-updates | tier3 | blocked by profile by design | registry | snapshot |
 | perf.disable-transparency | tier3 | partially verified on real Windows | registry | snapshot |
@@ -97,6 +82,11 @@
 | perf.mmcss-system-responsiveness | tier3 | requires reboot to verify fully | registry | snapshot |
 | perf.ntfs-optimization | tier3 | requires reboot to verify fully | registry, registry, registry, registry | snapshot |
 | perf.svchost-split-threshold | tier3 | requires reboot to verify fully | registry | snapshot |
+| personalize.accent-color-black | tier1 | requires reboot to verify fully | none | snapshot |
+| personalize.dark-mode | tier1 | partially verified on real Windows | registry, registry | snapshot |
+| personalize.login-screen-dark | tier1 | partially verified on real Windows | none | snapshot |
+| personalize.max-refresh-rate | tier1 | executable but readback not yet implemented | powershell | snapshot |
+| personalize.ouden-wallpaper | tier1 | executable but readback not yet implemented | powershell | snapshot |
 | power.disable-device-power-saving | tier3 | blocked by profile by design | power | snapshot |
 | power.disable-fast-startup | tier3 | partially verified on real Windows | registry | snapshot |
 | power.disable-hibernation | tier3 | partially verified on real Windows | registry | snapshot |
@@ -150,14 +140,12 @@
 | services.disable-bits | tier2 | expert-only / intentionally not broadly verified yet | service | snapshot |
 | services.disable-bluetooth-support | tier2 | blocked by profile by design | service | snapshot |
 | services.disable-delivery-optimization | tier2 | blocked by profile by design | service | snapshot |
-| services.disable-diagnostic-services | tier2 | requires reboot to verify fully | service, service, service | snapshot |
 | services.disable-diagtrack | tier2 | partially verified on real Windows | service | snapshot |
 | services.disable-dmwappushservice | tier2 | partially verified on real Windows | service | snapshot |
 | services.disable-fax | tier2 | blocked by profile by design | service | snapshot |
 | services.disable-geolocation | tier2 | blocked by profile by design | service | snapshot |
 | services.disable-map-services | tier2 | blocked by profile by design | service, service | snapshot |
 | services.disable-mixed-reality | tier2 | partially verified on real Windows | service, service | snapshot |
-| services.disable-pca-service | tier2 | blocked by profile by design | service | snapshot |
 | services.disable-phone-service | tier2 | blocked by profile by design | service | snapshot |
 | services.disable-print-spooler | tier1 | blocked by profile by design | service | snapshot |
 | services.disable-push-notifications | tier2 | requires reboot to verify fully | service | snapshot |
@@ -200,14 +188,10 @@
 | shell.reduce-search-box | tier1 | blocked by profile by design | registry | snapshot |
 | shell.remove-cast-to-device | tier1 | partially verified on real Windows | registry | snapshot |
 | shell.remove-edit-with-paint3d | tier1 | partially verified on real Windows | registry, registry, registry | snapshot |
-| shell.remove-give-access-to | tier1 | blocked by profile by design | registry | snapshot |
-| shell.remove-include-in-library | tier1 | blocked by profile by design | registry | snapshot |
-| shell.remove-share-context | tier1 | partially verified on real Windows | registry | snapshot |
 | shell.remove-troubleshoot-compatibility | tier1 | blocked by profile by design | registry | snapshot |
-| shell.restore-classic-context-menu | tier1 | requires reboot to verify fully | registry | snapshot |
 | shell.show-file-extensions | tier1 | partially verified on real Windows | registry | snapshot |
 | shell.show-hidden-files | tier1 | partially verified on real Windows | registry | snapshot |
-| shutdown.decrease-shutdown-time | tier2 | partially verified on real Windows | registry, registry, registry | snapshot |
+| shutdown.decrease-shutdown-time | tier2 | partially verified on real Windows | registry, registry | snapshot |
 | shutdown.force-end-apps | tier2 | partially verified on real Windows | registry | snapshot |
 | startup.disable-automatic-maintenance | tier2 | partially verified on real Windows | registry | snapshot |
 | startup.disable-autoplay | tier2 | partially verified on real Windows | registry, registry | snapshot |

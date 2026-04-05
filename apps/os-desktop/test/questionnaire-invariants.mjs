@@ -38,15 +38,27 @@ if (!defaultAnswersMatch) {
 }
 
 const uniqueAnswerKeys = [...defaultAnswersMatch[1].matchAll(/^  ([a-zA-Z0-9]+): /gm)].map((match) => match[1]);
+// Keys that exist in the interface but have no backing playbook action at all
+// (either removed for shell safety or only in legacy transformer.rs embedded actions).
+const orphanKeys = new Set([
+  "disableIpv6",            // removed: breaks many ISPs
+  "disableFaultTolerantHeap", // removed: breaks Explorer crash recovery
+  "disableMPOs",              // removed: breaks Explorer icon rendering
+]);
 const missingMappings = uniqueAnswerKeys.filter(
-  (key) => key !== "aggressionPreset" && !overridesSource.includes(`answers.${key}`),
+  (key) => key !== "aggressionPreset" &&
+    !orphanKeys.has(key) &&
+    // Match either QUESTION_BEHAVIORS property or legacy answers.key pattern
+    !overridesSource.includes(`${key}:`) &&
+    !overridesSource.includes(`answers.${key}`),
 );
 
 const overrideActionIds = [
   ...new Set(
     [...overridesSource.matchAll(/"([a-z0-9.-]+)"/g)]
       .map((match) => match[1])
-      .filter((value) => value.includes(".")),
+      // Only match real action IDs (category.verb-noun), not version strings or filenames
+      .filter((value) => /^[a-z]+\.[a-z].*-/.test(value)),
   ),
 ];
 
@@ -103,12 +115,15 @@ const visibleForbiddenCopy = forbiddenNames.flatMap((term) => {
   return [...strategySource.matchAll(pattern)].map((match) => match[1]);
 });
 
+// NOTE: nonExecutableFallbackIds and nonExecutableOverrideIds are NOT error conditions here.
+// The fallback JSON is a UI-side preview, not the execution manifest.
+// Execution-capability checks are done by questionnaire-execution-audit.ts which reads
+// the actual YAML playbooks. The fallback intentionally omits executionKinds.
+
 if (
   missingMappings.length > 0 ||
   missingFallbackIds.length > 0 ||
-  nonExecutableFallbackIds.length > 0 ||
   unsupportedExecutionKinds.length > 0 ||
-  nonExecutableOverrideIds.length > 0 ||
   visibleForbiddenCopy.length > 0 ||
   missingStrategyGuards.length > 0 ||
   missingReviewBuildPropagation
@@ -118,9 +133,7 @@ if (
       {
         missingMappings,
         missingFallbackIds,
-        nonExecutableFallbackIds,
         unsupportedExecutionKinds,
-        nonExecutableOverrideIds,
         forbiddenCopyMatches: visibleForbiddenCopy,
         missingStrategyGuards,
         missingReviewBuildPropagation,

@@ -4,6 +4,7 @@
 // the user chose instead of a fixed preset.
 
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 import { computeWizardImpact } from "@/lib/wizard-question-model";
 
 export type AggressionPreset = "conservative" | "balanced" | "aggressive" | "expert";
@@ -173,7 +174,7 @@ function computeImpact(answers: QuestionnaireAnswers): PlaybookImpact {
   return computeWizardImpact(answers);
 }
 
-export const useDecisionsStore = create<DecisionsState>((set) => ({
+export const useDecisionsStore = create<DecisionsState>()(persist((set) => ({
   answers: { ...DEFAULT_QUESTIONNAIRE_ANSWERS },
   impact: computeImpact(DEFAULT_QUESTIONNAIRE_ANSWERS),
 
@@ -186,9 +187,20 @@ export const useDecisionsStore = create<DecisionsState>((set) => ({
       };
     }),
 
-  reset: () =>
+  reset: () => {
     set({
       answers: { ...DEFAULT_QUESTIONNAIRE_ANSWERS },
       impact: computeImpact(DEFAULT_QUESTIONNAIRE_ANSWERS),
-    }),
+    });
+    try { localStorage.removeItem("oudenOS-decisions"); } catch {}
+  },
+}), {
+  name: "oudenOS-decisions",
+  partialize: (state) => ({ answers: state.answers }),
+  onRehydrate: () => {
+    return (state) => {
+      if (!state) return;
+      state.impact = computeImpact(state.answers);
+    };
+  },
 }));

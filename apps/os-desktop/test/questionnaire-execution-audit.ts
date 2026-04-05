@@ -231,6 +231,7 @@ const booleanKeys = Object.keys(DEFAULT_QUESTIONNAIRE_ANSWERS).filter(
     // Questions with no backing playbook action — either removed for shell safety
     // or only exist in legacy transformer.rs embedded actions
     "disableIpv6", "disableTeredo", "disableNetbios", "disableNagle", "disableNicOffloading",
+    "restoreClassicContextMenu", // shell.restore-classic-context-menu only in transformer.rs
     "disableFaultTolerantHeap", // removed: breaks Explorer crash recovery
     "disableMPOs",              // removed: breaks Explorer icon rendering / compositor
   ].includes(key),
