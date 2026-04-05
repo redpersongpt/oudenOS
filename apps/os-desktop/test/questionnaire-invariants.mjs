@@ -82,13 +82,14 @@ const nonExecutableOverrideIds = overrideActionIds.filter((id) =>
 );
 
 const requiredStrategyGuards = [
-  { key: "disableRecall", pattern: /"disableRecall"[\s\S]*ctx\.windowsBuild >= 26100/ },
-  { key: "disableClickToDo", pattern: /"disableClickToDo"[\s\S]*ctx\.windowsBuild >= 26100/ },
-  { key: "enableEndTask", pattern: /"enableEndTask"[\s\S]*ctx\.windowsBuild >= 22631/ },
+  { key: "disableRecall", pattern: /"disableRecall"[\s\S]*(ctx\.windowsBuild >= 26100|minWindowsBuild:\s*26100)/ },
+  { key: "disableClickToDo", pattern: /"disableClickToDo"[\s\S]*(ctx\.windowsBuild >= 26100|minWindowsBuild:\s*26100)/ },
+  { key: "enableEndTask", pattern: /"enableEndTask"[\s\S]*(ctx\.windowsBuild >= 22631|minWindowsBuild:\s*22631)/ },
 ];
 
+const combinedSource = strategySource + "\n" + fs.readFileSync(overridesPath, "utf8");
 const missingStrategyGuards = requiredStrategyGuards
-  .filter(({ pattern }) => !pattern.test(strategySource))
+  .filter(({ pattern }) => !pattern.test(combinedSource))
   .map(({ key }) => key);
 
 const missingReviewBuildPropagation =
