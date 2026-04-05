@@ -3539,79 +3539,14 @@
     "currentProofReason": "Immediate readback is possible, but full trust for this action still requires a post-reboot assertion."
   },
   {
-    "actionId": "network.disable-ipv6",
-    "name": "Disable IPv6 Protocol Stack",
-    "phaseId": "networking",
-    "phaseName": "Network Security",
-    "module": "networking.protocols",
-    "category": "networking",
-    "risk": "medium",
-    "expertOnly": false,
-    "requiresReboot": true,
-    "reversible": true,
-    "executionKinds": [
-      "registryChanges"
-    ],
-    "verificationTier": "tier3",
-    "expectedStateChanges": [
-      {
-        "kind": "registry",
-        "target": "HKLM\\SYSTEM\\\\CurrentControlSet\\\\Services\\\\Tcpip6\\\\Parameters\\DisabledComponents",
-        "expected": "255 (DWord)"
-      }
-    ],
-    "readbackMethods": [
-      {
-        "kind": "registry",
-        "detail": "Read HKLM\\SYSTEM\\\\CurrentControlSet\\\\Services\\\\Tcpip6\\\\Parameters\\DisabledComponents and compare to 255."
-      }
-    ],
-    "rollbackMethod": "Restore the snapshot captured immediately before apply, then read back the same targets and compare against baseline.",
-    "profileRestrictions": {
-      "blockedProfiles": [
-        "work_pc"
-      ],
-      "profileRuleHits": [
-        "work_pc"
-      ]
-    },
-    "questionDependencies": [
-      {
-        "questionKey": "disableIpv6",
-        "scenario": {
-          "profile": "gaming_desktop",
-          "preset": "aggressive",
-          "aggressionPreset": "aggressive",
-          "windowsBuild": 22631
-        },
-        "answerStatuses": [
-          {
-            "value": true,
-            "status": "Included",
-            "blockedReason": null
-          },
-          {
-            "value": false,
-            "status": "Blocked",
-            "blockedReason": "You chose to keep IPv6 enabled."
-          }
-        ],
-        "changesPlanReboot": false,
-        "changesPresetBehavior": false
-      }
-    ],
-    "currentProofStatus": "requires reboot to verify fully",
-    "currentProofReason": "Immediate readback is possible, but full trust for this action still requires a post-reboot assertion."
-  },
-  {
     "actionId": "network.disable-llmnr",
-    "name": "Disable Link-Local Multicast Name Resolution",
+    "name": "Disable LLMNR",
     "phaseId": "networking",
     "phaseName": "Network Security",
     "module": "networking.security",
     "category": "networking",
-    "risk": "low",
-    "expertOnly": false,
+    "risk": "safe",
+    "expertOnly": true,
     "requiresReboot": false,
     "reversible": true,
     "executionKinds": [
@@ -3658,295 +3593,7 @@
           {
             "value": false,
             "status": "Blocked",
-            "blockedReason": "You chose to keep LLMNR, SMBv1, and WPAD legacy protocols enabled."
-          }
-        ],
-        "changesPlanReboot": false,
-        "changesPresetBehavior": false
-      }
-    ],
-    "currentProofStatus": "blocked by profile by design",
-    "currentProofReason": "This action is intentionally blocked on work_pc profile(s); harness proof focuses on the profiles that can legally include it."
-  },
-  {
-    "actionId": "network.disable-mdns",
-    "name": "Disable Multicast DNS (mDNS)",
-    "phaseId": "networking",
-    "phaseName": "Network Security",
-    "module": "networking.security",
-    "category": "networking",
-    "risk": "low",
-    "expertOnly": false,
-    "requiresReboot": false,
-    "reversible": true,
-    "executionKinds": [
-      "registryChanges"
-    ],
-    "verificationTier": "tier3",
-    "expectedStateChanges": [
-      {
-        "kind": "registry",
-        "target": "HKLM\\SYSTEM\\\\CurrentControlSet\\\\Services\\\\Dnscache\\\\Parameters\\EnableMDNS",
-        "expected": "0 (DWord)"
-      }
-    ],
-    "readbackMethods": [
-      {
-        "kind": "registry",
-        "detail": "Read HKLM\\SYSTEM\\\\CurrentControlSet\\\\Services\\\\Dnscache\\\\Parameters\\EnableMDNS and compare to 0."
-      }
-    ],
-    "rollbackMethod": "Restore the snapshot captured immediately before apply, then read back the same targets and compare against baseline.",
-    "profileRestrictions": {
-      "blockedProfiles": [
-        "office_laptop",
-        "work_pc"
-      ],
-      "profileRuleHits": []
-    },
-    "questionDependencies": [],
-    "currentProofStatus": "blocked by profile by design",
-    "currentProofReason": "This action is intentionally blocked on work_pc, office_laptop profile(s); harness proof focuses on the profiles that can legally include it."
-  },
-  {
-    "actionId": "network.disable-nagle",
-    "name": "Disable Nagle's Algorithm (TCPNoDelay)",
-    "phaseId": "networking",
-    "phaseName": "Network Security",
-    "module": "networking.latency",
-    "category": "networking",
-    "risk": "low",
-    "expertOnly": false,
-    "requiresReboot": false,
-    "reversible": true,
-    "executionKinds": [
-      "registryChanges"
-    ],
-    "verificationTier": "tier3",
-    "expectedStateChanges": [
-      {
-        "kind": "registry",
-        "target": "HKLM\\SYSTEM\\\\CurrentControlSet\\\\Services\\\\Tcpip\\\\Parameters\\\\Interfaces\\\\<Interface GUID>\\TcpAckFrequency",
-        "expected": "1 (DWord)"
-      },
-      {
-        "kind": "registry",
-        "target": "HKLM\\SYSTEM\\\\CurrentControlSet\\\\Services\\\\Tcpip\\\\Parameters\\\\Interfaces\\\\<Interface GUID>\\TCPNoDelay",
-        "expected": "1 (DWord)"
-      }
-    ],
-    "readbackMethods": [
-      {
-        "kind": "registry",
-        "detail": "Read HKLM\\SYSTEM\\\\CurrentControlSet\\\\Services\\\\Tcpip\\\\Parameters\\\\Interfaces\\\\<Interface GUID>\\TcpAckFrequency and compare to 1."
-      },
-      {
-        "kind": "registry",
-        "detail": "Read HKLM\\SYSTEM\\\\CurrentControlSet\\\\Services\\\\Tcpip\\\\Parameters\\\\Interfaces\\\\<Interface GUID>\\TCPNoDelay and compare to 1."
-      }
-    ],
-    "rollbackMethod": "Restore the snapshot captured immediately before apply, then read back the same targets and compare against baseline.",
-    "profileRestrictions": {
-      "blockedProfiles": [],
-      "profileRuleHits": []
-    },
-    "questionDependencies": [
-      {
-        "questionKey": "disableNagle",
-        "scenario": {
-          "profile": "gaming_desktop",
-          "preset": "aggressive",
-          "aggressionPreset": "aggressive",
-          "windowsBuild": 22631
-        },
-        "answerStatuses": [
-          {
-            "value": true,
-            "status": "Included",
-            "blockedReason": null
-          },
-          {
-            "value": false,
-            "status": "Blocked",
-            "blockedReason": "You chose to keep the default TCP packet coalescing behavior."
-          }
-        ],
-        "changesPlanReboot": false,
-        "changesPresetBehavior": false
-      }
-    ],
-    "currentProofStatus": "partially verified on real Windows",
-    "currentProofReason": "This action has a defined readback and rollback strategy, but consumer-Windows certification still depends on running the harness."
-  },
-  {
-    "actionId": "network.disable-netbios",
-    "name": "Disable NetBIOS over TCP/IP",
-    "phaseId": "networking",
-    "phaseName": "Network Security",
-    "module": "networking.security",
-    "category": "networking",
-    "risk": "low",
-    "expertOnly": false,
-    "requiresReboot": false,
-    "reversible": true,
-    "executionKinds": [
-      "registryChanges"
-    ],
-    "verificationTier": "tier3",
-    "expectedStateChanges": [
-      {
-        "kind": "registry",
-        "target": "HKLM\\SYSTEM\\\\CurrentControlSet\\\\Services\\\\NetBT\\\\Parameters\\NodeType",
-        "expected": "2 (DWord)"
-      },
-      {
-        "kind": "registry",
-        "target": "HKLM\\SYSTEM\\\\CurrentControlSet\\\\Services\\\\NetBT\\\\Parameters\\\\Interfaces\\NetbiosOptions",
-        "expected": "2 (DWord)"
-      }
-    ],
-    "readbackMethods": [
-      {
-        "kind": "registry",
-        "detail": "Read HKLM\\SYSTEM\\\\CurrentControlSet\\\\Services\\\\NetBT\\\\Parameters\\NodeType and compare to 2."
-      },
-      {
-        "kind": "registry",
-        "detail": "Read HKLM\\SYSTEM\\\\CurrentControlSet\\\\Services\\\\NetBT\\\\Parameters\\\\Interfaces\\NetbiosOptions and compare to 2."
-      }
-    ],
-    "rollbackMethod": "Restore the snapshot captured immediately before apply, then read back the same targets and compare against baseline.",
-    "profileRestrictions": {
-      "blockedProfiles": [
-        "work_pc"
-      ],
-      "profileRuleHits": [
-        "work_pc"
-      ]
-    },
-    "questionDependencies": [
-      {
-        "questionKey": "disableNetbios",
-        "scenario": {
-          "profile": "gaming_desktop",
-          "preset": "aggressive",
-          "aggressionPreset": "aggressive",
-          "windowsBuild": 22631
-        },
-        "answerStatuses": [
-          {
-            "value": true,
-            "status": "Included",
-            "blockedReason": null
-          },
-          {
-            "value": false,
-            "status": "Blocked",
-            "blockedReason": "You chose to keep NetBIOS over TCP/IP enabled."
-          }
-        ],
-        "changesPlanReboot": false,
-        "changesPresetBehavior": false
-      }
-    ],
-    "currentProofStatus": "blocked by profile by design",
-    "currentProofReason": "This action is intentionally blocked on work_pc profile(s); harness proof focuses on the profiles that can legally include it."
-  },
-  {
-    "actionId": "network.disable-network-location-wizard",
-    "name": "Disable Network Location Wizard",
-    "phaseId": "networking",
-    "phaseName": "Network Security",
-    "module": "networking.security",
-    "category": "networking",
-    "risk": "safe",
-    "expertOnly": false,
-    "requiresReboot": false,
-    "reversible": true,
-    "executionKinds": [
-      "registryChanges"
-    ],
-    "verificationTier": "tier3",
-    "expectedStateChanges": [
-      {
-        "kind": "registry",
-        "target": "HKLM\\SYSTEM\\\\CurrentControlSet\\\\Control\\\\Network\\\\NewNetworkWindowOff\\(Default)",
-        "expected": " (String)"
-      }
-    ],
-    "readbackMethods": [
-      {
-        "kind": "registry",
-        "detail": "Read HKLM\\SYSTEM\\\\CurrentControlSet\\\\Control\\\\Network\\\\NewNetworkWindowOff\\(Default) and compare to ."
-      }
-    ],
-    "rollbackMethod": "Restore the snapshot captured immediately before apply, then read back the same targets and compare against baseline.",
-    "profileRestrictions": {
-      "blockedProfiles": [
-        "work_pc"
-      ],
-      "profileRuleHits": []
-    },
-    "questionDependencies": [],
-    "currentProofStatus": "blocked by profile by design",
-    "currentProofReason": "This action is intentionally blocked on work_pc profile(s); harness proof focuses on the profiles that can legally include it."
-  },
-  {
-    "actionId": "network.disable-offloading",
-    "name": "Disable NIC Offloading",
-    "phaseId": "networking",
-    "phaseName": "Network Security",
-    "module": "networking.latency",
-    "category": "networking",
-    "risk": "medium",
-    "expertOnly": true,
-    "requiresReboot": false,
-    "reversible": true,
-    "executionKinds": [
-      "powerShellCommands"
-    ],
-    "verificationTier": "tier3",
-    "expectedStateChanges": [
-      {
-        "kind": "powershell",
-        "target": "network.disable-offloading",
-        "expected": "$adapter = Get-NetAdapter | Where-Object { $_.Status -eq 'Up' -and $_.InterfaceDescription -notmatch 'Virtual|Hyper-V' } | Select-Object -First 1"
-      }
-    ],
-    "readbackMethods": [
-      {
-        "kind": "powershell-specialized",
-        "detail": "Run action-specific readback for network.disable-offloading."
-      }
-    ],
-    "rollbackMethod": "Restore the snapshot captured immediately before apply, then read back the same targets and compare against baseline.",
-    "profileRestrictions": {
-      "blockedProfiles": [
-        "low_spec_system",
-        "office_laptop",
-        "work_pc"
-      ],
-      "profileRuleHits": []
-    },
-    "questionDependencies": [
-      {
-        "questionKey": "disableNicOffloading",
-        "scenario": {
-          "profile": "gaming_desktop",
-          "preset": "aggressive",
-          "aggressionPreset": "aggressive",
-          "windowsBuild": 22631
-        },
-        "answerStatuses": [
-          {
-            "value": true,
-            "status": "Included",
-            "blockedReason": null
-          },
-          {
-            "value": false,
-            "status": "Blocked",
-            "blockedReason": "You chose to keep default NIC offloading and queue behavior."
+            "blockedReason": "You chose to keep LLMNR and SMBv1 legacy protocols enabled."
           }
         ],
         "changesPlanReboot": false,
@@ -3964,7 +3611,7 @@
     "module": "networking.security",
     "category": "networking",
     "risk": "low",
-    "expertOnly": false,
+    "expertOnly": true,
     "requiresReboot": true,
     "reversible": true,
     "executionKinds": [
@@ -3976,21 +3623,12 @@
         "kind": "registry",
         "target": "HKLM\\SYSTEM\\\\CurrentControlSet\\\\Services\\\\LanmanServer\\\\Parameters\\SMB1",
         "expected": "0 (DWord)"
-      },
-      {
-        "kind": "registry",
-        "target": "HKLM\\SYSTEM\\\\CurrentControlSet\\\\Services\\\\mrxsmb10\\Start",
-        "expected": "4 (DWord)"
       }
     ],
     "readbackMethods": [
       {
         "kind": "registry",
         "detail": "Read HKLM\\SYSTEM\\\\CurrentControlSet\\\\Services\\\\LanmanServer\\\\Parameters\\SMB1 and compare to 0."
-      },
-      {
-        "kind": "registry",
-        "detail": "Read HKLM\\SYSTEM\\\\CurrentControlSet\\\\Services\\\\mrxsmb10\\Start and compare to 4."
       }
     ],
     "rollbackMethod": "Restore the snapshot captured immediately before apply, then read back the same targets and compare against baseline.",
@@ -4000,56 +3638,9 @@
       ],
       "profileRuleHits": []
     },
-    "questionDependencies": [],
-    "currentProofStatus": "requires reboot to verify fully",
-    "currentProofReason": "Immediate readback is possible, but full trust for this action still requires a post-reboot assertion."
-  },
-  {
-    "actionId": "network.disable-teredo",
-    "name": "Disable Teredo Tunneling",
-    "phaseId": "networking",
-    "phaseName": "Network Security",
-    "module": "networking.protocols",
-    "category": "networking",
-    "risk": "safe",
-    "expertOnly": false,
-    "requiresReboot": false,
-    "reversible": true,
-    "executionKinds": [
-      "registryChanges",
-      "powerShellCommands"
-    ],
-    "verificationTier": "tier3",
-    "expectedStateChanges": [
-      {
-        "kind": "registry",
-        "target": "HKLM\\SYSTEM\\\\CurrentControlSet\\\\Services\\\\Tcpip6\\\\Parameters\\DisabledComponents",
-        "expected": "1 (DWord)"
-      },
-      {
-        "kind": "powershell",
-        "target": "network.disable-teredo",
-        "expected": "netsh interface teredo set state disabled"
-      }
-    ],
-    "readbackMethods": [
-      {
-        "kind": "registry",
-        "detail": "Read HKLM\\SYSTEM\\\\CurrentControlSet\\\\Services\\\\Tcpip6\\\\Parameters\\DisabledComponents and compare to 1."
-      },
-      {
-        "kind": "powershell",
-        "detail": "No generic PowerShell readback exists; this action needs an explicit verifier."
-      }
-    ],
-    "rollbackMethod": "Restore the snapshot captured immediately before apply, then read back the same targets and compare against baseline.",
-    "profileRestrictions": {
-      "blockedProfiles": [],
-      "profileRuleHits": []
-    },
     "questionDependencies": [
       {
-        "questionKey": "disableTeredo",
+        "questionKey": "disableLlmnr",
         "scenario": {
           "profile": "gaming_desktop",
           "preset": "aggressive",
@@ -4065,63 +3656,15 @@
           {
             "value": false,
             "status": "Blocked",
-            "blockedReason": "You chose to keep Teredo tunneling enabled."
+            "blockedReason": "You chose to keep LLMNR and SMBv1 legacy protocols enabled."
           }
         ],
         "changesPlanReboot": false,
         "changesPresetBehavior": false
       }
     ],
-    "currentProofStatus": "partially verified on real Windows",
-    "currentProofReason": "This action has a defined readback and rollback strategy, but consumer-Windows certification still depends on running the harness."
-  },
-  {
-    "actionId": "network.disable-wpad",
-    "name": "Disable Web Proxy Auto-Discovery (WPAD)",
-    "phaseId": "networking",
-    "phaseName": "Network Security",
-    "module": "networking.security",
-    "category": "networking",
-    "risk": "low",
-    "expertOnly": false,
-    "requiresReboot": false,
-    "reversible": true,
-    "executionKinds": [
-      "registryChanges"
-    ],
-    "verificationTier": "tier3",
-    "expectedStateChanges": [
-      {
-        "kind": "registry",
-        "target": "HKCU\\SOFTWARE\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\Internet Settings\\\\Wpad\\WpadOverride",
-        "expected": "1 (DWord)"
-      },
-      {
-        "kind": "registry",
-        "target": "HKLM\\SYSTEM\\\\CurrentControlSet\\\\Services\\\\WinHttpAutoProxySvc\\Start",
-        "expected": "4 (DWord)"
-      }
-    ],
-    "readbackMethods": [
-      {
-        "kind": "registry",
-        "detail": "Read HKCU\\SOFTWARE\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\Internet Settings\\\\Wpad\\WpadOverride and compare to 1."
-      },
-      {
-        "kind": "registry",
-        "detail": "Read HKLM\\SYSTEM\\\\CurrentControlSet\\\\Services\\\\WinHttpAutoProxySvc\\Start and compare to 4."
-      }
-    ],
-    "rollbackMethod": "Restore the snapshot captured immediately before apply, then read back the same targets and compare against baseline.",
-    "profileRestrictions": {
-      "blockedProfiles": [
-        "work_pc"
-      ],
-      "profileRuleHits": []
-    },
-    "questionDependencies": [],
-    "currentProofStatus": "blocked by profile by design",
-    "currentProofReason": "This action is intentionally blocked on work_pc profile(s); harness proof focuses on the profiles that can legally include it."
+    "currentProofStatus": "requires reboot to verify fully",
+    "currentProofReason": "Immediate readback is possible, but full trust for this action still requires a post-reboot assertion."
   },
   {
     "actionId": "network.harden-windows-firewall-defaults",
@@ -4166,170 +3709,6 @@
       "profileRuleHits": []
     },
     "questionDependencies": [],
-    "currentProofStatus": "partially verified on real Windows",
-    "currentProofReason": "This action has a defined readback and rollback strategy, but consumer-Windows certification still depends on running the harness."
-  },
-  {
-    "actionId": "network.qos-dscp-fix",
-    "name": "Fix QoS DSCP Packet Tagging",
-    "phaseId": "networking",
-    "phaseName": "Network Security",
-    "module": "networking.latency",
-    "category": "networking",
-    "risk": "safe",
-    "expertOnly": false,
-    "requiresReboot": false,
-    "reversible": true,
-    "executionKinds": [
-      "registryChanges"
-    ],
-    "verificationTier": "tier3",
-    "expectedStateChanges": [
-      {
-        "kind": "registry",
-        "target": "HKLM\\SYSTEM\\\\CurrentControlSet\\\\Services\\\\Tcpip\\\\QoS\\Do not use NLA",
-        "expected": "1 (String)"
-      }
-    ],
-    "readbackMethods": [
-      {
-        "kind": "registry",
-        "detail": "Read HKLM\\SYSTEM\\\\CurrentControlSet\\\\Services\\\\Tcpip\\\\QoS\\Do not use NLA and compare to 1."
-      }
-    ],
-    "rollbackMethod": "Restore the snapshot captured immediately before apply, then read back the same targets and compare against baseline.",
-    "profileRestrictions": {
-      "blockedProfiles": [],
-      "profileRuleHits": []
-    },
-    "questionDependencies": [],
-    "currentProofStatus": "partially verified on real Windows",
-    "currentProofReason": "This action has a defined readback and rollback strategy, but consumer-Windows certification still depends on running the harness."
-  },
-  {
-    "actionId": "network.rss-queues-2",
-    "name": "Set RSS Queues to 2",
-    "phaseId": "networking",
-    "phaseName": "Network Security",
-    "module": "networking.latency",
-    "category": "networking",
-    "risk": "low",
-    "expertOnly": false,
-    "requiresReboot": false,
-    "reversible": true,
-    "executionKinds": [
-      "registryChanges"
-    ],
-    "verificationTier": "tier3",
-    "expectedStateChanges": [
-      {
-        "kind": "registry",
-        "target": "HKLM\\SYSTEM\\\\CurrentControlSet\\\\Control\\\\Class\\\\{4d36e972-e325-11ce-bfc1-08002be10318}\\\\<Adapter Index>\\*NumRssQueues",
-        "expected": "2 (DWord)"
-      }
-    ],
-    "readbackMethods": [
-      {
-        "kind": "registry",
-        "detail": "Read HKLM\\SYSTEM\\\\CurrentControlSet\\\\Control\\\\Class\\\\{4d36e972-e325-11ce-bfc1-08002be10318}\\\\<Adapter Index>\\*NumRssQueues and compare to 2."
-      }
-    ],
-    "rollbackMethod": "Restore the snapshot captured immediately before apply, then read back the same targets and compare against baseline.",
-    "profileRestrictions": {
-      "blockedProfiles": [],
-      "profileRuleHits": []
-    },
-    "questionDependencies": [
-      {
-        "questionKey": "disableNicOffloading",
-        "scenario": {
-          "profile": "gaming_desktop",
-          "preset": "aggressive",
-          "aggressionPreset": "aggressive",
-          "windowsBuild": 22631
-        },
-        "answerStatuses": [
-          {
-            "value": true,
-            "status": "Included",
-            "blockedReason": null
-          },
-          {
-            "value": false,
-            "status": "Blocked",
-            "blockedReason": "You chose to keep default NIC offloading and queue behavior."
-          }
-        ],
-        "changesPlanReboot": false,
-        "changesPresetBehavior": false
-      }
-    ],
-    "currentProofStatus": "partially verified on real Windows",
-    "currentProofReason": "This action has a defined readback and rollback strategy, but consumer-Windows certification still depends on running the harness."
-  },
-  {
-    "actionId": "network.tcp-autotuning-normal",
-    "name": "Set TCP Auto-Tuning to Normal",
-    "phaseId": "networking",
-    "phaseName": "Network Security",
-    "module": "networking.latency",
-    "category": "networking",
-    "risk": "safe",
-    "expertOnly": false,
-    "requiresReboot": false,
-    "reversible": true,
-    "executionKinds": [
-      "powerShellCommands"
-    ],
-    "verificationTier": "tier3",
-    "expectedStateChanges": [
-      {
-        "kind": "powershell",
-        "target": "network.tcp-autotuning-normal",
-        "expected": "Set-NetTCPSetting -SettingName InternetCustom -AutoTuningLevelLocal Normal -ErrorAction SilentlyContinue"
-      },
-      {
-        "kind": "powershell",
-        "target": "network.tcp-autotuning-normal",
-        "expected": "Set-NetTCPSetting -SettingName Internet -AutoTuningLevelLocal Normal -ErrorAction SilentlyContinue"
-      }
-    ],
-    "readbackMethods": [
-      {
-        "kind": "powershell-specialized",
-        "detail": "Run action-specific readback for network.tcp-autotuning-normal."
-      }
-    ],
-    "rollbackMethod": "Restore the snapshot captured immediately before apply, then read back the same targets and compare against baseline.",
-    "profileRestrictions": {
-      "blockedProfiles": [],
-      "profileRuleHits": []
-    },
-    "questionDependencies": [
-      {
-        "questionKey": "disableNicOffloading",
-        "scenario": {
-          "profile": "gaming_desktop",
-          "preset": "aggressive",
-          "aggressionPreset": "aggressive",
-          "windowsBuild": 22631
-        },
-        "answerStatuses": [
-          {
-            "value": true,
-            "status": "Included",
-            "blockedReason": null
-          },
-          {
-            "value": false,
-            "status": "Blocked",
-            "blockedReason": "You chose to keep default NIC offloading and queue behavior."
-          }
-        ],
-        "changesPlanReboot": false,
-        "changesPresetBehavior": false
-      }
-    ],
     "currentProofStatus": "partially verified on real Windows",
     "currentProofReason": "This action has a defined readback and rollback strategy, but consumer-Windows certification still depends on running the harness."
   },
@@ -4451,7 +3830,31 @@
       ],
       "profileRuleHits": []
     },
-    "questionDependencies": [],
+    "questionDependencies": [
+      {
+        "questionKey": "disableAutoMaintenance",
+        "scenario": {
+          "profile": "gaming_desktop",
+          "preset": "balanced",
+          "aggressionPreset": "balanced",
+          "windowsBuild": 22631
+        },
+        "answerStatuses": [
+          {
+            "value": true,
+            "status": "Included",
+            "blockedReason": null
+          },
+          {
+            "value": false,
+            "status": "Blocked",
+            "blockedReason": "You chose to keep automatic maintenance. Windows will self-maintain."
+          }
+        ],
+        "changesPlanReboot": false,
+        "changesPresetBehavior": false
+      }
+    ],
     "currentProofStatus": "blocked by profile by design",
     "currentProofReason": "This action is intentionally blocked on work_pc profile(s); harness proof focuses on the profiles that can legally include it."
   },
@@ -4530,67 +3933,6 @@
     "questionDependencies": [],
     "currentProofStatus": "blocked by profile by design",
     "currentProofReason": "This action is intentionally blocked on work_pc profile(s); harness proof focuses on the profiles that can legally include it."
-  },
-  {
-    "actionId": "perf.disable-fault-tolerant-heap",
-    "name": "Disable Fault Tolerant Heap",
-    "phaseId": "performance",
-    "phaseName": "Performance Optimization",
-    "module": "performance.cpu",
-    "category": "performance",
-    "risk": "low",
-    "expertOnly": false,
-    "requiresReboot": false,
-    "reversible": true,
-    "executionKinds": [
-      "registryChanges"
-    ],
-    "verificationTier": "tier3",
-    "expectedStateChanges": [
-      {
-        "kind": "registry",
-        "target": "HKLM\\SOFTWARE\\\\Microsoft\\\\FTH\\Enabled",
-        "expected": "0 (DWord)"
-      }
-    ],
-    "readbackMethods": [
-      {
-        "kind": "registry",
-        "detail": "Read HKLM\\SOFTWARE\\\\Microsoft\\\\FTH\\Enabled and compare to 0."
-      }
-    ],
-    "rollbackMethod": "Restore the snapshot captured immediately before apply, then read back the same targets and compare against baseline.",
-    "profileRestrictions": {
-      "blockedProfiles": [],
-      "profileRuleHits": []
-    },
-    "questionDependencies": [
-      {
-        "questionKey": "disableFaultTolerantHeap",
-        "scenario": {
-          "profile": "gaming_desktop",
-          "preset": "balanced",
-          "aggressionPreset": "balanced",
-          "windowsBuild": 22631
-        },
-        "answerStatuses": [
-          {
-            "value": true,
-            "status": "Included",
-            "blockedReason": null
-          },
-          {
-            "value": false,
-            "status": "Blocked",
-            "blockedReason": "You chose to keep Fault Tolerant Heap enabled."
-          }
-        ],
-        "changesPlanReboot": false,
-        "changesPresetBehavior": false
-      }
-    ],
-    "currentProofStatus": "partially verified on real Windows",
-    "currentProofReason": "This action has a defined readback and rollback strategy, but consumer-Windows certification still depends on running the harness."
   },
   {
     "actionId": "perf.disable-fullscreen-optimizations",
@@ -4765,45 +4107,6 @@
     "currentProofReason": "This action has a defined readback and rollback strategy, but consumer-Windows certification still depends on running the harness."
   },
   {
-    "actionId": "perf.disable-mpos",
-    "name": "Disable Multi-Plane Overlays (MPO)",
-    "phaseId": "performance",
-    "phaseName": "Performance Optimization",
-    "module": "performance.gpu",
-    "category": "performance",
-    "risk": "moderate",
-    "expertOnly": false,
-    "requiresReboot": false,
-    "reversible": true,
-    "executionKinds": [
-      "registryChanges"
-    ],
-    "verificationTier": "tier3",
-    "expectedStateChanges": [
-      {
-        "kind": "registry",
-        "target": "HKLM\\SOFTWARE\\\\Microsoft\\\\Windows\\\\Dwm\\OverlayTestMode",
-        "expected": "5 (DWord)"
-      }
-    ],
-    "readbackMethods": [
-      {
-        "kind": "registry",
-        "detail": "Read HKLM\\SOFTWARE\\\\Microsoft\\\\Windows\\\\Dwm\\OverlayTestMode and compare to 5."
-      }
-    ],
-    "rollbackMethod": "Restore the snapshot captured immediately before apply, then read back the same targets and compare against baseline.",
-    "profileRestrictions": {
-      "blockedProfiles": [
-        "vm_cautious"
-      ],
-      "profileRuleHits": []
-    },
-    "questionDependencies": [],
-    "currentProofStatus": "blocked by profile by design",
-    "currentProofReason": "This action is intentionally blocked on vm_cautious profile(s); harness proof focuses on the profiles that can legally include it."
-  },
-  {
     "actionId": "perf.disable-ndu",
     "name": "Disable Network Data Usage Monitor (NDU)",
     "phaseId": "performance",
@@ -4836,7 +4139,31 @@
       "blockedProfiles": [],
       "profileRuleHits": []
     },
-    "questionDependencies": [],
+    "questionDependencies": [
+      {
+        "questionKey": "disableMemoryCompression",
+        "scenario": {
+          "profile": "gaming_desktop",
+          "preset": "balanced",
+          "aggressionPreset": "balanced",
+          "windowsBuild": 22631
+        },
+        "answerStatuses": [
+          {
+            "value": true,
+            "status": "Included",
+            "blockedReason": null
+          },
+          {
+            "value": false,
+            "status": "Blocked",
+            "blockedReason": "You chose to keep Windows memory compression and related memory subsystem defaults."
+          }
+        ],
+        "changesPlanReboot": false,
+        "changesPresetBehavior": false
+      }
+    ],
     "currentProofStatus": "requires reboot to verify fully",
     "currentProofReason": "Immediate readback is possible, but full trust for this action still requires a post-reboot assertion."
   },
@@ -4876,44 +4203,31 @@
       ],
       "profileRuleHits": []
     },
-    "questionDependencies": [],
-    "currentProofStatus": "requires reboot to verify fully",
-    "currentProofReason": "Immediate readback is possible, but full trust for this action still requires a post-reboot assertion."
-  },
-  {
-    "actionId": "perf.disable-paging-executive",
-    "name": "Disable Paging Executive",
-    "phaseId": "performance",
-    "phaseName": "Performance Optimization",
-    "module": "performance.cpu",
-    "category": "performance",
-    "risk": "low",
-    "expertOnly": false,
-    "requiresReboot": true,
-    "reversible": true,
-    "executionKinds": [
-      "registryChanges"
-    ],
-    "verificationTier": "tier3",
-    "expectedStateChanges": [
+    "questionDependencies": [
       {
-        "kind": "registry",
-        "target": "HKLM\\SYSTEM\\\\CurrentControlSet\\\\Control\\\\Session Manager\\\\Memory Management\\DisablePagingExecutive",
-        "expected": "1 (DWord)"
+        "questionKey": "disableMemoryCompression",
+        "scenario": {
+          "profile": "gaming_desktop",
+          "preset": "balanced",
+          "aggressionPreset": "balanced",
+          "windowsBuild": 22631
+        },
+        "answerStatuses": [
+          {
+            "value": true,
+            "status": "Included",
+            "blockedReason": null
+          },
+          {
+            "value": false,
+            "status": "Blocked",
+            "blockedReason": "You chose to keep Windows memory compression and related memory subsystem defaults."
+          }
+        ],
+        "changesPlanReboot": false,
+        "changesPresetBehavior": false
       }
     ],
-    "readbackMethods": [
-      {
-        "kind": "registry",
-        "detail": "Read HKLM\\SYSTEM\\\\CurrentControlSet\\\\Control\\\\Session Manager\\\\Memory Management\\DisablePagingExecutive and compare to 1."
-      }
-    ],
-    "rollbackMethod": "Restore the snapshot captured immediately before apply, then read back the same targets and compare against baseline.",
-    "profileRestrictions": {
-      "blockedProfiles": [],
-      "profileRuleHits": []
-    },
-    "questionDependencies": [],
     "currentProofStatus": "requires reboot to verify fully",
     "currentProofReason": "Immediate readback is possible, but full trust for this action still requires a post-reboot assertion."
   },
@@ -4968,7 +4282,31 @@
       "blockedProfiles": [],
       "profileRuleHits": []
     },
-    "questionDependencies": [],
+    "questionDependencies": [
+      {
+        "questionKey": "disableMouseAcceleration",
+        "scenario": {
+          "profile": "gaming_desktop",
+          "preset": "balanced",
+          "aggressionPreset": "balanced",
+          "windowsBuild": 22631
+        },
+        "answerStatuses": [
+          {
+            "value": true,
+            "status": "Included",
+            "blockedReason": null
+          },
+          {
+            "value": false,
+            "status": "Blocked",
+            "blockedReason": "You chose to keep Windows mouse acceleration enabled."
+          }
+        ],
+        "changesPlanReboot": false,
+        "changesPresetBehavior": false
+      }
+    ],
     "currentProofStatus": "partially verified on real Windows",
     "currentProofReason": "This action has a defined readback and rollback strategy, but consumer-Windows certification still depends on running the harness."
   },
@@ -5016,44 +4354,31 @@
       ],
       "profileRuleHits": []
     },
-    "questionDependencies": [],
-    "currentProofStatus": "requires reboot to verify fully",
-    "currentProofReason": "Immediate readback is possible, but full trust for this action still requires a post-reboot assertion."
-  },
-  {
-    "actionId": "perf.disable-service-host-split",
-    "name": "Disable Service Host Splitting",
-    "phaseId": "performance",
-    "phaseName": "Performance Optimization",
-    "module": "performance.cpu",
-    "category": "performance",
-    "risk": "low",
-    "expertOnly": false,
-    "requiresReboot": true,
-    "reversible": true,
-    "executionKinds": [
-      "registryChanges"
-    ],
-    "verificationTier": "tier3",
-    "expectedStateChanges": [
+    "questionDependencies": [
       {
-        "kind": "registry",
-        "target": "HKLM\\SYSTEM\\\\CurrentControlSet\\\\Control\\SvcHostSplitThresholdInKB",
-        "expected": "4294967295 (DWord)"
+        "questionKey": "disableMemoryCompression",
+        "scenario": {
+          "profile": "gaming_desktop",
+          "preset": "balanced",
+          "aggressionPreset": "balanced",
+          "windowsBuild": 22631
+        },
+        "answerStatuses": [
+          {
+            "value": true,
+            "status": "Included",
+            "blockedReason": null
+          },
+          {
+            "value": false,
+            "status": "Blocked",
+            "blockedReason": "You chose to keep Windows memory compression and related memory subsystem defaults."
+          }
+        ],
+        "changesPlanReboot": false,
+        "changesPresetBehavior": false
       }
     ],
-    "readbackMethods": [
-      {
-        "kind": "registry",
-        "detail": "Read HKLM\\SYSTEM\\\\CurrentControlSet\\\\Control\\SvcHostSplitThresholdInKB and compare to 4294967295."
-      }
-    ],
-    "rollbackMethod": "Restore the snapshot captured immediately before apply, then read back the same targets and compare against baseline.",
-    "profileRestrictions": {
-      "blockedProfiles": [],
-      "profileRuleHits": []
-    },
-    "questionDependencies": [],
     "currentProofStatus": "requires reboot to verify fully",
     "currentProofReason": "Immediate readback is possible, but full trust for this action still requires a post-reboot assertion."
   },
@@ -5153,7 +4478,31 @@
       ],
       "profileRuleHits": []
     },
-    "questionDependencies": [],
+    "questionDependencies": [
+      {
+        "questionKey": "disableStoreAutoUpdates",
+        "scenario": {
+          "profile": "gaming_desktop",
+          "preset": "balanced",
+          "aggressionPreset": "balanced",
+          "windowsBuild": 22631
+        },
+        "answerStatuses": [
+          {
+            "value": true,
+            "status": "Included",
+            "blockedReason": null
+          },
+          {
+            "value": false,
+            "status": "Blocked",
+            "blockedReason": "You chose to keep Store auto-updates enabled."
+          }
+        ],
+        "changesPlanReboot": false,
+        "changesPresetBehavior": false
+      }
+    ],
     "currentProofStatus": "blocked by profile by design",
     "currentProofReason": "This action is intentionally blocked on work_pc profile(s); harness proof focuses on the profiles that can legally include it."
   },
@@ -5343,7 +4692,31 @@
       ],
       "profileRuleHits": []
     },
-    "questionDependencies": [],
+    "questionDependencies": [
+      {
+        "questionKey": "legacyFlipPresentation",
+        "scenario": {
+          "profile": "gaming_desktop",
+          "preset": "balanced",
+          "aggressionPreset": "balanced",
+          "windowsBuild": 22631
+        },
+        "answerStatuses": [
+          {
+            "value": true,
+            "status": "Included",
+            "blockedReason": null
+          },
+          {
+            "value": false,
+            "status": "Blocked",
+            "blockedReason": "You chose to keep modern composed flip. Compatible with overlays."
+          }
+        ],
+        "changesPlanReboot": false,
+        "changesPresetBehavior": false
+      }
+    ],
     "currentProofStatus": "blocked by profile by design",
     "currentProofReason": "This action is intentionally blocked on vm_cautious, work_pc profile(s); harness proof focuses on the profiles that can legally include it."
   },
@@ -5573,9 +4946,205 @@
       ],
       "profileRuleHits": []
     },
+    "questionDependencies": [
+      {
+        "questionKey": "disableMemoryCompression",
+        "scenario": {
+          "profile": "gaming_desktop",
+          "preset": "balanced",
+          "aggressionPreset": "balanced",
+          "windowsBuild": 22631
+        },
+        "answerStatuses": [
+          {
+            "value": true,
+            "status": "Included",
+            "blockedReason": null
+          },
+          {
+            "value": false,
+            "status": "Blocked",
+            "blockedReason": "You chose to keep Windows memory compression and related memory subsystem defaults."
+          }
+        ],
+        "changesPlanReboot": false,
+        "changesPresetBehavior": false
+      }
+    ],
+    "currentProofStatus": "requires reboot to verify fully",
+    "currentProofReason": "Immediate readback is possible, but full trust for this action still requires a post-reboot assertion."
+  },
+  {
+    "actionId": "personalize.accent-color-black",
+    "name": "Set Accent Color to Black",
+    "phaseId": "personalization",
+    "phaseName": "Visual Personalization",
+    "module": "personalization.theme",
+    "category": "personalization",
+    "risk": "safe",
+    "expertOnly": false,
+    "requiresReboot": true,
+    "reversible": true,
+    "executionKinds": [
+      "registryChanges"
+    ],
+    "verificationTier": "tier1",
+    "expectedStateChanges": [],
+    "readbackMethods": [],
+    "rollbackMethod": "Restore the snapshot captured immediately before apply, then read back the same targets and compare against baseline.",
+    "profileRestrictions": {
+      "blockedProfiles": [],
+      "profileRuleHits": []
+    },
     "questionDependencies": [],
     "currentProofStatus": "requires reboot to verify fully",
     "currentProofReason": "Immediate readback is possible, but full trust for this action still requires a post-reboot assertion."
+  },
+  {
+    "actionId": "personalize.dark-mode",
+    "name": "Enable System Dark Mode",
+    "phaseId": "personalization",
+    "phaseName": "Visual Personalization",
+    "module": "personalization.theme",
+    "category": "personalization",
+    "risk": "safe",
+    "expertOnly": false,
+    "requiresReboot": false,
+    "reversible": true,
+    "executionKinds": [
+      "registryChanges"
+    ],
+    "verificationTier": "tier1",
+    "expectedStateChanges": [
+      {
+        "kind": "registry",
+        "target": "HKCU\\SOFTWARE\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\Themes\\\\Personalize\\SystemUsesLightTheme",
+        "expected": "0 (DWord)"
+      },
+      {
+        "kind": "registry",
+        "target": "HKCU\\SOFTWARE\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\Themes\\\\Personalize\\AppsUseLightTheme",
+        "expected": "0 (DWord)"
+      }
+    ],
+    "readbackMethods": [
+      {
+        "kind": "registry",
+        "detail": "Read HKCU\\SOFTWARE\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\Themes\\\\Personalize\\SystemUsesLightTheme and compare to 0."
+      },
+      {
+        "kind": "registry",
+        "detail": "Read HKCU\\SOFTWARE\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\Themes\\\\Personalize\\AppsUseLightTheme and compare to 0."
+      }
+    ],
+    "rollbackMethod": "Restore the snapshot captured immediately before apply, then read back the same targets and compare against baseline.",
+    "profileRestrictions": {
+      "blockedProfiles": [],
+      "profileRuleHits": []
+    },
+    "questionDependencies": [],
+    "currentProofStatus": "partially verified on real Windows",
+    "currentProofReason": "This action has a defined readback and rollback strategy, but consumer-Windows certification still depends on running the harness."
+  },
+  {
+    "actionId": "personalize.login-screen-dark",
+    "name": "Dark Login Screen",
+    "phaseId": "personalization",
+    "phaseName": "Visual Personalization",
+    "module": "personalization.theme",
+    "category": "personalization",
+    "risk": "safe",
+    "expertOnly": false,
+    "requiresReboot": false,
+    "reversible": true,
+    "executionKinds": [
+      "registryChanges"
+    ],
+    "verificationTier": "tier1",
+    "expectedStateChanges": [],
+    "readbackMethods": [],
+    "rollbackMethod": "Restore the snapshot captured immediately before apply, then read back the same targets and compare against baseline.",
+    "profileRestrictions": {
+      "blockedProfiles": [],
+      "profileRuleHits": []
+    },
+    "questionDependencies": [],
+    "currentProofStatus": "partially verified on real Windows",
+    "currentProofReason": "This action has a defined readback and rollback strategy, but consumer-Windows certification still depends on running the harness."
+  },
+  {
+    "actionId": "personalize.max-refresh-rate",
+    "name": "Set Monitor to Maximum Refresh Rate",
+    "phaseId": "personalization",
+    "phaseName": "Visual Personalization",
+    "module": "personalization.theme",
+    "category": "personalization",
+    "risk": "safe",
+    "expertOnly": false,
+    "requiresReboot": false,
+    "reversible": true,
+    "executionKinds": [
+      "powerShellCommands"
+    ],
+    "verificationTier": "tier1",
+    "expectedStateChanges": [
+      {
+        "kind": "powershell",
+        "target": "personalize.max-refresh-rate",
+        "expected": "try {"
+      }
+    ],
+    "readbackMethods": [
+      {
+        "kind": "powershell",
+        "detail": "No generic PowerShell readback exists; this action needs an explicit verifier."
+      }
+    ],
+    "rollbackMethod": "Restore the snapshot captured immediately before apply, then read back the same targets and compare against baseline.",
+    "profileRestrictions": {
+      "blockedProfiles": [],
+      "profileRuleHits": []
+    },
+    "questionDependencies": [],
+    "currentProofStatus": "executable but readback not yet implemented",
+    "currentProofReason": "Pure PowerShell action with no generic state reader and no action-specific verifier."
+  },
+  {
+    "actionId": "personalize.ouden-wallpaper",
+    "name": "Set Ouden Desktop Wallpaper",
+    "phaseId": "personalization",
+    "phaseName": "Visual Personalization",
+    "module": "personalization.wallpaper",
+    "category": "personalization",
+    "risk": "safe",
+    "expertOnly": false,
+    "requiresReboot": false,
+    "reversible": true,
+    "executionKinds": [
+      "powerShellCommands"
+    ],
+    "verificationTier": "tier1",
+    "expectedStateChanges": [
+      {
+        "kind": "powershell",
+        "target": "personalize.ouden-wallpaper",
+        "expected": "$ErrorActionPreference = 'SilentlyContinue'"
+      }
+    ],
+    "readbackMethods": [
+      {
+        "kind": "powershell",
+        "detail": "No generic PowerShell readback exists; this action needs an explicit verifier."
+      }
+    ],
+    "rollbackMethod": "Restore the snapshot captured immediately before apply, then read back the same targets and compare against baseline.",
+    "profileRestrictions": {
+      "blockedProfiles": [],
+      "profileRuleHits": []
+    },
+    "questionDependencies": [],
+    "currentProofStatus": "executable but readback not yet implemented",
+    "currentProofReason": "Pure PowerShell action with no generic state reader and no action-specific verifier."
   },
   {
     "actionId": "power.disable-device-power-saving",
@@ -5613,7 +5182,31 @@
       ],
       "profileRuleHits": []
     },
-    "questionDependencies": [],
+    "questionDependencies": [
+      {
+        "questionKey": "disableDevicePowerSaving",
+        "scenario": {
+          "profile": "gaming_desktop",
+          "preset": "balanced",
+          "aggressionPreset": "balanced",
+          "windowsBuild": 22631
+        },
+        "answerStatuses": [
+          {
+            "value": true,
+            "status": "Included",
+            "blockedReason": null
+          },
+          {
+            "value": false,
+            "status": "Blocked",
+            "blockedReason": "You chose to keep device power management enabled."
+          }
+        ],
+        "changesPlanReboot": false,
+        "changesPresetBehavior": false
+      }
+    ],
     "currentProofStatus": "blocked by profile by design",
     "currentProofReason": "This action is intentionally blocked on office_laptop, gaming_laptop profile(s); harness proof focuses on the profiles that can legally include it."
   },
@@ -7043,31 +6636,7 @@
       "blockedProfiles": [],
       "profileRuleHits": []
     },
-    "questionDependencies": [
-      {
-        "questionKey": "disableAiApps",
-        "scenario": {
-          "profile": "gaming_desktop",
-          "preset": "balanced",
-          "aggressionPreset": "balanced",
-          "windowsBuild": 22631
-        },
-        "answerStatuses": [
-          {
-            "value": true,
-            "status": "Included",
-            "blockedReason": null
-          },
-          {
-            "value": false,
-            "status": "Blocked",
-            "blockedReason": "You chose to keep AI features in system apps."
-          }
-        ],
-        "changesPlanReboot": false,
-        "changesPresetBehavior": false
-      }
-    ],
+    "questionDependencies": [],
     "currentProofStatus": "partially verified on real Windows",
     "currentProofReason": "This action has a defined readback and rollback strategy, but consumer-Windows certification still depends on running the harness."
   },
@@ -7262,31 +6831,7 @@
       "blockedProfiles": [],
       "profileRuleHits": []
     },
-    "questionDependencies": [
-      {
-        "questionKey": "disableAiApps",
-        "scenario": {
-          "profile": "gaming_desktop",
-          "preset": "balanced",
-          "aggressionPreset": "balanced",
-          "windowsBuild": 22631
-        },
-        "answerStatuses": [
-          {
-            "value": true,
-            "status": "Included",
-            "blockedReason": null
-          },
-          {
-            "value": false,
-            "status": "Blocked",
-            "blockedReason": "You chose to keep AI features in system apps."
-          }
-        ],
-        "changesPlanReboot": false,
-        "changesPresetBehavior": false
-      }
-    ],
+    "questionDependencies": [],
     "currentProofStatus": "partially verified on real Windows",
     "currentProofReason": "This action has a defined readback and rollback strategy, but consumer-Windows certification still depends on running the harness."
   },
@@ -8006,7 +7551,31 @@
       ],
       "profileRuleHits": []
     },
-    "questionDependencies": [],
+    "questionDependencies": [
+      {
+        "questionKey": "disableCpuMitigations",
+        "scenario": {
+          "profile": "gaming_desktop",
+          "preset": "balanced",
+          "aggressionPreset": "balanced",
+          "windowsBuild": 22631
+        },
+        "answerStatuses": [
+          {
+            "value": true,
+            "status": "Included",
+            "blockedReason": null
+          },
+          {
+            "value": false,
+            "status": "Blocked",
+            "blockedReason": "You chose to keep CPU security mitigations active. Safer, with minor performance cost."
+          }
+        ],
+        "changesPlanReboot": false,
+        "changesPresetBehavior": false
+      }
+    ],
     "currentProofStatus": "requires reboot to verify fully",
     "currentProofReason": "Immediate readback is possible, but full trust for this action still requires a post-reboot assertion."
   },
@@ -8054,7 +7623,31 @@
       ],
       "profileRuleHits": []
     },
-    "questionDependencies": [],
+    "questionDependencies": [
+      {
+        "questionKey": "disableDefender",
+        "scenario": {
+          "profile": "gaming_desktop",
+          "preset": "balanced",
+          "aggressionPreset": "balanced",
+          "windowsBuild": 22631
+        },
+        "answerStatuses": [
+          {
+            "value": true,
+            "status": "Included",
+            "blockedReason": null
+          },
+          {
+            "value": false,
+            "status": "Blocked",
+            "blockedReason": "You chose to keep Windows Defender and VBS active."
+          }
+        ],
+        "changesPlanReboot": false,
+        "changesPresetBehavior": false
+      }
+    ],
     "currentProofStatus": "expert-only / intentionally not broadly verified yet",
     "currentProofReason": "Action is gated behind expert mode; verification exists, but broad consumer proof should stay narrower by default."
   },
@@ -8131,7 +7724,31 @@
       ],
       "profileRuleHits": []
     },
-    "questionDependencies": [],
+    "questionDependencies": [
+      {
+        "questionKey": "disableDefender",
+        "scenario": {
+          "profile": "gaming_desktop",
+          "preset": "balanced",
+          "aggressionPreset": "balanced",
+          "windowsBuild": 22631
+        },
+        "answerStatuses": [
+          {
+            "value": true,
+            "status": "Included",
+            "blockedReason": null
+          },
+          {
+            "value": false,
+            "status": "Blocked",
+            "blockedReason": "You chose to keep Windows Defender and VBS active."
+          }
+        ],
+        "changesPlanReboot": false,
+        "changesPresetBehavior": false
+      }
+    ],
     "currentProofStatus": "requires reboot to verify fully",
     "currentProofReason": "Immediate readback is possible, but full trust for this action still requires a post-reboot assertion."
   },
@@ -8347,7 +7964,31 @@
       ],
       "profileRuleHits": []
     },
-    "questionDependencies": [],
+    "questionDependencies": [
+      {
+        "questionKey": "disableDefender",
+        "scenario": {
+          "profile": "gaming_desktop",
+          "preset": "balanced",
+          "aggressionPreset": "balanced",
+          "windowsBuild": 22631
+        },
+        "answerStatuses": [
+          {
+            "value": true,
+            "status": "Included",
+            "blockedReason": null
+          },
+          {
+            "value": false,
+            "status": "Blocked",
+            "blockedReason": "You chose to keep Windows Defender and VBS active."
+          }
+        ],
+        "changesPlanReboot": false,
+        "changesPresetBehavior": false
+      }
+    ],
     "currentProofStatus": "requires reboot to verify fully",
     "currentProofReason": "Immediate readback is possible, but full trust for this action still requires a post-reboot assertion."
   },
@@ -8387,7 +8028,31 @@
       ],
       "profileRuleHits": []
     },
-    "questionDependencies": [],
+    "questionDependencies": [
+      {
+        "questionKey": "disableVulnerableDriverBlocklist",
+        "scenario": {
+          "profile": "gaming_desktop",
+          "preset": "balanced",
+          "aggressionPreset": "balanced",
+          "windowsBuild": 22631
+        },
+        "answerStatuses": [
+          {
+            "value": true,
+            "status": "Included",
+            "blockedReason": null
+          },
+          {
+            "value": false,
+            "status": "Blocked",
+            "blockedReason": "You chose to keep the driver blocklist. Blocked drivers stay blocked."
+          }
+        ],
+        "changesPlanReboot": false,
+        "changesPresetBehavior": false
+      }
+    ],
     "currentProofStatus": "requires reboot to verify fully",
     "currentProofReason": "Immediate readback is possible, but full trust for this action still requires a post-reboot assertion."
   },
@@ -8501,7 +8166,31 @@
       ],
       "profileRuleHits": []
     },
-    "questionDependencies": [],
+    "questionDependencies": [
+      {
+        "questionKey": "fullDefenderDisable",
+        "scenario": {
+          "profile": "gaming_desktop",
+          "preset": "balanced",
+          "aggressionPreset": "balanced",
+          "windowsBuild": 22631
+        },
+        "answerStatuses": [
+          {
+            "value": true,
+            "status": "Included",
+            "blockedReason": null
+          },
+          {
+            "value": false,
+            "status": "Blocked",
+            "blockedReason": "You chose to keep Windows Defender active. Smart choice for internet-connected PCs."
+          }
+        ],
+        "changesPlanReboot": false,
+        "changesPresetBehavior": false
+      }
+    ],
     "currentProofStatus": "requires reboot to verify fully",
     "currentProofReason": "Immediate readback is possible, but full trust for this action still requires a post-reboot assertion."
   },
@@ -8654,7 +8343,31 @@
       ],
       "profileRuleHits": []
     },
-    "questionDependencies": [],
+    "questionDependencies": [
+      {
+        "questionKey": "disableWindowsUpdate",
+        "scenario": {
+          "profile": "gaming_desktop",
+          "preset": "balanced",
+          "aggressionPreset": "balanced",
+          "windowsBuild": 22631
+        },
+        "answerStatuses": [
+          {
+            "value": true,
+            "status": "Included",
+            "blockedReason": null
+          },
+          {
+            "value": false,
+            "status": "Blocked",
+            "blockedReason": "You chose to keep Windows Update services running."
+          }
+        ],
+        "changesPlanReboot": false,
+        "changesPresetBehavior": false
+      }
+    ],
     "currentProofStatus": "expert-only / intentionally not broadly verified yet",
     "currentProofReason": "Action is gated behind expert mode; verification exists, but broad consumer proof should stay narrower by default."
   },
@@ -8689,6 +8402,7 @@
     "rollbackMethod": "Restore the snapshot captured immediately before apply, then read back the same targets and compare against baseline.",
     "profileRestrictions": {
       "blockedProfiles": [
+        "gaming_laptop",
         "office_laptop",
         "work_pc"
       ],
@@ -8696,7 +8410,7 @@
     },
     "questionDependencies": [],
     "currentProofStatus": "blocked by profile by design",
-    "currentProofReason": "This action is intentionally blocked on office_laptop, work_pc profile(s); harness proof focuses on the profiles that can legally include it."
+    "currentProofReason": "This action is intentionally blocked on office_laptop, gaming_laptop, work_pc profile(s); harness proof focuses on the profiles that can legally include it."
   },
   {
     "actionId": "services.disable-delivery-optimization",
@@ -8733,66 +8447,56 @@
       ],
       "profileRuleHits": []
     },
-    "questionDependencies": [],
+    "questionDependencies": [
+      {
+        "questionKey": "disableDeliveryOptimization",
+        "scenario": {
+          "profile": "gaming_desktop",
+          "preset": "aggressive",
+          "aggressionPreset": "aggressive",
+          "windowsBuild": 22631
+        },
+        "answerStatuses": [
+          {
+            "value": true,
+            "status": "Included",
+            "blockedReason": null
+          },
+          {
+            "value": false,
+            "status": "Blocked",
+            "blockedReason": "You chose to keep Delivery Optimization enabled."
+          }
+        ],
+        "changesPlanReboot": false,
+        "changesPresetBehavior": false
+      },
+      {
+        "questionKey": "disableWindowsUpdate",
+        "scenario": {
+          "profile": "gaming_desktop",
+          "preset": "balanced",
+          "aggressionPreset": "balanced",
+          "windowsBuild": 22631
+        },
+        "answerStatuses": [
+          {
+            "value": true,
+            "status": "Included",
+            "blockedReason": null
+          },
+          {
+            "value": false,
+            "status": "Blocked",
+            "blockedReason": "You chose to keep Windows Update services running."
+          }
+        ],
+        "changesPlanReboot": false,
+        "changesPresetBehavior": false
+      }
+    ],
     "currentProofStatus": "blocked by profile by design",
     "currentProofReason": "This action is intentionally blocked on work_pc profile(s); harness proof focuses on the profiles that can legally include it."
-  },
-  {
-    "actionId": "services.disable-diagnostic-services",
-    "name": "Disable Diagnostic Policy & Execution Services",
-    "phaseId": "services",
-    "phaseName": "Background Services",
-    "module": "services.telemetry-services",
-    "category": "services",
-    "risk": "low",
-    "expertOnly": false,
-    "requiresReboot": true,
-    "reversible": true,
-    "executionKinds": [
-      "serviceChanges"
-    ],
-    "verificationTier": "tier2",
-    "expectedStateChanges": [
-      {
-        "kind": "service",
-        "target": "DPS",
-        "expected": "Disabled"
-      },
-      {
-        "kind": "service",
-        "target": "WdiServiceHost",
-        "expected": "Disabled"
-      },
-      {
-        "kind": "service",
-        "target": "WdiSystemHost",
-        "expected": "Disabled"
-      }
-    ],
-    "readbackMethods": [
-      {
-        "kind": "service",
-        "detail": "Read Win32_Service start mode for DPS and confirm Disabled."
-      },
-      {
-        "kind": "service",
-        "detail": "Read Win32_Service start mode for WdiServiceHost and confirm Disabled."
-      },
-      {
-        "kind": "service",
-        "detail": "Read Win32_Service start mode for WdiSystemHost and confirm Disabled."
-      }
-    ],
-    "rollbackMethod": "Restore the snapshot captured immediately before apply, then read back the same targets and compare against baseline.",
-    "profileRestrictions": {
-      "blockedProfiles": [
-        "work_pc"
-      ],
-      "profileRuleHits": []
-    },
-    "questionDependencies": [],
-    "currentProofStatus": "requires reboot to verify fully",
-    "currentProofReason": "Immediate readback is possible, but full trust for this action still requires a post-reboot assertion."
   },
   {
     "actionId": "services.disable-diagtrack",
@@ -9041,45 +8745,6 @@
     "currentProofReason": "This action has a defined readback and rollback strategy, but consumer-Windows certification still depends on running the harness."
   },
   {
-    "actionId": "services.disable-pca-service",
-    "name": "Disable Program Compatibility Assistant",
-    "phaseId": "services",
-    "phaseName": "Background Services",
-    "module": "services.telemetry-services",
-    "category": "services",
-    "risk": "low",
-    "expertOnly": false,
-    "requiresReboot": false,
-    "reversible": true,
-    "executionKinds": [
-      "serviceChanges"
-    ],
-    "verificationTier": "tier2",
-    "expectedStateChanges": [
-      {
-        "kind": "service",
-        "target": "PcaSvc",
-        "expected": "Disabled"
-      }
-    ],
-    "readbackMethods": [
-      {
-        "kind": "service",
-        "detail": "Read Win32_Service start mode for PcaSvc and confirm Disabled."
-      }
-    ],
-    "rollbackMethod": "Restore the snapshot captured immediately before apply, then read back the same targets and compare against baseline.",
-    "profileRestrictions": {
-      "blockedProfiles": [
-        "work_pc"
-      ],
-      "profileRuleHits": []
-    },
-    "questionDependencies": [],
-    "currentProofStatus": "blocked by profile by design",
-    "currentProofReason": "This action is intentionally blocked on work_pc profile(s); harness proof focuses on the profiles that can legally include it."
-  },
-  {
     "actionId": "services.disable-phone-service",
     "name": "Disable Phone Service",
     "phaseId": "services",
@@ -9191,7 +8856,7 @@
     "phaseName": "Background Services",
     "module": "services.consumer-services",
     "category": "services",
-    "risk": "medium",
+    "risk": "low",
     "expertOnly": false,
     "requiresReboot": true,
     "reversible": true,
@@ -9202,14 +8867,14 @@
     "expectedStateChanges": [
       {
         "kind": "service",
-        "target": "WpnService",
+        "target": "WpnUserService",
         "expected": "Disabled"
       }
     ],
     "readbackMethods": [
       {
         "kind": "service",
-        "detail": "Read Win32_Service start mode for WpnService and confirm Disabled."
+        "detail": "Read Win32_Service start mode for WpnUserService and confirm Disabled."
       }
     ],
     "rollbackMethod": "Restore the snapshot captured immediately before apply, then read back the same targets and compare against baseline.",
@@ -9587,13 +9252,15 @@
     "rollbackMethod": "Restore the snapshot captured immediately before apply, then read back the same targets and compare against baseline.",
     "profileRestrictions": {
       "blockedProfiles": [
-        "office_laptop"
+        "gaming_laptop",
+        "office_laptop",
+        "work_pc"
       ],
       "profileRuleHits": []
     },
     "questionDependencies": [],
     "currentProofStatus": "blocked by profile by design",
-    "currentProofReason": "This action is intentionally blocked on office_laptop profile(s); harness proof focuses on the profiles that can legally include it."
+    "currentProofReason": "This action is intentionally blocked on office_laptop, gaming_laptop, work_pc profile(s); harness proof focuses on the profiles that can legally include it."
   },
   {
     "actionId": "services.disable-update-orchestrator-svc",
@@ -9630,7 +9297,31 @@
       ],
       "profileRuleHits": []
     },
-    "questionDependencies": [],
+    "questionDependencies": [
+      {
+        "questionKey": "disableWindowsUpdate",
+        "scenario": {
+          "profile": "gaming_desktop",
+          "preset": "balanced",
+          "aggressionPreset": "balanced",
+          "windowsBuild": 22631
+        },
+        "answerStatuses": [
+          {
+            "value": true,
+            "status": "Included",
+            "blockedReason": null
+          },
+          {
+            "value": false,
+            "status": "Blocked",
+            "blockedReason": "You chose to keep Windows Update services running."
+          }
+        ],
+        "changesPlanReboot": false,
+        "changesPresetBehavior": false
+      }
+    ],
     "currentProofStatus": "expert-only / intentionally not broadly verified yet",
     "currentProofReason": "Action is gated behind expert mode; verification exists, but broad consumer proof should stay narrower by default."
   },
@@ -9669,7 +9360,31 @@
       ],
       "profileRuleHits": []
     },
-    "questionDependencies": [],
+    "questionDependencies": [
+      {
+        "questionKey": "disableWindowsUpdate",
+        "scenario": {
+          "profile": "gaming_desktop",
+          "preset": "balanced",
+          "aggressionPreset": "balanced",
+          "windowsBuild": 22631
+        },
+        "answerStatuses": [
+          {
+            "value": true,
+            "status": "Included",
+            "blockedReason": null
+          },
+          {
+            "value": false,
+            "status": "Blocked",
+            "blockedReason": "You chose to keep Windows Update services running."
+          }
+        ],
+        "changesPlanReboot": false,
+        "changesPresetBehavior": false
+      }
+    ],
     "currentProofStatus": "expert-only / intentionally not broadly verified yet",
     "currentProofReason": "Action is gated behind expert mode; verification exists, but broad consumer proof should stay narrower by default."
   },
@@ -9743,7 +9458,36 @@
       "blockedProfiles": [],
       "profileRuleHits": []
     },
-    "questionDependencies": [],
+    "questionDependencies": [
+      {
+        "questionKey": "telemetryLevel",
+        "scenario": {
+          "profile": "gaming_desktop",
+          "preset": "balanced",
+          "aggressionPreset": "balanced",
+          "windowsBuild": 22631
+        },
+        "answerStatuses": [
+          {
+            "value": "keep",
+            "status": "Optional",
+            "blockedReason": null
+          },
+          {
+            "value": "reduce",
+            "status": "Included",
+            "blockedReason": null
+          },
+          {
+            "value": "aggressive",
+            "status": "Included",
+            "blockedReason": null
+          }
+        ],
+        "changesPlanReboot": false,
+        "changesPresetBehavior": false
+      }
+    ],
     "currentProofStatus": "partially verified on real Windows",
     "currentProofReason": "This action has a defined readback and rollback strategy, but consumer-Windows certification still depends on running the harness."
   },
@@ -9857,7 +9601,31 @@
       ],
       "profileRuleHits": []
     },
-    "questionDependencies": [],
+    "questionDependencies": [
+      {
+        "questionKey": "disableWindowsUpdate",
+        "scenario": {
+          "profile": "gaming_desktop",
+          "preset": "balanced",
+          "aggressionPreset": "balanced",
+          "windowsBuild": 22631
+        },
+        "answerStatuses": [
+          {
+            "value": true,
+            "status": "Included",
+            "blockedReason": null
+          },
+          {
+            "value": false,
+            "status": "Blocked",
+            "blockedReason": "You chose to keep Windows Update services running."
+          }
+        ],
+        "changesPlanReboot": false,
+        "changesPresetBehavior": false
+      }
+    ],
     "currentProofStatus": "expert-only / intentionally not broadly verified yet",
     "currentProofReason": "Action is gated behind expert mode; verification exists, but broad consumer proof should stay narrower by default."
   },
@@ -10084,7 +9852,7 @@
   },
   {
     "actionId": "shell.disable-copilot",
-    "name": "Disable Windows Copilot",
+    "name": "Disable Windows Copilot (Win11)",
     "phaseId": "shell",
     "phaseName": "Shell & Explorer",
     "module": "shell.taskbar",
@@ -10977,7 +10745,7 @@
   },
   {
     "actionId": "shell.hide-widgets-button",
-    "name": "Hide Widgets Button",
+    "name": "Hide Widgets Button (Win11)",
     "phaseId": "shell",
     "phaseName": "Shell & Explorer",
     "module": "shell.taskbar",
@@ -11079,7 +10847,7 @@
   },
   {
     "actionId": "shell.remove-cast-to-device",
-    "name": "Remove 'Cast to Device' from Context Menu",
+    "name": "Remove 'Cast to Device",
     "phaseId": "shell",
     "phaseName": "Shell & Explorer",
     "module": "shell.context-menu",
@@ -11110,13 +10878,37 @@
       "blockedProfiles": [],
       "profileRuleHits": []
     },
-    "questionDependencies": [],
+    "questionDependencies": [
+      {
+        "questionKey": "restoreClassicContextMenu",
+        "scenario": {
+          "profile": "gaming_desktop",
+          "preset": "balanced",
+          "aggressionPreset": "balanced",
+          "windowsBuild": 22631
+        },
+        "answerStatuses": [
+          {
+            "value": true,
+            "status": "Included",
+            "blockedReason": null
+          },
+          {
+            "value": false,
+            "status": "Blocked",
+            "blockedReason": "You chose to keep the default Windows 11 compact context menu and shell clutter."
+          }
+        ],
+        "changesPlanReboot": false,
+        "changesPresetBehavior": false
+      }
+    ],
     "currentProofStatus": "partially verified on real Windows",
     "currentProofReason": "This action has a defined readback and rollback strategy, but consumer-Windows certification still depends on running the harness."
   },
   {
     "actionId": "shell.remove-edit-with-paint3d",
-    "name": "Remove 'Edit with Paint 3D' from Context Menu",
+    "name": "Remove 'Edit with Paint 3D",
     "phaseId": "shell",
     "phaseName": "Shell & Explorer",
     "module": "shell.context-menu",
@@ -11165,128 +10957,37 @@
       "blockedProfiles": [],
       "profileRuleHits": []
     },
-    "questionDependencies": [],
-    "currentProofStatus": "partially verified on real Windows",
-    "currentProofReason": "This action has a defined readback and rollback strategy, but consumer-Windows certification still depends on running the harness."
-  },
-  {
-    "actionId": "shell.remove-give-access-to",
-    "name": "Remove 'Give access to' from Context Menu",
-    "phaseId": "shell",
-    "phaseName": "Shell & Explorer",
-    "module": "shell.context-menu",
-    "category": "shell",
-    "risk": "safe",
-    "expertOnly": false,
-    "requiresReboot": false,
-    "reversible": true,
-    "executionKinds": [
-      "registryChanges"
-    ],
-    "verificationTier": "tier1",
-    "expectedStateChanges": [
+    "questionDependencies": [
       {
-        "kind": "registry",
-        "target": "HKCU\\SOFTWARE\\\\Classes\\\\*\\\\shellex\\\\ContextMenuHandlers\\\\Sharing\\(Default)",
-        "expected": " (String)"
+        "questionKey": "restoreClassicContextMenu",
+        "scenario": {
+          "profile": "gaming_desktop",
+          "preset": "balanced",
+          "aggressionPreset": "balanced",
+          "windowsBuild": 22631
+        },
+        "answerStatuses": [
+          {
+            "value": true,
+            "status": "Included",
+            "blockedReason": null
+          },
+          {
+            "value": false,
+            "status": "Blocked",
+            "blockedReason": "You chose to keep the default Windows 11 compact context menu and shell clutter."
+          }
+        ],
+        "changesPlanReboot": false,
+        "changesPresetBehavior": false
       }
     ],
-    "readbackMethods": [
-      {
-        "kind": "registry",
-        "detail": "Read HKCU\\SOFTWARE\\\\Classes\\\\*\\\\shellex\\\\ContextMenuHandlers\\\\Sharing\\(Default) and compare to ."
-      }
-    ],
-    "rollbackMethod": "Restore the snapshot captured immediately before apply, then read back the same targets and compare against baseline.",
-    "profileRestrictions": {
-      "blockedProfiles": [
-        "work_pc"
-      ],
-      "profileRuleHits": []
-    },
-    "questionDependencies": [],
-    "currentProofStatus": "blocked by profile by design",
-    "currentProofReason": "This action is intentionally blocked on work_pc profile(s); harness proof focuses on the profiles that can legally include it."
-  },
-  {
-    "actionId": "shell.remove-include-in-library",
-    "name": "Remove 'Include in library' from Context Menu",
-    "phaseId": "shell",
-    "phaseName": "Shell & Explorer",
-    "module": "shell.context-menu",
-    "category": "shell",
-    "risk": "safe",
-    "expertOnly": false,
-    "requiresReboot": false,
-    "reversible": true,
-    "executionKinds": [
-      "registryChanges"
-    ],
-    "verificationTier": "tier1",
-    "expectedStateChanges": [
-      {
-        "kind": "registry",
-        "target": "HKCU\\SOFTWARE\\\\Classes\\\\Folder\\\\shellex\\\\ContextMenuHandlers\\\\Library Location\\(Default)",
-        "expected": " (String)"
-      }
-    ],
-    "readbackMethods": [
-      {
-        "kind": "registry",
-        "detail": "Read HKCU\\SOFTWARE\\\\Classes\\\\Folder\\\\shellex\\\\ContextMenuHandlers\\\\Library Location\\(Default) and compare to ."
-      }
-    ],
-    "rollbackMethod": "Restore the snapshot captured immediately before apply, then read back the same targets and compare against baseline.",
-    "profileRestrictions": {
-      "blockedProfiles": [
-        "work_pc"
-      ],
-      "profileRuleHits": []
-    },
-    "questionDependencies": [],
-    "currentProofStatus": "blocked by profile by design",
-    "currentProofReason": "This action is intentionally blocked on work_pc profile(s); harness proof focuses on the profiles that can legally include it."
-  },
-  {
-    "actionId": "shell.remove-share-context",
-    "name": "Remove 'Share' from Context Menu",
-    "phaseId": "shell",
-    "phaseName": "Shell & Explorer",
-    "module": "shell.context-menu",
-    "category": "shell",
-    "risk": "safe",
-    "expertOnly": false,
-    "requiresReboot": false,
-    "reversible": true,
-    "executionKinds": [
-      "registryChanges"
-    ],
-    "verificationTier": "tier1",
-    "expectedStateChanges": [
-      {
-        "kind": "registry",
-        "target": "HKCU\\SOFTWARE\\\\Classes\\\\*\\\\shellex\\\\ContextMenuHandlers\\\\ModernSharing\\(Default)",
-        "expected": " (String)"
-      }
-    ],
-    "readbackMethods": [
-      {
-        "kind": "registry",
-        "detail": "Read HKCU\\SOFTWARE\\\\Classes\\\\*\\\\shellex\\\\ContextMenuHandlers\\\\ModernSharing\\(Default) and compare to ."
-      }
-    ],
-    "rollbackMethod": "Restore the snapshot captured immediately before apply, then read back the same targets and compare against baseline.",
-    "profileRestrictions": {
-      "blockedProfiles": [],
-      "profileRuleHits": []
-    },
-    "questionDependencies": [],
     "currentProofStatus": "partially verified on real Windows",
     "currentProofReason": "This action has a defined readback and rollback strategy, but consumer-Windows certification still depends on running the harness."
   },
   {
     "actionId": "shell.remove-troubleshoot-compatibility",
-    "name": "Remove 'Troubleshoot compatibility' from Context Menu",
+    "name": "Remove 'Troubleshoot compatibility",
     "phaseId": "shell",
     "phaseName": "Shell & Explorer",
     "module": "shell.context-menu",
@@ -11319,43 +11020,6 @@
       ],
       "profileRuleHits": []
     },
-    "questionDependencies": [],
-    "currentProofStatus": "blocked by profile by design",
-    "currentProofReason": "This action is intentionally blocked on work_pc profile(s); harness proof focuses on the profiles that can legally include it."
-  },
-  {
-    "actionId": "shell.restore-classic-context-menu",
-    "name": "Restore Classic Context Menu",
-    "phaseId": "shell",
-    "phaseName": "Shell & Explorer",
-    "module": "shell.context-menu",
-    "category": "shell",
-    "risk": "low",
-    "expertOnly": false,
-    "requiresReboot": true,
-    "reversible": true,
-    "executionKinds": [
-      "registryChanges"
-    ],
-    "verificationTier": "tier1",
-    "expectedStateChanges": [
-      {
-        "kind": "registry",
-        "target": "HKCU\\Software\\\\Classes\\\\CLSID\\\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a8}\\\\InprocServer32\\(Default)",
-        "expected": " (String)"
-      }
-    ],
-    "readbackMethods": [
-      {
-        "kind": "registry",
-        "detail": "Read HKCU\\Software\\\\Classes\\\\CLSID\\\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a8}\\\\InprocServer32\\(Default) and compare to ."
-      }
-    ],
-    "rollbackMethod": "Restore the snapshot captured immediately before apply, then read back the same targets and compare against baseline.",
-    "profileRestrictions": {
-      "blockedProfiles": [],
-      "profileRuleHits": []
-    },
     "questionDependencies": [
       {
         "questionKey": "restoreClassicContextMenu",
@@ -11381,8 +11045,8 @@
         "changesPresetBehavior": false
       }
     ],
-    "currentProofStatus": "requires reboot to verify fully",
-    "currentProofReason": "Immediate readback is possible, but full trust for this action still requires a post-reboot assertion."
+    "currentProofStatus": "blocked by profile by design",
+    "currentProofReason": "This action is intentionally blocked on work_pc profile(s); harness proof focuses on the profiles that can legally include it."
   },
   {
     "actionId": "shell.show-file-extensions",
@@ -11477,31 +11141,22 @@
       {
         "kind": "registry",
         "target": "HKCU\\Control Panel\\\\Desktop\\WaitToKillAppTimeout",
-        "expected": "2000 (String)"
+        "expected": "3500 (String)"
       },
       {
         "kind": "registry",
         "target": "HKCU\\Control Panel\\\\Desktop\\HungAppTimeout",
-        "expected": "1000 (String)"
-      },
-      {
-        "kind": "registry",
-        "target": "HKCU\\Control Panel\\\\Desktop\\AutoEndTasks",
-        "expected": "1 (String)"
+        "expected": "3500 (String)"
       }
     ],
     "readbackMethods": [
       {
         "kind": "registry",
-        "detail": "Read HKCU\\Control Panel\\\\Desktop\\WaitToKillAppTimeout and compare to 2000."
+        "detail": "Read HKCU\\Control Panel\\\\Desktop\\WaitToKillAppTimeout and compare to 3500."
       },
       {
         "kind": "registry",
-        "detail": "Read HKCU\\Control Panel\\\\Desktop\\HungAppTimeout and compare to 1000."
-      },
-      {
-        "kind": "registry",
-        "detail": "Read HKCU\\Control Panel\\\\Desktop\\AutoEndTasks and compare to 1."
+        "detail": "Read HKCU\\Control Panel\\\\Desktop\\HungAppTimeout and compare to 3500."
       }
     ],
     "rollbackMethod": "Restore the snapshot captured immediately before apply, then read back the same targets and compare against baseline.",
@@ -13165,7 +12820,31 @@
       ],
       "profileRuleHits": []
     },
-    "questionDependencies": [],
+    "questionDependencies": [
+      {
+        "questionKey": "disableWindowsUpdate",
+        "scenario": {
+          "profile": "gaming_desktop",
+          "preset": "balanced",
+          "aggressionPreset": "balanced",
+          "windowsBuild": 22631
+        },
+        "answerStatuses": [
+          {
+            "value": true,
+            "status": "Included",
+            "blockedReason": null
+          },
+          {
+            "value": false,
+            "status": "Blocked",
+            "blockedReason": "You chose to keep Windows Update services running."
+          }
+        ],
+        "changesPlanReboot": false,
+        "changesPresetBehavior": false
+      }
+    ],
     "currentProofStatus": "blocked by profile by design",
     "currentProofReason": "This action is intentionally blocked on work_pc profile(s); harness proof focuses on the profiles that can legally include it."
   }

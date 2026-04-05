@@ -330,7 +330,7 @@
         {
           "id": "appx.disable-edge-updates",
           "name": "Disable Edge Auto-Updates",
-          "description": "Prevent Edge from auto-updating and reinstalling itself via the Microsoft Edge Update service. Registry policy only — does not remove Edge.",
+          "description": "Prevent Edge from auto-updating and reinstalling itself via the Microsoft Edge Update service. Registry policy only \u2014 does not remove Edge.",
           "risk": "safe",
           "default": true,
           "expertOnly": false,
@@ -366,12 +366,12 @@
         {
           "id": "appx.remove-edge",
           "name": "Remove Microsoft Edge",
-          "description": "Permanently uninstall Microsoft Edge using the setup.exe force-uninstall flag and remove AppX provisioning to prevent reinstallation. This action cannot be undone — Edge must be reinstalled from microsoft.com if needed.",
+          "description": "Permanently uninstall Microsoft Edge using the setup.exe force-uninstall flag and remove AppX provisioning to prevent reinstallation. This action cannot be undone \u2014 Edge must be reinstalled from microsoft.com if needed.",
           "risk": "high",
           "default": false,
           "expertOnly": true,
           "requiresReboot": true,
-          "warningMessage": "This permanently removes Microsoft Edge. It cannot be undone from within Windows — you must download Edge from microsoft.com to reinstall. Some Windows features that open web links via Edge (Help, Feedback, some Settings pages) will fail to open. Ensure you have an alternative browser installed before proceeding.",
+          "warningMessage": "This permanently removes Microsoft Edge. It cannot be undone from within Windows \u2014 you must download Edge from microsoft.com to reinstall. Some Windows features that open web links via Edge (Help, Feedback, some Settings pages) will fail to open. Ensure you have an alternative browser installed before proceeding.",
           "blockedProfiles": [
             "work_pc",
             "office_laptop",
@@ -387,7 +387,7 @@
           "default": false,
           "expertOnly": true,
           "requiresReboot": true,
-          "warningMessage": "WebView2 is a shared system component. Removing it WILL break: Microsoft Teams, Windows Widgets, some installer UIs, some Electron apps, and any app using embedded web views. This cannot be undone — you must manually download and reinstall WebView2 from developer.microsoft.com. Do NOT remove this unless you are certain no app on your system depends on it.",
+          "warningMessage": "WebView2 is a shared system component. Removing it WILL break: Microsoft Teams, Windows Widgets, some installer UIs, some Electron apps, and any app using embedded web views. This cannot be undone \u2014 you must manually download and reinstall WebView2 from developer.microsoft.com. Do NOT remove this unless you are certain no app on your system depends on it.",
           "blockedProfiles": [
             "work_pc",
             "office_laptop",
@@ -412,7 +412,7 @@
         {
           "id": "appx.remove-recall",
           "name": "Disable Windows Recall",
-          "description": "Disable Windows Recall — AI-powered screenshot-based activity history",
+          "description": "Disable Windows Recall \u2014 AI-powered screenshot-based activity history",
           "risk": "safe",
           "default": true,
           "expertOnly": false,
@@ -515,7 +515,7 @@
         {
           "id": "services.disable-diagtrack",
           "name": "Disable Connected User Experiences (DiagTrack)",
-          "description": "Disable the Connected User Experiences and Telemetry service (DiagTrack) — primary Windows telemetry pipeline",
+          "description": "Disable the Connected User Experiences and Telemetry service (DiagTrack) \u2014 primary Windows telemetry pipeline",
           "risk": "safe",
           "default": true,
           "expertOnly": false,
@@ -527,7 +527,7 @@
         {
           "id": "services.disable-dmwappushservice",
           "name": "Disable WAP Push Message Routing",
-          "description": "Disable dmwappushservice — routes telemetry data from DiagTrack to Microsoft",
+          "description": "Disable dmwappushservice \u2014 routes telemetry data from DiagTrack to Microsoft",
           "risk": "safe",
           "default": true,
           "expertOnly": false,
@@ -565,7 +565,7 @@
         {
           "id": "services.disable-tiledatamodelsvc",
           "name": "Disable Tile Data Model Server",
-          "description": "Disable tiledatamodelsvc — indexes Start Menu tile data",
+          "description": "Disable tiledatamodelsvc \u2014 indexes Start Menu tile data",
           "risk": "safe",
           "default": true,
           "expertOnly": false,
@@ -577,7 +577,7 @@
         {
           "id": "services.disable-wisvc",
           "name": "Disable Windows Insider Service",
-          "description": "Disable wisvc — Windows Insider Program flight/preview management",
+          "description": "Disable wisvc \u2014 Windows Insider Program flight/preview management",
           "risk": "safe",
           "default": true,
           "expertOnly": false,
@@ -589,7 +589,7 @@
         {
           "id": "services.disable-retaildemo",
           "name": "Disable Retail Demo Service",
-          "description": "Disable RetailDemo — retail store demo experience management",
+          "description": "Disable RetailDemo \u2014 retail store demo experience management",
           "risk": "safe",
           "default": true,
           "expertOnly": false,
@@ -601,7 +601,7 @@
         {
           "id": "services.disable-map-services",
           "name": "Disable Map Download & Broker",
-          "description": "Disable MapsBroker and lfsvc — offline map data download and geolocation",
+          "description": "Disable MapsBroker and lfsvc \u2014 offline map data download and geolocation",
           "risk": "safe",
           "default": true,
           "expertOnly": false,
@@ -615,7 +615,7 @@
         {
           "id": "services.disable-print-spooler",
           "name": "Disable Print Spooler",
-          "description": "Disable Print Spooler — manages print queues. Safe to disable on systems with no printers.",
+          "description": "Disable Print Spooler \u2014 manages print queues. Safe to disable on systems with no printers.",
           "risk": "low",
           "default": false,
           "expertOnly": false,
@@ -630,7 +630,7 @@
         {
           "id": "services.disable-remote-services",
           "name": "Disable Remote Access Services",
-          "description": "Disable Remote Desktop, Remote Registry, and Remote Assistance — external connection listeners",
+          "description": "Disable Remote Desktop, Remote Registry, and Remote Assistance \u2014 external connection listeners",
           "risk": "safe",
           "default": false,
           "expertOnly": false,
@@ -658,7 +658,7 @@
         {
           "id": "services.disable-fax",
           "name": "Disable Fax Service",
-          "description": "Disable the Fax service — legacy fax modem support",
+          "description": "Disable the Fax service \u2014 legacy fax modem support",
           "risk": "safe",
           "default": false,
           "expertOnly": false,
@@ -672,7 +672,7 @@
         {
           "id": "services.disable-phone-service",
           "name": "Disable Phone Service",
-          "description": "Disable PhoneSvc — telephony state management for Your Phone / Phone Link",
+          "description": "Disable PhoneSvc \u2014 telephony state management for Your Phone / Phone Link",
           "risk": "safe",
           "default": true,
           "expertOnly": false,
@@ -686,7 +686,7 @@
         {
           "id": "services.disable-wallet-service",
           "name": "Disable Wallet Service",
-          "description": "Disable WalletService — NFC tap-to-pay and wallet credential management",
+          "description": "Disable WalletService \u2014 NFC tap-to-pay and wallet credential management",
           "risk": "safe",
           "default": true,
           "expertOnly": false,
@@ -698,7 +698,7 @@
         {
           "id": "services.disable-bluetooth-support",
           "name": "Disable Bluetooth Support Service",
-          "description": "Disable bthserv — Bluetooth device discovery and pairing",
+          "description": "Disable bthserv \u2014 Bluetooth device discovery and pairing",
           "risk": "low",
           "default": false,
           "expertOnly": false,
@@ -714,7 +714,7 @@
         {
           "id": "services.disable-alljoyn-router",
           "name": "Disable AllJoyn Router",
-          "description": "Disable AllJoyn Router Service — IoT device communication protocol",
+          "description": "Disable AllJoyn Router Service \u2014 IoT device communication protocol",
           "risk": "safe",
           "default": false,
           "expertOnly": false,
@@ -738,7 +738,7 @@
         {
           "id": "services.disable-geolocation",
           "name": "Disable Geolocation Service",
-          "description": "Disable lfsvc — Windows location framework service",
+          "description": "Disable lfsvc \u2014 Windows location framework service",
           "risk": "safe",
           "default": false,
           "expertOnly": false,
@@ -752,7 +752,7 @@
         {
           "id": "services.disable-wmp-network-sharing",
           "name": "Disable Windows Media Player Network Sharing",
-          "description": "Disable WMPNetworkSvc — DLNA/UPnP media server",
+          "description": "Disable WMPNetworkSvc \u2014 DLNA/UPnP media server",
           "risk": "safe",
           "default": true,
           "expertOnly": false,
@@ -764,7 +764,7 @@
         {
           "id": "services.disable-smart-card",
           "name": "Disable Smart Card Services",
-          "description": "Disable SCardSvr and ScDeviceEnum — smart card reader support",
+          "description": "Disable SCardSvr and ScDeviceEnum \u2014 smart card reader support",
           "risk": "safe",
           "default": true,
           "expertOnly": false,
@@ -778,7 +778,7 @@
         {
           "id": "services.disable-secondary-logon",
           "name": "Disable Secondary Logon",
-          "description": "Disable seclogon — 'Run as different user' support",
+          "description": "Disable seclogon \u2014 'Run as different user' support",
           "risk": "low",
           "default": false,
           "expertOnly": false,
@@ -792,7 +792,7 @@
         {
           "id": "services.disable-touch-keyboard",
           "name": "Disable Touch Keyboard & Handwriting",
-          "description": "Disable TabletInputService — touch keyboard, handwriting, and pen input",
+          "description": "Disable TabletInputService \u2014 touch keyboard, handwriting, and pen input",
           "risk": "low",
           "default": false,
           "expertOnly": false,
@@ -808,7 +808,7 @@
         {
           "id": "services.disable-wer-service",
           "name": "Disable Windows Error Reporting Service",
-          "description": "Disable WerSvc — crash dump collection and upload",
+          "description": "Disable WerSvc \u2014 crash dump collection and upload",
           "risk": "safe",
           "default": false,
           "expertOnly": false,
@@ -820,7 +820,7 @@
         {
           "id": "services.disable-push-notifications",
           "name": "Disable Windows Push Notification Service",
-          "description": "Disable WpnUserService — per-user push notification relay. WpnService (system) is kept to prevent Explorer notification crashes.",
+          "description": "Disable WpnUserService \u2014 per-user push notification relay. WpnService (system) is kept to prevent Explorer notification crashes.",
           "risk": "low",
           "default": false,
           "expertOnly": false,
@@ -835,7 +835,7 @@
         {
           "id": "services.disable-delivery-optimization",
           "name": "Disable Delivery Optimization",
-          "description": "Disable DoSvc — peer-to-peer update sharing and background content delivery",
+          "description": "Disable DoSvc \u2014 peer-to-peer update sharing and background content delivery",
           "risk": "low",
           "default": true,
           "expertOnly": false,
@@ -849,7 +849,7 @@
         {
           "id": "services.disable-wuauserv",
           "name": "Disable Windows Update Service",
-          "description": "Disable wuauserv — automatic Windows Update download and installation",
+          "description": "Disable wuauserv \u2014 automatic Windows Update download and installation",
           "risk": "high",
           "default": false,
           "expertOnly": true,
@@ -864,7 +864,7 @@
         {
           "id": "services.disable-update-orchestrator-svc",
           "name": "Disable Update Orchestrator Service",
-          "description": "Disable UsoSvc — manages update scan scheduling and download orchestration",
+          "description": "Disable UsoSvc \u2014 manages update scan scheduling and download orchestration",
           "risk": "medium",
           "default": false,
           "expertOnly": true,
@@ -878,7 +878,7 @@
         {
           "id": "services.disable-bits",
           "name": "Disable Background Intelligent Transfer",
-          "description": "Disable BITS — background file transfer service used by Windows Update",
+          "description": "Disable BITS \u2014 background file transfer service used by Windows Update",
           "risk": "medium",
           "default": false,
           "expertOnly": true,
@@ -892,7 +892,7 @@
         {
           "id": "services.disable-waasmedic",
           "name": "Disable Windows Update Medic",
-          "description": "Disable WaaSMedicSvc — re-enables Windows Update components if they are disabled",
+          "description": "Disable WaaSMedicSvc \u2014 re-enables Windows Update components if they are disabled",
           "risk": "medium",
           "default": false,
           "expertOnly": true,
@@ -1053,7 +1053,7 @@
         {
           "id": "tasks.disable-defrag-tasks",
           "name": "Disable Automatic Disk Defragmentation",
-          "description": "Disable ScheduledDefrag — automatic disk defragmentation and optimization",
+          "description": "Disable ScheduledDefrag \u2014 automatic disk defragmentation and optimization",
           "risk": "low",
           "default": true,
           "expertOnly": false,
@@ -1095,7 +1095,7 @@
         {
           "id": "tasks.disable-power-efficiency-tasks",
           "name": "Disable Power Efficiency Diagnostics",
-          "description": "Disable AnalyzeSystem — background power efficiency diagnostic collection",
+          "description": "Disable AnalyzeSystem \u2014 background power efficiency diagnostic collection",
           "risk": "safe",
           "default": true,
           "expertOnly": false,
@@ -1107,7 +1107,7 @@
         {
           "id": "tasks.disable-chkdsk-tasks",
           "name": "Disable Automatic CHKDSK",
-          "description": "Disable ProactiveScan — background disk health monitoring and automatic chkdsk",
+          "description": "Disable ProactiveScan \u2014 background disk health monitoring and automatic chkdsk",
           "risk": "low",
           "default": false,
           "expertOnly": false,
@@ -1121,7 +1121,7 @@
         {
           "id": "tasks.disable-device-census",
           "name": "Disable Device Census",
-          "description": "Disable Device Census — hardware/software inventory collection for Microsoft",
+          "description": "Disable Device Census \u2014 hardware/software inventory collection for Microsoft",
           "risk": "safe",
           "default": true,
           "expertOnly": false,
@@ -1526,7 +1526,7 @@
         {
           "id": "perf.disable-sticky-keys",
           "name": "Disable Sticky Keys Shortcut",
-          "description": "Disable the Shift×5 sticky keys shortcut that interrupts gameplay",
+          "description": "Disable the Shift\u00d75 sticky keys shortcut that interrupts gameplay",
           "risk": "safe",
           "default": true,
           "expertOnly": false,
@@ -2260,6 +2260,18 @@
           "minWindowsBuild": null
         },
         {
+          "id": "shell.restore-classic-context-menu",
+          "name": "Restore Classic Context Menu",
+          "description": "Restore the full classic right-click context menu on Windows 11",
+          "risk": "low",
+          "default": false,
+          "expertOnly": false,
+          "requiresReboot": false,
+          "warningMessage": null,
+          "blockedProfiles": [],
+          "minWindowsBuild": 22000
+        },
+        {
           "id": "shell.remove-cast-to-device",
           "name": "Remove 'Cast to Device'",
           "description": "Remove Cast to Device from right-click menu",
@@ -2396,7 +2408,7 @@
         {
           "id": "shell.disable-content-delivery",
           "name": "Disable Content Delivery Subscriptions",
-          "description": "Remove all Windows content delivery ads — welcome experience, tips, suggested content",
+          "description": "Remove all Windows content delivery ads \u2014 welcome experience, tips, suggested content",
           "risk": "safe",
           "default": true,
           "expertOnly": false,
@@ -2584,7 +2596,7 @@
         {
           "id": "shutdown.decrease-shutdown-time",
           "name": "Decrease Shutdown Time",
-          "description": "Reduce app kill timeouts for faster shutdown. Does NOT auto-end tasks — Windows will still ask before killing hung apps.",
+          "description": "Reduce app kill timeouts for faster shutdown. Does NOT auto-end tasks \u2014 Windows will still ask before killing hung apps.",
           "risk": "low",
           "default": true,
           "expertOnly": false,
@@ -2662,7 +2674,7 @@
         {
           "id": "network.disable-llmnr",
           "name": "Disable LLMNR",
-          "description": "Disable Link-Local Multicast Name Resolution — prevents NTLM hash capture attacks",
+          "description": "Disable Link-Local Multicast Name Resolution \u2014 prevents NTLM hash capture attacks",
           "risk": "safe",
           "default": false,
           "expertOnly": true,
@@ -2692,6 +2704,58 @@
           "name": "Harden Windows Firewall Defaults",
           "description": "Block inbound, allow outbound on all firewall profiles",
           "risk": "safe",
+          "default": false,
+          "expertOnly": false,
+          "requiresReboot": false,
+          "warningMessage": null,
+          "blockedProfiles": [],
+          "minWindowsBuild": null
+        },
+        {
+          "id": "network.disable-teredo",
+          "name": "Disable Teredo Tunneling",
+          "description": "Disable Teredo IPv6 tunneling which adds latency overhead",
+          "risk": "safe",
+          "default": false,
+          "expertOnly": false,
+          "requiresReboot": false,
+          "warningMessage": null,
+          "blockedProfiles": [
+            "work_pc"
+          ],
+          "minWindowsBuild": null
+        },
+        {
+          "id": "network.disable-netbios",
+          "name": "Disable NetBIOS over TCP/IP",
+          "description": "Disable NetBIOS name resolution and session services",
+          "risk": "low",
+          "default": false,
+          "expertOnly": false,
+          "requiresReboot": false,
+          "warningMessage": null,
+          "blockedProfiles": [
+            "work_pc"
+          ],
+          "minWindowsBuild": null
+        },
+        {
+          "id": "network.disable-nagle",
+          "name": "Disable Nagle's Algorithm",
+          "description": "Disable TCP packet coalescing for lower network latency",
+          "risk": "low",
+          "default": false,
+          "expertOnly": false,
+          "requiresReboot": false,
+          "warningMessage": null,
+          "blockedProfiles": [],
+          "minWindowsBuild": null
+        },
+        {
+          "id": "network.rss-queues-2",
+          "name": "Set RSS Queues to 2",
+          "description": "Configure Receive Side Scaling to use 2 queues for balanced network processing",
+          "risk": "low",
           "default": false,
           "expertOnly": false,
           "requiresReboot": false,
@@ -2866,7 +2930,7 @@
         {
           "id": "security.disable-vbs",
           "name": "Disable Virtualization-Based Security (VBS)",
-          "description": "Disable VBS — the hypervisor layer that enables HVCI, Credential Guard, and other virtualization-backed security features",
+          "description": "Disable VBS \u2014 the hypervisor layer that enables HVCI, Credential Guard, and other virtualization-backed security features",
           "risk": "high",
           "default": false,
           "expertOnly": true,
@@ -2882,12 +2946,12 @@
         {
           "id": "security.full-defender-disable",
           "name": "Full Windows Defender Disable (Services + Drivers)",
-          "description": "Completely disable Windows Defender at the service level — WinDefend, WdFilter, WdBoot, WdNisSvc, WdNisDrv, SecurityHealthService, wscsvc, Sense, MsSecCore. Also disables SmartScreen, WTDS, and removes startup entries.",
+          "description": "Completely disable Windows Defender at the service level \u2014 WinDefend, WdFilter, WdBoot, WdNisSvc, WdNisDrv, SecurityHealthService, wscsvc, Sense, MsSecCore. Also disables SmartScreen, WTDS, and removes startup entries.",
           "risk": "extreme",
           "default": false,
           "expertOnly": true,
           "requiresReboot": true,
-          "warningMessage": "THIS REMOVES ALL ANTIVIRUS PROTECTION. Your system will have zero malware defense. Only use on air-gapped or dedicated gaming PCs. Tamper Protection must be disabled manually in Windows Security settings first — otherwise service changes will be blocked by TrustedInstaller and this action will time out. On Windows 10 22H2+ and Windows 11, Tamper Protection may prevent service disabling entirely even with this action applied.",
+          "warningMessage": "THIS REMOVES ALL ANTIVIRUS PROTECTION. Your system will have zero malware defense. Only use on air-gapped or dedicated gaming PCs. Tamper Protection must be disabled manually in Windows Security settings first \u2014 otherwise service changes will be blocked by TrustedInstaller and this action will time out. On Windows 10 22H2+ and Windows 11, Tamper Protection may prevent service disabling entirely even with this action applied.",
           "blockedProfiles": [
             "work_pc",
             "office_laptop",
