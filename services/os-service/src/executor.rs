@@ -9,6 +9,99 @@ use crate::powershell;
 use crate::rollback;
 use serde_json::Value;
 
+fn is_shell_coupled_package(package_name: &str) -> bool {
+    // These packages own Explorer, Start, taskbar, or shell-adjacent UX.
+    const SHELL_COUPLED_PACKAGES: &[&str] = &[
+        "Microsoft.Windows.ShellExperienceHost",
+        "Microsoft.Windows.StartMenuExperienceHost",
+        "Microsoft.Windows.Search",
+        "Microsoft.Windows.ContentDeliveryManager",
+        "Microsoft.Windows.CloudExperienceHost",
+        "Microsoft.Windows.SecHealthUI",
+        "Microsoft.AAD.BrokerPlugin",
+        "Microsoft.AccountsControl",
+        "Microsoft.LockApp",
+        "Microsoft.Windows.Apprep.ChxApp",
+        "Microsoft.Windows.AssignedAccessLockApp",
+        "Microsoft.Windows.ParentalControls",
+        "Microsoft.Windows.PeopleExperienceHost",
+        "Microsoft.Windows.PinningConfirmationDialog",
+        "Microsoft.Windows.SecureAssessmentBrowser",
+        "Microsoft.Windows.XGpuEjectDialog",
+        "MicrosoftWindows.Client.WebExperience",
+        "MicrosoftWindows.Client.CBS",
+        "Microsoft.Windows.CrossDeviceResume",
+        "Microsoft.MicrosoftEdge",
+        "windows.immersivecontrolpanel",
+        "Windows.PrintDialog",
+        "Windows.CBSPreview",
+        "MicrosoftWindows.UndockedDevKit",
+        "NcsiUwpApp",
+    ];
+
+    SHELL_COUPLED_PACKAGES
+        .iter()
+        .any(|entry| package_name.eq_ignore_ascii_case(entry))
+}
+
+fn matches_protected_service_name(service_name: &str, protected_name: &str) -> bool {
+    if service_name.eq_ignore_ascii_case(protected_name) {
+        return true;
+    }
+
+    let normalized_service = service_name.to_ascii_lowercase();
+    let normalized_protected = protected_name.to_ascii_lowercase();
+
+    normalized_service
+        .strip_prefix(&normalized_protected)
+        .is_some_and(|suffix| suffix.starts_with('_'))
+}
+
+fn is_protected_service(service_name: &str) -> bool {
+    // AppInfo/AppReadiness/UdkUserSvc/TimeBrokerSvc are explicitly protected
+    // because older tweak packs disable them and wedge UAC, login, or shell UX.
+    const PROTECTED_SERVICES: &[&str] = &[
+        "DcomLaunch",
+        "RpcSs",
+        "RpcEptMapper",
+        "DPS",
+        "Themes",
+        "UxSms",
+        "ShellHWDetection",
+        "FontCache",
+        "Schedule",
+        "gpsvc",
+        "EventSystem",
+        "ProfSvc",
+        "UserManager",
+        "StateRepository",
+        "TokenBroker",
+        "StorSvc",
+        "ClipSVC",
+        "AppXSvc",
+        "LicenseManager",
+        "BFE",
+        "mpssvc",
+        "NlaSvc",
+        "EventLog",
+        "CryptSvc",
+        "DeviceInstall",
+        "WpnService",
+        "AppInfo",
+        "AppReadiness",
+        "BrokerInfrastructure",
+        "TimeBrokerSvc",
+    ];
+    const PROTECTED_SERVICE_TEMPLATES: &[&str] = &["UdkUserSvc"];
+
+    PROTECTED_SERVICES
+        .iter()
+        .any(|entry| service_name.eq_ignore_ascii_case(entry))
+        || PROTECTED_SERVICE_TEMPLATES
+            .iter()
+            .any(|entry| matches_protected_service_name(service_name, entry))
+}
+
 /// Execute a tuning action, creating a rollback snapshot first, then applying
 /// all changes described in `action_data`.
 pub fn execute_action(
@@ -19,9 +112,7 @@ pub fn execute_action(
 ) -> anyhow::Result<Value> {
     tracing::info!(action_id = action_id, "Executing action");
 
-    let action_type = action_data["actionType"]
-        .as_str()
-        .unwrap_or("unknown");
+    let action_type = action_data["actionType"].as_str().unwrap_or("unknown");
 
     // ── Phase 1: Collect previous values for rollback ───────────────────
 
@@ -446,36 +537,11 @@ pub fn execute_action(
 
 #[cfg(windows)]
 fn remove_appx_package(package_name: &str) -> anyhow::Result<()> {
-    // Shell-coupled packages that must NEVER be removed — removing these breaks Explorer/taskbar/Start
-    const SHELL_COUPLED_PACKAGES: &[&str] = &[
-        "Microsoft.Windows.ShellExperienceHost",
-        "Microsoft.Windows.StartMenuExperienceHost",
-        "Microsoft.Windows.Search",
-        "Microsoft.Windows.ContentDeliveryManager",
-        "Microsoft.Windows.CloudExperienceHost",
-        "Microsoft.Windows.SecHealthUI",
-        "Microsoft.AAD.BrokerPlugin",
-        "Microsoft.AccountsControl",
-        "Microsoft.LockApp",
-        "Microsoft.Windows.Apprep.ChxApp",
-        "Microsoft.Windows.AssignedAccessLockApp",
-        "Microsoft.Windows.ParentalControls",
-        "Microsoft.Windows.PeopleExperienceHost",
-        "Microsoft.Windows.PinningConfirmationDialog",
-        "Microsoft.Windows.SecureAssessmentBrowser",
-        "Microsoft.Windows.XGpuEjectDialog",
-        "MicrosoftWindows.Client.WebExperience",   // Widgets — shell-integrated, removal crashes Explorer
-        "MicrosoftWindows.Client.CBS",             // System settings integration
-        "Microsoft.Windows.CrossDeviceResume",     // Cross-device shell handler
-        "Microsoft.MicrosoftEdge",                 // Legacy Edge (shell-integrated on Win10)
-        "windows.immersivecontrolpanel",           // Settings app
-        "Windows.PrintDialog",
-        "Windows.CBSPreview",
-        "MicrosoftWindows.UndockedDevKit",
-        "NcsiUwpApp",
-    ];
-    if SHELL_COUPLED_PACKAGES.iter().any(|s| package_name.eq_ignore_ascii_case(s)) {
-        tracing::warn!(package = package_name, "Shell-coupled package — skipped to protect Explorer");
+    if is_shell_coupled_package(package_name) {
+        tracing::warn!(
+            package = package_name,
+            "Shell-coupled package — skipped to protect Explorer"
+        );
         return Ok(());
     }
 
@@ -489,7 +555,10 @@ fn remove_appx_package(package_name: &str) -> anyhow::Result<()> {
     let result = powershell::execute(&script)?;
     if !result.success {
         let stderr = result.stderr.trim();
-        if stderr.contains("not found") || stderr.contains("does not exist") || stderr.contains("not installed") {
+        if stderr.contains("not found")
+            || stderr.contains("does not exist")
+            || stderr.contains("not installed")
+        {
             tracing::warn!(package = package_name, "AppX package not found — skipped");
             return Ok(());
         }
@@ -552,7 +621,10 @@ fn apply_registry_change(
     if !result.success {
         anyhow::bail!(
             "Registry write failed for {}\\{}\\{}: {}",
-            hive, path, value_name, result.stderr.trim()
+            hive,
+            path,
+            value_name,
+            result.stderr.trim()
         );
     }
     Ok(())
@@ -560,29 +632,11 @@ fn apply_registry_change(
 
 #[cfg(windows)]
 fn apply_service_change(service_name: &str, startup_type: &str) -> anyhow::Result<()> {
-    // Never touch Explorer/TaskManager/shell critical services
-    const PROTECTED_SERVICES: &[&str] = &[
-        "DcomLaunch", "RpcSs", "RpcEptMapper", "DPS",          // Core RPC/diagnostics
-        "Themes", "UxSms",                                       // Shell visual rendering
-        "ShellHWDetection",                                      // Shell hardware detection
-        "FontCache",                                             // Font rendering (Explorer text)
-        "Schedule",                                              // Task scheduler (shell background ops)
-        "gpsvc",                                                 // Group policy (shell extensions)
-        "EventSystem",                                           // COM+ events (Explorer notifications)
-        "ProfSvc", "UserManager",                                // User profile (Explorer identity)
-        "StateRepository",                                       // App state (Store/UWP shell integration)
-        "TokenBroker",                                           // Auth tokens (Explorer cloud files)
-        "StorSvc",                                               // Storage service (Explorer drives)
-        "ClipSVC", "AppXSvc", "LicenseManager",                  // AppX/Store (Start menu, UWP)
-        "BFE", "mpssvc",                                         // Base Filtering Engine + Firewall
-        "NlaSvc",                                                // Network Location (taskbar flyouts)
-        "EventLog",                                              // Event log (anti-cheat depends on it)
-        "CryptSvc",                                              // Crypto services (BattlEye/EAC)
-        "DeviceInstall",                                         // Driver install (GPU/WiFi/BT)
-        "WpnService",                                            // Push notification broker (shell toasts)
-    ];
-    if PROTECTED_SERVICES.iter().any(|s| s.eq_ignore_ascii_case(service_name)) {
-        tracing::warn!(service = service_name, "Protected service — skipped to preserve Task Manager/system stability");
+    if is_protected_service(service_name) {
+        tracing::warn!(
+            service = service_name,
+            "Protected service — skipped to preserve Task Manager/system stability"
+        );
         return Ok(());
     }
     // Validate inputs before interpolation
@@ -616,10 +670,7 @@ fn apply_service_change(service_name: &str, startup_type: &str) -> anyhow::Resul
             tracing::warn!(service = service_name, "Service not found — skipped");
             return Ok(());
         }
-        anyhow::bail!(
-            "Service change failed for {}: {}",
-            service_name, stderr
-        );
+        anyhow::bail!("Service change failed for {}: {}", service_name, stderr);
     }
     Ok(())
 }
@@ -640,10 +691,7 @@ fn resolve_registry_changes(action_data: &Value) -> anyhow::Result<Vec<Value>> {
 
 #[cfg(windows)]
 fn resolve_registry_change(change: &Value) -> anyhow::Result<Vec<Value>> {
-    let path = change
-        .get("path")
-        .and_then(|v| v.as_str())
-        .unwrap_or("");
+    let path = change.get("path").and_then(|v| v.as_str()).unwrap_or("");
 
     if !path.contains('<') {
         return Ok(vec![change.clone()]);
@@ -703,10 +751,7 @@ fn expand_registry_template(
     token: &str,
     replacements: &[String],
 ) -> anyhow::Result<Vec<Value>> {
-    let path = change
-        .get("path")
-        .and_then(|v| v.as_str())
-        .unwrap_or("");
+    let path = change.get("path").and_then(|v| v.as_str()).unwrap_or("");
 
     if replacements.is_empty() {
         anyhow::bail!("No runtime targets resolved for placeholder {}", token);
@@ -738,7 +783,10 @@ fn resolve_active_interface_guids() -> anyhow::Result<Vec<String>> {
         }";
     let result = powershell::execute(script)?;
     if !result.success {
-        anyhow::bail!("Failed to resolve active NIC GUIDs: {}", result.stderr.trim());
+        anyhow::bail!(
+            "Failed to resolve active NIC GUIDs: {}",
+            result.stderr.trim()
+        );
     }
     let guids = parse_nonempty_lines(&result.stdout);
     if guids.is_empty() {
@@ -761,7 +809,10 @@ fn resolve_active_adapter_indices() -> anyhow::Result<Vec<String>> {
         }";
     let result = powershell::execute(script)?;
     if !result.success {
-        anyhow::bail!("Failed to resolve active adapter indices: {}", result.stderr.trim());
+        anyhow::bail!(
+            "Failed to resolve active adapter indices: {}",
+            result.stderr.trim()
+        );
     }
     let indices = parse_nonempty_lines(&result.stdout);
     if indices.is_empty() {
@@ -777,7 +828,10 @@ fn resolve_display_pci_instances() -> anyhow::Result<Vec<String>> {
         Where-Object { $_ -like 'PCI\\\\*' } | ForEach-Object { $_.Substring(4) }";
     let result = powershell::execute(script)?;
     if !result.success {
-        anyhow::bail!("Failed to resolve display PCI instances: {}", result.stderr.trim());
+        anyhow::bail!(
+            "Failed to resolve display PCI instances: {}",
+            result.stderr.trim()
+        );
     }
     let instances = parse_nonempty_lines(&result.stdout);
     if instances.is_empty() {
@@ -793,7 +847,10 @@ fn resolve_scsi_disk_instances() -> anyhow::Result<Vec<String>> {
         Where-Object { $_ -like 'SCSI\\\\*' } | ForEach-Object { $_.Substring(5) }";
     let result = powershell::execute(script)?;
     if !result.success {
-        anyhow::bail!("Failed to resolve SCSI disk instances: {}", result.stderr.trim());
+        anyhow::bail!(
+            "Failed to resolve SCSI disk instances: {}",
+            result.stderr.trim()
+        );
     }
     let instances = parse_nonempty_lines(&result.stdout);
     if instances.is_empty() {
@@ -1031,6 +1088,33 @@ fn apply_power_change(setting_path: &str, new_value: &str) -> anyhow::Result<()>
 fn apply_power_change(_setting_path: &str, _new_value: &str) -> anyhow::Result<()> {
     tracing::info!("[simulated] Power change");
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{is_protected_service, is_shell_coupled_package};
+
+    #[test]
+    fn shell_coupled_packages_stay_blocked() {
+        assert!(is_shell_coupled_package("Microsoft.Windows.Search"));
+        assert!(is_shell_coupled_package(
+            "microsoft.windows.shellexperiencehost"
+        ));
+        assert!(is_shell_coupled_package(
+            "MicrosoftWindows.Client.WebExperience"
+        ));
+        assert!(!is_shell_coupled_package("Microsoft.WindowsCalculator"));
+    }
+
+    #[test]
+    fn protected_services_cover_shell_login_regressions() {
+        assert!(is_protected_service("AppXSvc"));
+        assert!(is_protected_service("AppInfo"));
+        assert!(is_protected_service("AppReadiness"));
+        assert!(is_protected_service("TimeBrokerSvc"));
+        assert!(is_protected_service("UdkUserSvc_12345"));
+        assert!(!is_protected_service("WSearch"));
+    }
 }
 
 // ─── PowerShell command execution ───────────────────────────────────────────

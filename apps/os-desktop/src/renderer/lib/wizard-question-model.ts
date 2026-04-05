@@ -347,7 +347,7 @@ export const strategyQuestions: StrategyQuestionDefinition[] = [
     "No — keep full search",
     "Keeps web suggestions and the full search experience.",
     {
-      note: "This is intentionally more honest than claiming complete search removal when the actual playbook applies targeted shell/search actions.",
+      note: "This only removes web results, highlights, and taskbar search clutter. It does not delete SearchHost.exe, ShellExperienceHost.exe, StartMenuExperienceHost.exe, taskhostw.exe, or replace the shell with Open-Shell.",
     },
   ),
   makeBooleanQuestion(

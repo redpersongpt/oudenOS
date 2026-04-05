@@ -28,7 +28,7 @@ rl.on("line", (line) => {
 function handleMethod(method, params) {
   switch (method) {
     case "system.status":
-      return { status: "running", uptimeSeconds: 42, version: "0.10.1" };
+      return { status: "running", uptimeSeconds: 42, version: "0.10.2" };
 
     case "system.reboot":
       return { status: "ok" };
