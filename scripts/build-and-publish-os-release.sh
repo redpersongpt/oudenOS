@@ -84,8 +84,9 @@ VERSION="$(node -p "require('./apps/os-desktop/package.json').version")"
 VERSION_TAG="v${VERSION}-${COMMIT_SHA}"
 RELEASE_BASENAME="redcore-os-${VERSION}-${COMMIT_SHA}.exe"
 RELEASE_PATH="$RELEASES_DIR/$RELEASE_BASENAME"
+WINDOWS_TARGET="x86_64-pc-windows-gnu"
 # Tauri NSIS output — find the actual file after build
-TAURI_NSIS_DIR="$APP_DIR/src-tauri/target/release/bundle/nsis"
+TAURI_NSIS_DIR="$APP_DIR/src-tauri/target/$WINDOWS_TARGET/release/bundle/nsis"
 INSTALLER_STABLE_PATH="$APP_DIR/dist/installers/$STABLE_NAME"
 WIZARD_RELEASE_BASENAME="redcore-os-wizard-playbook-${VERSION}-${COMMIT_SHA}.zip"
 WIZARD_RELEASE_PATH="$WIZARD_RELEASE_ROOT/$WIZARD_RELEASE_BASENAME"
@@ -98,7 +99,7 @@ APBX_BUILD_PATH="$APBX_BUILD_ROOT/$APBX_STABLE_NAME"
 
 echo "==> Ensuring Rust target"
 cargo --version >/dev/null
-rustup target add x86_64-pc-windows-gnu >/dev/null
+rustup target add "$WINDOWS_TARGET" >/dev/null
 
 if [ -d "$ROOT_DIR/node_modules" ] && [ "${FORCE_INSTALL:-0}" != "1" ]; then
   echo "==> Reusing existing workspace node_modules"
@@ -111,14 +112,14 @@ echo "==> Building Windows service"
 pushd "$SERVICE_DIR" >/dev/null
 cargo build --release --target x86_64-pc-windows-gnu
 mkdir -p target/release
-cp target/x86_64-pc-windows-gnu/release/redcore-os-service.exe target/release/redcore-os-service.exe
+cp "target/$WINDOWS_TARGET/release/redcore-os-service.exe" target/release/redcore-os-service.exe
 popd >/dev/null
 
 echo "==> Building desktop app (Tauri)"
 pushd "$APP_DIR" >/dev/null
 bash "$ROOT_DIR/scripts/sync-desktop-brand-assets.sh"
 pnpm build
-cargo tauri build --config src-tauri/tauri.conf.production.json
+cargo tauri build --target "$WINDOWS_TARGET" --config src-tauri/tauri.conf.production.json
 popd >/dev/null
 
 # Copy Tauri NSIS output to stable name
