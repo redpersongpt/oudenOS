@@ -10,7 +10,6 @@ export type WizardStepId =
   | "playbook-strategy"
   | "playbook-review"
   | "personalization"
-  | "app-setup"
   | "final-review"
   | "execution"
   | "reboot-resume"
@@ -153,16 +152,6 @@ export interface ActionDecisionProvenance {
   executionResultRef: string | null;
 }
 
-export interface RecommendedApp {
-  id: string;
-  name: string;
-  category: string;
-  description: string;
-  recommended: boolean;
-  selected: boolean;
-  workSafe: boolean;
-}
-
 export interface PersonalizationPreferences {
   darkMode: boolean;
   brandAccent: boolean;
@@ -207,15 +196,9 @@ export function getProfilePersonalizationDefaults(profileId?: string | null): Pe
 
 export const DEFAULT_PERSONALIZATION: PersonalizationPreferences = getProfilePersonalizationDefaults(null);
 
-export interface AppInstallSummary {
-  requested: number;
-  installed: number;
-  failed: number;
-}
-
 export interface ExecutionJournalEntry {
   id: string;
-  kind: "playbook-action" | "personalization" | "app-install";
+  kind: "playbook-action" | "personalization";
   actionId: string;
   label: string;
   phase: string;
@@ -237,7 +220,6 @@ export interface ExecutionResult {
   skipped: number;
   preserved: number;
   personalizationApplied: boolean;
-  appInstall: AppInstallSummary;
   packageKind: "user-resolved";
   packageRefs: WizardPackageRefs | null;
   journal: ExecutionJournalEntry[];
@@ -253,8 +235,6 @@ interface WizardState {
   detectedProfile: DetectedProfile | null;
   playbookPreset: string;
   resolvedPlaybook: ResolvedPlaybook | null;
-  recommendedApps: RecommendedApp[];
-  selectedAppIds: string[];
   executionResult: ExecutionResult | null;
   personalization: PersonalizationPreferences;
 
@@ -272,8 +252,6 @@ interface WizardState {
   setDetectedProfile: (profile: DetectedProfile) => void;
   setPlaybookPreset: (preset: string) => void;
   setResolvedPlaybook: (playbook: ResolvedPlaybook) => void;
-  setRecommendedApps: (apps: RecommendedApp[]) => void;
-  toggleApp: (appId: string) => void;
   setExecutionResult: (result: ExecutionResult) => void;
   setPersonalization: (prefs: Partial<PersonalizationPreferences>) => void;
   setDemoMode: (demo: boolean) => void;
@@ -292,7 +270,6 @@ const INITIAL_STEPS: WizardStep[] = [
   { id: "playbook-strategy",  label: "Strategy",          status: "locked"  },
   { id: "playbook-review",    label: "Playbook Review",   status: "locked"  },
   { id: "personalization",    label: "Personalization",   status: "locked"  },
-  { id: "app-setup",          label: "App Setup",         status: "locked"  },
   { id: "final-review",       label: "Final Review",      status: "locked"  },
   { id: "execution",          label: "Apply",             status: "locked"  },
   { id: "reboot-resume",      label: "Reboot",            status: "locked"  },
@@ -309,7 +286,6 @@ const INITIAL_STEP_READINESS: Record<WizardStepId, boolean> = {
   "playbook-strategy": false,
   "playbook-review": false,
   personalization: true,
-  "app-setup": false,
   "final-review": false,
   execution: false,
   "reboot-resume": false,
@@ -343,8 +319,6 @@ export const useWizardStore = create<WizardState>()(persist((set, get) => ({
   detectedProfile: null,
   playbookPreset: "balanced",
   resolvedPlaybook: null,
-  recommendedApps: [],
-  selectedAppIds: [],
   executionResult: null,
   personalization: { ...DEFAULT_PERSONALIZATION },
   canGoNext: true,
@@ -463,15 +437,6 @@ export const useWizardStore = create<WizardState>()(persist((set, get) => ({
   }),
   setPlaybookPreset: (preset) => set({ playbookPreset: preset, resolvedPlaybook: null }),
   setResolvedPlaybook: (playbook) => set({ resolvedPlaybook: playbook }),
-  setRecommendedApps: (apps) => set({
-    recommendedApps: apps,
-    selectedAppIds: apps.filter(a => a.selected).map(a => a.id),
-  }),
-  toggleApp: (appId) => set((state) => ({
-    selectedAppIds: state.selectedAppIds.includes(appId)
-      ? state.selectedAppIds.filter(id => id !== appId)
-      : [...state.selectedAppIds, appId],
-  })),
   setExecutionResult: (result) => set({ executionResult: result }),
   setPersonalization: (prefs) =>
     set((state) => ({ personalization: { ...state.personalization, ...prefs } })),
@@ -516,8 +481,6 @@ export const useWizardStore = create<WizardState>()(persist((set, get) => ({
       detectedProfile: null,
       playbookPreset: "balanced",
       resolvedPlaybook: null,
-      recommendedApps: [],
-      selectedAppIds: [],
       executionResult: null,
       personalization: { ...DEFAULT_PERSONALIZATION },
       canGoNext: true,
@@ -536,10 +499,9 @@ export const useWizardStore = create<WizardState>()(persist((set, get) => ({
     playbookPreset: state.playbookPreset,
     executionResult: state.executionResult,
     personalization: state.personalization,
-    selectedAppIds: state.selectedAppIds,
   }),
-  onRehydrate: () => {
-    return (state) => {
+  onRehydrateStorage: () => {
+    return (state?: WizardState) => {
       if (!state) return;
       if (state.currentStep === "execution") {
         state.currentStep = "reboot-resume";

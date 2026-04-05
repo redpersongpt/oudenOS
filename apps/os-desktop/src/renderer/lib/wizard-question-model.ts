@@ -1861,6 +1861,7 @@ const QUESTION_BEHAVIORS: Record<keyof QuestionnaireAnswers, StrategyQuestionBeh
       },
     },
   ),
+  disableIpv6: { options: [{ value: true }, { value: false }] },
   disableTeredo: createBooleanBehavior(
     ["network.disable-teredo"],
     "You chose to keep Teredo tunneling enabled.",

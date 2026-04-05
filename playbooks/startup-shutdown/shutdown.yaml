@@ -42,5 +42,5 @@ actions:
       - hive: HKLM
         path: "SYSTEM\\CurrentControlSet\\Control"
         valueName: WaitToKillServiceTimeout
-        value: "2000"
+        value: "3000"
         valueType: String

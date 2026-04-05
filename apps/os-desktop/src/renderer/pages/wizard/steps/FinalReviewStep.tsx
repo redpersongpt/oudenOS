@@ -10,7 +10,7 @@ import { platform } from "@/lib/platform";
 const ND_EASE = [0.25, 0.1, 0.25, 1] as const;
 
 export function FinalReviewStep() {
-  const { detectedProfile, resolvedPlaybook, selectedAppIds, personalization, setStepReady } = useWizardStore();
+  const { detectedProfile, resolvedPlaybook, personalization, setStepReady } = useWizardStore();
   const answers = useDecisionsStore((state) => state.answers);
   const effectivePersonalization = resolveEffectivePersonalization(detectedProfile?.id, personalization, answers);
   const [exportState, setExportState] = useState<"idle" | "busy" | "done" | "error">("idle");
@@ -29,7 +29,7 @@ export function FinalReviewStep() {
       answers, resolvedPlaybook,
       decisionSummary: resolvedPlaybook.decisionSummary ?? null,
       actionProvenance: resolvedPlaybook.actionProvenance ?? [],
-      personalization: effectivePersonalization, selectedAppIds,
+      personalization: effectivePersonalization,
     });
     if (result.ok) {
       setExportState("done");
@@ -47,7 +47,6 @@ export function FinalReviewStep() {
     { key: "profile", label: "MACHINE", value: `${detectedProfile?.label?.toUpperCase() ?? "UNKNOWN"} · ${detectedProfile?.machineName ?? "—"}` },
     pb ? { key: "actions", label: "ACTIONS", value: `${pb.totalIncluded} INCLUDED · ${pb.totalBlocked} BLOCKED · ${pb.phases.length} PHASES` } : null,
     pb?.decisionSummary ? { key: "risk", label: "RISK", value: pb.decisionSummary.riskLevel.toUpperCase() } : null,
-    { key: "apps", label: "APPS", value: selectedAppIds.length > 0 ? `${selectedAppIds.length} SELECTED` : "NONE" },
     { key: "theme", label: "THEME", value: [
       effectivePersonalization.darkMode && "DARK",
       effectivePersonalization.brandAccent && "ACCENT",

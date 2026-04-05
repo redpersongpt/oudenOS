@@ -1,6 +1,6 @@
 
 use crate::db::Database;
-use crate::{appbundle, assessor, classifier, executor, ledger, personalizer, playbook, rollback, transformer};
+use crate::{assessor, classifier, executor, ledger, personalizer, playbook, rollback, transformer};
 use anyhow::Result;
 use serde::{Deserialize, Serialize};
 use std::time::Instant;
@@ -755,94 +755,8 @@ async fn dispatch(
             }))
         }
 
-        "appbundle.getRecommended" => {
-            let profile = params
-                .get("profile")
-                .and_then(|v| v.as_str())
-                .unwrap_or("gaming_desktop");
-
-            let playbook_dir = match resolve_playbook_dir() {
-                Some(d) => d,
-                None => {
-                    return RpcResponse::err(id, -50, "Playbook directory not found".into());
-                }
-            };
-
-            tracing::info!(profile = profile, "Getting recommended app bundle");
-
-            match appbundle::get_recommended(&playbook_dir, profile) {
-                Ok(result) => RpcResponse::ok(id, result),
-                Err(e) => {
-                    tracing::error!(profile = profile, error = %e, "Failed to get recommended apps");
-                    RpcResponse::err(id, -52, format!("App bundle load failed: {}", e))
-                }
-            }
-        }
-
-        "appbundle.resolve" => {
-            let profile = params
-                .get("profile")
-                .and_then(|v| v.as_str())
-                .unwrap_or("gaming_desktop");
-            let selected_apps: Vec<String> = params
-                .get("selectedApps")
-                .or_else(|| params.get("appIds"))
-                .and_then(|v| v.as_array())
-                .map(|arr| {
-                    arr.iter()
-                        .filter_map(|v| v.as_str().map(String::from))
-                        .collect()
-                })
-                .unwrap_or_default();
-
-            if selected_apps.is_empty() {
-                return RpcResponse::err(id, -3, "Missing or empty param: selectedApps/appIds".into());
-            }
-
-            let playbook_dir = match resolve_playbook_dir() {
-                Some(d) => d,
-                None => {
-                    return RpcResponse::err(id, -50, "Playbook directory not found".into());
-                }
-            };
-
-            tracing::info!(
-                profile = profile,
-                selected = selected_apps.len(),
-                "Resolving app install queue"
-            );
-
-            match appbundle::resolve(&playbook_dir, profile, &selected_apps) {
-                Ok(result) => RpcResponse::ok(id, result),
-                Err(e) => {
-                    tracing::error!(profile = profile, error = %e, "Failed to resolve app bundle");
-                    RpcResponse::err(id, -53, format!("App bundle resolve failed: {}", e))
-                }
-            }
-        }
-
-        "appbundle.install" => {
-            let app_id = match params.get("appId").and_then(|v| v.as_str()) {
-                Some(app_id) if !app_id.trim().is_empty() => app_id,
-                _ => return RpcResponse::err(id, -3, "Missing param: appId".into()),
-            };
-
-            let playbook_dir = match resolve_playbook_dir() {
-                Some(d) => d,
-                None => {
-                    return RpcResponse::err(id, -50, "Playbook directory not found".into());
-                }
-            };
-
-            tracing::info!(app_id = app_id, "Installing selected app");
-
-            match appbundle::install(&playbook_dir, app_id) {
-                Ok(result) => RpcResponse::ok(id, result),
-                Err(e) => {
-                    tracing::error!(app_id = app_id, error = %e, "App install failed");
-                    RpcResponse::err(id, -54, format!("App install failed: {}", e))
-                }
-            }
+        "appbundle.getRecommended" | "appbundle.resolve" | "appbundle.install" => {
+            RpcResponse::err(id, -100, "App install system has been removed from RedcoreOS.".into())
         }
 
         "ledger.createPlan" => {

@@ -176,6 +176,14 @@ You shouldn't trust any software blindly. [Read the playbooks](playbooks). [Read
 
 ## Changelog
 
+### v0.10.0
+
+- **App install system removed** — silent app installers (Brave, Discord, VS Code, etc.) registered RunOnce/Active Setup entries that ran during the next Windows logon *before* Explorer starts. This caused: very long logon, "Setting up personalized settings for Brave", then black screen with no taskbar. The entire app download/install pipeline has been removed from the wizard. Install your apps yourself after setup.
+- **WpnService protected** — added to the protected services denylist. Prevents accidental disable of the push notification broker (shell toasts depend on it).
+- **Service shutdown timeout fixed** — `WaitToKillServiceTimeout` bumped from 2000ms to 3000ms. Services now get adequate time to shut down cleanly.
+- **TypeScript strict mode clean** — all 62 type errors resolved. Dead `AppSetupStep.tsx` deleted, zustand persist API corrected, React type alignment fixed.
+- **Technical details accuracy** — generated review data now correctly shows `WpnUserService` (per-user) instead of `WpnService` (system).
+
 ### v0.9.0
 
 - **Reboot-safe wizard** — wizard state now persists across reboots. If the machine restarts mid-apply, the app resumes at the reboot step instead of starting over.

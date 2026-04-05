@@ -137,7 +137,7 @@ pub fn get_recommended(playbook_dir: &Path, profile: &str) -> anyhow::Result<ser
                     url: entry.url.clone(),
                     silent_args: entry.silent_args.clone(),
                     work_safe: entry.work_safe,
-                    selected: true,
+                    selected: false,
                     recommended: true,
                 });
             } else {

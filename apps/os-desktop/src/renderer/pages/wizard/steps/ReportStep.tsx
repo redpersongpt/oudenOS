@@ -35,7 +35,7 @@ interface LedgerQueryResult {
 }
 
 export function ReportStep() {
-  const { executionResult, resolvedPlaybook, detectedProfile, personalization, selectedAppIds, gotoDonation } = useWizardStore();
+  const { executionResult, resolvedPlaybook, detectedProfile, personalization, gotoDonation } = useWizardStore();
   const answers = useDecisionsStore((state) => state.answers);
   const effectivePersonalization = useMemo(
     () => resolveEffectivePersonalization(detectedProfile?.id, personalization, answers),
@@ -145,7 +145,6 @@ export function ReportStep() {
       serviceJournalState: serviceJournalResult.ok ? serviceJournalResult.data : null,
       ledgerState: ledgerQueryResult.ok ? ledgerQueryResult.data : null,
       personalization: effectivePersonalization,
-      selectedAppIds,
     });
 
     if (exportResult.ok) {

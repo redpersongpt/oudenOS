@@ -115,12 +115,6 @@ interface CompletedAction {
   provenanceRef: string | null;
 }
 
-interface AppInstallProgress {
-  requested: number;
-  installed: number;
-  failed: number;
-}
-
 function TimelineItem({ action }: { action: CompletedAction }) {
   const failed = action.status === "failed";
   return (
@@ -197,7 +191,7 @@ function SpinningQuote({ isActive }: { isActive: boolean }) {
 }
 
 export function ExecutionStep() {
-  const { detectedProfile, resolvedPlaybook, selectedAppIds, personalization, demoMode, completeStep, setExecutionResult, setResolvedPlaybook } = useWizardStore();
+  const { detectedProfile, resolvedPlaybook, personalization, demoMode, completeStep, setExecutionResult, setResolvedPlaybook } = useWizardStore();
   const answers = useDecisionsStore((state) => state.answers);
   const addLogEntry = useLogStore((state) => state.addEntry);
   const effectivePersonalization = useMemo(
@@ -226,7 +220,7 @@ export function ExecutionStep() {
     return queue;
   }, [resolvedPlaybook]);
 
-  const totalActions = actionQueue.length + selectedAppIds.length + 1;
+  const totalActions = actionQueue.length + 1; // +1 for personalization
 
   const [currentIdx,    setCurrentIdx]    = useState(-1);
   const [currentAction, setCurrentAction] = useState<string | null>(null);
@@ -260,7 +254,7 @@ export function ExecutionStep() {
       let operationIndex = 0;
       const journalEntries: ExecutionJournalEntry[] = [];
 
-      addLogEntry({ level: "info", category: "Execution", message: `Starting execution with ${actionQueue.length} actions, ${selectedAppIds.length} apps` });
+      addLogEntry({ level: "info", category: "Execution", message: `Starting execution with ${actionQueue.length} actions` });
 
       const planId = playbook.packageRefs?.planId ?? `plan-${Date.now()}`;
       try {
@@ -471,114 +465,6 @@ export function ExecutionStep() {
       ]);
       operationIndex += 1;
 
-      if (selectedAppIds.length > 0) {
-        addLogEntry({ level: "info", category: "Apps", message: `Installing ${selectedAppIds.length} selected apps` });
-      }
-      let appInstallProgress: AppInstallProgress = {
-        requested: selectedAppIds.length,
-        installed: 0,
-        failed: 0,
-      };
-      if (selectedAppIds.length > 0) {
-        try {
-          const appResult = await serviceCall("appbundle.resolve", {
-            profile: detectedProfile?.id ?? "gaming_desktop",
-            selectedApps: selectedAppIds,
-          });
-          if (!appResult.ok) {
-            appInstallProgress.failed = selectedAppIds.length;
-          } else {
-            const payload = appResult.data as { installQueue?: Array<{ id: string; name: string }> } | undefined;
-            const installQueue = Array.isArray(payload?.installQueue) ? payload.installQueue : [];
-
-            for (const app of installQueue) {
-              if (controller.signal.aborted) return;
-              const appStartedAt = new Date().toISOString();
-
-              setCurrentIdx(operationIndex);
-              setCurrentAction(`Installing ${app.name}`);
-              setCurrentActionId(`app.${app.id}`);
-              setCurrentPhase("App Setup");
-
-              let status: "applied" | "failed" = "failed";
-              let appErrorMessage: string | null = null;
-              const installResult = await serviceCall<{
-                status?: unknown;
-                error?: unknown;
-                message?: unknown;
-                name?: unknown;
-              }>("appbundle.install", { appId: app.id });
-
-              if (installResult.ok) {
-                const rpcStatus = typeof installResult.data.status === "string" ? installResult.data.status : "failed";
-                status = rpcStatus === "installed" || rpcStatus === "skipped" ? "applied" : "failed";
-                if (status === "failed") {
-                  appErrorMessage =
-                    (typeof installResult.data.error === "string" ? installResult.data.error : null)
-                    ?? (typeof installResult.data.message === "string" ? installResult.data.message : null)
-                    ?? `App install returned status="${rpcStatus}"`;
-                }
-              } else if (demoMode) {
-                await new Promise<void>((resolve) => {
-                  timerRef.current = setTimeout(resolve, 80 + Math.random() * 120);
-                });
-                status = "applied";
-              } else {
-                appErrorMessage = installResult.error ?? "Service call failed";
-              }
-
-              if (status === "applied") {
-                appInstallProgress.installed += 1;
-                addLogEntry({ level: "success", category: "Apps", message: `Installed: ${app.name}` });
-              } else {
-                appInstallProgress.failed += 1;
-                addLogEntry({ level: "error", category: "Apps", message: `Failed: ${app.name}`, details: appErrorMessage ?? undefined });
-              }
-
-              setCurrentAction(null);
-              const appFinishedAt = new Date().toISOString();
-              journalEntries.push({
-                id: `journal.app.${app.id}`,
-                kind: "app-install",
-                actionId: `app.${app.id}`,
-                label: `Install ${app.name}`,
-                phase: "App Setup",
-                status,
-                startedAt: appStartedAt,
-                finishedAt: appFinishedAt,
-                durationMs: Math.max(0, new Date(appFinishedAt).getTime() - new Date(appStartedAt).getTime()),
-                questionKeys: [],
-                selectedValues: [app.id],
-                packageSourceRef: "state/selected-apps.json",
-                provenanceRef: null,
-                resultRef: `${playbook.packageRefs?.executionJournalRef ?? "state/execution-journal.json"}#/entries/${journalEntries.length}`,
-                errorMessage: status === "failed" ? `App install failed for ${app.name}.` : null,
-              });
-              setCompleted((prev) => [
-                ...prev,
-                {
-                  label: `Install ${app.name}`,
-                  actionId: `app.${app.id}`,
-                  status,
-                  errorMessage: appErrorMessage ?? undefined,
-                  packageSourceRef: "state/selected-apps.json",
-                  provenanceRef: null,
-                },
-              ]);
-              operationIndex += 1;
-
-              requestAnimationFrame(() => {
-                if (timelineRef.current) {
-                  timelineRef.current.scrollTop = timelineRef.current.scrollHeight;
-                }
-              });
-            }
-          }
-        } catch {
-          appInstallProgress.failed = selectedAppIds.length;
-        }
-      }
-
       if (controller.signal.aborted) return;
 
       await serviceCall("ledger.completePlan", { planId }).catch(() => {});
@@ -633,7 +519,6 @@ export function ExecutionStep() {
         skipped,
         preserved: executionAwarePlaybook.totalBlocked,
         personalizationApplied,
-        appInstall: appInstallProgress,
         packageKind: "user-resolved",
         packageRefs: executionAwarePlaybook.packageRefs ?? null,
         journal: journalEntries,
@@ -659,11 +544,6 @@ export function ExecutionStep() {
         skipped: 0,
         preserved: resolvedPlaybook?.totalBlocked ?? 0,
         personalizationApplied: false,
-        appInstall: {
-          requested: selectedAppIds.length,
-          installed: 0,
-          failed: selectedAppIds.length,
-        },
         packageKind: "user-resolved",
         packageRefs: resolvedPlaybook?.packageRefs ?? null,
         journal: [],
