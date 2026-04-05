@@ -537,9 +537,8 @@ export const useWizardStore = create<WizardState>()(persist((set, get) => ({
     executionResult: state.executionResult,
     personalization: state.personalization,
   }),
-  onRehydrate: () => {
-    // Called after hydration completes — fix up computed state and handle reboot-resume
-    return (state) => {
+  onRehydrateStorage: () => {
+    return (state?: WizardState) => {
       if (!state) return;
       // If app closed during execution, advance to reboot-resume on relaunch
       if (state.currentStep === "execution") {

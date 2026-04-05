@@ -197,8 +197,8 @@ export const useDecisionsStore = create<DecisionsState>()(persist((set) => ({
 }), {
   name: "oudenOS-decisions",
   partialize: (state) => ({ answers: state.answers }),
-  onRehydrate: () => {
-    return (state) => {
+  onRehydrateStorage: () => {
+    return (state?: DecisionsState) => {
       if (!state) return;
       state.impact = computeImpact(state.answers);
     };
