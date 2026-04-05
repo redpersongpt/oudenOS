@@ -191,7 +191,7 @@
 | shell.remove-troubleshoot-compatibility | tier1 | blocked by profile by design | registry | snapshot |
 | shell.show-file-extensions | tier1 | partially verified on real Windows | registry | snapshot |
 | shell.show-hidden-files | tier1 | partially verified on real Windows | registry | snapshot |
-| shutdown.decrease-shutdown-time | tier2 | partially verified on real Windows | registry, registry, registry | snapshot |
+| shutdown.decrease-shutdown-time | tier2 | partially verified on real Windows | registry, registry | snapshot |
 | shutdown.force-end-apps | tier2 | partially verified on real Windows | registry | snapshot |
 | startup.disable-automatic-maintenance | tier2 | partially verified on real Windows | registry | snapshot |
 | startup.disable-autoplay | tier2 | partially verified on real Windows | registry, registry | snapshot |

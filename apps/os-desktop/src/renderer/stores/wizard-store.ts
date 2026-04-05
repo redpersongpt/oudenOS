@@ -1,5 +1,6 @@
 
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
 export type WizardStepId =
   | "welcome"
@@ -334,8 +335,8 @@ function computeCanGoBack(_steps: WizardStep[], currentStep: WizardStepId): bool
   return STEP_ORDER.indexOf(currentStep) > 0;
 }
 
-export const useWizardStore = create<WizardState>((set, get) => ({
-  currentStep: "welcome",
+export const useWizardStore = create<WizardState>()(persist((set, get) => ({
+  currentStep: "welcome" as WizardStepId,
   steps: INITIAL_STEPS.map(s => ({ ...s })),
   stepReadiness: { ...INITIAL_STEP_READINESS },
   demoMode: false,
@@ -506,7 +507,7 @@ export const useWizardStore = create<WizardState>((set, get) => ({
       };
     }),
 
-  reset: () =>
+  reset: () => {
     set({
       currentStep: "welcome",
       steps: INITIAL_STEPS.map(s => ({ ...s })),
@@ -522,5 +523,34 @@ export const useWizardStore = create<WizardState>((set, get) => ({
       canGoNext: true,
       canGoBack: false,
       progress: 0,
-    }),
+    });
+    try { localStorage.removeItem("oudenOS-wizard-state"); } catch {}
+  },
+}), {
+  name: "oudenOS-wizard-state",
+  partialize: (state) => ({
+    currentStep: state.currentStep,
+    steps: state.steps,
+    stepReadiness: state.stepReadiness,
+    detectedProfile: state.detectedProfile,
+    playbookPreset: state.playbookPreset,
+    executionResult: state.executionResult,
+    personalization: state.personalization,
+    selectedAppIds: state.selectedAppIds,
+  }),
+  onRehydrate: () => {
+    return (state) => {
+      if (!state) return;
+      if (state.currentStep === "execution") {
+        state.currentStep = "reboot-resume";
+        state.steps = state.steps.map((s) =>
+          s.id === "execution" ? { ...s, status: "completed" as const } :
+          s.id === "reboot-resume" ? { ...s, status: "current" as const } : s
+        );
+      }
+      state.progress = computeProgress(state.steps);
+      state.canGoNext = computeCanGoNext(state.steps, state.currentStep, state.stepReadiness);
+      state.canGoBack = computeCanGoBack(state.steps, state.currentStep);
+    };
+  },
 }));

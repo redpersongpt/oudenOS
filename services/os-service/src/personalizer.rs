@@ -479,15 +479,11 @@ fn apply_accent_color() -> anyhow::Result<()> {
         Set-ItemProperty 'HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Accent' \
             -Name StartColorMenu -Value {} -Type DWord -Force; \
         Set-ItemProperty 'HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize' \
-            -Name ColorPrevalence -Value 1 -Type DWord -Force; \
+            -Name ColorPrevalence -Value 0 -Type DWord -Force; \
         Set-ItemProperty 'HKCU:\\SOFTWARE\\Microsoft\\Windows\\DWM' \
-            -Name ColorizationColor -Value {} -Type DWord -Force; \
-        Set-ItemProperty 'HKCU:\\SOFTWARE\\Microsoft\\Windows\\DWM' \
-            -Name ColorizationAfterglow -Value {} -Type DWord -Force",
+            -Name ColorPrevalence -Value 0 -Type DWord -Force",
         REDCORE_ACCENT_BGR,
         REDCORE_ACCENT_BGR,
-        REDCORE_DWM_ACCENT,
-        REDCORE_DWM_ACCENT,
     );
     let result = powershell::execute(&script)?;
     if !result.success {
@@ -509,7 +505,7 @@ fn apply_accent_color() -> anyhow::Result<()> {
         "HKCU",
         "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize",
         "ColorPrevalence",
-        1,
+        0,
     )?;
     tracing::info!("Accent color set to black (Ouden monochrome)");
     Ok(())

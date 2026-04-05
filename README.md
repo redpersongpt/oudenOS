@@ -121,7 +121,7 @@ EXECUTE   → applies changes one by one, restore point first
 VALIDATE  → confirms what changed, generates a report
 ```
 
-Built with Tauri (Rust backend, React frontend). 5MB installer. The privileged Rust service does the actual system modifications. The UI is just a wizard.
+Built with Tauri (Rust backend, React frontend). 5MB installer. The privileged Rust service does the actual system modifications. The UI is just a wizard. Your progress is saved — if the machine reboots mid-apply, the wizard picks up where it left off.
 
 ### Personalization
 
@@ -173,6 +173,24 @@ $300/year. Not yet. SmartScreen will flag it. Right-click → Properties → Unb
 
 **"Why should I trust this?"**
 You shouldn't trust any software blindly. [Read the playbooks](playbooks). [Read the Rust service](services/os-service). Run it in a VM. Or don't. Your call.
+
+## Changelog
+
+### v0.9.0
+
+- **Reboot-safe wizard** — wizard state now persists across reboots. If the machine restarts mid-apply, the app resumes at the reboot step instead of starting over.
+- **Shell stability hardening** — 25-package AppX denylist prevents removal of Explorer-coupled packages (ShellExperienceHost, StartMenuExperienceHost, Search, ContentDeliveryManager, Client.CBS, CrossDeviceResume, etc.). 25+ critical services are protected from accidental disable.
+- **Shell refresh rewritten** — uses only `SendMessageTimeout` with `WM_SETTINGCHANGE`. No more COM automation, rundll32 hacks, or Stop-Process explorer.
+- **AutoEndTasks removed** — was force-killing hung Explorer instead of letting it recover.
+- **FTH and MPO actions removed** — Fault Tolerant Heap disable broke Explorer crash recovery; Multi-Plane Overlay disable broke icon rendering.
+- **Win10/Win11 gating** — Copilot, Recall, Click to Do, classic context menu, Widgets, and End Task options are now correctly hidden on builds that don't support them.
+- **Dark theme fix** — `ColorPrevalence=0` for natural dark taskbar instead of forcing accent color.
+- **Lock screen wallpaper** — writes to `%ProgramData%\OudenOS` (machine-wide, accessible by SYSTEM) instead of user-local path.
+- **Questionnaire audit system** — 58 audited questions, 226 fallback actions, all invariant and execution checks passing.
+
+### v0.8.0
+
+- Initial public release with 8 profiles, 222 YAML-defined actions, 67 wizard questions.
 
 ## License
 
