@@ -1863,7 +1863,9 @@ const QUESTION_BEHAVIORS: Record<keyof QuestionnaireAnswers, StrategyQuestionBeh
       },
     },
   ),
-  // disableIpv6 behavior removed — no backing action
+  // IPv6 disable removed — breaks many ISPs and modern services. Question remains in
+  // QuestionnaireAnswers for schema compat but maps to no actions.
+  disableIpv6: { options: [{ value: true }, { value: false }] },
   disableTeredo: createBooleanBehavior(
     ["network.disable-teredo"],
     "You chose to keep Teredo tunneling enabled.",
