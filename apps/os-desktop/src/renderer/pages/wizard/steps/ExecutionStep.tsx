@@ -214,7 +214,7 @@ function SpinningQuote({ isActive }: { isActive: boolean }) {
 // Component
 
 export function ExecutionStep() {
-  const { detectedProfile, resolvedPlaybook, selectedAppIds, personalization, demoMode, completeStep, goNext, setExecutionResult, setResolvedPlaybook } = useWizardStore();
+  const { detectedProfile, resolvedPlaybook, selectedAppIds, personalization, demoMode, completeStep, setExecutionResult, setResolvedPlaybook } = useWizardStore();
   const answers = useDecisionsStore((state) => state.answers);
   const addLogEntry = useLogStore((state) => state.addEntry);
   const effectivePersonalization = useMemo(
@@ -675,11 +675,7 @@ export function ExecutionStep() {
         details: `truthSource=${ledgerIsAuthoritative ? "ledger" : "local"}`,
       });
 
-      timerRef.current = setTimeout(() => {
-        completeStep("execution");
-        // Auto-advance to reboot step after a short delay
-        setTimeout(() => goNext(), 1200);
-      }, 800);
+      timerRef.current = setTimeout(() => completeStep("execution"), 800);
     };
 
     exec().catch((err) => {

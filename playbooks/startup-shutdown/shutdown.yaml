@@ -7,8 +7,8 @@ category: startup
 actions:
   - id: shutdown.decrease-shutdown-time
     name: "Decrease Shutdown Time"
-    description: "Reduce app kill timeouts for faster shutdown"
-    rationale: "Default 5000ms timeout delays shutdown; 2000ms is responsive"
+    description: "Reduce app kill timeouts for faster shutdown. Does NOT auto-end tasks — Windows will still ask before killing hung apps."
+    rationale: "Default 5000ms timeout delays shutdown; 3500ms balances speed with stability"
     risk: low
     tier: free
     default: true
@@ -20,17 +20,12 @@ actions:
       - hive: HKCU
         path: "Control Panel\\Desktop"
         valueName: WaitToKillAppTimeout
-        value: "2000"
+        value: "3500"
         valueType: String
       - hive: HKCU
         path: "Control Panel\\Desktop"
         valueName: HungAppTimeout
-        value: "1000"
-        valueType: String
-      - hive: HKCU
-        path: "Control Panel\\Desktop"
-        valueName: AutoEndTasks
-        value: "1"
+        value: "3500"
         valueType: String
 
   - id: shutdown.force-end-apps

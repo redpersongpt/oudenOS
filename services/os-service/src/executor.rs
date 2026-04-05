@@ -446,6 +446,36 @@ pub fn execute_action(
 
 #[cfg(windows)]
 fn remove_appx_package(package_name: &str) -> anyhow::Result<()> {
+    // Shell-coupled packages that must NEVER be removed — removing these breaks Explorer/taskbar/Start
+    const SHELL_COUPLED_PACKAGES: &[&str] = &[
+        "Microsoft.Windows.ShellExperienceHost",
+        "Microsoft.Windows.StartMenuExperienceHost",
+        "Microsoft.Windows.Search",
+        "Microsoft.Windows.ContentDeliveryManager",
+        "Microsoft.Windows.CloudExperienceHost",
+        "Microsoft.Windows.SecHealthUI",
+        "Microsoft.AAD.BrokerPlugin",
+        "Microsoft.AccountsControl",
+        "Microsoft.LockApp",
+        "Microsoft.Windows.Apprep.ChxApp",
+        "Microsoft.Windows.AssignedAccessLockApp",
+        "Microsoft.Windows.ParentalControls",
+        "Microsoft.Windows.PeopleExperienceHost",
+        "Microsoft.Windows.PinningConfirmationDialog",
+        "Microsoft.Windows.SecureAssessmentBrowser",
+        "Microsoft.Windows.XGpuEjectDialog",
+        "Microsoft.MicrosoftEdge",          // Legacy Edge (shell-integrated on Win10)
+        "windows.immersivecontrolpanel",    // Settings app
+        "Windows.PrintDialog",
+        "Windows.CBSPreview",
+        "MicrosoftWindows.UndockedDevKit",
+        "NcsiUwpApp",
+    ];
+    if SHELL_COUPLED_PACKAGES.iter().any(|s| package_name.eq_ignore_ascii_case(s)) {
+        tracing::warn!(package = package_name, "Shell-coupled package — skipped to protect Explorer");
+        return Ok(());
+    }
+
     let script = format!(
         "$pkg = Get-AppxPackage -AllUsers -Name '{}' -ErrorAction SilentlyContinue; \
          if (-not $pkg) {{ Write-Host 'SKIPPED: package not installed'; exit 0 }}; \

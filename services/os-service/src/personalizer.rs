@@ -623,9 +623,9 @@ Set-ItemProperty 'HKCU:\Control Panel\Desktop' -Name WallpaperStyle -Value '10' 
 Set-ItemProperty 'HKCU:\Control Panel\Desktop' -Name TileWallpaper -Value '0' -Force
 Set-ItemProperty 'HKCU:\Control Panel\Colors' -Name Background -Value '0 0 0' -Force
 
-# Lock screen / login screen
+# Lock screen / login screen — use ProgramData (machine-wide, accessible by SYSTEM)
 try {
-    $lockDir = "$env:LOCALAPPDATA\OudenOS\LockScreen"
+    $lockDir = "$env:ProgramData\OudenOS"
     if (!(Test-Path $lockDir)) { New-Item -ItemType Directory -Path $lockDir -Force | Out-Null }
     Copy-Item $wallPath "$lockDir\lockscreen.bmp" -Force
     New-Item -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization' -Force | Out-Null
@@ -774,10 +774,7 @@ public static class RedcoreShellRefresh {\n\
 '@; \
         $result = [UIntPtr]::Zero; \
         [void][RedcoreShellRefresh]::SendMessageTimeout([IntPtr]0xffff, 0x001A, [UIntPtr]::Zero, 'ImmersiveColorSet', 2, 5000, [ref]$result); \
-        [void][RedcoreShellRefresh]::SendMessageTimeout([IntPtr]0xffff, 0x001A, [UIntPtr]::Zero, 'WindowsThemeElement', 2, 5000, [ref]$result); \
-        $shell = New-Object -ComObject Shell.Application; \
-        $shell.Windows() | Out-Null; \
-        RUNDLL32.EXE USER32.DLL,UpdatePerUserSystemParameters 1, True";
+        [void][RedcoreShellRefresh]::SendMessageTimeout([IntPtr]0xffff, 0x001A, [UIntPtr]::Zero, 'WindowsThemeElement', 2, 5000, [ref]$result)";
     let result = powershell::execute(script)?;
     if !result.success {
         anyhow::bail!("Shell refresh failed: {}", result.stderr.trim());

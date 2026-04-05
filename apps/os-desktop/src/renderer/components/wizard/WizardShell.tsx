@@ -23,7 +23,7 @@ const CTA: Partial<Record<WizardStepId, string>> = {
   "final-review": "APPLY", report: "NEXT STEPS", profile: "CONFIGURE",
 };
 
-const NO_BAR = new Set<WizardStepId>(["execution", "reboot-resume", "donation", "handoff"]);
+const NO_BAR = new Set<WizardStepId>(["execution", "donation", "handoff"]);
 
 /* ── Sidebar rail — bracket-style nav, divider rows ─────────────────── */
 
