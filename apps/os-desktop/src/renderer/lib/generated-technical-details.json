@@ -3037,21 +3037,14 @@
         "hive": "HKCU",
         "path": "Control Panel\\Desktop",
         "valueName": "WaitToKillAppTimeout",
-        "value": "2000",
+        "value": "3500",
         "valueType": "String"
       },
       {
         "hive": "HKCU",
         "path": "Control Panel\\Desktop",
         "valueName": "HungAppTimeout",
-        "value": "1000",
-        "valueType": "String"
-      },
-      {
-        "hive": "HKCU",
-        "path": "Control Panel\\Desktop",
-        "valueName": "AutoEndTasks",
-        "value": "1",
+        "value": "3500",
         "valueType": "String"
       }
     ]
