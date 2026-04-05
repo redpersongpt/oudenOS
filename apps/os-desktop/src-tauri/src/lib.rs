@@ -40,9 +40,7 @@ async fn service_call(
 }
 
 #[tauri::command]
-async fn service_status(
-    state: tauri::State<'_, AppState>,
-) -> Result<serde_json::Value, String> {
+async fn service_status(state: tauri::State<'_, AppState>) -> Result<serde_json::Value, String> {
     let bridge = state.bridge.lock().await;
     Ok(serde_json::json!({
         "running": bridge.is_running(),
@@ -88,16 +86,27 @@ async fn export_package(
     app: tauri::AppHandle,
     state: apbx::ExportPackageRequest,
 ) -> Result<serde_json::Value, String> {
-    let resource_dir = app.path().resource_dir().unwrap_or_else(|_| std::path::PathBuf::from("."));
+    let resource_dir = app
+        .path()
+        .resource_dir()
+        .unwrap_or_else(|_| std::path::PathBuf::from("."));
 
     // Find playbook root and wizard.json
-    let playbook_root = [resource_dir.join("playbooks"), std::path::PathBuf::from("../../playbooks")]
-        .into_iter()
-        .find(|p| p.is_dir());
+    let playbook_root = [
+        resource_dir.join("playbooks"),
+        std::path::PathBuf::from("../../playbooks"),
+    ]
+    .into_iter()
+    .find(|p| p.is_dir());
 
     let playbook_root = match playbook_root {
         Some(p) => p,
-        None => return Ok(serde_json::to_value(apbx::ExportResult::err("Playbook directory not found")).map_err(|e| e.to_string())?),
+        None => {
+            return Ok(serde_json::to_value(apbx::ExportResult::err(
+                "Playbook directory not found",
+            ))
+            .map_err(|e| e.to_string())?)
+        }
     };
 
     let wizard_json_path = playbook_root.join("wizard.json");
@@ -108,8 +117,14 @@ async fn export_package(
         serde_json::json!({ "title": "redcore OS Package", "packageId": "redcore-os" })
     };
 
-    let version = wizard_metadata.get("version").and_then(|v| v.as_str()).unwrap_or("0.10.1");
-    let commit = wizard_metadata.get("commit").and_then(|v| v.as_str()).unwrap_or("unknown");
+    let version = wizard_metadata
+        .get("version")
+        .and_then(|v| v.as_str())
+        .unwrap_or("0.10.2");
+    let commit = wizard_metadata
+        .get("commit")
+        .and_then(|v| v.as_str())
+        .unwrap_or("unknown");
 
     let has_journal = state.execution_journal.is_some();
     let default_name = if has_journal {
@@ -125,7 +140,8 @@ async fn export_package(
     let default_path = downloads.join(&default_name);
 
     use tauri_plugin_dialog::DialogExt;
-    let file_path = app.dialog()
+    let file_path = app
+        .dialog()
         .file()
         .set_title("Save redcore OS Package")
         .set_file_name(&default_name)
@@ -133,11 +149,26 @@ async fn export_package(
         .blocking_save_file();
 
     let output_path = match file_path {
-        Some(p) => p.as_path().map(|pp| pp.to_path_buf()).unwrap_or(default_path),
-        None => return Ok(serde_json::to_value(apbx::ExportResult::err("Export cancelled")).map_err(|e| e.to_string())?),
+        Some(p) => p
+            .as_path()
+            .map(|pp| pp.to_path_buf())
+            .unwrap_or(default_path),
+        None => {
+            return Ok(
+                serde_json::to_value(apbx::ExportResult::err("Export cancelled"))
+                    .map_err(|e| e.to_string())?,
+            )
+        }
     };
 
-    match apbx::create_bundle(&output_path, &playbook_root, &wizard_metadata, &state, version, commit) {
+    match apbx::create_bundle(
+        &output_path,
+        &playbook_root,
+        &wizard_metadata,
+        &state,
+        version,
+        commit,
+    ) {
         Ok(result) => Ok(serde_json::to_value(result).map_err(|e| e.to_string())?),
         Err(e) => Ok(serde_json::to_value(apbx::ExportResult::err(e)).map_err(|e| e.to_string())?),
     }

@@ -3,7 +3,15 @@
 // All download buttons on the site must use these functions.
 // Never hardcode version strings or download URLs in pages.
 
-const OS_LATEST_URL = "https://ouden.cc/downloads/os/latest.json";
+const DEFAULT_OS_LATEST_URL = "https://redcoreos.net/downloads/os/latest.json";
+
+function getOsLatestUrl(): string {
+  return (
+    process.env.REDCORE_OS_LATEST_URL ??
+    process.env.NEXT_PUBLIC_REDCORE_OS_LATEST_URL ??
+    DEFAULT_OS_LATEST_URL
+  );
+}
 
 export interface ReleaseManifest {
   product: string;
@@ -76,7 +84,7 @@ function validateManifest(data: unknown): ReleaseManifest | null {
  */
 export async function getRedcoreOsDownloadState(): Promise<DownloadState> {
   try {
-    const response = await fetch(OS_LATEST_URL, {
+    const response = await fetch(getOsLatestUrl(), {
       cache: "no-store",
       next: { revalidate: 0 },
     });
