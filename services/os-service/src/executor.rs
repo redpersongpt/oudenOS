@@ -464,8 +464,11 @@ fn remove_appx_package(package_name: &str) -> anyhow::Result<()> {
         "Microsoft.Windows.PinningConfirmationDialog",
         "Microsoft.Windows.SecureAssessmentBrowser",
         "Microsoft.Windows.XGpuEjectDialog",
-        "Microsoft.MicrosoftEdge",          // Legacy Edge (shell-integrated on Win10)
-        "windows.immersivecontrolpanel",    // Settings app
+        "MicrosoftWindows.Client.WebExperience",   // Widgets — shell-integrated, removal crashes Explorer
+        "MicrosoftWindows.Client.CBS",             // System settings integration
+        "Microsoft.Windows.CrossDeviceResume",     // Cross-device shell handler
+        "Microsoft.MicrosoftEdge",                 // Legacy Edge (shell-integrated on Win10)
+        "windows.immersivecontrolpanel",           // Settings app
         "Windows.PrintDialog",
         "Windows.CBSPreview",
         "MicrosoftWindows.UndockedDevKit",

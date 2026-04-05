@@ -3060,8 +3060,8 @@ fn embedded_actions() -> Vec<Value> {
             "id": "shutdown.decrease-shutdown-time",
             "category": "startup",
             "name": "Decrease Shutdown Time",
-            "description": "Reduce app kill timeouts and enable auto-end tasks for faster shutdown",
-            "rationale": "Reduces WaitToKillAppTimeout and HungAppTimeout so Windows shuts down faster instead of waiting for unresponsive apps",
+            "description": "Reduce app kill timeouts for faster shutdown (does NOT auto-end tasks)",
+            "rationale": "Reduces WaitToKillAppTimeout and HungAppTimeout so Windows shuts down faster. AutoEndTasks is NOT set to avoid force-killing Explorer/shell.",
             "risk": "low",
             "tier": "free",
             "requiresReboot": false,
@@ -3076,21 +3076,14 @@ fn embedded_actions() -> Vec<Value> {
                     "hive": "HKCU",
                     "path": "Control Panel\\Desktop",
                     "valueName": "WaitToKillAppTimeout",
-                    "value": "2000",
+                    "value": "3500",
                     "valueType": "String"
                 },
                 {
                     "hive": "HKCU",
                     "path": "Control Panel\\Desktop",
                     "valueName": "HungAppTimeout",
-                    "value": "1000",
-                    "valueType": "String"
-                },
-                {
-                    "hive": "HKCU",
-                    "path": "Control Panel\\Desktop",
-                    "valueName": "AutoEndTasks",
-                    "value": "1",
+                    "value": "3500",
                     "valueType": "String"
                 }
             ],
