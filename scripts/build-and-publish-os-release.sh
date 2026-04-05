@@ -96,6 +96,7 @@ APBX_RELEASE_BASENAME="redcore-os-template-${VERSION}-${COMMIT_SHA}.apbx"
 APBX_RELEASE_PATH="$APBX_RELEASE_ROOT/$APBX_RELEASE_BASENAME"
 APBX_BUILD_ROOT="$ROOT_DIR/artifacts/os-apbx-package"
 APBX_BUILD_PATH="$APBX_BUILD_ROOT/$APBX_STABLE_NAME"
+APBX_AVAILABLE=0
 
 echo "==> Ensuring Rust target"
 cargo --version >/dev/null
@@ -139,11 +140,15 @@ node "$ROOT_DIR/scripts/build-os-wizard-package.mjs" \
   --out-dir "$WIZARD_BUILD_ROOT"
 
 echo "==> Building APBX template package"
-pnpm --dir "$APP_DIR" exec tsx "$ROOT_DIR/scripts/build-os-apbx-package.ts" \
+if pnpm --dir "$APP_DIR" exec tsx "$ROOT_DIR/scripts/build-os-apbx-package.ts" \
   --version "$VERSION" \
   --commit "$COMMIT_SHA" \
   --out-dir "$APBX_BUILD_ROOT" \
-  --package-name "$APBX_STABLE_NAME"
+  --package-name "$APBX_STABLE_NAME"; then
+  APBX_AVAILABLE=1
+else
+  echo "WARN: APBX template build failed; continuing without APBX package" >&2
+fi
 
 if [ ! -f "$INSTALLER_STABLE_PATH" ]; then
   echo "Installer not produced at $INSTALLER_STABLE_PATH" >&2
@@ -155,7 +160,7 @@ if [ ! -f "$WIZARD_BUILD_PATH" ]; then
   exit 1
 fi
 
-if [ ! -f "$APBX_BUILD_PATH" ]; then
+if [ "$APBX_AVAILABLE" = "1" ] && [ ! -f "$APBX_BUILD_PATH" ]; then
   echo "APBX package not produced at $APBX_BUILD_PATH" >&2
   exit 1
 fi
@@ -169,8 +174,8 @@ fi
 SHA256="$(sha256sum "$INSTALLER_STABLE_PATH" | awk '{print $1}')"
 WIZARD_SHA256="$(sha256sum "$WIZARD_BUILD_PATH" | awk '{print $1}')"
 WIZARD_SIZE_BYTES="$(stat -c '%s' "$WIZARD_BUILD_PATH")"
-APBX_SHA256="$(sha256sum "$APBX_BUILD_PATH" | awk '{print $1}')"
-APBX_SIZE_BYTES="$(stat -c '%s' "$APBX_BUILD_PATH")"
+APBX_SHA256=""
+APBX_SIZE_BYTES=""
 
 if [ -f "$RELEASE_ROOT/$STABLE_NAME" ]; then
   CURRENT_SHA="$(sha256sum "$RELEASE_ROOT/$STABLE_NAME" | awk '{print $1}')"
@@ -183,8 +188,25 @@ cp "$INSTALLER_STABLE_PATH" "$RELEASE_PATH"
 cp "$INSTALLER_STABLE_PATH" "$RELEASE_ROOT/$STABLE_NAME"
 cp "$WIZARD_BUILD_PATH" "$WIZARD_RELEASE_PATH"
 cp "$WIZARD_BUILD_PATH" "$WIZARD_RELEASE_ROOT/$WIZARD_STABLE_NAME"
-cp "$APBX_BUILD_PATH" "$APBX_RELEASE_PATH"
-cp "$APBX_BUILD_PATH" "$APBX_RELEASE_ROOT/$APBX_STABLE_NAME"
+
+APBX_MANIFEST_FIELDS=""
+if [ "$APBX_AVAILABLE" = "1" ]; then
+  APBX_SHA256="$(sha256sum "$APBX_BUILD_PATH" | awk '{print $1}')"
+  APBX_SIZE_BYTES="$(stat -c '%s' "$APBX_BUILD_PATH")"
+  cp "$APBX_BUILD_PATH" "$APBX_RELEASE_PATH"
+  cp "$APBX_BUILD_PATH" "$APBX_RELEASE_ROOT/$APBX_STABLE_NAME"
+  APBX_MANIFEST_FIELDS="$(cat <<JSON
+,
+  "apbxPackageFilename": "$APBX_STABLE_NAME",
+  "apbxPackageReleaseFilename": "$APBX_RELEASE_BASENAME",
+  "apbxPackageSizeBytes": $APBX_SIZE_BYTES,
+  "apbxPackageSha256": "$APBX_SHA256",
+  "apbxPackageUrl": "https://redcoreos.net/downloads/os/apbx/$APBX_STABLE_NAME",
+  "apbxPackageReleaseUrl": "https://redcoreos.net/downloads/os/apbx/$APBX_RELEASE_BASENAME",
+  "apbxPackageRole": "wizard-template"
+JSON
+)"
+fi
 
 cat > "$MANIFEST_PATH" <<JSON
 {
@@ -206,14 +228,7 @@ cat > "$MANIFEST_PATH" <<JSON
   "wizardPackageSha256": "$WIZARD_SHA256",
   "wizardPackageUrl": "https://redcoreos.net/downloads/os/wizard/$WIZARD_STABLE_NAME",
   "wizardPackageReleaseUrl": "https://redcoreos.net/downloads/os/wizard/$WIZARD_RELEASE_BASENAME",
-  "wizardPackageRole": "wizard-template",
-  "apbxPackageFilename": "$APBX_STABLE_NAME",
-  "apbxPackageReleaseFilename": "$APBX_RELEASE_BASENAME",
-  "apbxPackageSizeBytes": $APBX_SIZE_BYTES,
-  "apbxPackageSha256": "$APBX_SHA256",
-  "apbxPackageUrl": "https://redcoreos.net/downloads/os/apbx/$APBX_STABLE_NAME",
-  "apbxPackageReleaseUrl": "https://redcoreos.net/downloads/os/apbx/$APBX_RELEASE_BASENAME",
-  "apbxPackageRole": "wizard-template",
+  "wizardPackageRole": "wizard-template"$APBX_MANIFEST_FIELDS,
   "isoInjectionScriptUrl": "https://github.com/redpersongpt/redcoreECO/blob/main/scripts/stage-os-iso-injection.ps1"
 }
 JSON
@@ -222,7 +237,11 @@ echo "==> Published"
 echo "stable:   $RELEASE_ROOT/$STABLE_NAME"
 echo "release:  $RELEASE_PATH"
 echo "wizard:   $WIZARD_RELEASE_ROOT/$WIZARD_STABLE_NAME"
-echo "apbx:     $APBX_RELEASE_ROOT/$APBX_STABLE_NAME"
+if [ "$APBX_AVAILABLE" = "1" ]; then
+  echo "apbx:     $APBX_RELEASE_ROOT/$APBX_STABLE_NAME"
+else
+  echo "apbx:     skipped (builder unavailable)"
+fi
 echo "manifest: $MANIFEST_PATH"
 echo "sha256:   $SHA256"
 echo "size:     $SIZE_BYTES"
