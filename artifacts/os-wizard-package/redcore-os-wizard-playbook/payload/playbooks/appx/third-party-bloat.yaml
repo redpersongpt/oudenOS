@@ -1,5 +1,4 @@
-# ─── AppX: Third-Party Preinstalled Bloatware ─────────────────────────────────
-# OEM-installed third-party apps. Curated from the redcore internal cleanup catalog.
+# AppX: Third-Party Preinstalled Bloatware
 
 module: appx.third-party-bloat
 name: "Third-Party Bloatware Removal"

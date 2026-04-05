@@ -1,6 +1,6 @@
 [package]
 name = "redcore-os-desktop"
-version = "0.1.0"
+version = "0.1.1"
 description = "redcore OS desktop app"
 authors = ["redcore"]
 edition = "2021"

@@ -1,0 +1,153 @@
+# AppX: AI & Copilot Removal
+
+module: appx.ai-copilot-removal
+name: "AI & Copilot Bloat Removal"
+description: "Remove Microsoft Copilot, You don't need that for gaming"
+category: appx
+
+actions:
+  - id: appx.remove-copilot
+    name: "Remove Microsoft BloatPilot"
+    description: "Remove the Microsoft Copilot app and disable Copilot integration points"
+    rationale: "Background cloud connections, interaction data collection, persistent sidebar/taskbar presence"
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: false
+    estimatedSeconds: 10
+    minWindowsBuild: 22000
+    blockedProfiles: []
+    packages:
+      - Microsoft.Copilot
+      - Microsoft.Windows.Ai.Copilot.Provider
+    registryChanges:
+      - hive: HKCU
+        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsCopilot"
+        valueName: TurnOffWindowsCopilot
+        value: 1
+        valueType: DWord
+      - hive: HKLM
+        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsCopilot"
+        valueName: TurnOffWindowsCopilot
+        value: 1
+        valueType: DWord
+
+  - id: appx.remove-recall
+    name: "Disable Windows Recall"
+    description: "Disable Windows Recall — AI-powered screenshot-based activity history"
+    rationale: "Takes periodic screenshots and indexes them locally with AI"
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 5
+    minWindowsBuild: 26100
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKCU
+        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsAI"
+        valueName: DisableAIDataAnalysis
+        value: 1
+        valueType: DWord
+      - hive: HKLM
+        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsAI"
+        valueName: DisableAIDataAnalysis
+        value: 1
+        valueType: DWord
+
+  - id: appx.remove-clipchamp
+    name: "Remove Clipchamp"
+    description: "Remove Microsoft's trash video editor"
+    rationale: "Pre-installed video editor, rarely used"
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: false
+    estimatedSeconds: 8
+    blockedProfiles:
+      - vm_cautious
+    packages:
+      - Clipchamp.Clipchamp
+
+  - id: appx.remove-teams-consumer
+    name: "Remove Microsoft Teams (Consumer)"
+    description: "Remove the consumer version of Microsoft Teams pre-installed in Windows 11"
+    rationale: "Auto-starts, runs in background. Work users install from org portal"
+    risk: low
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: false
+    estimatedSeconds: 10
+    blockedProfiles:
+      - work_pc
+    packages:
+      - MicrosoftTeams
+      - MSTeams
+
+  - id: appx.remove-family-safety
+    name: "Remove Microsoft Family"
+    description: "Remove Microsoft Family Safety / Family app"
+    rationale: "Parental controls app, unused on personal/gaming machines"
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: false
+    estimatedSeconds: 8
+    blockedProfiles:
+      - vm_cautious
+    packages:
+      - MicrosoftCorporationII.MicrosoftFamily
+
+  - id: appx.remove-news
+    name: "Remove Microsoft News / Start"
+    description: "Remove Microsoft News and MSN news feed integration"
+    rationale: "Ad-driven news feed integrated into Start Menu and taskbar"
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: false
+    estimatedSeconds: 8
+    blockedProfiles:
+      - vm_cautious
+    packages:
+      - Microsoft.BingNews
+      - Microsoft.MicrosoftNews
+
+  - id: appx.remove-3d-apps
+    name: "Remove 3D Viewer & Paint 3D"
+    description: "Remove 3D Viewer, Paint 3D, and 3D Builder"
+    rationale: "3D apps are rarely used and have been deprecated in newer Windows versions"
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: false
+    estimatedSeconds: 10
+    blockedProfiles:
+      - vm_cautious
+    packages:
+      - Microsoft.Microsoft3DViewer
+      - Microsoft.MSPaint  # Paint 3D (classic Paint is separate)
+      - Microsoft.3DBuilder
+
+  - id: appx.remove-outlook-new
+    name: "Remove New Bloatlook"
+    description: "Remove the new Outlook bloat Windows app that replaces Mail & Calendar"
+    rationale: "Proxies all email through Microsoft servers, including non-Microsoft accounts"
+    risk: low
+    tier: free
+    default: false
+    requiresReboot: false
+    reversible: false
+    estimatedSeconds: 8
+    blockedProfiles:
+      - work_pc
+      - office_laptop
+    packages:
+      - Microsoft.OutlookForWindows

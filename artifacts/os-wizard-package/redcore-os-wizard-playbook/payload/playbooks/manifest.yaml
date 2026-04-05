@@ -106,13 +106,6 @@ phases:
       - security/update-control.yaml
       - security/defender-control.yaml
 
-  - id: personalization
-    name: "Visual Personalization"
-    description: "Dark mode, accent color, wallpaper, refresh rate"
-    modules:
-      - personalization/theme.yaml
-      - personalization/wallpaper.yaml
-
 # Profile Definitions
 
 profiles:

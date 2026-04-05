@@ -1,5 +1,4 @@
-# ─── Privacy: Telemetry Reduction ────────────────────────────────────────────
-# Disables Windows diagnostic data collection and telemetry services.
+# Privacy: Telemetry Reduction
 
 module: privacy.telemetry
 name: "Telemetry Reduction"
@@ -82,4 +81,62 @@ actions:
         path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\AdvertisingInfo"
         valueName: Enabled
         value: 0
+        valueType: DWord
+
+  - id: privacy.powershell-telemetry-optout
+    name: "Opt Out of PowerShell Telemetry"
+    description: "Set POWERSHELL_TELEMETRY_OPTOUT environment variable"
+    rationale: "PowerShell sends usage telemetry to Microsoft by default"
+    risk: safe
+    tier: free
+    default: true
+    expertOnly: false
+    requiresReboot: true
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKLM
+        path: "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment"
+        valueName: POWERSHELL_TELEMETRY_OPTOUT
+        value: "1"
+        valueType: String
+
+  - id: privacy.disable-typing-insights
+    name: "Disable Typing Insights"
+    description: "Disable typing analytics collection"
+    rationale: "Tracks keystroke patterns for Microsoft AI improvement"
+    risk: safe
+    tier: free
+    default: true
+    expertOnly: false
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKCU
+        path: "SOFTWARE\\Microsoft\\input\\Settings"
+        valueName: InsightsEnabled
+        value: 0
+        valueType: DWord
+
+  - id: privacy.disable-msrt
+    name: "Disable MSRT Windows Update Delivery"
+    description: "Prevent Malicious Software Removal Tool from being offered via Windows Update"
+    rationale: "Runs full system scans during Windows Update cycles, consuming CPU"
+    risk: moderate
+    tier: free
+    default: false
+    expertOnly: false
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles:
+      - work_pc
+    registryChanges:
+      - hive: HKLM
+        path: "SOFTWARE\\Policies\\Microsoft\\MRT"
+        valueName: DontOfferThroughWUAU
+        value: 1
         valueType: DWord

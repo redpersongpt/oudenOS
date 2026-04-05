@@ -11,7 +11,7 @@ actions:
     rationale: "Default 5000ms timeout delays shutdown; 3500ms balances speed with stability"
     risk: low
     tier: free
-    default: true
+    default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2

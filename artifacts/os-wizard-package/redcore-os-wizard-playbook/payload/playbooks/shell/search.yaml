@@ -1,5 +1,4 @@
-# ─── Shell: Search Cleanup ────────────────────────────────────────────────────
-
+# Shell: Search Cleanup
 module: shell.search
 name: "Search Cleanup"
 description: "Disable search highlights, history, and Cortana remnants"

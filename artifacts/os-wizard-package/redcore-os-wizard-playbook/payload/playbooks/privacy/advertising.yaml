@@ -1,5 +1,4 @@
-# ─── Privacy: Advertising & Tracking ─────────────────────────────────────────
-
+# Privacy: Advertising & Tracking
 module: privacy.advertising
 name: "Advertising & Tracking"
 description: "Disable ad targeting, app launch tracking, and tailored experiences"

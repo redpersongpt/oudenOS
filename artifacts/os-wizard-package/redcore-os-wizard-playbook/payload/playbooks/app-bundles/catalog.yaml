@@ -3,7 +3,7 @@ apps:
   steam:
     name: "Steam"
     category: gaming
-    description: "Game distribution platform"
+    description: "Best place to buy and play PC games"
     url: "https://cdn.cloudflare.steamstatic.com/client/installer/SteamSetup.exe"
     silentArgs: "/S"
     workSafe: false
@@ -19,7 +19,7 @@ apps:
   brave:
     name: "Brave Browser"
     category: browser
-    description: "Privacy-focused web browser"
+    description: "Based web browser"
     url: "https://laptop-updates.brave.com/latest/winx64"
     silentArgs: "--silent --install"
     workSafe: true
@@ -40,14 +40,6 @@ apps:
     silentArgs: "/S /L=1033"
     workSafe: true
 
-  everything:
-    name: "Everything Search"
-    category: utility
-    description: "Instant file search"
-    url: "https://www.voidtools.com/Everything-1.4.1.1026.x64-Setup.exe"
-    silentArgs: "/S"
-    workSafe: true
-
   notepadpp:
     name: "Notepad++"
     category: utility
@@ -59,7 +51,7 @@ apps:
   vscode:
     name: "Visual Studio Code"
     category: development
-    description: "Code editor"
+    description: "Vibecoding Lab"
     url: "https://update.code.visualstudio.com/latest/win32-x64/stable"
     silentArgs: "/VERYSILENT /NORESTART /MERGETASKS=!runcode"
     workSafe: true
@@ -68,7 +60,7 @@ apps:
     name: "OBS Studio"
     category: streaming
     description: "Screen recording and streaming"
-    url: "https://cdn-fastly.obsproject.com/downloads/OBS-Studio-30.2.3-Windows-Installer.exe"
+    url: "https://cdn-fastly.obsproject.com/downloads/OBS-Studio-31.0.2-Windows-Installer.exe"
     silentArgs: "/S"
     workSafe: true
 
@@ -91,9 +83,9 @@ apps:
   riot-client:
     name: "Riot Client"
     category: gaming
-    description: "Valorant, League of Legends launcher"
-    url: "https://valorant.secure.dyn.riotcdn.net/channels/public/x/installer.exe"
-    silentArgs: ""
+    description: "For Valorant and League of Legends you femboy :)"
+    url: "https://lol.secure.dyn.riotcdn.net/channels/public/x/installer/current/live.live.na.exe"
+    silentArgs: "--skip-to-install"
     workSafe: false
 
   battlenet:

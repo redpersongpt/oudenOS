@@ -1,5 +1,4 @@
-# ─── Profile: Office Laptop ───────────────────────────────────────────────────
-# Conservative tuning for office laptops, blocking battery-draining CPU/power actions.
+# Profile: Office Laptop
 
 profile: office-laptop
 name: "Office Laptop"

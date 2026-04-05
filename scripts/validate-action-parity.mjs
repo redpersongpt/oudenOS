@@ -40,6 +40,17 @@ const INTENTIONALLY_UNMAPPED = new Map([
   ["network.disable-mdns", "default:false, niche, excluded from work_pc"],
 ]);
 
+const TRANSFORMER_ONLY_ACTIONS = new Map([
+  ["network.disable-teredo", "Runtime-generated in transformer.rs"],
+  ["network.disable-netbios", "Runtime-generated in transformer.rs"],
+  ["network.disable-nagle", "Runtime-generated in transformer.rs"],
+  ["network.rss-queues-2", "Runtime-generated in transformer.rs"],
+]);
+
+const COMPATIBILITY_ANSWER_KEYS = new Set([
+  "disableIpv6",
+]);
+
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
 function walkYaml(dir) {
@@ -77,6 +88,12 @@ for (const file of yamlFiles) {
     } else {
       playbookActions.set(id, rel);
     }
+  }
+}
+
+for (const [id] of TRANSFORMER_ONLY_ACTIONS) {
+  if (!playbookActions.has(id)) {
+    playbookActions.set(id, "services/os-service/src/transformer.rs");
   }
 }
 
@@ -153,7 +170,7 @@ if (duplicates.length > 0) {
 }
 
 // Check 3: QUESTION_BEHAVIORS keys ↔ strategyQuestions keys
-const orphanedBehaviors = [...behaviorKeys].filter((k) => !questionKeys.has(k));
+const orphanedBehaviors = [...behaviorKeys].filter((k) => !questionKeys.has(k) && !COMPATIBILITY_ANSWER_KEYS.has(k));
 const orphanedQuestions = [...questionKeys].filter((k) => !behaviorKeys.has(k));
 
 if (orphanedBehaviors.length > 0) {
@@ -170,7 +187,7 @@ if (orphanedQuestions.length > 0) {
 }
 
 // Check 4: QuestionnaireAnswers ↔ strategyQuestions
-const answerWithoutQuestion = [...answerKeys].filter((k) => !questionKeys.has(k));
+const answerWithoutQuestion = [...answerKeys].filter((k) => !questionKeys.has(k) && !COMPATIBILITY_ANSWER_KEYS.has(k));
 const questionWithoutAnswer = [...questionKeys].filter((k) => !answerKeys.has(k));
 
 if (answerWithoutQuestion.length > 0) {

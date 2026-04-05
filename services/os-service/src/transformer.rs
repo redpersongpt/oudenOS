@@ -3021,39 +3021,6 @@ fn embedded_actions() -> Vec<Value> {
             "sideEffects": ["Meet Now / Chat icon hidden from taskbar; Teams/Skype still work normally"],
             "warningMessage": null
         }),
-        serde_json::json!({
-            "id": "shell.restore-classic-context-menu",
-            "category": "shell",
-            "name": "Restore Classic Context Menu",
-            "description": "Restore the full classic right-click context menu on Windows 11",
-            "rationale": "Restores full right-click context menu on Win11, removing the need to click 'Show more options'",
-            "risk": "low",
-            "tier": "free",
-            "requiresReboot": true,
-            "reversible": true,
-            "estimatedSeconds": 2,
-            "allowedProfiles": ["gaming_desktop", "work_pc", "low_spec_system", "vm_cautious", "office_laptop"],
-            "blockedProfiles": [],
-            "preservationConflicts": [],
-            "actionType": "registry",
-            "registryChanges": [
-                {
-                    "hive": "HKCU",
-                    "path": "Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a8}\\InprocServer32",
-                    "valueName": "",
-                    "value": "",
-                    "valueType": "String"
-                }
-            ],
-            "serviceChanges": [],
-            "taskChanges": [],
-            "appxRemovals": [],
-            "featureChanges": [],
-            "powerShellCommands": [],
-            "tags": ["shell", "context-menu", "win11", "classic"],
-            "sideEffects": ["Right-click context menu reverts to Windows 10 style; new Win11 context menu entries may not appear"],
-            "warningMessage": null
-        }),
 
         // ── Startup / Shutdown (Atlas-derived) ──────────────────────────
         serde_json::json!({
@@ -3836,8 +3803,8 @@ mod tests {
         let all = embedded_actions();
         assert_eq!(
             all.len(),
-            102,
-            "Expected exactly 102 embedded actions, got {}",
+            101,
+            "Expected exactly 101 embedded actions, got {}",
             all.len()
         );
     }
