@@ -228,7 +228,6 @@ function auditEnumQuestion<K extends keyof QuestionnaireAnswers>(
 const booleanKeys = Object.keys(DEFAULT_QUESTIONNAIRE_ANSWERS).filter(
   (key) => !["aggressionPreset", "edgeBehavior", "telemetryLevel",
     "disableIpv6", "disableTeredo", "disableNetbios", "disableNagle", "disableNicOffloading",
-    "restoreClassicContextMenu", // shell.restore-classic-context-menu only in transformer.rs
     "disableFaultTolerantHeap", // removed: breaks Explorer crash recovery
     "disableMPOs",              // removed: breaks Explorer icon rendering / compositor
   ].includes(key),

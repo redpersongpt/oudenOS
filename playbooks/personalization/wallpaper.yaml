@@ -4,7 +4,7 @@
 
 module: personalization.wallpaper
 name: "Ouden Wallpaper"
-description: "Set a custom monochrome Ouden wallpaper matching your screen resolution"
+description: "Set a custom monochrome Ouden desktop wallpaper matching your screen resolution"
 category: personalization
 
 actions:
@@ -121,26 +121,6 @@ public class WallpaperHelper {
           Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name WallpaperStyle -Value "10" -Force
           Set-ItemProperty -Path "HKCU:\Control Panel\Desktop" -Name TileWallpaper -Value "0" -Force
           Set-ItemProperty -Path "HKCU:\Control Panel\Colors" -Name Background -Value "0 0 0" -Force
-
-          # Also set as lock screen / login screen background
-          try {
-            $lockScreenDir = "$env:ProgramData\OudenOS"
-            if (!(Test-Path $lockScreenDir)) { New-Item -ItemType Directory -Path $lockScreenDir -Force | Out-Null }
-            $lockScreenPath = "$lockScreenDir\lockscreen.bmp"
-            Copy-Item $wallpaperPath $lockScreenPath -Force -ErrorAction Stop
-
-            # Group Policy lock screen image
-            New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization" -Force | Out-Null
-            Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization" -Name LockScreenImage -Value $lockScreenPath -Force
-
-            # OEM background for login screen
-            New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Authentication\LogonUI\Background" -Force | Out-Null
-            Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Authentication\LogonUI\Background" -Name OEMBackground -Value 1 -Type DWord -Force
-
-            Write-Host "Lock screen wallpaper applied"
-          } catch {
-            Write-Host "Lock screen wallpaper failed (non-critical): $_"
-          }
 
           Write-Host "Desktop wallpaper applied (${w}x${h})"
         } catch {

@@ -1,13 +1,13 @@
 {
   "name": "@redcore-os/desktop",
-  "version": "0.1.0",
+  "version": "0.10.1",
   "private": true,
   "description": "redcore OS desktop app (Tauri)",
   "author": {
     "name": "redcore",
-    "email": "support@redcoreos.net"
+    "email": "support@ouden.cc"
   },
-  "homepage": "https://redcoreos.net",
+  "homepage": "https://ouden.cc",
   "scripts": {
     "dev": "vite",
     "build": "vite build",

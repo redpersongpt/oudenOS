@@ -102,7 +102,7 @@ async fn export_package(
         serde_json::json!({ "title": "redcore OS Package", "packageId": "redcore-os" })
     };
 
-    let version = wizard_metadata.get("version").and_then(|v| v.as_str()).unwrap_or("0.1.0");
+    let version = wizard_metadata.get("version").and_then(|v| v.as_str()).unwrap_or("0.10.1");
     let commit = wizard_metadata.get("commit").and_then(|v| v.as_str()).unwrap_or("unknown");
 
     let has_journal = state.execution_journal.is_some();

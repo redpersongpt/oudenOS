@@ -11,7 +11,7 @@ actions:
     rationale: "Default 20% background reservation is excessive for gaming"
     risk: low
     tier: free
-    default: true
+    default: false
     requiresReboot: true
     reversible: true
     estimatedSeconds: 2

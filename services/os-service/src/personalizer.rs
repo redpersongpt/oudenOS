@@ -16,34 +16,34 @@ pub fn get_personalization_options(profile: &str) -> Value {
     match profile {
         "gaming_desktop" => serde_json::json!({
             "darkMode": true,
-            "brandAccent": true,
+            "brandAccent": false,
             "wallpaper": true,
-            "taskbarCleanup": true,
-            "explorerCleanup": true,
-            "transparency": true,
+            "taskbarCleanup": false,
+            "explorerCleanup": false,
+            "transparency": false,
             "profileVariant": "gaming_desktop"
         }),
         "work_pc" => serde_json::json!({
             "darkMode": true,
-            "brandAccent": true,
+            "brandAccent": false,
             "wallpaper": true,
             "taskbarCleanup": false,
             "explorerCleanup": false,
-            "transparency": true,
+            "transparency": false,
             "profileVariant": "work_pc"
         }),
         "low_spec_system" => serde_json::json!({
             "darkMode": true,
-            "brandAccent": true,
+            "brandAccent": false,
             "wallpaper": true,
-            "taskbarCleanup": true,
-            "explorerCleanup": true,
+            "taskbarCleanup": false,
+            "explorerCleanup": false,
             "transparency": false,
             "profileVariant": "low_spec_system"
         }),
         "vm_cautious" => serde_json::json!({
             "darkMode": true,
-            "brandAccent": true,
+            "brandAccent": false,
             "wallpaper": true,
             "taskbarCleanup": false,
             "explorerCleanup": false,
@@ -52,11 +52,11 @@ pub fn get_personalization_options(profile: &str) -> Value {
         }),
         _ => serde_json::json!({
             "darkMode": true,
-            "brandAccent": true,
+            "brandAccent": false,
             "wallpaper": true,
-            "taskbarCleanup": true,
-            "explorerCleanup": true,
-            "transparency": true,
+            "taskbarCleanup": false,
+            "explorerCleanup": false,
+            "transparency": false,
             "profileVariant": profile
         }),
     }
@@ -335,16 +335,6 @@ pub fn apply_personalization(
         );
     }
 
-    if dark_mode || brand_accent || taskbar_cleanup || explorer_cleanup || wallpaper || transparency {
-        apply_and_record(
-            "shellRefresh",
-            &mut results,
-            &mut succeeded,
-            &mut failed,
-            refresh_shell_ui(),
-        );
-    }
-
     let status = if failed == 0 {
         "success"
     } else if succeeded == 0 {
@@ -580,18 +570,6 @@ public class WallHelper {
 Set-ItemProperty 'HKCU:\Control Panel\Desktop' -Name WallpaperStyle -Value '10' -Force
 Set-ItemProperty 'HKCU:\Control Panel\Desktop' -Name TileWallpaper -Value '0' -Force
 Set-ItemProperty 'HKCU:\Control Panel\Colors' -Name Background -Value '0 0 0' -Force
-
-# Lock screen / login screen — use ProgramData (machine-wide, accessible by SYSTEM)
-try {
-    $lockDir = "$env:ProgramData\OudenOS"
-    if (!(Test-Path $lockDir)) { New-Item -ItemType Directory -Path $lockDir -Force | Out-Null }
-    Copy-Item $wallPath "$lockDir\lockscreen.bmp" -Force
-    New-Item -Path 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization' -Force | Out-Null
-    Set-ItemProperty 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\Personalization' -Name LockScreenImage -Value "$lockDir\lockscreen.bmp" -Force
-    New-Item -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Authentication\LogonUI\Background' -Force | Out-Null
-    Set-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Authentication\LogonUI\Background' -Name OEMBackground -Value 1 -Type DWord -Force
-    Write-Host 'Lock screen set'
-} catch { Write-Host "Lock screen failed (non-critical): $_" }
 
 Write-Host "Wallpaper generated and applied: ${w}x${h}"
 "#;
@@ -864,17 +842,17 @@ mod tests {
         let opts = get_personalization_options("gaming_desktop");
         assert_eq!(opts["darkMode"], true);
         assert_eq!(opts["wallpaper"], true);
-        assert_eq!(opts["taskbarCleanup"], true);
-        assert_eq!(opts["explorerCleanup"], true);
-        assert_eq!(opts["transparency"], true);
-        assert_eq!(opts["brandAccent"], true);
+        assert_eq!(opts["taskbarCleanup"], false);
+        assert_eq!(opts["explorerCleanup"], false);
+        assert_eq!(opts["transparency"], false);
+        assert_eq!(opts["brandAccent"], false);
     }
 
     #[test]
     fn test_work_pc_no_cleanup() {
         let opts = get_personalization_options("work_pc");
         assert_eq!(opts["darkMode"], true);
-        assert_eq!(opts["brandAccent"], true);
+        assert_eq!(opts["brandAccent"], false);
         assert_eq!(opts["wallpaper"], true);
         assert_eq!(opts["taskbarCleanup"], false);
         assert_eq!(opts["explorerCleanup"], false);
@@ -885,15 +863,17 @@ mod tests {
         let opts = get_personalization_options("low_spec_system");
         assert_eq!(opts["transparency"], false);
         assert_eq!(opts["darkMode"], true);
-        assert_eq!(opts["brandAccent"], true);
+        assert_eq!(opts["brandAccent"], false);
         assert_eq!(opts["wallpaper"], true);
+        assert_eq!(opts["taskbarCleanup"], false);
+        assert_eq!(opts["explorerCleanup"], false);
     }
 
     #[test]
     fn test_vm_cautious_minimal() {
         let opts = get_personalization_options("vm_cautious");
         assert_eq!(opts["darkMode"], true);
-        assert_eq!(opts["brandAccent"], true);
+        assert_eq!(opts["brandAccent"], false);
         assert_eq!(opts["wallpaper"], true);
         assert_eq!(opts["taskbarCleanup"], false);
         assert_eq!(opts["explorerCleanup"], false);
