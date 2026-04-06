@@ -2,17 +2,14 @@
 // Optimization manifest review. Shows the resolved playbook plan grouped by
 // phase with action statuses. Premium installer-grade density.
 
-import { useEffect, useMemo, useState } from "react";
-import type { ReactNode } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Check, X, AlertTriangle, Lock, ChevronDown, Shield, Cpu, Eye, Info } from "lucide-react";
 import { useWizardStore } from "@/stores/wizard-store";
-import type { ResolvedPlaybook, PlaybookPhase } from "@/stores/wizard-store";
+import type { ResolvedPlaybook, PlaybookPhase, PlaybookResolvedAction } from "@/stores/wizard-store";
 import { useDecisionsStore } from "@/stores/decisions-store";
-import { applyQuestionnaireOverrides } from "@/lib/wizard-question-model";
-import { getActionRationale, PHASE_RATIONALE, getBlockedExplanation } from "@/lib/expert-rationale";
 import { buildMockResolvedPlaybook } from "@/lib/mock-playbook";
 import technicalDetails from "@/lib/generated-technical-details.json";
+import { serviceCall } from "@/lib/service";
 
 // ---------------------------------------------------------------------------
 // Technical details types & helpers
@@ -75,12 +72,17 @@ function TechnicalDetails({ actionId }: { actionId: string }) {
     return (
       <button
         onClick={() => setExpanded(!expanded)}
-        className="mt-1 inline-flex items-center gap-1 text-[9px] text-nd-text-disabled/60 hover:text-nd-text-disabled transition-colors"
+        className="mt-1 inline-flex items-center gap-1 text-[10px] text-[var(--text-disabled)] hover:text-[var(--text-secondary)] transition-colors"
       >
-        <ChevronDown className={`h-2.5 w-2.5 transition-transform ${expanded ? "rotate-180" : ""}`} />
-        Technical Details
+        <svg
+          width="10" height="10" viewBox="0 0 12 12" fill="none"
+          className={`transition-transform duration-150 ${expanded ? "rotate-180" : ""}`}
+        >
+          <path d="M3 4.5l3 3 3-3" stroke="var(--text-secondary)" strokeWidth="1.5" strokeLinecap="round" />
+        </svg>
+        Details
         {expanded && (
-          <span className="ml-1 text-nd-text-disabled/40">-- not available for this action</span>
+          <span className="ml-1 text-[var(--text-disabled)]">Not available for this item</span>
         )}
       </button>
     );
@@ -90,10 +92,15 @@ function TechnicalDetails({ actionId }: { actionId: string }) {
     <div className="mt-1">
       <button
         onClick={() => setExpanded(!expanded)}
-        className="inline-flex items-center gap-1 text-[9px] text-nd-text-disabled/60 hover:text-nd-text-disabled transition-colors"
+        className="inline-flex items-center gap-1 text-[10px] text-[var(--text-disabled)] hover:text-[var(--text-secondary)] transition-colors"
       >
-        <ChevronDown className={`h-2.5 w-2.5 transition-transform duration-150 ${expanded ? "rotate-180" : ""}`} />
-        Technical Details
+        <svg
+          width="10" height="10" viewBox="0 0 12 12" fill="none"
+          className={`transition-transform duration-150 ${expanded ? "rotate-180" : ""}`}
+        >
+          <path d="M3 4.5l3 3 3-3" stroke="var(--text-secondary)" strokeWidth="1.5" strokeLinecap="round" />
+        </svg>
+        Details
       </button>
 
       <AnimatePresence initial={false}>
@@ -105,23 +112,23 @@ function TechnicalDetails({ actionId }: { actionId: string }) {
             transition={{ duration: 0.18, ease: [0.4, 0, 0.2, 1] }}
             className="overflow-hidden"
           >
-            <div className="mt-1 rounded border border-nd-border-subtle bg-nd-surface px-3 py-2 font-mono text-[9px] leading-relaxed text-nd-text-disabled/80 space-y-2">
+            <div className="mt-1 rounded-sm border border-[var(--border)] bg-[var(--surface)] px-3 py-2 font-mono text-[10px] leading-relaxed text-[var(--text-disabled)] space-y-2">
               {/* Registry Changes */}
               {details.registryChanges && details.registryChanges.length > 0 && (
                 <div>
-                  <p className="text-[9px] font-medium text-nd-text-secondary mb-0.5">Registry</p>
+                  <p className="text-[10px] font-medium text-[var(--text-secondary)] mb-0.5">Registry</p>
                   {details.registryChanges.map((rc, i) => {
                     const fullPath = `${rc.hive}\\${rc.path}`;
                     const hasTemplate = TEMPLATE_RE.test(fullPath) || TEMPLATE_RE.test(String(rc.value));
                     return (
                       <div key={i} className="ml-2">
-                        <p className="text-nd-text-disabled/60 truncate" title={fullPath}>{fullPath}</p>
-                        <p className="ml-2">
+                        <p className="text-[var(--text-disabled)] truncate" title={fullPath}>{fullPath}</p>
+                        <p className="ml-2 text-[var(--text-primary)]">
                           {rc.valueName} = {String(rc.value)}
                           {rc.valueType ? ` (${rc.valueType})` : ""}
                         </p>
                         {hasTemplate && (
-                          <p className="ml-2 text-[8px] text-amber-400/50 italic">Resolved at runtime</p>
+                          <p className="ml-2 text-[9px] text-[var(--text-disabled)] italic">Set during apply</p>
                         )}
                       </div>
                     );
@@ -132,7 +139,7 @@ function TechnicalDetails({ actionId }: { actionId: string }) {
               {/* Service Changes */}
               {details.serviceChanges && details.serviceChanges.length > 0 && (
                 <div>
-                  <p className="text-[9px] font-medium text-nd-text-secondary mb-0.5">Services</p>
+                  <p className="text-[10px] font-medium text-[var(--text-secondary)] mb-0.5">Services</p>
                   {details.serviceChanges.map((sc, i) => (
                     <p key={i} className="ml-2">
                       {sc.name} → {sc.startupType}
@@ -144,7 +151,7 @@ function TechnicalDetails({ actionId }: { actionId: string }) {
               {/* Packages */}
               {details.packages && details.packages.length > 0 && (
                 <div>
-                  <p className="text-[9px] font-medium text-nd-text-secondary mb-0.5">Packages</p>
+                  <p className="text-[10px] font-medium text-[var(--text-secondary)] mb-0.5">Packages</p>
                   {details.packages.map((pkg, i) => (
                     <p key={i} className="ml-2">{pkg}</p>
                   ))}
@@ -154,7 +161,7 @@ function TechnicalDetails({ actionId }: { actionId: string }) {
               {/* BCD Changes */}
               {details.bcdChanges && details.bcdChanges.length > 0 && (
                 <div>
-                  <p className="text-[9px] font-medium text-nd-text-secondary mb-0.5">Boot Configuration</p>
+                  <p className="text-[10px] font-medium text-[var(--text-secondary)] mb-0.5">Boot configuration</p>
                   {details.bcdChanges.map((bc, i) => (
                     <p key={i} className="ml-2">
                       {bc.element} = {bc.newValue}
@@ -166,7 +173,7 @@ function TechnicalDetails({ actionId }: { actionId: string }) {
               {/* Power Changes */}
               {details.powerChanges && details.powerChanges.length > 0 && (
                 <div>
-                  <p className="text-[9px] font-medium text-nd-text-secondary mb-0.5">Power Settings</p>
+                  <p className="text-[10px] font-medium text-[var(--text-secondary)] mb-0.5">Power settings</p>
                   {details.powerChanges.map((pc, i) => (
                     <p key={i} className="ml-2 truncate" title={pc.settingPath}>
                       {pc.settingPath} = {pc.newValue ?? pc.value ?? ""}
@@ -179,13 +186,13 @@ function TechnicalDetails({ actionId }: { actionId: string }) {
               {/* File Renames */}
               {details.fileRenames && details.fileRenames.length > 0 && (
                 <div>
-                  <p className="text-[9px] font-medium text-nd-text-secondary mb-0.5">File Renames</p>
+                  <p className="text-[10px] font-medium text-[var(--text-secondary)] mb-0.5">File renames</p>
                   {details.fileRenames.map((fr, i) => (
                     <div key={i} className="ml-2">
                       <p className="truncate" title={fr.source}>{fr.source}</p>
                       <p className="ml-2 truncate" title={fr.target}>→ {fr.target}</p>
                       {fr.cpuVendor && (
-                        <p className="ml-2 text-[8px] text-amber-400/50 italic">{fr.cpuVendor} only</p>
+                        <p className="ml-2 text-[9px] text-[var(--text-disabled)] italic">{fr.cpuVendor} only</p>
                       )}
                     </div>
                   ))}
@@ -199,158 +206,90 @@ function TechnicalDetails({ actionId }: { actionId: string }) {
   );
 }
 
-// Risk dot
+// ---------------------------------------------------------------------------
+// ActionRow
+// ---------------------------------------------------------------------------
 
-const riskDot: Record<string, string> = {
-  safe:   "bg-green-400",
-  low:    "bg-yellow-400",
-  medium: "bg-amber-400",
-  high:   "bg-red-400",
+const statusDot: Record<string, string> = {
+  Included:   "bg-[var(--success)]",
+  Blocked:    "bg-[#FF6B6B]",
+  Optional:   "bg-[var(--text-secondary)]",
+  ExpertOnly: "bg-purple-400",
+  BuildGated: "bg-neutral-400",
 };
 
-function RiskDot({ risk }: { risk?: string }) {
-  if (!risk) return null;
-  const color = riskDot[risk.toLowerCase()] ?? "bg-neutral-400";
+const statusBadge: Record<string, string> = {
+  Included:   "border-[var(--success)]/20 text-[var(--success)] bg-[var(--success)]/5",
+  Blocked:    "border-[#FF6B6B]/20 text-[#FF6B6B] bg-[#FF6B6B]/5",
+  Optional:   "border-[var(--border)] text-[var(--text-secondary)]",
+  ExpertOnly: "border-purple-400/20 text-purple-400 bg-purple-400/5",
+  BuildGated: "border-neutral-400/20 text-neutral-400 bg-neutral-400/5",
+};
+
+const statusLabel: Record<string, string> = {
+  Included:   "Included",
+  Blocked:    "Blocked",
+  Optional:   "Optional",
+  ExpertOnly: "Expert",
+  BuildGated: "Build-gated",
+};
+
+function ActionRow({ action }: { action: PlaybookResolvedAction }) {
   return (
-    <span
-      className={`inline-block h-1.5 w-1.5 shrink-0 rounded-sm ${color}`}
-      title={`Risk: ${risk}`}
-      aria-label={`Risk level: ${risk}`}
-    />
+    <div className="flex items-start gap-3 px-4 py-2 border-b border-[var(--border)] last:border-0">
+      <span className={`mt-1.5 w-1.5 h-1.5 rounded-full shrink-0 ${statusDot[action.status] ?? "bg-neutral-400"}`} />
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-3">
+          <span className="text-[12px] text-[var(--text-primary)] flex-1 min-w-0 truncate">{action.name}</span>
+          <span className={`shrink-0 text-[10px] px-2 py-0.5 rounded-sm border ${statusBadge[action.status] ?? statusBadge.Blocked}`}>
+            {statusLabel[action.status] ?? action.status}
+          </span>
+        </div>
+        <TechnicalDetails actionId={action.id} />
+      </div>
+    </div>
   );
 }
 
-// Status badge
+// ---------------------------------------------------------------------------
+// PhaseSection (collapsible)
+// ---------------------------------------------------------------------------
 
-function StatusBadge({ status }: { status: string }) {
-  const styles: Record<string, string> = {
-    Included:   "bg-green-500/15 text-green-400 border-green-500/20",
-    Blocked:    "bg-red-500/15 text-red-400 border-red-500/20",
-    Optional:   "bg-amber-500/15 text-amber-400 border-amber-500/20",
-    ExpertOnly: "bg-purple-500/15 text-purple-400 border-purple-500/20",
-    BuildGated: "bg-neutral-500/15 text-neutral-400 border-neutral-500/20",
-  };
-  const icons: Record<string, ReactNode> = {
-    Included:   <Check className="mr-0.5 h-2.5 w-2.5" />,
-    Blocked:    <X className="mr-0.5 h-2.5 w-2.5" />,
-    ExpertOnly: <Lock className="mr-0.5 h-2.5 w-2.5" />,
-    Optional:   <Eye className="mr-0.5 h-2.5 w-2.5" />,
-  };
-  return (
-    <span className={`inline-flex items-center rounded-sm border px-1.5 py-0.5 text-[10px] font-medium ${styles[status] ?? styles.Blocked}`}>
-      {icons[status]}
-      {status}
-    </span>
-  );
-}
-
-// Phase section
-
-function PhaseSection({ phase, defaultOpen, profile }: { phase: PlaybookPhase; defaultOpen: boolean; profile: string }) {
+function PhaseSection({ phase, defaultOpen }: { phase: PlaybookPhase; defaultOpen: boolean }) {
   const [open, setOpen] = useState(defaultOpen);
-  const included = phase.actions.filter(a => a.status === "Included").length;
-  const blocked  = phase.actions.filter(a => a.status === "Blocked").length;
-  const total    = phase.actions.length;
-  const phaseNote = PHASE_RATIONALE[phase.id];
+  const includedCount = phase.actions.filter(a => a.status === "Included").length;
 
   return (
-    <div className="rounded-sm border border-nd-border overflow-hidden">
+    <div className="border border-[var(--border)] rounded-sm overflow-hidden">
       <button
         onClick={() => setOpen(!open)}
-        className="flex w-full items-center justify-between px-4 py-2.5 text-left hover:bg-nd-surface transition-colors"
+        className="w-full flex items-center justify-between px-4 py-2.5 bg-[var(--surface)] hover:bg-[var(--surface-raised)] transition-colors"
       >
-        <div className="flex items-center gap-3 min-w-0">
-          <span className="text-[12px] font-medium text-nd-text-primary truncate">{phase.name}</span>
-          <div className="flex items-center gap-1.5">
-            <span className="rounded-sm bg-green-500/10 px-1.5 py-0.5 text-[10px] font-medium text-green-400">
-              {included}
-            </span>
-            {blocked > 0 && (
-              <span className="rounded-sm bg-red-500/10 px-1.5 py-0.5 text-[10px] font-medium text-red-400">
-                {blocked} blocked
-              </span>
-            )}
-            <span className="text-[10px] text-nd-text-disabled">of {total}</span>
-          </div>
+        <div className="flex items-center gap-3">
+          <span className="font-data text-[13px] text-[var(--text-display)]">{phase.name}</span>
+          <span className="text-[10px] text-[var(--text-disabled)]">{includedCount} changes</span>
         </div>
-        <motion.div
-          animate={{ rotate: open ? 180 : 0 }}
-          transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
+        <svg
+          width="12" height="12" viewBox="0 0 12 12" fill="none"
+          className={`transition-transform duration-200 ${open ? "rotate-180" : ""}`}
         >
-          <ChevronDown className="h-3.5 w-3.5 shrink-0 text-nd-text-disabled" />
-        </motion.div>
+          <path d="M3 4.5l3 3 3-3" stroke="var(--text-secondary)" strokeWidth="1.5" strokeLinecap="round" />
+        </svg>
       </button>
 
       <AnimatePresence initial={false}>
         {open && (
           <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
+            initial={{ height: 0 }}
+            animate={{ height: "auto" }}
+            exit={{ height: 0 }}
+            transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
             className="overflow-hidden"
           >
-            <div className="border-t border-nd-border-subtle">
-              {/* Phase rationale */}
-              {phaseNote && (
-                <div className="px-4 py-2 bg-white/[0.01] border-b border-white/[0.03]">
-                  <p className="text-[10px] leading-relaxed text-nd-text-secondary">{phaseNote}</p>
-                </div>
-              )}
-              {/* Actions */}
-              <div className="divide-y divide-white/[0.03]">
-                {phase.actions.map((action) => {
-                  const rationale = getActionRationale(action.id, profile);
-                  const blockedNote = action.status === "Blocked"
-                    ? getBlockedExplanation(action.id, action.blockedReason, profile)
-                    : null;
-
-                  return (
-                    <div key={action.id} className="px-4 py-2">
-                      <div className="flex items-center justify-between">
-                        <div className="min-w-0 flex-1">
-                          <div className="flex items-center gap-2">
-                            <RiskDot risk={action.risk} />
-                            <p className="text-[11px] font-medium text-nd-text-primary truncate">{action.name}</p>
-                            {action.requiresReboot && (
-                              <span className="shrink-0 rounded bg-amber-500/10 px-1 py-0.5 text-[8px] font-medium uppercase text-amber-400">
-                                reboot
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                        <div className="ml-3 shrink-0">
-                          <StatusBadge status={action.status} />
-                        </div>
-                      </div>
-                      {rationale.why ? (
-                        <p className="mt-0.5 text-[10px] leading-relaxed text-nd-text-secondary">{rationale.why}</p>
-                      ) : (
-                        <p className="mt-0.5 text-[10px] text-nd-text-disabled">{action.description}</p>
-                      )}
-                      {rationale.profileWarning && (
-                        <p className="mt-0.5 text-[10px] text-amber-400/80 flex items-center gap-1">
-                          <Info className="h-2.5 w-2.5 shrink-0" />
-                          {rationale.profileWarning}
-                        </p>
-                      )}
-                      {rationale.antiCheatNote && (
-                        <p className="mt-0.5 text-[10px] text-amber-400/80 flex items-center gap-1">
-                          <AlertTriangle className="h-2.5 w-2.5 shrink-0" />
-                          {rationale.antiCheatNote}
-                        </p>
-                      )}
-                      {blockedNote && (
-                        <p className="mt-0.5 text-[10px] text-red-400/80 flex items-center gap-1">
-                          <Shield className="h-2.5 w-2.5 shrink-0" />
-                          {blockedNote}
-                        </p>
-                      )}
-                      <TechnicalDetails actionId={action.id} />
-                    </div>
-                  );
-                })}
-              </div>
+            <div className="border-t border-[var(--border)]">
+              {phase.actions.map((action) => (
+                <ActionRow key={action.id} action={action} />
+              ))}
             </div>
           </motion.div>
         )}
@@ -359,40 +298,38 @@ function PhaseSection({ phase, defaultOpen, profile }: { phase: PlaybookPhase; d
   );
 }
 
+// ---------------------------------------------------------------------------
 // Skeleton loader
+// ---------------------------------------------------------------------------
 
 function PlaybookSkeleton() {
   return (
-    <div className="flex h-full flex-col px-6 py-5">
-      <div className="mb-4 space-y-2">
-        <div className="h-6 w-52 rounded-sm bg-nd-surface-raised animate-pulse" />
-        <div className="h-3.5 w-80 rounded bg-nd-surface animate-pulse" />
+    <div className="flex h-full min-h-0 flex-col bg-black px-6 py-5 overflow-hidden">
+      <div className="shrink-0 space-y-2 mb-4">
+        <div className="h-4 w-16 rounded-sm bg-[var(--surface)] animate-pulse" />
+        <div className="h-6 w-40 rounded-sm bg-[var(--surface)] animate-pulse" />
+        <div className="h-3 w-72 rounded-sm bg-[var(--surface)] animate-pulse" />
       </div>
-      <div className="mb-4 h-14 w-full rounded-sm bg-nd-surface animate-pulse" />
-      {[0, 1, 2, 3, 4].map(i => (
-        <div key={i} className="mb-1.5 h-11 rounded-sm bg-nd-surface animate-pulse" style={{ animationDelay: `${i * 0.1}s` }} />
-      ))}
+      <div className="h-12 rounded-sm bg-[var(--surface)] border border-[var(--border)] animate-pulse mb-4" />
+      <div className="space-y-3 animate-pulse">
+        {[0, 1, 2, 3].map(i => (
+          <div key={i} className="h-12 bg-[var(--surface)] rounded-sm border border-[var(--border)]" />
+        ))}
+      </div>
     </div>
   );
 }
 
+// ---------------------------------------------------------------------------
 // Component
+// ---------------------------------------------------------------------------
 
 export function PlaybookReviewStep() {
   const { detectedProfile, playbookPreset, demoMode, setResolvedPlaybook, setStepReady } = useWizardStore();
   const answers = useDecisionsStore((state) => state.answers);
   const [loading, setLoading] = useState(true);
-  const [basePlaybook, setBasePlaybook] = useState<ResolvedPlaybook | null>(null);
+  const [effectivePlaybook, setEffectivePlaybook] = useState<ResolvedPlaybook | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
-
-  const effectivePlaybook = useMemo(() => {
-    if (!basePlaybook) return null;
-    return applyQuestionnaireOverrides(basePlaybook, answers, {
-      isLaptop: detectedProfile?.id === "gaming_laptop" || detectedProfile?.id === "office_laptop",
-      isWorkPc: detectedProfile?.isWorkPc ?? false,
-      windowsBuild: detectedProfile?.windowsBuild ?? 22631,
-    });
-  }, [answers, basePlaybook, detectedProfile]);
 
   useEffect(() => {
     setStepReady("playbook-review", false);
@@ -403,33 +340,33 @@ export function PlaybookReviewStep() {
       setLoading(true);
       setLoadError(null);
       try {
-        const { serviceCall } = await import("@/lib/service");
         const result = await serviceCall<ResolvedPlaybook>("playbook.resolve", {
           profile,
           preset: playbookPreset,
           windowsBuild,
+          answers,
         });
         if (result.ok) {
-          setBasePlaybook(result.data);
+          setEffectivePlaybook(result.data);
         } else if (demoMode) {
-          setBasePlaybook(buildMockResolvedPlaybook(profile, playbookPreset, windowsBuild));
+          setEffectivePlaybook(buildMockResolvedPlaybook(profile, playbookPreset, windowsBuild));
         } else {
-          setBasePlaybook(null);
-          setLoadError(result.error || "Unable to resolve the real playbook.");
+          setEffectivePlaybook(null);
+          setLoadError(result.error || "Could not build the plan.");
         }
       } catch {
         if (demoMode) {
-          setBasePlaybook(buildMockResolvedPlaybook(profile, playbookPreset, windowsBuild));
+          setEffectivePlaybook(buildMockResolvedPlaybook(profile, playbookPreset, windowsBuild));
         } else {
-          setBasePlaybook(null);
-          setLoadError("Unable to resolve the real playbook.");
+          setEffectivePlaybook(null);
+          setLoadError("Could not build the plan.");
         }
       } finally {
         setLoading(false);
       }
     };
     load();
-  }, [demoMode, detectedProfile, playbookPreset, setStepReady]);
+  }, [answers, demoMode, detectedProfile, playbookPreset, setStepReady]);
 
   useEffect(() => {
     if (effectivePlaybook) {
@@ -443,14 +380,18 @@ export function PlaybookReviewStep() {
   if (!effectivePlaybook) {
     return (
       <div className="flex h-full flex-col items-center justify-center gap-3 px-8">
-        <AlertTriangle className="h-8 w-8 text-amber-400" />
-        <p className="text-sm text-nd-text-secondary">{loadError ?? "Playbook not available"}</p>
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+          <path d="M12 9v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="var(--text-display)" strokeWidth="1.5" strokeLinecap="round" />
+        </svg>
+        <p className="text-sm text-[var(--text-secondary)]">{loadError ?? "Plan not available."}</p>
       </div>
     );
   }
 
-  const rebootCount = effectivePlaybook.phases.reduce(
-    (n, p) => n + p.actions.filter(a => a.status === "Included" && a.requiresReboot).length, 0
+  const totalIncluded = effectivePlaybook.totalIncluded;
+  const totalBlocked = effectivePlaybook.totalBlocked;
+  const rebootRequired = effectivePlaybook.phases.some(
+    p => p.actions.some(a => a.status === "Included" && a.requiresReboot)
   );
 
   return (
@@ -459,126 +400,43 @@ export function PlaybookReviewStep() {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -8 }}
       transition={{ duration: 0.35, ease: [0.25, 0.1, 0.25, 1] }}
-      className="flex h-full flex-col px-6 py-5 overflow-y-auto"
+      className="flex h-full min-h-0 flex-col bg-black px-6 py-5 overflow-hidden"
     >
       {/* Header */}
-      <div className="mb-4">
-        <h1 className="text-[20px] font-medium tracking-tight text-nd-text-primary">
-          What We'll Change
-        </h1>
-        <p className="mt-1 text-[12px] text-nd-text-secondary">
-          Everything listed below will run on your{" "}
-          <span className="font-medium text-nd-text-primary">{detectedProfile?.label ?? "PC"}</span>
-          {" "}({playbookPreset} mode). Nothing hidden.
+      <div className="shrink-0">
+        <p className="nd-label-sm text-[var(--text-secondary)]">REVIEW</p>
+        <h2 className="mt-1 font-display text-[22px] text-[var(--text-display)]">Your plan</h2>
+        <p className="mt-1 text-[12px] text-[var(--text-secondary)] max-w-[600px]">
+          These are the changes that will be applied. Review each section before continuing.
         </p>
       </div>
 
-      {/* Stats row — total big + breakdown inline */}
-      <motion.div
-        initial={{ opacity: 0, y: 6 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.22 }}
-        className="mb-4 flex items-baseline gap-3 rounded-sm border border-nd-border bg-nd-surface px-4 py-3"
-      >
-        <span className="font-mono text-[28px] font-medium leading-none text-nd-text-primary">
-          {effectivePlaybook.totalIncluded + effectivePlaybook.totalBlocked + effectivePlaybook.totalOptional + effectivePlaybook.totalExpertOnly}
-        </span>
-        <span className="text-[13px] font-medium text-nd-text-primary">changes</span>
-        <span className="ml-1 text-[11px] text-nd-text-secondary">
-          {effectivePlaybook.totalBlocked > 0 && `${effectivePlaybook.totalBlocked} skipped · `}
-          {effectivePlaybook.totalOptional > 0 && `${effectivePlaybook.totalOptional} optional · `}
-          {effectivePlaybook.totalExpertOnly > 0 && `${effectivePlaybook.totalExpertOnly} expert-only`}
-        </span>
-      </motion.div>
+      {/* Summary bar */}
+      <div className="mt-4 shrink-0 flex items-center gap-4 border border-[var(--border)] bg-[var(--surface)] rounded-sm px-4 py-2.5">
+        <div className="flex items-center gap-2">
+          <span className="font-data text-[16px] text-[var(--text-display)]">{totalIncluded}</span>
+          <span className="text-[10px] text-[var(--text-secondary)] uppercase tracking-widest">changes</span>
+        </div>
+        <div className="w-px h-4 bg-[var(--border)]" />
+        <div className="flex items-center gap-2">
+          <span className="font-data text-[16px] text-[var(--text-display)]">{totalBlocked}</span>
+          <span className="text-[10px] text-[var(--text-secondary)] uppercase tracking-widest">blocked</span>
+        </div>
+        {rebootRequired && (
+          <>
+            <div className="w-px h-4 bg-[var(--border)]" />
+            <span className="text-[10px] text-[#FFBD2E] uppercase tracking-widest">Restart required</span>
+          </>
+        )}
+      </div>
 
-      {/* Reboot notice */}
-      {rebootCount > 0 && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.18 }}
-          className="mb-3 flex items-center gap-2 rounded-sm border border-amber-500/20 bg-amber-500/[0.04] px-3 py-2"
-        >
-          <Cpu className="h-3.5 w-3.5 shrink-0 text-amber-400" />
-          <span className="text-[11px] text-amber-400">
-            {rebootCount} action{rebootCount !== 1 ? "s" : ""} require a restart to take effect
-          </span>
-        </motion.div>
-      )}
-
-      {effectivePlaybook.decisionSummary && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2 }}
-          className="mb-3 rounded-sm border border-nd-border bg-nd-surface px-3 py-2.5"
-        >
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="rounded-sm bg-nd-surface-raised px-2.5 py-0.5 text-[10px] font-medium text-nd-text-secondary">
-              {effectivePlaybook.decisionSummary.riskLevel} mode
-            </span>
-            {effectivePlaybook.decisionSummary.estimatedPreserved > 0 && (
-              <span className="rounded-sm bg-amber-500/10 px-2.5 py-0.5 text-[10px] font-medium text-amber-400">
-                {effectivePlaybook.decisionSummary.estimatedPreserved} kept from your answers
-              </span>
-            )}
-            {effectivePlaybook.decisionSummary.warnings.length > 0 && (
-              <span className="inline-flex items-center gap-1 rounded-sm bg-amber-500/10 px-2.5 py-0.5 text-[10px] font-medium text-amber-400">
-                <AlertTriangle className="h-2.5 w-2.5 shrink-0" />
-                {effectivePlaybook.decisionSummary.warnings.length} heads up
-              </span>
-            )}
-          </div>
-
-          {effectivePlaybook.decisionSummary.warnings.length > 0 && (
-            <div className="mt-2 space-y-1">
-              {effectivePlaybook.decisionSummary.warnings.map((warning) => (
-                <p key={warning} className="flex items-start gap-1.5 text-[10px] leading-relaxed text-amber-400/90">
-                  <AlertTriangle className="mt-0.5 h-3 w-3 shrink-0" />
-                  <span>{warning}</span>
-                </p>
-              ))}
-            </div>
-          )}
-        </motion.div>
-      )}
-
-      {/* Blocked reasons (Work PC) */}
-      {effectivePlaybook.blockedReasons.length > 0 && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.22 }}
-          className="mb-3 rounded-sm border border-nd-border bg-nd-surface px-3 py-2"
-        >
-          <p className="text-[10px] font-medium text-nd-text-secondary mb-1.5">
-            Skipped — not safe for your PC type
-          </p>
-          {effectivePlaybook.blockedReasons.slice(0, 3).map((br) => (
-            <p key={br.actionId} className="text-[11px] text-nd-text-disabled truncate">
-              {br.reason}
-            </p>
+      {/* Scrollable phases list */}
+      <div className="mt-4 min-h-0 flex-1 overflow-y-auto scrollbar-thin pr-1">
+        <div className="space-y-2">
+          {effectivePlaybook.phases.map((phase, i) => (
+            <PhaseSection key={phase.id} phase={phase} defaultOpen={i === 0} />
           ))}
-          {effectivePlaybook.blockedReasons.length > 3 && (
-            <p className="text-[10px] text-nd-text-disabled mt-0.5">
-              +{effectivePlaybook.blockedReasons.length - 3} more
-            </p>
-          )}
-        </motion.div>
-      )}
-
-      {/* Phase list — staggered entrance */}
-      <div className="space-y-1.5">
-        {effectivePlaybook.phases.map((phase, i) => (
-          <motion.div
-            key={phase.id}
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.08 + i * 0.07, duration: 0.22, ease: [0.0, 0.0, 0.2, 1.0] }}
-          >
-            <PhaseSection phase={phase} defaultOpen={i === 0} profile={effectivePlaybook.profile} />
-          </motion.div>
-        ))}
+        </div>
       </div>
     </motion.div>
   );
