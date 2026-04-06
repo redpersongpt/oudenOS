@@ -52,13 +52,24 @@ impl ServiceBridge {
         self.admin
     }
 
+    pub fn mode(&self) -> &'static str {
+        if !self.is_running() {
+            "demo"
+        } else if cfg!(windows) {
+            "live"
+        } else {
+            "simulated"
+        }
+    }
+
     pub fn start(&mut self, resource_dir: &Path) -> Result<(), String> {
         self.admin = detect_admin();
 
-        let service_path = find_service_binary(resource_dir)
-            .ok_or("Could not find redcore-os-service binary")?;
+        let service_path =
+            find_service_binary(resource_dir).ok_or("Could not find Ouden service binary")?;
 
         let playbook_dir = find_playbook_dir(resource_dir);
+        let data_dir = find_service_data_dir(resource_dir);
 
         let mut cmd = Command::new(&service_path);
         cmd.stdin(Stdio::piped())
@@ -71,8 +82,13 @@ impl ServiceBridge {
         if let Some(ref pb_dir) = playbook_dir {
             cmd.env("REDCORE_PLAYBOOK_DIR", pb_dir);
         }
+        if let Some(ref service_data_dir) = data_dir {
+            cmd.env("REDCORE_OS_DATA_DIR", service_data_dir);
+        }
 
-        let mut child = cmd.spawn().map_err(|e| format!("Failed to spawn service: {e}"))?;
+        let mut child = cmd
+            .spawn()
+            .map_err(|e| format!("Failed to spawn service: {e}"))?;
 
         // Drain stderr to prevent pipe deadlock
         if let Some(stderr) = child.stderr.take() {
@@ -132,10 +148,7 @@ impl ServiceBridge {
 
     pub async fn call(&mut self, method: &str, params: Value) -> Result<Value, String> {
         let child = self.process.as_mut().ok_or("Service not running")?;
-        let stdin = child
-            .stdin
-            .as_mut()
-            .ok_or("Service stdin not available")?;
+        let stdin = child.stdin.as_mut().ok_or("Service stdin not available")?;
 
         let id = self.next_id.fetch_add(1, Ordering::SeqCst);
 
@@ -219,9 +232,7 @@ fn detect_admin() -> bool {
             .stdout(Stdio::null())
             .stderr(Stdio::null());
         cmd.creation_flags(CREATE_NO_WINDOW);
-        cmd.status()
-            .map(|s| s.success())
-            .unwrap_or(false)
+        cmd.status().map(|s| s.success()).unwrap_or(false)
     }
     #[cfg(not(windows))]
     {
@@ -236,18 +247,43 @@ fn find_service_binary(resource_dir: &Path) -> Option<PathBuf> {
         "redcore-os-service"
     };
 
+    if let Ok(explicit_path) = std::env::var("REDCORE_OS_SERVICE_BIN") {
+        let candidate = PathBuf::from(explicit_path);
+        if candidate.exists() {
+            eprintln!(
+                "[service-bridge] using REDCORE_OS_SERVICE_BIN={}",
+                candidate.display()
+            );
+            return Some(candidate);
+        }
+        eprintln!(
+            "[service-bridge] REDCORE_OS_SERVICE_BIN not found: {}",
+            candidate.display()
+        );
+    }
+
     let exe_dir = std::env::current_exe()
         .ok()
         .and_then(|p| p.parent().map(|pp| pp.to_path_buf()));
 
-    let mut candidates: Vec<PathBuf> = vec![
-        resource_dir.join(exe),
-        resource_dir.join("_up_").join(exe),
-    ];
+    let manifest_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+    let repo_root = manifest_dir
+        .parent()
+        .and_then(|path| path.parent())
+        .and_then(|path| path.parent())
+        .map(Path::to_path_buf);
+
+    let mut candidates: Vec<PathBuf> =
+        vec![resource_dir.join(exe), resource_dir.join("_up_").join(exe)];
 
     if let Some(ref dir) = exe_dir {
         candidates.push(dir.join(exe));
         candidates.push(dir.join("resources").join(exe));
+    }
+
+    if let Some(ref root) = repo_root {
+        candidates.push(root.join("services").join("os-service").join("target").join("debug").join(exe));
+        candidates.push(root.join("services").join("os-service").join("target").join("release").join(exe));
     }
 
     candidates.push(PathBuf::from("../../services/os-service/target/release").join(exe));
@@ -259,32 +295,94 @@ fn find_service_binary(resource_dir: &Path) -> Option<PathBuf> {
     }
     for c in &candidates {
         let exists = c.exists();
-        eprintln!("[service-bridge]   candidate: {} (exists={})", c.display(), exists);
+        eprintln!(
+            "[service-bridge]   candidate: {} (exists={})",
+            c.display(),
+            exists
+        );
     }
 
     candidates.into_iter().find(|p| p.exists())
 }
 
 fn find_playbook_dir(resource_dir: &Path) -> Option<PathBuf> {
+    if let Ok(explicit_path) = std::env::var("REDCORE_PLAYBOOK_DIR") {
+        let candidate = PathBuf::from(explicit_path);
+        if candidate.is_dir() {
+            eprintln!(
+                "[service-bridge] using REDCORE_PLAYBOOK_DIR={}",
+                candidate.display()
+            );
+            return Some(candidate);
+        }
+        eprintln!(
+            "[service-bridge] REDCORE_PLAYBOOK_DIR not found: {}",
+            candidate.display()
+        );
+    }
+
     let exe_dir = std::env::current_exe()
         .ok()
         .and_then(|p| p.parent().map(|pp| pp.to_path_buf()));
 
-    let mut candidates = vec![
-        resource_dir.join("playbooks"),
-    ];
+    let manifest_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+    let repo_root = manifest_dir
+        .parent()
+        .and_then(|path| path.parent())
+        .and_then(|path| path.parent())
+        .map(Path::to_path_buf);
+
+    let mut candidates = vec![resource_dir.join("playbooks")];
 
     if let Some(ref dir) = exe_dir {
         candidates.push(dir.join("playbooks"));
         candidates.push(dir.join("resources").join("playbooks"));
     }
 
+    if let Some(ref root) = repo_root {
+        candidates.push(root.join("playbooks"));
+    }
+
     candidates.push(PathBuf::from("../../playbooks"));
 
     for c in &candidates {
         let exists = c.is_dir();
-        eprintln!("[service-bridge] playbook candidate: {} (exists={})", c.display(), exists);
+        eprintln!(
+            "[service-bridge] playbook candidate: {} (exists={})",
+            c.display(),
+            exists
+        );
     }
 
     candidates.into_iter().find(|p| p.is_dir())
+}
+
+fn find_service_data_dir(resource_dir: &Path) -> Option<PathBuf> {
+    if let Ok(explicit_path) = std::env::var("REDCORE_OS_DATA_DIR") {
+        let candidate = PathBuf::from(explicit_path);
+        if !candidate.as_os_str().is_empty() {
+            eprintln!(
+                "[service-bridge] using REDCORE_OS_DATA_DIR={}",
+                candidate.display()
+            );
+            return Some(candidate);
+        }
+    }
+
+    let manifest_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+    let repo_root = manifest_dir
+        .parent()
+        .and_then(|path| path.parent())
+        .and_then(|path| path.parent())
+        .map(Path::to_path_buf);
+
+    let candidate = repo_root
+        .map(|root| root.join(".demo").join("os-service-data"))
+        .unwrap_or_else(|| resource_dir.join("service-data"));
+
+    eprintln!(
+        "[service-bridge] using fallback REDCORE_OS_DATA_DIR={}",
+        candidate.display()
+    );
+    Some(candidate)
 }

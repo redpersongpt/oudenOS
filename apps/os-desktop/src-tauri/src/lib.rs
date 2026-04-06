@@ -44,7 +44,7 @@ async fn service_status(state: tauri::State<'_, AppState>) -> Result<serde_json:
     let bridge = state.bridge.lock().await;
     Ok(serde_json::json!({
         "running": bridge.is_running(),
-        "mode": if bridge.is_running() { "live" } else { "demo" },
+        "mode": bridge.mode(),
         "isAdmin": bridge.is_admin(),
         "platform": std::env::consts::OS
     }))
@@ -58,7 +58,7 @@ async fn save_log(content: String) -> Result<serde_json::Value, String> {
     };
 
     let ts = chrono_free_timestamp();
-    let filename = format!("redcore-os-log-{ts}.txt");
+    let filename = format!("ouden-os-log-{ts}.txt");
     let path = desktop.join(&filename);
 
     match std::fs::write(&path, &content) {
@@ -114,7 +114,7 @@ async fn export_package(
         let content = std::fs::read_to_string(&wizard_json_path).map_err(|e| e.to_string())?;
         serde_json::from_str(&content).map_err(|e| e.to_string())?
     } else {
-        serde_json::json!({ "title": "redcore OS Package", "packageId": "redcore-os" })
+        serde_json::json!({ "title": "Ouden OS Package", "packageId": "ouden-os" })
     };
 
     let version = wizard_metadata
@@ -128,9 +128,9 @@ async fn export_package(
 
     let has_journal = state.execution_journal.is_some();
     let default_name = if has_journal {
-        format!("redcore-os-executed-package-{version}-{commit}.apbx")
+        format!("ouden-os-executed-package-{version}-{commit}.apbx")
     } else {
-        format!("redcore-os-user-package-{version}-{commit}.apbx")
+        format!("ouden-os-user-package-{version}-{commit}.apbx")
     };
 
     // Show save dialog
@@ -143,9 +143,9 @@ async fn export_package(
     let file_path = app
         .dialog()
         .file()
-        .set_title("Save redcore OS Package")
+        .set_title("Save Ouden OS Package")
         .set_file_name(&default_name)
-        .add_filter("redcore OS Package", &["apbx", "zip"])
+        .add_filter("Ouden OS Package", &["apbx", "zip"])
         .blocking_save_file();
 
     let output_path = match file_path {
@@ -241,7 +241,17 @@ pub fn run() {
             tauri::async_runtime::spawn(async move {
                 let mut b = bridge_clone.lock().await;
                 match b.start(&res_dir) {
-                    Ok(()) => eprintln!("[Tauri] Service started successfully"),
+                    Ok(()) => {
+                        eprintln!("[Tauri] Service started successfully");
+                        if !cfg!(windows) {
+                            if let Some(ref w) = win {
+                                let _ = w.emit(
+                                    "service-simulated-mode",
+                                    "Simulated backend active on non-Windows host. No Windows mutations will be applied.",
+                                );
+                            }
+                        }
+                    }
                     Err(e) => {
                         eprintln!("[Tauri] CRITICAL: Failed to start service: {e}");
                         eprintln!("[Tauri] App will run in demo mode — no changes will be applied");

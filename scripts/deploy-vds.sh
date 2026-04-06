@@ -7,7 +7,7 @@ set -euo pipefail
 
 VDS_IP="REDACTED_VDS_IP"
 VDS_USER="ubuntu"
-VDS_PASSWORD="#C6JGjP"
+VDS_PASSWORD="${VDS_PASSWORD}"
 VDS_REPO="/home/ubuntu/redcoreECO"
 
 echo "🚀 Deploying to VDS $VDS_IP..."

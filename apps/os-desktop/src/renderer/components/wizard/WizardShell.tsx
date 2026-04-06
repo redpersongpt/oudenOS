@@ -11,7 +11,7 @@ const ND = { ease: [0.25, 0.1, 0.25, 1] as const };
 const LABELS: Record<WizardStepId, string> = {
   welcome: "WELCOME", assessment: "ASSESSMENT", profile: "PROFILE",
   preservation: "PRESERVATION", "playbook-strategy": "STRATEGY",
-  "playbook-review": "PLAYBOOK", personalization: "PERSONALIZE",
+  "playbook-review": "PLAN", personalization: "PERSONALIZE",
   "final-review": "REVIEW",
   execution: "APPLY", "reboot-resume": "REBOOT",
   report: "COMPLETE", donation: "SUPPORT", handoff: "NEXT STEPS",
@@ -23,7 +23,7 @@ const CTA: Partial<Record<WizardStepId, string>> = {
   "final-review": "APPLY", report: "NEXT STEPS", profile: "CONFIGURE",
 };
 
-const NO_BAR = new Set<WizardStepId>(["execution", "donation", "handoff"]);
+const NO_BAR = new Set<WizardStepId>(["playbook-strategy", "execution", "donation", "handoff"]);
 
 /* ── Sidebar rail — bracket-style nav, divider rows ─────────────────── */
 
@@ -94,7 +94,7 @@ function Rail() {
 
 function Bar() {
   const { currentStep, progress, canGoBack, canGoNext, goBack, goNext } = useWizardStore();
-  if (NO_BAR.has(currentStep)) return null;
+  if (NO_BAR.has(currentStep) || currentStep === "execution") return null;
 
   return (
     <div
@@ -194,7 +194,7 @@ export function WizardShell({ children }: { children: ReactNode }) {
       <div className="flex flex-1 overflow-hidden">
         {!welcome && <Rail />}
         <main className="flex flex-1 flex-col overflow-hidden">
-          <div className="flex-1 overflow-y-auto overflow-x-hidden scrollbar-thin">{children}</div>
+          <div className="flex-1 overflow-hidden">{children}</div>
           {!welcome && <Bar />}
         </main>
       </div>

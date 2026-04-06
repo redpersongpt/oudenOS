@@ -168,3 +168,24 @@
 @layer utilities {
   .ease-nd { transition-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1); }
 }
+
+@keyframes ndExecutionPulse {
+  0%, 100% { opacity: 0.35; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.08); }
+}
+
+@keyframes ndExecutionScan {
+  0% { opacity: 0.35; }
+  50% { opacity: 1; }
+  100% { opacity: 0.35; }
+}
+
+@layer utilities {
+  .nd-execution-pulse {
+    animation: ndExecutionPulse 1.8s ease-in-out infinite;
+  }
+
+  .nd-execution-scan {
+    animation: ndExecutionScan 1.2s ease-in-out infinite;
+  }
+}

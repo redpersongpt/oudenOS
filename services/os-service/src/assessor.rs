@@ -232,10 +232,7 @@ fn calculate_score(
     let mut score: i32 = 100;
 
     // Penalty for bloat AppX packages (more than 30 = bloated)
-    let appx_count = appx
-        .get("count")
-        .and_then(|v| v.as_u64())
-        .unwrap_or(0) as i32;
+    let appx_count = appx.get("count").and_then(|v| v.as_u64()).unwrap_or(0) as i32;
     if appx_count > 30 {
         score -= ((appx_count - 30) * 2).min(20);
     }

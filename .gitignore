@@ -30,3 +30,7 @@ apps/redcore-os/apps/service-core/target/
 
 # Electron
 apps/redcore-tuning/proof-screenshots/preload-compiled.js
+.agents/
+.claude/
+.windsurf/
+*.claude/

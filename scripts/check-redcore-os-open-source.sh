@@ -7,7 +7,6 @@ TARGET_DIR="${1:?usage: check-redcore-os-open-source.sh <target-dir>}"
 declare -a forbidden_files=(
   "CLAUDE.md"
   "CODEXHANDOFF.md"
-  "CoWorkClaude.md"
   "ECOBUGHUNTERCLAUDE.md"
   "render.yaml"
   ".github/workflows/build-installers.yml"
@@ -23,7 +22,6 @@ done
 declare -a forbidden_patterns=(
   "185\\.48\\.182\\.164"
   "185\\.48\\.182\\.165"
-  "#C6JGjP"
   "postgres://redcore:"
   "JWT_SECRET="
   "STRIPE_SECRET_KEY="

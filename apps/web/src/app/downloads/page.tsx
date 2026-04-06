@@ -89,6 +89,12 @@ export default async function DownloadsPage() {
               >
                 Learn more
               </Link>
+              <Link
+                href="/patch-notes"
+                className="text-[13px] text-[var(--text-disabled)] hover:text-[var(--text-secondary)] transition-colors"
+              >
+                Patch notes
+              </Link>
             </div>
 
             {os.available && (os.versionTag || os.sizeBytes) && (
@@ -108,7 +114,10 @@ export default async function DownloadsPage() {
                 >
                   GitHub releases
                 </a>{" "}
-                page.
+                page or read the{" "}
+                <Link href="/patch-notes" className="underline hover:text-amber-400">
+                  patch notes
+                </Link>.
               </p>
             )}
 

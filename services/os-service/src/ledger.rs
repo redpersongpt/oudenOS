@@ -122,7 +122,10 @@ pub fn create_plan(
             &action.action_id,
             "enqueued",
             "queued",
-            Some(&format!("pos={} phase={}", action.queue_position, action.phase)),
+            Some(&format!(
+                "pos={} phase={}",
+                action.queue_position, action.phase
+            )),
             action.package_source_ref.as_deref(),
             action.provenance_ref.as_deref(),
             None,
@@ -140,11 +143,7 @@ pub fn create_plan(
 
 // ─── Record action result ───────────────────────────────────────────────────
 
-pub fn record_action_result(
-    db: &Database,
-    plan_id: &str,
-    result: &ActionResult,
-) -> Result<()> {
+pub fn record_action_result(db: &Database, plan_id: &str, result: &ActionResult) -> Result<()> {
     let now = chrono::Utc::now().to_rfc3339();
 
     let queue_status = match result.status.as_str() {
@@ -209,7 +208,9 @@ pub fn mark_action_started(db: &Database, plan_id: &str, action_id: &str) -> Res
         rusqlite::params![now, plan_id, action_id],
     )?;
 
-    append_ledger_event(db, plan_id, action_id, "started", "running", None, None, None, None)?;
+    append_ledger_event(
+        db, plan_id, action_id, "started", "running", None, None, None, None,
+    )?;
     Ok(())
 }
 
@@ -240,7 +241,11 @@ pub fn mark_reboot_pending(db: &Database, plan_id: &str, reason: &str) -> Result
         None,
     )?;
 
-    tracing::info!(plan_id = plan_id, reason = reason, "Plan marked paused_reboot in DB ledger");
+    tracing::info!(
+        plan_id = plan_id,
+        reason = reason,
+        "Plan marked paused_reboot in DB ledger"
+    );
     Ok(())
 }
 
@@ -358,7 +363,17 @@ pub fn complete_plan(db: &Database, plan_id: &str) -> Result<()> {
         rusqlite::params![now, plan_id],
     )?;
 
-    append_ledger_event(db, plan_id, "__plan__", "completed", "completed", None, None, None, None)?;
+    append_ledger_event(
+        db,
+        plan_id,
+        "__plan__",
+        "completed",
+        "completed",
+        None,
+        None,
+        None,
+        None,
+    )?;
     Ok(())
 }
 
@@ -379,7 +394,17 @@ pub fn cancel_plan(db: &Database, plan_id: &str) -> Result<()> {
         rusqlite::params![now, plan_id],
     )?;
 
-    append_ledger_event(db, plan_id, "__plan__", "cancelled", "cancelled", None, None, None, None)?;
+    append_ledger_event(
+        db,
+        plan_id,
+        "__plan__",
+        "cancelled",
+        "cancelled",
+        None,
+        None,
+        None,
+        None,
+    )?;
     Ok(())
 }
 
@@ -473,8 +498,20 @@ pub fn query_plan_journal_state(db: &Database, plan_id: &str) -> Result<serde_js
         },
     )?;
 
-    let (id, pkg_id, pkg_role, pkg_ver, pkg_src, prov_ref, journal_ref, src_commit,
-         total, status, reboot_reason, last_resume) = plan;
+    let (
+        id,
+        pkg_id,
+        pkg_role,
+        pkg_ver,
+        pkg_src,
+        prov_ref,
+        journal_ref,
+        src_commit,
+        total,
+        status,
+        reboot_reason,
+        last_resume,
+    ) = plan;
 
     // Load all queue entries for this plan
     let mut stmt = db.conn().prepare(
@@ -510,30 +547,32 @@ pub fn query_plan_journal_state(db: &Database, plan_id: &str) -> Result<serde_js
         })?
         .collect::<Result<Vec<_>, _>>()?;
 
-    let completed_ids: Vec<String> = steps.iter()
+    let completed_ids: Vec<String> = steps
+        .iter()
         .filter(|s| s["status"] == "completed")
         .filter_map(|s| s["actionId"].as_str().map(String::from))
         .collect();
 
-    let failed_ids: Vec<String> = steps.iter()
+    let failed_ids: Vec<String> = steps
+        .iter()
         .filter(|s| s["status"] == "failed")
         .filter_map(|s| s["actionId"].as_str().map(String::from))
         .collect();
 
-    let remaining_refs: Vec<String> = steps.iter()
+    let remaining_refs: Vec<String> = steps
+        .iter()
         .filter(|s| s["status"] == "queued" || s["status"] == "running")
         .filter_map(|s| s["provenanceRef"].as_str().map(String::from))
         .collect();
 
-    let pending_reboot_ids: Vec<String> = steps.iter()
+    let pending_reboot_ids: Vec<String> = steps
+        .iter()
         .filter(|s| s["status"] == "awaiting_reboot")
         .filter_map(|s| s["actionId"].as_str().map(String::from))
         .collect();
 
     let completed_count = completed_ids.len() as i32;
-    let total_processed = steps.iter()
-        .filter(|s| s["status"] != "queued")
-        .count() as i32;
+    let total_processed = steps.iter().filter(|s| s["status"] != "queued").count() as i32;
     let progress = if total > 0 {
         ((completed_count as f64 / total as f64) * 100.0) as i32
     } else {
@@ -543,7 +582,9 @@ pub fn query_plan_journal_state(db: &Database, plan_id: &str) -> Result<serde_js
     let can_resume = status == "paused_reboot" && !remaining_refs.is_empty();
 
     // Find current action (first running or first queued)
-    let current = steps.iter().find(|s| s["status"] == "running")
+    let current = steps
+        .iter()
+        .find(|s| s["status"] == "running")
         .or_else(|| steps.iter().find(|s| s["status"] == "queued"));
 
     Ok(serde_json::json!({
@@ -664,8 +705,16 @@ fn append_ledger_event(
           provenance_ref, rollback_snapshot_id, timestamp)
          VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10)",
         rusqlite::params![
-            id, plan_id, action_id, event_type, status, detail,
-            package_source_ref, provenance_ref, rollback_snapshot_id, now,
+            id,
+            plan_id,
+            action_id,
+            event_type,
+            status,
+            detail,
+            package_source_ref,
+            provenance_ref,
+            rollback_snapshot_id,
+            now,
         ],
     )?;
 

@@ -2,26 +2,27 @@ import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useWizardStore } from "@/stores/wizard-store";
 import type { DetectedProfile } from "@/stores/wizard-store";
+import { platform } from "@/lib/platform";
 
 const SCAN_QUOTES = [
-  "READING SYSTEM MANIFEST...",
-  "CATALOGING INSTALLED PACKAGES...",
-  "CHECKING ENTERPRISE SIGNALS...",
-  "EVALUATING BLOAT LEVELS...",
-  "SCANNING SERVICE REGISTRY...",
-  "DETECTING VIRTUALIZATION...",
-  "MEASURING STARTUP IMPACT...",
-  "ANALYZING CONFIGURATION STATE...",
+  "Checking system details...",
+  "Reviewing installed apps...",
+  "Checking work profile signals...",
+  "Reviewing background software...",
+  "Checking services...",
+  "Checking virtualization...",
+  "Reviewing startup items...",
+  "Reading system settings...",
 ];
 
 const CATEGORIES = [
-  { id: "windows",  label: "WINDOWS VERSION",     desc: "BUILD & EDITION" },
-  { id: "packages", label: "INSTALLED APPS",       desc: "SOFTWARE INVENTORY" },
-  { id: "startup",  label: "STARTUP PROGRAMS",     desc: "BOOT IMPACT" },
-  { id: "services", label: "BACKGROUND SERVICES",  desc: "RUNNING SERVICES" },
-  { id: "tasks",    label: "SCHEDULED TASKS",       desc: "RECURRING TASKS" },
-  { id: "signals",  label: "WORK ENVIRONMENT",      desc: "ENTERPRISE SIGNALS" },
-  { id: "vm",       label: "VIRTUALIZATION",         desc: "VM DETECTION" },
+  { id: "windows",  label: "Windows version",     desc: "Build and edition" },
+  { id: "packages", label: "Installed apps",      desc: "Software inventory" },
+  { id: "startup",  label: "Startup programs",    desc: "Boot impact" },
+  { id: "services", label: "Background services", desc: "Running services" },
+  { id: "tasks",    label: "Scheduled tasks",     desc: "Recurring tasks" },
+  { id: "signals",  label: "Work profile",        desc: "Company-managed signals" },
+  { id: "vm",       label: "Virtualization",      desc: "Virtual machine check" },
 ] as const;
 
 type Status = "idle" | "scanning" | "done";
@@ -29,7 +30,7 @@ type Status = "idle" | "scanning" | "done";
 const DEMO_PROFILE: DetectedProfile = {
   id: "gaming_desktop", label: "Gaming Desktop", confidence: 92,
   isWorkPc: false, machineName: "OUDEN-PC",
-  signals: ["Steam detected", "No domain join", "NVIDIA GPU", "32 GB RAM"],
+  signals: ["Steam detected", "Not joined to a domain", "NVIDIA GPU", "32 GB RAM"],
   accentColor: "text-[var(--accent)]", windowsBuild: 22631,
 };
 
@@ -41,6 +42,8 @@ const PROFILE_LABELS: Record<string, string> = {
 };
 
 const ND_EASE = [0.25, 0.1, 0.25, 1] as const;
+const SIMULATED_SERVICE_TIMEOUT_MS = 4000;
+const LIVE_SERVICE_TIMEOUT_MS = 15000;
 
 // ── Helpers (unchanged logic) ───────────────────────────────────────────
 
@@ -100,11 +103,11 @@ function deriveSignalsFromAssessment(assessment: Record<string, unknown>, isWork
   const ramGb = readNumber(hardware.ramGb);
   if (ramGb !== null) signals.push(`${Math.round(ramGb)} GB RAM`);
   const domainJoined = readBoolean(workSignals.domainJoined);
-  if (domainJoined === true) signals.push("Domain joined");
-  if (domainJoined === false) signals.push("No domain join");
+  if (domainJoined === true) signals.push("Joined to a domain");
+  if (domainJoined === false) signals.push("Not joined to a domain");
   const cpuCores = readNumber(cpu.NumberOfCores) ?? readNumber(cpu.cores);
   if (cpuCores !== null) signals.push(`${Math.round(cpuCores)}-core CPU`);
-  if (isWorkPc) signals.push("Enterprise safeguards enabled");
+  if (isWorkPc) signals.push("Work profile safeguards enabled");
   return signals.slice(0, 6);
 }
 function readWindowsBuild(assessmentValue: Record<string, unknown>): number {
@@ -143,6 +146,24 @@ function normalizeDetectedProfileFromService(assessmentValue: unknown, classific
   };
 }
 
+async function withTimeout<T>(promise: Promise<T>, timeoutMs: number, label: string): Promise<T> {
+  return await new Promise<T>((resolve, reject) => {
+    const timer = window.setTimeout(() => {
+      reject(new Error(`${label} timed out after ${timeoutMs}ms`));
+    }, timeoutMs);
+
+    promise
+      .then((value) => {
+        window.clearTimeout(timer);
+        resolve(value);
+      })
+      .catch((error) => {
+        window.clearTimeout(timer);
+        reject(error);
+      });
+  });
+}
+
 // ── Component ───────────────────────────────────────────────────────────
 
 export function AssessmentStep() {
@@ -158,38 +179,66 @@ export function AssessmentStep() {
     started.current = true;
     let aborted = false;
 
+    const completeWithDemoProfile = async () => {
+      setDemoMode(true);
+      setDetectedProfile(DEMO_PROFILE);
+      setStatuses(Object.fromEntries(CATEGORIES.map((c) => [c.id, "done"])));
+      setStepReady("assessment", true);
+      if (!aborted) completeStep("assessment");
+    };
+
     const run = async () => {
       const { serviceCall } = await import("@/lib/service");
       setStatuses(Object.fromEntries(CATEGORIES.map((c) => [c.id, "scanning"])));
-      const assessResult = await serviceCall<unknown>("assess.full");
-      if (aborted) return;
-      if (assessResult.ok) {
-        const assessment = assessResult.data;
-        const assessmentId = isObject(assessment) ? readString(assessment.id) : null;
-        const classifyParams = assessmentId ? { assessmentId } : { assessment };
-        const classificationResult = await serviceCall<unknown>("classify.machine", classifyParams);
-        if (aborted) return;
-        const detectedProfile = normalizeDetectedProfileFromService(assessment, classificationResult.ok ? classificationResult.data : undefined);
-        if (detectedProfile) {
-          setStatuses(Object.fromEntries(CATEGORIES.map((c) => [c.id, "done"])));
-          setDetectedProfile(detectedProfile);
-          setDemoMode(false);
-          setTimeout(() => { if (!aborted) completeStep("assessment"); }, 800);
+
+      try {
+        const runtime = await platform().service.status().catch(() => ({
+          running: false,
+          mode: "demo",
+          isAdmin: false,
+          platform: "unknown",
+        }));
+
+        if (runtime.platform !== "win32" || runtime.mode === "simulated") {
+          await completeWithDemoProfile();
           return;
         }
-      }
-      setDemoMode(true);
-      for (let i = 0; i < CATEGORIES.length; i++) {
+
+        const timeoutMs = runtime.mode === "simulated" ? SIMULATED_SERVICE_TIMEOUT_MS : LIVE_SERVICE_TIMEOUT_MS;
+
+        const assessResult = await withTimeout(
+          serviceCall<unknown>("assess.full"),
+          timeoutMs,
+          "Assessment",
+        );
         if (aborted) return;
-        setStatuses((p) => ({ ...p, [CATEGORIES[i].id]: "scanning" }));
-        await new Promise((r) => setTimeout(r, 280));
-        if (aborted) return;
-        setStatuses((p) => ({ ...p, [CATEGORIES[i].id]: "done" }));
-        await new Promise((r) => setTimeout(r, 60));
+
+        if (assessResult.ok) {
+          const assessment = assessResult.data;
+          const assessmentId = isObject(assessment) ? readString(assessment.id) : null;
+          const classifyParams = assessmentId ? { assessmentId } : { assessment };
+          const classificationResult = await withTimeout(
+            serviceCall<unknown>("classify.machine", classifyParams),
+            timeoutMs,
+            "Classification",
+          );
+          if (aborted) return;
+          const detectedProfile = normalizeDetectedProfileFromService(
+            assessment,
+            classificationResult.ok ? classificationResult.data : undefined,
+          );
+          if (detectedProfile) {
+            setStatuses(Object.fromEntries(CATEGORIES.map((c) => [c.id, "done"])));
+            setDetectedProfile(detectedProfile);
+            setDemoMode(false);
+            setTimeout(() => { if (!aborted) completeStep("assessment"); }, 800);
+            return;
+          }
+        }
+      } catch (error) {
+        console.warn("[assessment] backend flow failed, falling back to demo profile", error);
       }
-      if (aborted) return;
-      setDetectedProfile(DEMO_PROFILE);
-      setTimeout(() => { if (!aborted) completeStep("assessment"); }, 600);
+      await completeWithDemoProfile();
     };
     run();
     return () => { aborted = true; };
@@ -234,10 +283,10 @@ export function AssessmentStep() {
       {/* Header */}
       <div className="text-center">
         <h2 className="font-display text-title text-[var(--text-display)]">
-          {isScanning ? "SCANNING" : "COMPLETE"}
+          {isScanning ? "Checking your system" : "Assessment complete"}
         </h2>
         <p className="mt-2 nd-label text-[var(--text-secondary)]">
-          {isScanning ? "ANALYZING HARDWARE, SOFTWARE, AND CONFIGURATION" : "SYSTEM PROFILE READY"}
+          {isScanning ? "Looking at hardware, software, and current settings" : "Your system profile is ready"}
         </p>
 
         {/* Status text */}
@@ -252,7 +301,7 @@ export function AssessmentStep() {
                 transition={{ duration: 0.2, ease: ND_EASE }}
                 className="nd-status text-[var(--text-disabled)]"
               >
-                [{SCAN_QUOTES[quoteIdx]}]
+                {SCAN_QUOTES[quoteIdx]}
               </motion.p>
             </AnimatePresence>
           </div>

@@ -12,6 +12,7 @@
     "dev": "vite",
     "build": "vite build",
     "tauri:dev": "cargo tauri dev --config src-tauri/tauri.conf.json",
+    "demo:mac": "node ../../scripts/run-os-mac-demo.mjs",
     "tauri:build": "cargo tauri build --config src-tauri/tauri.conf.production.json",
     "audit:questionnaire": "node test/questionnaire-invariants.mjs && tsx test/questionnaire-execution-audit.ts",
     "audit:verification": "tsx test/verification-matrix.ts --check --outputDir ../../artifacts/os-verification",

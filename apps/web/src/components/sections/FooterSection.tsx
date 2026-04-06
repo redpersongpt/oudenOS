@@ -9,6 +9,7 @@ const productLinks = [
 ];
 
 const resourceLinks = [
+  { label: "Patch Notes",        href: "/patch-notes" },
   { label: "Windows Debloat",    href: "/windows-debloat" },
   { label: "Windows 11 Debloat", href: "/windows-11-debloat" },
   { label: "Custom Windows",     href: "/custom-windows" },

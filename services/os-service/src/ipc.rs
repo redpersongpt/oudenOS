@@ -3,12 +3,15 @@
 // Each line is a JSON-RPC request; each response is a single JSON line.
 
 use crate::db::Database;
-use crate::{assessor, classifier, executor, ledger, personalizer, playbook, rollback, transformer};
+use crate::{
+    assessor, classifier, executor, ledger, personalizer, playbook, questionnaire, rollback,
+    transformer,
+};
 use anyhow::Result;
 use serde::{Deserialize, Serialize};
 use std::time::Instant;
-use tokio::process::Command;
 use tokio::io::{self, AsyncBufReadExt, AsyncWriteExt, BufReader};
+use tokio::process::Command;
 
 #[derive(Debug, Deserialize)]
 struct RpcRequest {
@@ -146,11 +149,7 @@ pub async fn serve(db: Database) -> Result<()> {
     Ok(())
 }
 
-async fn dispatch(
-    db: &Database,
-    req: &RpcRequest,
-    start_time: Instant,
-) -> RpcResponse {
+async fn dispatch(db: &Database, req: &RpcRequest, start_time: Instant) -> RpcResponse {
     let id = req.id;
     let params = &req.params;
 
@@ -189,9 +188,18 @@ async fn dispatch(
                 Ok(result) => {
                     let detail = format!(
                         "reboot scheduled · planId={} · packageId={} · packageRole={}",
-                        result.get("planId").and_then(|value| value.as_str()).unwrap_or("null"),
-                        result.get("packageId").and_then(|value| value.as_str()).unwrap_or("null"),
-                        result.get("packageRole").and_then(|value| value.as_str()).unwrap_or("null"),
+                        result
+                            .get("planId")
+                            .and_then(|value| value.as_str())
+                            .unwrap_or("null"),
+                        result
+                            .get("packageId")
+                            .and_then(|value| value.as_str())
+                            .unwrap_or("null"),
+                        result
+                            .get("packageRole")
+                            .and_then(|value| value.as_str())
+                            .unwrap_or("null"),
                     );
                     let _ = append_audit_log(db, "journal", "reboot_scheduled", &detail, "info");
                     RpcResponse::ok(id, result)
@@ -236,9 +244,7 @@ async fn dispatch(
 
         // ── Classification ──────────────────────────────────────────────
         "classify.machine" => {
-            let assessment_id = params
-                .get("assessmentId")
-                .and_then(|v| v.as_str());
+            let assessment_id = params.get("assessmentId").and_then(|v| v.as_str());
 
             // Load assessment: by ID, inline, or latest from DB
             let assessment = if let Some(aid) = assessment_id {
@@ -276,9 +282,7 @@ async fn dispatch(
 
         // ── Transformation plan ─────────────────────────────────────────
         "transform.plan" => {
-            let classification_id = params
-                .get("classificationId")
-                .and_then(|v| v.as_str());
+            let classification_id = params.get("classificationId").and_then(|v| v.as_str());
             let preset = params
                 .get("preset")
                 .and_then(|v| v.as_str())
@@ -361,12 +365,9 @@ async fn dispatch(
             let action_data = if let Some(data) = params.get("actionData") {
                 data.clone()
             } else {
-                let playbook_dir = resolve_playbook_dir()
-                    .unwrap_or_else(playbook::default_playbook_dir);
-                let playbook_lookup = playbook::find_action_definition(
-                    &playbook_dir,
-                    action_id,
-                );
+                let playbook_dir =
+                    resolve_playbook_dir().unwrap_or_else(playbook::default_playbook_dir);
+                let playbook_lookup = playbook::find_action_definition(&playbook_dir, action_id);
 
                 match playbook_lookup {
                     Ok(Some(def)) => def,
@@ -385,11 +386,7 @@ async fn dispatch(
                     },
                     Err(e) => {
                         tracing::error!(action_id = action_id, error = %e, "Playbook action lookup failed");
-                        return RpcResponse::err(
-                            id,
-                            -20,
-                            format!("Action lookup failed: {}", e),
-                        );
+                        return RpcResponse::err(id, -20, format!("Action lookup failed: {}", e));
                     }
                 }
             };
@@ -405,7 +402,11 @@ async fn dispatch(
                     context.package.package_id,
                     context.package.package_role,
                     context.action.provenance_ref.as_deref().unwrap_or("null"),
-                    context.action.package_source_ref.as_deref().unwrap_or("null"),
+                    context
+                        .action
+                        .package_source_ref
+                        .as_deref()
+                        .unwrap_or("null"),
                 )
             });
 
@@ -443,15 +444,33 @@ async fn dispatch(
                         }
 
                         if let Some(object) = enriched_outcome.as_object_mut() {
-                            object.insert("packageId".to_string(), serde_json::json!(context.package.package_id));
-                            object.insert("packageRole".to_string(), serde_json::json!(context.package.package_role));
-                            object.insert("packageSourceRef".to_string(), serde_json::json!(context.action.package_source_ref));
-                            object.insert("provenanceRef".to_string(), serde_json::json!(context.action.provenance_ref));
+                            object.insert(
+                                "packageId".to_string(),
+                                serde_json::json!(context.package.package_id),
+                            );
+                            object.insert(
+                                "packageRole".to_string(),
+                                serde_json::json!(context.package.package_role),
+                            );
+                            object.insert(
+                                "packageSourceRef".to_string(),
+                                serde_json::json!(context.action.package_source_ref),
+                            );
+                            object.insert(
+                                "provenanceRef".to_string(),
+                                serde_json::json!(context.action.provenance_ref),
+                            );
                             object.insert(
                                 "journalRef".to_string(),
                                 serde_json::json!(format!(
                                     "{}#/{}",
-                                    context.package.execution_journal_ref.clone().unwrap_or_else(|| "state/execution-journal.json".to_string()),
+                                    context
+                                        .package
+                                        .execution_journal_ref
+                                        .clone()
+                                        .unwrap_or_else(
+                                            || "state/execution-journal.json".to_string()
+                                        ),
                                     context.action.action_id
                                 )),
                             );
@@ -466,13 +485,17 @@ async fn dispatch(
 
                     // Record failure in DB ledger if context available
                     if let Some(context) = journal_context.as_ref() {
-                        let _ = ledger::record_action_result(db, &context.package.plan_id, &ledger::ActionResult {
-                            action_id: action_id.to_string(),
-                            status: "failed".to_string(),
-                            rollback_snapshot_id: None,
-                            error_message: Some(format!("{}", e)),
-                            duration_ms: None,
-                        });
+                        let _ = ledger::record_action_result(
+                            db,
+                            &context.package.plan_id,
+                            &ledger::ActionResult {
+                                action_id: action_id.to_string(),
+                                status: "failed".to_string(),
+                                rollback_snapshot_id: None,
+                                error_message: Some(format!("{}", e)),
+                                duration_ms: None,
+                            },
+                        );
                     }
 
                     RpcResponse::err(id, -20, format!("Action failed: {}", e))
@@ -481,25 +504,19 @@ async fn dispatch(
         }
 
         // ── Rollback ────────────────────────────────────────────────────
-        "rollback.list" => {
-            match rollback::list_snapshots(db) {
-                Ok(snapshots) => RpcResponse::ok(id, serde_json::json!(snapshots)),
-                Err(e) => {
-                    tracing::error!("Failed to list snapshots: {}", e);
-                    RpcResponse::err(id, -30, format!("Failed to list snapshots: {}", e))
-                }
+        "rollback.list" => match rollback::list_snapshots(db) {
+            Ok(snapshots) => RpcResponse::ok(id, serde_json::json!(snapshots)),
+            Err(e) => {
+                tracing::error!("Failed to list snapshots: {}", e);
+                RpcResponse::err(id, -30, format!("Failed to list snapshots: {}", e))
             }
-        }
+        },
 
         "rollback.restore" => {
             let snapshot_id = match params.get("snapshotId").and_then(|v| v.as_str()) {
                 Some(sid) => sid,
                 None => {
-                    return RpcResponse::err(
-                        id,
-                        -3,
-                        "Missing required param: snapshotId".into(),
-                    );
+                    return RpcResponse::err(id, -3, "Missing required param: snapshotId".into());
                 }
             };
 
@@ -519,10 +536,7 @@ async fn dispatch(
         }
 
         "rollback.audit" => {
-            let limit = params
-                .get("limit")
-                .and_then(|v| v.as_u64())
-                .unwrap_or(50) as usize;
+            let limit = params.get("limit").and_then(|v| v.as_u64()).unwrap_or(50) as usize;
 
             match query_audit_log(db, limit) {
                 Ok(entries) => RpcResponse::ok(id, serde_json::json!(entries)),
@@ -534,35 +548,34 @@ async fn dispatch(
         }
 
         // ── Journal / reboot-resume (DB-backed ledger — sole truth path) ──
-        "journal.state" => {
-            match ledger::load_active_plan(db) {
-                Ok(Some(plan)) => {
-                    match ledger::query_plan_journal_state(db, &plan.id) {
-                        Ok(state) => RpcResponse::ok(id, state),
-                        Err(e) => {
-                            tracing::error!(error = %e, "Failed to query DB ledger state");
-                            RpcResponse::err(id, -61, format!("Ledger query failed: {}", e))
-                        }
-                    }
-                }
-                Ok(None) => RpcResponse::ok(id, serde_json::Value::Null),
+        "journal.state" => match ledger::load_active_plan(db) {
+            Ok(Some(plan)) => match ledger::query_plan_journal_state(db, &plan.id) {
+                Ok(state) => RpcResponse::ok(id, state),
                 Err(e) => {
-                    tracing::error!(error = %e, "Failed to query DB ledger");
-                    RpcResponse::err(id, -61, format!("Ledger error: {}", e))
+                    tracing::error!(error = %e, "Failed to query DB ledger state");
+                    RpcResponse::err(id, -61, format!("Ledger query failed: {}", e))
                 }
+            },
+            Ok(None) => RpcResponse::ok(id, serde_json::Value::Null),
+            Err(e) => {
+                tracing::error!(error = %e, "Failed to query DB ledger");
+                RpcResponse::err(id, -61, format!("Ledger error: {}", e))
             }
         },
 
-        "journal.resume" => {
-            match ledger::load_active_plan(db) {
-                Ok(Some(plan)) if plan.status == "paused_reboot" => {
-                    match ledger::resume_plan(db, &plan.id) {
-                        Ok(resume_result) => {
-                            let remaining_count = resume_result.remaining_actions.len();
-                            let package_id = resume_result.package.as_ref().map(|p| p.package_id.clone());
-                            let package_role = resume_result.package.as_ref().map(|p| p.package_role.clone());
+        "journal.resume" => match ledger::load_active_plan(db) {
+            Ok(Some(plan)) if plan.status == "paused_reboot" => {
+                match ledger::resume_plan(db, &plan.id) {
+                    Ok(resume_result) => {
+                        let remaining_count = resume_result.remaining_actions.len();
+                        let package_id =
+                            resume_result.package.as_ref().map(|p| p.package_id.clone());
+                        let package_role = resume_result
+                            .package
+                            .as_ref()
+                            .map(|p| p.package_role.clone());
 
-                            let remaining_actions: Vec<serde_json::Value> = resume_result.remaining_actions.iter().map(|entry| {
+                        let remaining_actions: Vec<serde_json::Value> = resume_result.remaining_actions.iter().map(|entry| {
                                 serde_json::json!({
                                     "actionId": entry.action_id,
                                     "actionName": entry.action_name,
@@ -578,46 +591,47 @@ async fn dispatch(
                                 })
                             }).collect();
 
-                            let detail = format!(
-                                "resume · planId={} · packageId={} · remaining={}",
-                                plan.id,
-                                package_id.clone().unwrap_or_else(|| "null".to_string()),
-                                remaining_count,
-                            );
-                            let _ = append_audit_log(db, "journal", "resume_from_ledger", &detail, "info");
+                        let detail = format!(
+                            "resume · planId={} · packageId={} · remaining={}",
+                            plan.id,
+                            package_id.clone().unwrap_or_else(|| "null".to_string()),
+                            remaining_count,
+                        );
+                        let _ =
+                            append_audit_log(db, "journal", "resume_from_ledger", &detail, "info");
 
-                            RpcResponse::ok(
-                                id,
-                                serde_json::json!({
-                                    "status": "resumed",
-                                    "resumed": remaining_count,
-                                    "planId": plan.id,
-                                    "packageId": package_id,
-                                    "packageRole": package_role,
-                                    "remainingActions": remaining_actions,
-                                }),
-                            )
-                        }
-                        Err(e) => {
-                            tracing::error!(error = %e, "Ledger resume failed");
-                            RpcResponse::err(id, -62, format!("Resume failed: {}", e))
-                        }
+                        RpcResponse::ok(
+                            id,
+                            serde_json::json!({
+                                "status": "resumed",
+                                "resumed": remaining_count,
+                                "planId": plan.id,
+                                "packageId": package_id,
+                                "packageRole": package_role,
+                                "remainingActions": remaining_actions,
+                            }),
+                        )
+                    }
+                    Err(e) => {
+                        tracing::error!(error = %e, "Ledger resume failed");
+                        RpcResponse::err(id, -62, format!("Resume failed: {}", e))
                     }
                 }
-                Ok(_) => {
-                    RpcResponse::ok(id, serde_json::json!({
-                        "status": "complete",
-                        "resumed": 0,
-                        "planId": serde_json::Value::Null,
-                        "packageId": serde_json::Value::Null,
-                        "packageRole": serde_json::Value::Null,
-                        "remainingActions": [],
-                    }))
-                }
-                Err(e) => {
-                    tracing::error!(error = %e, "Ledger query failed during resume");
-                    RpcResponse::err(id, -62, format!("Resume failed: {}", e))
-                }
+            }
+            Ok(_) => RpcResponse::ok(
+                id,
+                serde_json::json!({
+                    "status": "complete",
+                    "resumed": 0,
+                    "planId": serde_json::Value::Null,
+                    "packageId": serde_json::Value::Null,
+                    "packageRole": serde_json::Value::Null,
+                    "remainingActions": [],
+                }),
+            ),
+            Err(e) => {
+                tracing::error!(error = %e, "Ledger query failed during resume");
+                RpcResponse::err(id, -62, format!("Resume failed: {}", e))
             }
         },
 
@@ -628,13 +642,22 @@ async fn dispatch(
                     return RpcResponse::err(id, -63, format!("Cancel failed: {}", e));
                 }
             }
-            let _ = append_audit_log(db, "journal", "resume_cancelled", "cancelled via ledger", "info");
+            let _ = append_audit_log(
+                db,
+                "journal",
+                "resume_cancelled",
+                "cancelled via ledger",
+                "info",
+            );
             RpcResponse::ok(id, serde_json::json!({ "status": "cancelled" }))
-        },
+        }
 
         // ── Full pipeline: assess + classify + plan in one call ─────────
         "pipeline.assessClassifyPlan" => {
-            let preset = params.get("preset").and_then(|v| v.as_str()).unwrap_or("conservative");
+            let preset = params
+                .get("preset")
+                .and_then(|v| v.as_str())
+                .unwrap_or("conservative");
 
             // Step 1: Assess
             let assessment = match assessor::assess_system().await {
@@ -658,7 +681,9 @@ async fn dispatch(
                     let _ = store_classification(db, None, &c);
                     c
                 }
-                Err(e) => return RpcResponse::err(id, -11, format!("Classification failed: {}", e)),
+                Err(e) => {
+                    return RpcResponse::err(id, -11, format!("Classification failed: {}", e))
+                }
             };
 
             // Step 3: Plan
@@ -667,22 +692,27 @@ async fn dispatch(
                     let _ = store_plan(db, None, preset, &p);
                     p
                 }
-                Err(e) => return RpcResponse::err(id, -12, format!("Plan generation failed: {}", e)),
+                Err(e) => {
+                    return RpcResponse::err(id, -12, format!("Plan generation failed: {}", e))
+                }
             };
 
-            RpcResponse::ok(id, serde_json::json!({
-                "assessment": {
-                    "windows": assessment.get("windows"),
-                    "appx": assessment.get("appx"),
-                    "services": assessment.get("services"),
-                    "vm": assessment.get("vm"),
-                    "workSignals": assessment.get("workSignals"),
-                    "hardware": assessment.get("hardware"),
-                    "overallScore": assessment.get("overallScore"),
-                },
-                "classification": classification,
-                "plan": plan,
-            }))
+            RpcResponse::ok(
+                id,
+                serde_json::json!({
+                    "assessment": {
+                        "windows": assessment.get("windows"),
+                        "appx": assessment.get("appx"),
+                        "services": assessment.get("services"),
+                        "vm": assessment.get("vm"),
+                        "workSignals": assessment.get("workSignals"),
+                        "hardware": assessment.get("hardware"),
+                        "overallScore": assessment.get("overallScore"),
+                    },
+                    "classification": classification,
+                    "plan": plan,
+                }),
+            )
         }
 
         // ── Personalization ──────────────────────────────────────────────
@@ -701,11 +731,7 @@ async fn dispatch(
             let profile = match params.get("profile").and_then(|v| v.as_str()) {
                 Some(p) => p,
                 None => {
-                    return RpcResponse::err(
-                        id,
-                        -3,
-                        "Missing required param: profile".into(),
-                    );
+                    return RpcResponse::err(id, -3, "Missing required param: profile".into());
                 }
             };
 
@@ -729,11 +755,7 @@ async fn dispatch(
             let snapshot_id = match params.get("snapshotId").and_then(|v| v.as_str()) {
                 Some(sid) => sid,
                 None => {
-                    return RpcResponse::err(
-                        id,
-                        -3,
-                        "Missing required param: snapshotId".into(),
-                    );
+                    return RpcResponse::err(id, -3, "Missing required param: snapshotId".into());
                 }
             };
 
@@ -753,10 +775,71 @@ async fn dispatch(
         }
 
         // ── Playbook: load and resolve ─────────────────────────────────
+        "questionnaire.resolve" => {
+            let profile = params
+                .get("profile")
+                .and_then(|v| v.as_str())
+                .unwrap_or("gaming_desktop");
+            let windows_build = params
+                .get("windowsBuild")
+                .and_then(|v| v.as_u64())
+                .map(|value| value as u32)
+                .unwrap_or(22631);
+
+            let playbook_dir = match resolve_playbook_dir() {
+                Some(d) => d,
+                None => {
+                    return RpcResponse::err(id, -50, "Playbook directory not found".into());
+                }
+            };
+
+            match crate::playbook::load_playbook(&playbook_dir) {
+                Ok(playbook) => {
+                    match questionnaire::load_questionnaire_schema(&playbook_dir, &playbook) {
+                        Ok(schema) => {
+                            let mut result = serde_json::to_value(schema)
+                                .unwrap_or_else(|_| serde_json::json!({}));
+                            if let Some(obj) = result.as_object_mut() {
+                                obj.insert("profile".to_string(), serde_json::json!(profile));
+                                obj.insert(
+                                    "windowsBuild".to_string(),
+                                    serde_json::json!(windows_build),
+                                );
+                            }
+                            RpcResponse::ok(id, result)
+                        }
+                        Err(e) => {
+                            RpcResponse::err(id, -52, format!("Questionnaire load failed: {}", e))
+                        }
+                    }
+                }
+                Err(e) => {
+                    tracing::error!(error = %e, "Playbook load failed");
+                    RpcResponse::err(id, -51, format!("Playbook load failed: {}", e))
+                }
+            }
+        }
+
         "playbook.resolve" => {
-            let profile = params.get("profile").and_then(|v| v.as_str()).unwrap_or("gaming_desktop");
-            let preset = params.get("preset").and_then(|v| v.as_str()).unwrap_or("balanced");
-            let windows_build = params.get("windowsBuild").and_then(|v| v.as_u64()).map(|b| b as u32);
+            let profile = params
+                .get("profile")
+                .and_then(|v| v.as_str())
+                .unwrap_or("gaming_desktop");
+            let preset = params
+                .get("preset")
+                .and_then(|v| v.as_str())
+                .unwrap_or("balanced");
+            let windows_build = params
+                .get("windowsBuild")
+                .and_then(|v| v.as_u64())
+                .map(|b| b as u32);
+            let answers = params
+                .get("answers")
+                .cloned()
+                .and_then(|value| {
+                    serde_json::from_value::<questionnaire::QuestionnaireAnswers>(value).ok()
+                })
+                .unwrap_or_default();
 
             let playbook_dir = match resolve_playbook_dir() {
                 Some(d) => d,
@@ -774,13 +857,39 @@ async fn dispatch(
 
             match crate::playbook::load_playbook(&playbook_dir) {
                 Ok(playbook) => {
-                    let plan = crate::playbook::resolve_plan(&playbook, profile, preset, windows_build);
-                    let mut result = plan.to_json();
+                    let windows_build = windows_build.unwrap_or(22631);
+                    let plan = crate::playbook::resolve_plan(
+                        &playbook,
+                        profile,
+                        preset,
+                        Some(windows_build),
+                    );
+                    let mut result =
+                        match questionnaire::load_questionnaire_schema(&playbook_dir, &playbook) {
+                            Ok(schema) => questionnaire::evaluate_answers_on_plan(
+                                &schema,
+                                &answers,
+                                profile,
+                                windows_build,
+                                &plan,
+                            )
+                            .to_json(),
+                            Err(_) => plan.to_json(),
+                        };
                     // Add manifest metadata
                     if let Some(obj) = result.as_object_mut() {
-                        obj.insert("playbookName".to_string(), serde_json::json!(playbook.manifest.name));
-                        obj.insert("playbookVersion".to_string(), serde_json::json!(playbook.manifest.version));
-                        obj.insert("totalActions".to_string(), serde_json::json!(playbook.total_actions));
+                        obj.insert(
+                            "playbookName".to_string(),
+                            serde_json::json!(playbook.manifest.name),
+                        );
+                        obj.insert(
+                            "playbookVersion".to_string(),
+                            serde_json::json!(playbook.manifest.version),
+                        );
+                        obj.insert(
+                            "totalActions".to_string(),
+                            serde_json::json!(playbook.total_actions),
+                        );
                     }
                     RpcResponse::ok(id, result)
                 }
@@ -806,35 +915,57 @@ async fn dispatch(
                 None => return RpcResponse::err(id, -3, "Missing param: valueName".into()),
             };
 
-            tracing::info!(hive = hive, path = path, value_name = value_name, "Verifying registry value");
+            tracing::info!(
+                hive = hive,
+                path = path,
+                value_name = value_name,
+                "Verifying registry value"
+            );
             let current = executor::read_registry_value_public(hive, path, value_name);
 
-            RpcResponse::ok(id, serde_json::json!({
-                "hive": hive,
-                "path": path,
-                "valueName": value_name,
-                "currentValue": current,
-                "exists": current.is_some(),
-            }))
+            RpcResponse::ok(
+                id,
+                serde_json::json!({
+                    "hive": hive,
+                    "path": path,
+                    "valueName": value_name,
+                    "currentValue": current,
+                    "exists": current.is_some(),
+                }),
+            )
         }
 
         // App bundle system removed — app installs can register RunOnce/Active Setup
         // entries that wedge Windows logon (black screen, no taskbar).
-        "appbundle.getRecommended" | "appbundle.resolve" | "appbundle.install" => {
-            RpcResponse::err(id, -100, "App install system has been removed from RedcoreOS.".into())
-        }
+        "appbundle.getRecommended" | "appbundle.resolve" | "appbundle.install" => RpcResponse::err(
+            id,
+            -100,
+            "App install system has been removed from RedcoreOS.".into(),
+        ),
 
         // ── Execution Ledger: DB-backed plan/queue management ────────────
         "ledger.createPlan" => {
             let package = match serde_json::from_value::<ledger::PackageIdentity>(
-                params.get("package").cloned().unwrap_or(serde_json::Value::Null)
+                params
+                    .get("package")
+                    .cloned()
+                    .unwrap_or(serde_json::Value::Null),
             ) {
                 Ok(p) => p,
-                Err(e) => return RpcResponse::err(id, -3, format!("Invalid package identity: {}", e)),
+                Err(e) => {
+                    return RpcResponse::err(id, -3, format!("Invalid package identity: {}", e))
+                }
             };
-            let profile = params.get("profile").and_then(|v| v.as_str()).unwrap_or("gaming_desktop");
-            let preset = params.get("preset").and_then(|v| v.as_str()).unwrap_or("balanced");
-            let actions: Vec<ledger::QueuedAction> = params.get("actions")
+            let profile = params
+                .get("profile")
+                .and_then(|v| v.as_str())
+                .unwrap_or("gaming_desktop");
+            let preset = params
+                .get("preset")
+                .and_then(|v| v.as_str())
+                .unwrap_or("balanced");
+            let actions: Vec<ledger::QueuedAction> = params
+                .get("actions")
                 .and_then(|v| serde_json::from_value(v.clone()).ok())
                 .unwrap_or_default();
 
@@ -844,13 +975,26 @@ async fn dispatch(
 
             match ledger::create_plan(db, &package, profile, preset, &actions) {
                 Ok(plan_id) => {
-                    let _ = append_audit_log(db, "ledger", "plan_created",
-                        &format!("planId={} actions={} package={}", plan_id, actions.len(), package.package_id), "info");
-                    RpcResponse::ok(id, serde_json::json!({
-                        "planId": plan_id,
-                        "totalActions": actions.len(),
-                        "status": "running",
-                    }))
+                    let _ = append_audit_log(
+                        db,
+                        "ledger",
+                        "plan_created",
+                        &format!(
+                            "planId={} actions={} package={}",
+                            plan_id,
+                            actions.len(),
+                            package.package_id
+                        ),
+                        "info",
+                    );
+                    RpcResponse::ok(
+                        id,
+                        serde_json::json!({
+                            "planId": plan_id,
+                            "totalActions": actions.len(),
+                            "status": "running",
+                        }),
+                    )
                 }
                 Err(e) => {
                     tracing::error!(error = %e, "Failed to create execution plan");
@@ -865,7 +1009,10 @@ async fn dispatch(
                 None => return RpcResponse::err(id, -3, "Missing param: planId".into()),
             };
             let result = match serde_json::from_value::<ledger::ActionResult>(
-                params.get("result").cloned().unwrap_or(serde_json::Value::Null)
+                params
+                    .get("result")
+                    .cloned()
+                    .unwrap_or(serde_json::Value::Null),
             ) {
                 Ok(r) => r,
                 Err(e) => return RpcResponse::err(id, -3, format!("Invalid action result: {}", e)),
@@ -904,8 +1051,13 @@ async fn dispatch(
 
             match ledger::complete_plan(db, plan_id) {
                 Ok(()) => {
-                    let _ = append_audit_log(db, "ledger", "plan_completed",
-                        &format!("planId={}", plan_id), "info");
+                    let _ = append_audit_log(
+                        db,
+                        "ledger",
+                        "plan_completed",
+                        &format!("planId={}", plan_id),
+                        "info",
+                    );
                     RpcResponse::ok(id, serde_json::json!({ "status": "completed" }))
                 }
                 Err(e) => RpcResponse::err(id, -73, format!("Failed to complete plan: {}", e)),
@@ -922,11 +1074,20 @@ async fn dispatch(
                 match ledger::load_active_plan(db) {
                     Ok(Some(plan)) => plan.id,
                     Ok(None) => return RpcResponse::ok(id, serde_json::Value::Null),
-                    Err(e) => return RpcResponse::err(id, -74, format!("Failed to find active plan: {}", e)),
+                    Err(e) => {
+                        return RpcResponse::err(
+                            id,
+                            -74,
+                            format!("Failed to find active plan: {}", e),
+                        )
+                    }
                 }
             };
 
-            let include_ledger = params.get("includeLedger").and_then(|v| v.as_bool()).unwrap_or(false);
+            let include_ledger = params
+                .get("includeLedger")
+                .and_then(|v| v.as_bool())
+                .unwrap_or(false);
 
             match ledger::query_plan_journal_state(db, &target_plan_id) {
                 Ok(mut state) => {
@@ -966,7 +1127,14 @@ fn resolve_playbook_dir() -> Option<std::path::PathBuf> {
             candidates.push(parent.join("playbooks"));
             candidates.push(parent.join("resources").join("playbooks"));
             candidates.push(parent.join("..").join("resources").join("playbooks"));
-            candidates.push(parent.join("..").join("..").join("..").join("..").join("playbooks"));
+            candidates.push(
+                parent
+                    .join("..")
+                    .join("..")
+                    .join("..")
+                    .join("..")
+                    .join("playbooks"),
+            );
         }
     }
 
@@ -1009,12 +1177,27 @@ fn append_audit_log(
     Ok(())
 }
 
-async fn schedule_system_reboot(reason: &str, reboot_context: Option<RpcRebootJournalContext>) -> anyhow::Result<serde_json::Value> {
-    let safe_reason = reason.chars().filter(|c| !c.is_control()).collect::<String>()
-        .split_whitespace().collect::<Vec<_>>().join(" ");
-    let safe_reason = if safe_reason.is_empty() { "playbook-reboot-required".to_string() } else { safe_reason.chars().take(120).collect() };
+async fn schedule_system_reboot(
+    reason: &str,
+    reboot_context: Option<RpcRebootJournalContext>,
+) -> anyhow::Result<serde_json::Value> {
+    let safe_reason = reason
+        .chars()
+        .filter(|c| !c.is_control())
+        .collect::<String>()
+        .split_whitespace()
+        .collect::<Vec<_>>()
+        .join(" ");
+    let safe_reason = if safe_reason.is_empty() {
+        "playbook-reboot-required".to_string()
+    } else {
+        safe_reason.chars().take(120).collect()
+    };
 
-    let plan_id = reboot_context.as_ref().map(|c| c.plan_id.clone()).unwrap_or_else(|| "reboot".to_string());
+    let plan_id = reboot_context
+        .as_ref()
+        .map(|c| c.plan_id.clone())
+        .unwrap_or_else(|| "reboot".to_string());
     let package_id = reboot_context.as_ref().map(|c| c.package_id.clone());
     let package_role = reboot_context.as_ref().map(|c| c.package_role.clone());
 
@@ -1067,11 +1250,11 @@ fn store_assessment(db: &Database, assessment: &serde_json::Value) -> anyhow::Re
 }
 
 fn load_assessment(db: &Database, id: &str) -> anyhow::Result<serde_json::Value> {
-    let data: String = db.conn().query_row(
-        "SELECT data FROM assessments WHERE id = ?1",
-        [id],
-        |row| row.get(0),
-    )?;
+    let data: String =
+        db.conn()
+            .query_row("SELECT data FROM assessments WHERE id = ?1", [id], |row| {
+                row.get(0)
+            })?;
     Ok(serde_json::from_str(&data)?)
 }
 
@@ -1094,9 +1277,7 @@ fn store_classification(
         .as_str()
         .unwrap_or("unknown")
         .to_string();
-    let confidence = classification["confidence"]
-        .as_f64()
-        .unwrap_or(0.0);
+    let confidence = classification["confidence"].as_f64().unwrap_or(0.0);
     let data = serde_json::to_string(classification)?;
     // Use NULL when no stored assessment exists to avoid FK violation
     let aid: Option<&str> = assessment_id;
@@ -1131,10 +1312,7 @@ fn store_plan(
     plan: &serde_json::Value,
 ) -> anyhow::Result<String> {
     let fallback_id = uuid::Uuid::new_v4().to_string();
-    let id = plan["id"]
-        .as_str()
-        .unwrap_or(&fallback_id)
-        .to_string();
+    let id = plan["id"].as_str().unwrap_or(&fallback_id).to_string();
     let now = chrono::Utc::now().to_rfc3339();
     // Use NULL when no stored classification exists to avoid FK violation
     let cid: Option<&str> = classification_id;
@@ -1150,10 +1328,7 @@ fn store_plan(
     Ok(id)
 }
 
-fn query_audit_log(
-    db: &Database,
-    limit: usize,
-) -> anyhow::Result<Vec<serde_json::Value>> {
+fn query_audit_log(db: &Database, limit: usize) -> anyhow::Result<Vec<serde_json::Value>> {
     let mut stmt = db.conn().prepare(
         "SELECT id, timestamp, category, action, detail, severity
          FROM audit_log ORDER BY timestamp DESC LIMIT ?1",
