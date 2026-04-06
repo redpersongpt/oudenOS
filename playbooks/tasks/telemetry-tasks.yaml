@@ -73,12 +73,13 @@ actions:
 
   - id: tasks.disable-cloud-content-tasks
     name: "Disable Cloud Content & Spotlight Tasks"
-    description: "Disable Windows Spotlight, cloud content delivery, and lock screen suggestion tasks"
-    rationale: "Cloud content tasks download promotional content, lock screen suggestions, and app suggestions from Microsoft servers"
-    risk: safe
+    description: "Disable Windows Spotlight, cloud content delivery, and lock screen suggestion tasks. Disabling CloudExperienceHostLauncher may cause significantly slower first login on new user profiles."
+    rationale: "Cloud content tasks download promotional content, lock screen suggestions, and app suggestions from Microsoft servers. WARNING: CloudExperienceHostLauncher is used during login for OOBE and new-profile provisioning. Disabling it can cause 5-20 minute login delays on fresh profiles as Windows waits for the task to timeout."
+    risk: low
     tier: free
     default: false
     requiresReboot: false
+    warningMessage: "May cause significantly slower first login on new user profiles (5-20 minutes). Windows waits for CloudExperienceHost to timeout during profile provisioning."
     reversible: true
     estimatedSeconds: 3
     blockedProfiles: []
@@ -108,12 +109,13 @@ actions:
 
   - id: tasks.disable-update-tasks
     name: "Disable Update Orchestrator Tasks"
-    description: "Disable Windows Update Orchestrator scheduled tasks to reduce background update activity"
-    rationale: "Prevents unexpected update downloads and restarts during use"
+    description: "Disable Windows Update Orchestrator scheduled tasks to reduce background update activity. May cause 10-20 minute shutdown delays if disabled while an update cycle is in progress."
+    rationale: "Prevents unexpected update downloads and restarts during use. WARNING: If Windows Update is mid-operation when these tasks are disabled, shutdown can hang for 10-20 minutes waiting for the orchestrator cycle to complete. Apply this AFTER a clean shutdown, not during active update checks."
     risk: medium
     tier: free
     default: false
-    requiresReboot: false
+    requiresReboot: true
+    warningMessage: "If Windows Update is mid-operation, shutdown may hang for 10-20 minutes. Apply after a clean restart for best results."
     reversible: true
     estimatedSeconds: 5
     blockedProfiles:

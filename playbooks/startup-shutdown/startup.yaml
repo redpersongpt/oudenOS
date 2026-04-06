@@ -8,12 +8,13 @@ category: startup
 actions:
   - id: startup.disable-background-apps
     name: "Disable Background Apps"
-    description: "Prevent UWP apps from running in the background to reduce resource usage"
-    rationale: "Background UWP apps consume CPU, memory, and network resources even when not in use"
-    risk: low
+    description: "Prevent UWP apps from running in the background to reduce resource usage. On Windows 11 24H2+, this may affect Explorer context menu handlers and shell UX."
+    rationale: "Background UWP apps consume CPU, memory, and network resources even when not in use. WARNING: On Windows 11 24H2+, disabling all background apps can cause Explorer right-click to hang or crash because shell-integrated UWP components (ShellExperienceHost) lose their background execution rights."
+    risk: medium
     tier: free
     default: false
-    requiresReboot: false
+    requiresReboot: true
+    warningMessage: "On Windows 11 24H2+, disabling all background apps may cause File Explorer right-click menus to hang or crash. If you experience this, re-enable background apps via Settings > Apps > Installed apps > Advanced options."
     reversible: true
     estimatedSeconds: 2
     blockedProfiles: []

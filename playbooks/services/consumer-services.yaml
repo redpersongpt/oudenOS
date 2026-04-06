@@ -268,12 +268,13 @@ actions:
 
   - id: services.disable-push-notifications
     name: "Disable Windows Push Notification Service"
-    description: "Disable WpnUserService — per-user push notification relay. WpnService (system) is kept to prevent Explorer notification crashes."
-    rationale: "WPN user service relays cloud push notifications from Store apps. The system WpnService must stay enabled as Explorer's notification system depends on it."
+    description: "Disable WpnUserService — per-user push notification relay. WpnService (system) is kept to prevent Explorer notification crashes. A reboot is REQUIRED before the change takes effect safely."
+    rationale: "WPN user service relays cloud push notifications from Store apps. The system WpnService must stay enabled as Explorer's notification system depends on it. Without a reboot after disabling WpnUserService, Explorer may crash when accessing notification-related context menus or toast handlers."
     risk: low
     tier: free
     default: false
     requiresReboot: true
+    warningMessage: "You MUST restart your PC after this change. Using the desktop without restarting may cause File Explorer crashes when right-clicking or accessing notifications."
     reversible: true
     estimatedSeconds: 3
     blockedProfiles:
