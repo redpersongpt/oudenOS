@@ -58,13 +58,15 @@ export function RebootResumeStep() {
     phase.actions.some((a) => a.status === "Included" && a.requiresReboot)
   ) ?? false;
 
-  // Auto-skip if no reboot needed
+  const { demoMode } = useWizardStore();
+
+  // Auto-skip if no reboot needed OR if running in demo/simulated mode
   useEffect(() => {
-    if (!needsReboot) {
+    if (!needsReboot || demoMode) {
       const t = setTimeout(() => skipStep("reboot-resume"), 150);
       return () => clearTimeout(t);
     }
-  }, [needsReboot, skipStep]);
+  }, [needsReboot, demoMode, skipStep]);
 
   useEffect(() => {
     if (!needsReboot) return;
@@ -84,7 +86,7 @@ export function RebootResumeStep() {
     return () => { cancelled = true; };
   }, [needsReboot]);
 
-  if (!needsReboot) {
+  if (!needsReboot || demoMode) {
     return (
       <div className="flex h-full items-center justify-center">
         <div className="h-4 w-4 rounded-sm border-2 border-[var(--text-primary)] border-t-transparent animate-spin" />
@@ -167,7 +169,7 @@ export function RebootResumeStep() {
           journalContext: planId ? {
             package: {
               planId,
-              packageId: resumeResult.data.packageId ?? "redcore-os",
+              packageId: resumeResult.data.packageId ?? "ouden-os",
               packageRole: resumeResult.data.packageRole ?? "user-resolved",
               packageVersion: null,
               packageSourceRef: action.packageSourceRef,
@@ -325,9 +327,9 @@ export function RebootResumeStep() {
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ type: "spring", stiffness: 340, damping: 16 }}
-            className="flex h-14 w-14 items-center justify-center rounded-sm border border-amber-500/30 bg-amber-500/10"
+            className="flex h-14 w-14 items-center justify-center rounded-sm border border-white/[0.12] bg-white/[0.04]"
           >
-            <RotateCw className="h-7 w-7 text-amber-400" />
+            <RotateCw className="h-7 w-7 text-[var(--text-display)]" />
           </motion.div>
 
           <div className="flex flex-col items-center gap-1.5 text-center">
