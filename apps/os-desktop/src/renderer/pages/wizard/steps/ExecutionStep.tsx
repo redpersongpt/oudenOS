@@ -4,108 +4,85 @@
 // Calls execute.applyAction for each action via the platform service bridge.
 
 import { useEffect, useRef, useState, useMemo } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Check, AlertCircle } from "lucide-react";
+import { motion, AnimatePresence, useSpring, useTransform } from "framer-motion";
 import { useWizardStore } from "@/stores/wizard-store";
 import type { ActionDecisionProvenance, ExecutionJournalEntry } from "@/stores/wizard-store";
 import { useDecisionsStore } from "@/stores/decisions-store";
 import { useLogStore } from "@/stores/log-store";
-import { getActionRationale } from "@/lib/expert-rationale";
 import { resolveEffectivePersonalization } from "@/lib/personalization-resolution";
 import { buildExecutionJournalContext } from "@/lib/package-journal";
 
 // Spinning quotes — personality while you wait
 
 const SPINNING_QUOTES = [
-  // Windows roasts
+  "backing up your stuff first, obviously...",
   "petting windows gently...",
-  "convincing Cortana to retire...",
-  "teaching Windows what \"no\" means...",
-  "removing apps you never asked for...",
-  "telling Edge it's not the default...",
-  "Windows Update can't hurt you here...",
-  "deleting Candy Crush for the 47th time...",
-  "who needs Bing anyway?",
-  "making Bill Gates slightly disappointed...",
+  "cortana's packing her bags...",
+  "teaching windows what 'no' means...",
+  "removing apps you literally never opened...",
+  "edge is throwing a tantrum rn...",
+  "windows update can't touch you here...",
+  "candy crush again? seriously microsoft?",
+  "bing called. we hung up.",
+  "bill gates is mildly annoyed...",
   "solitaire had a good run lmfao...",
-  "removing BloatPilot\u2122...",
   "remember when PCs just... worked?",
-  "one does not simply debloat Windows...",
-  "fun fact: Windows has 200+ background services...",
-  "turning off things Microsoft turned on...",
-  "Windows is basically an ad platform now...",
-  "how did 45GB become the minimum OS size...",
-  "Cortana says goodbye... finally...",
-  "uninstalling the weather widget nobody asked for...",
-  "telling OneDrive to go drive itself...",
-  "Dear Microsoft: no, I don't want to try Edge...",
-  "removing the 17th Bing integration...",
-  "Xbox Game Bar: thanks but no thanks...",
-  "disabling the \"helpful\" tips that help nobody...",
-  "Windows 11 start menu: less is more, right?",
-  "telling SmartScreen you're smart enough...",
-  "Microsoft Rewards? more like Microsoft Tax...",
-  "removing the widget panel of doom...",
-  "no Clippy, I don't need help...",
-
-  // Funny tech
-  "tweaking your package ( \u0361\u00b0 \u035c\u0296 \u0361\u00b0)",
-  "optimizing bits and bytes...",
-  "making your RAM feel appreciated...",
+  "one does not simply debloat windows...",
+  "200+ background services btw. two hundred.",
+  "undoing microsoft's life choices...",
+  "windows is basically an ad platform at this point...",
+  "45GB for an OS. let that sink in.",
+  "bye cortana, won't miss you...",
+  "who even asked for a weather widget?",
+  "onedrive can go drive itself...",
+  "no microsoft, i don't want edge. stop asking.",
+  "removing bing integration #17...",
+  "game bar? nah we're good...",
+  "disabling 'helpful' tips that help nobody...",
+  "win11 start menu: less is more right?",
+  "smartscreen, i AM the smart one here...",
+  "microsoft rewards? more like microsoft tax...",
+  "widget panel of doom: eliminated.",
+  "clippy's spiritual successor: also eliminated.",
+  "tweaking your package ( ͡° ͜ʖ ͡°)",
+  "your RAM just sighed with relief...",
   "whispering sweet nothings to your CPU...",
-  "your SSD just sighed with relief...",
-  "the registry is trembling...",
-  "your RAM called, it wants its memory back...",
-  "teaching your CPU to skip leg day...",
-  "defragmenting your soul...",
-  "your GPU just winked at us...",
+  "the registry is shaking rn...",
+  "your SSD is doing a happy dance...",
   "negotiating with the kernel...",
-  "asking the BIOS nicely...",
-  "recalibrating the flux capacitor...",
-  "feeding your CPU some red bull...",
-  "telling your cores to wake up...",
+  "feeding your CPU some redbull...",
   "your disk I/O just hit a new PR...",
   "compiling happiness.exe...",
   "sudo make me a sandwich...",
-  "chmod 777 /your/freedom...",
   "rm -rf /bloat...",
-  "git commit -m \"bye bloat\"...",
-
-  // Personality
-  "im poor donate plz ( \u0361\u00b0 \u035c\u0296 \u0361\u00b0)",
+  "git commit -m 'bye bloat'...",
+  "broke student energy, donate if you can ( ͡° ͜ʖ ͡°)",
   "this is what freedom feels like...",
-  "every byte counts when you're debloating...",
   "removing digital cholesterol...",
   "reject bloat, return to performance...",
-  "your PC is about to feel 10 years younger...",
-  "making Task Manager proud...",
-  "unfriending Microsoft telemetry...",
-  "sending Clippy into retirement...",
-  "removing digital barnacles...",
-  "if you're reading this, you're patient...",
-  "you can listen to Kanye's new album while waiting...",
+  "your PC is about to feel brand new...",
+  "making task manager proud...",
+  "unfriending microsoft telemetry...",
+  "sending clippy into retirement...",
+  "if you're reading this you're patient af...",
   "grab a coffee, we're cooking...",
   "trust the process...",
-  "this PC is going to be FAST...",
+  "this PC is gonna be FAST...",
   "almost as satisfying as peeling screen protectors...",
-  "your future self will thank you...",
-  "doing what Microsoft should've done...",
+  "your future self will thank you for this...",
+  "doing what microsoft should've done from day one...",
   "free your PC, free your mind...",
-  "this is cheaper than a new PC...",
-  "less bloat = less heat = less noise...",
-  "your fans are about to get quieter...",
-  "saving the planet one disabled service at a time...",
-  "you're basically a hacker now...",
-  "your PC after this: *chef's kiss*...",
-  "loading... just kidding, we're actually working...",
-  "did you know: a fresh Windows install uses 4GB RAM idle?",
-  "after this: probably 1.8GB idle RAM...",
-  "we're not deleting System32, we promise...",
+  "cheaper than buying a new PC tbh...",
+  "less bloat = less heat = quieter fans...",
+  "you're basically a hacker now congrats...",
+  "loading... jk we're actually working...",
+  "fun fact: fresh windows uses 4GB RAM idle. FOUR.",
+  "after this: probably 1.8GB idle. you're welcome.",
+  "we're not deleting System32. probably.",
   "the FPS gods smile upon you...",
-  "debloating your load ( \u0361\u00b0 \u035c\u0296 \u0361\u00b0)",
-  "meanwhile, Edge is crying in the corner...",
-  "Satya Nadella left the chat...",
-  "plot twist: Windows was the malware all along...",
+  "edge is crying in the corner...",
+  "satya nadella has left the chat...",
+  "plot twist: windows was the bloatware all along...",
 ];
 
 // Types
@@ -126,52 +103,120 @@ interface CompletedAction {
   provenanceRef: string | null;
 }
 
-// Timeline item
+// Animated counter using spring physics
+function AnimatedNumber({ value, className }: { value: number; className?: string }) {
+  const spring = useSpring(value, { stiffness: 90, damping: 18 });
+  const display = useTransform(spring, (v) => Math.round(v).toString());
 
-function TimelineItem({ action }: { action: CompletedAction }) {
+  useEffect(() => {
+    spring.set(value);
+  }, [value, spring]);
+
+  return <motion.span className={className}>{display}</motion.span>;
+}
+
+// Stat tile — clean with icon indicator
+function StatTile({
+  label,
+  value,
+  tone = "default",
+}: {
+  label: string;
+  value: number | string;
+  tone?: "default" | "success" | "danger";
+}) {
+  const valueColor =
+    tone === "success"
+      ? "text-[var(--success)]"
+      : tone === "danger"
+        ? "text-[#FF6B6B]"
+        : "text-[var(--text-display)]";
+
+  const dotColor =
+    tone === "success"
+      ? "bg-[var(--success)]"
+      : tone === "danger"
+        ? "bg-[#FF6B6B]"
+        : "bg-[var(--text-disabled)]";
+
+  return (
+    <div className="border border-[var(--border)] bg-[var(--surface)] rounded-sm px-3 py-3">
+      <div className="flex items-center gap-2 mb-2">
+        <span className={`w-1.5 h-1.5 rounded-full ${dotColor}`} />
+        <span className="text-[10px] uppercase tracking-widest text-[var(--text-secondary)]">{label}</span>
+      </div>
+      <p className={`font-data text-[26px] leading-none ${valueColor}`}>
+        {typeof value === "number" ? <AnimatedNumber value={value} /> : value}
+      </p>
+    </div>
+  );
+}
+
+// Timeline item — card-style row
+function TimelineItem({ action, index }: { action: CompletedAction; index: number }) {
   const failed = action.status === "failed";
   return (
     <motion.div
-      initial={{ opacity: 0, x: -10, height: 0 }}
+      initial={{ opacity: 0, y: 6 }}
       animate={
         failed
-          ? { opacity: 1, x: [0, -5, 5, -3, 3, -1, 0], height: "auto" }
-          : { opacity: 1, x: 0, height: "auto" }
+          ? { opacity: 1, y: 0, x: [0, -3, 3, -2, 2, 0] }
+          : { opacity: 1, y: 0 }
       }
-      transition={
-        failed
-          ? { duration: 0.44, ease: "easeOut" }
-          : { duration: 0.18, ease: [0.0, 0.0, 0.2, 1.0] }
-      }
-      className="flex flex-col gap-0.5 py-1"
+      transition={{ duration: 0.2, delay: 0.02, ease: [0.25, 0.1, 0.25, 1] }}
+      className={`flex items-center gap-3 px-3 py-2 rounded-sm transition-colors ${
+        failed ? "bg-[#FF6B6B]/[0.04]" : index % 2 === 0 ? "bg-transparent" : "bg-white/[0.01]"
+      }`}
     >
-      <div className="flex items-center gap-2.5">
-        {action.status === "applied" ? (
-          <Check className="h-3.5 w-3.5 shrink-0 text-[var(--success)]" />
+      {/* Status indicator */}
+      <div className={`flex items-center justify-center w-5 h-5 rounded-full shrink-0 ${
+        failed ? "bg-[#FF6B6B]/10" : "bg-[var(--success)]/10"
+      }`}>
+        {failed ? (
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+            <path d="M3 3l4 4M7 3l-4 4" stroke="#FF6B6B" strokeWidth="1.5" strokeLinecap="round" />
+          </svg>
         ) : (
-          <AlertCircle className="h-3.5 w-3.5 shrink-0 text-[#FF6B6B]" />
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+            <motion.path
+              d="M2.5 5l2 2 3-3"
+              stroke="var(--success)"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              initial={{ pathLength: 0 }}
+              animate={{ pathLength: 1 }}
+              transition={{ duration: 0.25, delay: 0.05 }}
+            />
+          </svg>
         )}
-        <span className="text-[11px] text-[var(--text-secondary)] break-words">{action.label}</span>
-        <span className={`ml-auto shrink-0 text-[10px] font-medium ${
-          action.status === "applied" ? "text-[var(--success)]/60" : "text-[#FF6B6B]/60"
-        }`}>
-          {action.status}
-        </span>
       </div>
-      {action.status === "failed" && action.errorMessage && (
-        <span
-          className="text-[9px] text-[#FF6B6B]/50 pl-6 break-words"
-          title={action.errorMessage}
-        >
-          {action.errorMessage}
-        </span>
-      )}
+
+      {/* Action name */}
+      <div className="min-w-0 flex-1">
+        <p className={`text-[11px] truncate ${failed ? "text-[#FF6B6B]/80" : "text-[var(--text-primary)]"}`}>
+          {action.label}
+        </p>
+        {failed && action.errorMessage && (
+          <p className="text-[9px] text-[#FF6B6B]/40 truncate mt-0.5" title={action.errorMessage}>
+            {action.errorMessage}
+          </p>
+        )}
+      </div>
+
+      {/* Status badge */}
+      <span className={`shrink-0 text-[9px] font-medium uppercase tracking-widest px-1.5 py-0.5 rounded-sm ${
+        failed
+          ? "bg-[#FF6B6B]/10 text-[#FF6B6B]/70"
+          : "bg-[var(--success)]/10 text-[var(--success)]/70"
+      }`}>
+        {failed ? "fail" : "ok"}
+      </span>
     </motion.div>
   );
 }
 
-// Spinning Quote
-
+// Spinning Quote — italic, fade transition
 function SpinningQuote({ isActive }: { isActive: boolean }) {
   const [idx, setIdx] = useState(() => Math.floor(Math.random() * SPINNING_QUOTES.length));
 
@@ -194,10 +239,10 @@ function SpinningQuote({ isActive }: { isActive: boolean }) {
       <motion.p
         key={idx}
         initial={{ opacity: 0, y: 6 }}
-        animate={{ opacity: 0.8, y: 0 }}
+        animate={{ opacity: 0.7, y: 0 }}
         exit={{ opacity: 0, y: -6 }}
-        transition={{ duration: 0.3, ease: [0.0, 0.0, 0.2, 1.0] }}
-        className="mt-1 text-[10px] italic text-[var(--text-secondary)] select-none"
+        transition={{ duration: 0.35, ease: [0.0, 0.0, 0.2, 1.0] }}
+        className="text-[11px] italic text-[var(--text-secondary)] select-none text-center mt-2"
       >
         {SPINNING_QUOTES[idx]}
       </motion.p>
@@ -240,11 +285,11 @@ export function ExecutionStep() {
 
   const totalActions = actionQueue.length + 1; // +1 for personalization
 
-  const [currentIdx,    setCurrentIdx]    = useState(-1);
   const [currentAction, setCurrentAction] = useState<string | null>(null);
-  const [currentActionId, setCurrentActionId] = useState<string | null>(null);
+  const [_currentActionId, setCurrentActionId] = useState<string | null>(null);
   const [currentPhase, setCurrentPhase]   = useState<string | null>(null);
   const [completed,     setCompleted]     = useState<CompletedAction[]>([]);
+  const [completionTruth, setCompletionTruth] = useState<string | null>(null);
   const timerRef    = useRef<ReturnType<typeof setTimeout> | null>(null);
   const abortRef    = useRef<AbortController | null>(null);
   const started     = useRef(false);
@@ -256,6 +301,8 @@ export function ExecutionStep() {
   const progress  = totalActions > 0
     ? Math.round((completed.length / totalActions) * 100)
     : 0;
+
+  const isDone = !currentAction && completed.length === totalActions;
 
   useEffect(() => {
     if (started.current || totalActions === 0) return;
@@ -297,7 +344,7 @@ export function ExecutionStep() {
         await serviceCall("ledger.createPlan", {
           package: {
             planId,
-            packageId: playbook.packageRefs?.packageId ?? "redcore-os",
+            packageId: playbook.packageRefs?.packageId ?? "ouden-os",
             packageRole: playbook.packageRefs?.packageRole ?? "user-resolved",
             packageVersion: playbook.packageRefs?.packageVersion ?? null,
             packageSourceRef: playbook.packageRefs?.packageSourceRef ?? null,
@@ -319,7 +366,6 @@ export function ExecutionStep() {
         const action = actionQueue[i];
         const startedAt = new Date().toISOString();
 
-        setCurrentIdx(operationIndex);
         setCurrentAction(action.name);
         setCurrentActionId(action.id);
         setCurrentPhase(action.phase);
@@ -343,17 +389,22 @@ export function ExecutionStep() {
           const nestedFailures = typeof result.data.failed === "number" ? result.data.failed : 0;
           status = rpcStatus === "success" && nestedFailures === 0 ? "applied" : "failed";
           if (status === "failed") {
-            // Extract the real error from service response
             errorMessage =
               (typeof result.data.error === "string" ? result.data.error : null)
               ?? (typeof result.data.message === "string" ? result.data.message : null)
               ?? (typeof result.data.errorMessage === "string" ? result.data.errorMessage : null)
               ?? `Action returned status="${rpcStatus}" with ${nestedFailures} nested failure(s)`;
           }
+          // In demo mode, add a small delay so the UI can render each step visibly
+          if (demoMode) {
+            await new Promise<void>((resolve) => {
+              timerRef.current = setTimeout(resolve, 30 + Math.random() * 50);
+            });
+          }
         } else if (demoMode) {
-          // Explicit demo mode only — never fake success in the real runtime.
+          // Service call failed in demo — fake success
           await new Promise<void>((resolve) => {
-            timerRef.current = setTimeout(resolve, 80 + Math.random() * 120);
+            timerRef.current = setTimeout(resolve, 30 + Math.random() * 50);
           });
           status = "applied";
         } else {
@@ -417,11 +468,11 @@ export function ExecutionStep() {
         setCompleted((prev) => [...prev, completedEntry]);
         operationIndex += 1;
 
-        requestAnimationFrame(() => {
+        setTimeout(() => {
           if (timelineRef.current) {
             timelineRef.current.scrollTop = timelineRef.current.scrollHeight;
           }
-        });
+        }, 0);
       }
 
       if (controller.signal.aborted) return;
@@ -432,7 +483,6 @@ export function ExecutionStep() {
       let personalizationApplied = false;
       const personalizationStartedAt = new Date().toISOString();
       try {
-        setCurrentIdx(operationIndex);
         setCurrentAction("Applying personalization");
         setCurrentActionId("personalize.apply");
         setCurrentPhase("Personalization");
@@ -525,10 +575,14 @@ export function ExecutionStep() {
 
       const skipped = personalizationFailed ? 1 : 0;
       const executionJournalRef = playbook.packageRefs?.executionJournalRef ?? "state/execution-journal.json";
+      const journalIndexMap = new Map(journalEntries.map((entry, idx) => [entry.id, idx]));
       const actionProvenance = (playbook.actionProvenance ?? []).map((entry) => {
         const matchingJournalRefs = journalEntries
           .filter((journalEntry) => journalEntry.actionId === entry.actionId)
-          .map((journalEntry) => `${executionJournalRef}#/entries/${journalEntries.indexOf(journalEntry)}`);
+          .map((journalEntry) => {
+            const idx = journalIndexMap.get(journalEntry.id);
+            return `${executionJournalRef}#/entries/${idx ?? 0}`;
+          });
         return {
           ...entry,
           journalRecordRefs: matchingJournalRefs,
@@ -539,6 +593,7 @@ export function ExecutionStep() {
         ...playbook,
         actionProvenance,
       };
+      setCompletionTruth(ledgerIsAuthoritative ? "Verified by service" : "Local summary only");
       setResolvedPlaybook(executionAwarePlaybook);
       setExecutionResult({
         applied: ledgerApplied,
@@ -559,7 +614,7 @@ export function ExecutionStep() {
         details: `truthSource=${ledgerIsAuthoritative ? "ledger" : "local"}`,
       });
 
-      timerRef.current = setTimeout(() => completeStep("execution"), 800);
+      timerRef.current = setTimeout(() => completeStep("execution"), demoMode ? 200 : 800);
     };
 
     exec().catch((err) => {
@@ -576,7 +631,7 @@ export function ExecutionStep() {
         packageRefs: resolvedPlaybook?.packageRefs ?? null,
         journal: [],
       });
-      setTimeout(() => completeStep("execution"), 800);
+      setTimeout(() => completeStep("execution"), demoMode ? 200 : 800);
     });
 
     return () => {
@@ -590,8 +645,11 @@ export function ExecutionStep() {
   if (!resolvedPlaybook) {
     return (
       <div className="flex h-full flex-col items-center justify-center gap-3 px-8">
-        <AlertCircle className="h-8 w-8 text-amber-400" />
-        <p className="text-sm text-[var(--text-secondary)]">No playbook actions resolved. Go back and review your playbook.</p>
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+          <circle cx="16" cy="16" r="14" stroke="var(--text-display)" strokeWidth="1.5" opacity="0.3" />
+          <path d="M16 10v7M16 21v1" stroke="var(--text-display)" strokeWidth="1.5" strokeLinecap="round" />
+        </svg>
+        <p className="text-sm text-[var(--text-secondary)]">No plan is ready to apply. Go back and review it first.</p>
       </div>
     );
   }
@@ -602,124 +660,101 @@ export function ExecutionStep() {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -8 }}
       transition={{ duration: 0.35, ease: [0.25, 0.1, 0.25, 1] }}
-      className="flex h-full flex-col items-center justify-center gap-5 px-8"
+      className="relative flex h-full min-h-0 flex-col overflow-hidden bg-[var(--black)]"
     >
-      {/* Header */}
-      <div className="flex flex-col items-center gap-1 text-center">
-        <h2 className="text-lg font-medium text-[var(--text-primary)]">Applying Optimizations</h2>
-        <p className="text-xs text-[var(--text-secondary)]">Do not shut down your computer</p>
-        <SpinningQuote isActive={completed.length < totalActions} />
-      </div>
+      {/* Subtle dot-grid background */}
+      <div className="absolute inset-0 nd-dot-grid-subtle opacity-20 pointer-events-none" />
 
-      {/* Current action card */}
-      <div className="w-full max-w-md">
-        <AnimatePresence mode="wait">
-          {currentAction ? (
+      <div className="relative z-10 flex h-full min-h-0 flex-col items-center px-6 py-5 overflow-y-auto">
+        <div className="flex w-full max-w-[640px] min-h-0 flex-1 flex-col items-center">
+
+          {/* Minimal header */}
+          <p className="nd-label-sm text-[var(--text-secondary)]">APPLYING CHANGES</p>
+          <p className="text-sm text-[var(--text-secondary)] mt-1">
+            Step {completed.length + (currentAction ? 1 : 0)} of {totalActions}
+          </p>
+
+          {/* Thin progress bar */}
+          <div className="w-full h-[3px] bg-[var(--border)] rounded-full mt-4">
             <motion.div
-              key={currentAction}
-              initial={{ opacity: 0, y: 4 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -4 }}
-              transition={{ duration: 0.15 }}
-              style={{
-                boxShadow: "0 0 0 0 rgba(232,69,60,0.0)",
-                animation: "executionPulse 1.5s ease-in-out infinite",
-              }}
-              className="rounded-sm border border-[var(--border-visible)] bg-[var(--surface)] px-5 py-3"
+              className="h-full rounded-full"
+              style={{ backgroundColor: isDone && failCount === 0 ? "var(--success)" : "var(--text-display)" }}
+              initial={{ width: "0%" }}
+              animate={{ width: `${progress}%` }}
+              transition={{ duration: 0.5, ease: "easeOut" }}
+            />
+          </div>
+          <div className="flex justify-between w-full mt-1.5">
+            <span className="text-[10px] text-[var(--text-secondary)] font-data">{progress}%</span>
+            <span className="text-[10px] text-[var(--text-secondary)] font-data">{remaining} remaining</span>
+          </div>
+
+          {/* Current action card */}
+          <div className="mt-5 w-full border border-[var(--border)] bg-[var(--surface)] rounded-sm px-4 py-3">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentAction ?? "done"}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
+              >
+                <p className="nd-label-sm text-[var(--text-secondary)]">{currentPhase ?? "Preparing"}</p>
+                <p className="mt-1 text-[14px] text-[var(--text-display)] truncate">
+                  {currentAction ?? (isDone ? "Done" : "Starting...")}
+                </p>
+              </motion.div>
+            </AnimatePresence>
+            <SpinningQuote isActive={!isDone} />
+          </div>
+
+          {/* Stats row */}
+          <div className="mt-4 grid grid-cols-3 gap-2 w-full">
+            <StatTile label="Applied" value={applied} tone="success" />
+            <StatTile label="Failed" value={failCount} tone="danger" />
+            <StatTile label="Remaining" value={remaining} />
+          </div>
+
+          {/* Timeline */}
+          <div className="mt-4 w-full border border-[var(--border)] rounded-sm flex-1 min-h-0">
+            <div className="px-3 py-2 border-b border-[var(--border)] flex justify-between items-center">
+              <span className="nd-label-sm text-[var(--text-secondary)]">Activity</span>
+              <span className="text-[10px] text-[var(--text-disabled)] font-data">{completed.length}</span>
+            </div>
+            <div
+              ref={timelineRef}
+              className="overflow-y-auto max-h-[220px] scrollbar-thin px-3 py-1"
             >
-              <div className="flex items-center gap-3">
-                <motion.div
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 0.9, ease: "linear", repeat: Infinity }}
-                  className="h-4 w-4 shrink-0 rounded-sm border-2 border-[var(--text-primary)] border-t-transparent"
-                />
-                <span className="flex-1 truncate text-[13px] font-medium text-[var(--text-primary)]">{currentAction}</span>
-                <span className="shrink-0 font-mono-metric text-[10px] text-[var(--text-secondary)]">
-                  {currentIdx + 1}/{totalActions}
-                </span>
+              <div className="flex flex-col gap-0.5">
+                {(completed as CompletedAction[]).map((action, i) => (
+                  <TimelineItem key={`${action.label}-${i}`} action={action} index={i} />
+                ))}
+                {completed.length === 0 && (
+                  <p className="py-6 text-center text-[11px] text-[var(--text-disabled)]">
+                    Waiting for first action...
+                  </p>
+                )}
               </div>
-              {/* Expert rationale — why this action is running */}
-              {currentActionId && (() => {
-                const r = getActionRationale(currentActionId);
-                return r.why ? (
-                  <p className="mt-1.5 text-[10px] leading-relaxed text-[var(--text-secondary)] pl-7">{r.why}</p>
-                ) : null;
-              })()}
-              {currentPhase && (
-                <p className="mt-0.5 text-[9px] text-[var(--text-disabled)] pl-7">{currentPhase}</p>
+            </div>
+          </div>
+
+          {/* Completion state */}
+          {isDone && (
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.35, ease: [0.25, 0.1, 0.25, 1] }}
+              className="mt-4 text-center"
+            >
+              <p className={`text-sm ${failCount > 0 ? "text-[var(--text-display)]" : "text-[var(--success)]"}`}>
+                {failCount > 0 ? "Completed with issues" : "All changes applied successfully"}
+              </p>
+              {completionTruth && (
+                <p className="text-[10px] text-[var(--text-secondary)] mt-1">{completionTruth}</p>
               )}
             </motion.div>
-          ) : completed.length === totalActions ? (
-            <motion.div
-              key="done"
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ type: "spring", stiffness: 340, damping: 16 }}
-              className="flex flex-col items-center justify-center gap-1 rounded-sm border border-success-500/25 bg-[var(--success)]/[0.04] px-5 py-3.5"
-            >
-              <div className="flex items-center gap-3">
-                <Check className="h-4 w-4 text-[var(--success)]" />
-                <span className="text-sm font-medium text-[var(--success)]">All actions complete</span>
-              </div>
-              <span className="text-[10px] text-[var(--success)]/40 italic">
-                {failCount === 0 ? "debloated your load ( \u0361\u00b0 \u035c\u0296 \u0361\u00b0)" : "mostly debloated your load ( \u0361\u00b0 \u035c\u0296 \u0361\u00b0)"}
-              </span>
-            </motion.div>
-          ) : (
-            <div className="h-[50px]" />
           )}
-        </AnimatePresence>
-      </div>
 
-      {/* Progress */}
-      <div className="w-full max-w-md">
-        <div className="relative h-1.5 overflow-hidden rounded-sm bg-[var(--surface-raised)]">
-          <motion.div
-            className="absolute inset-y-0 left-0 rounded-sm bg-[var(--text-primary)]"
-            animate={{ width: `${progress}%` }}
-            transition={{ type: "spring", stiffness: 280, damping: 28 }}
-          />
-        </div>
-        <div className="mt-2 flex justify-between">
-          <span className="font-mono-metric text-[10px] text-[var(--text-secondary)]">{progress}%</span>
-          <span className="font-mono-metric text-[10px] text-[var(--text-secondary)]">
-            {completed.length}/{totalActions}
-          </span>
-        </div>
-      </div>
-
-      {/* Stats row */}
-      <div className="flex gap-6 text-center">
-        {[
-          { label: "Applied",   value: applied,    color: "text-[var(--success)]"   },
-          { label: "Failed",    value: failCount,  color: "text-[#FF6B6B]"          },
-          { label: "Remaining", value: remaining,  color: "text-[var(--text-secondary)]" },
-        ].map((stat) => (
-          <div key={stat.label} className="flex flex-col items-center gap-0.5">
-            <motion.span
-              key={stat.value}
-              initial={{ scale: 0.75, opacity: 0.4 }}
-              animate={{ scale: 1,    opacity: 1   }}
-              transition={{ type: "spring", stiffness: 600, damping: 18 }}
-              className={`font-mono-metric text-xl font-medium ${stat.color}`}
-            >
-              {stat.value}
-            </motion.span>
-            <span className="text-[10px] text-[var(--text-disabled)]">{stat.label}</span>
-          </div>
-        ))}
-      </div>
-
-      {/* Completed timeline */}
-      <div
-        ref={timelineRef}
-        className="w-full max-w-md overflow-y-auto scrollbar-none"
-        style={{ maxHeight: "120px" }}
-      >
-        <div className="flex flex-col divide-y divide-white/[0.03] px-1">
-          {(completed as CompletedAction[]).map((action, i) => (
-            <TimelineItem key={`${action.label}-${i}`} action={action} />
-          ))}
         </div>
       </div>
     </motion.div>
