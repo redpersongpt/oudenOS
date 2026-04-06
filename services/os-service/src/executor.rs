@@ -4,6 +4,8 @@
 // A rollback snapshot is always created BEFORE any changes are applied.
 
 use crate::db::Database;
+use crate::engine::ActionExecutionContract;
+use crate::playbook::{FileRename, RegistryChange};
 #[cfg(windows)]
 use crate::powershell;
 use crate::rollback;
@@ -112,10 +114,8 @@ pub fn execute_action(
 ) -> anyhow::Result<Value> {
     tracing::info!(action_id = action_id, "Executing action");
 
-    let manual_only = action_data
-        .get("manualOnly")
-        .and_then(|value| value.as_bool())
-        .unwrap_or(false);
+    let contract = ActionExecutionContract::from_value(action_data)?;
+    let manual_only = contract.manual_only;
 
     if manual_only {
         let now = chrono::Utc::now().to_rfc3339();
@@ -127,7 +127,7 @@ pub fn execute_action(
                 audit_id,
                 now,
                 format!(
-                    "Guide advisory action '{}' recorded with no automatic mutation{}",
+                    "Manual review action '{}' recorded with no automatic mutation{}",
                     action_id,
                     audit_context
                         .map(|detail| format!(" · {}", detail))
@@ -147,24 +147,24 @@ pub fn execute_action(
             "results": [{
                 "type": "manual",
                 "status": "success",
-                "note": "Guide advisory action recorded only. No automatic system mutation was performed."
+                "note": "Manual review action recorded only. No automatic system mutation was performed."
             }],
         }));
     }
 
-    let action_type = action_data["actionType"].as_str().unwrap_or("unknown");
+    let action_type = contract.execution_mode.as_str();
 
     // ── Phase 1: Collect previous values for rollback ───────────────────
 
     let mut previous_values: Vec<rollback::PreviousValue> = Vec::new();
 
     // Registry changes
-    let registry_changes = resolve_registry_changes(action_data)?;
+    let registry_changes = resolve_registry_changes(&contract.registry_changes)?;
 
     for change in &registry_changes {
-        let hive = change["hive"].as_str().unwrap_or("HKLM");
-        let path = change["path"].as_str().unwrap_or("");
-        let value_name = change["valueName"].as_str().unwrap_or("");
+        let hive = change.hive.as_str();
+        let path = change.path.as_str();
+        let value_name = change.value_name.as_str();
 
         let prev = read_registry_value(hive, path, value_name);
         previous_values.push(rollback::PreviousValue {
@@ -177,14 +177,8 @@ pub fn execute_action(
     }
 
     // Service changes
-    let service_changes = action_data
-        .get("serviceChanges")
-        .and_then(|v| v.as_array())
-        .cloned()
-        .unwrap_or_default();
-
-    for change in &service_changes {
-        let svc_name = change["name"].as_str().unwrap_or("");
+    for change in &contract.service_changes {
+        let svc_name = change.name.as_str();
         let prev = read_service_start_type(svc_name);
         previous_values.push(rollback::PreviousValue {
             change_type: "service".to_string(),
@@ -196,15 +190,9 @@ pub fn execute_action(
     }
 
     // Task changes: store task state for rollback (re-enable)
-    let tasks = action_data
-        .get("tasks")
-        .and_then(|v| v.as_array())
-        .cloned()
-        .unwrap_or_default();
-
-    for task in &tasks {
-        let task_name = task["name"].as_str().unwrap_or("");
-        let task_path = task["path"].as_str().unwrap_or("");
+    for task in &contract.tasks {
+        let task_name = task.name.as_str();
+        let task_path = task.path.as_str();
         previous_values.push(rollback::PreviousValue {
             change_type: "task".to_string(),
             path: task_path.to_string(),
@@ -215,14 +203,7 @@ pub fn execute_action(
     }
 
     // AppX packages: store package names for rollback note
-    let packages = action_data
-        .get("packages")
-        .and_then(|v| v.as_array())
-        .cloned()
-        .unwrap_or_default();
-
-    for pkg in &packages {
-        let pkg_name = pkg.as_str().unwrap_or("");
+    for pkg_name in &contract.packages {
         previous_values.push(rollback::PreviousValue {
             change_type: "appx".to_string(),
             path: pkg_name.to_string(),
@@ -233,14 +214,8 @@ pub fn execute_action(
     }
 
     // BCD changes: store element for rollback
-    let bcd_changes_pre = action_data
-        .get("bcdChanges")
-        .and_then(|v| v.as_array())
-        .cloned()
-        .unwrap_or_default();
-
-    for change in &bcd_changes_pre {
-        let element = change["element"].as_str().unwrap_or("");
+    for change in &contract.bcd_changes {
+        let element = change.element.as_str();
         let prev = read_bcd_value(element);
         previous_values.push(rollback::PreviousValue {
             change_type: "bcd".to_string(),
@@ -252,20 +227,28 @@ pub fn execute_action(
     }
 
     // Power changes: store setting path for rollback
-    let power_changes_pre = action_data
-        .get("powerChanges")
-        .and_then(|v| v.as_array())
-        .cloned()
-        .unwrap_or_default();
-
-    for change in &power_changes_pre {
-        let setting_path = change["settingPath"].as_str().unwrap_or("");
+    for change in &contract.power_changes {
+        let setting_path = change.setting_path.as_str();
         let prev = read_power_value(setting_path);
         previous_values.push(rollback::PreviousValue {
             change_type: "power".to_string(),
             path: setting_path.to_string(),
             value_name: "value".to_string(),
             previous_value: prev,
+            action_id: action_id.to_string(),
+        });
+    }
+
+    for rename in &contract.file_renames {
+        previous_values.push(rollback::PreviousValue {
+            change_type: "file_rename".to_string(),
+            path: rename.source.clone(),
+            value_name: rename.target.clone(),
+            previous_value: Some(serde_json::json!({
+                "sourceExisted": std::path::Path::new(&rename.source).exists(),
+                "targetExisted": std::path::Path::new(&rename.target).exists(),
+                "requiresTrustedInstaller": rename.requires_trusted_installer,
+            })),
             action_id: action_id.to_string(),
         });
     }
@@ -292,8 +275,7 @@ pub fn execute_action(
     let mut failed = 0u32;
 
     // Apply AppX removals
-    for pkg in &packages {
-        let pkg_name = pkg.as_str().unwrap_or("");
+    for pkg_name in &contract.packages {
         match remove_appx_package(pkg_name) {
             Ok(()) => {
                 succeeded += 1;
@@ -317,9 +299,9 @@ pub fn execute_action(
     }
 
     // Apply task disables
-    for task in &tasks {
-        let task_name = task["name"].as_str().unwrap_or("");
-        let task_path = task["path"].as_str().unwrap_or("");
+    for task in &contract.tasks {
+        let task_name = task.name.as_str();
+        let task_path = task.path.as_str();
         match disable_scheduled_task(task_name, task_path) {
             Ok(()) => {
                 succeeded += 1;
@@ -345,11 +327,11 @@ pub fn execute_action(
 
     // Apply registry changes
     for change in &registry_changes {
-        let hive = change["hive"].as_str().unwrap_or("HKLM");
-        let path = change["path"].as_str().unwrap_or("");
-        let value_name = change["valueName"].as_str().unwrap_or("");
-        let value = &change["value"];
-        let value_type = change["valueType"].as_str().unwrap_or("DWord");
+        let hive = change.hive.as_str();
+        let path = change.path.as_str();
+        let value_name = change.value_name.as_str();
+        let value = &change.value;
+        let value_type = change.value_type.as_str();
 
         match apply_registry_change(hive, path, value_name, value, value_type) {
             Ok(()) => {
@@ -381,9 +363,9 @@ pub fn execute_action(
     }
 
     // Apply service changes
-    for change in &service_changes {
-        let svc_name = change["name"].as_str().unwrap_or("");
-        let startup_type = change["startupType"].as_str().unwrap_or("Disabled");
+    for change in &contract.service_changes {
+        let svc_name = change.name.as_str();
+        let startup_type = change.startup_type.as_str();
 
         match apply_service_change(svc_name, startup_type) {
             Ok(()) => {
@@ -409,15 +391,9 @@ pub fn execute_action(
     }
 
     // Apply BCD changes
-    let bcd_changes = action_data
-        .get("bcdChanges")
-        .and_then(|v| v.as_array())
-        .cloned()
-        .unwrap_or_default();
-
-    for change in &bcd_changes {
-        let element = change["element"].as_str().unwrap_or("");
-        let new_value = change["newValue"].as_str().unwrap_or("");
+    for change in &contract.bcd_changes {
+        let element = change.element.as_str();
+        let new_value = change.new_value.as_str();
 
         match apply_bcd_change(element, new_value) {
             Ok(()) => {
@@ -443,15 +419,9 @@ pub fn execute_action(
     }
 
     // Apply power setting changes
-    let power_changes = action_data
-        .get("powerChanges")
-        .and_then(|v| v.as_array())
-        .cloned()
-        .unwrap_or_default();
-
-    for change in &power_changes {
-        let setting_path = change["settingPath"].as_str().unwrap_or("");
-        let new_value = change["newValue"].as_str().unwrap_or("");
+    for change in &contract.power_changes {
+        let setting_path = change.setting_path.as_str();
+        let new_value = change.new_value.as_str();
 
         match apply_power_change(setting_path, new_value) {
             Ok(()) => {
@@ -477,14 +447,7 @@ pub fn execute_action(
     }
 
     // Apply PowerShell commands (audited, structured — never user-input-derived)
-    let ps_commands = action_data
-        .get("powerShellCommands")
-        .and_then(|v| v.as_array())
-        .cloned()
-        .unwrap_or_default();
-
-    for cmd in &ps_commands {
-        let script = cmd.as_str().unwrap_or("");
+    for script in &contract.powershell_commands {
         if script.is_empty() {
             continue;
         }
@@ -503,6 +466,31 @@ pub fn execute_action(
                 results.push(serde_json::json!({
                     "type": "powershell",
                     "command": &script[..script.len().min(80)],
+                    "status": "failed",
+                    "error": e.to_string(),
+                }));
+            }
+        }
+    }
+
+    for rename in &contract.file_renames {
+        match apply_file_rename(rename) {
+            Ok(()) => {
+                succeeded += 1;
+                results.push(serde_json::json!({
+                    "type": "file_rename",
+                    "source": rename.source,
+                    "target": rename.target,
+                    "status": "success",
+                }));
+            }
+            Err(e) => {
+                failed += 1;
+                tracing::error!(source = rename.source.as_str(), target = rename.target.as_str(), error = %e, "File rename failed");
+                results.push(serde_json::json!({
+                    "type": "file_rename",
+                    "source": rename.source,
+                    "target": rename.target,
                     "status": "failed",
                     "error": e.to_string(),
                 }));
@@ -543,6 +531,11 @@ pub fn execute_action(
     let outcome_data = serde_json::json!({
         "actionId": action_id,
         "actionType": action_type,
+        "contractVersion": contract.contract_version,
+        "executionMode": contract.execution_mode,
+        "privilegeRequirements": contract.privilege_requirements,
+        "rollbackBoundary": contract.rollback_boundary,
+        "mutationSummary": contract.mutation_summary,
         "snapshotId": snapshot_id,
         "rollbackSnapshotId": snapshot_id,
         "status": status,
@@ -696,7 +689,10 @@ fn apply_service_change(service_name: &str, startup_type: &str) -> anyhow::Resul
              if ($tp -eq 5) {{ Write-Host 'SKIPPED: Tamper Protection is ON — disable it manually in Windows Security first'; exit 0 }} \
          }}; \
          Set-Service -Name '{}' -StartupType {} -ErrorAction Stop; \
-         if ('{}' -eq 'Disabled') {{ Stop-Service -Name '{}' -Force -ErrorAction SilentlyContinue }}; \
+         if ('{}' -eq 'Disabled') {{ \
+             $proc = Start-Process -FilePath 'sc.exe' -ArgumentList 'stop','{}' -NoNewWindow -PassThru -ErrorAction SilentlyContinue; \
+             if ($proc) {{ $null = $proc.WaitForExit(10000); if (-not $proc.HasExited) {{ $proc.Kill(); Write-Host 'WARN: Stop-Service timed out after 10s' }} }} \
+         }}; \
          Write-Host 'OK: service changed'",
         escaped_name, escaped_name, startup_type,
         escaped_name,
@@ -715,23 +711,19 @@ fn apply_service_change(service_name: &str, startup_type: &str) -> anyhow::Resul
     Ok(())
 }
 
-fn resolve_registry_changes(action_data: &Value) -> anyhow::Result<Vec<Value>> {
-    let registry_changes = action_data
-        .get("registryChanges")
-        .and_then(|v| v.as_array())
-        .cloned()
-        .unwrap_or_default();
-
-    let mut resolved: Vec<Value> = Vec::new();
-    for change in &registry_changes {
+fn resolve_registry_changes(
+    registry_changes: &[RegistryChange],
+) -> anyhow::Result<Vec<RegistryChange>> {
+    let mut resolved: Vec<RegistryChange> = Vec::new();
+    for change in registry_changes {
         resolved.extend(resolve_registry_change(change)?);
     }
     Ok(resolved)
 }
 
 #[cfg(windows)]
-fn resolve_registry_change(change: &Value) -> anyhow::Result<Vec<Value>> {
-    let path = change.get("path").and_then(|v| v.as_str()).unwrap_or("");
+fn resolve_registry_change(change: &RegistryChange) -> anyhow::Result<Vec<RegistryChange>> {
+    let path = change.path.as_str();
 
     if !path.contains('<') {
         return Ok(vec![change.clone()]);
@@ -773,25 +765,23 @@ fn resolve_registry_change(change: &Value) -> anyhow::Result<Vec<Value>> {
 }
 
 #[cfg(not(windows))]
-fn resolve_registry_change(change: &Value) -> anyhow::Result<Vec<Value>> {
+fn resolve_registry_change(change: &RegistryChange) -> anyhow::Result<Vec<RegistryChange>> {
     Ok(vec![change.clone()])
 }
 
-fn replace_registry_change_path(change: &Value, new_path: String) -> Value {
+fn replace_registry_change_path(change: &RegistryChange, new_path: String) -> RegistryChange {
     let mut resolved = change.clone();
-    if let Some(obj) = resolved.as_object_mut() {
-        obj.insert("path".to_string(), serde_json::json!(new_path));
-    }
+    resolved.path = new_path;
     resolved
 }
 
 #[cfg(windows)]
 fn expand_registry_template(
-    change: &Value,
+    change: &RegistryChange,
     token: &str,
     replacements: &[String],
-) -> anyhow::Result<Vec<Value>> {
-    let path = change.get("path").and_then(|v| v.as_str()).unwrap_or("");
+) -> anyhow::Result<Vec<RegistryChange>> {
+    let path = change.path.as_str();
 
     if replacements.is_empty() {
         anyhow::bail!("No runtime targets resolved for placeholder {}", token);
@@ -1127,6 +1117,35 @@ fn apply_power_change(setting_path: &str, new_value: &str) -> anyhow::Result<()>
 #[cfg(not(windows))]
 fn apply_power_change(_setting_path: &str, _new_value: &str) -> anyhow::Result<()> {
     tracing::info!("[simulated] Power change");
+    Ok(())
+}
+
+#[cfg(windows)]
+fn apply_file_rename(change: &FileRename) -> anyhow::Result<()> {
+    let source = powershell::escape_ps_string(&change.source);
+    let target = powershell::escape_ps_string(&change.target);
+    let script = format!(
+        "if (-not (Test-Path -LiteralPath '{}')) {{ Write-Host 'SKIPPED: source not found'; exit 0 }}; \
+         if (Test-Path -LiteralPath '{}') {{ Write-Host 'SKIPPED: target already exists'; exit 0 }}; \
+         Move-Item -LiteralPath '{}' -Destination '{}' -Force -ErrorAction Stop; \
+         Write-Host 'OK: file renamed'",
+        source, target, source, target,
+    );
+
+    let result = powershell::execute_with_privilege(&script, change.requires_trusted_installer)?;
+    if !result.success {
+        anyhow::bail!("File rename failed: {}", result.stderr.trim());
+    }
+    Ok(())
+}
+
+#[cfg(not(windows))]
+fn apply_file_rename(change: &FileRename) -> anyhow::Result<()> {
+    tracing::info!(
+        source = change.source.as_str(),
+        target = change.target.as_str(),
+        "[simulated] Would rename file"
+    );
     Ok(())
 }
 
