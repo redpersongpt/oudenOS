@@ -11,6 +11,7 @@ import { useDecisionsStore } from "@/stores/decisions-store";
 import { useLogStore } from "@/stores/log-store";
 import { resolveEffectivePersonalization } from "@/lib/personalization-resolution";
 import { buildExecutionJournalContext } from "@/lib/package-journal";
+import { buildMockResolvedPlaybook } from "@/lib/mock-playbook";
 
 // Spinning quotes — personality while you wait
 
@@ -260,6 +261,15 @@ export function ExecutionStep() {
     () => resolveEffectivePersonalization(detectedProfile?.id, personalization, answers),
     [answers, detectedProfile?.id, personalization],
   );
+
+  // In demo mode, if no playbook was resolved (e.g. service unavailable), build a mock
+  useEffect(() => {
+    if (demoMode && !resolvedPlaybook) {
+      const profile = detectedProfile?.id ?? "gaming_desktop";
+      const mock = buildMockResolvedPlaybook(profile, "aggressive");
+      setResolvedPlaybook(mock);
+    }
+  }, [demoMode, resolvedPlaybook, detectedProfile?.id, setResolvedPlaybook]);
 
   // Build action queue from resolved playbook
   const actionQueue = useMemo<ExecutableAction[]>(() => {
