@@ -17,6 +17,14 @@ artifacts/open-source/
 .env.*
 !.env.example
 
+# Local app data
+*.db
+*.sqlite
+apps/**/src-tauri/data/
+apps/**/prisma/prisma/*.db
+.demo/
+data/
+
 # OS
 .DS_Store
 Thumbs.db
@@ -34,3 +42,9 @@ apps/redcore-tuning/proof-screenshots/preload-compiled.js
 .claude/
 .windsurf/
 *.claude/
+
+# AI handoff / scratch files
+claudehandoff.md
+codexhandoff.md
+*handoff*.md
+Codexhandoffmd
