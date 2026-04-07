@@ -29,7 +29,7 @@ export const useLogStore = create<LogState>((set, get) => ({
     const { entries } = get();
     const lines = [
       "═══════════════════════════════════════════",
-      "  redcore OS — Execution Log",
+      "  Ouden OS — Execution Log",
       `  Generated: ${new Date().toISOString()}`,
       `  Total entries: ${entries.length}`,
       "═══════════════════════════════════════════",

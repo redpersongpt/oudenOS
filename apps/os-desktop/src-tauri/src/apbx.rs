@@ -43,10 +43,22 @@ pub struct ExportResult {
 
 impl ExportResult {
     pub fn ok(path: String, sha256: String, size: u64) -> Self {
-        Self { ok: true, path: Some(path), sha256: Some(sha256), size_bytes: Some(size), error: None }
+        Self {
+            ok: true,
+            path: Some(path),
+            sha256: Some(sha256),
+            size_bytes: Some(size),
+            error: None,
+        }
     }
     pub fn err(msg: impl Into<String>) -> Self {
-        Self { ok: false, path: None, sha256: None, size_bytes: None, error: Some(msg.into()) }
+        Self {
+            ok: false,
+            path: None,
+            sha256: None,
+            size_bytes: None,
+            error: Some(msg.into()),
+        }
     }
 }
 
@@ -60,15 +72,19 @@ pub fn create_bundle(
 ) -> Result<ExportResult, String> {
     let built_at = chrono_free_iso();
     let has_state = state.detected_profile.is_some();
-    let package_kind = if has_state { "user-resolved" } else { "wizard-template" };
-    let package_stem = if has_state {
-        format!("redcore-os-user-{version}-{commit}")
+    let package_kind = if has_state {
+        "user-resolved"
     } else {
-        format!("redcore-os-template-{version}-{commit}")
+        "wizard-template"
+    };
+    let package_stem = if has_state {
+        format!("ouden-os-user-{version}-{commit}")
+    } else {
+        format!("ouden-os-template-{version}-{commit}")
     };
 
     // Build the bundle in a temp directory, then ZIP it
-    let temp_dir = std::env::temp_dir().join(format!("redcore-os-apbx-{}", std::process::id()));
+    let temp_dir = std::env::temp_dir().join(format!("ouden-os-apbx-{}", std::process::id()));
     let pkg_dir = temp_dir.join(&package_stem);
 
     let payload_dir = pkg_dir.join("payload").join("playbooks");
@@ -78,7 +94,14 @@ pub fn create_bundle(
     let injection_dir = pkg_dir.join("injection");
     let meta_dir = pkg_dir.join("meta");
 
-    for d in [&payload_dir, &state_dir, &wizard_dir, &config_dir, &injection_dir, &meta_dir] {
+    for d in [
+        &payload_dir,
+        &state_dir,
+        &wizard_dir,
+        &config_dir,
+        &injection_dir,
+        &meta_dir,
+    ] {
         fs::create_dir_all(d).map_err(|e| format!("mkdir failed: {e}"))?;
     }
 
@@ -102,9 +125,12 @@ pub fn create_bundle(
     write_json(&injection_dir.join("staging.json"), &staging)?;
 
     // meta/release.json
-    let artifact_name = output_path.file_name().map(|f| f.to_string_lossy().to_string()).unwrap_or_default();
+    let artifact_name = output_path
+        .file_name()
+        .map(|f| f.to_string_lossy().to_string())
+        .unwrap_or_default();
     let release = serde_json::json!({
-        "product": "redcore-os",
+        "product": "ouden-os",
         "packageRole": package_kind,
         "artifactName": artifact_name,
         "version": version,
@@ -120,17 +146,47 @@ pub fn create_bundle(
 
     // Write state files
     if has_state {
-        write_json(&state_dir.join("answers.json"), &val_or_null(&state.answers))?;
-        write_json(&state_dir.join("profile.json"), &val_or_null(&state.detected_profile))?;
-        write_json(&state_dir.join("personalization.json"), &val_or_null(&state.personalization))?;
-        write_json(&state_dir.join("selected-apps.json"), &serde_json::json!(state.selected_app_ids.as_deref().unwrap_or(&[])))?;
-        write_json(&state_dir.join("resolved-playbook.json"), &val_or_null(&state.resolved_playbook))?;
-        write_json(&state_dir.join("decision-summary.json"), &val_or_null(&state.decision_summary))?;
-        write_json(&state_dir.join("action-provenance.json"), &val_or_null(&state.action_provenance))?;
-        write_json(&state_dir.join("execution-journal.json"), &val_or_null(&state.execution_journal))?;
-        write_json(&state_dir.join("service-journal-state.json"), &val_or_null(&state.service_journal_state))?;
+        write_json(
+            &state_dir.join("answers.json"),
+            &val_or_null(&state.answers),
+        )?;
+        write_json(
+            &state_dir.join("profile.json"),
+            &val_or_null(&state.detected_profile),
+        )?;
+        write_json(
+            &state_dir.join("personalization.json"),
+            &val_or_null(&state.personalization),
+        )?;
+        write_json(
+            &state_dir.join("selected-apps.json"),
+            &serde_json::json!(state.selected_app_ids.as_deref().unwrap_or(&[])),
+        )?;
+        write_json(
+            &state_dir.join("resolved-playbook.json"),
+            &val_or_null(&state.resolved_playbook),
+        )?;
+        write_json(
+            &state_dir.join("decision-summary.json"),
+            &val_or_null(&state.decision_summary),
+        )?;
+        write_json(
+            &state_dir.join("action-provenance.json"),
+            &val_or_null(&state.action_provenance),
+        )?;
+        write_json(
+            &state_dir.join("execution-journal.json"),
+            &val_or_null(&state.execution_journal),
+        )?;
+        write_json(
+            &state_dir.join("service-journal-state.json"),
+            &val_or_null(&state.service_journal_state),
+        )?;
         if state.ledger_state.is_some() {
-            write_json(&state_dir.join("execution-ledger.json"), &val_or_null(&state.ledger_state))?;
+            write_json(
+                &state_dir.join("execution-ledger.json"),
+                &val_or_null(&state.ledger_state),
+            )?;
         }
     }
 
@@ -154,8 +210,16 @@ pub fn create_bundle(
     let action_provenance = &state.action_provenance;
     let execution_journal = &state.execution_journal;
     let manifest = build_manifest(
-        wizard_metadata, state, package_kind, version, commit, &built_at,
-        &artifact_name, &checksums, action_provenance, execution_journal,
+        wizard_metadata,
+        state,
+        package_kind,
+        version,
+        commit,
+        &built_at,
+        &artifact_name,
+        &checksums,
+        action_provenance,
+        execution_journal,
     );
     write_json(&pkg_dir.join("manifest.json"), &manifest)?;
 
@@ -197,7 +261,9 @@ fn sha256_file(path: &Path) -> Result<String, std::io::Error> {
     let mut buf = [0u8; 8192];
     loop {
         let n = file.read(&mut buf)?;
-        if n == 0 { break; }
+        if n == 0 {
+            break;
+        }
         hasher.update(&buf[..n]);
     }
     Ok(format!("{:x}", hasher.finalize()))
@@ -240,9 +306,11 @@ fn zip_directory(source_dir: &Path, root_name: &str, output: &Path) -> Result<()
         let archive_path = format!("{root_name}/{}", rel.to_string_lossy().replace('\\', "/"));
 
         if entry.file_type().is_dir() {
-            zip.add_directory(&archive_path, options).map_err(|e| e.to_string())?;
+            zip.add_directory(&archive_path, options)
+                .map_err(|e| e.to_string())?;
         } else {
-            zip.start_file(&archive_path, options).map_err(|e| e.to_string())?;
+            zip.start_file(&archive_path, options)
+                .map_err(|e| e.to_string())?;
             let mut f = fs::File::open(abs).map_err(|e| e.to_string())?;
             std::io::copy(&mut f, &mut zip).map_err(|e| e.to_string())?;
         }
@@ -259,12 +327,32 @@ fn render_resolved_config(
 ) -> String {
     let mut lines = vec![
         "---".to_string(),
-        format!("title: \"{}\"", wm.get("title").and_then(|v| v.as_str()).unwrap_or("redcore OS Package")),
-        format!("packageId: \"{}\"", wm.get("packageId").and_then(|v| v.as_str()).unwrap_or("redcore-os")),
+        format!(
+            "title: \"{}\"",
+            wm.get("title")
+                .and_then(|v| v.as_str())
+                .unwrap_or("Ouden OS Package")
+        ),
+        format!(
+            "packageId: \"{}\"",
+            wm.get("packageId")
+                .and_then(|v| v.as_str())
+                .unwrap_or("ouden-os")
+        ),
         format!("packageKind: \"{package_kind}\""),
-        format!("profile: \"{}\"", state.detected_profile.as_ref()
-            .and_then(|p| p.get("id")).and_then(|v| v.as_str()).unwrap_or("template")),
-        format!("preset: \"{}\"", state.playbook_preset.as_deref().unwrap_or("balanced")),
+        format!(
+            "profile: \"{}\"",
+            state
+                .detected_profile
+                .as_ref()
+                .and_then(|p| p.get("id"))
+                .and_then(|v| v.as_str())
+                .unwrap_or("template")
+        ),
+        format!(
+            "preset: \"{}\"",
+            state.playbook_preset.as_deref().unwrap_or("balanced")
+        ),
         "requirements:".to_string(),
     ];
 
@@ -275,10 +363,30 @@ fn render_resolved_config(
     }
 
     lines.push("injection:".to_string());
-    lines.push(format!("  supportsISO: {}", wm.get("supportsISO").and_then(|v| v.as_bool()).unwrap_or(false)));
-    lines.push(format!("  injectPath: \"{}\"", wm.pointer("/iso/injectPath").and_then(|v| v.as_str()).unwrap_or("sources/$OEM$/$1/redcore/wizard")));
-    lines.push(format!("  disableBitLocker: {}", wm.pointer("/iso/disableBitLocker").and_then(|v| v.as_bool()).unwrap_or(false)));
-    lines.push(format!("  disableHardwareRequirements: {}", wm.pointer("/iso/disableHardwareRequirements").and_then(|v| v.as_bool()).unwrap_or(false)));
+    lines.push(format!(
+        "  supportsISO: {}",
+        wm.get("supportsISO")
+            .and_then(|v| v.as_bool())
+            .unwrap_or(false)
+    ));
+    lines.push(format!(
+        "  injectPath: \"{}\"",
+        wm.pointer("/iso/injectPath")
+            .and_then(|v| v.as_str())
+            .unwrap_or("sources/$OEM$/$1/redcore/wizard")
+    ));
+    lines.push(format!(
+        "  disableBitLocker: {}",
+        wm.pointer("/iso/disableBitLocker")
+            .and_then(|v| v.as_bool())
+            .unwrap_or(false)
+    ));
+    lines.push(format!(
+        "  disableHardwareRequirements: {}",
+        wm.pointer("/iso/disableHardwareRequirements")
+            .and_then(|v| v.as_bool())
+            .unwrap_or(false)
+    ));
 
     if state.detected_profile.is_some() {
         lines.push("selectedApps:".to_string());
@@ -293,7 +401,10 @@ fn render_resolved_config(
         lines.push("answers:".to_string());
         if let Some(answers) = state.answers.as_ref().and_then(|a| a.as_object()) {
             for (key, value) in answers {
-                lines.push(format!("  {key}: \"{}\"", value.as_str().unwrap_or(&value.to_string())));
+                lines.push(format!(
+                    "  {key}: \"{}\"",
+                    value.as_str().unwrap_or(&value.to_string())
+                ));
             }
         }
     }
@@ -313,15 +424,23 @@ fn build_manifest(
     action_provenance: &Option<serde_json::Value>,
     execution_journal: &Option<serde_json::Value>,
 ) -> serde_json::Value {
-    let ap_count = action_provenance.as_ref().and_then(|v| v.as_array()).map(|a| a.len()).unwrap_or(0);
-    let ej_count = execution_journal.as_ref().and_then(|v| v.as_array()).map(|a| a.len()).unwrap_or(0);
+    let ap_count = action_provenance
+        .as_ref()
+        .and_then(|v| v.as_array())
+        .map(|a| a.len())
+        .unwrap_or(0);
+    let ej_count = execution_journal
+        .as_ref()
+        .and_then(|v| v.as_array())
+        .map(|a| a.len())
+        .unwrap_or(0);
 
     serde_json::json!({
-        "format": "redcore-os-apbx",
+        "format": "ouden-os-apbx",
         "formatVersion": 1,
         "packageKind": package_kind,
-        "packageId": wm.get("packageId").and_then(|v| v.as_str()).unwrap_or("redcore-os"),
-        "title": wm.get("title").and_then(|v| v.as_str()).unwrap_or("redcore OS Package"),
+        "packageId": wm.get("packageId").and_then(|v| v.as_str()).unwrap_or("ouden-os"),
+        "title": wm.get("title").and_then(|v| v.as_str()).unwrap_or("Ouden OS Package"),
         "packageVersion": version,
         "commit": commit,
         "builtAt": built_at,
@@ -334,7 +453,7 @@ fn build_manifest(
         "riskLevel": state.decision_summary.as_ref()
             .and_then(|d| d.get("riskLevel")).and_then(|v| v.as_str()).unwrap_or("template"),
         "release": {
-            "product": "redcore-os",
+            "product": "ouden-os",
             "packageRole": package_kind,
             "artifactName": artifact_name,
             "version": version,
@@ -383,15 +502,32 @@ fn epoch_days_to_date(days: u64) -> (u64, u64, u64) {
     let mut remaining = days;
     loop {
         let days_in_year = if is_leap(y) { 366 } else { 365 };
-        if remaining < days_in_year { break; }
+        if remaining < days_in_year {
+            break;
+        }
         remaining -= days_in_year;
         y += 1;
     }
     let leap = is_leap(y);
-    let month_days = [31, if leap { 29 } else { 28 }, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+    let month_days = [
+        31,
+        if leap { 29 } else { 28 },
+        31,
+        30,
+        31,
+        30,
+        31,
+        31,
+        30,
+        31,
+        30,
+        31,
+    ];
     let mut mo = 1u64;
     for &md in &month_days {
-        if remaining < md { break; }
+        if remaining < md {
+            break;
+        }
         remaining -= md;
         mo += 1;
     }

@@ -4,9 +4,9 @@
 // Every change is captured in a rollback snapshot BEFORE application.
 
 use crate::db::Database;
-use crate::rollback;
 #[cfg(windows)]
 use crate::powershell;
+use crate::rollback;
 use serde_json::Value;
 
 #[cfg(windows)]
@@ -410,10 +410,7 @@ pub fn apply_personalization(
 }
 
 /// Revert a personalization by restoring its rollback snapshot.
-pub fn revert_personalization(
-    db: &Database,
-    snapshot_id: &str,
-) -> anyhow::Result<Value> {
+pub fn revert_personalization(db: &Database, snapshot_id: &str) -> anyhow::Result<Value> {
     tracing::info!(
         snapshot_id = snapshot_id,
         "Reverting personalization via snapshot"
@@ -613,7 +610,10 @@ Write-Host "Wallpaper generated and applied: ${w}x${h}"
 "#;
     let result = powershell::execute(script)?;
     if !result.success {
-        tracing::warn!("Wallpaper generation failed: {}, falling back to solid black", result.stderr.trim());
+        tracing::warn!(
+            "Wallpaper generation failed: {}, falling back to solid black",
+            result.stderr.trim()
+        );
         let fallback = "\
             Set-ItemProperty 'HKCU:\\Control Panel\\Colors' -Name Background -Value '0 0 0' -Force; \
             Add-Type -TypeDefinition @'\n\
@@ -758,7 +758,12 @@ public static class RedcoreShellRefresh {\n\
 }
 
 #[cfg(windows)]
-fn verify_registry_dword(hive: &str, path: &str, value_name: &str, expected: i64) -> anyhow::Result<()> {
+fn verify_registry_dword(
+    hive: &str,
+    path: &str,
+    value_name: &str,
+    expected: i64,
+) -> anyhow::Result<()> {
     match read_registry_value(hive, path, value_name) {
         Some(Value::Number(value)) if value.as_i64() == Some(expected) => Ok(()),
         Some(Value::String(value)) if value.parse::<i64>().ok() == Some(expected) => Ok(()),
@@ -780,7 +785,12 @@ fn verify_registry_dword(hive: &str, path: &str, value_name: &str, expected: i64
 }
 
 #[cfg(windows)]
-fn verify_registry_string(hive: &str, path: &str, value_name: &str, expected: &str) -> anyhow::Result<()> {
+fn verify_registry_string(
+    hive: &str,
+    path: &str,
+    value_name: &str,
+    expected: &str,
+) -> anyhow::Result<()> {
     match read_registry_value(hive, path, value_name) {
         Some(Value::String(value)) if value.eq_ignore_ascii_case(expected) => Ok(()),
         Some(other) => anyhow::bail!(
@@ -828,7 +838,9 @@ fn read_registry_value(hive: &str, path: &str, value_name: &str) -> Option<Value
 
 #[cfg(not(windows))]
 fn apply_dark_mode() -> anyhow::Result<()> {
-    tracing::info!("[simulated] Would enable dark mode (AppsUseLightTheme=0, SystemUsesLightTheme=0)");
+    tracing::info!(
+        "[simulated] Would enable dark mode (AppsUseLightTheme=0, SystemUsesLightTheme=0)"
+    );
     Ok(())
 }
 
@@ -852,13 +864,17 @@ fn apply_transparency(enable: bool) -> anyhow::Result<()> {
 
 #[cfg(not(windows))]
 fn apply_taskbar_cleanup() -> anyhow::Result<()> {
-    tracing::info!("[simulated] Would clean up taskbar (hide Task View, Widgets, Chat, reduce search)");
+    tracing::info!(
+        "[simulated] Would clean up taskbar (hide Task View, Widgets, Chat, reduce search)"
+    );
     Ok(())
 }
 
 #[cfg(not(windows))]
 fn apply_explorer_cleanup() -> anyhow::Result<()> {
-    tracing::info!("[simulated] Would clean up Explorer (show extensions, hidden files, disable recents)");
+    tracing::info!(
+        "[simulated] Would clean up Explorer (show extensions, hidden files, disable recents)"
+    );
     Ok(())
 }
 

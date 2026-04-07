@@ -118,14 +118,26 @@ export function ReportStep() {
       const result = await platform().log.saveToDesktop(text);
       if (result.ok) {
         setLogExportState("done");
-        setLogExportMessage(`Log saved${result.path ? ` to ${result.path}` : ""}`);
+        setLogExportMessage("Activity log saved successfully.");
+        window.setTimeout(() => {
+          setLogExportState("idle");
+          setLogExportMessage("");
+        }, 2500);
       } else {
         setLogExportState("error");
-        setLogExportMessage(result.error ?? "Failed to save log");
+        setLogExportMessage("Could not save the activity log. Try again.");
+        window.setTimeout(() => {
+          setLogExportState("idle");
+          setLogExportMessage("");
+        }, 2500);
       }
     } catch {
       setLogExportState("error");
-      setLogExportMessage("Failed to save log");
+      setLogExportMessage("Could not save the activity log. Try again.");
+      window.setTimeout(() => {
+        setLogExportState("idle");
+        setLogExportMessage("");
+      }, 2500);
     }
   };
 
@@ -157,7 +169,11 @@ export function ReportStep() {
 
     if (exportResult.ok) {
       setExportState("done");
-      setExportMessage(`Completed package exported${typeof exportResult.path === "string" ? ` to ${exportResult.path}` : ""}.`);
+      setExportMessage("Package saved successfully.");
+      window.setTimeout(() => {
+        setExportState("idle");
+        setExportMessage("");
+      }, 2500);
       return;
     }
 
@@ -167,7 +183,11 @@ export function ReportStep() {
     }
 
     setExportState("error");
-    setExportMessage(typeof exportResult.error === "string" ? exportResult.error : "Export failed.");
+    setExportMessage("Could not save the package. Try again.");
+    window.setTimeout(() => {
+      setExportState("idle");
+      setExportMessage("");
+    }, 2500);
   };
 
   return (
@@ -197,9 +217,9 @@ export function ReportStep() {
 
       {/* Title */}
       <div className="text-center">
-        <h2 className="text-[18px] font-medium text-[var(--text-primary)]">All Done</h2>
+        <h2 className="text-[18px] font-medium text-[var(--text-primary)]">Changes applied</h2>
         <p className="mt-1 text-[11px] text-[var(--text-secondary)]">
-          Your {detectedProfile?.label ?? "system"} has been optimized
+          The selected changes have been applied
         </p>
         <div className="mt-3 flex flex-col items-center gap-2">
           <div className="flex items-center gap-2">
@@ -209,7 +229,7 @@ export function ReportStep() {
               className="inline-flex items-center gap-2 rounded-sm border border-white/[0.12] bg-[var(--surface-raised)] px-4 py-2 text-[11px] font-medium text-[var(--text-primary)] transition-all hover:border-white/[0.22] hover:bg-white/[0.09] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40"
             >
               <Archive className="h-3.5 w-3.5 shrink-0" />
-              {exportState === "busy" ? "Exporting..." : exportState === "done" ? "Exported" : "Save Report"}
+              {exportState === "busy" ? "Exporting..." : exportState === "done" ? "Exported" : "Save package"}
             </button>
             <button
               onClick={handleExportLog}
@@ -217,7 +237,7 @@ export function ReportStep() {
               className="inline-flex items-center gap-2 rounded-sm border border-white/[0.12] bg-[var(--surface-raised)] px-4 py-2 text-[11px] font-medium text-[var(--text-primary)] transition-all hover:border-white/[0.22] hover:bg-white/[0.09] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40"
             >
               <FileText className="h-3.5 w-3.5 shrink-0" />
-              {logExportState === "busy" ? "Saving..." : logExportState === "done" ? "Saved" : "Save Log"}
+              {logExportState === "busy" ? "Saving..." : logExportState === "done" ? "Saved" : "Save activity log"}
             </button>
           </div>
           {exportMessage && (
@@ -237,8 +257,8 @@ export function ReportStep() {
       <div className="flex gap-3">
         {[
           { value: appliedPlaybookActions || rendererResult.applied, label: "Applied", color: "text-[var(--success)]", icon: Check },
-          { value: failedActions || rendererResult.failed, label: "Failed", color: (failedActions || rendererResult.failed) > 0 ? "text-[var(--accent)]" : "text-[var(--text-disabled)]", icon: AlertTriangle },
-          { value: preservedActions.length || rendererResult.preserved, label: "Preserved", color: "text-[var(--text-secondary)]", icon: Shield },
+          { value: failedActions || rendererResult.failed, label: "Needs attention", color: (failedActions || rendererResult.failed) > 0 ? "text-[var(--accent)]" : "text-[var(--text-disabled)]", icon: AlertTriangle },
+          { value: preservedActions.length || rendererResult.preserved, label: "Left unchanged", color: "text-[var(--text-secondary)]", icon: Shield },
         ].map(({ value, label, color, icon: Icon }, i) => (
           <motion.div
             key={label}
@@ -266,9 +286,9 @@ export function ReportStep() {
           <div className="flex items-start gap-2 rounded-sm bg-[var(--surface)] border border-[var(--border)] px-3 py-2">
             <Check className="mt-0.5 h-3 w-3 shrink-0 text-[var(--success)]" />
             <p className="text-[10px] leading-relaxed text-[var(--text-secondary)]">
-              <span className="font-medium text-[var(--text-primary)]">{appliedPlaybookActions || pb.totalIncluded} actions</span> applied across {pb.phases.length} categories.
+              <span className="font-medium text-[var(--text-primary)]">{appliedPlaybookActions || pb.totalIncluded} changes</span> were applied across {pb.phases.length} sections.
               {executionResult?.truthSource === "local" && (
-                <span className="ml-1 text-amber-400/70">(unverified — service ledger unavailable)</span>
+                <span className="ml-1 text-white/70">(service data was not available)</span>
               )}
             </p>
           </div>
@@ -276,14 +296,14 @@ export function ReportStep() {
           {/* What was preserved */}
           {preservedActions.length > 0 && (
             <div className="flex items-start gap-2 rounded-sm bg-[var(--surface)] border border-[var(--border)] px-3 py-2">
-              <Shield className="mt-0.5 h-3 w-3 shrink-0 text-amber-400" />
+              <Shield className="mt-0.5 h-3 w-3 shrink-0 text-[var(--text-display)]" />
               <p className="text-[10px] leading-relaxed text-[var(--text-secondary)]">
-                <span className="font-medium text-[var(--text-primary)]">{preservedActions.length} actions preserved</span>
+                <span className="font-medium text-[var(--text-primary)]">{preservedActions.length} changes were left unchanged</span>
                 {userChoicePreserved.length > 0
-                  ? ` — ${userChoicePreserved.length} skipped because of your answers.`
+                  ? ` — ${userChoicePreserved.length} because of your choices.`
                   : detectedProfile?.isWorkPc
-                  ? " — kept safe for your Work PC."
-                  : " — skipped because they don't fit your setup."}
+                  ? " — to keep work settings in place."
+                  : " — because they did not fit this setup."}
               </p>
             </div>
           )}
@@ -293,7 +313,7 @@ export function ReportStep() {
             <div className="flex items-start gap-2 rounded-sm bg-[var(--surface)] border border-[var(--border)] px-3 py-2">
               <Lock className="mt-0.5 h-3 w-3 shrink-0 text-purple-400" />
               <p className="text-[10px] leading-relaxed text-[var(--text-secondary)]">
-                <span className="font-medium text-[var(--text-primary)]">{pb.totalExpertOnly} expert-only actions</span> skipped — pick "Expert" preset to unlock them.
+                <span className="font-medium text-[var(--text-primary)]">{pb.totalExpertOnly} advanced changes</span> were not included.
               </p>
             </div>
           )}
@@ -310,9 +330,9 @@ export function ReportStep() {
           {topWarnings.length > 0 && (
             <div className="space-y-1.5">
               {topWarnings.map((warning) => (
-                <div key={warning} className="flex items-start gap-2 rounded-sm border border-amber-500/12 bg-amber-500/[0.06] px-3 py-2">
-                  <AlertTriangle className="mt-0.5 h-3 w-3 shrink-0 text-amber-400" />
-                  <p className="text-[10px] leading-relaxed text-amber-100/80">{warning}</p>
+                <div key={warning} className="flex items-start gap-2 rounded-sm border border-white/[0.12] bg-white/[0.04] px-3 py-2">
+                  <AlertTriangle className="mt-0.5 h-3 w-3 shrink-0 text-[var(--text-display)]" />
+                  <p className="text-[10px] leading-relaxed text-[var(--text-display)]/80">{warning}</p>
                 </div>
               ))}
             </div>

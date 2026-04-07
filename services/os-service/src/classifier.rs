@@ -9,7 +9,10 @@ use serde_json::Value;
 pub fn classify(assessment: &Value) -> anyhow::Result<Value> {
     tracing::info!("Classifying machine from assessment data");
 
-    let work_signals = assessment.get("workSignals").cloned().unwrap_or(Value::Null);
+    let work_signals = assessment
+        .get("workSignals")
+        .cloned()
+        .unwrap_or(Value::Null);
     let vm_data = assessment.get("vm").cloned().unwrap_or(Value::Null);
     let hw = assessment.get("hardware").cloned().unwrap_or(Value::Null);
 
@@ -43,10 +46,7 @@ pub fn classify(assessment: &Value) -> anyhow::Result<Value> {
         .and_then(|v| v.as_bool())
         .unwrap_or(false);
 
-    let ram_gb = hw
-        .get("ramGb")
-        .and_then(|v| v.as_u64())
-        .unwrap_or(8) as u32;
+    let ram_gb = hw.get("ramGb").and_then(|v| v.as_u64()).unwrap_or(8) as u32;
 
     let cpu_cores = hw
         .get("cpu")
@@ -87,10 +87,7 @@ pub fn classify(assessment: &Value) -> anyhow::Result<Value> {
 
     // Detect laptop form factor heuristic: model name contains "laptop"/"notebook",
     // or battery present (simulated by checking model string patterns)
-    let model = vm_data
-        .get("model")
-        .and_then(|v| v.as_str())
-        .unwrap_or("");
+    let model = vm_data.get("model").and_then(|v| v.as_str()).unwrap_or("");
     let is_laptop = model.to_lowercase().contains("laptop")
         || model.to_lowercase().contains("notebook")
         || model.to_lowercase().contains("surface");
@@ -260,10 +257,7 @@ impl ProfileScores {
     }
 }
 
-fn compute_preservation_flags(
-    profile: &str,
-    work_indicators: &Value,
-) -> Value {
+fn compute_preservation_flags(profile: &str, work_indicators: &Value) -> Value {
     let mut flags = serde_json::json!({
         "preserveOneDrive": false,
         "preserveAppxPackages": false,

@@ -37,6 +37,13 @@ impl Database {
     }
 
     fn data_dir() -> PathBuf {
+        if let Ok(explicit_dir) = std::env::var("REDCORE_OS_DATA_DIR") {
+            let candidate = PathBuf::from(explicit_dir);
+            if !candidate.as_os_str().is_empty() {
+                return candidate;
+            }
+        }
+
         #[cfg(windows)]
         {
             let appdata = std::env::var("LOCALAPPDATA")

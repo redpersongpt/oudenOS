@@ -11,12 +11,14 @@ pub mod appbundle;
 mod assessor;
 mod classifier;
 mod db;
+mod engine;
 mod executor;
 mod ipc;
 pub mod ledger;
 mod personalizer;
 pub mod playbook;
 mod powershell;
+mod questionnaire;
 mod rollback;
 mod transformer;
 

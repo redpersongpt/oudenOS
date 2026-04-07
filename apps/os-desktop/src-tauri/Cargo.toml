@@ -4,10 +4,15 @@ version = "0.10.2"
 description = "redcore OS desktop app"
 authors = ["redcore"]
 edition = "2021"
+default-run = "OudenOS"
 
 [lib]
 name = "redcore_os_desktop"
 crate-type = ["lib", "cdylib", "staticlib"]
+
+[[bin]]
+name = "OudenOS"
+path = "src/main.rs"
 
 [build-dependencies]
 tauri-build = { version = "2", features = [] }

@@ -25,6 +25,7 @@ const NAV_LINKS: NavLink[] = [
 
 const PAGE_LINKS = [
   { label: "Downloads", href: "/downloads" },
+  { label: "Patch Notes", href: "/patch-notes" },
 ];
 
 const SECTION_IDS = NAV_LINKS.map((l) => l.sectionId);

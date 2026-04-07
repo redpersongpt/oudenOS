@@ -72,9 +72,9 @@ pub fn create_snapshot(
 
 /// List all available snapshots, newest first.
 pub fn list_snapshots(db: &Database) -> anyhow::Result<Vec<Snapshot>> {
-    let mut stmt = db.conn().prepare(
-        "SELECT data FROM rollback_snapshots ORDER BY created_at DESC",
-    )?;
+    let mut stmt = db
+        .conn()
+        .prepare("SELECT data FROM rollback_snapshots ORDER BY created_at DESC")?;
 
     let snapshots = stmt
         .query_map([], |row| {
@@ -100,10 +100,7 @@ struct RestoreDetail {
 }
 
 /// Restore a snapshot by re-applying all previous values captured at snapshot time.
-pub fn restore_snapshot(
-    db: &Database,
-    snapshot_id: &str,
-) -> anyhow::Result<serde_json::Value> {
+pub fn restore_snapshot(db: &Database, snapshot_id: &str) -> anyhow::Result<serde_json::Value> {
     tracing::info!(snapshot_id = snapshot_id, "Beginning snapshot restoration");
 
     let data: String = db.conn().query_row(
@@ -125,6 +122,7 @@ pub fn restore_snapshot(
             "task" => restore_task(prev),
             "bcd" => restore_bcd(prev),
             "power" => restore_power(prev),
+            "file_rename" => restore_file_rename(prev),
             "appx" => {
                 // AppX packages cannot be automatically reinstalled -- note the limitation
                 tracing::info!(
@@ -224,8 +222,12 @@ fn restore_registry(prev: &PreviousValue) -> anyhow::Result<()> {
         Some(value) => {
             let (value_str, value_type) = match value {
                 serde_json::Value::Number(n) => (n.to_string(), "DWord"),
-                serde_json::Value::Bool(flag) => (((if *flag { 1 } else { 0 }).to_string()), "DWord"),
-                serde_json::Value::String(s) => (format!("'{}'", powershell::escape_ps_string(s)), "String"),
+                serde_json::Value::Bool(flag) => {
+                    (((if *flag { 1 } else { 0 }).to_string()), "DWord")
+                }
+                serde_json::Value::String(s) => {
+                    (format!("'{}'", powershell::escape_ps_string(s)), "String")
+                }
                 other => (
                     format!("'{}'", powershell::escape_ps_string(&other.to_string())),
                     "String",
@@ -239,7 +241,9 @@ fn restore_registry(prev: &PreviousValue) -> anyhow::Result<()> {
             if !result.success {
                 anyhow::bail!(
                     "Failed to restore registry {}\\{}: {}",
-                    prev.path, prev.value_name, result.stderr.trim()
+                    prev.path,
+                    prev.value_name,
+                    result.stderr.trim()
                 );
             }
         }
@@ -252,7 +256,9 @@ fn restore_registry(prev: &PreviousValue) -> anyhow::Result<()> {
             if !result.success {
                 tracing::warn!(
                     "Remove-ItemProperty returned non-zero for {}\\{}: {}",
-                    prev.path, prev.value_name, result.stderr.trim()
+                    prev.path,
+                    prev.value_name,
+                    result.stderr.trim()
                 );
             }
         }
@@ -281,7 +287,9 @@ fn restore_service(prev: &PreviousValue) -> anyhow::Result<()> {
     if !result.success {
         anyhow::bail!(
             "Failed to restore service {} to {}: {}",
-            prev.path, start_type, result.stderr.trim()
+            prev.path,
+            start_type,
+            result.stderr.trim()
         );
     }
 
@@ -309,7 +317,9 @@ fn restore_task(prev: &PreviousValue) -> anyhow::Result<()> {
     if !result.success {
         anyhow::bail!(
             "Failed to re-enable task '{}' at '{}': {}",
-            prev.value_name, prev.path, result.stderr.trim()
+            prev.value_name,
+            prev.path,
+            result.stderr.trim()
         );
     }
     Ok(())
@@ -328,14 +338,23 @@ fn restore_bcd(prev: &PreviousValue) -> anyhow::Result<()> {
         let script = format!("bcdedit /deletevalue {{current}} {}", element);
         let result = powershell::execute(&script)?;
         if !result.success {
-            anyhow::bail!("Failed to delete BCD element '{}': {}", element, result.stderr.trim());
+            anyhow::bail!(
+                "Failed to delete BCD element '{}': {}",
+                element,
+                result.stderr.trim()
+            );
         }
     } else {
         let safe_value = powershell::validate_safe_arg(value, "BCD value")?;
         let script = format!("bcdedit /set {{current}} {} {}", element, safe_value);
         let result = powershell::execute(&script)?;
         if !result.success {
-            anyhow::bail!("Failed to restore BCD element '{}' to '{}': {}", element, value, result.stderr.trim());
+            anyhow::bail!(
+                "Failed to restore BCD element '{}' to '{}': {}",
+                element,
+                value,
+                result.stderr.trim()
+            );
         }
     }
     Ok(())
@@ -362,7 +381,11 @@ fn restore_power(prev: &PreviousValue) -> anyhow::Result<()> {
             );
             let result = powershell::execute(&script)?;
             if !result.success {
-                anyhow::bail!("Failed to restore power setting '{}': {}", setting_path, result.stderr.trim());
+                anyhow::bail!(
+                    "Failed to restore power setting '{}': {}",
+                    setting_path,
+                    result.stderr.trim()
+                );
             }
         } else {
             anyhow::bail!("Invalid power setting path format: {}", setting_path);
@@ -371,17 +394,80 @@ fn restore_power(prev: &PreviousValue) -> anyhow::Result<()> {
     Ok(())
 }
 
+#[cfg(windows)]
+fn restore_file_rename(prev: &PreviousValue) -> anyhow::Result<()> {
+    let source = &prev.path;
+    let target = &prev.value_name;
+    let previous = prev.previous_value.clone().unwrap_or_default();
+    let source_existed = previous
+        .get("sourceExisted")
+        .and_then(|value| value.as_bool())
+        .unwrap_or(true);
+    let target_existed = previous
+        .get("targetExisted")
+        .and_then(|value| value.as_bool())
+        .unwrap_or(false);
+    let requires_trusted_installer = previous
+        .get("requiresTrustedInstaller")
+        .and_then(|value| value.as_bool())
+        .unwrap_or(false);
+
+    if !source_existed {
+        tracing::info!(
+            source = source.as_str(),
+            "Original file did not exist before apply — skipping file rename restore"
+        );
+        return Ok(());
+    }
+
+    if target_existed {
+        anyhow::bail!(
+            "Cannot automatically restore file rename {} -> {} because target already existed before apply",
+            source,
+            target
+        );
+    }
+
+    let escaped_source = powershell::escape_ps_string(source);
+    let escaped_target = powershell::escape_ps_string(target);
+    let script = format!(
+        "if (-not (Test-Path -LiteralPath '{}')) {{ Write-Host 'SKIPPED: rollback source not found'; exit 0 }}; \
+         if (Test-Path -LiteralPath '{}') {{ Write-Host 'SKIPPED: original file already restored'; exit 0 }}; \
+         Move-Item -LiteralPath '{}' -Destination '{}' -Force -ErrorAction Stop; \
+         Write-Host 'OK: file rename restored'",
+        escaped_target, escaped_source, escaped_target, escaped_source,
+    );
+
+    let result = powershell::execute_with_privilege(&script, requires_trusted_installer)?;
+    if !result.success {
+        anyhow::bail!(
+            "Failed to restore file rename {} <- {}: {}",
+            source,
+            target,
+            result.stderr.trim()
+        );
+    }
+
+    Ok(())
+}
+
 // ─── Non-Windows simulation ─────────────────────────────────────────────────
 
 #[cfg(not(windows))]
 fn restore_bcd(prev: &PreviousValue) -> anyhow::Result<()> {
-    tracing::info!(element = prev.value_name.as_str(), "[simulated] Would restore BCD element");
+    tracing::info!(
+        element = prev.value_name.as_str(),
+        "[simulated] Would restore BCD element"
+    );
     Ok(())
 }
 
 #[cfg(not(windows))]
 fn restore_power(prev: &PreviousValue) -> anyhow::Result<()> {
-    tracing::info!(setting = prev.path.as_str(), "[simulated] Would restore power setting");
+    tracing::info!(
+        setting = prev.path.as_str(),
+        "[simulated] Would restore power setting"
+    );
     Ok(())
 }
 
@@ -428,6 +514,16 @@ fn restore_task(prev: &PreviousValue) -> anyhow::Result<()> {
         task_name = prev.value_name.as_str(),
         task_path = prev.path.as_str(),
         "[simulated] Would re-enable scheduled task"
+    );
+    Ok(())
+}
+
+#[cfg(not(windows))]
+fn restore_file_rename(prev: &PreviousValue) -> anyhow::Result<()> {
+    tracing::info!(
+        source = prev.path.as_str(),
+        target = prev.value_name.as_str(),
+        "[simulated] Would restore file rename"
     );
     Ok(())
 }

@@ -67,11 +67,20 @@ struct LegacyAction {
 }
 
 fn sidecar_path() -> PathBuf {
+    if let Ok(explicit_dir) = std::env::var("REDCORE_OS_DATA_DIR") {
+        let candidate = PathBuf::from(explicit_dir);
+        if !candidate.as_os_str().is_empty() {
+            return candidate.join("resume-journal.json");
+        }
+    }
+
     #[cfg(windows)]
     {
         let base = std::env::var("LOCALAPPDATA")
             .unwrap_or_else(|_| "C:\\Users\\Default\\AppData\\Local".to_string());
-        PathBuf::from(base).join("redcore-os").join("resume-journal.json")
+        PathBuf::from(base)
+            .join("redcore-os")
+            .join("resume-journal.json")
     }
 
     #[cfg(not(windows))]
@@ -153,7 +162,9 @@ pub fn import_legacy_sidecar(db: &Database) {
     let mut all_actions: Vec<ledger::QueuedAction> = Vec::new();
     let mut pos = 0i32;
 
-    for action in sidecar.completed_actions.iter()
+    for action in sidecar
+        .completed_actions
+        .iter()
         .chain(sidecar.failed_actions.iter())
         .chain(sidecar.pending_reboot_actions.iter())
     {
@@ -195,23 +206,31 @@ pub fn import_legacy_sidecar(db: &Database) {
         } else {
             &action.status
         };
-        let _ = ledger::record_action_result(db, &sidecar.plan_id, &ledger::ActionResult {
-            action_id: action.action_id.clone(),
-            status: status.to_string(),
-            rollback_snapshot_id: action.rollback_snapshot_id.clone(),
-            error_message: None,
-            duration_ms: None,
-        });
+        let _ = ledger::record_action_result(
+            db,
+            &sidecar.plan_id,
+            &ledger::ActionResult {
+                action_id: action.action_id.clone(),
+                status: status.to_string(),
+                rollback_snapshot_id: action.rollback_snapshot_id.clone(),
+                error_message: None,
+                duration_ms: None,
+            },
+        );
     }
 
     for action in &sidecar.failed_actions {
-        let _ = ledger::record_action_result(db, &sidecar.plan_id, &ledger::ActionResult {
-            action_id: action.action_id.clone(),
-            status: "failed".to_string(),
-            rollback_snapshot_id: action.rollback_snapshot_id.clone(),
-            error_message: action.error.clone(),
-            duration_ms: None,
-        });
+        let _ = ledger::record_action_result(
+            db,
+            &sidecar.plan_id,
+            &ledger::ActionResult {
+                action_id: action.action_id.clone(),
+                status: "failed".to_string(),
+                rollback_snapshot_id: action.rollback_snapshot_id.clone(),
+                error_message: action.error.clone(),
+                duration_ms: None,
+            },
+        );
     }
 
     // If there are pending reboot actions, mark plan as paused_reboot

@@ -6,7 +6,7 @@ export function buildPackagePlanId(
 ): string {
   return [
     "apbx",
-    "redcore-os",
+    "ouden-os",
     playbook.playbookVersion,
     playbook.preset,
     profileId ?? playbook.profile,
@@ -21,7 +21,7 @@ export function buildExecutionJournalContext(
   return {
     package: {
       planId: buildPackagePlanId(playbook, profileId),
-      packageId: "redcore-os",
+      packageId: "ouden-os",
       packageRole: "user-resolved" as const,
       packageVersion: playbook.playbookVersion,
       packageSourceRef: playbook.packageRefs?.manifestRef ?? "manifest.json",
@@ -48,7 +48,7 @@ export function buildRebootJournalContext(
 ) {
   return {
     planId: buildPackagePlanId(playbook, profileId),
-    packageId: "redcore-os",
+    packageId: "ouden-os",
     packageRole: "user-resolved" as const,
     packageVersion: playbook.playbookVersion,
   };

@@ -253,7 +253,10 @@ pub fn resolve(
                 });
             }
             None => {
-                tracing::warn!(app_id = app_id.as_str(), "Selected app not found in catalog — skipping");
+                tracing::warn!(
+                    app_id = app_id.as_str(),
+                    "Selected app not found in catalog — skipping"
+                );
                 skipped.push(app_id.clone());
             }
         }
@@ -370,7 +373,10 @@ fn install_catalog_entry(app_id: &str, entry: &CatalogEntry) -> anyhow::Result<I
 
     let payload: serde_json::Value = serde_json::from_str(result.stdout.trim())
         .map_err(|e| anyhow::anyhow!("Failed to parse installer result: {}", e))?;
-    let exit_code = payload.get("exitCode").and_then(|value| value.as_i64()).map(|value| value as i32);
+    let exit_code = payload
+        .get("exitCode")
+        .and_then(|value| value.as_i64())
+        .map(|value| value as i32);
     let downloaded_path = payload
         .get("downloadedPath")
         .and_then(|value| value.as_str())
@@ -389,7 +395,10 @@ fn install_catalog_entry(app_id: &str, entry: &CatalogEntry) -> anyhow::Result<I
         error: if exit_code.unwrap_or(1) == 0 {
             None
         } else {
-            Some(format!("Installer exited with code {}", exit_code.unwrap_or(-1)))
+            Some(format!(
+                "Installer exited with code {}",
+                exit_code.unwrap_or(-1)
+            ))
         },
     })
 }
@@ -459,8 +468,14 @@ mod tests {
             .filter(|a| a["recommended"].as_bool() == Some(true))
             .filter_map(|a| a["id"].as_str())
             .collect();
-        assert!(recommended.contains(&"steam"), "Steam must be recommended for gaming");
-        assert!(recommended.contains(&"discord"), "Discord must be recommended for gaming");
+        assert!(
+            recommended.contains(&"steam"),
+            "Steam must be recommended for gaming"
+        );
+        assert!(
+            recommended.contains(&"discord"),
+            "Discord must be recommended for gaming"
+        );
 
         // All catalog apps should be present
         assert!(apps.len() >= 10);
@@ -481,8 +496,14 @@ mod tests {
             .filter(|a| a["recommended"].as_bool() == Some(true))
             .filter_map(|a| a["id"].as_str())
             .collect();
-        assert!(!recommended.contains(&"steam"), "Steam must NOT be recommended for work_pc");
-        assert!(recommended.contains(&"brave"), "Brave must be recommended for work_pc");
+        assert!(
+            !recommended.contains(&"steam"),
+            "Steam must NOT be recommended for work_pc"
+        );
+        assert!(
+            recommended.contains(&"brave"),
+            "Brave must be recommended for work_pc"
+        );
     }
 
     #[test]
@@ -491,7 +512,11 @@ mod tests {
         if !dir.join("app-bundles").exists() {
             return;
         }
-        let selected = vec!["7zip".to_string(), "brave".to_string(), "nonexistent".to_string()];
+        let selected = vec![
+            "7zip".to_string(),
+            "brave".to_string(),
+            "nonexistent".to_string(),
+        ];
         let result = resolve(&dir, "work_pc", &selected).unwrap();
 
         assert_eq!(result["totalQueued"].as_u64(), Some(2));

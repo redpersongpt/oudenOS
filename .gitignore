@@ -2,31 +2,34 @@
 node_modules/
 .pnpm-store/
 
-# Claude worktrees (temporary agent artifacts)
-.claude/worktrees/
-
 # Build outputs
 dist/
 .next/
+out/
+build/
+coverage/
 target/
 *.tsbuildinfo
-artifacts/open-source/
 
-# Environment (all nested paths)
 .env
 .env.*
 !.env.example
 
-# OS
 .DS_Store
 Thumbs.db
-
-# IDE
 .vscode/
 .idea/
 
-# Rust
-apps/redcore-os/apps/service-core/target/
+test-results/
+data/
+proof/
 
-# Electron
+# Local config
+.claude/
+.agents/
+.codex/
+.windsurf/
+
+artifacts/open-source/
+apps/redcore-os/apps/service-core/target/
 apps/redcore-tuning/proof-screenshots/preload-compiled.js

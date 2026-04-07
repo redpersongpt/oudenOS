@@ -3,6 +3,7 @@
 // and most auditable approach (bulk registry ops, service management).
 // Every command is logged. No undocumented PS spaghetti.
 
+use std::path::PathBuf;
 use std::process::Command;
 
 #[cfg(windows)]
@@ -49,9 +50,12 @@ fn build_ps_command(script: &str) -> Command {
     cmd.args([
         "-NoProfile",
         "-NonInteractive",
-        "-WindowStyle", "Hidden",
-        "-ExecutionPolicy", "Bypass",
-        "-Command", script,
+        "-WindowStyle",
+        "Hidden",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-Command",
+        script,
     ]);
 
     #[cfg(windows)]
@@ -85,10 +89,60 @@ pub fn execute(script: &str) -> anyhow::Result<PsResult> {
     Ok(result)
 }
 
+pub fn resolve_minsudo_path() -> Option<PathBuf> {
+    let mut candidates = Vec::new();
+
+    if let Ok(from_env) = std::env::var("REDCORE_MINSUDO_PATH") {
+        candidates.push(PathBuf::from(from_env));
+    }
+
+    if let Ok(exe) = std::env::current_exe() {
+        if let Some(parent) = exe.parent() {
+            candidates.push(parent.join("MinSudo.exe"));
+            candidates.push(parent.join("tools").join("MinSudo.exe"));
+            candidates.push(parent.join("resources").join("MinSudo.exe"));
+        }
+    }
+
+    let repo_root = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+        .parent()
+        .and_then(|path| path.parent())
+        .map(|path| path.to_path_buf());
+
+    if let Some(root) = repo_root {
+        candidates.push(
+            root.join("third_party")
+                .join("windows-backend")
+                .join("pc-tuning")
+                .join("bin")
+                .join("MinSudo.exe"),
+        );
+    }
+
+    candidates.into_iter().find(|candidate| candidate.exists())
+}
+
+pub fn execute_with_privilege(
+    script: &str,
+    requires_trusted_installer: bool,
+) -> anyhow::Result<PsResult> {
+    if requires_trusted_installer {
+        let minsudo_path = resolve_minsudo_path().ok_or_else(|| {
+            anyhow::anyhow!("MinSudo.exe not found for TrustedInstaller execution")
+        })?;
+        return execute_elevated(script, &minsudo_path.to_string_lossy());
+    }
+
+    execute(script)
+}
+
 /// Execute a PowerShell command with elevated privileges via MinSudo.
 #[allow(dead_code)]
 pub fn execute_elevated(script: &str, minsudo_path: &str) -> anyhow::Result<PsResult> {
-    tracing::info!("PowerShell elevated exec: {}", &script[..script.len().min(200)]);
+    tracing::info!(
+        "PowerShell elevated exec: {}",
+        &script[..script.len().min(200)]
+    );
 
     let mut cmd = Command::new(minsudo_path);
     cmd.args([
@@ -96,9 +150,12 @@ pub fn execute_elevated(script: &str, minsudo_path: &str) -> anyhow::Result<PsRe
         "powershell.exe",
         "-NoProfile",
         "-NonInteractive",
-        "-WindowStyle", "Hidden",
-        "-ExecutionPolicy", "Bypass",
-        "-Command", script,
+        "-WindowStyle",
+        "Hidden",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-Command",
+        script,
     ]);
 
     #[cfg(windows)]
