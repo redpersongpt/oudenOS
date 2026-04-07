@@ -1,50 +1,10 @@
-# Dependencies
 node_modules/
-.pnpm-store/
-
-# Claude worktrees (temporary agent artifacts)
-.claude/worktrees/
-
-# Build outputs
 dist/
 .next/
 target/
 *.tsbuildinfo
-artifacts/open-source/
-
-# Environment (all nested paths)
 .env
 .env.*
 !.env.example
-
-# Local app data
-*.db
-*.sqlite
-apps/**/src-tauri/data/
-apps/**/prisma/prisma/*.db
-.demo/
-data/
-
-# OS
 .DS_Store
 Thumbs.db
-
-# IDE
-.vscode/
-.idea/
-
-# Rust
-apps/redcore-os/apps/service-core/target/
-
-# Electron
-apps/redcore-tuning/proof-screenshots/preload-compiled.js
-.agents/
-.claude/
-.windsurf/
-*.claude/
-
-# AI handoff / scratch files
-claudehandoff.md
-codexhandoff.md
-*handoff*.md
-Codexhandoffmd
