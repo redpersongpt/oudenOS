@@ -1,0 +1,1857 @@
+{
+  "packageId": "ouden-os",
+  "title": "Ouden OS Plan",
+  "shortDescription": "Windows optimization plan for Ouden OS",
+  "description": "A review-first Windows optimization playbook that stages cleanup, privacy hardening, and performance tuning through a guided wizard.",
+  "details": "Ouden OS scans the current install, resolves a profile-aware plan, and packages the same decisions for wizard and ISO flows.",
+  "version": "2.0",
+  "supportedBuilds": [
+    19045,
+    22631,
+    26100
+  ],
+  "chapters": [
+    {
+      "id": "preset",
+      "title": "Optimization Level",
+      "description": "Choose how aggressive the optimization should be.",
+      "kind": "preferences",
+      "sourcePrompt": "internal",
+      "sourceSections": [
+        "preset"
+      ],
+      "callouts": [],
+      "questions": [
+        {
+          "icon": "Shield",
+          "label": "Optimization Level",
+          "title": "How aggressively should we optimize your system?",
+          "desc": "This preset controls which advanced questions appear later. Conservative is safe for anyone. Expert unlocks every tweak \u2014 including ones with real trade-offs.",
+          "note": "You can always return and change this. Questions hidden at lower presets are just deferred, not locked.",
+          "visibility": null,
+          "options": [
+            {
+              "value": "conservative",
+              "title": "Conservative \u2014 safe cleanup only",
+              "desc": "Light cleanup and privacy fixes. Nothing that changes system behavior or touches security settings. Best for shared or work PCs.",
+              "badge": "Safest",
+              "badgeColor": "bg-emerald-500/15 text-emerald-400",
+              "danger": false,
+              "behavior": {
+                "value": "conservative",
+                "estimatedBlocked": 0,
+                "riskLevel": "safe"
+              }
+            },
+            {
+              "value": "balanced",
+              "title": "Balanced \u2014 good for most systems",
+              "desc": "A solid mix of performance, privacy, and stability improvements. Avoids anything that needs manual reversal.",
+              "badge": "Recommended",
+              "badgeColor": "bg-brand-500/15 text-brand-400",
+              "danger": false,
+              "behavior": {
+                "value": "balanced",
+                "estimatedBlocked": 0,
+                "riskLevel": "safe"
+              }
+            },
+            {
+              "value": "aggressive",
+              "title": "Aggressive \u2014 gaming / enthusiast",
+              "desc": "Unlocks deeper tweaks: memory compression, core parking, GPU P-state locks. Aimed at dedicated gaming rigs.",
+              "badge": "Advanced",
+              "badgeColor": "bg-purple-500/15 text-purple-400",
+              "danger": false,
+              "behavior": {
+                "value": "aggressive",
+                "estimatedBlocked": 0,
+                "riskLevel": "moderate"
+              }
+            },
+            {
+              "value": "expert",
+              "title": "Expert \u2014 full control",
+              "desc": "Every question is shown. Includes Spectre/Meltdown mitigation toggles, full Windows Update control, and Defender disablement. You accept the risks.",
+              "badge": "Expert",
+              "badgeColor": "bg-red-500/15 text-red-400",
+              "danger": true,
+              "behavior": {
+                "value": "expert",
+                "estimatedBlocked": 0,
+                "riskLevel": "high",
+                "warnings": [
+                  "Expert preset enables questions that can significantly reduce system security. Only proceed if you understand the implications."
+                ]
+              }
+            }
+          ],
+          "id": "aggressionPreset"
+        }
+      ]
+    },
+    {
+      "id": "essentials",
+      "title": "Essential Tweaks",
+      "description": "Core system changes \u2014 highest impact, lowest risk.",
+      "kind": "preferences",
+      "sourcePrompt": "internal",
+      "sourceSections": [
+        "essentials"
+      ],
+      "callouts": [],
+      "questions": [
+        {
+          "icon": "Zap",
+          "label": "Power Plan",
+          "title": "Switch to the High Performance power plan?",
+          "desc": "The default Balanced plan throttles CPU speed to save power. High Performance keeps the CPU at full clock, eliminating latency spikes. performance research calls this the single most impactful change for gaming responsiveness.",
+          "note": "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Power \u2014 sets the active plan GUID to 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c.",
+          "visibility": null,
+          "options": [
+            {
+              "value": true,
+              "title": "Yes \u2014 switch to High Performance",
+              "desc": "Full CPU clock at all times. Eliminates frequency ramp-up latency that causes frame-time spikes in games.",
+              "badge": "Core",
+              "badgeColor": "bg-brand-500/15 text-brand-400",
+              "danger": false,
+              "behavior": {
+                "value": true,
+                "includeActions": [
+                  "power.high-performance-plan"
+                ],
+                "estimatedActions": 1,
+                "riskLevel": "safe",
+                "requiresReboot": false,
+                "warnings": []
+              }
+            },
+            {
+              "value": false,
+              "title": "No \u2014 keep Balanced",
+              "desc": "Windows default. Good for laptops on battery. CPU may throttle during bursty workloads.",
+              "badge": null,
+              "badgeColor": null,
+              "danger": false,
+              "behavior": {
+                "value": false,
+                "blockActions": [
+                  "power.high-performance-plan"
+                ],
+                "blockReason": "You chose to keep the Balanced power plan.",
+                "estimatedBlocked": 1
+              }
+            }
+          ],
+          "id": "highPerformancePlan"
+        },
+        {
+          "icon": "Power",
+          "label": "Fast Startup",
+          "title": "Disable Fast Startup (Hybrid Boot)?",
+          "desc": "Fast Startup saves a hibernation snapshot of the kernel on shutdown. This can cause stale drivers, hidden power states, and misleading 'uptime' readings. Both performance research and community benchmarks recommend disabling it for clean boots.",
+          "note": "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Power \u2014 HiberbootEnabled = 0.",
+          "visibility": null,
+          "options": [
+            {
+              "value": true,
+              "title": "Yes \u2014 disable Fast Startup",
+              "desc": "Full cold boot on every shutdown. Slightly longer POST, but drivers always load fresh and hibernation snapshots can't interfere.",
+              "badge": "Core",
+              "badgeColor": "bg-brand-500/15 text-brand-400",
+              "danger": false,
+              "behavior": {
+                "value": true,
+                "includeActions": [
+                  "power.disable-fast-startup"
+                ],
+                "estimatedActions": 1,
+                "riskLevel": "safe",
+                "requiresReboot": false,
+                "warnings": []
+              }
+            },
+            {
+              "value": false,
+              "title": "No \u2014 keep Fast Startup",
+              "desc": "Faster Windows shutdown/resume cycle. May cause driver state issues after updates.",
+              "badge": null,
+              "badgeColor": null,
+              "danger": false,
+              "behavior": {
+                "value": false,
+                "blockActions": [
+                  "power.disable-fast-startup"
+                ],
+                "blockReason": "You chose to keep Fast Startup enabled.",
+                "estimatedBlocked": 1
+              }
+            }
+          ],
+          "id": "disableFastStartup"
+        },
+        {
+          "icon": "Battery",
+          "label": "Hibernation",
+          "title": "Disable hibernation and remove hiberfil.sys?",
+          "desc": "Hibernation writes a full RAM snapshot to disk (hiberfil.sys). On a 16 GB+ system this file can be 8\u201316 GB. If you never hibernate, this is wasted space and pointless I/O on shutdown. performance research runs `powercfg /h off` as a standard step.",
+          "note": "Runs: powercfg /hibernate off \u2014 removes C:\\hiberfil.sys and disables the hibernate power state.",
+          "visibility": null,
+          "options": [
+            {
+              "value": true,
+              "title": "Yes \u2014 disable hibernation",
+              "desc": "Frees hiberfil.sys disk space and removes the hibernate power option. Fast Startup also stops working (which is already disabled above).",
+              "badge": "Core",
+              "badgeColor": "bg-brand-500/15 text-brand-400",
+              "danger": false,
+              "behavior": {
+                "value": true,
+                "includeActions": [
+                  "power.disable-hibernation"
+                ],
+                "estimatedActions": 1,
+                "riskLevel": "safe",
+                "requiresReboot": false,
+                "warnings": []
+              }
+            },
+            {
+              "value": false,
+              "title": "No \u2014 keep hibernation",
+              "desc": "Useful on laptops where you close the lid for long periods. Preserves hiberfil.sys.",
+              "badge": null,
+              "badgeColor": null,
+              "danger": false,
+              "behavior": {
+                "value": false,
+                "blockActions": [
+                  "power.disable-hibernation"
+                ],
+                "blockReason": "You chose to keep hibernation enabled.",
+                "estimatedBlocked": 1
+              }
+            }
+          ],
+          "id": "disableHibernation"
+        },
+        {
+          "icon": "Search",
+          "label": "Search Indexing",
+          "title": "Disable Windows Search indexing (WSearch service)?",
+          "desc": "The Windows Search service continuously indexes files in the background, consuming CPU and disk I/O. On an SSD where file access is already fast, the index provides minimal benefit while generating steady background load. Both performance research and community benchmarks recommend disabling it.",
+          "note": "Sets WSearch service to disabled and stops it. HKLM\\SYSTEM\\CurrentControlSet\\Services\\WSearch \u2014 Start = 4.",
+          "visibility": null,
+          "options": [
+            {
+              "value": true,
+              "title": "Yes \u2014 disable indexing",
+              "desc": "Stops background I/O from the indexer. Search still works, just without pre-built index (slightly slower first results in Explorer).",
+              "badge": "Core",
+              "badgeColor": "bg-brand-500/15 text-brand-400",
+              "danger": false,
+              "behavior": {
+                "value": true,
+                "includeActions": [
+                  "storage.disable-indexing",
+                  "services.disable-tiledatamodelsvc"
+                ],
+                "estimatedActions": 2,
+                "riskLevel": "safe",
+                "requiresReboot": false,
+                "warnings": []
+              }
+            },
+            {
+              "value": false,
+              "title": "No \u2014 keep indexing",
+              "desc": "Instant results in Windows Search. Useful on HDDs or if you search files heavily.",
+              "badge": null,
+              "badgeColor": null,
+              "danger": false,
+              "behavior": {
+                "value": false,
+                "blockActions": [
+                  "storage.disable-indexing",
+                  "services.disable-tiledatamodelsvc"
+                ],
+                "blockReason": "You chose to keep Windows Search indexing active.",
+                "estimatedBlocked": 2
+              }
+            }
+          ],
+          "id": "disableIndexing"
+        },
+        {
+          "icon": "Cpu",
+          "label": "Background App Access",
+          "title": "Block apps from running in the background?",
+          "desc": "Windows lets Store apps receive data, send notifications, and stay active when not focused. Disabling this via AppPrivacy policy reduces unnecessary CPU wake-ups and network calls. Note: on Windows 11 24H2, this setting moved into Explorer and may require a reboot to take effect.",
+          "note": "HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows\\AppPrivacy \u2014 LetAppsRunInBackground = 2.",
+          "visibility": {
+            "minPreset": "balanced"
+          },
+          "options": [
+            {
+              "value": true,
+              "title": "Yes \u2014 block background app activity",
+              "desc": "Apps only run when focused. Reduces CPU wake-ups and network calls from idle apps. Effective after reboot on 24H2+.",
+              "badge": "Core",
+              "badgeColor": "bg-brand-500/15 text-brand-400",
+              "danger": false,
+              "behavior": {
+                "value": true,
+                "includeActions": [
+                  "startup.disable-background-apps"
+                ],
+                "estimatedActions": 1,
+                "riskLevel": "safe",
+                "requiresReboot": true,
+                "warnings": [
+                  "On Windows 11 24H2+, this policy moved to Explorer. A reboot is required for the change to take full effect."
+                ]
+              }
+            },
+            {
+              "value": false,
+              "title": "No \u2014 allow background app activity",
+              "desc": "Apps can receive updates and notifications in the background. Default Windows behaviour.",
+              "badge": null,
+              "badgeColor": null,
+              "danger": false,
+              "behavior": {
+                "value": false,
+                "blockActions": [
+                  "startup.disable-background-apps"
+                ],
+                "blockReason": "You chose to allow apps to run in the background.",
+                "estimatedBlocked": 1
+              }
+            }
+          ],
+          "id": "disableBackgroundApps"
+        },
+        {
+          "icon": "HardDrive",
+          "label": "SysMain / Superfetch",
+          "title": "Disable SysMain (Superfetch) service?",
+          "desc": "SysMain pre-loads frequently used apps into RAM to speed up launches. On an SSD, load times are already near-instant, so the service just burns RAM and generates background disk I/O with no real benefit. performance research marks this as a standard SSD optimisation.",
+          "note": "HKLM\\SYSTEM\\CurrentControlSet\\Services\\SysMain \u2014 Start = 4. The service is also stopped immediately.",
+          "visibility": null,
+          "options": [
+            {
+              "value": true,
+              "title": "Yes \u2014 disable SysMain",
+              "desc": "Frees the RAM SysMain reserves for its cache. No practical downside on SSDs.",
+              "badge": "Core",
+              "badgeColor": "bg-brand-500/15 text-brand-400",
+              "danger": false,
+              "behavior": {
+                "value": true,
+                "includeActions": [
+                  "services.disable-sysmain"
+                ],
+                "estimatedActions": 1,
+                "riskLevel": "safe",
+                "requiresReboot": false,
+                "warnings": []
+              }
+            },
+            {
+              "value": false,
+              "title": "No \u2014 keep SysMain",
+              "desc": "Useful on HDDs where pre-loading apps reduces perceptible launch lag.",
+              "badge": null,
+              "badgeColor": null,
+              "danger": false,
+              "behavior": {
+                "value": false,
+                "blockActions": [
+                  "services.disable-sysmain"
+                ],
+                "blockReason": "You chose to keep SysMain enabled.",
+                "estimatedBlocked": 1
+              }
+            }
+          ],
+          "id": "disableSysmain"
+        },
+        {
+          "icon": "Wrench",
+          "label": "Automatic Maintenance",
+          "title": "Disable Windows Automatic Maintenance?",
+          "desc": "Windows schedules maintenance tasks (disk defrag, Windows Defender scans, diagnostics) to run at 2 AM by default, but it can also trigger mid-session if the system was idle. This causes sudden CPU and disk spikes that hurt frame times. Both community benchmarks and performance research recommend disabling it.",
+          "note": "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Schedule\\Maintenance \u2014 MaintenanceDisabled = 1.",
+          "visibility": null,
+          "options": [
+            {
+              "value": true,
+              "title": "Yes \u2014 disable automatic maintenance",
+              "desc": "Prevents unexpected background scans and defrag runs. You can still trigger maintenance manually from Settings.",
+              "badge": "Core",
+              "badgeColor": "bg-brand-500/15 text-brand-400",
+              "danger": false,
+              "behavior": {
+                "value": true,
+                "includeActions": [
+                  "startup.disable-automatic-maintenance",
+                  "perf.disable-auto-maintenance"
+                ],
+                "estimatedActions": 2,
+                "riskLevel": "safe",
+                "requiresReboot": false,
+                "warnings": []
+              }
+            },
+            {
+              "value": false,
+              "title": "No \u2014 keep automatic maintenance",
+              "desc": "Windows runs health tasks on a schedule. Can cause performance spikes if it triggers while you're gaming.",
+              "badge": null,
+              "badgeColor": null,
+              "danger": false,
+              "behavior": {
+                "value": false,
+                "blockActions": [
+                  "startup.disable-automatic-maintenance",
+                  "perf.disable-auto-maintenance"
+                ],
+                "blockReason": "You chose to keep automatic maintenance enabled.",
+                "estimatedBlocked": 2
+              }
+            }
+          ],
+          "id": "disableAutomaticMaintenance"
+        },
+        {
+          "icon": "Cpu",
+          "label": "Thread Scheduling",
+          "title": "Optimize Win32PrioritySeparation for foreground responsiveness?",
+          "desc": "Win32PrioritySeparation controls how much the scheduler boosts foreground thread priority over background threads. The default value (2) is balanced. performance research recommends 0x26 (38) which gives foreground threads a longer, higher-priority quantum \u2014 directly reducing input lag in games.",
+          "note": "HKLM\\SYSTEM\\CurrentControlSet\\Control\\PriorityControl \u2014 Win32PrioritySeparation = 38 (0x26). Also sets csrss.exe base priority to high.",
+          "visibility": {
+            "minPreset": "balanced"
+          },
+          "options": [
+            {
+              "value": true,
+              "title": "Yes \u2014 boost foreground thread priority",
+              "desc": "Foreground app (your game) gets longer CPU time slices and higher scheduler priority. Background tasks yield faster.",
+              "badge": "Core",
+              "badgeColor": "bg-brand-500/15 text-brand-400",
+              "danger": false,
+              "behavior": {
+                "value": true,
+                "includeActions": [
+                  "cpu.win32-priority-separation",
+                  "perf.csrss-high-priority"
+                ],
+                "estimatedActions": 2,
+                "riskLevel": "safe",
+                "requiresReboot": false,
+                "warnings": []
+              }
+            },
+            {
+              "value": false,
+              "title": "No \u2014 keep default scheduling",
+              "desc": "Windows default balanced scheduler. Fine for multi-tasking workloads.",
+              "badge": null,
+              "badgeColor": null,
+              "danger": false,
+              "behavior": {
+                "value": false,
+                "blockActions": [
+                  "cpu.win32-priority-separation",
+                  "perf.csrss-high-priority"
+                ],
+                "blockReason": "You chose to keep the default Win32PrioritySeparation value.",
+                "estimatedBlocked": 2
+              }
+            }
+          ],
+          "id": "optimizeThreadPriority"
+        },
+        {
+          "icon": "Wrench",
+          "label": "Print Spooler",
+          "title": "Do you use a printer on this PC?",
+          "desc": "The Print Spooler service runs even when no printer is attached. If you don't print from this machine, disabling it removes an unnecessary service and closes several historical RPC attack surfaces.",
+          "note": "HKLM\\SYSTEM\\CurrentControlSet\\Services\\Spooler \u2014 Start = 4. This also disables the Fax service.",
+          "visibility": null,
+          "options": [
+            {
+              "value": false,
+              "title": "No printer \u2014 disable Print Spooler",
+              "desc": "Stops the Spooler and Fax services. Printing will not work unless you re-enable the service.",
+              "badge": null,
+              "badgeColor": null,
+              "danger": false,
+              "behavior": {
+                "value": false,
+                "includeActions": [
+                  "services.disable-print-spooler",
+                  "services.disable-fax"
+                ],
+                "estimatedActions": 2,
+                "riskLevel": "safe",
+                "requiresReboot": false,
+                "warnings": []
+              }
+            },
+            {
+              "value": true,
+              "title": "Yes \u2014 keep Print Spooler",
+              "desc": "Required for any local or network printing. Keep this if you use a printer.",
+              "badge": null,
+              "badgeColor": null,
+              "danger": false,
+              "behavior": {
+                "value": true,
+                "blockActions": [
+                  "services.disable-print-spooler",
+                  "services.disable-fax"
+                ],
+                "blockReason": "You indicated this PC uses a printer.",
+                "estimatedBlocked": 2
+              }
+            }
+          ],
+          "id": "keepPrinterSupport"
+        },
+        {
+          "icon": "Globe",
+          "label": "Remote Desktop / Phone Service",
+          "title": "Do you use Remote Desktop or phone-linking on this PC?",
+          "desc": "Remote Desktop and the Phone-Link (Phone Service) run background listeners. If you don't connect to this PC remotely or sync a phone, these services are pure overhead and attack surface.",
+          "note": "Disables services.disable-remote-services and services.disable-phone-service.",
+          "visibility": null,
+          "options": [
+            {
+              "value": false,
+              "title": "No \u2014 disable remote services",
+              "desc": "Stops Remote Desktop and Phone Service. You won't be able to RDP into this machine.",
+              "badge": null,
+              "badgeColor": null,
+              "danger": false,
+              "behavior": {
+                "value": false,
+                "includeActions": [
+                  "services.disable-remote-services",
+                  "services.disable-phone-service"
+                ],
+                "estimatedActions": 2,
+                "riskLevel": "safe",
+                "requiresReboot": false,
+                "warnings": []
+              }
+            },
+            {
+              "value": true,
+              "title": "Yes \u2014 keep remote access",
+              "desc": "Keeps Remote Desktop and Phone Link services running. Required for remote management or phone sync.",
+              "badge": null,
+              "badgeColor": null,
+              "danger": false,
+              "behavior": {
+                "value": true,
+                "blockActions": [
+                  "services.disable-remote-services",
+                  "services.disable-phone-service"
+                ],
+                "blockReason": "You indicated this PC uses remote access or phone linking.",
+                "estimatedBlocked": 2
+              }
+            }
+          ],
+          "id": "keepRemoteAccess"
+        },
+        {
+          "icon": "HardDrive",
+          "label": "AutoPlay",
+          "title": "Disable AutoPlay for removable drives?",
+          "desc": "AutoPlay automatically runs content from USB drives and optical discs when inserted. This is a classic malware delivery vector and provides no real convenience benefit that File Explorer doesn't already cover. Both repos recommend disabling it.",
+          "note": "HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\AutoplayHandlers \u2014 DisableAutoplay = 1.",
+          "visibility": null,
+          "options": [
+            {
+              "value": true,
+              "title": "Yes \u2014 disable AutoPlay",
+              "desc": "Nothing happens automatically when a USB drive is plugged in. You open it manually via File Explorer.",
+              "badge": "Core",
+              "badgeColor": "bg-brand-500/15 text-brand-400",
+              "danger": false,
+              "behavior": {
+                "value": true,
+                "includeActions": [
+                  "startup.disable-autoplay"
+                ],
+                "estimatedActions": 1,
+                "riskLevel": "safe",
+                "requiresReboot": false,
+                "warnings": []
+              }
+            },
+            {
+              "value": false,
+              "title": "No \u2014 keep AutoPlay",
+              "desc": "Windows prompts you to open, play, or import content when a drive is plugged in.",
+              "badge": null,
+              "badgeColor": null,
+              "danger": false,
+              "behavior": {
+                "value": false,
+                "blockActions": [
+                  "startup.disable-autoplay"
+                ],
+                "blockReason": "You chose to keep AutoPlay enabled.",
+                "estimatedBlocked": 1
+              }
+            }
+          ],
+          "id": "disableAutoplay"
+        },
+        {
+          "icon": "Clock",
+          "label": "NTFS Last Access Time",
+          "title": "Disable NTFS last-access timestamp updates?",
+          "desc": "By default, Windows writes a timestamp to every file it reads. On a busy system this creates a constant stream of small writes even during read-only operations. performance research recommends disabling this via `fsutil` for meaningful I/O reduction on mechanical drives and SSDs alike.",
+          "note": "Runs: fsutil behavior set disablelastaccess 1 \u2014 also enables storage.ntfs-optimization for further NTFS tuning.",
+          "visibility": {
+            "minPreset": "balanced"
+          },
+          "options": [
+            {
+              "value": true,
+              "title": "Yes \u2014 disable last-access writes",
+              "desc": "Reading a file no longer triggers a metadata write. Reduces NTFS overhead, especially on HDDs.",
+              "badge": "Core",
+              "badgeColor": "bg-brand-500/15 text-brand-400",
+              "danger": false,
+              "behavior": {
+                "value": true,
+                "includeActions": [
+                  "storage.disable-last-access",
+                  "perf.ntfs-optimization"
+                ],
+                "estimatedActions": 2,
+                "riskLevel": "safe",
+                "requiresReboot": false,
+                "warnings": []
+              }
+            },
+            {
+              "value": false,
+              "title": "No \u2014 keep last-access timestamps",
+              "desc": "Every file read updates its last-access time. Useful for backup software that relies on access timestamps.",
+              "badge": null,
+              "badgeColor": null,
+              "danger": false,
+              "behavior": {
+                "value": false,
+                "blockActions": [
+                  "storage.disable-last-access",
+                  "perf.ntfs-optimization"
+                ],
+                "blockReason": "You chose to keep NTFS last-access timestamps.",
+                "estimatedBlocked": 2
+              }
+            }
+          ],
+          "id": "disableLastAccessTime"
+        },
+        {
+          "icon": "Cpu",
+          "label": "SVCHost Splitting",
+          "title": "Set svchost process split threshold based on RAM?",
+          "desc": "On systems with 4 GB+ RAM, Windows can run each Windows service in its own svchost.exe process. This isolates them for better stability and makes Task Manager readable. community benchmarks enables this by default on modern RAM amounts.",
+          "note": "HKLM\\SYSTEM\\CurrentControlSet\\Control \u2014 SvcHostSplitThresholdInKB = physical RAM in KB (e.g. 8388608 for 8 GB). Enables perf.svchost-split-threshold.",
+          "visibility": null,
+          "options": [
+            {
+              "value": true,
+              "title": "Yes \u2014 split services into individual processes",
+              "desc": "Each service gets its own svchost.exe. Easier to diagnose CPU/memory hogs and slightly more crash-isolated.",
+              "badge": "Core",
+              "badgeColor": "bg-brand-500/15 text-brand-400",
+              "danger": false,
+              "behavior": {
+                "value": true,
+                "includeActions": [
+                  "perf.svchost-split-threshold"
+                ],
+                "estimatedActions": 1,
+                "riskLevel": "safe",
+                "requiresReboot": false,
+                "warnings": []
+              }
+            },
+            {
+              "value": false,
+              "title": "No \u2014 keep grouped svchost",
+              "desc": "Windows default: services share svchost processes. Slightly lower process count.",
+              "badge": null,
+              "badgeColor": null,
+              "danger": false,
+              "behavior": {
+                "value": false,
+                "blockActions": [
+                  "perf.svchost-split-threshold"
+                ],
+                "blockReason": "You chose to keep the default svchost grouping.",
+                "estimatedBlocked": 1
+              }
+            }
+          ],
+          "id": "svcHostSplitThreshold"
+        },
+        {
+          "icon": "Cpu",
+          "label": "Fault Tolerant Heap",
+          "title": "Disable Fault Tolerant Heap (FTH)?",
+          "desc": "FTH monitors apps that crash and silently applies compatibility shims to prevent them crashing again. The shims include artificial delays that cap performance \u2014 performance research has measured FTH secretly throttling game frame rates. If your apps are stable, FTH is pure overhead.",
+          "note": "HKLM\\SOFTWARE\\Microsoft\\FTH \u2014 Enabled = 0. This does NOT fix unstable apps; if an app needs FTH, disabling it will make the app crash more visibly.",
+          "visibility": {
+            "minPreset": "aggressive"
+          },
+          "options": [
+            {
+              "value": true,
+              "title": "Yes \u2014 disable FTH",
+              "desc": "Removes the compatibility delay shims. Apps will crash normally instead of being silently throttled.",
+              "badge": "Advanced",
+              "badgeColor": "bg-purple-500/15 text-purple-400",
+              "danger": false,
+              "behavior": {
+                "value": true,
+                "includeActions": [
+                  "perf.disable-prefetch"
+                ],
+                "estimatedActions": 1,
+                "riskLevel": "moderate",
+                "requiresReboot": false,
+                "warnings": [
+                  "If a game or app relied on FTH shims, it may crash more often. Only disable if your system is stable."
+                ]
+              }
+            },
+            {
+              "value": false,
+              "title": "No \u2014 keep FTH enabled",
+              "desc": "Windows continues to protect unstable apps with compatibility shims. Safe default.",
+              "badge": null,
+              "badgeColor": null,
+              "danger": false,
+              "behavior": {
+                "value": false,
+                "blockActions": [
+                  "perf.disable-prefetch"
+                ],
+                "blockReason": "You chose to keep Fault Tolerant Heap enabled.",
+                "estimatedBlocked": 1
+              }
+            }
+          ],
+          "id": "disableFaultTolerantHeap"
+        }
+      ]
+    },
+    {
+      "id": "privacy",
+      "title": "Privacy & Telemetry",
+      "description": "Remove Microsoft telemetry and data collection.",
+      "kind": "preferences",
+      "sourcePrompt": "internal",
+      "sourceSections": [
+        "privacy"
+      ],
+      "callouts": [],
+      "questions": [
+        {
+          "icon": "Eye",
+          "label": "Telemetry Level",
+          "title": "How much Microsoft telemetry should be blocked?",
+          "desc": "Windows sends diagnostic data to Microsoft continuously. The scope of what's acceptable differs by use case. Minimal blocks the DiagTrack service and the worst tracking. Standard adds advertising and activity feeds. Full Block adds every policy-controllable telemetry channel \u2014 including disabling DiagTrack, CEIP, TIPC, and telemetry scheduled tasks.",
+          "note": "Minimal: services.disable-diagtrack. Standard adds privacy.disable-advertising-id, privacy.disable-activity-feed, privacy.disable-tailored-experiences. Full Block adds all remaining privacy.* and tasks.disable-telemetry-tasks actions.",
+          "visibility": null,
+          "options": [
+            {
+              "value": "minimal",
+              "title": "Minimal \u2014 stop DiagTrack service only",
+              "desc": "Disables the Connected User Experiences and Telemetry service (DiagTrack). Covers the highest-volume telemetry channel.",
+              "badge": "Safest",
+              "badgeColor": "bg-emerald-500/15 text-emerald-400",
+              "danger": false,
+              "behavior": {
+                "value": "minimal",
+                "includeActions": [
+                  "services.disable-diagtrack",
+                  "services.disable-dmwappushservice"
+                ],
+                "estimatedActions": 2,
+                "riskLevel": "safe",
+                "requiresReboot": false,
+                "warnings": []
+              }
+            },
+            {
+              "value": "standard",
+              "title": "Standard \u2014 block advertising and activity tracking",
+              "desc": "Adds advertising ID opt-out, activity feed, tailored experiences, and typing insights on top of the minimal block.",
+              "badge": "Recommended",
+              "badgeColor": "bg-brand-500/15 text-brand-400",
+              "danger": false,
+              "behavior": {
+                "value": "standard",
+                "includeActions": [
+                  "services.disable-diagtrack",
+                  "services.disable-dmwappushservice",
+                  "privacy.disable-advertising-id",
+                  "privacy.disable-activity-feed",
+                  "privacy.disable-tailored-experiences",
+                  "privacy.disable-typing-insights",
+                  "privacy.disable-ceip",
+                  "privacy.disable-tipc",
+                  "privacy.disable-siuf",
+                  "privacy.disable-online-tips"
+                ],
+                "estimatedActions": 10,
+                "riskLevel": "safe",
+                "requiresReboot": false,
+                "warnings": []
+              }
+            },
+            {
+              "value": "full",
+              "title": "Full Block \u2014 disable every telemetry channel",
+              "desc": "Blocks all of the above plus telemetry scheduled tasks, MSRT opt-out, online speech, device monitoring, and app launch tracking.",
+              "badge": "Advanced",
+              "badgeColor": "bg-purple-500/15 text-purple-400",
+              "danger": false,
+              "behavior": {
+                "value": "full",
+                "includeActions": [
+                  "services.disable-diagtrack",
+                  "services.disable-dmwappushservice",
+                  "privacy.disable-advertising-id",
+                  "privacy.disable-activity-feed",
+                  "privacy.disable-tailored-experiences",
+                  "privacy.disable-typing-insights",
+                  "privacy.disable-ceip",
+                  "privacy.disable-tipc",
+                  "privacy.disable-siuf",
+                  "privacy.disable-online-tips",
+                  "privacy.disable-online-speech",
+                  "privacy.disable-device-monitoring",
+                  "privacy.disable-app-launch-tracking",
+                  "privacy.disable-msrt",
+                  "privacy.disable-input-personalization",
+                  "privacy.disable-harvest-contacts",
+                  "privacy.powershell-telemetry-optout",
+                  "tasks.disable-telemetry-tasks",
+                  "tasks.disable-diagnostic-tasks",
+                  "tasks.disable-device-census",
+                  "tasks.disable-speech-tasks"
+                ],
+                "estimatedActions": 21,
+                "riskLevel": "safe",
+                "requiresReboot": false,
+                "warnings": []
+              }
+            }
+          ],
+          "id": "telemetryLevel"
+        },
+        {
+          "icon": "Eye",
+          "label": "Activity Feed / Timeline",
+          "title": "Disable Windows Activity Feed (Timeline)?",
+          "desc": "The Activity Feed logs your app usage and document history to enable the Timeline feature. This data is also synced to Microsoft's servers if your account allows it. The feature was removed from the UI in Windows 11 but the logging layer still runs.",
+          "note": "HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows\\System \u2014 EnableActivityFeed = 0, PublishUserActivities = 0.",
+          "visibility": null,
+          "options": [
+            {
+              "value": true,
+              "title": "Yes \u2014 disable Activity Feed",
+              "desc": "Stops Windows from logging app and document history. Timeline (if present) will stop accumulating entries.",
+              "badge": "Core",
+              "badgeColor": "bg-brand-500/15 text-brand-400",
+              "danger": false,
+              "behavior": {
+                "value": true,
+                "includeActions": [
+                  "privacy.disable-activity-feed"
+                ],
+                "estimatedActions": 1,
+                "riskLevel": "safe",
+                "requiresReboot": false,
+                "warnings": []
+              }
+            },
+            {
+              "value": false,
+              "title": "No \u2014 keep Activity Feed",
+              "desc": "Windows logs your app activity. Required if you use Timeline or cross-device history features.",
+              "badge": null,
+              "badgeColor": null,
+              "danger": false,
+              "behavior": {
+                "value": false,
+                "blockActions": [
+                  "privacy.disable-activity-feed"
+                ],
+                "blockReason": "You chose to keep the Activity Feed enabled.",
+                "estimatedBlocked": 1
+              }
+            }
+          ],
+          "id": "disableActivityFeed"
+        },
+        {
+          "icon": "Eye",
+          "label": "Clipboard History",
+          "title": "Disable Clipboard History and cloud sync?",
+          "desc": "Clipboard History (Win+V) stores everything you copy. If cloud sync is enabled, this includes passwords and sensitive text sent to Microsoft's servers. community benchmarks and performance research both recommend disabling it unless you actively use the feature.",
+          "note": "HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows\\System \u2014 AllowClipboardHistory = 0, AllowCrossDeviceClipboard = 0.",
+          "visibility": null,
+          "options": [
+            {
+              "value": true,
+              "title": "Yes \u2014 disable Clipboard History",
+              "desc": "Clipboard works normally (copy/paste), but no history is stored locally or synced to the cloud.",
+              "badge": "Core",
+              "badgeColor": "bg-brand-500/15 text-brand-400",
+              "danger": false,
+              "behavior": {
+                "value": true,
+                "includeActions": [
+                  "privacy.disable-clipboard-history"
+                ],
+                "estimatedActions": 1,
+                "riskLevel": "safe",
+                "requiresReboot": false,
+                "warnings": []
+              }
+            },
+            {
+              "value": false,
+              "title": "No \u2014 keep Clipboard History",
+              "desc": "Win+V lets you paste from previous clipboard entries. Useful for power users.",
+              "badge": null,
+              "badgeColor": null,
+              "danger": false,
+              "behavior": {
+                "value": false,
+                "blockActions": [
+                  "privacy.disable-clipboard-history"
+                ],
+                "blockReason": "You chose to keep Clipboard History enabled.",
+                "estimatedBlocked": 1
+              }
+            }
+          ],
+          "id": "disableClipboardHistory"
+        },
+        {
+          "icon": "Globe",
+          "label": "Location Services",
+          "title": "Disable Location Services?",
+          "desc": "Windows Location Services lets apps query your physical location. Unless you use maps or location-aware apps on this PC, this is unnecessary access to a privacy-sensitive sensor. community benchmarks marks this as an essential privacy tweak.",
+          "note": "HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows\\LocationAndSensors \u2014 DisableLocation = 1.",
+          "visibility": null,
+          "options": [
+            {
+              "value": true,
+              "title": "Yes \u2014 disable Location Services",
+              "desc": "No app (including Windows itself) can determine your physical location.",
+              "badge": "Core",
+              "badgeColor": "bg-brand-500/15 text-brand-400",
+              "danger": false,
+              "behavior": {
+                "value": true,
+                "includeActions": [
+                  "privacy.disable-location",
+                  "services.disable-geolocation"
+                ],
+                "estimatedActions": 2,
+                "riskLevel": "safe",
+                "requiresReboot": false,
+                "warnings": []
+              }
+            },
+            {
+              "value": false,
+              "title": "No \u2014 keep Location Services",
+              "desc": "Apps can request your location. Required for maps, weather apps, and find-my-device.",
+              "badge": null,
+              "badgeColor": null,
+              "danger": false,
+              "behavior": {
+                "value": false,
+                "blockActions": [
+                  "privacy.disable-location",
+                  "services.disable-geolocation"
+                ],
+                "blockReason": "You chose to keep Location Services enabled.",
+                "estimatedBlocked": 2
+              }
+            }
+          ],
+          "id": "disableLocation"
+        },
+        {
+          "icon": "Eye",
+          "label": "Advertising ID",
+          "title": "Opt out of the Windows Advertising ID?",
+          "desc": "Windows assigns each user a unique advertising ID that apps use to track behaviour across sessions and deliver targeted ads. Opting out resets the ID and blocks new assignments. Both repos recommend this as a baseline privacy setting.",
+          "note": "HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\AdvertisingInfo \u2014 Enabled = 0.",
+          "visibility": null,
+          "options": [
+            {
+              "value": true,
+              "title": "Yes \u2014 opt out of Advertising ID",
+              "desc": "Apps can no longer read your advertising ID. Store apps and ad-funded software lose cross-app tracking capability.",
+              "badge": "Core",
+              "badgeColor": "bg-brand-500/15 text-brand-400",
+              "danger": false,
+              "behavior": {
+                "value": true,
+                "includeActions": [
+                  "privacy.disable-advertising-id"
+                ],
+                "estimatedActions": 1,
+                "riskLevel": "safe",
+                "requiresReboot": false,
+                "warnings": []
+              }
+            },
+            {
+              "value": false,
+              "title": "No \u2014 keep Advertising ID",
+              "desc": "Apps can use the ID to deliver targeted ads and track cross-app behaviour.",
+              "badge": null,
+              "badgeColor": null,
+              "danger": false,
+              "behavior": {
+                "value": false,
+                "blockActions": [
+                  "privacy.disable-advertising-id"
+                ],
+                "blockReason": "You chose to keep the Advertising ID.",
+                "estimatedBlocked": 1
+              }
+            }
+          ],
+          "id": "disableAdvertisingId"
+        },
+        {
+          "icon": "Eye",
+          "label": "Tailored Experiences",
+          "title": "Disable Tailored Experiences and diagnostic data usage?",
+          "desc": "Tailored Experiences uses your diagnostic data to suggest Microsoft features, tips, and offers. It is separate from general telemetry \u2014 this specifically controls whether diagnostic data feeds into product recommendations sent back to your device.",
+          "note": "HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Privacy \u2014 TailoredExperiencesWithDiagnosticDataEnabled = 0.",
+          "visibility": null,
+          "options": [
+            {
+              "value": true,
+              "title": "Yes \u2014 disable Tailored Experiences",
+              "desc": "Microsoft stops using your diagnostic data to push product tips or feature suggestions.",
+              "badge": "Core",
+              "badgeColor": "bg-brand-500/15 text-brand-400",
+              "danger": false,
+              "behavior": {
+                "value": true,
+                "includeActions": [
+                  "privacy.disable-tailored-experiences"
+                ],
+                "estimatedActions": 1,
+                "riskLevel": "safe",
+                "requiresReboot": false,
+                "warnings": []
+              }
+            },
+            {
+              "value": false,
+              "title": "No \u2014 allow tailored suggestions",
+              "desc": "Microsoft may send personalised tips based on your diagnostic data.",
+              "badge": null,
+              "badgeColor": null,
+              "danger": false,
+              "behavior": {
+                "value": false,
+                "blockActions": [
+                  "privacy.disable-tailored-experiences"
+                ],
+                "blockReason": "You chose to allow Tailored Experiences.",
+                "estimatedBlocked": 1
+              }
+            }
+          ],
+          "id": "disableTailoredExperiences"
+        },
+        {
+          "icon": "Volume2",
+          "label": "Online Speech Recognition",
+          "title": "Disable Online Speech Recognition and personalisation?",
+          "desc": "Online Speech Recognition sends your voice to Microsoft's cloud for recognition. Speech personalisation builds a model of your voice and vocabulary. Both are disabled by default in enterprise but left enabled for consumer accounts.",
+          "note": "HKCU\\SOFTWARE\\Microsoft\\Speech_OneCore\\Settings\\OnlineSpeechPrivacy \u2014 HasAccepted = 0. Also sets privacy.disable-online-speech.",
+          "visibility": null,
+          "options": [
+            {
+              "value": true,
+              "title": "Yes \u2014 disable online speech features",
+              "desc": "Voice commands still work locally, but nothing is sent to Microsoft's cloud for personalisation.",
+              "badge": "Core",
+              "badgeColor": "bg-brand-500/15 text-brand-400",
+              "danger": false,
+              "behavior": {
+                "value": true,
+                "includeActions": [
+                  "privacy.disable-online-speech"
+                ],
+                "estimatedActions": 1,
+                "riskLevel": "safe",
+                "requiresReboot": false,
+                "warnings": []
+              }
+            },
+            {
+              "value": false,
+              "title": "No \u2014 keep online speech features",
+              "desc": "Microsoft builds a personalised speech model using your voice data.",
+              "badge": null,
+              "badgeColor": null,
+              "danger": false,
+              "behavior": {
+                "value": false,
+                "blockActions": [
+                  "privacy.disable-online-speech"
+                ],
+                "blockReason": "You chose to keep online speech personalisation.",
+                "estimatedBlocked": 1
+              }
+            }
+          ],
+          "id": "disableSpeechPersonalization"
+        },
+        {
+          "icon": "Globe",
+          "label": "Delivery Optimization",
+          "title": "Disable Delivery Optimization (P2P update sharing)?",
+          "desc": "Delivery Optimization can upload Windows Update data to other PCs on the internet, using your bandwidth. While it also helps you download updates faster from peers, on a metered or gaming connection the upload overhead is undesirable. Both repos recommend disabling it.",
+          "note": "HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows\\DeliveryOptimization \u2014 DODownloadMode = 0.",
+          "visibility": null,
+          "options": [
+            {
+              "value": true,
+              "title": "Yes \u2014 disable Delivery Optimization",
+              "desc": "Updates download from Microsoft servers only. No P2P upload of your cached update data.",
+              "badge": "Core",
+              "badgeColor": "bg-brand-500/15 text-brand-400",
+              "danger": false,
+              "behavior": {
+                "value": true,
+                "includeActions": [
+                  "security.disable-delivery-optimization"
+                ],
+                "estimatedActions": 1,
+                "riskLevel": "safe",
+                "requiresReboot": false,
+                "warnings": []
+              }
+            },
+            {
+              "value": false,
+              "title": "No \u2014 keep P2P update sharing",
+              "desc": "Windows may use your connection to seed updates to other PCs. Can speed up your own downloads on some networks.",
+              "badge": null,
+              "badgeColor": null,
+              "danger": false,
+              "behavior": {
+                "value": false,
+                "blockActions": [
+                  "security.disable-delivery-optimization"
+                ],
+                "blockReason": "You chose to keep Delivery Optimization enabled.",
+                "estimatedBlocked": 1
+              }
+            }
+          ],
+          "id": "disableDeliveryOptimization"
+        },
+        {
+          "icon": "Eye",
+          "label": "Error Reporting",
+          "title": "Disable Windows Error Reporting (WER)?",
+          "desc": "When an app crashes, WER collects crash dumps and sends them to Microsoft. This is useful for developers but reveals crash information and app data to Microsoft on consumer machines. Disabling it also stops the WerSvc service from running.",
+          "note": "HKLM\\SOFTWARE\\Microsoft\\Windows\\Windows Error Reporting \u2014 Disabled = 1. Also disables services.disable-wer-service.",
+          "visibility": null,
+          "options": [
+            {
+              "value": true,
+              "title": "Yes \u2014 disable error reporting",
+              "desc": "Crash data stays local. No dumps are sent to Microsoft. Apps crash silently without triggering the WER dialog.",
+              "badge": "Core",
+              "badgeColor": "bg-brand-500/15 text-brand-400",
+              "danger": false,
+              "behavior": {
+                "value": true,
+                "includeActions": [
+                  "privacy.disable-error-reporting",
+                  "services.disable-wer-service"
+                ],
+                "estimatedActions": 2,
+                "riskLevel": "safe",
+                "requiresReboot": false,
+                "warnings": []
+              }
+            },
+            {
+              "value": false,
+              "title": "No \u2014 keep error reporting",
+              "desc": "Crash dumps are sent to Microsoft. Useful if you're debugging software or want app vendors to get your crash reports.",
+              "badge": null,
+              "badgeColor": null,
+              "danger": false,
+              "behavior": {
+                "value": false,
+                "blockActions": [
+                  "privacy.disable-error-reporting",
+                  "services.disable-wer-service"
+                ],
+                "blockReason": "You chose to keep Windows Error Reporting enabled.",
+                "estimatedBlocked": 2
+              }
+            }
+          ],
+          "id": "disableErrorReporting"
+        },
+        {
+          "icon": "Eye",
+          "label": "Consumer Cloud Content",
+          "title": "Disable Consumer Features and cloud-pushed content?",
+          "desc": "Windows Consumer Features installs suggested apps, adds promotional tiles to the Start menu, and enables cloud-delivered content like lock screen tips and spotlight ads. community benchmarks's DisableWindowsConsumerFeatures flag removes this layer entirely.",
+          "note": "HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent \u2014 DisableWindowsConsumerFeatures = 1. Also disables privacy.disable-cloud-content and tasks.disable-cloud-content-tasks.",
+          "visibility": null,
+          "options": [
+            {
+              "value": true,
+              "title": "Yes \u2014 disable cloud-pushed content",
+              "desc": "No more suggested apps appearing in Start, no promotional tiles, no lock screen 'fun facts'.",
+              "badge": "Core",
+              "badgeColor": "bg-brand-500/15 text-brand-400",
+              "danger": false,
+              "behavior": {
+                "value": true,
+                "includeActions": [
+                  "privacy.disable-cloud-content",
+                  "shell.disable-content-delivery",
+                  "shell.disable-lock-screen-tips",
+                  "tasks.disable-cloud-content-tasks"
+                ],
+                "estimatedActions": 4,
+                "riskLevel": "safe",
+                "requiresReboot": false,
+                "warnings": []
+              }
+            },
+            {
+              "value": false,
+              "title": "No \u2014 allow cloud content",
+              "desc": "Microsoft may push app suggestions and promotional content to Start and the lock screen.",
+              "badge": null,
+              "badgeColor": null,
+              "danger": false,
+              "behavior": {
+                "value": false,
+                "blockActions": [
+                  "privacy.disable-cloud-content",
+                  "shell.disable-content-delivery",
+                  "shell.disable-lock-screen-tips",
+                  "tasks.disable-cloud-content-tasks"
+                ],
+                "blockReason": "You chose to allow cloud-pushed consumer content.",
+                "estimatedBlocked": 4
+              }
+            }
+          ],
+          "id": "disableCloudContent"
+        },
+        {
+          "icon": "Shield",
+          "label": "Find My Device",
+          "title": "Disable Find My Device?",
+          "desc": "Find My Device requires location tracking to be active and transmits the PC's location to Microsoft. Unless you genuinely need to locate a lost laptop, this is unnecessary surveillance. community benchmarks includes this in its essential privacy block.",
+          "note": "HKLM\\SOFTWARE\\Policies\\Microsoft\\FindMyDevice \u2014 AllowFindMyDevice = 0. Also applies privacy.disable-find-my-device.",
+          "visibility": null,
+          "options": [
+            {
+              "value": true,
+              "title": "Yes \u2014 disable Find My Device",
+              "desc": "Location is not transmitted for device tracking. You won't be able to locate this PC via Microsoft account.",
+              "badge": "Core",
+              "badgeColor": "bg-brand-500/15 text-brand-400",
+              "danger": false,
+              "behavior": {
+                "value": true,
+                "includeActions": [
+                  "privacy.disable-find-my-device"
+                ],
+                "estimatedActions": 1,
+                "riskLevel": "safe",
+                "requiresReboot": false,
+                "warnings": []
+              }
+            },
+            {
+              "value": false,
+              "title": "No \u2014 keep Find My Device",
+              "desc": "Useful on laptops. Requires Location Services to be enabled.",
+              "badge": null,
+              "badgeColor": null,
+              "danger": false,
+              "behavior": {
+                "value": false,
+                "blockActions": [
+                  "privacy.disable-find-my-device"
+                ],
+                "blockReason": "You chose to keep Find My Device enabled.",
+                "estimatedBlocked": 1
+              }
+            }
+          ],
+          "id": "disableWpbt"
+        },
+        {
+          "icon": "Eye",
+          "label": "PowerShell Telemetry",
+          "title": "Opt out of PowerShell telemetry?",
+          "desc": "PowerShell 7+ sends command usage data to Microsoft by default unless the POWERSHELL_TELEMETRY_OPTOUT environment variable is set. community benchmarks includes this as an essential tweak.",
+          "note": "Sets the POWERSHELL_TELEMETRY_OPTOUT=1 system environment variable. Applies to PS7+ only \u2014 Windows PowerShell 5.1 is unaffected.",
+          "visibility": null,
+          "options": [
+            {
+              "value": true,
+              "title": "Yes \u2014 opt out of PS telemetry",
+              "desc": "PowerShell 7+ stops sending command analytics. The opt-out persists via a system environment variable.",
+              "badge": "Core",
+              "badgeColor": "bg-brand-500/15 text-brand-400",
+              "danger": false,
+              "behavior": {
+                "value": true,
+                "includeActions": [
+                  "privacy.powershell-telemetry-optout"
+                ],
+                "estimatedActions": 1,
+                "riskLevel": "safe",
+                "requiresReboot": false,
+                "warnings": []
+              }
+            },
+            {
+              "value": false,
+              "title": "No \u2014 keep PS telemetry",
+              "desc": "PowerShell 7+ continues to report command usage to Microsoft.",
+              "badge": null,
+              "badgeColor": null,
+              "danger": false,
+              "behavior": {
+                "value": false,
+                "blockActions": [
+                  "privacy.powershell-telemetry-optout"
+                ],
+                "blockReason": "You chose to keep PowerShell telemetry.",
+                "estimatedBlocked": 1
+              }
+            }
+          ],
+          "id": "powershellTelemetryOptout"
+        }
+      ]
+    },
+    {
+      "id": "performance",
+      "title": "Performance",
+      "description": "CPU, GPU, memory, and timer optimizations.",
+      "kind": "preferences",
+      "sourcePrompt": "internal",
+      "sourceSections": [
+        "performance"
+      ],
+      "callouts": [],
+      "questions": [
+        {
+          "icon": "MonitorSpeaker",
+          "label": "Fullscreen Optimizations",
+          "title": "Disable Fullscreen Optimizations (FSO)?",
+          "desc": "Fullscreen Optimizations intercept exclusive fullscreen games and silently run them in a borderless window. This enables faster Alt+Tab and overlay injection but adds a compositor layer between the game and the display driver, increasing input latency. performance research recommends disabling FSO for exclusive fullscreen apps.",
+          "note": "HKCU\\System\\GameConfigStore \u2014 GameDVR_FSEBehaviorMode = 2, GameDVR_DXGIHonorFSEWindowsCompatible = 1.",
+          "visibility": null,
+          "options": [
+            {
+              "value": true,
+              "title": "Yes \u2014 disable FSO",
+              "desc": "Games run in true exclusive fullscreen mode. Lower input latency, but Alt+Tab is slower and some overlays may not work.",
+              "badge": "Core",
+              "badgeColor": "bg-brand-500/15 text-brand-400",
+              "danger": false,
+              "behavior": {
+                "value": true,
+                "includeActions": [
+                  "perf.disable-fullscreen-optimizations"
+                ],
+                "estimatedActions": 1,
+                "riskLevel": "safe",
+                "requiresReboot": false,
+                "warnings": []
+              }
+            },
+            {
+              "value": false,
+              "title": "No \u2014 keep Fullscreen Optimizations",
+              "desc": "Windows wraps exclusive fullscreen in a borderless window. Faster Alt+Tab, easier overlays.",
+              "badge": null,
+              "badgeColor": null,
+              "danger": false,
+              "behavior": {
+                "value": false,
+                "blockActions": [
+                  "perf.disable-fullscreen-optimizations"
+                ],
+                "blockReason": "You chose to keep Fullscreen Optimizations enabled.",
+                "estimatedBlocked": 1
+              }
+            }
+          ],
+          "id": "disableFullscreenOptimizations"
+        },
+        {
+          "icon": "Cpu",
+          "label": "Core Parking",
+          "title": "Disable CPU core parking?",
+          "desc": "Core parking powers down CPU cores that aren't in heavy use to save energy. When a burst of work arrives, parked cores must wake up \u2014 adding latency spikes. performance research disables core parking via power plan configuration to keep all cores ready at all times.",
+          "note": "Sets HKLM\\SYSTEM\\CurrentControlSet\\Control\\Power\\PowerSettings \u2014 MinValueMax/MaxValueMax for core parking to 0 (0 parked cores).",
+          "visibility": {
+            "minPreset": "aggressive"
+          },
+          "options": [
+            {
+              "value": true,
+              "title": "Yes \u2014 disable core parking",
+              "desc": "All CPU cores stay awake. Eliminates wake-up latency when workload bursts. Slightly higher idle power draw.",
+              "badge": "Advanced",
+              "badgeColor": "bg-purple-500/15 text-purple-400",
+              "danger": false,
+              "behavior": {
+                "value": true,
+                "includeActions": [
+                  "cpu.disable-core-parking",
+                  "cpu.min-processor-state-100"
+                ],
+                "estimatedActions": 2,
+                "riskLevel": "moderate",
+                "requiresReboot": false,
+                "warnings": []
+              }
+            },
+            {
+              "value": false,
+              "title": "No \u2014 allow core parking",
+              "desc": "Idle cores are powered down. Saves energy. May add latency on workload spikes.",
+              "badge": null,
+              "badgeColor": null,
+              "danger": false,
+              "behavior": {
+                "value": false,
+                "blockActions": [
+                  "cpu.disable-core-parking",
+                  "cpu.min-processor-state-100"
+                ],
+                "blockReason": "You chose to allow core parking.",
+                "estimatedBlocked": 2
+              }
+            }
+          ],
+          "id": "disableCoreParking"
+        }
+      ]
+    },
+    {
+      "id": "shell",
+      "title": "Shell & UI",
+      "description": "Explorer, taskbar, Start menu, and visual tweaks.",
+      "kind": "preferences",
+      "sourcePrompt": "internal",
+      "sourceSections": [
+        "shell"
+      ],
+      "callouts": [],
+      "questions": [
+        {
+          "icon": "Sparkles",
+          "label": "Copilot",
+          "title": "Disable and remove Copilot?",
+          "desc": "Copilot adds a persistent sidebar button to the taskbar and runs background services even when not in use. Both repos recommend removing it. This covers the Copilot taskbar button, the Copilot app package, and its autostart entries.",
+          "note": "HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced \u2014 ShowCopilotButton = 0. Also removes appx.remove-copilot and appx.remove-copilot-app.",
+          "visibility": null,
+          "options": [
+            {
+              "value": true,
+              "title": "Yes \u2014 disable and remove Copilot",
+              "desc": "Copilot button disappears from the taskbar and the app package is removed.",
+              "badge": "Core",
+              "badgeColor": "bg-brand-500/15 text-brand-400",
+              "danger": false,
+              "behavior": {
+                "value": true,
+                "includeActions": [
+                  "shell.disable-copilot",
+                  "appx.remove-copilot",
+                  "appx.remove-copilot-app"
+                ],
+                "estimatedActions": 3,
+                "riskLevel": "safe",
+                "requiresReboot": false,
+                "warnings": []
+              }
+            },
+            {
+              "value": false,
+              "title": "No \u2014 keep Copilot",
+              "desc": "Copilot stays visible and accessible via the taskbar button.",
+              "badge": null,
+              "badgeColor": null,
+              "danger": false,
+              "behavior": {
+                "value": false,
+                "blockActions": [
+                  "shell.disable-copilot",
+                  "appx.remove-copilot",
+                  "appx.remove-copilot-app"
+                ],
+                "blockReason": "You chose to keep Copilot.",
+                "estimatedBlocked": 3
+              }
+            }
+          ],
+          "id": "disableCopilot"
+        },
+        {
+          "icon": "Eye",
+          "label": "Visual Transparency",
+          "title": "Disable transparency effects in the UI?",
+          "desc": "Transparency (acrylic, mica) requires the GPU to composite blurred samples of whatever is behind each window. It is a continuous GPU tax that exists purely for aesthetics. Both repos recommend disabling it to reclaim GPU headroom.",
+          "note": "HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize \u2014 EnableTransparency = 0.",
+          "visibility": null,
+          "options": [
+            {
+              "value": true,
+              "title": "Yes \u2014 disable transparency",
+              "desc": "Taskbar, Start, and window chrome become opaque. Slightly lower GPU load in the desktop compositor.",
+              "badge": "Core",
+              "badgeColor": "bg-brand-500/15 text-brand-400",
+              "danger": false,
+              "behavior": {
+                "value": true,
+                "includeActions": [
+                  "perf.disable-transparency"
+                ],
+                "estimatedActions": 1,
+                "riskLevel": "safe",
+                "requiresReboot": false,
+                "warnings": []
+              }
+            },
+            {
+              "value": false,
+              "title": "No \u2014 keep transparency effects",
+              "desc": "Acrylic and mica effects remain on taskbar and windows.",
+              "badge": null,
+              "badgeColor": null,
+              "danger": false,
+              "behavior": {
+                "value": false,
+                "blockActions": [
+                  "perf.disable-transparency"
+                ],
+                "blockReason": "You chose to keep transparency effects.",
+                "estimatedBlocked": 1
+              }
+            }
+          ],
+          "id": "disableTransparency"
+        }
+      ]
+    },
+    {
+      "id": "network",
+      "title": "Networking",
+      "description": "Network stack and adapter optimization.",
+      "kind": "preferences",
+      "sourcePrompt": "internal",
+      "sourceSections": [
+        "network"
+      ],
+      "callouts": [],
+      "questions": [
+        {
+          "icon": "Globe",
+          "label": "Nagle Algorithm",
+          "title": "Disable Nagle's algorithm for lower network latency?",
+          "desc": "Nagle's algorithm buffers small TCP packets and combines them before sending. This reduces bandwidth overhead but adds latency \u2014 every small packet waits up to 200ms to be bundled. performance research disables it for gaming to ensure packets are sent immediately.",
+          "note": "HKLM\\SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters\\Interfaces\\{adapter} \u2014 TcpAckFrequency = 1, TCPNoDelay = 1.",
+          "visibility": {
+            "minPreset": "aggressive"
+          },
+          "options": [
+            {
+              "value": true,
+              "title": "Yes \u2014 disable Nagle (lower latency)",
+              "desc": "Small TCP packets are sent immediately. Reduces ping jitter in online games at the cost of slightly more packets.",
+              "badge": "Advanced",
+              "badgeColor": "bg-purple-500/15 text-purple-400",
+              "danger": false,
+              "behavior": {
+                "value": true,
+                "includeActions": [],
+                "estimatedActions": 1,
+                "riskLevel": "safe",
+                "requiresReboot": false,
+                "warnings": []
+              }
+            },
+            {
+              "value": false,
+              "title": "No \u2014 keep Nagle enabled",
+              "desc": "TCP coalesces small packets. Better for bulk transfers, adds small latency to interactive traffic.",
+              "badge": null,
+              "badgeColor": null,
+              "danger": false,
+              "behavior": {
+                "value": false,
+                "blockActions": [],
+                "blockReason": "You chose to keep Nagle's algorithm enabled.",
+                "estimatedBlocked": 1
+              }
+            }
+          ],
+          "id": "disableNagle"
+        }
+      ]
+    },
+    {
+      "id": "security",
+      "title": "Security",
+      "description": "Security and update settings.",
+      "kind": "preferences",
+      "sourcePrompt": "internal",
+      "sourceSections": [
+        "security"
+      ],
+      "callouts": [],
+      "questions": [
+        {
+          "icon": "Shield",
+          "label": "Windows Defender",
+          "title": "What should happen with Windows Defender?",
+          "desc": "Windows Defender provides real-time antivirus protection. It consumes CPU/RAM and can interfere with game file access. You can keep it, reduce its footprint by disabling cloud-based lookups, or disable it entirely \u2014 which performance research calls a significant security risk and marks as default FALSE.",
+          "note": "Reduce: security.disable-defender-cloud (DisableBehaviorMonitoring, SpynetReporting=0). Full disable: security.full-defender-disable, security.disable-defender-realtime. Requires VBS/Tamper Protection to be off first.",
+          "visibility": {
+            "minPreset": "aggressive"
+          },
+          "options": [
+            {
+              "value": "keep",
+              "title": "Keep Defender \u2014 full protection",
+              "desc": "Real-time protection, cloud lookups, and automatic sample submission all remain active.",
+              "badge": "Safest",
+              "badgeColor": "bg-emerald-500/15 text-emerald-400",
+              "danger": false,
+              "behavior": {
+                "value": "keep",
+                "blockActions": [
+                  "security.disable-defender-realtime",
+                  "security.disable-defender-cloud",
+                  "security.full-defender-disable"
+                ],
+                "blockReason": "You chose to keep Defender fully active.",
+                "estimatedBlocked": 3
+              }
+            },
+            {
+              "value": "reduce",
+              "title": "Reduce \u2014 disable cloud lookups and MAPS",
+              "desc": "Local real-time scanning stays on. Cloud-based lookups and automatic sample submission are disabled \u2014 reducing telemetry without losing local scanning.",
+              "badge": "Advanced",
+              "badgeColor": "bg-purple-500/15 text-purple-400",
+              "danger": false,
+              "behavior": {
+                "value": "reduce",
+                "includeActions": [
+                  "security.disable-defender-cloud"
+                ],
+                "estimatedActions": 1,
+                "riskLevel": "moderate",
+                "requiresReboot": false,
+                "warnings": [
+                  "Cloud-based threat intelligence is disabled. Zero-day malware detected only by cloud lookups may not be caught."
+                ]
+              }
+            },
+            {
+              "value": "full-disable",
+              "title": "Full Disable \u2014 turn off all real-time protection",
+              "desc": "Defender is completely disabled. No real-time scanning of any kind.",
+              "badge": null,
+              "badgeColor": null,
+              "danger": true,
+              "behavior": {
+                "value": "full-disable",
+                "includeActions": [
+                  "security.disable-defender-realtime",
+                  "security.disable-defender-cloud",
+                  "security.full-defender-disable"
+                ],
+                "estimatedActions": 3,
+                "riskLevel": "high",
+                "requiresReboot": true,
+                "warnings": [
+                  "You will have no antivirus protection. Malware, ransomware, and trojans will run undetected.",
+                  "This requires Tamper Protection and VBS to already be disabled.",
+                  "performance research labels this default: FALSE. Only do this with a third-party AV in place."
+                ]
+              }
+            }
+          ],
+          "id": "disableDefender"
+        },
+        {
+          "icon": "Shield",
+          "label": "SmartScreen",
+          "title": "Disable Microsoft SmartScreen?",
+          "desc": "SmartScreen checks every downloaded file and URL against Microsoft's reputation database. This provides real malware protection but also sends file hashes and URLs to Microsoft. Disabling it removes the protection and the telemetry. Only do this if you rely on other security tools.",
+          "note": "HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows\\System \u2014 EnableSmartScreen = 0. Also applies privacy.disable-smartscreen.",
+          "visibility": {
+            "minPreset": "aggressive"
+          },
+          "options": [
+            {
+              "value": true,
+              "title": "Yes \u2014 disable SmartScreen",
+              "desc": "File reputation checks stop. No file hash or URL is sent to Microsoft for screening. You lose a real layer of malware protection.",
+              "badge": null,
+              "badgeColor": null,
+              "danger": true,
+              "behavior": {
+                "value": true,
+                "includeActions": [
+                  "privacy.disable-smartscreen"
+                ],
+                "estimatedActions": 1,
+                "riskLevel": "high",
+                "requiresReboot": false,
+                "warnings": [
+                  "SmartScreen blocks real malware. Disabling it removes a meaningful protection layer. Only do this if you have alternative endpoint protection."
+                ]
+              }
+            },
+            {
+              "value": false,
+              "title": "No \u2014 keep SmartScreen",
+              "desc": "Downloaded files and URLs are checked against Microsoft's cloud reputation database.",
+              "badge": "Safest",
+              "badgeColor": "bg-emerald-500/15 text-emerald-400",
+              "danger": false,
+              "behavior": {
+                "value": false,
+                "blockActions": [
+                  "privacy.disable-smartscreen"
+                ],
+                "blockReason": "You chose to keep SmartScreen enabled.",
+                "estimatedBlocked": 1
+              }
+            }
+          ],
+          "id": "disableSmartScreen"
+        },
+        {
+          "icon": "Shield",
+          "label": "Windows Update",
+          "title": "Fully block Windows Update?",
+          "desc": "performance research documents blocking Windows Update as a way to prevent unexpected reboots and background bandwidth usage. It explicitly marks this as a SECURITY RISK with default FALSE. Blocking updates leaves your system without security patches indefinitely.",
+          "note": "Applies security.disable-update-asap and system.defer-feature-updates. Full block additionally sets the WU service to disabled and blocks the WU firewall rules.",
+          "visibility": {
+            "minPreset": "expert"
+          },
+          "options": [
+            {
+              "value": "allow",
+              "title": "Allow updates \u2014 keep Windows Update",
+              "desc": "Security patches and feature updates install normally. Recommended for all users.",
+              "badge": "Safest",
+              "badgeColor": "bg-emerald-500/15 text-emerald-400",
+              "danger": false,
+              "behavior": {
+                "value": "allow",
+                "blockActions": [
+                  "security.disable-update-asap",
+                  "system.defer-feature-updates",
+                  "system.disable-update-auto-restart"
+                ],
+                "blockReason": "You chose to keep Windows Update fully active.",
+                "estimatedBlocked": 3
+              }
+            },
+            {
+              "value": "defer",
+              "title": "Defer \u2014 pause feature updates, allow security patches",
+              "desc": "Feature updates are deferred 365 days. Security patches still install. Auto-restart is suppressed during active hours.",
+              "badge": "Advanced",
+              "badgeColor": "bg-purple-500/15 text-purple-400",
+              "danger": false,
+              "behavior": {
+                "value": "defer",
+                "includeActions": [
+                  "system.defer-feature-updates",
+                  "system.disable-update-auto-restart"
+                ],
+                "estimatedActions": 2,
+                "riskLevel": "moderate",
+                "requiresReboot": false,
+                "warnings": [
+                  "Feature updates will not install for up to 365 days. Security patches still apply."
+                ]
+              }
+            },
+            {
+              "value": "block",
+              "title": "Block \u2014 disable all Windows Update",
+              "desc": "Windows Update service is disabled. No patches of any kind will install until you manually re-enable it.",
+              "badge": "Expert",
+              "badgeColor": "bg-red-500/15 text-red-400",
+              "danger": true,
+              "behavior": {
+                "value": "block",
+                "includeActions": [
+                  "security.disable-update-asap",
+                  "system.defer-feature-updates",
+                  "system.disable-update-auto-restart"
+                ],
+                "estimatedActions": 3,
+                "riskLevel": "high",
+                "requiresReboot": false,
+                "warnings": [
+                  "You will receive no security patches. Known vulnerabilities will remain unpatched indefinitely.",
+                  "performance research explicitly marks this default: FALSE and labels it a SECURITY RISK.",
+                  "Only appropriate for air-gapped or isolated gaming machines."
+                ]
+              }
+            }
+          ],
+          "id": "disableWindowsUpdate"
+        }
+      ]
+    }
+  ]
+}

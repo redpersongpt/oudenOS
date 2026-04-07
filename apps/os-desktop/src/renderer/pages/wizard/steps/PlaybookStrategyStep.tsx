@@ -25,6 +25,7 @@ import {
 import { useDecisionsStore, type QuestionAnswer } from "@/stores/decisions-store";
 import { useWizardStore } from "@/stores/wizard-store";
 import { serviceCall } from "@/lib/service";
+import questionnaireFallback from "@/lib/questionnaire-fallback.json";
 import {
   computeQuestionnaireImpact,
   derivePlaybookPreset,
@@ -204,7 +205,7 @@ function Screen({
 
 export function PlaybookStrategyStep() {
   const { answers, setAnswer, applyAnswers } = useDecisionsStore();
-  const { detectedProfile, playbookPreset, setPlaybookPreset, setStepReady, goBack, goNext } = useWizardStore();
+  const { detectedProfile, playbookPreset, setPlaybookPreset, setStepReady, goBack, goNext, demoMode } = useWizardStore();
   const [schema, setSchema] = useState<QuestionnaireSchema | null>(null);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -238,6 +239,13 @@ export function PlaybookStrategyStep() {
             aggressionPreset: context.isWorkPc ? "balanced" : "aggressive",
           });
         }
+      } else if (demoMode) {
+        setSchema(questionnaireFallback as unknown as QuestionnaireSchema);
+        if (Object.keys(answers).length === 0) {
+          applyAnswers({
+            aggressionPreset: context.isWorkPc ? "balanced" : "aggressive",
+          });
+        }
       } else {
         setSchema(null);
         setLoadError(result.error || "Could not load setup questions.");
@@ -248,7 +256,7 @@ export function PlaybookStrategyStep() {
     return () => {
       cancelled = true;
     };
-  }, [applyAnswers, context.isWorkPc, context.windowsBuild, detectedProfile?.id]);
+  }, [applyAnswers, context.isWorkPc, context.windowsBuild, demoMode, detectedProfile?.id]);
 
   const activeQuestions = useMemo(
     () => getVisibleChapters(schema, answers, context).flatMap((chapter) => chapter.questions),
