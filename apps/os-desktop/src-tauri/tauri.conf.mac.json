@@ -1,0 +1,14 @@
+{
+  "bundle": {
+    "targets": ["dmg"],
+    "icon": ["icons/icon.png"],
+    "resources": {
+      "../../../services/os-service/target-mac/release/redcore-os-service": "redcore-os-service",
+      "../../../playbooks": "playbooks",
+      "../resources/redcore-icon.png": "redcore-icon.png"
+    },
+    "macOS": {
+      "minimumSystemVersion": "10.15"
+    }
+  }
+}
