@@ -391,6 +391,32 @@ async fn dispatch(db: &Database, req: &RpcRequest, start_time: Instant) -> RpcRe
                 }
             };
 
+            // Guard: reject expert_only actions unless caller explicitly confirms
+            let is_expert = action_data
+                .get("expertOnly")
+                .and_then(|v| v.as_bool())
+                .unwrap_or(false);
+            let risk = action_data
+                .get("risk")
+                .and_then(|v| v.as_str())
+                .unwrap_or("low");
+            if is_expert || risk == "extreme" {
+                let expert_confirmed = params
+                    .get("expertConfirmed")
+                    .and_then(|v| v.as_bool())
+                    .unwrap_or(false);
+                if !expert_confirmed {
+                    return RpcResponse::err(
+                        id,
+                        -22,
+                        format!(
+                            "Action '{}' is expert-only (risk: {}). Requires explicit confirmation.",
+                            action_id, risk
+                        ),
+                    );
+                }
+            }
+
             tracing::info!(action_id = action_id, "Applying action");
             let journal_context = params
                 .get("journalContext")

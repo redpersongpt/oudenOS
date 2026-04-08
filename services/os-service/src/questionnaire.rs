@@ -749,7 +749,7 @@ fn include_action(plan: &mut ResolvedPlan, action_id: &str) {
     };
     if matches!(
         action.status,
-        ActionStatus::Blocked | ActionStatus::BuildGated
+        ActionStatus::Blocked | ActionStatus::BuildGated | ActionStatus::ExpertOnly
     ) {
         return;
     }
