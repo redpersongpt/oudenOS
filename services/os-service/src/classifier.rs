@@ -270,6 +270,7 @@ fn compute_preservation_flags(profile: &str, work_indicators: &Value) -> Value {
         "work_pc" => {
             flags["preserveOneDrive"] = Value::Bool(true);
             flags["preservePrintSpooler"] = Value::Bool(true);
+            flags["preserveGroupPolicy"] = Value::Bool(true);
             if work_indicators
                 .get("rdpEnabled")
                 .and_then(|v| v.as_bool())
@@ -277,11 +278,26 @@ fn compute_preservation_flags(profile: &str, work_indicators: &Value) -> Value {
             {
                 flags["preserveRdp"] = Value::Bool(true);
             }
+        }
+        "office_laptop" => {
+            // Office laptops likely print and may use OneDrive
+            flags["preserveOneDrive"] = Value::Bool(true);
+            flags["preservePrintSpooler"] = Value::Bool(true);
             flags["preserveGroupPolicy"] = Value::Bool(true);
         }
-        "vm_cautious" => {
-            flags["preserveAppxPackages"] = Value::Bool(true);
+        "workstation" => {
+            // Pro workstations: printing, Group Policy, RDP likely
+            flags["preservePrintSpooler"] = Value::Bool(true);
+            flags["preserveGroupPolicy"] = Value::Bool(true);
+            flags["preserveRdp"] = Value::Bool(true);
         }
+        "vm_cautious" => {
+            // VMs: keep AppX (store apps may be the point), keep Group Policy
+            flags["preserveAppxPackages"] = Value::Bool(true);
+            flags["preserveGroupPolicy"] = Value::Bool(true);
+        }
+        // gaming_desktop, gaming_laptop, low_spec_system, budget_desktop:
+        // No preservation — these are personal machines, nuke everything the user allows
         _ => {}
     }
 

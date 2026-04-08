@@ -166,6 +166,7 @@ export function RebootResumeStep() {
         // Execute the action via the Rust service
         const execResult = await serviceCall<Record<string, unknown>>("execute.applyAction", {
           actionId: action.actionId,
+          ...(action.expertOnly ? { expertConfirmed: true } : {}),
           journalContext: planId ? {
             package: {
               planId,

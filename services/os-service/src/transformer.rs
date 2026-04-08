@@ -57,13 +57,15 @@ pub fn generate_plan(classification: &Value, preset: &str) -> anyhow::Result<Val
         }
 
         // Preset filtering: conservative only includes safe actions,
-        // balanced includes moderate, aggressive includes all
+        // balanced includes moderate, aggressive includes high (but NOT extreme/expert)
         let risk = action["risk"].as_str().unwrap_or("low");
+        let is_expert = action["expertOnly"].as_bool().unwrap_or(false)
+            || risk == "extreme";
         let include = match preset {
-            "conservative" => risk == "safe" || risk == "low",
-            "balanced" => risk == "safe" || risk == "low" || risk == "medium",
-            "aggressive" => true,
-            _ => risk == "safe" || risk == "low" || risk == "medium",
+            "conservative" => !is_expert && (risk == "safe" || risk == "low"),
+            "balanced" => !is_expert && (risk == "safe" || risk == "low" || risk == "medium"),
+            "aggressive" => !is_expert,
+            _ => !is_expert && (risk == "safe" || risk == "low" || risk == "medium"),
         };
 
         if include {
@@ -160,10 +162,14 @@ fn is_blocked(action_id: &str, profile: &str, preservation: &Value) -> bool {
         }
         "gpu.msi-mode" => profile == "vm_cautious",
 
-        // ── Service actions blocked on work_pc ──
+        // ── Service actions blocked per profile ──
         "services.disable-sysmain" => profile == "work_pc",
-        "services.disable-print-spooler" => profile == "work_pc",
-        "services.disable-remote-services" => profile == "work_pc",
+        "services.disable-print-spooler" => {
+            profile == "work_pc" || profile == "office_laptop" || profile == "workstation"
+        }
+        "services.disable-remote-services" => {
+            profile == "work_pc" || profile == "workstation"
+        }
 
         // ── Security expert-only: blocked on work_pc, office_laptop, vm_cautious ──
         "security.reduce-ssbd-mitigation" => {
@@ -3336,8 +3342,8 @@ fn embedded_actions() -> Vec<Value> {
             "featureChanges": [],
             "powerShellCommands": [],
             "tags": ["security", "hvci", "core-isolation", "performance"],
-            "sideEffects": ["Kernel-mode code integrity will no longer be enforced by the hypervisor", "System is more vulnerable to kernel-level exploits"],
-            "warningMessage": "Disabling HVCI reduces security. Only recommended for dedicated gaming PCs with no sensitive data."
+            "sideEffects": ["Kernel-mode code integrity will no longer be enforced by the hypervisor", "System is more vulnerable to kernel-level exploits", "Kernel-level anti-cheats like Riot Vanguard (Valorant, League of Legends) may require HVCI/VBS to be enabled — disabling this can prevent those games from launching"],
+            "warningMessage": "Disabling HVCI reduces security and may break kernel anti-cheat systems (Riot Vanguard, EasyAntiCheat). You will not be able to play Valorant if VBS/HVCI is disabled. Only recommended for dedicated gaming PCs with no sensitive data and no kernel anti-cheat games."
         }),
         // ── Network Security: Disable IPv6 ──────────────────────────────────
         serde_json::json!({

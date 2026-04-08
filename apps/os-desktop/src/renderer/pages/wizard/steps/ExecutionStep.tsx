@@ -387,8 +387,10 @@ export function ExecutionStep() {
 
         let status: "applied" | "failed" = "failed";
         let errorMessage: string | null = null;
+        const isExpert = action.provenance?.expertOnly ?? false;
         const result = await serviceCall<Record<string, unknown>>("execute.applyAction", {
           actionId: action.id,
+          ...(isExpert ? { expertConfirmed: true } : {}),
           journalContext: action.provenance
             ? buildExecutionJournalContext(playbook, action.provenance, detectedProfile?.id)
             : undefined,

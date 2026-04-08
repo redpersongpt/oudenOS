@@ -91,8 +91,8 @@
         },
         {
           "value": "expert",
-          "title": "Expert — full control",
-          "desc": "Every question is shown. Includes Spectre/Meltdown mitigation toggles, full Windows Update control, and Defender disablement. You accept the risks.",
+          "title": "Expert — DO NOT USE UNLESS YOU KNOW YOUR SH*T",
+          "desc": "Unlocks every toggle including Defender disablement, Windows Update kill, CPU mitigation removal, and VBS/HVCI. These can brick your install, break anti-cheat (Valorant won't launch), and leave you with zero security. If you don't know what a registry hive is, go back to Balanced.",
           "badge": "Expert",
           "badgeColor": "bg-red-500/15 text-red-400",
           "danger": true,
@@ -101,7 +101,7 @@
             "estimatedBlocked": 0,
             "riskLevel": "high",
             "warnings": [
-              "Expert preset enables questions that can significantly reduce system security. Only proceed if you understand the implications."
+              "DO NOT USE UNLESS YOU KNOW YOUR SH*T. This preset can disable Windows Defender, kill Windows Update permanently, remove CPU security mitigations, and break kernel anti-cheat (Valorant, League, Fortnite). There is no undo for some of these changes without a restore point."
             ]
           }
         }
@@ -2749,7 +2749,7 @@
       "icon": "Shield",
       "label": "HVCI / Core Isolation",
       "title": "Disable HVCI (Hypervisor-Protected Code Integrity)?",
-      "desc": "HVCI uses the hypervisor to protect the kernel from unsigned code injection. It is a strong security feature but adds overhead to system calls and is incompatible with some older game anti-cheats and kernel drivers. Both repos document this tradeoff.",
+      "desc": "HVCI uses the hypervisor to protect the kernel from unsigned code injection. It is a strong security feature but adds overhead to system calls and is incompatible with some older kernel drivers. Both repos document this tradeoff.",
       "note": "HKLM\\SYSTEM\\CurrentControlSet\\Control\\DeviceGuard\\Scenarios\\HypervisorEnforcedCodeIntegrity — Enabled = 0. Requires reboot.",
       "visibility": {
         "minPreset": "aggressive"
@@ -2769,7 +2769,8 @@
             "riskLevel": "high",
             "requiresReboot": true,
             "warnings": [
-              "Disabling HVCI removes a key kernel integrity protection. Unsigned or malicious drivers can inject code into the kernel."
+              "Disabling HVCI removes a key kernel integrity protection. Unsigned or malicious drivers can inject code into the kernel.",
+              "Kernel-level anti-cheats like Riot Vanguard (Valorant), nProtect GameGuard, and EasyAntiCheat require VBS/HVCI to be enabled on some configurations. Disabling this may prevent you from playing Valorant and other games with kernel anti-cheat."
             ]
           }
         },
@@ -2795,7 +2796,7 @@
       "icon": "Shield",
       "label": "Virtualization Based Security",
       "title": "Disable Virtualization Based Security (VBS)?",
-      "desc": "VBS uses the CPU hypervisor to create an isolated memory region for security features like Credential Guard and HVCI. It adds overhead to every VM-exit path and can reduce gaming frame rates by 5–15% on some CPUs. Both repos document this as an aggressive performance tradeoff.",
+      "desc": "VBS uses the CPU hypervisor to create an isolated memory region for security features like Credential Guard and HVCI. It adds overhead to every VM-exit path and can reduce gaming frame rates by 5–15% on some CPUs. WARNING: Disabling VBS will break kernel-level anti-cheats like Riot Vanguard — you will not be able to play Valorant, League of Legends (Vanguard), and other games that require VBS/HVCI.",
       "note": "HKLM\\SYSTEM\\CurrentControlSet\\Control\\DeviceGuard — EnableVirtualizationBasedSecurity = 0. Requires reboot. HVCI must also be disabled first.",
       "visibility": {
         "minPreset": "aggressive"
@@ -2817,7 +2818,8 @@
             "warnings": [
               "Disabling VBS removes Credential Guard and all hypervisor-based isolation features.",
               "Pass-the-hash and credential theft attacks become easier without Credential Guard.",
-              "Requires HVCI to already be disabled."
+              "Requires HVCI to already be disabled.",
+              "Riot Vanguard (Valorant, League of Legends) requires VBS to be enabled. Disabling VBS will prevent these games from launching. Other kernel anti-cheats (nProtect, EasyAntiCheat) may also refuse to run."
             ]
           }
         },

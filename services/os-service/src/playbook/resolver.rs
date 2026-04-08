@@ -51,7 +51,7 @@ pub(crate) fn resolve_action_status(
     let risk_allowed = match preset {
         "conservative" => action.risk == "safe" || action.risk == "low",
         "balanced" => action.risk != "high" && action.risk != "extreme",
-        "aggressive" => true,
+        "aggressive" => !action.expert_only && action.risk != "extreme",
         _ => action.risk == "safe" || action.risk == "low",
     };
 
