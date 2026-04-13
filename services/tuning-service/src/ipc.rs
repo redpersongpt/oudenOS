@@ -81,14 +81,16 @@ fn tier_allows(license: &LicenseState, feature: &str) -> bool {
 }
 
 pub async fn serve(db: Database, license: LicenseState) -> Result<()> {
-    use std::sync::{Arc, Mutex};
+    use std::sync::Arc;
+    use tokio::sync::Mutex;
 
     let stdin = io::stdin();
     let mut stdout = io::stdout();
     let reader = BufReader::new(stdin);
     let mut lines = reader.lines();
 
-    // License is mutable so main process can push a tier update at runtime
+    // License is mutable so main process can push a tier update at runtime.
+    // Using tokio::sync::Mutex (not std) so we never block the Tokio runtime.
     let live_license: Arc<Mutex<LicenseState>> = Arc::new(Mutex::new(license));
 
     let start_time = Instant::now();
@@ -106,7 +108,7 @@ pub async fn serve(db: Database, license: LicenseState) -> Result<()> {
 
         tracing::debug!("RPC: {} (id={})", request.method, request.id);
 
-        let current_license = live_license.lock().map(|g| g.clone()).unwrap_or_default();
+        let current_license = live_license.lock().await.clone();
         let response = dispatch(&db, &current_license, &request, start_time, &live_license).await;
         let mut json = serde_json::to_string(&response)?;
         json.push('\n');
@@ -122,7 +124,7 @@ async fn dispatch(
     license: &LicenseState,
     req: &RpcRequest,
     start_time: Instant,
-    live_license: &std::sync::Arc<std::sync::Mutex<LicenseState>>,
+    live_license: &std::sync::Arc<tokio::sync::Mutex<LicenseState>>,
 ) -> RpcResponse {
     let id = req.id;
     let params = &req.params;
@@ -332,7 +334,8 @@ async fn dispatch(
             let tier = params.get("tier").and_then(|v| v.as_str()).unwrap_or("free");
             let status = params.get("status").and_then(|v| v.as_str()).unwrap_or("active");
             tracing::info!("License tier updated: tier={} status={}", tier, status);
-            if let Ok(mut guard) = live_license.lock() {
+            {
+                let mut guard = live_license.lock().await;
                 guard.tier = tier.to_string();
                 guard.status = status.to_string();
             }

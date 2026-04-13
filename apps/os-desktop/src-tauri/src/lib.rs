@@ -15,12 +15,64 @@ struct AppState {
 // Tauri commands — the renderer calls these via invoke()
 // ---------------------------------------------------------------------------
 
+// SECURITY: Allowlist of RPC methods the renderer is permitted to invoke on
+// the privileged service. Any method not in this list is rejected at the
+// Tauri boundary so a compromised renderer (e.g. via XSS in playbook data)
+// cannot reach arbitrary privileged handlers.
+const ALLOWED_SERVICE_METHODS: &[&str] = &[
+    // System / status
+    "system.status",
+    "system.info",
+    // Assessment + classification + planning pipeline
+    "assess.full",
+    "assess.system",
+    "classify.machine",
+    "transform.plan",
+    "transform.getActions",
+    "pipeline.assessClassifyPlan",
+    // Playbook resolution
+    "playbook.resolve",
+    "playbook.list",
+    // Questionnaire
+    "questionnaire.resolve",
+    "questionnaire.evaluate",
+    // Personalization
+    "personalize.options",
+    "personalize.apply",
+    "personalize.revert",
+    // Execution + ledger (actionData is resolved server-side, never trusted from client)
+    "execute.applyAction",
+    "ledger.createPlan",
+    "ledger.markStarted",
+    "ledger.recordResult",
+    "ledger.getPlan",
+    // Rollback
+    "rollback.list",
+    "rollback.restore",
+    "rollback.audit",
+    // Journal / reboot resume
+    "journal.state",
+    "journal.resume",
+    "journal.cancel",
+    // Verification
+    "verify.registryValue",
+];
+
 #[tauri::command]
 async fn service_call(
     state: tauri::State<'_, AppState>,
     method: String,
     params: serde_json::Value,
 ) -> Result<serde_json::Value, String> {
+    // SECURITY: Reject any method not explicitly allowlisted.
+    if !ALLOWED_SERVICE_METHODS.contains(&method.as_str()) {
+        eprintln!("[Tauri] Rejected unauthorized IPC method: {method}");
+        return Ok(serde_json::json!({
+            "__serviceError": true,
+            "error": format!("Method not allowed: {}", method)
+        }));
+    }
+
     let mut bridge = state.bridge.lock().await;
 
     if !bridge.is_running() {
@@ -52,6 +104,16 @@ async fn service_status(state: tauri::State<'_, AppState>) -> Result<serde_json:
 
 #[tauri::command]
 async fn save_log(content: String) -> Result<serde_json::Value, String> {
+    // SECURITY: Cap log size to prevent a compromised renderer from filling
+    // the user's disk.
+    const MAX_LOG_SIZE: usize = 10 * 1024 * 1024; // 10 MB
+    if content.len() > MAX_LOG_SIZE {
+        return Ok(serde_json::json!({
+            "ok": false,
+            "error": format!("Log content exceeds maximum size of {} bytes", MAX_LOG_SIZE)
+        }));
+    }
+
     let desktop = match dirs::desktop_dir() {
         Some(d) => d,
         None => return Ok(serde_json::json!({ "ok": false, "error": "Cannot find Desktop" })),

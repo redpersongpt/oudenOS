@@ -5,7 +5,7 @@
   "description": "redcore OS desktop app (Tauri)",
   "author": {
     "name": "redcore",
-    "email": "REDACTED_EMAIL"
+    "email": "support@redcoreos.net"
   },
   "homepage": "https://redcoreos.net",
   "scripts": {

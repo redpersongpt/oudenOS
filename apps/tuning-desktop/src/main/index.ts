@@ -106,6 +106,16 @@ function getLicense(): LicenseState {
 
 let serviceProcess: ChildProcess | null = null;
 let requestId = 0;
+// Restart backoff state: exponential up to a 60s ceiling, reset to 0 after
+// the service has stayed alive for a minute. Prevents an infinite
+// crash-restart storm if the service binary is broken.
+let serviceRestartAttempts = 0;
+let serviceStartedAt = 0;
+const MAX_RESTART_DELAY_MS = 60_000;
+const BASE_RESTART_DELAY_MS = 2_000;
+const STABILITY_RESET_MS = 60_000;
+const MAX_RESTART_ATTEMPTS = 10;
+
 const pendingRequests = new Map<
   number,
   {
@@ -129,6 +139,7 @@ function getServicePath(): string {
 function startService(): void {
   const servicePath = getServicePath();
   console.log("[Main] Starting service:", servicePath);
+  serviceStartedAt = Date.now();
 
   try {
     serviceProcess = spawn(servicePath, [], {
@@ -187,13 +198,38 @@ function startService(): void {
       pendingRequests.delete(id);
     }
 
+    const uptime = Date.now() - serviceStartedAt;
     serviceProcess = null;
 
-    // Restart if not quitting and abnormal exit
-    if (!isQuitting) {
-      console.log("[Main] Restarting service in 2s...");
-      setTimeout(startService, 2000);
+    if (isQuitting) return;
+
+    // If the service ran successfully for long enough, treat this as a fresh
+    // incident and reset the attempt counter.
+    if (uptime >= STABILITY_RESET_MS) {
+      serviceRestartAttempts = 0;
     }
+
+    if (serviceRestartAttempts >= MAX_RESTART_ATTEMPTS) {
+      console.error(
+        `[Main] Service crash loop detected (${serviceRestartAttempts} attempts) — giving up. ` +
+          "Renderer will remain in degraded mode until the app is relaunched.",
+      );
+      mainWindow?.webContents.send("service:crash-loop", {
+        attempts: serviceRestartAttempts,
+      });
+      return;
+    }
+
+    // Exponential backoff: 2s, 4s, 8s, 16s, 32s, 60s (clamped)
+    const delay = Math.min(
+      BASE_RESTART_DELAY_MS * 2 ** serviceRestartAttempts,
+      MAX_RESTART_DELAY_MS,
+    );
+    serviceRestartAttempts += 1;
+    console.log(
+      `[Main] Restarting service in ${delay}ms (attempt ${serviceRestartAttempts}/${MAX_RESTART_ATTEMPTS})...`,
+    );
+    setTimeout(startService, delay);
   });
 }
 

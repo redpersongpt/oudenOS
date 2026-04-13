@@ -246,9 +246,13 @@ fn calculate_score(
         score -= ((running - 80) / 5).min(15);
     }
 
-    // Penalty for startup items (more than 5 is cluttered)
+    // Penalty for startup items (more than 5 is cluttered).
+    // On Windows the real assessor returns `{ "count": N }`; the simulation
+    // path returns an array. Handle both.
     let startup_count = if startup.is_array() {
         startup.as_array().map(|a| a.len()).unwrap_or(0) as i32
+    } else if let Some(count) = startup.get("count").and_then(|v| v.as_i64()) {
+        count as i32
     } else {
         0
     };

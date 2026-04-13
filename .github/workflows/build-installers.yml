@@ -311,7 +311,7 @@ jobs:
           if_key_exists: replace
 
       - name: Add known hosts
-        run: ssh-keyscan -H REDACTED_VDS_IP >> ~/.ssh/known_hosts 2>/dev/null
+        run: ssh-keyscan -H ${{ secrets.VDS_IP }} >> ~/.ssh/known_hosts 2>/dev/null
 
       - name: Prepare release artifacts
         id: prep
@@ -352,9 +352,9 @@ jobs:
 
       - name: Upload installer (before manifest)
         run: |
-          ssh -o StrictHostKeyChecking=no ubuntu@REDACTED_VDS_IP "mkdir -p /var/www/redcore-downloads/os/releases /var/www/redcore-downloads/os/archive"
-          scp -o StrictHostKeyChecking=no ./artifacts/os/publish/redcore-os-setup.exe ubuntu@REDACTED_VDS_IP:/var/www/redcore-downloads/os/
-          scp -o StrictHostKeyChecking=no "./artifacts/os/publish/${{ steps.prep.outputs.RELEASE_NAME }}" ubuntu@REDACTED_VDS_IP:/var/www/redcore-downloads/os/releases/
+          ssh -o StrictHostKeyChecking=no ${{ secrets.VDS_USER }}@${{ secrets.VDS_IP }} "mkdir -p /var/www/redcore-downloads/os/releases /var/www/redcore-downloads/os/archive"
+          scp -o StrictHostKeyChecking=no ./artifacts/os/publish/redcore-os-setup.exe ${{ secrets.VDS_USER }}@${{ secrets.VDS_IP }}:/var/www/redcore-downloads/os/
+          scp -o StrictHostKeyChecking=no "./artifacts/os/publish/${{ steps.prep.outputs.RELEASE_NAME }}" ${{ secrets.VDS_USER }}@${{ secrets.VDS_IP }}:/var/www/redcore-downloads/os/releases/
 
       - name: Verify installer reachable over HTTPS
         run: |
@@ -389,7 +389,7 @@ jobs:
 
       - name: Publish latest.json (after installer verified)
         run: |
-          scp -o StrictHostKeyChecking=no ./artifacts/os/publish/latest.json ubuntu@REDACTED_VDS_IP:/var/www/redcore-downloads/os/
+          scp -o StrictHostKeyChecking=no ./artifacts/os/publish/latest.json ${{ secrets.VDS_USER }}@${{ secrets.VDS_IP }}:/var/www/redcore-downloads/os/
 
       - name: Verify latest.json reachable and coherent
         run: |

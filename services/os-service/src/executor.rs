@@ -273,240 +273,314 @@ pub fn execute_action(
     let mut results: Vec<Value> = Vec::new();
     let mut succeeded = 0u32;
     let mut failed = 0u32;
+    // SAFETY: Unless explicitly in "aggressive" execution mode, halt further
+    // mutations as soon as ANY section reports a failure so the system is not
+    // left in a partially-applied state. Phase 5 auto-rollback relies on this.
+    let stop_on_failure = contract.execution_mode != "aggressive";
 
     // Apply AppX removals
-    for pkg_name in &contract.packages {
-        match remove_appx_package(pkg_name) {
-            Ok(()) => {
-                succeeded += 1;
-                results.push(serde_json::json!({
-                    "type": "appx_remove",
-                    "package": pkg_name,
-                    "status": "success",
-                }));
-            }
-            Err(e) => {
-                failed += 1;
-                tracing::error!(package = pkg_name, error = %e, "AppX removal failed");
-                results.push(serde_json::json!({
-                    "type": "appx_remove",
-                    "package": pkg_name,
-                    "status": "failed",
-                    "error": e.to_string(),
-                }));
-            }
-        }
-    }
-
-    // Apply task disables
-    for task in &contract.tasks {
-        let task_name = task.name.as_str();
-        let task_path = task.path.as_str();
-        match disable_scheduled_task(task_name, task_path) {
-            Ok(()) => {
-                succeeded += 1;
-                results.push(serde_json::json!({
-                    "type": "task_disable",
-                    "taskName": task_name,
-                    "taskPath": task_path,
-                    "status": "success",
-                }));
-            }
-            Err(e) => {
-                failed += 1;
-                tracing::error!(task = task_name, error = %e, "Task disable failed");
-                results.push(serde_json::json!({
-                    "type": "task_disable",
-                    "taskName": task_name,
-                    "status": "failed",
-                    "error": e.to_string(),
-                }));
+    'apply: loop {
+        for pkg_name in &contract.packages {
+            match remove_appx_package(pkg_name) {
+                Ok(()) => {
+                    succeeded += 1;
+                    results.push(serde_json::json!({
+                        "type": "appx_remove",
+                        "package": pkg_name,
+                        "status": "success",
+                    }));
+                }
+                Err(e) => {
+                    failed += 1;
+                    tracing::error!(package = pkg_name, error = %e, "AppX removal failed");
+                    results.push(serde_json::json!({
+                        "type": "appx_remove",
+                        "package": pkg_name,
+                        "status": "failed",
+                        "error": e.to_string(),
+                    }));
+                    if stop_on_failure {
+                        break 'apply;
+                    }
+                }
             }
         }
-    }
 
-    // Apply registry changes
-    for change in &registry_changes {
-        let hive = change.hive.as_str();
-        let path = change.path.as_str();
-        let value_name = change.value_name.as_str();
-        let value = &change.value;
-        let value_type = change.value_type.as_str();
-
-        match apply_registry_change(hive, path, value_name, value, value_type) {
-            Ok(()) => {
-                succeeded += 1;
-                results.push(serde_json::json!({
-                    "type": "registry",
-                    "path": format!("{}\\{}", hive, path),
-                    "valueName": value_name,
-                    "status": "success",
-                }));
-            }
-            Err(e) => {
-                failed += 1;
-                tracing::error!(
-                    path = format!("{}\\{}", hive, path).as_str(),
-                    value_name = value_name,
-                    error = %e,
-                    "Registry change failed"
-                );
-                results.push(serde_json::json!({
-                    "type": "registry",
-                    "path": format!("{}\\{}", hive, path),
-                    "valueName": value_name,
-                    "status": "failed",
-                    "error": e.to_string(),
-                }));
+        // Apply task disables
+        for task in &contract.tasks {
+            let task_name = task.name.as_str();
+            let task_path = task.path.as_str();
+            match disable_scheduled_task(task_name, task_path) {
+                Ok(()) => {
+                    succeeded += 1;
+                    results.push(serde_json::json!({
+                        "type": "task_disable",
+                        "taskName": task_name,
+                        "taskPath": task_path,
+                        "status": "success",
+                    }));
+                }
+                Err(e) => {
+                    failed += 1;
+                    tracing::error!(task = task_name, error = %e, "Task disable failed");
+                    results.push(serde_json::json!({
+                        "type": "task_disable",
+                        "taskName": task_name,
+                        "status": "failed",
+                        "error": e.to_string(),
+                    }));
+                    if stop_on_failure {
+                        break 'apply;
+                    }
+                }
             }
         }
-    }
 
-    // Apply service changes
-    for change in &contract.service_changes {
-        let svc_name = change.name.as_str();
-        let startup_type = change.startup_type.as_str();
+        // Apply registry changes
+        for change in &registry_changes {
+            let hive = change.hive.as_str();
+            let path = change.path.as_str();
+            let value_name = change.value_name.as_str();
+            let value = &change.value;
+            let value_type = change.value_type.as_str();
 
-        match apply_service_change(svc_name, startup_type) {
-            Ok(()) => {
-                succeeded += 1;
-                results.push(serde_json::json!({
-                    "type": "service",
-                    "service": svc_name,
-                    "startupType": startup_type,
-                    "status": "success",
-                }));
-            }
-            Err(e) => {
-                failed += 1;
-                tracing::error!(service = svc_name, error = %e, "Service change failed");
-                results.push(serde_json::json!({
-                    "type": "service",
-                    "service": svc_name,
-                    "status": "failed",
-                    "error": e.to_string(),
-                }));
+            match apply_registry_change(hive, path, value_name, value, value_type) {
+                Ok(()) => {
+                    succeeded += 1;
+                    results.push(serde_json::json!({
+                        "type": "registry",
+                        "path": format!("{}\\{}", hive, path),
+                        "valueName": value_name,
+                        "status": "success",
+                    }));
+                }
+                Err(e) => {
+                    failed += 1;
+                    tracing::error!(
+                        path = format!("{}\\{}", hive, path).as_str(),
+                        value_name = value_name,
+                        error = %e,
+                        "Registry change failed"
+                    );
+                    results.push(serde_json::json!({
+                        "type": "registry",
+                        "path": format!("{}\\{}", hive, path),
+                        "valueName": value_name,
+                        "status": "failed",
+                        "error": e.to_string(),
+                    }));
+                    if stop_on_failure {
+                        break 'apply;
+                    }
+                }
             }
         }
-    }
 
-    // Apply BCD changes
-    for change in &contract.bcd_changes {
-        let element = change.element.as_str();
-        let new_value = change.new_value.as_str();
+        // Apply service changes
+        for change in &contract.service_changes {
+            let svc_name = change.name.as_str();
+            let startup_type = change.startup_type.as_str();
 
-        match apply_bcd_change(element, new_value) {
-            Ok(()) => {
-                succeeded += 1;
-                results.push(serde_json::json!({
-                    "type": "bcd",
-                    "element": element,
-                    "newValue": new_value,
-                    "status": "success",
-                }));
-            }
-            Err(e) => {
-                failed += 1;
-                tracing::error!(element = element, error = %e, "BCD change failed");
-                results.push(serde_json::json!({
-                    "type": "bcd",
-                    "element": element,
-                    "status": "failed",
-                    "error": e.to_string(),
-                }));
+            match apply_service_change(svc_name, startup_type) {
+                Ok(()) => {
+                    succeeded += 1;
+                    results.push(serde_json::json!({
+                        "type": "service",
+                        "service": svc_name,
+                        "startupType": startup_type,
+                        "status": "success",
+                    }));
+                }
+                Err(e) => {
+                    failed += 1;
+                    tracing::error!(service = svc_name, error = %e, "Service change failed");
+                    results.push(serde_json::json!({
+                        "type": "service",
+                        "service": svc_name,
+                        "status": "failed",
+                        "error": e.to_string(),
+                    }));
+                    if stop_on_failure {
+                        break 'apply;
+                    }
+                }
             }
         }
-    }
 
-    // Apply power setting changes
-    for change in &contract.power_changes {
-        let setting_path = change.setting_path.as_str();
-        let new_value = change.new_value.as_str();
+        // Apply BCD changes
+        for change in &contract.bcd_changes {
+            let element = change.element.as_str();
+            let new_value = change.new_value.as_str();
 
-        match apply_power_change(setting_path, new_value) {
-            Ok(()) => {
-                succeeded += 1;
-                results.push(serde_json::json!({
-                    "type": "power",
-                    "settingPath": setting_path,
-                    "newValue": new_value,
-                    "status": "success",
-                }));
-            }
-            Err(e) => {
-                failed += 1;
-                tracing::error!(setting = setting_path, error = %e, "Power change failed");
-                results.push(serde_json::json!({
-                    "type": "power",
-                    "settingPath": setting_path,
-                    "status": "failed",
-                    "error": e.to_string(),
-                }));
+            match apply_bcd_change(element, new_value) {
+                Ok(()) => {
+                    succeeded += 1;
+                    results.push(serde_json::json!({
+                        "type": "bcd",
+                        "element": element,
+                        "newValue": new_value,
+                        "status": "success",
+                    }));
+                }
+                Err(e) => {
+                    failed += 1;
+                    tracing::error!(element = element, error = %e, "BCD change failed");
+                    results.push(serde_json::json!({
+                        "type": "bcd",
+                        "element": element,
+                        "status": "failed",
+                        "error": e.to_string(),
+                    }));
+                    if stop_on_failure {
+                        break 'apply;
+                    }
+                }
             }
         }
-    }
 
-    // Apply PowerShell commands (audited, structured — never user-input-derived)
-    for script in &contract.powershell_commands {
-        if script.is_empty() {
-            continue;
-        }
-        match execute_ps_command(script) {
-            Ok(()) => {
-                succeeded += 1;
-                results.push(serde_json::json!({
-                    "type": "powershell",
-                    "command": &script[..script.len().min(80)],
-                    "status": "success",
-                }));
-            }
-            Err(e) => {
-                failed += 1;
-                tracing::error!(error = %e, "PowerShell command failed");
-                results.push(serde_json::json!({
-                    "type": "powershell",
-                    "command": &script[..script.len().min(80)],
-                    "status": "failed",
-                    "error": e.to_string(),
-                }));
-            }
-        }
-    }
+        // Apply power setting changes
+        for change in &contract.power_changes {
+            let setting_path = change.setting_path.as_str();
+            let new_value = change.new_value.as_str();
 
-    for rename in &contract.file_renames {
-        match apply_file_rename(rename) {
-            Ok(()) => {
-                succeeded += 1;
-                results.push(serde_json::json!({
-                    "type": "file_rename",
-                    "source": rename.source,
-                    "target": rename.target,
-                    "status": "success",
-                }));
-            }
-            Err(e) => {
-                failed += 1;
-                tracing::error!(source = rename.source.as_str(), target = rename.target.as_str(), error = %e, "File rename failed");
-                results.push(serde_json::json!({
-                    "type": "file_rename",
-                    "source": rename.source,
-                    "target": rename.target,
-                    "status": "failed",
-                    "error": e.to_string(),
-                }));
+            match apply_power_change(setting_path, new_value) {
+                Ok(()) => {
+                    succeeded += 1;
+                    results.push(serde_json::json!({
+                        "type": "power",
+                        "settingPath": setting_path,
+                        "newValue": new_value,
+                        "status": "success",
+                    }));
+                }
+                Err(e) => {
+                    failed += 1;
+                    tracing::error!(setting = setting_path, error = %e, "Power change failed");
+                    results.push(serde_json::json!({
+                        "type": "power",
+                        "settingPath": setting_path,
+                        "status": "failed",
+                        "error": e.to_string(),
+                    }));
+                    if stop_on_failure {
+                        break 'apply;
+                    }
+                }
             }
         }
+
+        // Apply PowerShell commands (audited, structured — resolved server-side
+        // from playbook YAML, never from renderer input — see ipc.rs)
+        for script in &contract.powershell_commands {
+            if script.is_empty() {
+                continue;
+            }
+            match execute_ps_command(script) {
+                Ok(()) => {
+                    succeeded += 1;
+                    results.push(serde_json::json!({
+                        "type": "powershell",
+                        "command": &script[..script.len().min(80)],
+                        "status": "success",
+                    }));
+                }
+                Err(e) => {
+                    failed += 1;
+                    tracing::error!(error = %e, "PowerShell command failed");
+                    results.push(serde_json::json!({
+                        "type": "powershell",
+                        "command": &script[..script.len().min(80)],
+                        "status": "failed",
+                        "error": e.to_string(),
+                    }));
+                    if stop_on_failure {
+                        break 'apply;
+                    }
+                }
+            }
+        }
+
+        for rename in &contract.file_renames {
+            match apply_file_rename(rename) {
+                Ok(()) => {
+                    succeeded += 1;
+                    results.push(serde_json::json!({
+                        "type": "file_rename",
+                        "source": rename.source,
+                        "target": rename.target,
+                        "status": "success",
+                    }));
+                }
+                Err(e) => {
+                    failed += 1;
+                    tracing::error!(source = rename.source.as_str(), target = rename.target.as_str(), error = %e, "File rename failed");
+                    results.push(serde_json::json!({
+                        "type": "file_rename",
+                        "source": rename.source,
+                        "target": rename.target,
+                        "status": "failed",
+                        "error": e.to_string(),
+                    }));
+                    if stop_on_failure {
+                        break 'apply;
+                    }
+                }
+            }
+        }
+
+        // Finished all sections without triggering stop_on_failure
+        break 'apply;
     }
 
     // ── Phase 4: Audit log ──────────────────────────────────────────────
 
-    let status = if failed == 0 {
+    let mut status = if failed == 0 {
         "success"
     } else if succeeded == 0 {
         "failed"
     } else {
         "partial"
     };
+
+    // ── Phase 5: Auto-rollback on failure ──────────────────────────────
+    // If any operation failed (and we're not in aggressive mode), restore
+    // the pre-execution snapshot so the system is never left in a partial
+    // state that the user has to reason about manually.
+    let mut rolled_back = false;
+    if failed > 0 && stop_on_failure {
+        tracing::warn!(
+            action_id = action_id,
+            snapshot_id = snapshot_id.as_str(),
+            succeeded = succeeded,
+            failed = failed,
+            "Auto-rolling back after failure"
+        );
+        match rollback::restore_snapshot(db, &snapshot_id) {
+            Ok(_) => {
+                rolled_back = true;
+                status = "rolled_back";
+                results.push(serde_json::json!({
+                    "type": "auto_rollback",
+                    "snapshotId": snapshot_id,
+                    "status": "success",
+                }));
+            }
+            Err(e) => {
+                tracing::error!(
+                    snapshot_id = snapshot_id.as_str(),
+                    error = %e,
+                    "Auto-rollback FAILED — system may be in partial state"
+                );
+                results.push(serde_json::json!({
+                    "type": "auto_rollback",
+                    "snapshotId": snapshot_id,
+                    "status": "failed",
+                    "error": e.to_string(),
+                }));
+            }
+        }
+    }
+    let _ = rolled_back; // reserved for future telemetry
 
     let now = chrono::Utc::now().to_rfc3339();
     let audit_id = uuid::Uuid::new_v4().to_string();

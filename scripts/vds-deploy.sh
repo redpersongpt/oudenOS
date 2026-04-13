@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ─── redcore VDS Production Deployment ──────────────────────────────────────
-# Target: Ubuntu 24.04 @ REDACTED_VDS_IP
+# Target: Ubuntu 24.04 VDS (set VDS_IP env var)
 # Deploys: apps/web (Next.js standalone) only
 # Domain: redcoreos.net
 #
@@ -14,7 +14,7 @@
 set -euo pipefail
 
 DOMAIN="redcoreos.net"
-CERTBOT_EMAIL="REDACTED_EMAIL"  # ← REPLACE THIS
+CERTBOT_EMAIL="${CERTBOT_EMAIL:?ERROR: Set CERTBOT_EMAIL environment variable}"
 REPO_URL="https://github.com/redpersongpt/redcoreECO.git"
 APP_DIR="/opt/redcore/app"
 DATA_DIR="/opt/redcore/data"
@@ -22,11 +22,6 @@ DOWNLOADS_DIR="/var/www/redcore-downloads"
 DEPLOY_USER="ubuntu"
 
 # ─── Validation ─────────────────────────────────────────────────────────────
-
-if [[ "$CERTBOT_EMAIL" == "REDACTED_EMAIL" ]]; then
-  echo "ERROR: Replace YOUR_EMAIL_HERE in this script with your real email."
-  exit 1
-fi
 
 if [[ "$EUID" -ne 0 ]]; then
   echo "ERROR: Run with sudo"
@@ -229,5 +224,5 @@ echo "  Database:  $DATA_DIR/production.db"
 echo "  Releases:  $DOWNLOADS_DIR/{os,tuning,archive}/"
 echo ""
 echo "  Upload installers:"
-echo "    scp file.exe ubuntu@REDACTED_VDS_IP:$DOWNLOADS_DIR/os/"
+echo "    scp file.exe ${VDS_USER}@${VDS_IP}:$DOWNLOADS_DIR/os/"
 echo ""

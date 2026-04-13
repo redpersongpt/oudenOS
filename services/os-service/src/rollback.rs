@@ -375,17 +375,36 @@ fn restore_power(prev: &PreviousValue) -> anyhow::Result<()> {
         if parts.len() == 2 {
             powershell::validate_safe_arg(parts[0], "power subgroup GUID")?;
             powershell::validate_safe_arg(parts[1], "power setting GUID")?;
-            let script = format!(
+
+            // Restore AC (plugged-in) value — critical path.
+            let ac_script = format!(
                 "powercfg /setacvalueindex scheme_current {} {} {}",
                 parts[0], parts[1], value
             );
-            let result = powershell::execute(&script)?;
-            if !result.success {
+            let ac_result = powershell::execute(&ac_script)?;
+            if !ac_result.success {
                 anyhow::bail!(
-                    "Failed to restore power setting '{}': {}",
+                    "Failed to restore AC power setting '{}': {}",
                     setting_path,
-                    result.stderr.trim()
+                    ac_result.stderr.trim()
                 );
+            }
+
+            // Restore DC (battery) value on laptops. A failure here is logged
+            // but not fatal — desktops have no DC profile and AC was the
+            // critical restore.
+            let dc_script = format!(
+                "powercfg /setdcvalueindex scheme_current {} {} {}",
+                parts[0], parts[1], value
+            );
+            if let Ok(dc_result) = powershell::execute(&dc_script) {
+                if !dc_result.success {
+                    tracing::warn!(
+                        setting_path = setting_path,
+                        stderr = dc_result.stderr.trim(),
+                        "DC power value restore returned non-success (ignored on desktops)"
+                    );
+                }
             }
         } else {
             anyhow::bail!("Invalid power setting path format: {}", setting_path);

@@ -10,6 +10,11 @@ import type {
 } from "./types.js";
 
 const ISSUER = "redcore-platform";
+// SECURITY: audience claims are required on all tokens to prevent confused
+// deputy / token-replay attacks across services. Keep these in sync with
+// apps/cloud-api/src/lib/jwt.ts.
+const AUDIENCE_ACCESS = "redcore-access";
+const AUDIENCE_REFRESH = "redcore-refresh";
 
 function getSecret(): Uint8Array {
   const secret = process.env.JWT_SECRET;
@@ -29,6 +34,7 @@ export async function signAccessToken(
     .setProtectedHeader({ alg: "HS256" })
     .setSubject(userId)
     .setIssuer(ISSUER)
+    .setAudience(AUDIENCE_ACCESS)
     .setIssuedAt()
     .setExpirationTime("15m")
     .sign(getSecret());
@@ -39,6 +45,7 @@ export async function signRefreshToken(userId: string): Promise<string> {
     .setProtectedHeader({ alg: "HS256" })
     .setSubject(userId)
     .setIssuer(ISSUER)
+    .setAudience(AUDIENCE_REFRESH)
     .setIssuedAt()
     .setExpirationTime("30d")
     .sign(getSecret());
@@ -51,6 +58,7 @@ export async function verifyAccessToken(
 ): Promise<VerifiedAccessToken> {
   const { payload } = await jwtVerify(token, getSecret(), {
     issuer: ISSUER,
+    audience: AUDIENCE_ACCESS,
   });
 
   if (payload.type !== "access") {
@@ -72,6 +80,7 @@ export async function verifyRefreshToken(
 ): Promise<VerifiedRefreshToken> {
   const { payload } = await jwtVerify(token, getSecret(), {
     issuer: ISSUER,
+    audience: AUDIENCE_REFRESH,
   });
 
   if (payload.type !== "refresh") {

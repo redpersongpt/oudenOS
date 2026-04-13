@@ -29,15 +29,28 @@ export async function POST(req: NextRequest) {
   }
 
   const tokenHash = hashPasswordResetToken(token);
-  const user = await prisma.user.findFirst({
+
+  // SECURITY: Atomically claim the reset token so it can only be used once.
+  // updateMany returns count 0 if another concurrent request already consumed
+  // it, eliminating the find-then-update race window.
+  const passwordHash = await bcrypt.hash(password, 12);
+
+  const claimed = await prisma.user.updateMany({
     where: {
       passwordResetToken: tokenHash,
       passwordResetExpiresAt: { gt: new Date() },
     },
-    select: { id: true },
+    data: {
+      passwordHash,
+      passwordChangedAt: new Date(),
+      passwordResetToken: null,
+      passwordResetExpiresAt: null,
+    },
   });
 
-  if (!user) {
+  if (claimed.count === 0) {
+    // Token not in local DB — fall back to cloud-api which owns the canonical
+    // user record. It performs the same atomic claim on its side.
     const cloudResponse = await callCloudApi<{ ok: true; message?: string }>("/auth/reset-password", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -53,18 +66,6 @@ export async function POST(req: NextRequest) {
       message: cloudResponse.data.message ?? "Password has been reset. You can sign in with your new password now.",
     });
   }
-
-  const passwordHash = await bcrypt.hash(password, 12);
-
-  await prisma.user.update({
-    where: { id: user.id },
-    data: {
-      passwordHash,
-      passwordChangedAt: new Date(),
-      passwordResetToken: null,
-      passwordResetExpiresAt: null,
-    },
-  });
 
   return NextResponse.json({
     ok: true,

@@ -28,7 +28,7 @@ declare -a forbidden_patterns=(
   "SENDGRID_API_KEY="
   "GOCSPX-"
   "apps\\.googleusercontent\\.com"
-  "REDACTED_EMAIL"
+  "[a-zA-Z0-9._%+-]+@gmail\\.com"
   "BUGHUNTER"
   "CLAUDE"
   "TODO"

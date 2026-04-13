@@ -1,7 +1,9 @@
 // In-process Rate Limiter
 // Fixed-window rate limiting keyed by IP (or custom key).
-// For multi-instance deployments, replace the Map store with a Redis backend
-// via @fastify/rate-limit + @fastify/redis.
+//
+// WARNING: This is a single-process store. If RATE_LIMIT_BACKEND is not set
+// to "memory" in a multi-instance deployment, the process will warn on start
+// — use @fastify/rate-limit + @fastify/redis for horizontal scaling.
 
 import type { FastifyRequest, FastifyReply } from "fastify";
 
@@ -11,6 +13,22 @@ interface Bucket {
 }
 
 const store = new Map<string, Bucket>();
+
+// Refuse to start silently in multi-instance prod. Operator must opt-in.
+if (
+  process.env.NODE_ENV === "production" &&
+  process.env.RATE_LIMIT_BACKEND !== "memory" &&
+  !process.env.REDIS_URL
+) {
+  // Not fatal — we still rate-limit per-instance — but loud enough that
+  // the operator sees it in boot logs.
+  // eslint-disable-next-line no-console
+  console.warn(
+    "[rate-limit] Using in-process Map store in production. " +
+      "Set RATE_LIMIT_BACKEND=memory to acknowledge, or configure REDIS_URL " +
+      "for a shared store across instances.",
+  );
+}
 
 // Sweep expired buckets every 5 minutes to prevent unbounded memory growth.
 const sweep = setInterval(() => {

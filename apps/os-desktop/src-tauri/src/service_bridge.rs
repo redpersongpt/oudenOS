@@ -181,12 +181,17 @@ impl ServiceBridge {
             return result;
         }
 
-        // Wait for OUR response, buffering any others that arrive first
+        // Wait for OUR response, buffering any others that arrive first.
+        //
+        // PERFORMANCE: Use try_recv + async sleep instead of blocking
+        // recv_timeout so the tokio runtime can schedule other tasks while
+        // we wait. Previously a busy `recv_timeout(100ms)` loop would block
+        // the tokio worker thread for up to 30s and starve other futures.
         let deadline = std::time::Instant::now() + REQUEST_TIMEOUT;
 
         loop {
             if let Some(ref rx) = self.response_rx {
-                match rx.recv_timeout(Duration::from_millis(100)) {
+                match rx.try_recv() {
                     Ok((resp_id, result)) => {
                         if resp_id == id {
                             return result;
@@ -194,12 +199,14 @@ impl ServiceBridge {
                         // Not our response — buffer it for the caller that owns it
                         self.buffered.insert(resp_id, result);
                     }
-                    Err(mpsc::RecvTimeoutError::Timeout) => {
+                    Err(mpsc::TryRecvError::Empty) => {
                         if std::time::Instant::now() > deadline {
                             return Err(format!("Service call '{method}' timed out after 30s"));
                         }
+                        // Yield to the tokio runtime so other tasks can progress.
+                        tokio::time::sleep(Duration::from_millis(10)).await;
                     }
-                    Err(mpsc::RecvTimeoutError::Disconnected) => {
+                    Err(mpsc::TryRecvError::Disconnected) => {
                         self.process = None;
                         return Err("Service process died".into());
                     }

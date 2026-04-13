@@ -174,37 +174,20 @@ export interface PersonalizationPreferences {
   transparency: boolean;
 }
 
-export function getProfilePersonalizationDefaults(profileId?: string | null): PersonalizationPreferences {
-  switch (profileId) {
-    case "work_pc":
-      return {
-        darkMode: true,
-        brandAccent: false,
-        wallpaper: true,
-        taskbarCleanup: false,
-        explorerCleanup: false,
-        transparency: false,
-      };
-    case "low_spec_system":
-    case "low_spec":
-      return {
-        darkMode: true,
-        brandAccent: false,
-        wallpaper: true,
-        taskbarCleanup: false,
-        explorerCleanup: false,
-        transparency: false,
-      };
-    default:
-      return {
-        darkMode: true,
-        brandAccent: false,
-        wallpaper: true,
-        taskbarCleanup: false,
-        explorerCleanup: false,
-        transparency: false,
-      };
-  }
+export function getProfilePersonalizationDefaults(
+  // profileId is currently unused — all profiles share the same defaults.
+  // Kept as a parameter so future profile-specific defaults can be added
+  // without touching callers.
+  _profileId?: string | null,
+): PersonalizationPreferences {
+  return {
+    darkMode: true,
+    brandAccent: false,
+    wallpaper: true,
+    taskbarCleanup: false,
+    explorerCleanup: false,
+    transparency: false,
+  };
 }
 
 export const DEFAULT_PERSONALIZATION: PersonalizationPreferences = getProfilePersonalizationDefaults(null);
@@ -527,13 +510,16 @@ export const useWizardStore = create<WizardState>()(persist((set, get) => ({
   },
 }), {
   name: "oudenOS-wizard-state",
-  // Only persist the data needed to survive a reboot/relaunch
+  // Only persist the data needed to survive a reboot/relaunch.
+  // resolvedPlaybook must be persisted so reboot-resume has the action list
+  // after the app restarts mid-execution.
   partialize: (state) => ({
     currentStep: state.currentStep,
     steps: state.steps,
     stepReadiness: state.stepReadiness,
     detectedProfile: state.detectedProfile,
     playbookPreset: state.playbookPreset,
+    resolvedPlaybook: state.resolvedPlaybook,
     executionResult: state.executionResult,
     personalization: state.personalization,
   }),

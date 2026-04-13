@@ -18,16 +18,22 @@ const googleConfigured =
   hasRealValue(process.env.GOOGLE_CLIENT_ID ?? webEnv("GOOGLE_CLIENT_ID")) &&
   hasRealValue(process.env.GOOGLE_CLIENT_SECRET ?? webEnv("GOOGLE_CLIENT_SECRET"));
 
-console.log("[auth-config]", {
-  googleConfigured,
-  googleClientIdLength:
-    (process.env.GOOGLE_CLIENT_ID ?? webEnv("GOOGLE_CLIENT_ID"))?.length ?? 0,
-  googleClientSecretLength:
-    (process.env.GOOGLE_CLIENT_SECRET ?? webEnv("GOOGLE_CLIENT_SECRET"))?.length ?? 0,
-  nextauthUrl: process.env.NEXTAUTH_URL ?? null,
-});
+if (process.env.NODE_ENV !== "production") {
+  console.log("[auth-config]", {
+    googleConfigured,
+    googleClientIdLength:
+      (process.env.GOOGLE_CLIENT_ID ?? webEnv("GOOGLE_CLIENT_ID"))?.length ?? 0,
+    googleClientSecretLength:
+      (process.env.GOOGLE_CLIENT_SECRET ?? webEnv("GOOGLE_CLIENT_SECRET"))?.length ?? 0,
+    nextauthUrl: process.env.NEXTAUTH_URL ?? null,
+  });
+}
 
 function webEnv(key: string): string | undefined {
+  // Dev-only fallback for .env.local lookup. In production we rely exclusively
+  // on process.env to avoid reading from an unpredictable relative path
+  // (PM2/Docker CWDs differ) which could yield another app's secrets.
+  if (process.env.NODE_ENV === "production") return undefined;
   try {
     const filePath = path.resolve(process.cwd(), "../../../../.env.local");
     if (!fs.existsSync(filePath)) return undefined;
@@ -54,10 +60,12 @@ function webEnv(key: string): string | undefined {
   return undefined;
 }
 
+const isDev = process.env.NODE_ENV !== "production";
+
 export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: PrismaAdapter(prisma),
   trustHost: true,
-  debug: true,
+  debug: isDev,
   logger: {
     error(error) {
       console.error("[auth][error]", error);
@@ -66,7 +74,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       console.warn("[auth][warn]", ...message);
     },
     debug(...message) {
-      console.debug("[auth][debug]", ...message);
+      if (isDev) console.debug("[auth][debug]", ...message);
     },
   },
   secret: process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET,
