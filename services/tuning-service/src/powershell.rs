@@ -24,7 +24,7 @@ pub fn escape_ps_string(s: &str) -> String {
 /// Rejects strings containing characters that could break out of quoting context:
 /// semicolons, backticks, dollar signs, pipe, ampersand, parentheses, newlines.
 /// Returns the original string if safe, or an error describing the rejected char.
-pub fn validate_safe_arg(s: &str, context: &str) -> anyhow::Result<&str> {
+pub fn validate_safe_arg<'a>(s: &'a str, context: &str) -> anyhow::Result<&'a str> {
     const DANGEROUS: &[char] = &[';', '`', '$', '|', '&', '(', ')', '\n', '\r'];
     for ch in DANGEROUS {
         if s.contains(*ch) {
