@@ -206,13 +206,14 @@ impl ActionExecutionContract {
         let summary = summarize_mutations(&mutations);
         let rollback = analyze_rollback(self, &mutations);
 
-        if self.execution_mode.is_empty() {
-            self.execution_mode = if self.manual_only || summary.total == 0 {
-                "manual".to_string()
-            } else {
-                "automatic".to_string()
-            };
-        }
+        // SECURITY: Always override execution_mode to a known-safe value.
+        // A crafted playbook YAML could inject "aggressive" to bypass
+        // stop_on_failure and auto-rollback in executor.rs.
+        self.execution_mode = if self.manual_only || summary.total == 0 {
+            "manual".to_string()
+        } else {
+            "automatic".to_string()
+        };
 
         if summary.total == 0 {
             self.manual_only = true;

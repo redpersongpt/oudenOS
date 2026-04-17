@@ -2,9 +2,14 @@ mod apbx;
 mod service_bridge;
 
 use service_bridge::ServiceBridge;
+use std::sync::atomic::{AtomicU32, Ordering};
 use std::sync::Arc;
 use tauri::{Emitter, Manager};
 use tokio::sync::Mutex;
+
+// Session-wide log call counter (prevents disk exhaustion via repeated calls)
+static LOG_CALLS: AtomicU32 = AtomicU32::new(0);
+const MAX_LOG_CALLS_PER_SESSION: u32 = 10;
 
 // Managed state: the service bridge singleton
 struct AppState {
@@ -19,23 +24,24 @@ struct AppState {
 // the privileged service. Any method not in this list is rejected at the
 // Tauri boundary so a compromised renderer (e.g. via XSS in playbook data)
 // cannot reach arbitrary privileged handlers.
+// Sync check: every entry here MUST have a handler in os-service/src/ipc.rs
+// dispatch(), and every renderer invoke() call MUST be listed here.
+// Dead entries (no handler) or missing entries (handler exists, not listed)
+// indicate a desync — audit on any change.
 const ALLOWED_SERVICE_METHODS: &[&str] = &[
     // System / status
     "system.status",
-    "system.info",
+    "system.reboot",
     // Assessment + classification + planning pipeline
     "assess.full",
-    "assess.system",
     "classify.machine",
     "transform.plan",
     "transform.getActions",
     "pipeline.assessClassifyPlan",
     // Playbook resolution
     "playbook.resolve",
-    "playbook.list",
     // Questionnaire
     "questionnaire.resolve",
-    "questionnaire.evaluate",
     // Personalization
     "personalize.options",
     "personalize.apply",
@@ -45,7 +51,8 @@ const ALLOWED_SERVICE_METHODS: &[&str] = &[
     "ledger.createPlan",
     "ledger.markStarted",
     "ledger.recordResult",
-    "ledger.getPlan",
+    "ledger.completePlan",
+    "ledger.query",
     // Rollback
     "rollback.list",
     "rollback.restore",
@@ -111,6 +118,15 @@ async fn save_log(content: String) -> Result<serde_json::Value, String> {
         return Ok(serde_json::json!({
             "ok": false,
             "error": format!("Log content exceeds maximum size of {} bytes", MAX_LOG_SIZE)
+        }));
+    }
+
+    // SECURITY: Rate limit to prevent disk exhaustion via repeated calls.
+    let call_count = LOG_CALLS.fetch_add(1, Ordering::Relaxed);
+    if call_count >= MAX_LOG_CALLS_PER_SESSION {
+        return Ok(serde_json::json!({
+            "ok": false,
+            "error": format!("Log call limit reached ({} per session)", MAX_LOG_CALLS_PER_SESSION)
         }));
     }
 

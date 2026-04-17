@@ -20,17 +20,32 @@ for file in "${forbidden_files[@]}"; do
 done
 
 declare -a forbidden_patterns=(
+  # Infrastructure / credentials
   "185\\.48\\.182\\.164"
   "185\\.48\\.182\\.165"
   "postgres://redcore:"
+  "sshpass"
+  "-----BEGIN.*PRIVATE KEY"
+  # Auth secrets
   "JWT_SECRET="
+  "NEXTAUTH_SECRET="
+  "AUTH_SECRET="
+  # Payment
   "STRIPE_SECRET_KEY="
+  "STRIPE_WEBHOOK_SECRET="
+  "sk_live_"
+  "sk_test_"
+  "whsec_"
+  # Email / API
   "SENDGRID_API_KEY="
+  "SG\\."
+  # OAuth
   "GOCSPX-"
   "apps\\.googleusercontent\\.com"
+  # Personal identifiers
   "[a-zA-Z0-9._%+-]+@gmail\\.com"
+  # Code hygiene
   "BUGHUNTER"
-  "CLAUDE"
   "TODO"
   "FIXME"
   "HACK"

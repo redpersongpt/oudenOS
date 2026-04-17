@@ -27,6 +27,9 @@ on:
       - 'scripts/build-and-publish-os-release.sh'
       - '.github/workflows/build-installers.yml'
 
+permissions:
+  contents: read
+
 concurrency:
   group: build-installers-${{ github.ref }}
   cancel-in-progress: true
@@ -352,9 +355,9 @@ jobs:
 
       - name: Upload installer (before manifest)
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.VDS_USER }}@${{ secrets.VDS_IP }} "mkdir -p /var/www/redcore-downloads/os/releases /var/www/redcore-downloads/os/archive"
-          scp -o StrictHostKeyChecking=no ./artifacts/os/publish/redcore-os-setup.exe ${{ secrets.VDS_USER }}@${{ secrets.VDS_IP }}:/var/www/redcore-downloads/os/
-          scp -o StrictHostKeyChecking=no "./artifacts/os/publish/${{ steps.prep.outputs.RELEASE_NAME }}" ${{ secrets.VDS_USER }}@${{ secrets.VDS_IP }}:/var/www/redcore-downloads/os/releases/
+          ssh ${{ secrets.VDS_USER }}@${{ secrets.VDS_IP }} "mkdir -p /var/www/redcore-downloads/os/releases /var/www/redcore-downloads/os/archive"
+          scp ./artifacts/os/publish/redcore-os-setup.exe ${{ secrets.VDS_USER }}@${{ secrets.VDS_IP }}:/var/www/redcore-downloads/os/
+          scp "./artifacts/os/publish/${{ steps.prep.outputs.RELEASE_NAME }}" ${{ secrets.VDS_USER }}@${{ secrets.VDS_IP }}:/var/www/redcore-downloads/os/releases/
 
       - name: Verify installer reachable over HTTPS
         run: |
@@ -389,7 +392,7 @@ jobs:
 
       - name: Publish latest.json (after installer verified)
         run: |
-          scp -o StrictHostKeyChecking=no ./artifacts/os/publish/latest.json ${{ secrets.VDS_USER }}@${{ secrets.VDS_IP }}:/var/www/redcore-downloads/os/
+          scp ./artifacts/os/publish/latest.json ${{ secrets.VDS_USER }}@${{ secrets.VDS_IP }}:/var/www/redcore-downloads/os/
 
       - name: Verify latest.json reachable and coherent
         run: |

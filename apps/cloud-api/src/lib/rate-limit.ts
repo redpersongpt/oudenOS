@@ -57,10 +57,10 @@ function increment(key: string, max: number, windowMs: number): { allowed: boole
 }
 
 function clientKey(request: FastifyRequest): string {
-  // Respect X-Forwarded-For set by a trusted reverse proxy (nginx, Caddy, etc.)
-  const forwarded = request.headers["x-forwarded-for"];
-  const ip = (Array.isArray(forwarded) ? forwarded[0] : forwarded?.split(",")[0]?.trim()) ?? request.ip;
-  return ip;
+  // SECURITY: Use request.ip which respects Fastify's trustProxy config.
+  // Never parse X-Forwarded-For directly — attackers can forge the header
+  // to get a fresh rate-limit bucket on every request, bypassing all limits.
+  return request.ip;
 }
 
 /**

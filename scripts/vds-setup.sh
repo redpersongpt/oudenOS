@@ -46,8 +46,8 @@ fi
 DB_PASS=$(openssl rand -hex 16)
 sudo -u postgres psql -c "CREATE USER redcore WITH PASSWORD '${DB_PASS}' CREATEDB;" 2>/dev/null || echo "  User already exists"
 sudo -u postgres psql -c "CREATE DATABASE redcore OWNER redcore;" 2>/dev/null || echo "  Database already exists"
-echo "  Database: redcore, User: redcore, Password: ${DB_PASS}"
-echo "  SAVE THIS PASSWORD — it will be written to .env"
+echo "  Database: redcore, User: redcore"
+echo "  Password will be written to .env (not logged for security)"
 
 # ─── 3. Node.js 22 LTS ────────────────────────────────────────────────────
 echo "── 3. Node.js 22 ──"
