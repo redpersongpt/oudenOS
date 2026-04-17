@@ -571,6 +571,10 @@ pub fn execute_action(
                     error = %e,
                     "Auto-rollback FAILED — system may be in partial state"
                 );
+                // SAFETY: Distinct status so the renderer treats this as a
+                // hard stop requiring manual intervention, not a resumable
+                // partial state.
+                status = "rollback_failed";
                 results.push(serde_json::json!({
                     "type": "auto_rollback",
                     "snapshotId": snapshot_id,

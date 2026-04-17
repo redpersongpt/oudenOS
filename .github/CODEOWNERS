@@ -1,0 +1,18 @@
+# Deploy infrastructure — requires owner review
+scripts/deploy*.sh       @redpersongpt
+scripts/vds-*.sh         @redpersongpt
+.github/workflows/       @redpersongpt
+ecosystem.config.cjs     @redpersongpt
+render.yaml              @redpersongpt
+
+# Security-sensitive
+scripts/check-redcore-os-open-source.sh  @redpersongpt
+packages/auth-core/                      @redpersongpt
+apps/cloud-api/src/lib/jwt.ts            @redpersongpt
+apps/cloud-api/src/lib/rate-limit.ts     @redpersongpt
+
+# Privileged service boundary
+services/os-service/src/ipc.rs           @redpersongpt
+services/os-service/src/executor.rs      @redpersongpt
+services/tuning-service/src/ipc.rs       @redpersongpt
+apps/os-desktop/src-tauri/src/lib.rs     @redpersongpt
