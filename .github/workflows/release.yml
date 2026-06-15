@@ -79,12 +79,9 @@ jobs:
         working-directory: apps/os-desktop
         run: pnpm build
 
-      - name: Install Tauri CLI
-        run: cargo install tauri-cli --version "^2" --locked
-
       - name: Build Tauri installer
         working-directory: apps/os-desktop
-        run: cargo tauri build --config src-tauri/tauri.conf.production.json
+        run: pnpm tauri:build
 
       - name: Prepare release asset
         id: asset

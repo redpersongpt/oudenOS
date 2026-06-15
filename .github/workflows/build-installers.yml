@@ -191,9 +191,6 @@ jobs:
         with:
           targets: x86_64-pc-windows-msvc
 
-      - name: Install Tauri CLI
-        run: cargo install tauri-cli --version "^2" --locked
-
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
@@ -214,7 +211,7 @@ jobs:
 
       - name: Build Tauri installer
         working-directory: apps/os-desktop
-        run: cargo tauri build --config src-tauri/tauri.conf.production.json
+        run: pnpm tauri:build
 
       - name: Copy installer to stable name
         shell: pwsh

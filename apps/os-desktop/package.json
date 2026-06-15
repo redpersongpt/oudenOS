@@ -11,9 +11,9 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "tauri:dev": "cargo tauri dev --config src-tauri/tauri.conf.json",
+    "tauri:dev": "tauri dev --config src-tauri/tauri.conf.json",
     "demo:mac": "node ../../scripts/run-os-mac-demo.mjs",
-    "tauri:build": "cargo tauri build --config src-tauri/tauri.conf.production.json",
+    "tauri:build": "tauri build --config src-tauri/tauri.conf.production.json",
     "audit:questionnaire": "node test/questionnaire-invariants.mjs",
     "proof:production": "node test/production-proof.mjs",
     "typecheck": "tsc --noEmit"
@@ -27,6 +27,7 @@
     "zustand": "^4.5.0"
   },
   "devDependencies": {
+    "@tauri-apps/cli": "^2",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@vitejs/plugin-react": "^4.3.0",
