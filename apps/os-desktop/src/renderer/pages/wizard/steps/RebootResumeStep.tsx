@@ -166,7 +166,11 @@ export function RebootResumeStep() {
         // Execute the action via the Rust service
         const execResult = await serviceCall<Record<string, unknown>>("execute.applyAction", {
           actionId: action.actionId,
-          ...(action.expertOnly ? { expertConfirmed: true } : {}),
+          // Resume continues a plan the user already reviewed and acknowledged at
+          // FinalReview (including its high-risk/expert actions) before the reboot,
+          // so confirm every resumed action — the service backstop now also gates
+          // risk "high"/"extreme", not just expert-only.
+          expertConfirmed: true,
           journalContext: planId ? {
             package: {
               planId,

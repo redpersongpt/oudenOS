@@ -92,6 +92,7 @@ interface ExecutableAction {
   id: string;
   name: string;
   phase: string;
+  risk: string;
   provenance: ActionDecisionProvenance | null;
 }
 
@@ -292,6 +293,7 @@ export function ExecutionStep() {
             id: action.id,
             name: action.name,
             phase: phase.name,
+            risk: action.risk,
             provenance: provenanceByAction.get(action.id) ?? null,
           });
         }
@@ -426,10 +428,17 @@ export function ExecutionStep() {
 
         let status: "applied" | "skipped" | "failed" = "failed";
         let errorMessage: string | null = null;
-        const isExpert = action.provenance?.expertOnly ?? false;
+        // The service backstop requires explicit confirmation for expert-only,
+        // high, and extreme risk actions. These were already acknowledged at the
+        // FinalReview gate (which blocks Continue until the checkbox is ticked),
+        // so confirm them here.
+        const requiresConfirmation =
+          (action.provenance?.expertOnly ?? false) ||
+          action.risk === "high" ||
+          action.risk === "extreme";
         const result = await serviceCall<Record<string, unknown>>("execute.applyAction", {
           actionId: action.id,
-          ...(isExpert ? { expertConfirmed: true } : {}),
+          ...(requiresConfirmation ? { expertConfirmed: true } : {}),
           journalContext: action.provenance
             ? buildExecutionJournalContext(playbook, action.provenance, detectedProfile?.id)
             : undefined,

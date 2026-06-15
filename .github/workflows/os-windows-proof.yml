@@ -771,7 +771,10 @@ jobs:
                   $chainPass = $true
                   foreach ($actionId in $chainActions) {
                       Start-Sleep -Milliseconds 500
-                      $r = Send-Rpc "execute.applyAction" @{ actionId = $actionId }
+                      # Chain actions are resolved Included actions (aggressive preset may
+                      # include risk:"high" items); pass expertConfirmed so the apply guard
+                      # (which now gates high/extreme/expert) authorizes the pipeline test.
+                      $r = Send-Rpc "execute.applyAction" @{ actionId = $actionId; expertConfirmed = $true }
                       if ($r -and $r.result -and ($r.result.status -eq "success" -or $r.result.status -eq "partial")) {
                           Write-Output "    PASS: execute $actionId (status=$($r.result.status))"
                       } else {

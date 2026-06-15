@@ -451,7 +451,7 @@ async fn dispatch(db: &Database, req: &RpcRequest, start_time: Instant) -> RpcRe
                 .get("risk")
                 .and_then(|v| v.as_str())
                 .unwrap_or("low");
-            if is_expert || risk == "extreme" {
+            if is_expert || risk == "high" || risk == "extreme" {
                 let expert_confirmed = params
                     .get("expertConfirmed")
                     .and_then(|v| v.as_bool())
@@ -461,8 +461,8 @@ async fn dispatch(db: &Database, req: &RpcRequest, start_time: Instant) -> RpcRe
                         id,
                         -22,
                         format!(
-                            "Action '{}' is expert-only (risk: {}). Requires explicit confirmation.",
-                            action_id, risk
+                            "Action '{}' is high-risk (risk: {}, expertOnly: {}). Requires explicit confirmation.",
+                            action_id, risk, is_expert
                         ),
                     );
                 }
