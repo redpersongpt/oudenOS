@@ -12,6 +12,7 @@
 // Exit code 0 = valid, 1 = invalid or missing
 
 import { readdirSync, readFileSync, existsSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 import { join } from "node:path";
 import {
   WINDOWS_PROOF_ARTIFACTS,
@@ -24,7 +25,7 @@ import {
   getEnvironmentCapabilities,
 } from "./lib/evidence-contract.mjs";
 
-const ROOT = new URL("..", import.meta.url).pathname.replace(/\/$/, "");
+const ROOT = fileURLToPath(new URL("..", import.meta.url)).replace(/[\\/]+$/, "");
 const args = process.argv.slice(2);
 
 let proofDir = null;

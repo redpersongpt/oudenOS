@@ -18,6 +18,7 @@
 // Exit code 0 = clear to release, 1 = blocked
 
 import { readdirSync, readFileSync, existsSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 import { join } from "node:path";
 import { execSync } from "node:child_process";
 import {
@@ -37,7 +38,7 @@ import {
   MANIFEST_FILENAME,
 } from "./lib/proof-provenance.mjs";
 
-const ROOT = new URL("..", import.meta.url).pathname.replace(/\/$/, "");
+const ROOT = fileURLToPath(new URL("..", import.meta.url)).replace(/[\\/]+$/, "");
 const PROOF_DIR = join(ROOT, "artifacts", "windows-proof");
 const REBOOT_PROOF_DIR = join(ROOT, "artifacts", "reboot-proof");
 

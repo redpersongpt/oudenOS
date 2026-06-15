@@ -22,9 +22,10 @@
 // Exit code 0 = pass, 1 = failure
 
 import { spawn } from "node:child_process";
+import { fileURLToPath } from "node:url";
 import { resolve } from "node:path";
 
-const ROOT = new URL("..", import.meta.url).pathname.replace(/\/$/, "");
+const ROOT = fileURLToPath(new URL("..", import.meta.url)).replace(/[\\/]+$/, "");
 
 // Find the binary — check common locations
 const binaryArg = process.argv[2];

@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 
 import fs from "node:fs";
+import { fileURLToPath } from "node:url";
 import path from "node:path";
 
-const repoRoot = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..", "..", "..");
+const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
 const strategyPath = path.join(
   repoRoot,
   "apps/os-desktop/src/renderer/pages/wizard/steps/PlaybookStrategyStep.tsx",
@@ -31,9 +32,12 @@ const overridesSource = fs.readFileSync(overridesPath, "utf8");
 const reviewSource = fs.readFileSync(reviewPath, "utf8");
 const fallback = JSON.parse(fs.readFileSync(fallbackPath, "utf8"));
 
-const defaultAnswersMatch = storeSource.match(/export const DEFAULT_QUESTIONNAIRE_ANSWERS:[\s\S]*?=\s*\{([\s\S]*?)\n\};/);
+// Match both the populated multi-line form and the valid empty/inline form
+// (`= {};`). Defaults are intentionally empty now — answers are populated
+// dynamically by the store — so an empty body yields zero keys, not a fatal error.
+const defaultAnswersMatch = storeSource.match(/export const DEFAULT_QUESTIONNAIRE_ANSWERS\s*:[\s\S]*?=\s*\{([\s\S]*?)\}\s*;/);
 if (!defaultAnswersMatch) {
-  console.error(JSON.stringify({ error: "Could not locate DEFAULT_QUESTIONNAIRE_ANSWERS block" }, null, 2));
+  console.error(JSON.stringify({ error: "Could not locate DEFAULT_QUESTIONNAIRE_ANSWERS declaration" }, null, 2));
   process.exit(1);
 }
 
@@ -93,16 +97,26 @@ const nonExecutableOverrideIds = overrideActionIds.filter((id) =>
     .some((action) => action.id === id && (!Array.isArray(action.executionKinds) || action.executionKinds.length === 0)),
 );
 
-const requiredStrategyGuards = [
-  { key: "disableRecall", pattern: /"disableRecall"[\s\S]*(ctx\.windowsBuild >= 26100|minWindowsBuild:\s*26100)/ },
-  { key: "disableClickToDo", pattern: /"disableClickToDo"[\s\S]*(ctx\.windowsBuild >= 26100|minWindowsBuild:\s*26100)/ },
-  { key: "enableEndTask", pattern: /"enableEndTask"[\s\S]*(ctx\.windowsBuild >= 22631|minWindowsBuild:\s*22631)/ },
+// Build-gating moved from inline client-side guards (old PlaybookStrategyStep.tsx)
+// to the data-driven playbook layer: each build-specific action carries
+// minWindowsBuild and is enforced server-side by the Rust resolver
+// (services/os-service/src/playbook/resolver.rs, covered by
+// test_build_gated_actions_resolve_by_windows_build). Verify the gate exists on
+// the actual actions rather than scanning obsolete TSX source.
+const requiredActionBuildGates = [
+  { actionId: "privacy.disable-recall", minBuild: 26100 },     // Windows Recall — 24H2+
+  { actionId: "privacy.disable-click-to-do", minBuild: 26100 }, // Click to Do — 24H2+
+  { actionId: "shell.enable-end-task", minBuild: 22631 },       // End Task — 22H2+
 ];
-
-const combinedSource = strategySource + "\n" + fs.readFileSync(overridesPath, "utf8");
-const missingStrategyGuards = requiredStrategyGuards
-  .filter(({ pattern }) => !pattern.test(combinedSource))
-  .map(({ key }) => key);
+const fallbackActionsById = new Map(
+  fallback.phases.flatMap((phase) => phase.actions.map((action) => [action.id, action])),
+);
+const missingStrategyGuards = requiredActionBuildGates
+  .filter(({ actionId, minBuild }) => {
+    const action = fallbackActionsById.get(actionId);
+    return !action || action.minWindowsBuild !== minBuild;
+  })
+  .map(({ actionId }) => actionId);
 
 const missingReviewBuildPropagation =
   !/const windowsBuild = detectedProfile\?\.windowsBuild \?\? 22631;/.test(reviewSource) ||

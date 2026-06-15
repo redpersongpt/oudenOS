@@ -40,25 +40,25 @@ jobs:
         run: choco install sqlite -y --no-progress
 
       - name: Cargo build
-        working-directory: apps/service-core
+        working-directory: services/tuning-service
         run: cargo build 2>&1
 
       - name: Cargo test
-        working-directory: apps/service-core
+        working-directory: services/tuning-service
         run: cargo test -- --nocapture 2>&1
 
       - name: pnpm install
         run: pnpm install
 
       - name: Vite build
-        working-directory: apps/desktop
+        working-directory: apps/tuning-desktop
         run: pnpm exec vite build
 
       - name: Run IPC proof on Windows
         shell: pwsh
         run: |
           $ErrorActionPreference = "Continue"
-          $servicePath = "apps\service-core\target\debug\oudenos-tuning-service.exe"
+          $servicePath = "services\tuning-service\target\debug\oudenos-tuning-service.exe"
           $psi = New-Object System.Diagnostics.ProcessStartInfo
           $psi.FileName = (Resolve-Path $servicePath).Path
           $psi.RedirectStandardInput = $true
@@ -676,7 +676,7 @@ jobs:
           }
           if (-not $esbuild) { Write-Error "esbuild not found"; exit 1 }
           Write-Output "esbuild: $($esbuild.FullName)"
-          & $esbuild.FullName apps/desktop/src/preload/index.ts --bundle --platform=node --target=node20 --outfile=test-results/preload-compiled.js --external:electron
+          & $esbuild.FullName apps/tuning-desktop/src/preload/index.ts --bundle --platform=node --target=node20 --outfile=test-results/preload-compiled.js --external:electron
           Write-Output "Preload compiled: test-results/preload-compiled.js ($((Get-Item 'test-results/preload-compiled.js').Length) bytes)"
 
       - name: Electron runtime smoke test
@@ -696,7 +696,7 @@ jobs:
           $electronBin = $null
           $candidates = @(
               "node_modules\.bin\electron.cmd",
-              "apps\desktop\node_modules\.bin\electron.cmd",
+              "apps\tuning-desktop\node_modules\.bin\electron.cmd",
               "node_modules\electron\dist\electron.exe"
           )
           foreach ($c in $candidates) {
@@ -706,10 +706,10 @@ jobs:
               # Fallback: use pnpm exec
               Write-Output "Using pnpm exec electron..."
               $electronBin = "pnpm"
-              $electronArgs = "exec", "electron", "--disable-gpu", "--no-sandbox", "apps/desktop/test/electron-smoke.mjs"
+              $electronArgs = "exec", "electron", "--disable-gpu", "--no-sandbox", "apps/tuning-desktop/test/electron-smoke.mjs"
           } else {
               Write-Output "Electron: $electronBin"
-              $electronArgs = "--disable-gpu", "--no-sandbox", "apps/desktop/test/electron-smoke.mjs"
+              $electronArgs = "--disable-gpu", "--no-sandbox", "apps/tuning-desktop/test/electron-smoke.mjs"
           }
 
           $proc = Start-Process -FilePath $electronBin `

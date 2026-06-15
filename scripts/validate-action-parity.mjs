@@ -23,9 +23,10 @@
 // Integrated into: pnpm verify (runs alongside typecheck)
 
 import { readFileSync, readdirSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 import { join, relative } from "node:path";
 
-const ROOT = new URL("..", import.meta.url).pathname.replace(/\/$/, "");
+const ROOT = fileURLToPath(new URL("..", import.meta.url)).replace(/[\\/]+$/, "");
 const PLAYBOOK_DIR = join(ROOT, "playbooks");
 const QUESTION_MODEL = join(ROOT, "apps/os-desktop/src/renderer/lib/wizard-question-model.ts");
 const DECISIONS_STORE = join(ROOT, "apps/os-desktop/src/renderer/stores/decisions-store.ts");

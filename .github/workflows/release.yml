@@ -56,18 +56,18 @@ jobs:
         uses: pnpm/action-setup@v4
 
       - name: Cargo build (release)
-        working-directory: apps/service-core
+        working-directory: services/tuning-service
         run: cargo build --release
 
       - name: Cargo test
-        working-directory: apps/service-core
+        working-directory: services/tuning-service
         run: cargo test
 
       - name: pnpm install
         run: pnpm install
 
       - name: Vite build
-        working-directory: apps/desktop
+        working-directory: apps/tuning-desktop
         run: pnpm exec vite build
 
       - name: Determine version
@@ -102,7 +102,7 @@ jobs:
 
             ![Repobeats](https://repobeats.axiom.co/api/embed/d3501dcf0fd81b97796a54adfb2658582ad6b97e.svg "Repobeats analytics image")
           files: |
-            apps/service-core/target/release/oudenos-tuning-service.exe
+            services/tuning-service/target/release/oudenos-tuning-service.exe
           draft: false
           prerelease: ${{ contains(steps.version.outputs.VERSION, 'alpha') || contains(steps.version.outputs.VERSION, 'beta') || contains(steps.version.outputs.VERSION, 'rc') }}
         env:

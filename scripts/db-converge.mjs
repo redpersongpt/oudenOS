@@ -21,10 +21,11 @@
 //   1 = failed / DB incompatible / migration error
 
 import { readFileSync, existsSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 import { execSync } from "node:child_process";
 import { join } from "node:path";
 
-const ROOT = new URL("..", import.meta.url).pathname.replace(/\/$/, "");
+const ROOT = fileURLToPath(new URL("..", import.meta.url)).replace(/[\\/]+$/, "");
 const MIGRATION_FILE = join(ROOT, "packages/db/migrations/001_schema_convergence.sql");
 
 const args = process.argv.slice(2);
