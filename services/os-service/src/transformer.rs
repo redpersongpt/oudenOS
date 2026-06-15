@@ -3224,7 +3224,7 @@ fn embedded_actions() -> Vec<Value> {
             "name": "Disable SmartScreen Filter",
             "description": "Disable the Windows SmartScreen filter that checks downloaded files and visited websites against Microsoft's reputation database.",
             "rationale": "SmartScreen sends file hashes and URLs to Microsoft servers for reputation checks. Disabling it removes this telemetry and network latency at the cost of reduced download protection.",
-            "risk": "medium",
+            "risk": "high",
             "tier": "free",
             "requiresReboot": false,
             "reversible": true,

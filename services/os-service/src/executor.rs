@@ -1414,13 +1414,46 @@ mod tests {
 
     #[test]
     fn shell_coupled_packages_stay_blocked() {
-        assert!(is_shell_coupled_package("Microsoft.Windows.Search"));
+        // The FULL shell-coupled package set. Asserting every entry locks the
+        // list against accidental shrinkage: removing any name from the const
+        // makes is_shell_coupled_package() return false for it and fails here.
+        for pkg in [
+            "Microsoft.Windows.ShellExperienceHost",
+            "Microsoft.Windows.StartMenuExperienceHost",
+            "Microsoft.Windows.Search",
+            "Microsoft.Windows.ContentDeliveryManager",
+            "Microsoft.Windows.CloudExperienceHost",
+            "Microsoft.Windows.SecHealthUI",
+            "Microsoft.AAD.BrokerPlugin",
+            "Microsoft.AccountsControl",
+            "Microsoft.LockApp",
+            "Microsoft.Windows.Apprep.ChxApp",
+            "Microsoft.Windows.AssignedAccessLockApp",
+            "Microsoft.Windows.ParentalControls",
+            "Microsoft.Windows.PeopleExperienceHost",
+            "Microsoft.Windows.PinningConfirmationDialog",
+            "Microsoft.Windows.SecureAssessmentBrowser",
+            "Microsoft.Windows.XGpuEjectDialog",
+            "MicrosoftWindows.Client.WebExperience",
+            "MicrosoftWindows.Client.CBS",
+            "Microsoft.Windows.CrossDeviceResume",
+            "Microsoft.MicrosoftEdge",
+            "windows.immersivecontrolpanel",
+            "Windows.PrintDialog",
+            "Windows.CBSPreview",
+            "MicrosoftWindows.UndockedDevKit",
+            "NcsiUwpApp",
+        ] {
+            assert!(
+                is_shell_coupled_package(pkg),
+                "{pkg} must stay shell-coupled (blocked)"
+            );
+        }
+        // Case-insensitive match still holds.
         assert!(is_shell_coupled_package(
             "microsoft.windows.shellexperiencehost"
         ));
-        assert!(is_shell_coupled_package(
-            "MicrosoftWindows.Client.WebExperience"
-        ));
+        // A normal app must NOT be treated as shell-coupled.
         assert!(!is_shell_coupled_package("Microsoft.WindowsCalculator"));
     }
 
@@ -1437,25 +1470,55 @@ mod tests {
     #[test]
     fn hard_protected_shell_services_are_all_covered() {
         // The full shell/login/AppX-infrastructure set that must never be
-        // disabled by oudenOS. (explorer.exe / SearchHost / RuntimeBroker /
+        // disabled by oudenOS. Every entry of PROTECTED_SERVICES is asserted so
+        // the list is locked against accidental shrinkage: dropping any name
+        // from the const makes is_protected_service() return false for it and
+        // fails here. (explorer.exe / SearchHost / RuntimeBroker /
         // ApplicationFrameHost are processes, not services — guarded by the
         // post-apply shell health check, not this list.)
         for svc in [
-            "AppXSvc",
-            "StateRepository",
-            "AppInfo",
-            "EventLog",
+            "DcomLaunch",
             "RpcSs",
+            "RpcEptMapper",
+            "DPS",
+            "Themes",
+            "UxSms",
+            "ShellHWDetection",
+            "FontCache",
             "Schedule",
-            "CryptSvc",
-            "Winmgmt",
+            "gpsvc",
+            "EventSystem",
             "ProfSvc",
             "UserManager",
-            "Themes",
-            "DcomLaunch",
+            "StateRepository",
+            "TokenBroker",
+            "StorSvc",
+            "ClipSVC",
+            "AppXSvc",
+            "LicenseManager",
+            "BFE",
+            "mpssvc",
+            "NlaSvc",
+            "EventLog",
+            "CryptSvc",
+            "DeviceInstall",
+            "WpnService",
+            "AppInfo",
+            "AppReadiness",
+            "BrokerInfrastructure",
+            "TimeBrokerSvc",
+            "Winmgmt",
+            "SamSs",
+            "LSM",
+            "Power",
+            "PlugPlay",
+            "Dnscache",
+            "CoreMessagingRegistrar",
         ] {
             assert!(is_protected_service(svc), "{svc} must be hard-protected");
         }
+        // Per-user service template instances (suffixed) stay protected too.
+        assert!(is_protected_service("UdkUserSvc_4a2b1"));
     }
 
     #[test]

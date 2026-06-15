@@ -1114,12 +1114,12 @@
         {
           "id": "services.disable-push-notifications",
           "name": "Disable Windows Push Notification Service",
-          "description": "Disable WpnUserService — per-user push notification relay. WpnService (system) is kept to prevent Explorer notification crashes.",
+          "description": "Disable WpnUserService — per-user push notification relay. WpnService (system) is kept to prevent Explorer notification crashes. A reboot is REQUIRED before the change takes effect safely.",
           "risk": "low",
           "default": false,
           "expertOnly": false,
           "requiresReboot": true,
-          "warningMessage": null,
+          "warningMessage": "You MUST restart your PC after this change. Using the desktop without restarting may cause File Explorer crashes when right-clicking or accessing notifications.",
           "blockedProfiles": [
             "work_pc",
             "office_laptop",
@@ -1184,12 +1184,12 @@
         {
           "id": "tasks.disable-cloud-content-tasks",
           "name": "Disable Cloud Content & Spotlight Tasks",
-          "description": "Disable Windows Spotlight, cloud content delivery, and lock screen suggestion tasks",
-          "risk": "safe",
+          "description": "Disable Windows Spotlight, cloud content delivery, and lock screen suggestion tasks. Disabling CloudExperienceHostLauncher may cause significantly slower first login on new user profiles.",
+          "risk": "low",
           "default": false,
           "expertOnly": false,
           "requiresReboot": false,
-          "warningMessage": null,
+          "warningMessage": "May cause significantly slower first login on new user profiles (5-20 minutes). Windows waits for CloudExperienceHost to timeout during profile provisioning.",
           "blockedProfiles": [],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -1217,12 +1217,12 @@
         {
           "id": "tasks.disable-update-tasks",
           "name": "Disable Update Orchestrator Tasks",
-          "description": "Disable Windows Update Orchestrator scheduled tasks to reduce background update activity",
+          "description": "Disable Windows Update Orchestrator scheduled tasks to reduce background update activity. May cause 10-20 minute shutdown delays if disabled while an update cycle is in progress.",
           "risk": "medium",
           "default": false,
           "expertOnly": false,
-          "requiresReboot": false,
-          "warningMessage": null,
+          "requiresReboot": true,
+          "warningMessage": "If Windows Update is mid-operation, shutdown may hang for 10-20 minutes. Apply after a clean restart for best results.",
           "blockedProfiles": [
             "work_pc",
             "name: \"Schedule Scan"
@@ -1762,7 +1762,7 @@
           "id": "privacy.disable-smartscreen",
           "name": "Disable SmartScreen Filter",
           "description": "Disable the Windows SmartScreen filter that checks downloaded files and visited websites against Microsoft's reputation database",
-          "risk": "medium",
+          "risk": "high",
           "default": false,
           "expertOnly": false,
           "requiresReboot": false,
@@ -2377,7 +2377,7 @@
         {
           "id": "power.high-performance-plan",
           "name": "Activate High Performance Power Plan",
-          "description": "Set the active power plan to Windows High Performance, preventing CPU frequency scaling and sleep transitions",
+          "description": "Set the active power plan to Windows High Performance, preventing CPU frequency scaling and sleep transitions. This holds the CPU at its top clock speed — it does not mean 100% CPU usage — but it may increase idle power draw, heat, and fan noise.",
           "risk": "low",
           "default": false,
           "expertOnly": false,
@@ -3018,12 +3018,12 @@
         {
           "id": "startup.disable-background-apps",
           "name": "Disable Background Apps",
-          "description": "Prevent UWP apps from running in the background to reduce resource usage",
-          "risk": "low",
+          "description": "Prevent UWP apps from running in the background to reduce resource usage. On Windows 11 24H2+, this may affect Explorer context menu handlers and shell UX.",
+          "risk": "medium",
           "default": false,
           "expertOnly": false,
-          "requiresReboot": false,
-          "warningMessage": null,
+          "requiresReboot": true,
+          "warningMessage": "On Windows 11 24H2+, disabling all background apps may cause File Explorer right-click menus to hang or crash. If you experience this, re-enable background apps via Settings > Apps > Installed apps > Advanced options.",
           "blockedProfiles": [],
           "minWindowsBuild": null,
           "executionKinds": [
