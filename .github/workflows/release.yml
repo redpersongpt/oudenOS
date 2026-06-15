@@ -112,13 +112,11 @@ jobs:
         shell: bash
         run: |
           cat > RELEASE_NOTES.md <<'NOTES'
-          OudenOS 1.0.1
+          A small maintenance update.
 
-          Small maintenance update for the Windows release.
-
-          - Fixed the Windows proof workflow.
-          - Updated desktop package metadata for 1.0.1.
-          - Cleaned remaining branding text on the site and app.
+          - Unified oudenOS branding across the app and website
+          - Fixed the Windows installer build and packaging
+          - Minor UI and stability fixes
           NOTES
 
       - name: Publish GitHub release
