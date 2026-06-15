@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import type { ReactNode } from "react";
-import { staggerContainer, staggerChild } from "@redcore/design-system";
+import { staggerContainer, staggerChild } from "@oudenos/design-system";
 
 interface EmptyStateProps {
   icon?: ReactNode;

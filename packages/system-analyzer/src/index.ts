@@ -1,7 +1,7 @@
 // System Analyzer
 // Multi-step system analysis and recommendation engine.
-// Usage: import { runAnalysisPipeline, createInitialPipelineState } from "@redcore/system-analyzer"
-// UI:    import { SystemAnalysisCard, RecommendationList } from "@redcore/system-analyzer/components"
+// Usage: import { runAnalysisPipeline, createInitialPipelineState } from "@oudenos/system-analyzer"
+// UI:    import { SystemAnalysisCard, RecommendationList } from "@oudenos/system-analyzer/components"
 
 // Types
 export type {

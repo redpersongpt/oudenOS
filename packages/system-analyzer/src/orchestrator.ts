@@ -2,7 +2,7 @@
 // Multi-step pipeline: scan → classify → risk → recommend → impact → validate
 // Each step updates state via a callback, enabling live UI progress.
 
-import type { DeviceProfile } from "@redcore/shared-schema/device";
+import type { DeviceProfile } from "@oudenos/tuning-shared-schema/device";
 import { analyzeHardware } from "./analyzers/hardware-analyzer.js";
 import { analyzeSoftware } from "./analyzers/software-analyzer.js";
 import { analyzeWorkload } from "./analyzers/workload-analyzer.js";

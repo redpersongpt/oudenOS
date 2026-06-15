@@ -118,8 +118,8 @@ async function start(): Promise<void> {
 
   // Database preflight: fail fast on schema mismatch
   if (process.env.SKIP_PREFLIGHT !== "1") {
-    const { db } = await import("@redcore/db");
-    const { preflightOrDie } = await import("@redcore/db/preflight");
+    const { db } = await import("@oudenos/db");
+    const { preflightOrDie } = await import("@oudenos/db/preflight");
     await preflightOrDie(db, {
       info: (msg: string) => app.log.info(msg),
       error: (msg: string) => app.log.error(msg),

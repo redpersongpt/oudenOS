@@ -17,7 +17,7 @@ importers:
       '@fastify/cors':
         specifier: ^10.0.0
         version: 10.1.0
-      '@redcore/db':
+      '@oudenos/db':
         specifier: workspace:*
         version: link:../../packages/db
       bcryptjs:
@@ -81,7 +81,7 @@ importers:
       '@fastify/rate-limit':
         specifier: ^9.1.0
         version: 9.1.0
-      '@redcore/db':
+      '@oudenos/db':
         specifier: workspace:*
         version: link:../../packages/db
       bcryptjs:
@@ -237,10 +237,10 @@ importers:
       '@fastify/helmet':
         specifier: ^12.0.0
         version: 12.0.1
-      '@redcore/db':
+      '@oudenos/db':
         specifier: workspace:*
         version: link:../../packages/db
-      '@redcore/shared-schema':
+      '@oudenos/tuning-shared-schema':
         specifier: workspace:*
         version: link:../../packages/tuning-shared-schema
       bcryptjs:
@@ -289,6 +289,18 @@ importers:
 
   apps/tuning-desktop:
     dependencies:
+      '@oudenos/design-system':
+        specifier: workspace:*
+        version: link:../../packages/tuning-design-system
+      '@oudenos/license-client':
+        specifier: workspace:*
+        version: link:../../packages/tuning-license-client
+      '@oudenos/system-analyzer':
+        specifier: workspace:*
+        version: link:../../packages/system-analyzer
+      '@oudenos/tuning-shared-schema':
+        specifier: workspace:*
+        version: link:../../packages/tuning-shared-schema
       '@radix-ui/react-dialog':
         specifier: ^1.1.0
         version: 1.1.15(@types/react-dom@18.3.7(@types/react@18.3.28))(@types/react@18.3.28)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -310,18 +322,6 @@ importers:
       '@radix-ui/react-tooltip':
         specifier: ^1.1.0
         version: 1.2.8(@types/react-dom@18.3.7(@types/react@18.3.28))(@types/react@18.3.28)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@redcore/design-system':
-        specifier: workspace:*
-        version: link:../../packages/tuning-design-system
-      '@redcore/license-client':
-        specifier: workspace:*
-        version: link:../../packages/tuning-license-client
-      '@redcore/shared-schema':
-        specifier: workspace:*
-        version: link:../../packages/tuning-shared-schema
-      '@redcore/system-analyzer':
-        specifier: workspace:*
-        version: link:../../packages/system-analyzer
       '@tanstack/react-query':
         specifier: ^5.60.0
         version: 5.95.2(react@18.3.1)
@@ -558,7 +558,7 @@ importers:
 
   packages/system-analyzer:
     dependencies:
-      '@redcore/shared-schema':
+      '@oudenos/tuning-shared-schema':
         specifier: workspace:*
         version: link:../tuning-shared-schema
       framer-motion:
@@ -580,7 +580,7 @@ importers:
 
   packages/tuning-benchmark:
     dependencies:
-      '@redcore/shared-schema':
+      '@oudenos/tuning-shared-schema':
         specifier: workspace:*
         version: link:../tuning-shared-schema
     devDependencies:
@@ -606,7 +606,7 @@ importers:
 
   packages/tuning-download:
     dependencies:
-      '@redcore/shared-schema':
+      '@oudenos/tuning-shared-schema':
         specifier: workspace:*
         version: link:../tuning-shared-schema
     devDependencies:
@@ -616,7 +616,7 @@ importers:
 
   packages/tuning-license-client:
     dependencies:
-      '@redcore/shared-schema':
+      '@oudenos/tuning-shared-schema':
         specifier: workspace:*
         version: link:../tuning-shared-schema
     devDependencies:
@@ -626,7 +626,7 @@ importers:
 
   packages/tuning-modules:
     dependencies:
-      '@redcore/shared-schema':
+      '@oudenos/tuning-shared-schema':
         specifier: workspace:*
         version: link:../tuning-shared-schema
     devDependencies:
@@ -636,7 +636,7 @@ importers:
 
   packages/tuning-rollback:
     dependencies:
-      '@redcore/shared-schema':
+      '@oudenos/tuning-shared-schema':
         specifier: workspace:*
         version: link:../tuning-shared-schema
     devDependencies:
@@ -9716,7 +9716,7 @@ snapshots:
       eslint: 9.39.4(jiti@2.6.1)
       eslint-import-resolver-node: 0.3.9
       eslint-import-resolver-typescript: 3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.57.2(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.4(jiti@2.6.1)))(eslint@9.39.4(jiti@2.6.1))
-      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@8.57.2(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint-import-resolver-typescript@3.10.1)(eslint@9.39.4(jiti@2.6.1))
+      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@8.57.2(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.57.2(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.4(jiti@2.6.1)))(eslint@9.39.4(jiti@2.6.1)))(eslint@9.39.4(jiti@2.6.1))
       eslint-plugin-jsx-a11y: 6.10.2(eslint@9.39.4(jiti@2.6.1))
       eslint-plugin-react: 7.37.5(eslint@9.39.4(jiti@2.6.1))
       eslint-plugin-react-hooks: 7.0.1(eslint@9.39.4(jiti@2.6.1))
@@ -9749,7 +9749,7 @@ snapshots:
       tinyglobby: 0.2.15
       unrs-resolver: 1.11.1
     optionalDependencies:
-      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@8.57.2(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint-import-resolver-typescript@3.10.1)(eslint@9.39.4(jiti@2.6.1))
+      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@8.57.2(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.57.2(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.4(jiti@2.6.1)))(eslint@9.39.4(jiti@2.6.1)))(eslint@9.39.4(jiti@2.6.1))
     transitivePeerDependencies:
       - supports-color
 
@@ -9764,7 +9764,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.57.2(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint-import-resolver-typescript@3.10.1)(eslint@9.39.4(jiti@2.6.1)):
+  eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.57.2(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.57.2(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.4(jiti@2.6.1)))(eslint@9.39.4(jiti@2.6.1)))(eslint@9.39.4(jiti@2.6.1)):
     dependencies:
       '@rtsao/scc': 1.1.0
       array-includes: 3.1.9

@@ -5,8 +5,8 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Activity, Cpu, ListChecks, TrendingUp, AlertTriangle, RefreshCw, Zap } from "lucide-react";
-import { staggerContainer, staggerChild } from "@redcore/design-system";
-import { runAnalysisPipeline } from "@redcore/system-analyzer";
+import { staggerContainer, staggerChild } from "@oudenos/design-system";
+import { runAnalysisPipeline } from "@oudenos/system-analyzer";
 import {
   AnalysisTimeline,
   HardwareAnalysisCard,
@@ -17,7 +17,7 @@ import {
   SecurityAnalysisCard,
   RecommendationList,
   ImpactPreview,
-} from "@redcore/system-analyzer/components";
+} from "@oudenos/system-analyzer/components";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent } from "@/components/ui/Card";
 import { useDeviceStore } from "@/stores/device-store";

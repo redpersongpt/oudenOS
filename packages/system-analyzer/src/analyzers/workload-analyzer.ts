@@ -4,7 +4,7 @@
 // Work indicators: Windows edition (Pro/Enterprise), domain signals, Hyper-V
 // Dev indicators: WSL, Hyper-V, high RAM + CPU
 
-import type { DeviceProfile } from "@redcore/shared-schema/device";
+import type { DeviceProfile } from "@oudenos/tuning-shared-schema/device";
 import type { WorkloadAnalysis, WorkloadSignal, WorkloadType } from "../types.js";
 
 interface WorkloadInput {

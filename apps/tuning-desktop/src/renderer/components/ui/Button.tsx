@@ -1,6 +1,6 @@
 import { motion, type HTMLMotionProps, type TargetAndTransition } from "framer-motion";
 import type { ReactNode } from "react";
-import { spring } from "@redcore/design-system";
+import { spring } from "@oudenos/design-system";
 
 type ButtonVariant = "primary" | "secondary" | "ghost" | "danger" | "warning";
 type ButtonSize = "sm" | "md" | "lg";

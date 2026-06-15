@@ -149,8 +149,8 @@ process.on('SIGTERM', () => shutdown('SIGTERM'));
 
 if (process.env.SKIP_PREFLIGHT !== '1') {
   try {
-    const { preflightOrDie } = await import('@redcore/db/preflight');
-    const { db: canonicalDb } = await import('@redcore/db');
+    const { preflightOrDie } = await import('@oudenos/db/preflight');
+    const { db: canonicalDb } = await import('@oudenos/db');
     await preflightOrDie(canonicalDb, {
       info: (msg: string) => app.log.info(msg),
       error: (msg: string) => app.log.error(msg),

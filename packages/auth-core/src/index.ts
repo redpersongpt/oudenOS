@@ -1,4 +1,4 @@
-// @redcore/auth-core
+// @oudenos/auth-core
 // Shared JWT authentication for the redcoreECO platform.
 
 export {

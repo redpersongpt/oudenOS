@@ -1,7 +1,7 @@
 // Hardware Analyzer
 // Derives structured hardware analysis from a DeviceProfile.
 
-import type { DeviceProfile } from "@redcore/shared-schema/device";
+import type { DeviceProfile } from "@oudenos/tuning-shared-schema/device";
 import type {
   HardwareAnalysis,
   CpuAnalysis,

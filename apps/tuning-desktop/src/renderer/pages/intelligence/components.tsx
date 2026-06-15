@@ -2,7 +2,7 @@
 // Split out to keep IntelligencePage.tsx lean.
 
 import { motion } from "framer-motion";
-import { staggerChild, cardHover } from "@redcore/design-system";
+import { staggerChild, cardHover } from "@oudenos/design-system";
 import { Badge } from "@/components/ui/Badge";
 import type {
   MachineArchetype,
@@ -10,8 +10,8 @@ import type {
   IntelligentRecommendation,
   IntelligentTuningProfile,
   ClassificationSignal,
-} from "@redcore/shared-schema/device-intelligence";
-import { ARCHETYPE_META } from "@redcore/shared-schema/device-intelligence";
+} from "@oudenos/tuning-shared-schema/device-intelligence";
+import { ARCHETYPE_META } from "@oudenos/tuning-shared-schema/device-intelligence";
 
 // Archetype accent color → Tailwind class map
 

@@ -7,9 +7,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Lock } from "lucide-react";
 import {
   tabUnderlineTransition,
-} from "@redcore/design-system";
+} from "@oudenos/design-system";
 import { Badge } from "@/components/ui/Badge";
-import type { RiskLevel } from "@redcore/shared-schema/tuning";
+import type { RiskLevel } from "@oudenos/tuning-shared-schema/tuning";
 
 // Action data
 

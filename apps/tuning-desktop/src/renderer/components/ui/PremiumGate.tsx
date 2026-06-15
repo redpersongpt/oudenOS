@@ -10,7 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { useLicenseStore } from "@/stores/license-store";
 import { Sparkles } from "lucide-react";
 import { Button } from "./Button";
-import { spring } from "@redcore/design-system";
+import { spring } from "@oudenos/design-system";
 
 // Feature-specific value propositions — what the user GAINS, not what's locked
 const FEATURE_VALUE: Record<string, { title: string; description: string }> = {

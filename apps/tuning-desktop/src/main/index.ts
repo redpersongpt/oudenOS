@@ -12,8 +12,8 @@ import {
   fetchLicense,
   generateDeviceFingerprint,
   validateLicenseOffline,
-} from "@redcore/license-client";
-import type { LicenseState } from "@redcore/shared-schema/license";
+} from "@oudenos/license-client";
+import type { LicenseState } from "@oudenos/tuning-shared-schema/license";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const isDev = process.env.NODE_ENV === "development";

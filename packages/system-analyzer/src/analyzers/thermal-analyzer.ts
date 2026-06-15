@@ -1,7 +1,7 @@
 // Thermal Analyzer
 // Evaluates CPU/GPU temperatures, throttling state, and thermal risk.
 
-import type { DeviceProfile } from "@redcore/shared-schema/device";
+import type { DeviceProfile } from "@oudenos/tuning-shared-schema/device";
 import type { ThermalAnalysis, ThermalRating } from "../types.js";
 
 const CPU_THRESHOLDS = { cool: 60, warm: 75, hot: 90 };   // °C

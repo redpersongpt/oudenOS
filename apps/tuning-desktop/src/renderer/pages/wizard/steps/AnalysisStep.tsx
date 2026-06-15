@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import {
   spring,
-} from "@redcore/design-system";
+} from "@oudenos/design-system";
 import { useWizardStore } from "@/stores/wizard-store";
 import { useDeviceStore } from "@/stores/device-store";
 import { useIntelligenceStore } from "@/stores/intelligence-store";

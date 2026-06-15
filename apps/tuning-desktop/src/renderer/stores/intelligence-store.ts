@@ -4,7 +4,7 @@ import { create } from "zustand";
 import type {
   MachineClassification,
   IntelligentTuningProfile,
-} from "@redcore/shared-schema/device-intelligence";
+} from "@oudenos/tuning-shared-schema/device-intelligence";
 import { serviceCall } from "@/lib/api";
 
 interface IntelligenceState {

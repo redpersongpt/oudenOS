@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { cardHover, cardStaggerContainer, cardStaggerItem } from "@redcore/design-system";
+import { cardHover, cardStaggerContainer, cardStaggerItem } from "@oudenos/design-system";
 import type { ReactNode } from "react";
 
 interface CardProps {

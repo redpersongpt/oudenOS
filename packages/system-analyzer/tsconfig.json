@@ -9,8 +9,8 @@
     "skipLibCheck": true,
     "noEmit": true,
     "paths": {
-      "@redcore/shared-schema": ["../tuning-shared-schema/src/index.ts"],
-      "@redcore/shared-schema/*": ["../tuning-shared-schema/src/*.ts"]
+      "@oudenos/tuning-shared-schema": ["../tuning-shared-schema/src/index.ts"],
+      "@oudenos/tuning-shared-schema/*": ["../tuning-shared-schema/src/*.ts"]
     }
   },
   "include": ["src/**/*"]

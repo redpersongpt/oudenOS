@@ -2,7 +2,7 @@
 // Wrappers for benchmark/stress/telemetry providers.
 // Each runner implements a common interface and is invoked by the Rust service.
 
-import type { BenchmarkType, BenchmarkConfig, BenchmarkMetric } from "@redcore/shared-schema/benchmark";
+import type { BenchmarkType, BenchmarkConfig, BenchmarkMetric } from "@oudenos/tuning-shared-schema/benchmark";
 
 export interface BenchmarkRunner {
   type: BenchmarkType;

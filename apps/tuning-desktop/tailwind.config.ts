@@ -1,5 +1,5 @@
 import type { Config } from "tailwindcss";
-import redcorePreset from "@redcore/design-system/tailwind";
+import redcorePreset from "@oudenos/design-system/tailwind";
 
 const config: Config = {
   presets: [redcorePreset as Config],

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { spring } from "@redcore/design-system";
+import { spring } from "@oudenos/design-system";
 import { LogoMark } from "@/components/brand/Logo";
 
 type Phase = "logo" | "text" | "bar" | "exit";

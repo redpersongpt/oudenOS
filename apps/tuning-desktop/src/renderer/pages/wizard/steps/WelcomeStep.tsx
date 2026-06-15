@@ -8,7 +8,7 @@
 
 import { motion } from "framer-motion";
 import { Shield, RotateCcw, Cpu } from "lucide-react";
-import { spring } from "@redcore/design-system";
+import { spring } from "@oudenos/design-system";
 import { useWizardStore } from "@/stores/wizard-store";
 import { LogoHero } from "@/components/brand/Logo";
 

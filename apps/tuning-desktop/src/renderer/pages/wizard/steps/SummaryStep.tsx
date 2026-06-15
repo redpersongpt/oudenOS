@@ -16,12 +16,12 @@ import {
 } from "lucide-react";
 import {
   spring,
-} from "@redcore/design-system";
+} from "@oudenos/design-system";
 import { useWizardStore } from "@/stores/wizard-store";
 import { useTuningStore } from "@/stores/tuning-store";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
-import type { TuningCategory, RiskLevel } from "@redcore/shared-schema/tuning";
+import type { TuningCategory, RiskLevel } from "@oudenos/tuning-shared-schema/tuning";
 
 // Helpers
 

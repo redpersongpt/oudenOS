@@ -14,4 +14,4 @@ export {
   telemetryEvents,
   userPreferences,
   users,
-} from "@redcore/db";
+} from "@oudenos/db";

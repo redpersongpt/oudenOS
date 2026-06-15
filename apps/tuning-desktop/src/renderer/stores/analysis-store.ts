@@ -6,8 +6,8 @@ import {
   createInitialPipelineState,
   toggleRecommendation,
   recomputePlan,
-} from "@redcore/system-analyzer";
-import type { AnalysisPipelineState, Recommendation } from "@redcore/system-analyzer";
+} from "@oudenos/system-analyzer";
+import type { AnalysisPipelineState, Recommendation } from "@oudenos/system-analyzer";
 
 interface AnalysisStoreState {
   pipeline: AnalysisPipelineState;

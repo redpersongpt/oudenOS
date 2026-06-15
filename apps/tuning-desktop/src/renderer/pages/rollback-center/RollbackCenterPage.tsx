@@ -15,13 +15,13 @@ import {
   Plus,
   X,
 } from "lucide-react";
-import { staggerContainer, staggerChild } from "@redcore/design-system";
+import { staggerContainer, staggerChild } from "@oudenos/design-system";
 import { Card, CardHeader, CardContent } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { PremiumGate } from "@/components/ui/PremiumGate";
 import { serviceCall } from "@/lib/api";
-import type { RollbackSnapshot, ConfigDiffEntry } from "@redcore/shared-schema/rollback";
+import type { RollbackSnapshot, ConfigDiffEntry } from "@oudenos/tuning-shared-schema/rollback";
 
 type RestoreStep = "idle" | "backing-up" | "reverting" | "verifying" | "done";
 

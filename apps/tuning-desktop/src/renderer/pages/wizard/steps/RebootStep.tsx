@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import { Power, RotateCcw, CheckCircle2, ArrowRight } from "lucide-react";
 import {
   spring,
-} from "@redcore/design-system";
+} from "@oudenos/design-system";
 import { useWizardStore } from "@/stores/wizard-store";
 import { useTuningStore } from "@/stores/tuning-store";
 import { Button } from "@/components/ui/Button";

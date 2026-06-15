@@ -1,7 +1,7 @@
 // Security Analyzer
 // Analyzes Windows security posture, VBS/HVCI impact, and firewall config.
 
-import type { DeviceProfile } from "@redcore/shared-schema/device";
+import type { DeviceProfile } from "@oudenos/tuning-shared-schema/device";
 import type { SecurityAnalysis, SecurityPosture } from "../types.js";
 
 function classifyPosture(security: DeviceProfile["security"]): SecurityPosture {

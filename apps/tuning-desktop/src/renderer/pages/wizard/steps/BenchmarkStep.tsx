@@ -7,11 +7,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Activity, TrendingDown, TrendingUp, ChevronRight } from "lucide-react";
 import {
   spring,
-} from "@redcore/design-system";
+} from "@oudenos/design-system";
 import { useWizardStore } from "@/stores/wizard-store";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
-import type { BenchmarkResult } from "@redcore/shared-schema/benchmark";
+import type { BenchmarkResult } from "@oudenos/tuning-shared-schema/benchmark";
 
 // Metric display config
 

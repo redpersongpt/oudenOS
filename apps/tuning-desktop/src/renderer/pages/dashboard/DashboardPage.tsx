@@ -17,7 +17,7 @@ import {
   staggerContainer,
   staggerChild,
   cardHover,
-} from "@redcore/design-system";
+} from "@oudenos/design-system";
 import { Card, CardHeader, CardContent } from "@/components/ui/Card";
 import { MetricCard } from "@/components/ui/MetricCard";
 import { Badge } from "@/components/ui/Badge";

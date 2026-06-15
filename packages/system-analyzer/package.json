@@ -1,5 +1,5 @@
 {
-  "name": "@redcore/system-analyzer",
+  "name": "@oudenos/system-analyzer",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -14,7 +14,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@redcore/shared-schema": "workspace:*"
+    "@oudenos/tuning-shared-schema": "workspace:*"
   },
   "peerDependencies": {
     "framer-motion": ">=11.0.0",

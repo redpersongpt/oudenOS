@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import { ShieldAlert } from "lucide-react";
 import { useLicenseStore } from "@/stores/license-store";
 import { Button } from "./Button";
-import { scaleUp } from "@redcore/design-system";
+import { scaleUp } from "@oudenos/design-system";
 
 // ExpertGate
 // Locks expert/advanced features behind a gate. Shows blurred content with an

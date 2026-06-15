@@ -1,4 +1,4 @@
-import type { RiskLevel } from "@redcore/shared-schema/tuning";
+import type { RiskLevel } from "@oudenos/tuning-shared-schema/tuning";
 
 // RiskBadge
 // Standalone badge for tuning action risk levels.

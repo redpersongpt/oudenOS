@@ -1,7 +1,7 @@
 // Tuning Plan Store
 
 import { create } from "zustand";
-import type { TuningPlan } from "@redcore/shared-schema/tuning";
+import type { TuningPlan } from "@oudenos/tuning-shared-schema/tuning";
 
 export interface LogEntry {
   timestamp: string;

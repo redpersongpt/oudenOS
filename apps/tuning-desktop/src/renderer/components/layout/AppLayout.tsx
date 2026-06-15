@@ -1,6 +1,6 @@
 import { Outlet, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
-import { pageTransition } from "@redcore/design-system";
+import { pageTransition } from "@oudenos/design-system";
 import { Sidebar } from "./Sidebar";
 import { TitleBar } from "./TitleBar";
 

@@ -5,7 +5,7 @@
 import { useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { AlertTriangle, CheckCircle2, Zap } from "lucide-react";
-import { ARCHETYPE_META } from "@redcore/shared-schema/device-intelligence";
+import { ARCHETYPE_META } from "@oudenos/tuning-shared-schema/device-intelligence";
 import { useWizardStore } from "@/stores/wizard-store";
 import { useIntelligenceStore } from "@/stores/intelligence-store";
 import { Badge } from "@/components/ui/Badge";

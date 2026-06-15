@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { AlertTriangle, RefreshCw } from "lucide-react";
 import { Button } from "./Button";
-import { staggerContainer, staggerChild } from "@redcore/design-system";
+import { staggerContainer, staggerChild } from "@oudenos/design-system";
 
 interface ErrorStateProps {
   title?: string;

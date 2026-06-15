@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import type { RiskLevel } from "@redcore/shared-schema/tuning";
+import type { RiskLevel } from "@oudenos/tuning-shared-schema/tuning";
 
 // Dark-first risk badge styles — legible on #131316 surface
 const riskStyles: Record<RiskLevel, string> = {

@@ -1,8 +1,8 @@
 // License State Store
 
 import { create } from "zustand";
-import type { LicenseState, SubscriptionTier } from "@redcore/shared-schema/license";
-import { FEATURE_GATES } from "@redcore/shared-schema/license";
+import type { LicenseState, SubscriptionTier } from "@oudenos/tuning-shared-schema/license";
+import { FEATURE_GATES } from "@oudenos/tuning-shared-schema/license";
 
 interface LicenseStoreState {
   license: LicenseState | null;

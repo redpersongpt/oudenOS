@@ -1,5 +1,5 @@
 {
-  "name": "@redcore/os-api",
+  "name": "@oudenos/os-api",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -25,7 +25,7 @@
     "stripe": "^17.4.0",
     "uuid": "^11.0.3",
     "zod": "^3.23.8",
-    "@redcore/db": "workspace:*"
+    "@oudenos/db": "workspace:*"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",

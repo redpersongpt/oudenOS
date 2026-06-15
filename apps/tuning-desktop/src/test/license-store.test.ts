@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { useLicenseStore } from "@/stores/license-store";
-import type { LicenseState } from "@redcore/shared-schema/license";
+import type { LicenseState } from "@oudenos/tuning-shared-schema/license";
 
 const makeLicense = (tier: "free" | "premium", status: "active" | "expired" = "active"): LicenseState => ({
   tier,

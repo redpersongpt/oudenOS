@@ -5,7 +5,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Lock, Server } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
-import type { RiskLevel } from "@redcore/shared-schema/tuning";
+import type { RiskLevel } from "@oudenos/tuning-shared-schema/tuning";
 
 // Service definitions
 

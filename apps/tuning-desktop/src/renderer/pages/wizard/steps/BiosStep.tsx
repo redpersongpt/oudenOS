@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 import { ChevronRight, Info, Check, Cpu } from "lucide-react";
 import {
   spring,
-} from "@redcore/design-system";
+} from "@oudenos/design-system";
 import { useWizardStore } from "@/stores/wizard-store";
 import { useDeviceStore } from "@/stores/device-store";
 import { Button } from "@/components/ui/Button";

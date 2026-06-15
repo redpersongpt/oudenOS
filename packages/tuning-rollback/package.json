@@ -1,11 +1,11 @@
 {
-  "name": "@redcore/rollback",
+  "name": "@oudenos/rollback",
   "version": "0.1.0",
   "private": true,
   "type": "module",
   "main": "./src/index.ts",
   "dependencies": {
-    "@redcore/shared-schema": "workspace:*"
+    "@oudenos/tuning-shared-schema": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.7.0"

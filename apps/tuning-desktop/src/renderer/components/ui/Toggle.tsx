@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { useState } from "react";
-import { spring } from "@redcore/design-system";
+import { spring } from "@oudenos/design-system";
 
 interface ToggleProps {
   checked?: boolean;

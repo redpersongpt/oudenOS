@@ -6,7 +6,7 @@
 import type { ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, ArrowRight, ChevronDown } from "lucide-react";
-import { spring } from "@redcore/design-system";
+import { spring } from "@oudenos/design-system";
 import { useWizardStore } from "@/stores/wizard-store";
 import type { WizardStepId } from "@/stores/wizard-store";
 import { Button } from "@/components/ui/Button";

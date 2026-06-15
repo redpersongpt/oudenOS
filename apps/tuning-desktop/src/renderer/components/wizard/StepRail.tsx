@@ -5,7 +5,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { Check, Minus } from "lucide-react";
 import { LogoMark } from "@/components/brand/Logo";
-import { spring, staggerContainer, staggerChild } from "@redcore/design-system";
+import { spring, staggerContainer, staggerChild } from "@oudenos/design-system";
 import {
   useWizardStore,
   CATEGORY_LABELS,

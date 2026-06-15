@@ -7,8 +7,8 @@ import { motion } from "framer-motion";
 import { Lock, Zap } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useLicenseStore } from "@/stores/license-store";
-import { FEATURE_GATES } from "@redcore/shared-schema/license";
-import type { SubscriptionTier } from "@redcore/shared-schema/license";
+import { FEATURE_GATES } from "@oudenos/tuning-shared-schema/license";
+import type { SubscriptionTier } from "@oudenos/tuning-shared-schema/license";
 import { Button } from "./Button";
 
 // Types

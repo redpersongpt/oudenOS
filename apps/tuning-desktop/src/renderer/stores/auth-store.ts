@@ -17,7 +17,7 @@ import {
 } from "@/lib/cloud-api";
 import type { UserProfile } from "@/lib/cloud-api";
 import { useLicenseStore } from "@/stores/license-store";
-import type { LicenseState } from "@redcore/shared-schema/license";
+import type { LicenseState } from "@oudenos/tuning-shared-schema/license";
 
 // Obfuscated storage adapter
 // Wraps localStorage with base64 encode/decode. Not cryptographic — use

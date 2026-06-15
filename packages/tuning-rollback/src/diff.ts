@@ -1,4 +1,4 @@
-import type { ConfigDiffEntry } from "@redcore/shared-schema/rollback";
+import type { ConfigDiffEntry } from "@oudenos/tuning-shared-schema/rollback";
 
 export function generateDiff(
   beforeValues: Array<{ path: string; valueName: string; value: unknown; actionId: string; actionName: string }>,

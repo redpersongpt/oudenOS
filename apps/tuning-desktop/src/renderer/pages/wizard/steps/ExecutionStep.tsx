@@ -7,12 +7,12 @@ import { CheckCircle2, XCircle, AlertCircle, ChevronDown, Zap } from "lucide-rea
 import {
   spring,
   progressFill,
-} from "@redcore/design-system";
+} from "@oudenos/design-system";
 import { useWizardStore } from "@/stores/wizard-store";
 import { useTuningStore } from "@/stores/tuning-store";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
-import type { ActionOutcome } from "@redcore/shared-schema/tuning";
+import type { ActionOutcome } from "@oudenos/tuning-shared-schema/tuning";
 
 // Types
 

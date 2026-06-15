@@ -21,7 +21,7 @@ import {
   CheckSquare,
   Square,
 } from "lucide-react";
-import { staggerContainer, staggerChild } from "@redcore/design-system";
+import { staggerContainer, staggerChild } from "@oudenos/design-system";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
@@ -29,7 +29,7 @@ import { PremiumGate } from "@/components/ui/PremiumGate";
 import { useDeviceStore } from "@/stores/device-store";
 import { useTuningStore } from "@/stores/tuning-store";
 import { serviceCall } from "@/lib/api";
-import type { PlanPreset, TuningPlan, TuningPlanAction, TuningCategory, RiskLevel } from "@redcore/shared-schema/tuning";
+import type { PlanPreset, TuningPlan, TuningPlanAction, TuningCategory, RiskLevel } from "@oudenos/tuning-shared-schema/tuning";
 
 // Preset definitions
 

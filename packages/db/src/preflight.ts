@@ -189,7 +189,7 @@ export async function preflightOrDie(
     logger.error(
       `[preflight] ${failCount} check(s) failed. ` +
       `The database schema does not match the canonical definition in packages/db. ` +
-      `Run migrations or use 'pnpm --filter @redcore/db db:push' to align.`
+      `Run migrations or use 'pnpm --filter @oudenos/db db:push' to align.`
     );
     throw new Error(`Database preflight failed: ${failCount} incompatible schema element(s)`);
   }

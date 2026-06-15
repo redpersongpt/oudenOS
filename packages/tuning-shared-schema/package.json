@@ -1,5 +1,5 @@
 {
-  "name": "@redcore/shared-schema",
+  "name": "@oudenos/tuning-shared-schema",
   "version": "0.1.0",
   "private": true,
   "type": "module",

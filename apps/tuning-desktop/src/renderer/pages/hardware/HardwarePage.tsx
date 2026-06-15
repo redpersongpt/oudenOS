@@ -11,7 +11,7 @@ import {
   Loader2,
   Zap,
 } from "lucide-react";
-import { staggerContainer, staggerChild } from "@redcore/design-system";
+import { staggerContainer, staggerChild } from "@oudenos/design-system";
 import { Card, CardHeader, CardContent } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";

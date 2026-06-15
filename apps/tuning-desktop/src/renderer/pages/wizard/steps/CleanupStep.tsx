@@ -6,7 +6,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, Lock } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
-import type { RiskLevel } from "@redcore/shared-schema/tuning";
+import type { RiskLevel } from "@oudenos/tuning-shared-schema/tuning";
 
 // Action data
 

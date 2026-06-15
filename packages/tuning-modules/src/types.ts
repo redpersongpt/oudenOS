@@ -1,4 +1,4 @@
-import type { TuningCategory, RiskLevel, TierGate, CompatibilityPredicate } from "@redcore/shared-schema/tuning";
+import type { TuningCategory, RiskLevel, TierGate, CompatibilityPredicate } from "@oudenos/tuning-shared-schema/tuning";
 
 export interface RegistryChangeDefinition {
   hive: string;

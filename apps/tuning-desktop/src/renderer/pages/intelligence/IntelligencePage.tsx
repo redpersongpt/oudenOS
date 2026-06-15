@@ -7,9 +7,9 @@ import {
   staggerContainer,
   staggerChild,
   pageTransition,
-} from "@redcore/design-system";
-import { ARCHETYPE_META } from "@redcore/shared-schema/device-intelligence";
-import type { RecommendationConfidence } from "@redcore/shared-schema/device-intelligence";
+} from "@oudenos/design-system";
+import { ARCHETYPE_META } from "@oudenos/tuning-shared-schema/device-intelligence";
+import type { RecommendationConfidence } from "@oudenos/tuning-shared-schema/device-intelligence";
 import { Card, CardHeader, CardContent } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { useDeviceStore } from "@/stores/device-store";

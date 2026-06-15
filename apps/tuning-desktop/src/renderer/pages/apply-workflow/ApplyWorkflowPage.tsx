@@ -20,13 +20,13 @@ import {
   staggerChild,
   scaleUp,
   slideUp,
-} from "@redcore/design-system";
+} from "@oudenos/design-system";
 import { Card, CardHeader, CardContent } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { useTuningStore } from "@/stores/tuning-store";
 import { serviceCall } from "@/lib/api";
-import type { TuningPlanAction, TuningCategory } from "@redcore/shared-schema/tuning";
+import type { TuningPlanAction, TuningCategory } from "@oudenos/tuning-shared-schema/tuning";
 
 // Types
 

@@ -7,12 +7,12 @@
     "moduleResolution": "bundler",
     "paths": {
       "@/*": ["./src/renderer/*"],
-      "@redcore/design-system": ["../../packages/tuning-design-system/src"],
-      "@redcore/design-system/*": ["../../packages/tuning-design-system/src/*"],
-      "@redcore/shared-schema": ["../../packages/tuning-shared-schema/src"],
-      "@redcore/shared-schema/*": ["../../packages/tuning-shared-schema/src/*"],
-      "@redcore/system-analyzer": ["../../packages/system-analyzer/src"],
-      "@redcore/system-analyzer/*": ["../../packages/system-analyzer/src/*"]
+      "@oudenos/design-system": ["../../packages/tuning-design-system/src"],
+      "@oudenos/design-system/*": ["../../packages/tuning-design-system/src/*"],
+      "@oudenos/tuning-shared-schema": ["../../packages/tuning-shared-schema/src"],
+      "@oudenos/tuning-shared-schema/*": ["../../packages/tuning-shared-schema/src/*"],
+      "@oudenos/system-analyzer": ["../../packages/system-analyzer/src"],
+      "@oudenos/system-analyzer/*": ["../../packages/system-analyzer/src/*"]
     }
   },
   "include": ["src/renderer", "src/preload", "src/main"]

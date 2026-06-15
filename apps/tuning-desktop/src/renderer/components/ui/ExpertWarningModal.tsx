@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { TriangleAlert, X } from "lucide-react";
 import { useEffect, useCallback } from "react";
-import { backdropFade, modalSpring } from "@redcore/design-system";
+import { backdropFade, modalSpring } from "@oudenos/design-system";
 import { Button } from "./Button";
 
 // ExpertWarningModal

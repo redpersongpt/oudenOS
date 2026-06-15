@@ -1,7 +1,7 @@
 // Software Analyzer
 // Analyzes Windows version, services, startup items, and config state.
 
-import type { DeviceProfile } from "@redcore/shared-schema/device";
+import type { DeviceProfile } from "@oudenos/tuning-shared-schema/device";
 import type { SoftwareAnalysis, WindowsAnalysis } from "../types.js";
 
 const SUPPORTED_WIN11_BUILDS = 22000; // 22H2 baseline

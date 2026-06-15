@@ -25,7 +25,7 @@ import { LogoMark } from "@/components/brand/Logo";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { ProgressBar } from "@/components/ui/ProgressBar";
-import { spring, staggerContainer, staggerChild } from "@redcore/design-system";
+import { spring, staggerContainer, staggerChild } from "@oudenos/design-system";
 import { toast } from "@/components/ui/Toast";
 
 // Step slide variants

@@ -2,7 +2,7 @@
 // Typed wrapper around the preload bridge to the Rust service.
 
 import type { RedcoreAPI } from "../../preload/index";
-import type { IpcMethods, IpcEvents } from "@redcore/shared-schema/ipc";
+import type { IpcMethods, IpcEvents } from "@oudenos/tuning-shared-schema/ipc";
 
 declare global {
   interface Window {

@@ -72,7 +72,7 @@ async function runPreflight() {
     const distExists = existsSync(join(ROOT, "packages/db/dist/preflight.js"));
     if (!distExists) {
       console.log("  Building packages/db...");
-      execSync("pnpm --filter @redcore/db build", { cwd: ROOT, stdio: "pipe" });
+      execSync("pnpm --filter @oudenos/db build", { cwd: ROOT, stdio: "pipe" });
     }
 
     const { runPreflight: preflight } = await import(join(ROOT, "packages/db/dist/preflight.js"));

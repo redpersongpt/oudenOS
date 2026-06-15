@@ -2,7 +2,7 @@
 // Convenience hook that surfaces tier/feature-gate logic from the license store.
 
 import { useLicenseStore } from "@/stores/license-store";
-import { FEATURE_GATES } from "@redcore/shared-schema/license";
+import { FEATURE_GATES } from "@oudenos/tuning-shared-schema/license";
 
 export type AppTier = "free" | "premium" | "expert";
 

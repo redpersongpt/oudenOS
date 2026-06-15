@@ -1,7 +1,7 @@
 // Download Center / App Hub
 // Curated app catalog with trusted sources, checksums, and silent install support.
 
-import type { AppCatalogEntry } from "@redcore/shared-schema/ipc";
+import type { AppCatalogEntry } from "@oudenos/tuning-shared-schema/ipc";
 
 export const defaultCatalog: AppCatalogEntry[] = [
   // Browsers

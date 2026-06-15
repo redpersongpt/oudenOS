@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import { Lock, RotateCcw } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
 import { useIntelligenceStore } from "@/stores/intelligence-store";
-import type { RiskLevel } from "@redcore/shared-schema/tuning";
+import type { RiskLevel } from "@oudenos/tuning-shared-schema/tuning";
 
 // Action definitions
 

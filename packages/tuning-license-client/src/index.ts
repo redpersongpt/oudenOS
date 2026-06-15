@@ -4,13 +4,13 @@
 //
 // Used by: Electron main process (Node.js context only — never import in renderer)
 
-import type { LicenseState, SubscriptionTier } from "@redcore/shared-schema/license";
-import { FEATURE_GATES } from "@redcore/shared-schema/license";
+import type { LicenseState, SubscriptionTier } from "@oudenos/tuning-shared-schema/license";
+import { FEATURE_GATES } from "@oudenos/tuning-shared-schema/license";
 import * as crypto from "node:crypto";
 import * as fs from "node:fs";
 import * as path from "node:path";
 
-export { FEATURE_GATES } from "@redcore/shared-schema/license";
+export { FEATURE_GATES } from "@oudenos/tuning-shared-schema/license";
 
 // Types
 
