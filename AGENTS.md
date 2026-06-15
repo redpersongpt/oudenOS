@@ -34,6 +34,7 @@ pushes without verifying CI is incomplete.
    pnpm -r --no-bail typecheck
    pnpm -r --no-bail lint
    pnpm -r --no-bail test
+   pnpm build:os:sources
    cargo check && cargo test            # in services/os-service and services/tuning-service
    pnpm --dir apps/os-desktop audit:questionnaire   # Windows-proof gate (Node 22)
    ```

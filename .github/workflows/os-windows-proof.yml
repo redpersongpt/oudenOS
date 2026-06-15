@@ -19,6 +19,8 @@ jobs:
           cache: pnpm
       - name: Install workspace dependencies
         run: pnpm install --frozen-lockfile
+      - name: Generate OS source catalog
+        run: pnpm build:os:sources
       - name: Questionnaire integrity audit
         run: pnpm --dir apps/os-desktop audit:questionnaire
       - uses: dtolnay/rust-toolchain@stable

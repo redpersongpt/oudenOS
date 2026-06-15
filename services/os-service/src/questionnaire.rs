@@ -1085,7 +1085,7 @@ mod tests {
             .chapters
             .iter()
             .flat_map(|chapter| chapter.questions.iter())
-            .any(|question| question.key == "benchmarkReady"));
+            .any(|question| question.key == "aggressionPreset"));
         assert!(schema
             .chapters
             .iter()
@@ -1109,12 +1109,6 @@ mod tests {
                 "aggressionPreset".to_string(),
                 Value::String("balanced".to_string()),
             ),
-            ("benchmarkReady".to_string(), Value::Bool(true)),
-            ("physicalSetupReviewed".to_string(), Value::Bool(true)),
-            ("coolingReviewed".to_string(), Value::Bool(true)),
-            ("biosTradeoffsReviewed".to_string(), Value::Bool(true)),
-            ("stabilityValidated".to_string(), Value::Bool(true)),
-            ("offlineInstallPlanReviewed".to_string(), Value::Bool(true)),
             ("highPerformancePlan".to_string(), Value::Bool(true)),
             ("disableIndexing".to_string(), Value::Bool(true)),
         ]);

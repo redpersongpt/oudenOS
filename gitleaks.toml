@@ -15,7 +15,6 @@ paths = [
   '''apps/cloud-api/env\.example$''',
   # The repo's own pre-publish secret-checker stores PATTERN STRINGS, not values.
   '''scripts/check-oudenos-os-open-source\.sh$''',
-  '''scripts/check-redcore-os-open-source\.sh$''',
   # Lockfiles contain integrity hashes that look high-entropy but are not secrets.
   '''pnpm-lock\.yaml$''',
 ]
