@@ -107,7 +107,7 @@ const PROFILE_OPTIONS = [
 ] as const;
 
 export function ProfileStep() {
-  const { detectedProfile, setDetectedProfile, setStepReady } = useWizardStore();
+  const { detectedProfile, setDetectedProfile, setStepReady, demoMode } = useWizardStore();
   const p = detectedProfile;
   const signals = Array.isArray(p?.signals) ? p.signals : [];
   const [showOverride, setShowOverride] = useState(false);
@@ -152,6 +152,25 @@ export function ProfileStep() {
       >
         {p.machineName}
       </motion.div>
+
+      {/* Sample-data notice — shown when no real system scan ran (demo / service unavailable) */}
+      {demoMode && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.12, duration: 0.3, ease: ND_EASE }}
+          className="flex items-start gap-3 border border-white/[0.12] bg-white/[0.04] px-4 py-3 rounded-sm max-w-sm"
+        >
+          <div className="w-3 h-0.5 bg-[var(--text-display)] mt-1.5 shrink-0" />
+          <div>
+            <p className="nd-label text-[var(--text-display)]">SAMPLE DATA</p>
+            <p className="mt-1 text-caption text-[var(--text-secondary)]">
+              No system scan ran — the optimization service isn&apos;t available here. The
+              profile and signals shown are an example, not your PC&apos;s detected hardware.
+            </p>
+          </div>
+        </motion.div>
+      )}
 
       {/* Profile name — Doto display */}
       <motion.h2

@@ -120,7 +120,7 @@
         {
           "value": true,
           "title": "Yes — switch to High Performance",
-          "desc": "Full CPU clock at all times. Eliminates frequency ramp-up latency that causes frame-time spikes in games.",
+          "desc": "Full CPU clock at all times (this is clock speed, not 100% CPU usage). Eliminates frequency ramp-up latency that causes frame-time spikes in games. Expect higher idle power draw, heat, and fan noise.",
           "badge": "Core",
           "badgeColor": "bg-brand-500/15 text-brand-400",
           "danger": false,

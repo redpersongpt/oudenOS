@@ -2343,7 +2343,7 @@
         {
           "id": "cpu.min-processor-state-100",
           "name": "Set Minimum Processor State to 100%",
-          "description": "Prevent the CPU from throttling below maximum frequency. Sets both minimum and maximum processor state to 100%.",
+          "description": "Keeps the CPU from dropping too aggressively into low-power states so it can react faster under load by holding the clock-frequency floor at 100%. This is a clock-speed setting and does not mean 100% CPU usage, but it may increase idle power draw, heat, and fan noise.",
           "risk": "low",
           "default": true,
           "expertOnly": false,

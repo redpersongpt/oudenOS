@@ -99,7 +99,7 @@ export function WelcomeStep() {
           animate={{ opacity: 1 }}
           transition={{ delay: 1.0, duration: 0.4, ease: ND.ease }}
         >
-          V0.2.0
+          {`V${__APP_VERSION__}`}
         </motion.div>
 
         {/* PRIMARY — Logo mark: spring scale-in first */}

@@ -42,8 +42,8 @@ actions:
 
   - id: cpu.min-processor-state-100
     name: "Set Minimum Processor State to 100%"
-    description: "Prevent the CPU from throttling below maximum frequency. Sets both minimum and maximum processor state to 100%."
-    rationale: "Keeps CPU at max frequency even at idle. Higher power/heat but eliminates frequency scaling transitions (~1-2ms)."
+    description: "Keeps the CPU from dropping too aggressively into low-power states so it can react faster under load by holding the clock-frequency floor at 100%. This is a clock-speed setting and does not mean 100% CPU usage, but it may increase idle power draw, heat, and fan noise."
+    rationale: "Holds the clock-frequency floor (minimum processor state) at 100% so the CPU does not downclock between bursts of work, eliminating frequency scaling transitions (~1-2ms). It does not raise CPU utilization; idle power draw, heat, and fan noise increase."
     risk: low
     tier: premium
     default: true

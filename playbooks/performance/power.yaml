@@ -8,8 +8,8 @@ category: performance
 actions:
   - id: power.high-performance-plan
     name: "Activate High Performance Power Plan"
-    description: "Set the active power plan to Windows High Performance, preventing CPU frequency scaling and sleep transitions"
-    rationale: "The Balanced power plan dynamically scales CPU frequency and allows C-state transitions, introducing latency when the CPU must ramp up. High Performance keeps the CPU at maximum frequency."
+    description: "Set the active power plan to Windows High Performance, preventing CPU frequency scaling and sleep transitions. This holds the CPU at its top clock speed — it does not mean 100% CPU usage — but it may increase idle power draw, heat, and fan noise."
+    rationale: "The Balanced power plan dynamically scales CPU frequency and allows C-state transitions, introducing latency when the CPU must ramp up. High Performance keeps the CPU clock at maximum (not CPU utilization), trading higher idle power and heat for lower latency."
     risk: low
     tier: premium
     default: false
