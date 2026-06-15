@@ -520,7 +520,7 @@ function ExecutionContent() {
 
       {/* Mini timeline */}
       <div className="w-full max-w-[280px] max-h-[60px] overflow-hidden">
-        {EXEC_ACTIONS.slice(0, completed).map((action, i) => (
+        {EXEC_ACTIONS.slice(0, completed).map((action) => (
           <motion.div
             key={action}
             initial={{ opacity: 0, height: 0 }}

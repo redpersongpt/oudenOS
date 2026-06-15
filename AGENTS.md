@@ -25,7 +25,7 @@ pushes without verifying CI is incomplete.
    ```
 5. **Fix the root cause, not the symptom.** Categorize first: typecheck / lint /
    unit tests / `cargo check`/`test` / Tauri build / Windows-only build / secret
-   scan / dependency install / path or package-rename issue / stale `redcore`
+   scan / dependency install / path or package-rename issue / stale legacy-brand
    reference / workflow syntax.
 6. Re-run the **strongest local checks** before pushing (use the *actual* scripts —
    inspect `package.json`, `pnpm-workspace.yaml`, `Cargo.toml`; do not invent names):
@@ -64,7 +64,7 @@ pushes without verifying CI is incomplete.
 | `tuning-windows-proof.yml` ("Windows Vertical Slice Proof") | push `main`, `ci/windows-proof`, `workflow_dispatch` | Legacy line; builds `services/tuning-service`. |
 | `build-installers.yml` | PR→`main` (path-filtered), `workflow_dispatch` | NSIS/Tauri installers. |
 | `validate-tauri-migration.yml` | push `main` (path-filtered), `workflow_dispatch` | Tauri bridge parity. |
-| `release.yml` | tag `v*`, `workflow_dispatch` | Builds + publishes; legacy `services/tuning-service`. |
+| `release.yml` | tag `v*`, `workflow_dispatch` | Builds + publishes the OudenOS Tauri installer. |
 
 **Most Windows workflows are `main`-scoped.** To test a feature branch against them,
 trigger them on the branch:

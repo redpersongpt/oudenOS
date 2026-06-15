@@ -104,8 +104,8 @@ function checkTauriConfig() {
     if (win.maximizable !== false) return fail("config:maximizable", "should be false");
 
     // Identity
-    if (config.productName !== "oudenOS") return fail("config:productName", config.productName);
-    if (config.identifier !== "net.oudenos.os") return fail("config:identifier", config.identifier);
+    if (config.productName !== "OudenOS") return fail("config:productName", config.productName);
+    if (config.identifier !== "cc.ouden.os") return fail("config:identifier", config.identifier);
 
     // CSP
     if (!config.app?.security?.csp) return fail("config:csp", "no CSP defined");

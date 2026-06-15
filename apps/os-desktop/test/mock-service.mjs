@@ -201,7 +201,7 @@ function buildResolvedPlaybook(profile, preset) {
 
   return {
     playbookName: "oudenos-os-default",
-    playbookVersion: "1.0.0",
+    playbookVersion: "1.0.1",
     profile,
     preset,
     totalIncluded,

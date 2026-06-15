@@ -1,3 +1,3 @@
-export function GlowOrb(_props: Record<string, unknown>) {
+export function GlowOrb() {
   return null;
 }

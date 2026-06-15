@@ -278,7 +278,7 @@ interface ExecutingPhaseProps {
   completedCount: number;
   totalCount: number;
   onCancel: () => void;
-  logRef: React.RefObject<HTMLDivElement>;
+  logRef: React.RefObject<HTMLDivElement | null>;
 }
 
 function ExecutingPhase({

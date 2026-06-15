@@ -99,8 +99,8 @@ function useCountUp(
   useEffect(() => {
     if (!isActive) return;
     if (prefersReducedMotion) {
-      setCurrent(target);
-      return;
+      const id = requestAnimationFrame(() => setCurrent(target));
+      return () => cancelAnimationFrame(id);
     }
 
     let startTime: number | null = null;

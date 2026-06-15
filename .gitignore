@@ -49,12 +49,6 @@ test-results/
 data/
 proof/
 
-# Local config
-.claude/
-.agents/
-.codex/
-.windsurf/
-
 artifacts/open-source/
 artifacts/os-source-catalog.json
 proof-screenshots-os/

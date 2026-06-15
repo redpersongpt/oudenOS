@@ -41,7 +41,7 @@ function parseManifest(text) {
   const profiles = {};
   const manifest = {
     name: "oudenos-os-default",
-    version: "1.0.0",
+    version: "1.0.1",
     description: "",
     author: "oudenos",
     minWindowsBuild: 19041,

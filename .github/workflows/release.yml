@@ -3,131 +3,135 @@ name: Release
 on:
   push:
     tags:
-      - 'v*'
+      - "v*"
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version tag (e.g., v0.1.0)'
+        description: "Version tag, for example v1.0.1"
         required: true
 
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
-  release-gate:
-    name: Release Gate
-    runs-on: ubuntu-latest
+  release:
+    name: Build and Publish OudenOS
+    runs-on: windows-latest
+    timeout-minutes: 45
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.4
+          run_install: false
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          run_install: false
-
-      - name: Install dependencies
-        run: pnpm install
-
-      - name: Run release gate
-        run: node scripts/release-gate.mjs --version ${{ github.ref_name || github.event.inputs.version }}
-
-  release:
-    needs: release-gate
-    runs-on: windows-latest
-    timeout-minutes: 30
-    permissions:
-      contents: write
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+          cache: pnpm
 
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
         with:
-          node-version: 20
+          targets: x86_64-pc-windows-msvc
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
-      - name: Cargo build (release)
-        working-directory: services/tuning-service
-        run: cargo build --release
-
-      - name: Cargo test
-        working-directory: services/tuning-service
-        run: cargo test
-
-      - name: pnpm install
-        run: pnpm install
-
-      - name: Vite build
-        working-directory: apps/tuning-desktop
-        run: pnpm exec vite build
-
-      - name: Determine version
+      - name: Check version tag
         id: version
         shell: pwsh
         run: |
-          if ("${{ github.event.inputs.version }}") {
-            $ver = "${{ github.event.inputs.version }}"
-          } else {
-            $ver = "${{ github.ref_name }}"
+          $tag = "${{ github.event.inputs.version }}"
+          if (-not $tag) {
+            $tag = "${{ github.ref_name }}"
           }
-          Write-Output "VERSION=$ver" >> $env:GITHUB_OUTPUT
-          Write-Output "Version: $ver"
 
-      - name: Create Release
+          $pkgVersion = node -p "require('./apps/os-desktop/package.json').version"
+          $expectedTag = "v$pkgVersion"
+          if ($tag -ne $expectedTag) {
+            throw "Release tag $tag does not match apps/os-desktop version $pkgVersion"
+          }
+
+          "TAG=$tag" >> $env:GITHUB_OUTPUT
+          "VERSION=$pkgVersion" >> $env:GITHUB_OUTPUT
+
+      - name: Run release checks
+        shell: bash
+        run: |
+          pnpm build:os:sources
+          pnpm --dir apps/os-desktop audit:questionnaire
+          pnpm --filter @oudenos/os-desktop typecheck
+
+      - name: Build OS service
+        working-directory: services/os-service
+        run: cargo build --release
+
+      - name: Build renderer
+        working-directory: apps/os-desktop
+        run: pnpm build
+
+      - name: Install Tauri CLI
+        run: cargo install tauri-cli --version "^2" --locked
+
+      - name: Build Tauri installer
+        working-directory: apps/os-desktop
+        run: cargo tauri build --config src-tauri/tauri.conf.production.json
+
+      - name: Prepare release asset
+        id: asset
+        shell: pwsh
+        run: |
+          $installer = Get-ChildItem -Path "apps/os-desktop/src-tauri/target/release/bundle/nsis/*.exe" | Select-Object -First 1
+          if (-not $installer) {
+            throw "No NSIS installer found"
+          }
+
+          New-Item -ItemType Directory -Path "apps/os-desktop/dist/installers" -Force | Out-Null
+          $stableName = "oudenOS-setup-${{ steps.version.outputs.VERSION }}.exe"
+          $stablePath = "apps/os-desktop/dist/installers/$stableName"
+          Copy-Item $installer.FullName $stablePath
+
+          $size = (Get-Item $stablePath).Length
+          if ($size -lt 2000000) {
+            throw "Installer too small: $size bytes"
+          }
+
+          $sha = (Get-FileHash $stablePath -Algorithm SHA256).Hash.ToLower()
+          "ASSET_PATH=$stablePath" >> $env:GITHUB_OUTPUT
+          "ASSET_NAME=$stableName" >> $env:GITHUB_OUTPUT
+          "SHA256=$sha" >> $env:GITHUB_OUTPUT
+          "SIZE=$size" >> $env:GITHUB_OUTPUT
+
+      - name: Create release notes
+        shell: bash
+        run: |
+          cat > RELEASE_NOTES.md <<'NOTES'
+          OudenOS 1.0.1
+
+          Small maintenance update for the Windows release.
+
+          - Fixed the Windows proof workflow.
+          - Updated desktop package metadata for 1.0.1.
+          - Cleaned remaining branding text on the site and app.
+          NOTES
+
+      - name: Publish GitHub release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ steps.version.outputs.VERSION }}
-          name: oudenOS Tuning ${{ steps.version.outputs.VERSION }}
-          body: |
-            ## oudenOS Tuning ${{ steps.version.outputs.VERSION }}
-
-            ### What's Included
-            - Rust service binary (Windows x64)
-            - Vite-built desktop renderer
-            - 66 tuning actions across 15 categories
-            - Real benchmark engine (system latency, storage, memory)
-            - App Hub with 5 core apps
-            - Full rollback + audit system
-
-            ### Project Activity
-
-            ![Repobeats](https://repobeats.axiom.co/api/embed/d3501dcf0fd81b97796a54adfb2658582ad6b97e.svg "Repobeats analytics image")
-          files: |
-            services/tuning-service/target/release/oudenos-tuning-service.exe
+          tag_name: ${{ steps.version.outputs.TAG }}
+          name: OudenOS ${{ steps.version.outputs.VERSION }}
+          body_path: RELEASE_NOTES.md
+          files: ${{ steps.asset.outputs.ASSET_PATH }}
           draft: false
-          prerelease: ${{ contains(steps.version.outputs.VERSION, 'alpha') || contains(steps.version.outputs.VERSION, 'beta') || contains(steps.version.outputs.VERSION, 'rc') }}
+          prerelease: ${{ contains(steps.version.outputs.TAG, 'alpha') || contains(steps.version.outputs.TAG, 'beta') || contains(steps.version.outputs.TAG, 'rc') }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  sync-open-source:
-    needs: release
-    runs-on: ubuntu-latest
-    if: ${{ !contains(github.ref_name, 'alpha') && !contains(github.ref_name, 'beta') }}
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Prepare open-source export
-        run: bash scripts/prepare-oudenos-os-open-source.sh ./public-os-export
-
-      - name: Remove README from export (oudenOS has its own)
-        run: rm -f public-os-export/README.md
-
-      - name: Push to oudenOS repo
-        uses: cpina/github-action-push-to-another-repository@main
-        env:
-          SSH_DEPLOY_KEY: ${{ secrets.OUDENSO_DEPLOY_KEY }}
-        with:
-          source-directory: public-os-export
-          destination-github-username: redpersongpt
-          destination-repository-name: oudenOS
-          target-branch: main
-          commit-message: "sync: ${{ github.ref_name }} from oudenOS"

@@ -4,10 +4,10 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build && bash ../../scripts/sync-web-standalone-assets.sh",
+    "build": "prisma generate && next build && bash ../../scripts/sync-web-standalone-assets.sh",
     "start": "next start",
     "lint": "eslint",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "prisma generate && tsc --noEmit",
     "db:push": "prisma db push",
     "db:generate": "prisma generate"
   },

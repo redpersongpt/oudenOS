@@ -90,14 +90,6 @@ function IconPalette({ className }: { className?: string }) {
     </svg>
   );
 }
-function IconGauge({ className }: { className?: string }) {
-  return (
-    <svg width={20} height={20} viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth={1.4} strokeLinecap="round" className={className}>
-      <path d="M10 18a8 8 0 110-16 8 8 0 010 16z" /><path d="M10 10l3-5" /><circle cx="10" cy="10" r="1.5" fill="currentColor" />
-    </svg>
-  );
-}
-
 const ease = [0.16, 1, 0.3, 1] as const;
 
 const tuningFeatures = [

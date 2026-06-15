@@ -1,3 +1,3 @@
-export function GridPattern(_props: Record<string, unknown>) {
+export function GridPattern() {
   return null;
 }

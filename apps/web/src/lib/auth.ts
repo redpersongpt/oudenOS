@@ -18,17 +18,6 @@ const googleConfigured =
   hasRealValue(process.env.GOOGLE_CLIENT_ID ?? webEnv("GOOGLE_CLIENT_ID")) &&
   hasRealValue(process.env.GOOGLE_CLIENT_SECRET ?? webEnv("GOOGLE_CLIENT_SECRET"));
 
-if (process.env.NODE_ENV !== "production") {
-  console.log("[auth-config]", {
-    googleConfigured,
-    googleClientIdLength:
-      (process.env.GOOGLE_CLIENT_ID ?? webEnv("GOOGLE_CLIENT_ID"))?.length ?? 0,
-    googleClientSecretLength:
-      (process.env.GOOGLE_CLIENT_SECRET ?? webEnv("GOOGLE_CLIENT_SECRET"))?.length ?? 0,
-    nextauthUrl: process.env.NEXTAUTH_URL ?? null,
-  });
-}
-
 function webEnv(key: string): string | undefined {
   // Dev-only fallback for .env.local lookup. In production we rely exclusively
   // on process.env to avoid reading from an unpredictable relative path
@@ -61,11 +50,21 @@ function webEnv(key: string): string | undefined {
 }
 
 const isDev = process.env.NODE_ENV !== "production";
+const configuredSecret =
+  process.env.AUTH_SECRET ??
+  process.env.NEXTAUTH_SECRET ??
+  webEnv("AUTH_SECRET") ??
+  webEnv("NEXTAUTH_SECRET");
+const authSecret = hasRealValue(configuredSecret)
+  ? configuredSecret
+  : isDev
+    ? "oudenos-local-development-auth-secret"
+    : undefined;
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: PrismaAdapter(prisma),
   trustHost: true,
-  debug: isDev,
+  debug: isDev && process.env.AUTH_DEBUG === "true",
   logger: {
     error(error) {
       console.error("[auth][error]", error);
@@ -77,7 +76,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (isDev) console.debug("[auth][debug]", ...message);
     },
   },
-  secret: process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET,
+  secret: authSecret,
   session: { strategy: "jwt" },
   pages: {
     signIn: "/login",

@@ -13,6 +13,30 @@ function getOsLatestUrl(): string {
   );
 }
 
+function isAllowedOudenDownloadUrl(value: string): boolean {
+  try {
+    const url = new URL(value);
+    return (
+      url.protocol === "https:" &&
+      url.hostname === "ouden.cc" &&
+      url.pathname.startsWith("/downloads/os/")
+    );
+  } catch {
+    return false;
+  }
+}
+
+function isAllowedReleaseUrl(value: string): boolean {
+  try {
+    const url = new URL(value);
+    if (url.protocol !== "https:") return false;
+    if (url.hostname === "ouden.cc" && url.pathname.startsWith("/downloads/os/")) return true;
+    return url.hostname === "github.com" && url.pathname.startsWith("/redpersongpt/oudenOS/");
+  } catch {
+    return false;
+  }
+}
+
 export interface ReleaseManifest {
   product: string;
   channel: string;
@@ -60,6 +84,10 @@ function validateManifest(data: unknown): ReleaseManifest | null {
   if (typeof d.version !== "string" || d.version.length === 0) return null;
   if (typeof d.sha256 !== "string" || d.sha256.length < 32) return null;
   if (typeof d.sizeBytes !== "number" || d.sizeBytes <= 0) return null;
+  if (!isAllowedOudenDownloadUrl(d.url)) return null;
+
+  const releaseUrl = typeof d.releaseUrl === "string" ? d.releaseUrl : d.url;
+  if (!isAllowedReleaseUrl(releaseUrl)) return null;
 
   return {
     product: typeof d.product === "string" ? d.product : "oudenos-os",
@@ -73,7 +101,7 @@ function validateManifest(data: unknown): ReleaseManifest | null {
     sizeBytes: d.sizeBytes as number,
     sha256: d.sha256 as string,
     url: d.url as string,
-    releaseUrl: typeof d.releaseUrl === "string" ? d.releaseUrl : d.url as string,
+    releaseUrl,
   };
 }
 

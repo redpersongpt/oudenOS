@@ -4,7 +4,6 @@ import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import {
   Check,
-  AlertTriangle,
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
@@ -122,7 +121,6 @@ function StepRail() {
 
 function ActionRow({ item }: { item: ActionItem }) {
   const risk = riskConfig[item.risk];
-  const isWarning = item.risk === "MEDIUM";
 
   return (
     <div className="flex items-center gap-3 bg-[var(--surface)] rounded-lg px-4 py-3">

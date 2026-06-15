@@ -1,8 +1,6 @@
-import { nanoid } from "nanoid";
-
 /**
  * Generate a license key in format: RCTN-XXXX-XXXX-XXXX
- * Uses nanoid with uppercase alphanumeric characters
+ * Uses uppercase alphanumeric characters without lookalikes.
  */
 export function generateLicenseKey(): string {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // no 0/O/1/I confusion
