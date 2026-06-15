@@ -509,14 +509,12 @@ jobs:
               # These MUST be present (allowed for work_pc)
               $mustAllow = @(
                   "privacy.disable-advertising-id",
-                  "privacy.disable-smart-app-control",
                   "privacy.disable-app-launch-tracking",
                   "privacy.disable-tailored-experiences",
                   "perf.disable-service-host-split",
                   "perf.disable-paging-executive",
                   "shell.disable-copilot",
                   "shell.show-file-extensions",
-                  "shell.restore-classic-context-menu",
                   "shutdown.decrease-shutdown-time",
                   "display.disable-pointer-acceleration",
                   "shell.disable-web-search",
@@ -826,7 +824,7 @@ jobs:
           Write-Output "Actions applied end-to-end: $($applyResults.Count) / 61"
           Write-Output "Registry read-back verified: $verifiedCount / $($verifyChecks.Count)"
           Write-Output "Rollback snapshots: $($snapshotIds.Count) created, 2 restored"
-          Write-Output "Profile blocking: work_pc (16 blocked + 14 allowed), vm_cautious, office_laptop"
+          Write-Output "Profile blocking: work_pc (16 blocked + 12 allowed), vm_cautious, office_laptop"
           Write-Output "Playbook chain: playbook.resolve → execute.applyAction (3 actions)"
           Write-Output "App bundle chain: appbundle.getRecommended → appbundle.resolve"
           Write-Output "Depth coverage: $($applyResults.Count) of 102 total actions runtime-proven"
