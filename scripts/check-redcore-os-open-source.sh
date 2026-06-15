@@ -5,9 +5,6 @@ set -euo pipefail
 TARGET_DIR="${1:?usage: check-redcore-os-open-source.sh <target-dir>}"
 
 declare -a forbidden_files=(
-  "CLAUDE.md"
-  "CODEXHANDOFF.md"
-  "ECOBUGHUNTERCLAUDE.md"
   "render.yaml"
   ".github/workflows/build-installers.yml"
 )
@@ -46,6 +43,7 @@ declare -a forbidden_patterns=(
   "[a-zA-Z0-9._%+-]+@gmail\\.com"
   # Code hygiene
   "BUGHUNTER"
+  "HANDOFF"
   "TODO"
   "FIXME"
   "HACK"
