@@ -19,6 +19,7 @@ mod personalizer;
 pub mod playbook;
 mod powershell;
 mod questionnaire;
+mod restore_point;
 mod rollback;
 mod transformer;
 

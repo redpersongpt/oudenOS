@@ -32,6 +32,9 @@ const ALLOWED_SERVICE_METHODS: &[&str] = &[
     // System / status
     "system.status",
     "system.reboot",
+    "system.elevationStatus",
+    "system.restorePointStatus",
+    "system.createRestorePoint",
     // Assessment + classification + planning pipeline
     "assess.full",
     "classify.machine",

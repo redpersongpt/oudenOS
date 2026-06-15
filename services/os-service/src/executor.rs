@@ -93,6 +93,14 @@ fn is_protected_service(service_name: &str) -> bool {
         "AppReadiness",
         "BrokerInfrastructure",
         "TimeBrokerSvc",
+        // Core OS services that wedge WMI, login, hardware, or networking if disabled.
+        "Winmgmt",
+        "SamSs",
+        "LSM",
+        "Power",
+        "PlugPlay",
+        "Dnscache",
+        "CoreMessagingRegistrar",
     ];
     const PROTECTED_SERVICE_TEMPLATES: &[&str] = &["UdkUserSvc"];
 
@@ -102,6 +110,23 @@ fn is_protected_service(service_name: &str) -> bool {
         || PROTECTED_SERVICE_TEMPLATES
             .iter()
             .any(|entry| matches_protected_service_name(service_name, entry))
+}
+
+/// Block writes to a small set of catastrophic, shell-critical registry targets
+/// regardless of which playbook requested them. These keys decide what Windows
+/// launches as the user's shell / login process; clobbering them can leave the
+/// machine with no desktop after reboot. This is defense-in-depth: the shipped
+/// playbooks never touch these, but a malformed or custom playbook could.
+fn is_protected_registry_target(path: &str, value_name: &str) -> bool {
+    let path_lower = path.to_ascii_lowercase();
+    // Winlogon `Shell` / `Userinit` define the interactive shell and logon chain.
+    if path_lower.contains("winlogon")
+        && (value_name.eq_ignore_ascii_case("Shell")
+            || value_name.eq_ignore_ascii_case("Userinit"))
+    {
+        return true;
+    }
+    false
 }
 
 /// Execute a tuning action, creating a rollback snapshot first, then applying
@@ -143,6 +168,7 @@ pub fn execute_action(
             "rollbackSnapshotId": null,
             "status": "success",
             "succeeded": 0,
+            "skipped": 0,
             "failed": 0,
             "results": [{
                 "type": "manual",
@@ -273,6 +299,9 @@ pub fn execute_action(
     let mut results: Vec<Value> = Vec::new();
     let mut succeeded = 0u32;
     let mut failed = 0u32;
+    // Deliberately-skipped mutations (protected target, no-op, already configured).
+    // Tracked separately so they are never reported to the user as "succeeded".
+    let mut skipped = 0u32;
     // SAFETY: Unless explicitly in "aggressive" execution mode, halt further
     // mutations as soon as ANY section reports a failure so the system is not
     // left in a partially-applied state. Phase 5 auto-rollback relies on this.
@@ -282,12 +311,21 @@ pub fn execute_action(
     'apply: loop {
         for pkg_name in &contract.packages {
             match remove_appx_package(pkg_name) {
-                Ok(()) => {
+                Ok(true) => {
                     succeeded += 1;
                     results.push(serde_json::json!({
                         "type": "appx_remove",
                         "package": pkg_name,
                         "status": "success",
+                    }));
+                }
+                Ok(false) => {
+                    skipped += 1;
+                    results.push(serde_json::json!({
+                        "type": "appx_remove",
+                        "package": pkg_name,
+                        "status": "skipped",
+                        "note": "Protected/shell-coupled package or not installed — no change made.",
                     }));
                 }
                 Err(e) => {
@@ -344,6 +382,24 @@ pub fn execute_action(
             let value = &change.value;
             let value_type = change.value_type.as_str();
 
+            // Defense-in-depth: never write shell-critical login/shell keys.
+            if is_protected_registry_target(path, value_name) {
+                tracing::warn!(
+                    path = format!("{}\\{}", hive, path).as_str(),
+                    value_name = value_name,
+                    "Protected shell-critical registry target — change blocked"
+                );
+                skipped += 1;
+                results.push(serde_json::json!({
+                    "type": "registry",
+                    "path": format!("{}\\{}", hive, path),
+                    "valueName": value_name,
+                    "status": "skipped",
+                    "note": "Protected shell-critical registry target (e.g. Winlogon Shell/Userinit) — blocked to keep Windows bootable.",
+                }));
+                continue;
+            }
+
             match apply_registry_change(hive, path, value_name, value, value_type) {
                 Ok(()) => {
                     succeeded += 1;
@@ -382,13 +438,23 @@ pub fn execute_action(
             let startup_type = change.startup_type.as_str();
 
             match apply_service_change(svc_name, startup_type) {
-                Ok(()) => {
+                Ok(true) => {
                     succeeded += 1;
                     results.push(serde_json::json!({
                         "type": "service",
                         "service": svc_name,
                         "startupType": startup_type,
                         "status": "success",
+                    }));
+                }
+                Ok(false) => {
+                    skipped += 1;
+                    results.push(serde_json::json!({
+                        "type": "service",
+                        "service": svc_name,
+                        "startupType": startup_type,
+                        "status": "skipped",
+                        "note": "Protected system service, missing, or already configured — no change made.",
                     }));
                 }
                 Err(e) => {
@@ -535,7 +601,13 @@ pub fn execute_action(
     // ── Phase 4: Audit log ──────────────────────────────────────────────
 
     let mut status = if failed == 0 {
-        "success"
+        // Nothing failed, but if everything was skipped (protected/no-op) and
+        // nothing was actually applied, do not claim "success".
+        if succeeded == 0 && skipped > 0 {
+            "skipped"
+        } else {
+            "success"
+        }
     } else if succeeded == 0 {
         "failed"
     } else {
@@ -595,8 +667,8 @@ pub fn execute_action(
             audit_id,
             now,
             format!(
-                "Action '{}' (type={}): {} succeeded, {} failed, status={}",
-                action_id, action_type, succeeded, failed, status
+                "Action '{}' (type={}): {} succeeded, {} skipped, {} failed, status={}",
+                action_id, action_type, succeeded, skipped, failed, status
             ) + &audit_context
                 .map(|detail| format!(" · {}", detail))
                 .unwrap_or_default(),
@@ -618,6 +690,7 @@ pub fn execute_action(
         "rollbackSnapshotId": snapshot_id,
         "status": status,
         "succeeded": succeeded,
+        "skipped": skipped,
         "failed": failed,
         "results": results,
     });
@@ -646,14 +719,17 @@ pub fn execute_action(
 
 // ─── Windows implementations ────────────────────────────────────────────────
 
+/// Returns `Ok(true)` when the package was actually removed, `Ok(false)` when the
+/// removal was deliberately skipped (shell-coupled/protected) or was a no-op
+/// (package not installed). Callers must NOT report `Ok(false)` as a success.
 #[cfg(windows)]
-fn remove_appx_package(package_name: &str) -> anyhow::Result<()> {
+fn remove_appx_package(package_name: &str) -> anyhow::Result<bool> {
     if is_shell_coupled_package(package_name) {
         tracing::warn!(
             package = package_name,
             "Shell-coupled package — skipped to protect Explorer"
         );
-        return Ok(());
+        return Ok(false);
     }
 
     let script = format!(
@@ -671,11 +747,13 @@ fn remove_appx_package(package_name: &str) -> anyhow::Result<()> {
             || stderr.contains("not installed")
         {
             tracing::warn!(package = package_name, "AppX package not found — skipped");
-            return Ok(());
+            return Ok(false);
         }
         anyhow::bail!("Remove-AppxPackage failed: {}", stderr);
     }
-    Ok(())
+    // The script exits 0 with a "SKIPPED" marker when the package was not
+    // installed; treat that as a no-op rather than a successful removal.
+    Ok(!result.stdout.contains("SKIPPED"))
 }
 
 #[cfg(windows)]
@@ -741,14 +819,18 @@ fn apply_registry_change(
     Ok(())
 }
 
+/// Returns `Ok(true)` when the service startup type was actually changed,
+/// `Ok(false)` when the change was deliberately skipped (protected service) or
+/// was a no-op (service missing, already configured, Tamper Protection on).
+/// Callers must NOT report `Ok(false)` as a success.
 #[cfg(windows)]
-fn apply_service_change(service_name: &str, startup_type: &str) -> anyhow::Result<()> {
+fn apply_service_change(service_name: &str, startup_type: &str) -> anyhow::Result<bool> {
     if is_protected_service(service_name) {
         tracing::warn!(
             service = service_name,
             "Protected service — skipped to preserve Task Manager/system stability"
         );
-        return Ok(());
+        return Ok(false);
     }
     // Validate inputs before interpolation
     powershell::validate_safe_arg(service_name, "service name")?;
@@ -782,11 +864,13 @@ fn apply_service_change(service_name: &str, startup_type: &str) -> anyhow::Resul
         let stderr = result.stderr.trim();
         if stderr.contains("not found") || stderr.contains("does not exist") {
             tracing::warn!(service = service_name, "Service not found — skipped");
-            return Ok(());
+            return Ok(false);
         }
         anyhow::bail!("Service change failed for {}: {}", service_name, stderr);
     }
-    Ok(())
+    // The script exits 0 with a "SKIPPED" marker when the service is missing,
+    // already configured, or Tamper Protection blocked it; that is a no-op.
+    Ok(!result.stdout.contains("SKIPPED"))
 }
 
 fn resolve_registry_changes(
@@ -1104,12 +1188,19 @@ fn read_power_value(_setting_path: &str) -> Option<Value> {
 // ─── Non-Windows simulation ─────────────────────────────────────────────────
 
 #[cfg(not(windows))]
-fn remove_appx_package(package_name: &str) -> anyhow::Result<()> {
+fn remove_appx_package(package_name: &str) -> anyhow::Result<bool> {
+    if is_shell_coupled_package(package_name) {
+        tracing::info!(
+            package = package_name,
+            "[simulated] Shell-coupled package — would skip to protect Explorer"
+        );
+        return Ok(false);
+    }
     tracing::info!(
         package = package_name,
         "[simulated] Would remove AppX package"
     );
-    Ok(())
+    Ok(true)
 }
 
 #[cfg(not(windows))]
@@ -1140,13 +1231,20 @@ fn apply_registry_change(
 }
 
 #[cfg(not(windows))]
-fn apply_service_change(service_name: &str, startup_type: &str) -> anyhow::Result<()> {
+fn apply_service_change(service_name: &str, startup_type: &str) -> anyhow::Result<bool> {
+    if is_protected_service(service_name) {
+        tracing::info!(
+            service = service_name,
+            "[simulated] Protected service — would skip to preserve system stability"
+        );
+        return Ok(false);
+    }
     tracing::info!(
         service = service_name,
         startup_type = startup_type,
         "[simulated] Would change service startup type"
     );
-    Ok(())
+    Ok(true)
 }
 
 // ─── BCD changes ────────────────────────────────────────────────────────────

@@ -200,7 +200,7 @@ export interface ExecutionJournalEntry {
   actionId: string;
   label: string;
   phase: string;
-  status: "applied" | "failed";
+  status: "applied" | "skipped" | "failed";
   startedAt: string;
   finishedAt: string;
   durationMs: number;

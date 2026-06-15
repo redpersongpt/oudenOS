@@ -89,6 +89,31 @@ pub fn execute(script: &str) -> anyhow::Result<PsResult> {
     Ok(result)
 }
 
+/// Returns `true` if this process is running with administrator privileges.
+/// The result is cached because elevation cannot change during the lifetime of
+/// the process. Privileged RPC handlers use this to fail fast with a clear
+/// "relaunch as administrator" error instead of failing mid-apply.
+#[cfg(windows)]
+pub fn is_elevated() -> bool {
+    use std::sync::OnceLock;
+    static ELEVATED: OnceLock<bool> = OnceLock::new();
+    *ELEVATED.get_or_init(|| {
+        match execute(
+            "[bool]([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)",
+        ) {
+            Ok(r) => r.stdout.trim().eq_ignore_ascii_case("true"),
+            Err(_) => false,
+        }
+    })
+}
+
+/// On non-Windows hosts (simulated/demo builds) there is no Windows elevation
+/// concept; treat as elevated so the simulated apply flow is not blocked.
+#[cfg(not(windows))]
+pub fn is_elevated() -> bool {
+    true
+}
+
 pub fn resolve_minsudo_path() -> Option<PathBuf> {
     let mut candidates = Vec::new();
 

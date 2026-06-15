@@ -98,7 +98,7 @@ interface ExecutableAction {
 interface CompletedAction {
   label: string;
   actionId: string;
-  status: "applied" | "failed";
+  status: "applied" | "skipped" | "failed";
   errorMessage?: string;
   packageSourceRef: string | null;
   provenanceRef: string | null;
@@ -156,6 +156,7 @@ function StatTile({
 // Timeline item — card-style row
 function TimelineItem({ action, index }: { action: CompletedAction; index: number }) {
   const failed = action.status === "failed";
+  const skipped = action.status === "skipped";
   return (
     <motion.div
       initial={{ opacity: 0, y: 6 }}
@@ -171,11 +172,15 @@ function TimelineItem({ action, index }: { action: CompletedAction; index: numbe
     >
       {/* Status indicator */}
       <div className={`flex items-center justify-center w-5 h-5 rounded-full shrink-0 ${
-        failed ? "bg-[#FF6B6B]/10" : "bg-[var(--success)]/10"
+        failed ? "bg-[#FF6B6B]/10" : skipped ? "bg-[var(--text-disabled)]/10" : "bg-[var(--success)]/10"
       }`}>
         {failed ? (
           <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
             <path d="M3 3l4 4M7 3l-4 4" stroke="#FF6B6B" strokeWidth="1.5" strokeLinecap="round" />
+          </svg>
+        ) : skipped ? (
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+            <path d="M2.5 5h5" stroke="var(--text-disabled)" strokeWidth="1.5" strokeLinecap="round" />
           </svg>
         ) : (
           <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
@@ -195,7 +200,7 @@ function TimelineItem({ action, index }: { action: CompletedAction; index: numbe
 
       {/* Action name */}
       <div className="min-w-0 flex-1">
-        <p className={`text-[11px] truncate ${failed ? "text-[#FF6B6B]/80" : "text-[var(--text-primary)]"}`}>
+        <p className={`text-[11px] truncate ${failed ? "text-[#FF6B6B]/80" : skipped ? "text-[var(--text-secondary)]" : "text-[var(--text-primary)]"}`}>
           {action.label}
         </p>
         {failed && action.errorMessage && (
@@ -209,9 +214,11 @@ function TimelineItem({ action, index }: { action: CompletedAction; index: numbe
       <span className={`shrink-0 text-[9px] font-medium uppercase tracking-widest px-1.5 py-0.5 rounded-sm ${
         failed
           ? "bg-[#FF6B6B]/10 text-[#FF6B6B]/70"
-          : "bg-[var(--success)]/10 text-[var(--success)]/70"
+          : skipped
+            ? "bg-[var(--text-disabled)]/10 text-[var(--text-secondary)]"
+            : "bg-[var(--success)]/10 text-[var(--success)]/70"
       }`}>
-        {failed ? "fail" : "ok"}
+        {failed ? "fail" : skipped ? "skip" : "ok"}
       </span>
     </motion.div>
   );
@@ -307,6 +314,7 @@ export function ExecutionStep() {
 
   const applied   = completed.filter((c) => c.status === "applied").length;
   const failCount = completed.filter((c) => c.status === "failed").length;
+  const skippedCount = completed.filter((c) => c.status === "skipped").length;
   const remaining = Math.max(0, totalActions - completed.length - (currentAction ? 1 : 0));
   const progress  = totalActions > 0
     ? Math.round((completed.length / totalActions) * 100)
@@ -385,7 +393,7 @@ export function ExecutionStep() {
 
         addLogEntry({ level: "info", category: "Action", message: `Starting: ${action.name}`, details: `actionId=${action.id}, phase=${action.phase}` });
 
-        let status: "applied" | "failed" = "failed";
+        let status: "applied" | "skipped" | "failed" = "failed";
         let errorMessage: string | null = null;
         const isExpert = action.provenance?.expertOnly ?? false;
         const result = await serviceCall<Record<string, unknown>>("execute.applyAction", {
@@ -399,7 +407,16 @@ export function ExecutionStep() {
         if (result.ok) {
           const rpcStatus = typeof result.data.status === "string" ? result.data.status : "failed";
           const nestedFailures = typeof result.data.failed === "number" ? result.data.failed : 0;
-          status = rpcStatus === "success" && nestedFailures === 0 ? "applied" : "failed";
+          // "skipped" means the service safely made no change (protected target,
+          // already configured, not present) — it is NOT a failure, but must not
+          // be reported as if the optimization was applied either.
+          if (nestedFailures === 0 && rpcStatus === "success") {
+            status = "applied";
+          } else if (nestedFailures === 0 && rpcStatus === "skipped") {
+            status = "skipped";
+          } else {
+            status = "failed";
+          }
           if (status === "failed") {
             errorMessage =
               (typeof result.data.error === "string" ? result.data.error : null)
@@ -428,6 +445,8 @@ export function ExecutionStep() {
         if (status === "failed") {
           localFailed++;
           addLogEntry({ level: "error", category: "Action", message: `Failed: ${action.name}`, details: errorMessage ?? undefined });
+        } else if (status === "skipped") {
+          addLogEntry({ level: "info", category: "Action", message: `Skipped: ${action.name}`, details: "No change made (protected target, already configured, or not present)." });
         } else {
           addLogEntry({ level: "success", category: "Action", message: `Applied: ${action.name}` });
         }
@@ -437,7 +456,7 @@ export function ExecutionStep() {
           planId,
           result: {
             actionId: action.id,
-            status: status === "applied" ? "success" : "failed",
+            status: status === "applied" ? "success" : status === "skipped" ? "skipped" : "failed",
             rollbackSnapshotId: null,
             errorMessage,
             durationMs: null,
@@ -758,8 +777,20 @@ export function ExecutionStep() {
               transition={{ duration: 0.35, ease: [0.25, 0.1, 0.25, 1] }}
               className="mt-4 text-center"
             >
-              <p className={`text-sm ${failCount > 0 ? "text-[var(--text-display)]" : "text-[var(--success)]"}`}>
-                {failCount > 0 ? "Completed with issues" : "All changes applied successfully"}
+              <p className={`text-sm ${
+                failCount > 0
+                  ? "text-[var(--text-display)]"
+                  : applied === 0 && skippedCount > 0
+                    ? "text-[var(--text-secondary)]"
+                    : "text-[var(--success)]"
+              }`}>
+                {failCount > 0
+                  ? "Completed with issues"
+                  : applied === 0 && skippedCount > 0
+                    ? "No changes applied — all items were skipped"
+                    : skippedCount > 0
+                      ? `Applied with ${skippedCount} item${skippedCount === 1 ? "" : "s"} skipped`
+                      : "All changes applied successfully"}
               </p>
               {completionTruth && (
                 <p className="text-[10px] text-[var(--text-secondary)] mt-1">{completionTruth}</p>

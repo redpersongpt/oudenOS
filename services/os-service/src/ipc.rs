@@ -211,6 +211,45 @@ async fn dispatch(db: &Database, req: &RpcRequest, start_time: Instant) -> RpcRe
             }
         }
 
+        // ── Elevation / restore point ────────────────────────────────────
+        "system.elevationStatus" => RpcResponse::ok(
+            id,
+            serde_json::json!({ "isElevated": crate::powershell::is_elevated() }),
+        ),
+
+        "system.restorePointStatus" => {
+            RpcResponse::ok(id, crate::restore_point::availability())
+        }
+
+        "system.createRestorePoint" => {
+            let description = params
+                .get("description")
+                .and_then(|v| v.as_str())
+                .unwrap_or("oudenOS pre-optimization restore point");
+            let outcome = crate::restore_point::create(description);
+            let status = outcome
+                .get("status")
+                .and_then(|v| v.as_str())
+                .unwrap_or("failed");
+            let severity = if status == "failed" || status == "unavailable" {
+                "error"
+            } else {
+                "info"
+            };
+            let detail = format!(
+                "restore point '{}' → {}{}",
+                description,
+                status,
+                outcome
+                    .get("error")
+                    .and_then(|v| v.as_str())
+                    .map(|e| format!(" · {}", e))
+                    .unwrap_or_default(),
+            );
+            let _ = append_audit_log(db, "system", "restore_point", &detail, severity);
+            RpcResponse::ok(id, outcome)
+        }
+
         // ── Assessment ──────────────────────────────────────────────────
         "assess.full" => {
             tracing::info!("Full system assessment requested");
@@ -352,6 +391,18 @@ async fn dispatch(db: &Database, req: &RpcRequest, start_time: Instant) -> RpcRe
                     return RpcResponse::err(id, -3, "Missing required param: actionId".into());
                 }
             };
+
+            // Fail fast with a clear message if not elevated, rather than letting
+            // each privileged PowerShell call fail mid-apply with access-denied.
+            if !crate::powershell::is_elevated() {
+                return RpcResponse::err(
+                    id,
+                    -403,
+                    "oudenOS is not running with administrator privileges. \
+                     Relaunch oudenOS as administrator before applying system changes."
+                        .into(),
+                );
+            }
 
             if is_retired_unsafe_action(action_id) {
                 return RpcResponse::err(
