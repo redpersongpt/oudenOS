@@ -19,6 +19,29 @@ if ((navigator.platform || "").toLowerCase().includes("mac")) {
   }
 }
 
+// Mac demo build: with no Tauri runtime (a plain browser, e.g. the
+// `pnpm demo:os:mac` launcher) the privileged service can never connect and the
+// Tauri "simulated mode" event never fires. Surface a persistent banner so it is
+// always obvious this is a preview and nothing is applied to the system. In the
+// real Windows app window.__TAURI__ is present, so this never shows there.
+if (!window.__TAURI__) {
+  const showDemoBanner = () => {
+    if (document.getElementById("ouden-demo-banner")) return;
+    const banner = document.createElement("div");
+    banner.id = "ouden-demo-banner";
+    banner.style.cssText =
+      "position:fixed;bottom:0;left:0;right:0;z-index:9999;background:#1d4ed8;color:white;padding:6px 16px;font-size:12px;text-align:center;font-family:system-ui";
+    banner.textContent =
+      "Demo preview — oudenOS is running without its Windows service. The UI is fully interactive, but nothing is applied to this device.";
+    document.body.appendChild(banner);
+  };
+  if (document.body) {
+    showDemoBanner();
+  } else {
+    window.addEventListener("DOMContentLoaded", showDemoBanner, { once: true });
+  }
+}
+
 // Listen for service start failure — warn user that app is in demo mode
 platform().on("service-start-failed", (error) => {
   console.error("[ouden] Service failed to start:", error);
