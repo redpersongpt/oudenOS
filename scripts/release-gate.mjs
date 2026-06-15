@@ -107,15 +107,13 @@ function unproven(name, detail = "") {
 
 console.log("  ── Cross-platform checks ──");
 
-// Check 1: Action parity
-try {
-  execSync("node scripts/validate-action-parity.mjs --quiet", { cwd: ROOT, stdio: "pipe" });
-  check("action-parity", true);
-} catch {
-  check("action-parity", false, "validate-action-parity.mjs failed");
-}
+// Action/questionnaire→plan parity is now enforced server-side by the Rust
+// resolver contract tests (services/os-service: test_build_gated_actions_resolve_by_windows_build,
+// test_build_gates_exclude_windows10_unsupported_builds, test_resolve_plan_*),
+// run via `cargo test` in the Windows proof — the client-side parity script
+// (validate-action-parity.mjs) was retired when that logic moved to Rust.
 
-// Check 2: No RELEASE_BLOCKER markers
+// Check: No RELEASE_BLOCKER markers
 try {
   const blockerOutput = execSync(
     `grep -r "RELEASE_BLOCKER" --include="*.ts" --include="*.tsx" --include="*.rs" --include="*.yaml" --include="*.yml" -l . 2>/dev/null || true`,

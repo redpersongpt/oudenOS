@@ -71,16 +71,24 @@ trigger them on the branch:
 gh workflow run os-windows-proof.yml --ref <branch>
 ```
 
-### Known pre-existing blockers (NOT introduced by the rebrand)
-- `os-windows-proof` `audit:questionnaire`/`audit:verification` import
-  `applyDecisionOverrides` from `apps/os-desktop/src/renderer/lib/playbook-decision-overrides.ts`,
-  which was **deleted** when plan resolution moved server-side (Rust
-  `services/os-service/src/playbook/resolver.rs`, covered by
-  `test_build_gated_actions_resolve_by_windows_build`). The client-side audit
-  harness (`questionnaire-execution-audit.ts`, `verification-lib.ts`) is therefore
-  unrunnable and needs a maintainer decision: rewrite to validate the server-side
-  resolver, or retire in favour of the Rust resolver tests. **Do not** fabricate the
-  removed module or delete the suite without that decision.
+### Source of truth: the Rust resolver (not client-side audits)
+Plan/questionnaire resolution (preset/profile gating, build-gating via
+`minWindowsBuild`) lives **server-side** in `services/os-service/src/playbook/resolver.rs`
++ `questionnaire.rs`, and is verified by `cargo test` in the Windows proofs:
+`test_build_gated_actions_resolve_by_windows_build`,
+`test_build_gates_exclude_windows10_unsupported_builds`, `test_resolve_plan_*`,
+`test_resolve_plan_work_pc_blocks`.
+
+The old **client-side** decision-override harness (`applyDecisionOverrides` /
+`QUESTION_BEHAVIORS` / `playbook-decision-overrides.ts`) was deleted in that move.
+Its dependent audits — `questionnaire-execution-audit.ts`, `verification-matrix.ts`,
+`verification-lib.ts`, `windows-certification-harness.ts`, and
+`scripts/validate-action-parity.mjs` — have been **retired**; do not resurrect that
+client logic. `audit:questionnaire` now runs only the still-valid data-invariant
+check (`questionnaire-invariants.mjs`: forbidden-name / fallback-action / build-gate
+data invariants). Add new resolution coverage as **Rust resolver tests**, not as a
+JS reimplementation. If a JS check ever needs resolved-plan data, read a JSON fixture
+emitted by the Rust resolver — never duplicate the resolution logic in JS.
 
 ### Cross-platform gotchas
 - Never use `new URL(import.meta.url).pathname` for filesystem paths — it yields

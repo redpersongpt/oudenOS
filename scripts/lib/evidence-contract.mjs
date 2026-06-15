@@ -17,8 +17,8 @@
  */
 export const CROSS_PLATFORM_CHECKS = [
   { id: "typecheck",       name: "TypeScript typecheck (all workspace projects)",  runner: "pnpm typecheck" },
-  { id: "action-parity",   name: "Playbook ↔ wizard structural alignment",        runner: "node scripts/validate-action-parity.mjs --quiet" },
-  { id: "schema-parity",   name: "QuestionnaireAnswers ↔ strategyQuestions match", runner: "node scripts/validate-action-parity.mjs --quiet" },
+  // Playbook↔wizard / answers↔plan parity is enforced server-side by the Rust
+  // resolver contract tests (cargo test, services/os-service), not a client script.
   { id: "no-blockers",     name: "No RELEASE_BLOCKER markers in codebase",         runner: "grep" },
   { id: "download-truth",  name: "No hardcoded download URLs in web surfaces",     runner: "grep" },
 ];

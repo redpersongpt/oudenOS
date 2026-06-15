@@ -131,8 +131,9 @@ const visibleForbiddenCopy = forbiddenNames.flatMap((term) => {
 
 // NOTE: nonExecutableFallbackIds and nonExecutableOverrideIds are NOT error conditions here.
 // The fallback JSON is a UI-side preview, not the execution manifest.
-// Execution-capability checks are done by questionnaire-execution-audit.ts which reads
-// the actual YAML playbooks. The fallback intentionally omits executionKinds.
+// Execution capability and questionnaire→plan resolution are verified server-side by
+// the Rust resolver tests (cargo test, services/os-service). The fallback intentionally
+// omits executionKinds.
 
 if (
   missingMappings.length > 0 ||

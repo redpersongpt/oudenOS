@@ -11,7 +11,6 @@ on:
       - 'services/tuning-service/**'
       - 'packages/os-shared-schema/**'
       - 'playbooks/**'
-      - 'scripts/validate-action-parity.mjs'
       - 'scripts/build-and-publish-os-release.sh'
       - '.github/workflows/build-installers.yml'
   push:
@@ -23,7 +22,6 @@ on:
       - 'services/tuning-service/**'
       - 'packages/os-shared-schema/**'
       - 'playbooks/**'
-      - 'scripts/validate-action-parity.mjs'
       - 'scripts/build-and-publish-os-release.sh'
       - '.github/workflows/build-installers.yml'
 

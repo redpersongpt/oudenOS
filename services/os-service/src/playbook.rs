@@ -571,6 +571,38 @@ mod tests {
         );
     }
 
+    /// Server-side build-gating contract — the source of truth that replaces the
+    /// retired client-side decision-override audits (questionnaire-execution-audit /
+    /// verification-matrix). On Windows 10 (22H2, build 19045) every build-specific
+    /// action must be BuildGated (Recall/ClickToDo require 26100, End Task 22631).
+    #[test]
+    fn test_build_gates_exclude_windows10_unsupported_builds() {
+        let dir = playbook_dir();
+        if !dir.exists() {
+            return;
+        }
+        let playbook = load_playbook(&dir).unwrap();
+        let plan = resolve_plan(&playbook, "gaming_desktop", "aggressive", Some(19045));
+        let actions: HashMap<String, ActionStatus> = plan
+            .phases
+            .iter()
+            .flat_map(|phase| phase.actions.iter())
+            .map(|action| (action.action.id.clone(), action.status.clone()))
+            .collect();
+
+        for id in [
+            "privacy.disable-recall",
+            "privacy.disable-click-to-do",
+            "shell.enable-end-task",
+        ] {
+            assert_eq!(
+                actions.get(id),
+                Some(&ActionStatus::BuildGated),
+                "{id} must be BuildGated on Windows 10 (build 19045)",
+            );
+        }
+    }
+
     #[test]
     fn test_guide_phases_lead_with_evidence_and_hardware() {
         let dir = playbook_dir();
