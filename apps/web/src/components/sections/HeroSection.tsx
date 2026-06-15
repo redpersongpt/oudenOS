@@ -150,7 +150,7 @@ export function HeroSection() {
                 Get Ouden
               </motion.button>
               <a
-                href="https://github.com/redpersongpt/redcoreOS"
+                href="https://github.com/redpersongpt/oudenOS"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2.5 rounded-full border border-[#333333] px-6 py-4 text-[0.92rem] font-medium text-[var(--color-ink-secondary)] transition-colors duration-200 hover:border-[#444444] hover:text-[var(--color-ink-primary)] cursor-pointer"

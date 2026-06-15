@@ -65,7 +65,7 @@ export default function Footer() {
 
         <div className="mt-12 pt-8 border-t border-white/[0.06] flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-xs text-white/30">
-            © {new Date().getFullYear()} redcore. All rights reserved. Windows is a trademark of Microsoft Corporation.
+            © {new Date().getFullYear()} oudenos. All rights reserved. Windows is a trademark of Microsoft Corporation.
           </p>
           <p className="text-xs text-white/20">
             Built for enthusiasts. Not affiliated with Microsoft.

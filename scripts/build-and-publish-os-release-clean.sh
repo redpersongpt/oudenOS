@@ -3,7 +3,7 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-WORKTREE_DIR="${WORKTREE_DIR:-$(mktemp -d "${TMPDIR:-/tmp}/redcore-os-release-worktree.XXXXXX")}"
+WORKTREE_DIR="${WORKTREE_DIR:-$(mktemp -d "${TMPDIR:-/tmp}/oudenos-os-release-worktree.XXXXXX")}"
 KEEP_WORKTREE="${KEEP_WORKTREE:-0}"
 
 cleanup() {

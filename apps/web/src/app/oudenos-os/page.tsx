@@ -10,7 +10,7 @@ import {
   CTAStrip,
   RelatedPages,
 } from "@/components/seo";
-import { getRedcoreOsDownloadState } from "@/lib/downloads";
+import { getOudenOsDownloadState } from "@/lib/downloads";
 import { RotateCcw, Monitor } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -26,13 +26,13 @@ export const metadata: Metadata = {
     "reversible windows changes",
   ],
   alternates: {
-    canonical: "https://ouden.cc/redcore-os",
+    canonical: "https://ouden.cc/oudenos-os",
   },
   openGraph: {
     title: "OudenOS — Free Windows Optimization Tool",
     description:
       "Scan your hardware, build a plan, transform your system. Free, guided, reversible.",
-    url: "https://ouden.cc/redcore-os",
+    url: "https://ouden.cc/oudenos-os",
     type: "website",
   },
 };
@@ -51,7 +51,7 @@ function buildJsonLd(downloadUrl: string | null, version: string | null) {
     },
     description:
       "Free Windows optimization tool with step-by-step debloating, 8 profiles, 250 actions, and full rollback support.",
-    url: "https://ouden.cc/redcore-os",
+    url: "https://ouden.cc/oudenos-os",
     softwareVersion: version ?? "1.0",
     featureList: [
       "Scans your hardware first",
@@ -69,8 +69,8 @@ function buildJsonLd(downloadUrl: string | null, version: string | null) {
   return ld;
 }
 
-export default async function RedcoreOSPage() {
-  const os = await getRedcoreOsDownloadState();
+export default async function OudenOSPage() {
+  const os = await getOudenOsDownloadState();
   const downloadUrl = os.available ? os.url : null;
 
   return (
@@ -183,7 +183,7 @@ export default async function RedcoreOSPage() {
             }}
             secondaryAction={{
               label: "See Ouden.Tuning",
-              href: "/redcore-tuning",
+              href: "/oudenos-tuning",
             }}
           />
 
@@ -198,7 +198,7 @@ export default async function RedcoreOSPage() {
                 title: "Ouden.Tuning",
                 description:
                   "Hardware-level optimization. CPU scheduler, timer resolution, GPU tuning, memory management. $12.99 one-time.",
-                href: "/redcore-tuning",
+                href: "/oudenos-tuning",
               },
               {
                 title: "Windows Debloat",
@@ -210,7 +210,7 @@ export default async function RedcoreOSPage() {
                 title: "Why Ouden",
                 description:
                   "How Ouden compares to blind debloat scripts and registry hacks.",
-                href: "/why-redcore",
+                href: "/why-oudenos",
               },
             ]}
           />

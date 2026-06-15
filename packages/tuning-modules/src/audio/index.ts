@@ -1,5 +1,5 @@
 // Audio Tuning Module
-// Derived from the redcore internal audio-latency notes.
+// Derived from the oudenos internal audio-latency notes.
 
 import type { TuningActionDefinition } from "../types.js";
 

@@ -9,7 +9,7 @@ import {
   CTAStrip,
   RelatedPages,
 } from "@/components/seo";
-// Download links point to /downloads which handles release truth via getRedcoreOsDownloadState().
+// Download links point to /downloads which handles release truth via getOudenOsDownloadState().
 import { Shield, RotateCcw } from "lucide-react";
 
 export const metadata: Metadata = {

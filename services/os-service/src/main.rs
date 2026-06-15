@@ -1,5 +1,5 @@
-// ─── redcore-os-service ─────────────────────────────────────────────────────
-// Privileged orchestration daemon for redcore-OS.
+// ─── oudenos-os-service ─────────────────────────────────────────────────────
+// Privileged orchestration daemon for oudenOS.
 // Communicates with the Electron shell via JSON-RPC over stdio.
 //
 // ARCHITECTURE:
@@ -35,13 +35,13 @@ async fn main() -> Result<()> {
         .with_writer(std::io::stderr)
         .with_env_filter(
             EnvFilter::try_from_default_env()
-                .unwrap_or_else(|_| EnvFilter::new("redcore_os_service=info")),
+                .unwrap_or_else(|_| EnvFilter::new("oudenos_os_service=info")),
         )
         .with_target(false)
         .json()
         .init();
 
-    tracing::info!("redcore-os-service starting");
+    tracing::info!("oudenos-os-service starting");
 
     // Initialize database
     let db = db::Database::init()?;

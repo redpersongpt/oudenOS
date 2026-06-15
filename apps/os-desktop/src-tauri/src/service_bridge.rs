@@ -80,10 +80,10 @@ impl ServiceBridge {
         cmd.creation_flags(CREATE_NO_WINDOW);
 
         if let Some(ref pb_dir) = playbook_dir {
-            cmd.env("REDCORE_PLAYBOOK_DIR", pb_dir);
+            cmd.env("OUDENOS_PLAYBOOK_DIR", pb_dir);
         }
         if let Some(ref service_data_dir) = data_dir {
-            cmd.env("REDCORE_OS_DATA_DIR", service_data_dir);
+            cmd.env("OUDENOS_OS_DATA_DIR", service_data_dir);
         }
 
         let mut child = cmd
@@ -249,22 +249,22 @@ fn detect_admin() -> bool {
 
 fn find_service_binary(resource_dir: &Path) -> Option<PathBuf> {
     let exe = if cfg!(windows) {
-        "redcore-os-service.exe"
+        "oudenos-os-service.exe"
     } else {
-        "redcore-os-service"
+        "oudenos-os-service"
     };
 
-    if let Ok(explicit_path) = std::env::var("REDCORE_OS_SERVICE_BIN") {
+    if let Ok(explicit_path) = std::env::var("OUDENOS_OS_SERVICE_BIN") {
         let candidate = PathBuf::from(explicit_path);
         if candidate.exists() {
             eprintln!(
-                "[service-bridge] using REDCORE_OS_SERVICE_BIN={}",
+                "[service-bridge] using OUDENOS_OS_SERVICE_BIN={}",
                 candidate.display()
             );
             return Some(candidate);
         }
         eprintln!(
-            "[service-bridge] REDCORE_OS_SERVICE_BIN not found: {}",
+            "[service-bridge] OUDENOS_OS_SERVICE_BIN not found: {}",
             candidate.display()
         );
     }
@@ -313,17 +313,17 @@ fn find_service_binary(resource_dir: &Path) -> Option<PathBuf> {
 }
 
 fn find_playbook_dir(resource_dir: &Path) -> Option<PathBuf> {
-    if let Ok(explicit_path) = std::env::var("REDCORE_PLAYBOOK_DIR") {
+    if let Ok(explicit_path) = std::env::var("OUDENOS_PLAYBOOK_DIR") {
         let candidate = PathBuf::from(explicit_path);
         if candidate.is_dir() {
             eprintln!(
-                "[service-bridge] using REDCORE_PLAYBOOK_DIR={}",
+                "[service-bridge] using OUDENOS_PLAYBOOK_DIR={}",
                 candidate.display()
             );
             return Some(candidate);
         }
         eprintln!(
-            "[service-bridge] REDCORE_PLAYBOOK_DIR not found: {}",
+            "[service-bridge] OUDENOS_PLAYBOOK_DIR not found: {}",
             candidate.display()
         );
     }
@@ -365,11 +365,11 @@ fn find_playbook_dir(resource_dir: &Path) -> Option<PathBuf> {
 }
 
 fn find_service_data_dir(resource_dir: &Path) -> Option<PathBuf> {
-    if let Ok(explicit_path) = std::env::var("REDCORE_OS_DATA_DIR") {
+    if let Ok(explicit_path) = std::env::var("OUDENOS_OS_DATA_DIR") {
         let candidate = PathBuf::from(explicit_path);
         if !candidate.as_os_str().is_empty() {
             eprintln!(
-                "[service-bridge] using REDCORE_OS_DATA_DIR={}",
+                "[service-bridge] using OUDENOS_OS_DATA_DIR={}",
                 candidate.display()
             );
             return Some(candidate);
@@ -388,7 +388,7 @@ fn find_service_data_dir(resource_dir: &Path) -> Option<PathBuf> {
         .unwrap_or_else(|| resource_dir.join("service-data"));
 
     eprintln!(
-        "[service-bridge] using fallback REDCORE_OS_DATA_DIR={}",
+        "[service-bridge] using fallback OUDENOS_OS_DATA_DIR={}",
         candidate.display()
     );
     Some(candidate)

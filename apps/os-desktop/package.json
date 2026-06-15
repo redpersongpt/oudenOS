@@ -2,12 +2,12 @@
   "name": "@oudenos/os-desktop",
   "version": "1.0.0",
   "private": true,
-  "description": "redcore OS desktop app (Tauri)",
+  "description": "oudenOS desktop app (Tauri)",
   "author": {
-    "name": "redcore",
-    "email": "support@redcoreos.net"
+    "name": "oudenos",
+    "email": "support@ouden.cc"
   },
-  "homepage": "https://redcoreos.net",
+  "homepage": "https://ouden.cc",
   "scripts": {
     "dev": "vite",
     "build": "vite build",

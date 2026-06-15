@@ -1,10 +1,10 @@
 // Reference Tables
-// Technical reference data curated in the redcore internal research set.
+// Technical reference data curated in the oudenos internal research set.
 // Used by both apps for expert tooltips and configuration guidance.
 
 // Win32PrioritySeparation Valid Values
 // The key only reads the first 6 bits. Values above 63 recycle.
-// Source: redcore scheduler lab note §5.1
+// Source: oudenos scheduler lab note §5.1
 
 export interface PrioritySeparationEntry {
   hex: string;
@@ -31,7 +31,7 @@ export const WIN32_PRIORITY_TABLE: PrioritySeparationEntry[] = [
 // Note: Win11 24H2 changed this table
 
 // Timer Resolution Reference
-// Source: redcore timer lab note §10
+// Source: oudenos timer lab note §10
 
 export interface TimerResolutionNote {
   topic: string;
@@ -49,7 +49,7 @@ export const TIMER_RESOLUTION_NOTES: TimerResolutionNote[] = [
 ];
 
 // Windows Version GPU Compatibility
-// Source: redcore GPU lab note §2.1
+// Source: oudenos GPU lab note §2.1
 
 export interface GpuCompatEntry {
   gpu: string;

@@ -35,14 +35,14 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
-$TASK_NAME = "RedcoreOS-RebootProof-PostReboot"
+$TASK_NAME = "OudenOS-RebootProof-PostReboot"
 
 # ─── Find service binary ────────────────────────────────────────────────────
 
 if (-not $ServicePath) {
     $candidates = @(
-        "services\os-service\target\release\redcore-os-service.exe",
-        "services\os-service\target\debug\redcore-os-service.exe"
+        "services\os-service\target\release\oudenos-os-service.exe",
+        "services\os-service\target\debug\oudenos-os-service.exe"
     )
     foreach ($c in $candidates) {
         if (Test-Path $c) { $ServicePath = $c; break }
@@ -66,7 +66,7 @@ New-Item -ItemType Directory -Force -Path $OutputDir | Out-Null
 $OutputDir = (Resolve-Path $OutputDir).Path
 
 # Save the output dir path for phase B to find
-$markerPath = Join-Path $env:LOCALAPPDATA "redcore-os\reboot-proof-dir.txt"
+$markerPath = Join-Path $env:LOCALAPPDATA "oudenos-os\reboot-proof-dir.txt"
 if ($Phase -eq "pre-reboot") {
     New-Item -ItemType Directory -Force -Path (Split-Path $markerPath) | Out-Null
     Set-Content -Path $markerPath -Value $OutputDir
@@ -76,7 +76,7 @@ if ($Phase -eq "pre-reboot") {
 }
 
 Write-Host ""
-Write-Host "  redcore OS — Reboot/Resume Proof ($Phase)"
+Write-Host "  oudenOS — Reboot/Resume Proof ($Phase)"
 Write-Host "  ──────────────────────────────────────────"
 Write-Host "  Binary:  $ServicePath"
 Write-Host "  Output:  $OutputDir"
@@ -86,7 +86,7 @@ Write-Host ""
 # ─── Service helpers ────────────────────────────────────────────────────────
 
 $playbooks = Resolve-Path "playbooks" -ErrorAction SilentlyContinue
-$env:REDCORE_PLAYBOOK_DIR = if ($playbooks) { $playbooks.Path } else { "playbooks" }
+$env:OUDENOS_PLAYBOOK_DIR = if ($playbooks) { $playbooks.Path } else { "playbooks" }
 
 $script:process = $null
 $script:requestId = 0
@@ -163,7 +163,7 @@ if ($Phase -eq "pre-reboot") {
         $createResult = Send-RPC "ledger.createPlan" @{
             package = @{
                 planId = $planId
-                packageId = "redcore-os"
+                packageId = "oudenos-os"
                 packageRole = "user-resolved"
             }
             profile = "gaming_desktop"
@@ -182,7 +182,7 @@ if ($Phase -eq "pre-reboot") {
         $applyResult = Send-RPC "execute.applyAction" @{
             actionId = "privacy.disable-advertising-id"
             journalContext = @{
-                package = @{ planId = $planId; packageId = "redcore-os"; packageRole = "user-resolved" }
+                package = @{ planId = $planId; packageId = "oudenos-os"; packageRole = "user-resolved" }
                 action = @{ actionId = "privacy.disable-advertising-id"; label = "Disable Advertising ID"; phase = "Privacy"; requiresReboot = $false; questionKeys = @(); selectedValues = @() }
             }
         }
@@ -210,7 +210,7 @@ if ($Phase -eq "pre-reboot") {
             reason = "reboot-resume-proof"
             journalContext = @{
                 plan_id = $planId
-                package_id = "redcore-os"
+                package_id = "oudenos-os"
                 package_role = "user-resolved"
             }
         }
@@ -236,7 +236,7 @@ if ($Phase -eq "pre-reboot") {
     try {
         Unregister-ScheduledTask -TaskName $TASK_NAME -Confirm:$false -ErrorAction SilentlyContinue
     } catch { }
-    Register-ScheduledTask -TaskName $TASK_NAME -Action $taskAction -Trigger $taskTrigger -Settings $taskSettings -Description "redcore OS reboot proof phase B" | Out-Null
+    Register-ScheduledTask -TaskName $TASK_NAME -Action $taskAction -Trigger $taskTrigger -Settings $taskSettings -Description "oudenOS reboot proof phase B" | Out-Null
 
     Write-Host ""
     Write-Host "  Pre-reboot phase complete."
@@ -254,8 +254,8 @@ if ($Phase -eq "pre-reboot") {
     }
 
     # On real Windows, trigger actual reboot
-    # shutdown /r /t 10 /f /c "redcore OS reboot proof"
-    Write-Host "  To reboot now: shutdown /r /t 0 /f /c `"redcore reboot proof`""
+    # shutdown /r /t 10 /f /c "oudenOS reboot proof"
+    Write-Host "  To reboot now: shutdown /r /t 0 /f /c `"oudenos reboot proof`""
     exit 0
 }
 

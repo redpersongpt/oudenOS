@@ -143,7 +143,7 @@ export function ExecutionStep() {
       addLog("info", `Applying: ${pa.action.name}`);
 
       try {
-        const outcome = (await window.redcore.service.call("tuning.applyAction", {
+        const outcome = (await window.oudenos.service.call("tuning.applyAction", {
           actionId: pa.actionId,
         })) as ActionOutcome;
 

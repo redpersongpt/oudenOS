@@ -6,7 +6,7 @@
  * 2. Rust service spawns from main process
  * 3. Preload bridge loads in the renderer
  * 4. Renderer JS executes
- * 5. window.redcore.service.call() reaches the Rust service and returns real data
+ * 5. window.oudenos.service.call() reaches the Rust service and returns real data
  *
  * Runs headless (BrowserWindow show:false) so no display is needed.
  * Outputs JSON results to stdout for CI capture.
@@ -42,7 +42,7 @@ function getServicePath() {
     "tuning-service",
     "target",
     "debug",
-    "redcore-service" + ext,
+    "oudenos-tuning-service" + ext,
   );
 }
 
@@ -184,7 +184,7 @@ app.whenReady().then(async () => {
   const testHtml = `
 <!DOCTYPE html>
 <html>
-<head><title>redcore-Tuning Smoke Test</title></head>
+<head><title>oudenOS Tuning Smoke Test</title></head>
 <body>
 <h1>Smoke Test</h1>
 <pre id="output">Running...</pre>
@@ -194,24 +194,24 @@ app.whenReady().then(async () => {
   const results = {};
 
   try {
-    output.textContent = 'Step 1: Checking window.redcore...\\n';
+    output.textContent = 'Step 1: Checking window.oudenos...\\n';
 
-    if (!window.redcore) {
-      throw new Error('window.redcore is not defined — preload failed');
+    if (!window.oudenos) {
+      throw new Error('window.oudenos is not defined — preload failed');
     }
     results.preloadLoaded = true;
-    output.textContent += 'OK: window.redcore exists\\n';
-    output.textContent += 'OK: platform = ' + window.redcore.platform + '\\n';
+    output.textContent += 'OK: window.oudenos exists\\n';
+    output.textContent += 'OK: platform = ' + window.oudenos.platform + '\\n';
 
     // Step 2: Service status
     output.textContent += '\\nStep 2: system.getServiceStatus...\\n';
-    const status = await window.redcore.service.call('system.getServiceStatus', {});
+    const status = await window.oudenos.service.call('system.getServiceStatus', {});
     results.serviceStatus = status;
     output.textContent += 'OK: version=' + status.version + ' uptime=' + status.uptime + '\\n';
 
     // Step 3: Real hardware scan
     output.textContent += '\\nStep 3: scan.hardware (REAL)...\\n';
-    const scan = await window.redcore.service.call('scan.hardware', {});
+    const scan = await window.oudenos.service.call('scan.hardware', {});
     results.scan = scan;
     output.textContent += 'OK: CPU=' + scan.cpu.brand + '\\n';
     output.textContent += 'OK: GPU=' + (scan.gpus[0]?.name || 'none') + '\\n';
@@ -220,7 +220,7 @@ app.whenReady().then(async () => {
 
     // Step 4: Generate plan
     output.textContent += '\\nStep 4: tuning.generatePlan (conservative)...\\n';
-    const plan = await window.redcore.service.call('tuning.generatePlan', {
+    const plan = await window.oudenos.service.call('tuning.generatePlan', {
       deviceProfileId: scan.id,
       preset: 'conservative',
     });
@@ -229,7 +229,7 @@ app.whenReady().then(async () => {
 
     // Step 5: Apply one action
     output.textContent += '\\nStep 5: tuning.applyAction (privacy.disable-ceip)...\\n';
-    const applyResult = await window.redcore.service.call('tuning.applyAction', {
+    const applyResult = await window.oudenos.service.call('tuning.applyAction', {
       actionId: 'privacy.disable-ceip',
     });
     results.apply = applyResult;
@@ -237,14 +237,14 @@ app.whenReady().then(async () => {
 
     // Step 6: List snapshots
     output.textContent += '\\nStep 6: rollback.listSnapshots...\\n';
-    const snapshots = await window.redcore.service.call('rollback.listSnapshots', {});
+    const snapshots = await window.oudenos.service.call('rollback.listSnapshots', {});
     results.snapshotCount = Array.isArray(snapshots) ? snapshots.length : 0;
     output.textContent += 'OK: ' + results.snapshotCount + ' snapshots\\n';
 
     // Step 7: Rollback
     if (Array.isArray(snapshots) && snapshots.length > 0) {
       output.textContent += '\\nStep 7: rollback.restore...\\n';
-      const restore = await window.redcore.service.call('rollback.restore', {
+      const restore = await window.oudenos.service.call('rollback.restore', {
         snapshotId: snapshots[0].id,
       });
       results.restore = restore;

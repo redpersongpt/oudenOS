@@ -91,7 +91,7 @@ jobs:
         run: cargo build
 
       - name: Run OS service smoke test
-        run: node scripts/smoke-test-os-service.mjs services/os-service/target/debug/redcore-os-service.exe
+        run: node scripts/smoke-test-os-service.mjs services/os-service/target/debug/oudenos-os-service.exe
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
@@ -139,7 +139,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: os-service-binary
-          path: services/os-service/target/release/redcore-os-service.exe
+          path: services/os-service/target/release/oudenos-os-service.exe
           retention-days: 7
 
   build-tuning-service:
@@ -172,11 +172,11 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: tuning-service-binary
-          path: services/tuning-service/target/release/redcore-service.exe
+          path: services/tuning-service/target/release/oudenos-tuning-service.exe
           retention-days: 7
 
   build-os-installer:
-    name: Package redcore OS Installer (Tauri)
+    name: Package oudenOS Installer (Tauri)
     if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     runs-on: windows-latest
     needs: [check-rust, build-os-service]
@@ -224,13 +224,13 @@ jobs:
           $nsis = Get-ChildItem -Path "apps/os-desktop/src-tauri/target/release/bundle/nsis/*.exe" | Select-Object -First 1
           if (-not $nsis) { throw "No NSIS installer found" }
           New-Item -ItemType Directory -Path "apps/os-desktop/dist/installers" -Force | Out-Null
-          Copy-Item $nsis.FullName "apps/os-desktop/dist/installers/redcore-os-setup.exe"
-          Write-Host "Installer: $($nsis.Name) -> redcore-os-setup.exe ($($nsis.Length) bytes)"
+          Copy-Item $nsis.FullName "apps/os-desktop/dist/installers/oudenOS-setup.exe"
+          Write-Host "Installer: $($nsis.Name) -> oudenOS-setup.exe ($($nsis.Length) bytes)"
 
       - name: Verify OS installer size
         shell: pwsh
         run: |
-          $size = (Get-Item "apps/os-desktop/dist/installers/redcore-os-setup.exe").Length
+          $size = (Get-Item "apps/os-desktop/dist/installers/oudenOS-setup.exe").Length
           if ($size -lt 2000000) {
             throw "OS installer too small: $size bytes (expected >2MB for Tauri NSIS)"
           }
@@ -239,12 +239,12 @@ jobs:
       - name: Upload OS installer
         uses: actions/upload-artifact@v4
         with:
-          name: redcore-os-installer
-          path: apps/os-desktop/dist/installers/redcore-os-setup.exe
+          name: oudenos-os-installer
+          path: apps/os-desktop/dist/installers/oudenOS-setup.exe
           retention-days: 30
 
   build-tuning-installer:
-    name: Package redcore Tuning Installer
+    name: Package oudenOS Tuning Installer
     if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     runs-on: windows-latest
     needs: [check-rust, build-tuning-service]
@@ -283,8 +283,8 @@ jobs:
       - name: Upload Tuning installer
         uses: actions/upload-artifact@v4
         with:
-          name: redcore-tuning-installer
-          path: apps/tuning-desktop/dist/installers/redcore-tuning-setup.exe
+          name: oudenos-tuning-installer
+          path: apps/tuning-desktop/dist/installers/oudenos-tuning-setup.exe
           retention-days: 30
 
   deploy-to-vds:
@@ -303,7 +303,7 @@ jobs:
       - name: Download OS installer
         uses: actions/download-artifact@v4
         with:
-          name: redcore-os-installer
+          name: oudenos-os-installer
           path: ./artifacts/os/
 
       - name: Install SSH key
@@ -320,31 +320,31 @@ jobs:
         id: prep
         run: |
           VERSION=$(node -p "require('./apps/os-desktop/package.json').version")
-          SHA=$(sha256sum ./artifacts/os/redcore-os-setup.exe | awk '{print $1}')
+          SHA=$(sha256sum ./artifacts/os/oudenOS-setup.exe | awk '{print $1}')
           COMMIT_SHA="${GITHUB_SHA::7}"
-          RELEASE_NAME="redcore-os-${VERSION}-${COMMIT_SHA}.exe"
-          SIZE=$(stat -c %s ./artifacts/os/redcore-os-setup.exe)
+          RELEASE_NAME="oudenos-os-${VERSION}-${COMMIT_SHA}.exe"
+          SIZE=$(stat -c %s ./artifacts/os/oudenOS-setup.exe)
           BUILT_AT=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
           mkdir -p ./artifacts/os/publish
 
-          cp ./artifacts/os/redcore-os-setup.exe ./artifacts/os/publish/redcore-os-setup.exe
-          cp ./artifacts/os/redcore-os-setup.exe "./artifacts/os/publish/${RELEASE_NAME}"
+          cp ./artifacts/os/oudenOS-setup.exe ./artifacts/os/publish/oudenOS-setup.exe
+          cp ./artifacts/os/oudenOS-setup.exe "./artifacts/os/publish/${RELEASE_NAME}"
 
           cat > ./artifacts/os/publish/latest.json <<JSON
           {
-            "product": "redcore-os",
+            "product": "oudenos-os",
             "channel": "latest",
             "version": "${VERSION}",
             "versionTag": "v${VERSION}-${COMMIT_SHA}",
             "commit": "${COMMIT_SHA}",
             "builtAt": "${BUILT_AT}",
-            "filename": "redcore-os-setup.exe",
+            "filename": "oudenOS-setup.exe",
             "releaseFilename": "${RELEASE_NAME}",
             "sizeBytes": ${SIZE},
             "sha256": "${SHA}",
-            "url": "https://redcoreos.net/downloads/os/redcore-os-setup.exe",
-            "releaseUrl": "https://redcoreos.net/downloads/os/releases/${RELEASE_NAME}"
+            "url": "https://ouden.cc/downloads/os/oudenOS-setup.exe",
+            "releaseUrl": "https://ouden.cc/downloads/os/releases/${RELEASE_NAME}"
           }
           JSON
 
@@ -355,22 +355,22 @@ jobs:
 
       - name: Upload installer (before manifest)
         run: |
-          ssh ${{ secrets.VDS_USER }}@${{ secrets.VDS_IP }} "mkdir -p /var/www/redcore-downloads/os/releases /var/www/redcore-downloads/os/archive"
-          scp ./artifacts/os/publish/redcore-os-setup.exe ${{ secrets.VDS_USER }}@${{ secrets.VDS_IP }}:/var/www/redcore-downloads/os/
-          scp "./artifacts/os/publish/${{ steps.prep.outputs.RELEASE_NAME }}" ${{ secrets.VDS_USER }}@${{ secrets.VDS_IP }}:/var/www/redcore-downloads/os/releases/
+          ssh ${{ secrets.VDS_USER }}@${{ secrets.VDS_IP }} "mkdir -p /var/www/oudenos-downloads/os/releases /var/www/oudenos-downloads/os/archive"
+          scp ./artifacts/os/publish/oudenOS-setup.exe ${{ secrets.VDS_USER }}@${{ secrets.VDS_IP }}:/var/www/oudenos-downloads/os/
+          scp "./artifacts/os/publish/${{ steps.prep.outputs.RELEASE_NAME }}" ${{ secrets.VDS_USER }}@${{ secrets.VDS_IP }}:/var/www/oudenos-downloads/os/releases/
 
       - name: Verify installer reachable over HTTPS
         run: |
           echo "Checking installer is publicly reachable..."
 
-          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" "https://redcoreos.net/downloads/os/redcore-os-setup.exe")
+          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" "https://ouden.cc/downloads/os/oudenOS-setup.exe")
           if [ "$HTTP_CODE" != "200" ]; then
             echo "FAIL: Installer URL returned HTTP $HTTP_CODE"
             exit 1
           fi
           echo "PASS: Installer returns HTTP 200"
 
-          REMOTE_SIZE=$(curl -sI "https://redcoreos.net/downloads/os/redcore-os-setup.exe" | grep -i content-length | awk '{print $2}' | tr -d '\r')
+          REMOTE_SIZE=$(curl -sI "https://ouden.cc/downloads/os/oudenOS-setup.exe" | grep -i content-length | awk '{print $2}' | tr -d '\r')
           EXPECTED_SIZE="${{ steps.prep.outputs.SIZE }}"
           if [ -n "$REMOTE_SIZE" ] && [ "$REMOTE_SIZE" != "$EXPECTED_SIZE" ]; then
             echo "WARN: Size mismatch — remote=$REMOTE_SIZE expected=$EXPECTED_SIZE"
@@ -378,7 +378,7 @@ jobs:
             echo "PASS: Size matches ($REMOTE_SIZE bytes)"
           fi
 
-          curl -s -o /tmp/verify-installer.exe "https://redcoreos.net/downloads/os/redcore-os-setup.exe"
+          curl -s -o /tmp/verify-installer.exe "https://ouden.cc/downloads/os/oudenOS-setup.exe"
           DOWNLOAD_SHA=$(sha256sum /tmp/verify-installer.exe | awk '{print $1}')
           EXPECTED_SHA="${{ steps.prep.outputs.SHA }}"
           if [ "$DOWNLOAD_SHA" != "$EXPECTED_SHA" ]; then
@@ -392,13 +392,13 @@ jobs:
 
       - name: Publish latest.json (after installer verified)
         run: |
-          scp ./artifacts/os/publish/latest.json ${{ secrets.VDS_USER }}@${{ secrets.VDS_IP }}:/var/www/redcore-downloads/os/
+          scp ./artifacts/os/publish/latest.json ${{ secrets.VDS_USER }}@${{ secrets.VDS_IP }}:/var/www/oudenos-downloads/os/
 
       - name: Verify latest.json reachable and coherent
         run: |
           echo "Checking latest.json is publicly reachable and coherent..."
 
-          HTTP_CODE=$(curl -s -o /tmp/verify-latest.json -w "%{http_code}" "https://redcoreos.net/downloads/os/latest.json")
+          HTTP_CODE=$(curl -s -o /tmp/verify-latest.json -w "%{http_code}" "https://ouden.cc/downloads/os/latest.json")
           if [ "$HTTP_CODE" != "200" ]; then
             echo "FAIL: latest.json returned HTTP $HTTP_CODE"
             exit 1
@@ -424,7 +424,7 @@ jobs:
           fi
           echo "PASS: Manifest SHA matches"
 
-          if [ "$MANIFEST_URL" != "https://redcoreos.net/downloads/os/redcore-os-setup.exe" ]; then
+          if [ "$MANIFEST_URL" != "https://ouden.cc/downloads/os/oudenOS-setup.exe" ]; then
             echo "FAIL: Manifest URL unexpected — $MANIFEST_URL"
             exit 1
           fi

@@ -277,7 +277,7 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
     await db
       .update(users)
       .set({
-        email: `deleted+${id}@redcore.invalid`,
+        email: `deleted+${id}@ouden.invalid`,
         name: null,
         passwordHash: null,
         avatarUrl: null,

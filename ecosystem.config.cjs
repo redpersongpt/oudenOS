@@ -1,4 +1,4 @@
-// PM2 Ecosystem Config for redcoreECO VDS deployment
+// PM2 Ecosystem Config for oudenOS VDS deployment
 const fs = require("fs");
 const path = require("path");
 
@@ -54,7 +54,7 @@ const webDatabaseUrl =
 module.exports = {
   apps: [
     {
-      name: "redcore-web",
+      name: "oudenos-web",
       cwd: "./apps/web",
       script: ".next/standalone/apps/web/server.js",
       env: {

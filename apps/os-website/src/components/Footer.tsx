@@ -24,7 +24,7 @@ export function Footer() {
                 <div className="h-2.5 w-2.5 rounded-sm bg-brand-500" />
               </div>
               <span className="text-sm font-semibold tracking-tight text-neutral-200">
-                redcore-OS
+                oudenOS
               </span>
             </Link>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-neutral-500">
@@ -72,7 +72,7 @@ export function Footer() {
 
         <div className="mt-16 flex flex-col items-center justify-between gap-4 border-t border-white/[0.06] pt-8 sm:flex-row">
           <p className="text-xs text-neutral-600">
-            {new Date().getFullYear()} redcore-OS. All rights reserved.
+            {new Date().getFullYear()} oudenOS. All rights reserved.
           </p>
           <p className="text-xs text-neutral-600">
             Windows is a registered trademark of Microsoft Corporation.

@@ -1,5 +1,5 @@
 // Power Tuning Module
-// Derived from the redcore internal power-management notes.
+// Derived from the oudenos internal power-management notes.
 
 import type { TuningActionDefinition } from "../types.js";
 

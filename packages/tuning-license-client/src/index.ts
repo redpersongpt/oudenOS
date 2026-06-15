@@ -178,7 +178,7 @@ export function generateDeviceFingerprint(): string {
 
   return crypto
     .createHash("sha256")
-    .update(`redcore:${hostname}:${platform}`)
+    .update(`oudenos:${hostname}:${platform}`)
     .digest("hex")
     .slice(0, 40);
 }
@@ -238,7 +238,7 @@ async function validateRemote(
 
 function deriveCacheKey(deviceFingerprint: string): Buffer {
   // Derive AES-256 key from device fingerprint + app salt
-  const salt = Buffer.from("redcore-license-cache-v1", "utf8");
+  const salt = Buffer.from("oudenos-license-cache-v1", "utf8");
   return crypto.pbkdf2Sync(deviceFingerprint, salt, 10000, 32, "sha256");
 }
 

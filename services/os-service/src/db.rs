@@ -1,5 +1,5 @@
 // ─── Database ───────────────────────────────────────────────────────────────
-// SQLite state store for redcore-OS service.
+// SQLite state store for oudenOS service.
 // Tables: assessments, classifications, transform_plans, action_outcomes,
 //         rollback_snapshots, audit_log.
 
@@ -17,7 +17,7 @@ impl Database {
         let data_dir = Self::data_dir();
         std::fs::create_dir_all(&data_dir)?;
 
-        let path = data_dir.join("redcore-os.db");
+        let path = data_dir.join("oudenos-os.db");
         let conn = Connection::open(&path)?;
 
         conn.execute_batch("PRAGMA journal_mode=WAL;")?;
@@ -37,7 +37,7 @@ impl Database {
     }
 
     fn data_dir() -> PathBuf {
-        if let Ok(explicit_dir) = std::env::var("REDCORE_OS_DATA_DIR") {
+        if let Ok(explicit_dir) = std::env::var("OUDENOS_OS_DATA_DIR") {
             let candidate = PathBuf::from(explicit_dir);
             if !candidate.as_os_str().is_empty() {
                 return candidate;
@@ -48,7 +48,7 @@ impl Database {
         {
             let appdata = std::env::var("LOCALAPPDATA")
                 .unwrap_or_else(|_| "C:\\Users\\Default\\AppData\\Local".to_string());
-            PathBuf::from(appdata).join("redcore-os")
+            PathBuf::from(appdata).join("oudenos-os")
         }
         #[cfg(not(windows))]
         {

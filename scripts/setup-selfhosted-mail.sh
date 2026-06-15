@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-DOMAIN="${DOMAIN:-redcoreos.net}"
-MAIL_HOST="${MAIL_HOST:-redcoreos.net}"
+DOMAIN="${DOMAIN:-ouden.cc}"
+MAIL_HOST="${MAIL_HOST:-ouden.cc}"
 MAIL_FQDN="${MAIL_FQDN:-mail.${DOMAIN}}"
 MAIL_ROOT="${MAIL_ROOT:-/srv/mailboxes}"
 CERT_BASE="${CERT_BASE:-/etc/letsencrypt/live/${MAIL_HOST}}"
@@ -37,9 +37,9 @@ SUPPORT_PASS="$(openssl rand -base64 24 | tr -d '\n')"
 NOREPLY_PASS="$(openssl rand -base64 24 | tr -d '\n')"
 printf 'info:%s\nsupport:%s\nnoreply:%s\n' "${INFO_PASS}" "${SUPPORT_PASS}" "${NOREPLY_PASS}" | chpasswd
 
-install -m 600 -o root -g root /dev/null /root/redcore-mail-credentials.txt
-cat >/root/redcore-mail-credentials.txt <<CREDS
-redcore self-hosted mail credentials
+install -m 600 -o root -g root /dev/null /root/oudenos-mail-credentials.txt
+cat >/root/oudenos-mail-credentials.txt <<CREDS
+oudenos self-hosted mail credentials
 domain: ${DOMAIN}
 imap host: ${MAIL_HOST}
 smtp host: ${MAIL_HOST}
@@ -233,5 +233,5 @@ echo
 echo "DKIM record:"
 cat "/etc/opendkim/keys/${DOMAIN}/${DKIM_SELECTOR}.txt"
 echo
-echo "Credentials saved to /root/redcore-mail-credentials.txt"
+echo "Credentials saved to /root/oudenos-mail-credentials.txt"
 echo "Important: add A record ${MAIL_FQDN} -> server IP if your MX points there."

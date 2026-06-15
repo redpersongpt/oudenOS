@@ -12,7 +12,7 @@ impl Database {
         let data_dir = Self::data_dir();
         std::fs::create_dir_all(&data_dir)?;
 
-        let path = data_dir.join("redcore.db");
+        let path = data_dir.join("oudenos.db");
         let conn = Connection::open(&path)?;
 
         conn.execute_batch("PRAGMA journal_mode=WAL;")?;
@@ -36,7 +36,7 @@ impl Database {
         {
             let appdata = std::env::var("LOCALAPPDATA")
                 .unwrap_or_else(|_| "C:\\ProgramData".to_string());
-            PathBuf::from(appdata).join("redcore-tuning")
+            PathBuf::from(appdata).join("oudenos-tuning")
         }
         #[cfg(not(windows))]
         {

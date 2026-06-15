@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
       product: "tuning",
     },
     success_url: `${appUrl}/profile?purchased=true`,
-    cancel_url: `${appUrl}/redcore-tuning`,
+    cancel_url: `${appUrl}/oudenos-tuning`,
   });
 
   return NextResponse.json({ url: checkoutSession.url });

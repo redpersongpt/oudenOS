@@ -135,8 +135,8 @@ async fn assess_simulated() -> anyhow::Result<serde_json::Value> {
 
     let now = chrono::Utc::now().to_rfc3339();
 
-    let vm_data = if std::env::var("REDCORE_SIMULATE_VM").is_ok() {
-        tracing::info!("[simulated] REDCORE_SIMULATE_VM set — reporting as virtual machine");
+    let vm_data = if std::env::var("OUDENOS_SIMULATE_VM").is_ok() {
+        tracing::info!("[simulated] OUDENOS_SIMULATE_VM set — reporting as virtual machine");
         serde_json::json!({
             "manufacturer": "QEMU",
             "model": "Simulated Virtual Machine",

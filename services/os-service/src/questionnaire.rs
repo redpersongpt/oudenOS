@@ -298,7 +298,7 @@ fn package_refs() -> WizardPackageRefs {
         execution_journal_ref: "state/execution-journal.json".to_string(),
         injection_metadata_ref: "state/injection-metadata.json".to_string(),
         plan_id: None,
-        package_id: Some("redcore-os".to_string()),
+        package_id: Some("oudenos-os".to_string()),
         package_role: Some("user-resolved".to_string()),
         package_version: Some("1.0".to_string()),
         package_source_ref: Some("wizard/questionnaire.json".to_string()),

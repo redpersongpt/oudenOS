@@ -1,5 +1,5 @@
 // Cloud API Client
-// JWT-authenticated HTTP client for the redcore cloud API.
+// JWT-authenticated HTTP client for the oudenos cloud API.
 // Handles automatic token refresh on 401 and network error normalization.
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -10,7 +10,7 @@ if (_configuredUrl && !_configuredUrl.startsWith("https://") && !_configuredUrl.
   throw new Error(`VITE_API_URL must use HTTPS, got: ${_configuredUrl}`);
 }
 
-const RAW_BASE_URL: string = _configuredUrl || "https://api.redcoreos.net";
+const RAW_BASE_URL: string = _configuredUrl || "https://api.ouden.cc";
 const BASE_URL: string = RAW_BASE_URL.endsWith("/v1")
   ? RAW_BASE_URL
   : `${RAW_BASE_URL.replace(/\/$/, "")}/v1`;

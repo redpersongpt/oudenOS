@@ -232,9 +232,9 @@ const features = [
     icon: Zap,
   },
   {
-    title: 'redcore-Tuning Handoff',
+    title: 'oudenOS Tuning Handoff',
     description:
-      'When the wizard completes, hand off to redcore-Tuning for ongoing performance monitoring.',
+      'When the wizard completes, hand off to oudenOS Tuning for ongoing performance monitoring.',
     icon: ArrowRight,
   },
 ] as const
@@ -310,7 +310,7 @@ const profiles: ProfileData[] = [
 const testimonials = [
   {
     quote:
-      'Ran redcore-OS on 12 office machines. Every one came back faster, and our domain join, printers, and VPN were untouched. Exactly what we needed.',
+      'Ran oudenOS on 12 office machines. Every one came back faster, and our domain join, printers, and VPN were untouched. Exactly what we needed.',
     name: 'Marcus Webb',
     role: 'IT Manager, Greenfield Associates',
   },

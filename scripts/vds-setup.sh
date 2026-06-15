@@ -1,6 +1,6 @@
 #!/bin/bash
 # ═══════════════════════════════════════════════════════════════════════════════
-# redcoreECO — VDS Server Setup Script
+# oudenOS — VDS Server Setup Script
 # ═══════════════════════════════════════════════════════════════════════════════
 # Run this on the VDS as root (or with sudo):
 #   ssh ubuntu@YOUR_VDS_IP
@@ -19,7 +19,7 @@
 set -euo pipefail
 
 echo "╔══════════════════════════════════════════╗"
-echo "║  redcoreECO VDS Setup                    ║"
+echo "║  oudenOS VDS Setup                    ║"
 echo "╚══════════════════════════════════════════╝"
 echo ""
 
@@ -44,9 +44,9 @@ fi
 
 # Create database and user
 DB_PASS=$(openssl rand -hex 16)
-sudo -u postgres psql -c "CREATE USER redcore WITH PASSWORD '${DB_PASS}' CREATEDB;" 2>/dev/null || echo "  User already exists"
-sudo -u postgres psql -c "CREATE DATABASE redcore OWNER redcore;" 2>/dev/null || echo "  Database already exists"
-echo "  Database: redcore, User: redcore"
+sudo -u postgres psql -c "CREATE USER oudenos WITH PASSWORD '${DB_PASS}' CREATEDB;" 2>/dev/null || echo "  User already exists"
+sudo -u postgres psql -c "CREATE DATABASE oudenos OWNER oudenos;" 2>/dev/null || echo "  Database already exists"
+echo "  Database: oudenos, User: oudenos"
 echo "  Password will be written to .env (not logged for security)"
 
 # ─── 3. Node.js 22 LTS ────────────────────────────────────────────────────
@@ -116,50 +116,50 @@ echo "  Rust + MinGW + NSIS + Wine + Xvfb ready"
 # ─── 9. Caddy Config ─────────────────────────────────────────────────────
 echo "── 9. Caddy config ──"
 cat > /etc/caddy/Caddyfile << 'CADDYEOF'
-# ─── redcoreECO Reverse Proxy ────────────────────────────────────────────
+# ─── oudenOS Reverse Proxy ────────────────────────────────────────────
 
-redcoreos.net {
+ouden.cc {
     reverse_proxy localhost:3000
     encode gzip
 }
 
-tuning-api.redcoreos.net {
+tuning-api.ouden.cc {
     reverse_proxy localhost:3001
     encode gzip
 }
 
-os-api.redcoreos.net {
+os-api.ouden.cc {
     reverse_proxy localhost:3002
     encode gzip
 }
 
-api.redcoreos.net {
+api.ouden.cc {
     reverse_proxy localhost:3003
     encode gzip
 }
 CADDYEOF
 
 systemctl restart caddy
-echo "  Caddy configured for redcoreos.net + subdomains"
+echo "  Caddy configured for ouden.cc + subdomains"
 
 # ─── 10. App Directory ───────────────────────────────────────────────────
 echo "── 10. App directory ──"
-mkdir -p /home/ubuntu/redcoreECO
-chown ubuntu:ubuntu /home/ubuntu/redcoreECO
-echo "  /home/ubuntu/redcoreECO ready"
+mkdir -p /home/ubuntu/oudenOS
+chown ubuntu:ubuntu /home/ubuntu/oudenOS
+echo "  /home/ubuntu/oudenOS ready"
 
 # ─── 11. Environment Template ────────────────────────────────────────────
 echo "── 11. Environment template ──"
 JWT_SECRET_VALUE=$(openssl rand -hex 32)
 NEXTAUTH_SECRET_VALUE=$(openssl rand -hex 32)
-cat > /home/ubuntu/redcoreECO/.env << ENVEOF
+cat > /home/ubuntu/oudenOS/.env << ENVEOF
 # ─── Shared across all services ──────────────────────────────────────────
-DATABASE_URL=postgres://redcore:${DB_PASS}@localhost:5432/redcore
+DATABASE_URL=postgres://oudenos:${DB_PASS}@localhost:5432/oudenos
 JWT_SECRET=${JWT_SECRET_VALUE}
 NODE_ENV=production
 
 # ─── Web (Next.js) ──────────────────────────────────────────────────────
-NEXTAUTH_URL=https://redcoreos.net
+NEXTAUTH_URL=https://ouden.cc
 NEXTAUTH_SECRET=${NEXTAUTH_SECRET_VALUE}
 GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
@@ -169,12 +169,12 @@ STRIPE_SECRET_KEY=
 STRIPE_WEBHOOK_SECRET=
 
 # ─── cloud-api ───────────────────────────────────────────────────────────
-APP_URL=https://redcoreos.net
-OS_APP_URL=https://redcoreos.net
-CORS_ORIGINS=https://redcoreos.net
-ALLOWED_REDIRECT_HOSTS=redcoreos.net
+APP_URL=https://ouden.cc
+OS_APP_URL=https://ouden.cc
+CORS_ORIGINS=https://ouden.cc
+ALLOWED_REDIRECT_HOSTS=ouden.cc
 SENDGRID_API_KEY=
-EMAIL_FROM=noreply@redcoreos.net
+EMAIL_FROM=noreply@ouden.cc
 STRIPE_PRICE_PREMIUM_MONTHLY=
 STRIPE_PRICE_PREMIUM_ANNUAL=
 STRIPE_PRICE_EXPERT_MONTHLY=
@@ -187,25 +187,25 @@ TUNING_API_PORT=3001
 OS_API_PORT=3002
 ENVEOF
 
-chown ubuntu:ubuntu /home/ubuntu/redcoreECO/.env
-echo "  .env template created at /home/ubuntu/redcoreECO/.env"
+chown ubuntu:ubuntu /home/ubuntu/oudenOS/.env
+echo "  .env template created at /home/ubuntu/oudenOS/.env"
 
 # ─── Done ─────────────────────────────────────────────────────────────────
 echo ""
 echo "╔══════════════════════════════════════════╗"
 echo "║  VDS SETUP COMPLETE                      ║"
 echo "╠══════════════════════════════════════════╣"
-echo "║  PostgreSQL: localhost:5432/redcore       ║"
-echo "║  Caddy: redcoreos.net (auto-HTTPS)       ║"
+echo "║  PostgreSQL: localhost:5432/oudenos       ║"
+echo "║  Caddy: ouden.cc (auto-HTTPS)       ║"
 echo "║  PM2: ready for app deployment            ║"
 echo "║  Node.js: $(node -v)                     ║"
 echo "╚══════════════════════════════════════════╝"
 echo ""
 echo "NEXT STEPS:"
-echo "  1. Edit /home/ubuntu/redcoreECO/.env — set real passwords and API keys"
-echo "  2. Point DNS: redcoreos.net → <YOUR_VDS_IP>"
-echo "  3. Point DNS: tuning-api.redcoreos.net → <YOUR_VDS_IP>"
-echo "  4. Point DNS: os-api.redcoreos.net → <YOUR_VDS_IP>"
-echo "  5. Point DNS: api.redcoreos.net → <YOUR_VDS_IP>"
+echo "  1. Edit /home/ubuntu/oudenOS/.env — set real passwords and API keys"
+echo "  2. Point DNS: ouden.cc → <YOUR_VDS_IP>"
+echo "  3. Point DNS: tuning-api.ouden.cc → <YOUR_VDS_IP>"
+echo "  4. Point DNS: os-api.ouden.cc → <YOUR_VDS_IP>"
+echo "  5. Point DNS: api.ouden.cc → <YOUR_VDS_IP>"
 echo "  6. Clone repo and deploy apps"
 echo "  7. CHANGE YOUR SSH PASSWORD: passwd"

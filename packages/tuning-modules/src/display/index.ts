@@ -1,5 +1,5 @@
 // Display Tuning Module
-// Derived from the redcore internal display-tuning notes.
+// Derived from the oudenos internal display-tuning notes.
 
 import type { TuningActionDefinition } from "../types.js";
 

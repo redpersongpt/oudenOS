@@ -31,10 +31,10 @@ const binaryArg = process.argv[2];
 const candidates = binaryArg
   ? [resolve(binaryArg)]
   : [
-      resolve(ROOT, "services/os-service/target/release/redcore-os-service.exe"),
-      resolve(ROOT, "services/os-service/target/release/redcore-os-service"),
-      resolve(ROOT, "services/os-service/target/debug/redcore-os-service.exe"),
-      resolve(ROOT, "services/os-service/target/debug/redcore-os-service"),
+      resolve(ROOT, "services/os-service/target/release/oudenos-os-service.exe"),
+      resolve(ROOT, "services/os-service/target/release/oudenos-os-service"),
+      resolve(ROOT, "services/os-service/target/debug/oudenos-os-service.exe"),
+      resolve(ROOT, "services/os-service/target/debug/oudenos-os-service"),
     ];
 
 // ─── Safe read-only RPC commands to exercise ────────────────────────────────
@@ -137,7 +137,7 @@ async function run() {
   }
 
   console.log("");
-  console.log("  redcore OS — Service Smoke Test");
+  console.log("  oudenOS — Service Smoke Test");
   console.log("  ───────────────────────────────");
   console.log(`  Binary: ${binaryPath}`);
   console.log("");
@@ -147,8 +147,8 @@ async function run() {
     stdio: ["pipe", "pipe", "pipe"],
     env: {
       ...process.env,
-      RUST_LOG: "redcore_os_service=warn",
-      REDCORE_PLAYBOOK_DIR: resolve(ROOT, "playbooks"),
+      RUST_LOG: "oudenos_os_service=warn",
+      OUDENOS_PLAYBOOK_DIR: resolve(ROOT, "playbooks"),
     },
     timeout: 30000,
   });

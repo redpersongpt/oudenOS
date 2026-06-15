@@ -9,7 +9,7 @@ import {
   CTAStrip,
   RelatedPages,
 } from "@/components/seo";
-import { getRedcoreOsDownloadState } from "@/lib/downloads";
+import { getOudenOsDownloadState } from "@/lib/downloads";
 import { Cpu, RotateCcw, Shield } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -24,20 +24,20 @@ export const metadata: Metadata = {
     "windows debloat tool",
   ],
   alternates: {
-    canonical: "https://ouden.cc/why-redcore",
+    canonical: "https://ouden.cc/why-oudenos",
   },
   openGraph: {
     title:
       "Why Ouden — Guided Optimization vs Blind Debloat Scripts",
     description:
       "Scans your PC first, adapts to what it finds, safe for work PCs, and every change is reversible.",
-    url: "https://ouden.cc/why-redcore",
+    url: "https://ouden.cc/why-oudenos",
     type: "article",
   },
 };
 
-export default async function WhyRedcorePage() {
-  const os = await getRedcoreOsDownloadState();
+export default async function WhyOudenPage() {
+  const os = await getOudenOsDownloadState();
 
   return (
     <>
@@ -114,7 +114,7 @@ export default async function WhyRedcorePage() {
             }}
             secondaryAction={{
               label: "Learn about OudenOS",
-              href: "/redcore-os",
+              href: "/oudenos-os",
             }}
           />
 
@@ -124,13 +124,13 @@ export default async function WhyRedcorePage() {
                 title: "OudenOS",
                 description:
                   "Free Windows optimization tool. 8 profiles, 250 actions, full rollback.",
-                href: "/redcore-os",
+                href: "/oudenos-os",
               },
               {
                 title: "Ouden.Tuning",
                 description:
                   "Hardware-level optimization for CPU, GPU, memory, and disk. $12.99 one-time.",
-                href: "/redcore-tuning",
+                href: "/oudenos-tuning",
               },
               {
                 title: "Windows Debloat",

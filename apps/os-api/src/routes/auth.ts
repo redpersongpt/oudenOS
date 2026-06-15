@@ -687,7 +687,7 @@ export default async function authRoutes(app: FastifyInstance): Promise<void> {
         }
       } else {
         // Apple sometimes doesn't provide email — create with placeholder
-        const placeholderEmail = `apple_${appleUser.id}@private.redcore-os.com`;
+        const placeholderEmail = `apple_${appleUser.id}@private.ouden.cc`;
         const [newUser] = await db
           .insert(users)
           .values({

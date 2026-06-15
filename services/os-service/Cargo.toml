@@ -1,5 +1,5 @@
 [package]
-name = "redcore-os-service"
+name = "oudenos-os-service"
 version = "0.1.0"
 edition = "2021"
 

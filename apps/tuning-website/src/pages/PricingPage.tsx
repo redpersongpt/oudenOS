@@ -189,7 +189,7 @@ export default function PricingPage() {
           <p className="text-sm text-white/30">
             Need multi-seat licensing for a team or organization?{" "}
             <a
-              href="mailto:enterprise@redcore-tuning.com"
+              href="mailto:enterprise@ouden.cc"
               className="text-white/50 hover:text-white underline underline-offset-2 transition-colors"
             >
               Contact us

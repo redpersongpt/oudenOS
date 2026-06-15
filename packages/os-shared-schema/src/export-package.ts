@@ -1,7 +1,7 @@
 export type OsPackageKind = "wizard-template" | "user-resolved";
 
 export interface OsPackageReleaseMetadata {
-  product: "redcore-os";
+  product: "oudenos-os";
   packageRole?: OsPackageKind;
   artifactName?: string;
   version: string;
@@ -86,7 +86,7 @@ export interface OsPackageExecutionJournalEntry {
 }
 
 export interface OsPackageManifest {
-  format: "redcore-os-apbx";
+  format: "oudenos-os-apbx";
   formatVersion: 1;
   packageKind: OsPackageKind;
   packageId: string;

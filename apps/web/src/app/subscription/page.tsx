@@ -40,7 +40,7 @@ export default function SubscriptionPage() {
               <Link href="/downloads" className="text-[13px] font-medium text-[var(--accent)] hover:text-[var(--accent)]-bright transition-colors">
                 Download OudenOS
               </Link>
-              <Link href="/redcore-tuning" className="text-[13px] font-medium text-[var(--accent)] hover:text-[var(--accent)]-bright transition-colors">
+              <Link href="/oudenos-tuning" className="text-[13px] font-medium text-[var(--accent)] hover:text-[var(--accent)]-bright transition-colors">
                 View Ouden.Tuning
               </Link>
             </div>

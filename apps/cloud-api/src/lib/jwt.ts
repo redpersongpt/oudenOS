@@ -14,9 +14,9 @@ import {
 // jose v6 uses CryptoKey/Uint8Array as key types
 type KeyLike = Awaited<ReturnType<typeof importPKCS8>>;
 
-const ISSUER = "redcore-cloud-api";
-const AUDIENCE_ACCESS = "redcore-app";
-const AUDIENCE_LICENSE = "redcore-license";
+const ISSUER = "oudenos-cloud-api";
+const AUDIENCE_ACCESS = "oudenos-app";
+const AUDIENCE_LICENSE = "oudenos-license";
 
 // Key helpers
 

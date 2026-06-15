@@ -14,8 +14,8 @@ winget install OpenJS.NodeJS.LTS
 npm install -g pnpm
 
 # 3. Clone and install
-git clone https://github.com/redpersongpt/redcoreECO.git
-cd redcoreECO
+git clone https://github.com/redpersongpt/oudenOS.git
+cd oudenOS
 pnpm install
 
 # 4. Build the Rust service (debug, faster)
@@ -49,7 +49,7 @@ cargo tauri dev
 - [ ] Frameless — no Windows title bar
 - [ ] Dark background (#1e1e22 or close)
 - [ ] No white flash on startup
-- [ ] Window title bar area shows "redcore · OS" text
+- [ ] Window title bar area shows "oudenos · OS" text
 - [ ] Minimize button works
 - [ ] Close button works
 - [ ] Window is resizable (drag edges)
@@ -135,4 +135,4 @@ cargo tauri build --config src-tauri/tauri.conf.production.json
 - [ ] Start Menu shortcut created
 - [ ] Launching from shortcut opens the app
 - [ ] App runs with elevation (if installed as admin)
-- [ ] Uninstaller works (Settings > Apps > redcore OS > Uninstall)
+- [ ] Uninstaller works (Settings > Apps > oudenOS > Uninstall)

@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: redcore-web
+    name: oudenos-web
     runtime: node
     region: oregon
     plan: starter

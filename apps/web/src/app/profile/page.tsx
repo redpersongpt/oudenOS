@@ -260,7 +260,7 @@ export default function ProfilePage() {
                   No license keys yet. Buy Ouden.Tuning once and your license key will appear here.
                 </p>
                 <a
-                  href="/redcore-tuning"
+                  href="/oudenos-tuning"
                   className="inline-flex items-center justify-center h-10 px-6 text-[13px] font-medium rounded-lg text-[var(--text-primary)] border border-[var(--border)] bg-[var(--surface-raised)] hover:border-[var(--border-visible)] transition-colors"
                 >
                   Buy Ouden.Tuning — $12.99 one-time

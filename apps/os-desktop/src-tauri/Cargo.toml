@@ -1,13 +1,13 @@
 [package]
-name = "redcore-os-desktop"
+name = "oudenos-os-desktop"
 version = "1.0.0"
-description = "redcore OS desktop app"
-authors = ["redcore"]
+description = "oudenOS desktop app"
+authors = ["oudenos"]
 edition = "2021"
 default-run = "OudenOS"
 
 [lib]
-name = "redcore_os_desktop"
+name = "oudenos_os_desktop"
 crate-type = ["lib", "cdylib", "staticlib"]
 
 [[bin]]

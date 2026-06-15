@@ -6,24 +6,24 @@ from PIL import Image
 
 
 ROOT = Path(__file__).resolve().parent.parent
-SOURCE = ROOT / "apps/web/public/redcore-logo.png"
+SOURCE = ROOT / "apps/web/public/oudenos-logo.png"
 
 PNG_TARGETS = [
-    ROOT / "apps/web/public/redcore-icon.png",
+    ROOT / "apps/web/public/oudenos-icon.png",
     ROOT / "apps/web/public/favicon.png",
     ROOT / "apps/web/src/app/icon.png",
     ROOT / "apps/web/src/app/apple-icon.png",
-    ROOT / "apps/os-desktop/resources/redcore-icon.png",
+    ROOT / "apps/os-desktop/resources/oudenos-icon.png",
     ROOT / "apps/os-desktop/resources/icon.png",
     ROOT / "apps/os-desktop/resources/favicon.png",
-    ROOT / "apps/tuning-desktop/resources/redcore-icon.png",
+    ROOT / "apps/tuning-desktop/resources/oudenos-icon.png",
     ROOT / "apps/tuning-desktop/resources/favicon.png",
 ]
 
 ICO_TARGETS = [
     ROOT / "apps/web/src/app/favicon.ico",
-    ROOT / "apps/os-desktop/resources/redcore-icon.ico",
-    ROOT / "apps/tuning-desktop/resources/redcore-icon.ico",
+    ROOT / "apps/os-desktop/resources/oudenos-icon.ico",
+    ROOT / "apps/tuning-desktop/resources/oudenos-icon.ico",
 ]
 
 PNG_SIZE = 512

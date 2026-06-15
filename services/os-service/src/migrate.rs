@@ -67,7 +67,7 @@ struct LegacyAction {
 }
 
 fn sidecar_path() -> PathBuf {
-    if let Ok(explicit_dir) = std::env::var("REDCORE_OS_DATA_DIR") {
+    if let Ok(explicit_dir) = std::env::var("OUDENOS_OS_DATA_DIR") {
         let candidate = PathBuf::from(explicit_dir);
         if !candidate.as_os_str().is_empty() {
             return candidate.join("resume-journal.json");
@@ -79,7 +79,7 @@ fn sidecar_path() -> PathBuf {
         let base = std::env::var("LOCALAPPDATA")
             .unwrap_or_else(|_| "C:\\Users\\Default\\AppData\\Local".to_string());
         PathBuf::from(base)
-            .join("redcore-os")
+            .join("oudenos-os")
             .join("resume-journal.json")
     }
 

@@ -3,7 +3,7 @@ param(
   [Parameter(Mandatory = $true)]
   [string]$IsoPath,
 
-  [string]$ApbxPath = (Join-Path $PSScriptRoot "..\artifacts\os-apbx-package\redcore-os-template.apbx"),
+  [string]$ApbxPath = (Join-Path $PSScriptRoot "..\artifacts\os-apbx-package\oudenos-os-template.apbx"),
 
   [string]$WizardBundlePath = "",
 
@@ -29,7 +29,7 @@ $resolvedIso = (Resolve-Path $IsoPath).Path
 $resolvedWorking = [System.IO.Path]::GetFullPath($WorkingDirectory)
 
 $isoRoot = Join-Path $resolvedWorking "iso-root"
-$packageCarrierRoot = Join-Path $isoRoot "sources\$OEM$\$1\redcore\packages"
+$packageCarrierRoot = Join-Path $isoRoot "sources\$OEM$\$1\oudenos\packages"
 $wizardRoot = $null
 $mountPath = $null
 $mountedImage = $null
@@ -90,14 +90,14 @@ if ($ApbxPath -and (Test-Path $ApbxPath)) {
     ($staging.injectPath -replace "/", "\")
   }
   else {
-    "sources\$OEM$\$1\redcore\wizard"
+    "sources\$OEM$\$1\oudenos\wizard"
   }
 
   $wizardRoot = Join-Path $isoRoot $injectPath
   New-Item -ItemType Directory -Path $wizardRoot -Force | Out-Null
   New-Item -ItemType Directory -Path $packageCarrierRoot -Force | Out-Null
 
-  Copy-Item $resolvedApbx (Join-Path $packageCarrierRoot "redcore-os.apbx") -Force
+  Copy-Item $resolvedApbx (Join-Path $packageCarrierRoot "oudenos-os.apbx") -Force
 
   $payloadItems = @(
     "manifest.json",
@@ -118,9 +118,9 @@ if ($ApbxPath -and (Test-Path $ApbxPath)) {
 }
 elseif ($WizardBundlePath -and (Test-Path $WizardBundlePath)) {
   $resolvedBundle = (Resolve-Path $WizardBundlePath).Path
-  $wizardRoot = Join-Path $isoRoot "sources\$OEM$\$1\redcore\wizard"
+  $wizardRoot = Join-Path $isoRoot "sources\$OEM$\$1\oudenos\wizard"
   New-Item -ItemType Directory -Path $wizardRoot -Force | Out-Null
-  Copy-Item $resolvedBundle (Join-Path $wizardRoot "redcore-os-wizard-playbook.zip") -Force
+  Copy-Item $resolvedBundle (Join-Path $wizardRoot "oudenos-os-wizard-playbook.zip") -Force
 }
 else {
   throw "Provide a valid -ApbxPath or -WizardBundlePath."
@@ -142,7 +142,7 @@ $metadata = @{
   }
 }
 
-$metadata | ConvertTo-Json -Depth 6 | Set-Content (Join-Path $wizardRoot "redcore-iso-injection.json")
+$metadata | ConvertTo-Json -Depth 6 | Set-Content (Join-Path $wizardRoot "oudenos-iso-injection.json")
 
 if ($OutputIsoPath) {
   $oscdimg = Get-Command oscdimg -ErrorAction SilentlyContinue

@@ -69,7 +69,7 @@ const ALLOWED_EVENTS: ReadonlySet<string> = new Set([
 
 // API Definition
 
-export interface RedcoreAPI {
+export interface OudenAPI {
   // Window controls
   window: {
     minimize: () => void;
@@ -102,7 +102,7 @@ export interface RedcoreAPI {
   platform: NodeJS.Platform;
 }
 
-const api: RedcoreAPI = {
+const api: OudenAPI = {
   window: {
     minimize: () => ipcRenderer.send("window:minimize"),
     maximize: () => ipcRenderer.send("window:maximize"),
@@ -145,4 +145,4 @@ const api: RedcoreAPI = {
   platform: process.platform,
 };
 
-contextBridge.exposeInMainWorld("redcore", api);
+contextBridge.exposeInMainWorld("oudenos", api);

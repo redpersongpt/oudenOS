@@ -53,7 +53,7 @@ if (!proofDir) {
 const env = getEnvironmentCapabilities();
 
 console.log("");
-console.log("  redcore OS — Proof Validator");
+console.log("  oudenOS — Proof Validator");
 console.log("  ────────────────────────────");
 console.log(`  Platform: ${env.platform}`);
 

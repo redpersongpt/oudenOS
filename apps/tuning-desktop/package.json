@@ -54,8 +54,8 @@
     "yaml": "^2.8.3"
   },
   "build": {
-    "appId": "net.redcoreos.tuning",
-    "productName": "redcore Tuning",
+    "appId": "net.oudenos.tuning",
+    "productName": "oudenOS Tuning",
     "directories": {
       "output": "dist/installers"
     },
@@ -67,12 +67,12 @@
     ],
     "extraResources": [
       {
-        "from": "../../services/tuning-service/target/release/redcore-service.exe",
-        "to": "redcore-service.exe"
+        "from": "../../services/tuning-service/target/release/oudenos-tuning-service.exe",
+        "to": "oudenos-tuning-service.exe"
       },
       {
-        "from": "resources/redcore-icon.png",
-        "to": "redcore-icon.png"
+        "from": "resources/oudenos-icon.png",
+        "to": "oudenos-icon.png"
       }
     ],
     "win": {
@@ -84,15 +84,15 @@
           ]
         }
       ],
-      "icon": "resources/redcore-icon.ico"
+      "icon": "resources/oudenos-icon.ico"
     },
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
-      "installerIcon": "resources/redcore-icon.ico",
-      "uninstallerIcon": "resources/redcore-icon.ico",
-      "installerHeaderIcon": "resources/redcore-icon.ico",
-      "artifactName": "redcore-tuning-setup.${ext}"
+      "installerIcon": "resources/oudenos-icon.ico",
+      "uninstallerIcon": "resources/oudenos-icon.ico",
+      "installerHeaderIcon": "resources/oudenos-icon.ico",
+      "artifactName": "oudenos-tuning-setup.${ext}"
     },
     "asar": true,
     "compression": "maximum"

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-REPO_DIR="${REPO_DIR:-/home/ubuntu/redcoreECO}"
+REPO_DIR="${REPO_DIR:-/home/ubuntu/oudenOS}"
 ENV_FILE="${ENV_FILE:-$REPO_DIR/.env}"
 HERMES_INSTALL_DIR="${HERMES_INSTALL_DIR:-$HOME/.hermes/hermes-agent}"
 BACKUP_SUFFIX="$(date -u +%Y%m%d-%H%M%S)"
@@ -54,11 +54,11 @@ mkdir -p "$(dirname "$ENV_FILE")"
 touch "$ENV_FILE"
 cp "$ENV_FILE" "${ENV_FILE}.${BACKUP_SUFFIX}.bak"
 
-upsert_env "AUTH_URL" "${AUTH_URL:-https://redcoreos.net}"
-upsert_env "NEXTAUTH_URL" "${NEXTAUTH_URL:-https://redcoreos.net}"
-upsert_env "APP_URL" "${APP_URL:-https://redcoreos.net}"
-upsert_env "CORS_ORIGINS" "${CORS_ORIGINS:-https://redcoreos.net,https://api.redcoreos.net}"
-upsert_env "ALLOWED_REDIRECT_HOSTS" "${ALLOWED_REDIRECT_HOSTS:-redcoreos.net,api.redcoreos.net}"
+upsert_env "AUTH_URL" "${AUTH_URL:-https://ouden.cc}"
+upsert_env "NEXTAUTH_URL" "${NEXTAUTH_URL:-https://ouden.cc}"
+upsert_env "APP_URL" "${APP_URL:-https://ouden.cc}"
+upsert_env "CORS_ORIGINS" "${CORS_ORIGINS:-https://ouden.cc,https://api.ouden.cc}"
+upsert_env "ALLOWED_REDIRECT_HOSTS" "${ALLOWED_REDIRECT_HOSTS:-ouden.cc,api.ouden.cc}"
 upsert_env "AUTH_SECRET" "${AUTH_SECRET:-${NEXTAUTH_SECRET:-}}"
 upsert_env "NEXTAUTH_SECRET" "${NEXTAUTH_SECRET:-${AUTH_SECRET:-}}"
 upsert_env "GOOGLE_CLIENT_ID" "${GOOGLE_CLIENT_ID:-}"
@@ -73,13 +73,13 @@ else
 fi
 
 pnpm --dir apps/web build
-pm2 restart redcore-web
+pm2 restart oudenos-web
 
 echo
 echo "Done."
 echo "Env backup: ${ENV_FILE}.${BACKUP_SUFFIX}.bak"
 echo "Google OAuth callback URI must be configured in Google Cloud Console:"
-echo "  https://redcoreos.net/api/auth/callback/google"
+echo "  https://ouden.cc/api/auth/callback/google"
 echo
 if grep -q '^GOOGLE_CLIENT_ID=$' "$ENV_FILE" || ! grep -q '^GOOGLE_CLIENT_ID=' "$ENV_FILE"; then
   echo "WARNING: GOOGLE_CLIENT_ID is still missing in $ENV_FILE"

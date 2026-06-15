@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Mock JSON-RPC service for redcore-OS desktop headed proof.
+ * Mock JSON-RPC service for oudenOS desktop headed proof.
  * Simulates the Rust service's IPC responses on macOS for UI testing.
  * Playbook-native: all methods match the real service contract.
  */
@@ -39,7 +39,7 @@ function handleMethod(method, params) {
         label: "Gaming Desktop",
         confidence: 92,
         isWorkPc: false,
-        machineName: "REDCORE-PC",
+        machineName: "OUDENOS-PC",
         signals: [
           "NVIDIA RTX 3070 detected",
           "32 GB DDR4 RAM",
@@ -200,7 +200,7 @@ function buildResolvedPlaybook(profile, preset) {
   }
 
   return {
-    playbookName: "redcore-os-default",
+    playbookName: "oudenos-os-default",
     playbookVersion: "1.0.0",
     profile,
     preset,

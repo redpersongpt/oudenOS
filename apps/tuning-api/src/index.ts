@@ -1,4 +1,4 @@
-// redcore-Tuning Cloud API
+// oudenOS Tuning Cloud API
 // Handles: accounts, auth, subscription licensing, device binding,
 // anonymized telemetry, update metadata, crash reporting.
 //
@@ -29,7 +29,7 @@ async function start() {
   // CORS — kept for the catalog manifest consumed by desktop clients
   await app.register(cors, {
     origin: [
-      "https://redcoreos.net",
+      "https://ouden.cc",
       "http://localhost:5173",
     ],
     credentials: true,

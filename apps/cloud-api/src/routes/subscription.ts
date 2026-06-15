@@ -33,8 +33,8 @@ const PRICES = {
 // Helpers
 
 // Restrict redirect URLs to allowed domains to prevent post-payment phishing.
-// ALLOWED_REDIRECT_HOSTS is a comma-separated list (e.g. "redcoreos.net").
-const allowedRedirectHosts = (process.env.ALLOWED_REDIRECT_HOSTS ?? "redcoreos.net")
+// ALLOWED_REDIRECT_HOSTS is a comma-separated list (e.g. "ouden.cc").
+const allowedRedirectHosts = (process.env.ALLOWED_REDIRECT_HOSTS ?? "ouden.cc")
   .split(",")
   .map((h) => h.trim())
   .filter(Boolean);
@@ -191,7 +191,7 @@ export const subscriptionRoutes: FastifyPluginAsync = async (app) => {
     }
 
     const customerId = await getOrCreateStripeCustomer(request.userId);
-    const appUrl = process.env.APP_URL ?? "https://redcoreos.net";
+    const appUrl = process.env.APP_URL ?? "https://ouden.cc";
 
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
@@ -224,7 +224,7 @@ export const subscriptionRoutes: FastifyPluginAsync = async (app) => {
       return reply.code(400).send({ error: "No billing account found. Subscribe first." });
     }
 
-    const appUrl = process.env.APP_URL ?? "https://redcoreos.net";
+    const appUrl = process.env.APP_URL ?? "https://ouden.cc";
     const session = await stripe.billingPortal.sessions.create({
       customer: user.stripeCustomerId,
       return_url: `${appUrl}/subscription`,

@@ -1,5 +1,5 @@
 // Privacy & Telemetry Module
-// Derived from the redcore internal privacy-hardening notes.
+// Derived from the oudenos internal privacy-hardening notes.
 
 import type { TuningActionDefinition } from "../types.js";
 

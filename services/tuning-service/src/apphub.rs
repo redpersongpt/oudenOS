@@ -108,7 +108,7 @@ fn audit_install(db: &Database, install_id: &str, app_id: &str, status: &str, de
 #[cfg(windows)]
 fn download_installer(url: &str, app_id: &str) -> anyhow::Result<String> {
     let temp_dir = std::env::var("TEMP").unwrap_or_else(|_| "C:\\Windows\\Temp".to_string());
-    let dest = format!("{}\\redcore-install-{}.exe", temp_dir, app_id);
+    let dest = format!("{}\\oudenos-install-{}.exe", temp_dir, app_id);
 
     tracing::info!(url, dest = %dest, "Downloading installer");
 
@@ -150,7 +150,7 @@ fn run_installer(path: &str, silent_args: Option<&str>) -> anyhow::Result<i32> {
 #[cfg(not(windows))]
 fn download_installer(_url: &str, app_id: &str) -> anyhow::Result<String> {
     tracing::info!(app_id, "[simulated] Would download installer");
-    Ok(format!("/tmp/redcore-install-{}.exe", app_id))
+    Ok(format!("/tmp/oudenos-install-{}.exe", app_id))
 }
 
 #[cfg(not(windows))]

@@ -1,5 +1,5 @@
 // Memory Tuning Module
-// Derived from the redcore internal memory-optimization notes.
+// Derived from the oudenos internal memory-optimization notes.
 
 import type { TuningActionDefinition } from "../types.js";
 

@@ -217,7 +217,7 @@ const unclassified = defaultOnly.filter((id) => !INTENTIONALLY_UNMAPPED.has(id))
 // ─── Report ─────────────────────────────────────────────────────────────────
 
 console.log("");
-console.log("  redcore OS — Action Parity Validator");
+console.log("  oudenOS — Action Parity Validator");
 console.log("  ────────────────────────────────────");
 console.log(`  Playbook actions:       ${playbookActions.size}`);
 console.log(`  Wizard-referenced:      ${wizardActionIds.size}`);

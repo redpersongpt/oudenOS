@@ -434,7 +434,7 @@ export const usersRoutes: FastifyPluginAsync = async (app) => {
       .from(machineActivations)
       .where(eq(machineActivations.userId, request.userId));
 
-    reply.header("Content-Disposition", 'attachment; filename="redcore-data-export.json"');
+    reply.header("Content-Disposition", 'attachment; filename="oudenos-data-export.json"');
     return reply.send({
       exportedAt: new Date().toISOString(),
       user,
@@ -465,7 +465,7 @@ export const usersRoutes: FastifyPluginAsync = async (app) => {
     // Soft delete
     await db
       .update(users)
-      .set({ deletedAt: new Date(), email: `deleted+${request.userId}@redcore.invalid`, updatedAt: new Date() })
+      .set({ deletedAt: new Date(), email: `deleted+${request.userId}@ouden.invalid`, updatedAt: new Date() })
       .where(eq(users.id, request.userId));
 
     return reply.send({ ok: true });

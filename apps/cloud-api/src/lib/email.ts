@@ -13,8 +13,8 @@ export interface EmailOptions {
 
 export async function sendEmail(opts: EmailOptions): Promise<void> {
   const from = {
-    email: process.env.EMAIL_FROM ?? "noreply@redcoreos.net",
-    name: process.env.EMAIL_FROM_NAME ?? "redcore",
+    email: process.env.EMAIL_FROM ?? "noreply@ouden.cc",
+    name: process.env.EMAIL_FROM_NAME ?? "oudenos",
   };
   const sendmailPath = process.env.SENDMAIL_BIN ?? "/usr/sbin/sendmail";
   const canUseSendGrid = Boolean(process.env.SENDGRID_API_KEY);
@@ -165,7 +165,7 @@ export function resetPasswordTemplate(name: string, link: string): string {
   return emailWrapper(
     "Password reset",
     `<p style="color:${MUTED};margin:0;font-size:15px;line-height:1.75;">${name ? `Hi ${esc(name)},` : "Hi,"}</p>
-     <p style="color:${MUTED};margin:10px 0 0;font-size:15px;line-height:1.75;">Use the button below to set a new password for your redcore account.</p>
+     <p style="color:${MUTED};margin:10px 0 0;font-size:15px;line-height:1.75;">Use the button below to set a new password for your oudenos account.</p>
      ${primaryButton(link, "Reset password")}
      ${caption("This link expires in 1 hour.")}`,
   );

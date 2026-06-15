@@ -49,7 +49,7 @@ const SECURITY = [
   {
     icon: Shield,
     title: "Code-signed installer",
-    detail: "Every release is signed with an EV certificate. Windows SmartScreen will show the publisher as redcore.",
+    detail: "Every release is signed with an EV certificate. Windows SmartScreen will show the publisher as oudenos.",
   },
   {
     icon: Lock,
@@ -83,7 +83,7 @@ export default function DownloadPage() {
             Windows 10 / 11 only
           </div>
           <h1 className="text-5xl font-black tracking-tight md:text-6xl">
-            Download redcore
+            Download oudenos
           </h1>
           <p className="mt-4 text-white/45 text-lg max-w-xl mx-auto">
             Free to download, free to use. Upgrade to Premium for the full
@@ -108,7 +108,7 @@ export default function DownloadPage() {
                   </div>
                   <div>
                     <p className="font-bold text-lg leading-tight">
-                      redcore-Tuning
+                      oudenOS Tuning
                     </p>
                     <p className="text-sm text-white/35">v{APP_VERSION} — Free tier</p>
                   </div>
@@ -216,9 +216,9 @@ export default function DownloadPage() {
               {[
                 "Run the installer as Administrator",
                 "Windows Defender SmartScreen may prompt — click 'More info' then 'Run anyway' (the binary is code-signed)",
-                "redcore installs two components: the UI (user context) and the privileged service (SYSTEM)",
+                "oudenos installs two components: the UI (user context) and the privileged service (SYSTEM)",
                 "The service communicates with the UI over a local IPC pipe — no network traffic on your LAN",
-                "To uninstall: Settings → Add or Remove Programs → redcore-Tuning",
+                "To uninstall: Settings → Add or Remove Programs → oudenOS Tuning",
               ].map((note, i) => (
                 <li key={i} className="text-sm text-white/40 leading-relaxed">
                   {note}

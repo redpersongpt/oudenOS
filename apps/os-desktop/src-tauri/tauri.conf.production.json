@@ -1,9 +1,9 @@
 {
   "bundle": {
     "resources": {
-      "../../../services/os-service/target/release/redcore-os-service.exe": "redcore-os-service.exe",
+      "../../../services/os-service/target/release/oudenos-os-service.exe": "oudenos-os-service.exe",
       "../../../playbooks": "playbooks",
-      "../resources/redcore-icon.png": "redcore-icon.png"
+      "../resources/oudenos-icon.png": "oudenos-icon.png"
     }
   }
 }

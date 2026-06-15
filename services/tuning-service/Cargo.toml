@@ -1,8 +1,8 @@
 [package]
-name = "redcore-service"
+name = "oudenos-tuning-service"
 version = "0.1.0"
 edition = "2021"
-description = "Privileged orchestration service for redcore-Tuning"
+description = "Privileged orchestration service for oudenOS Tuning"
 license = "LicenseRef-Proprietary"
 
 [dependencies]

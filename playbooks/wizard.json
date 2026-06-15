@@ -11,14 +11,14 @@
   "requirements": ["NoPendingUpdates", "Internet", "PluggedIn"],
   "useKernelDriver": false,
   "productCode": 410,
-  "git": "https://github.com/redpersongpt/redcoreOS",
+  "git": "https://github.com/redpersongpt/oudenOS",
   "website": "https://ouden.cc",
   "donateLink": "https://ouden.cc",
   "supportsISO": true,
   "iso": {
     "disableBitLocker": true,
     "disableHardwareRequirements": true,
-    "injectPath": "sources/$OEM$/$1/redcore/wizard"
+    "injectPath": "sources/$OEM$/$1/oudenos/wizard"
   },
   "oobe": {
     "internet": "Request",

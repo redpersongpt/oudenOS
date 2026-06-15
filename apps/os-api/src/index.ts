@@ -36,7 +36,7 @@ const app = Fastify({
 // ---------------------------------------------------------------------------
 
 const allowedOrigins = [
-  'https://redcoreos.net',
+  'https://ouden.cc',
   'http://localhost:5173',
   'http://localhost:3000',
   'app://',
@@ -168,7 +168,7 @@ if (process.env.SKIP_PREFLIGHT !== '1') {
 
 try {
   await app.listen({ port, host });
-  app.log.info(`redcore OS API running on http://${host}:${port}`);
+  app.log.info(`oudenOS API running on http://${host}:${port}`);
 } catch (err) {
   app.log.fatal(err);
   process.exit(1);

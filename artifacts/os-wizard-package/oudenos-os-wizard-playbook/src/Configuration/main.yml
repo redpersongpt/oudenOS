@@ -1,10 +1,10 @@
 ---
-title: "redcore OS Playbook"
+title: "oudenOS Playbook"
 description: "A review-first Windows optimization playbook that stages cleanup, privacy hardening, and performance tuning through a guided wizard."
 privilege: Admin
 wizardMetadata:
-  packageId: "redcore-os"
-  injectPath: "sources/$OEM$/$1/redcore/wizard"
+  packageId: "oudenos-os"
+  injectPath: "sources/$OEM$/$1/oudenos/wizard"
 pipeline:
   - id: assessment
     name: "System Assessment"

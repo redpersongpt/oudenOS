@@ -1,5 +1,5 @@
-// ─── redcore-service ────────────────────────────────────────────────────────
-// Privileged orchestration daemon for redcore-Tuning.
+// ─── oudenos-tuning-service ────────────────────────────────────────────────────────
+// Privileged orchestration daemon for oudenOS Tuning.
 // Communicates with the Electron shell via JSON-RPC over stdio/named pipe.
 //
 // ARCHITECTURE:
@@ -34,13 +34,13 @@ async fn main() -> Result<()> {
         .with_writer(std::io::stderr)
         .with_env_filter(
             EnvFilter::try_from_default_env()
-                .unwrap_or_else(|_| EnvFilter::new("redcore_service=info")),
+                .unwrap_or_else(|_| EnvFilter::new("oudenos_tuning_service=info")),
         )
         .with_target(false)
         .json()
         .init();
 
-    tracing::info!("redcore-service starting");
+    tracing::info!("oudenos-tuning-service starting");
 
     // Initialize database
     let db = db::Database::init()?;

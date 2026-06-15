@@ -214,7 +214,7 @@ export const useAuthStore = create<AuthState>()(
       },
     }),
     {
-      name: "redcore-auth",
+      name: "oudenos-auth",
       storage: obfuscatedStorage,
       // Only persist auth data — loading/error are ephemeral
       partialize: (state) => ({

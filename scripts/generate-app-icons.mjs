@@ -54,7 +54,7 @@ async function generatePngs() {
       .png()
       .toBuffer();
 
-    const filename = size === 512 ? "redcore-icon.png" : `icon-${size}.png`;
+    const filename = size === 512 ? "oudenos-icon.png" : `icon-${size}.png`;
     writeFileSync(join(OS_RESOURCES, filename), png);
     console.log(`  [wrote] ${filename} (${size}x${size})`);
   }
@@ -136,13 +136,13 @@ async function generateIco() {
   }
 
   const icoBuffer = Buffer.concat(parts);
-  const icoPath = join(OS_RESOURCES, "redcore-icon.ico");
+  const icoPath = join(OS_RESOURCES, "oudenos-icon.ico");
   writeFileSync(icoPath, icoBuffer);
-  console.log(`  [wrote] redcore-icon.ico (${numImages} sizes, ${Math.round(icoBuffer.length / 1024)}KB)`);
+  console.log(`  [wrote] oudenos-icon.ico (${numImages} sizes, ${Math.round(icoBuffer.length / 1024)}KB)`);
 }
 
 console.log("");
-console.log("  redcore OS — Icon Generation");
+console.log("  oudenOS — Icon Generation");
 console.log("  ────────────────────────────");
 
 const pngsOk = await generatePngs();

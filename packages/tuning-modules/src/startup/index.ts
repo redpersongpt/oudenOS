@@ -1,5 +1,5 @@
 // Startup & Background Tuning Module
-// Derived from the redcore internal startup optimization notes.
+// Derived from the oudenos internal startup optimization notes.
 
 import type { TuningActionDefinition } from "../types.js";
 

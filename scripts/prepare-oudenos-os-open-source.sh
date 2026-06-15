@@ -3,10 +3,10 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-OUTPUT_DIR="${1:-$ROOT_DIR/artifacts/open-source/redcore-os}"
-REPO_SLUG="${PUBLIC_REPO_SLUG:-redpersongpt/redcoreOS}"
-WEBSITE_URL="${PUBLIC_WEBSITE_URL:-https://redcoreos.net}"
-SUPPORT_EMAIL="${PUBLIC_SUPPORT_EMAIL:-support@redcoreos.net}"
+OUTPUT_DIR="${1:-$ROOT_DIR/artifacts/open-source/oudenos-os}"
+REPO_SLUG="${PUBLIC_REPO_SLUG:-redpersongpt/oudenOS}"
+WEBSITE_URL="${PUBLIC_WEBSITE_URL:-https://ouden.cc}"
+SUPPORT_EMAIL="${PUBLIC_SUPPORT_EMAIL:-support@ouden.cc}"
 
 rm -rf "$OUTPUT_DIR"
 mkdir -p "$OUTPUT_DIR"
@@ -27,7 +27,7 @@ copy_tree() {
 copy_tree "$ROOT_DIR/apps/os-desktop/" "$OUTPUT_DIR/apps/os-desktop/"
 copy_tree "$ROOT_DIR/services/os-service/" "$OUTPUT_DIR/services/os-service/"
 copy_tree "$ROOT_DIR/playbooks/" "$OUTPUT_DIR/playbooks/"
-copy_tree "$ROOT_DIR/templates/open-source/redcore-os/" "$OUTPUT_DIR/"
+copy_tree "$ROOT_DIR/templates/open-source/oudenos-os/" "$OUTPUT_DIR/"
 
 REPO_SLUG="$REPO_SLUG" WEBSITE_URL="$WEBSITE_URL" SUPPORT_EMAIL="$SUPPORT_EMAIL" OUTPUT_DIR="$OUTPUT_DIR" node <<'NODE'
 const fs = require("node:fs");
@@ -103,12 +103,12 @@ walk(outputDir);
 
 const desktopPackagePath = path.join(outputDir, "apps", "os-desktop", "package.json");
 const desktopPackage = JSON.parse(fs.readFileSync(desktopPackagePath, "utf8"));
-desktopPackage.author = { name: "redcore", email: supportEmail };
+desktopPackage.author = { name: "oudenos", email: supportEmail };
 desktopPackage.homepage = websiteUrl;
 desktopPackage.scripts["tauri:build"] = "cargo tauri build";
 fs.writeFileSync(desktopPackagePath, JSON.stringify(desktopPackage, null, 2) + "\n");
 NODE
 
-bash "$ROOT_DIR/scripts/check-redcore-os-open-source.sh" "$OUTPUT_DIR"
+bash "$ROOT_DIR/scripts/check-oudenos-os-open-source.sh" "$OUTPUT_DIR"
 
 echo "Prepared public repo at: $OUTPUT_DIR"

@@ -75,7 +75,7 @@ function ContrastBar({ row, index }: { row: ContrastRow; index: number }) {
 
 // Component
 
-export function WhyRedcoreSection() {
+export function WhyOudenSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const isInView = useInView(sectionRef, { once: true, margin: "-15% 0px" });
 

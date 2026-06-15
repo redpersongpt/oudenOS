@@ -1,8 +1,8 @@
 import type { Config } from "tailwindcss";
-import redcorePreset from "@oudenos/design-system/tailwind";
+import oudenosPreset from "@oudenos/design-system/tailwind";
 
 const config: Config = {
-  presets: [redcorePreset as Config],
+  presets: [oudenosPreset as Config],
   content: [
     "./src/renderer/**/*.{ts,tsx}",
     "../../packages/tuning-design-system/src/**/*.{ts,tsx}",

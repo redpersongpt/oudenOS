@@ -35,7 +35,7 @@ export function RebootStep() {
   }, [needsReboot, goNext]);
 
   async function handleRebootNow() {
-    await window.redcore.service.call("system.requestReboot", {
+    await window.oudenos.service.call("system.requestReboot", {
       reason: "wizard_execution_complete",
     });
   }

@@ -5,14 +5,14 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 APP_DIR="$ROOT_DIR/apps/os-desktop"
 SERVICE_DIR="$ROOT_DIR/services/os-service"
-RELEASE_ROOT="${RELEASE_ROOT:-/var/www/redcore-downloads/os}"
+RELEASE_ROOT="${RELEASE_ROOT:-/var/www/oudenos-downloads/os}"
 RELEASES_DIR="$RELEASE_ROOT/releases"
 ARCHIVE_DIR="$RELEASE_ROOT/archive"
 WIZARD_RELEASE_ROOT="$RELEASE_ROOT/wizard"
 APBX_RELEASE_ROOT="$RELEASE_ROOT/apbx"
-STABLE_NAME="redcore-os-setup.exe"
-WIZARD_STABLE_NAME="redcore-os-wizard-playbook.zip"
-APBX_STABLE_NAME="redcore-os-template.apbx"
+STABLE_NAME="oudenOS-setup.exe"
+WIZARD_STABLE_NAME="oudenos-os-wizard-playbook.zip"
+APBX_STABLE_NAME="oudenos-os-template.apbx"
 MANIFEST_PATH="$RELEASE_ROOT/latest.json"
 MIN_BYTES="${MIN_BYTES:-2000000}"
 MIN_FREE_MB="${MIN_FREE_MB:-3072}"
@@ -82,17 +82,17 @@ fi
 BUILD_DATE_UTC="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
 VERSION="$(node -p "require('./apps/os-desktop/package.json').version")"
 VERSION_TAG="v${VERSION}-${COMMIT_SHA}"
-RELEASE_BASENAME="redcore-os-${VERSION}-${COMMIT_SHA}.exe"
+RELEASE_BASENAME="oudenos-os-${VERSION}-${COMMIT_SHA}.exe"
 RELEASE_PATH="$RELEASES_DIR/$RELEASE_BASENAME"
 WINDOWS_TARGET="x86_64-pc-windows-gnu"
 # Tauri NSIS output — find the actual file after build
 TAURI_NSIS_DIR="$APP_DIR/src-tauri/target/$WINDOWS_TARGET/release/bundle/nsis"
 INSTALLER_STABLE_PATH="$APP_DIR/dist/installers/$STABLE_NAME"
-WIZARD_RELEASE_BASENAME="redcore-os-wizard-playbook-${VERSION}-${COMMIT_SHA}.zip"
+WIZARD_RELEASE_BASENAME="oudenos-os-wizard-playbook-${VERSION}-${COMMIT_SHA}.zip"
 WIZARD_RELEASE_PATH="$WIZARD_RELEASE_ROOT/$WIZARD_RELEASE_BASENAME"
 WIZARD_BUILD_ROOT="$ROOT_DIR/artifacts/os-wizard-package"
 WIZARD_BUILD_PATH="$WIZARD_BUILD_ROOT/$WIZARD_STABLE_NAME"
-APBX_RELEASE_BASENAME="redcore-os-template-${VERSION}-${COMMIT_SHA}.apbx"
+APBX_RELEASE_BASENAME="oudenos-os-template-${VERSION}-${COMMIT_SHA}.apbx"
 APBX_RELEASE_PATH="$APBX_RELEASE_ROOT/$APBX_RELEASE_BASENAME"
 APBX_BUILD_ROOT="$ROOT_DIR/artifacts/os-apbx-package"
 APBX_BUILD_PATH="$APBX_BUILD_ROOT/$APBX_STABLE_NAME"
@@ -113,7 +113,7 @@ echo "==> Building Windows service"
 pushd "$SERVICE_DIR" >/dev/null
 cargo build --release --target x86_64-pc-windows-gnu
 mkdir -p target/release
-cp "target/$WINDOWS_TARGET/release/redcore-os-service.exe" target/release/redcore-os-service.exe
+cp "target/$WINDOWS_TARGET/release/oudenos-os-service.exe" target/release/oudenos-os-service.exe
 popd >/dev/null
 
 echo "==> Building desktop app (Tauri)"
@@ -180,7 +180,7 @@ APBX_SIZE_BYTES=""
 if [ -f "$RELEASE_ROOT/$STABLE_NAME" ]; then
   CURRENT_SHA="$(sha256sum "$RELEASE_ROOT/$STABLE_NAME" | awk '{print $1}')"
   if [ "$CURRENT_SHA" != "$SHA256" ]; then
-    cp "$RELEASE_ROOT/$STABLE_NAME" "$ARCHIVE_DIR/redcore-os-setup-${CURRENT_SHA:0:12}.exe"
+    cp "$RELEASE_ROOT/$STABLE_NAME" "$ARCHIVE_DIR/oudenOS-setup-${CURRENT_SHA:0:12}.exe"
   fi
 fi
 
@@ -201,8 +201,8 @@ if [ "$APBX_AVAILABLE" = "1" ]; then
   "apbxPackageReleaseFilename": "$APBX_RELEASE_BASENAME",
   "apbxPackageSizeBytes": $APBX_SIZE_BYTES,
   "apbxPackageSha256": "$APBX_SHA256",
-  "apbxPackageUrl": "https://redcoreos.net/downloads/os/apbx/$APBX_STABLE_NAME",
-  "apbxPackageReleaseUrl": "https://redcoreos.net/downloads/os/apbx/$APBX_RELEASE_BASENAME",
+  "apbxPackageUrl": "https://ouden.cc/downloads/os/apbx/$APBX_STABLE_NAME",
+  "apbxPackageReleaseUrl": "https://ouden.cc/downloads/os/apbx/$APBX_RELEASE_BASENAME",
   "apbxPackageRole": "wizard-template"
 JSON
 )"
@@ -210,7 +210,7 @@ fi
 
 cat > "$MANIFEST_PATH" <<JSON
 {
-  "product": "redcore-os",
+  "product": "oudenos-os",
   "channel": "latest",
   "version": "$VERSION",
   "versionTag": "$VERSION_TAG",
@@ -220,16 +220,16 @@ cat > "$MANIFEST_PATH" <<JSON
   "releaseFilename": "$RELEASE_BASENAME",
   "sizeBytes": $SIZE_BYTES,
   "sha256": "$SHA256",
-  "url": "https://redcoreos.net/downloads/os/$STABLE_NAME",
-  "releaseUrl": "https://redcoreos.net/downloads/os/releases/$RELEASE_BASENAME",
+  "url": "https://ouden.cc/downloads/os/$STABLE_NAME",
+  "releaseUrl": "https://ouden.cc/downloads/os/releases/$RELEASE_BASENAME",
   "wizardPackageFilename": "$WIZARD_STABLE_NAME",
   "wizardPackageReleaseFilename": "$WIZARD_RELEASE_BASENAME",
   "wizardPackageSizeBytes": $WIZARD_SIZE_BYTES,
   "wizardPackageSha256": "$WIZARD_SHA256",
-  "wizardPackageUrl": "https://redcoreos.net/downloads/os/wizard/$WIZARD_STABLE_NAME",
-  "wizardPackageReleaseUrl": "https://redcoreos.net/downloads/os/wizard/$WIZARD_RELEASE_BASENAME",
+  "wizardPackageUrl": "https://ouden.cc/downloads/os/wizard/$WIZARD_STABLE_NAME",
+  "wizardPackageReleaseUrl": "https://ouden.cc/downloads/os/wizard/$WIZARD_RELEASE_BASENAME",
   "wizardPackageRole": "wizard-template"$APBX_MANIFEST_FIELDS,
-  "isoInjectionScriptUrl": "https://github.com/redpersongpt/redcoreECO/blob/main/scripts/stage-os-iso-injection.ps1"
+  "isoInjectionScriptUrl": "https://github.com/redpersongpt/oudenOS/blob/main/scripts/stage-os-iso-injection.ps1"
 }
 JSON
 

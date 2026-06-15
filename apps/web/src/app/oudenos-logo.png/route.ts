@@ -4,7 +4,7 @@ import path from "node:path";
 export const runtime = "nodejs";
 
 export async function GET() {
-  const filePath = path.join(process.cwd(), "public", "redcore-logo.png");
+  const filePath = path.join(process.cwd(), "public", "oudenos-logo.png");
   const file = await readFile(filePath);
 
   return new Response(file, {

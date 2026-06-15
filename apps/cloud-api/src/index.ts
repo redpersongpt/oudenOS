@@ -1,4 +1,4 @@
-// redcore-Tuning Cloud API
+// oudenOS Tuning Cloud API
 // Responsibilities:
 //   accounts · auth · subscriptions · licensing · device binding
 //   anonymized telemetry · update metadata
@@ -58,7 +58,7 @@ async function start(): Promise<void> {
   const originsEnv = process.env.CORS_ORIGINS ?? "";
   const allowedOrigins = originsEnv
     ? originsEnv.split(",").map((o) => o.trim()).filter(Boolean)
-    : ["https://redcoreos.net", "http://localhost:5173"];
+    : ["https://ouden.cc", "http://localhost:5173"];
 
   await app.register(cors, {
     origin: allowedOrigins,
@@ -128,7 +128,7 @@ async function start(): Promise<void> {
   }
 
   await app.listen({ port, host });
-  app.log.info(`redcore Cloud API listening on ${host}:${port}`);
+  app.log.info(`oudenos Cloud API listening on ${host}:${port}`);
 }
 
 // Graceful shutdown

@@ -104,7 +104,7 @@ const steps = [
     n: "01",
     title: "Scan Your System",
     description:
-      "redcore runs a deep hardware scan — CPU topology, memory config, GPU state, storage health — building an exact profile of your machine.",
+      "oudenos runs a deep hardware scan — CPU topology, memory config, GPU state, storage health — building an exact profile of your machine.",
   },
   {
     n: "02",

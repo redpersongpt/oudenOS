@@ -8,7 +8,7 @@ const repoRoot = process.cwd();
 const playbookRoot = path.join(repoRoot, "playbooks");
 const manifestPath = path.join(playbookRoot, "manifest.yaml");
 const defaultOutputRoot = path.join(repoRoot, "artifacts", "os-wizard-package");
-const iconSourcePath = path.join(repoRoot, "apps", "os-desktop", "resources", "redcore-icon.png");
+const iconSourcePath = path.join(repoRoot, "apps", "os-desktop", "resources", "oudenos-icon.png");
 
 function readArg(name, fallback = "") {
   const index = process.argv.indexOf(name);
@@ -40,10 +40,10 @@ function parseManifest(text) {
   const phases = [];
   const profiles = {};
   const manifest = {
-    name: "redcore-os-default",
+    name: "oudenos-os-default",
     version: "1.0.0",
     description: "",
-    author: "redcore",
+    author: "oudenos",
     minWindowsBuild: 19041,
     maxWindowsBuild: 99999,
     wizardConfig: "wizard.json",
@@ -246,7 +246,7 @@ function renderConfigurationYaml(manifest, wizard) {
     "privilege: Admin",
     "wizardMetadata:",
     `  packageId: ${yamlQuote(wizard.packageId)}`,
-    `  injectPath: ${yamlQuote(wizard.iso?.injectPath ?? "sources/$OEM$/$1/redcore/wizard")}`,
+    `  injectPath: ${yamlQuote(wizard.iso?.injectPath ?? "sources/$OEM$/$1/oudenos/wizard")}`,
     "pipeline:",
   ];
 
@@ -300,11 +300,11 @@ function main() {
   const outputRoot = path.resolve(readArg("--out-dir", defaultOutputRoot));
   const version = readArg("--version", "");
   const commit = readArg("--commit", "");
-  const packageDir = path.join(outputRoot, "redcore-os-wizard-playbook");
+  const packageDir = path.join(outputRoot, "oudenos-os-wizard-playbook");
   const srcDir = path.join(packageDir, "src");
   const configurationDir = path.join(srcDir, "Configuration");
   const payloadDir = path.join(packageDir, "payload");
-  const zipPath = path.join(outputRoot, "redcore-os-wizard-playbook.zip");
+  const zipPath = path.join(outputRoot, "oudenos-os-wizard-playbook.zip");
 
   fs.rmSync(outputRoot, { recursive: true, force: true });
   fs.mkdirSync(configurationDir, { recursive: true });
@@ -349,7 +349,7 @@ function main() {
 
   fs.cpSync(playbookRoot, path.join(payloadDir, "playbooks"), { recursive: true });
 
-  const zipResult = spawnSync("zip", ["-qr", zipPath, "redcore-os-wizard-playbook"], {
+  const zipResult = spawnSync("zip", ["-qr", zipPath, "oudenos-os-wizard-playbook"], {
     cwd: outputRoot,
     stdio: "inherit",
   });

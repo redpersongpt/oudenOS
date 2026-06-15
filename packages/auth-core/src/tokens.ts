@@ -9,12 +9,12 @@ import type {
   DEFAULT_AUTH_CONFIG,
 } from "./types.js";
 
-const ISSUER = "redcore-platform";
+const ISSUER = "oudenos-platform";
 // SECURITY: audience claims are required on all tokens to prevent confused
 // deputy / token-replay attacks across services. Keep these in sync with
 // apps/cloud-api/src/lib/jwt.ts.
-const AUDIENCE_ACCESS = "redcore-access";
-const AUDIENCE_REFRESH = "redcore-refresh";
+const AUDIENCE_ACCESS = "oudenos-access";
+const AUDIENCE_REFRESH = "oudenos-refresh";
 
 function getSecret(): Uint8Array {
   const secret = process.env.JWT_SECRET;

@@ -1,11 +1,11 @@
-# redcore · OS Playbook Manifest
+# oudenos · OS Playbook Manifest
 # The Rust service reads this manifest, loads all referenced playbook modules,
 # merges them with profile overrides, and produces an executable plan.
 
-name: "redcore-os-default"
+name: "oudenos-os-default"
 version: "1.0.0"
-description: "Default Windows transformation playbook for redcore · OS"
-author: "redcore"
+description: "Default Windows transformation playbook for oudenos · OS"
+author: "oudenos"
 minWindowsBuild: 19041  # Windows 10 2004+
 maxWindowsBuild: 99999
 wizardConfig: "wizard.json"

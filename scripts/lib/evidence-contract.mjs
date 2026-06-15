@@ -1,5 +1,5 @@
 // ─── Evidence Contract ─────────────────────────────────────────────────────
-// Machine-checkable truth boundary model for redcore release validation.
+// Machine-checkable truth boundary model for oudenos release validation.
 //
 // Defines exactly what can be proven on each platform, what evidence is
 // required, and how to validate proof artifacts against build identity.

@@ -58,7 +58,7 @@ jobs:
         shell: pwsh
         run: |
           $ErrorActionPreference = "Continue"
-          $servicePath = "apps\service-core\target\debug\redcore-service.exe"
+          $servicePath = "apps\service-core\target\debug\oudenos-tuning-service.exe"
           $psi = New-Object System.Diagnostics.ProcessStartInfo
           $psi.FileName = (Resolve-Path $servicePath).Path
           $psi.RedirectStandardInput = $true
@@ -633,37 +633,37 @@ jobs:
       - name: Query SQLite database
         shell: pwsh
         run: |
-          $dbPath = "$env:LOCALAPPDATA\redcore-tuning\redcore.db"
+          $dbPath = "$env:LOCALAPPDATA\oudenos-tuning\oudenos.db"
           if (-not (Test-Path $dbPath)) {
               Write-Output "DB NOT FOUND at $dbPath"
-              Get-ChildItem -Path C:\Users -Filter "redcore.db" -Recurse -Depth 5 -ErrorAction SilentlyContinue | ForEach-Object {
+              Get-ChildItem -Path C:\Users -Filter "oudenos.db" -Recurse -Depth 5 -ErrorAction SilentlyContinue | ForEach-Object {
                   Write-Output "Found: $($_.FullName)"
               }
               exit 1
           }
           Write-Output "DB: $dbPath ($((Get-Item $dbPath).Length) bytes)"
-          Copy-Item $dbPath -Destination "redcore.db"
+          Copy-Item $dbPath -Destination "oudenos.db"
 
           Write-Output "`n=== SCHEMA ==="
-          sqlite3 redcore.db ".schema"
+          sqlite3 oudenos.db ".schema"
 
           Write-Output "`n=== DEVICE PROFILES ==="
-          sqlite3 redcore.db "SELECT id, scanned_at FROM device_profiles;"
+          sqlite3 oudenos.db "SELECT id, scanned_at FROM device_profiles;"
 
           Write-Output "`n=== TUNING PLANS ==="
-          sqlite3 redcore.db "SELECT id, preset, created_at FROM tuning_plans;"
+          sqlite3 oudenos.db "SELECT id, preset, created_at FROM tuning_plans;"
 
           Write-Output "`n=== ROLLBACK SNAPSHOTS ==="
-          sqlite3 redcore.db "SELECT id, scope, created_at, description FROM rollback_snapshots ORDER BY created_at DESC;"
+          sqlite3 oudenos.db "SELECT id, scope, created_at, description FROM rollback_snapshots ORDER BY created_at DESC;"
 
           Write-Output "`n=== AUDIT LOG ==="
-          sqlite3 redcore.db "SELECT id, timestamp, category, action, detail, severity FROM audit_log ORDER BY timestamp DESC;"
+          sqlite3 oudenos.db "SELECT id, timestamp, category, action, detail, severity FROM audit_log ORDER BY timestamp DESC;"
 
           Write-Output "`n=== ACTION OUTCOMES ==="
-          sqlite3 redcore.db "SELECT id, action_id, status, applied_at FROM action_outcomes;"
+          sqlite3 oudenos.db "SELECT id, action_id, status, applied_at FROM action_outcomes;"
 
           Write-Output "`n=== JOURNAL ENTRIES ==="
-          sqlite3 redcore.db "SELECT * FROM journal_entries;"
+          sqlite3 oudenos.db "SELECT * FROM journal_entries;"
 
       - name: Pre-compile preload for Electron test
         shell: pwsh
@@ -762,7 +762,7 @@ jobs:
         with:
           name: windows-proof-artifacts
           path: |
-            redcore.db
+            oudenos.db
             scan-result.json
             plan-result.json
             plan-aggressive.json

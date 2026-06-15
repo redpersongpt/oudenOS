@@ -86,9 +86,9 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.version.outputs.VERSION }}
-          name: redcore-Tuning ${{ steps.version.outputs.VERSION }}
+          name: oudenOS Tuning ${{ steps.version.outputs.VERSION }}
           body: |
-            ## redcore-Tuning ${{ steps.version.outputs.VERSION }}
+            ## oudenOS Tuning ${{ steps.version.outputs.VERSION }}
 
             ### What's Included
             - Rust service binary (Windows x64)
@@ -102,7 +102,7 @@ jobs:
 
             ![Repobeats](https://repobeats.axiom.co/api/embed/d3501dcf0fd81b97796a54adfb2658582ad6b97e.svg "Repobeats analytics image")
           files: |
-            apps/service-core/target/release/redcore-service.exe
+            apps/service-core/target/release/oudenos-tuning-service.exe
           draft: false
           prerelease: ${{ contains(steps.version.outputs.VERSION, 'alpha') || contains(steps.version.outputs.VERSION, 'beta') || contains(steps.version.outputs.VERSION, 'rc') }}
         env:
@@ -116,7 +116,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Prepare open-source export
-        run: bash scripts/prepare-redcore-os-open-source.sh ./public-os-export
+        run: bash scripts/prepare-oudenos-os-open-source.sh ./public-os-export
 
       - name: Remove README from export (oudenOS has its own)
         run: rm -f public-os-export/README.md
@@ -130,4 +130,4 @@ jobs:
           destination-github-username: redpersongpt
           destination-repository-name: oudenOS
           target-branch: main
-          commit-message: "sync: ${{ github.ref_name }} from redcoreECO"
+          commit-message: "sync: ${{ github.ref_name }} from oudenOS"

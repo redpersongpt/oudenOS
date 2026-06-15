@@ -234,7 +234,7 @@ fn run_storage_benchmark() -> Vec<serde_json::Value> {
     let mut metrics = Vec::new();
 
     // Sequential write: write 10MB in 4KB blocks
-    let temp_path = std::env::temp_dir().join("redcore-bench-seq.tmp");
+    let temp_path = std::env::temp_dir().join("oudenos-bench-seq.tmp");
     let data = vec![0xABu8; 4096];
     let blocks = 2560; // 2560 * 4KB = 10MB
 
@@ -280,7 +280,7 @@ fn run_storage_benchmark() -> Vec<serde_json::Value> {
     let _ = std::fs::remove_file(&temp_path);
 
     // Random 4K write: create 1000 random 4K files
-    let bench_dir = std::env::temp_dir().join("redcore-bench-rnd");
+    let bench_dir = std::env::temp_dir().join("oudenos-bench-rnd");
     let _ = std::fs::create_dir_all(&bench_dir);
     let start = std::time::Instant::now();
     for i in 0..1000 {

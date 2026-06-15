@@ -72,7 +72,7 @@ export function SubscriptionPage() {
 
     setActivating(true);
     try {
-      const nextState = normalizeLicenseState(await window.redcore.license.activate(normalized));
+      const nextState = normalizeLicenseState(await window.oudenos.license.activate(normalized));
       setLicense(nextState);
       setLicenseKey("");
       toast.success("License Activated", "Premium features are now unlocked on this machine.");
@@ -89,7 +89,7 @@ export function SubscriptionPage() {
   async function handleRefresh() {
     setRefreshing(true);
     try {
-      const nextState = normalizeLicenseState(await window.redcore.license.refresh());
+      const nextState = normalizeLicenseState(await window.oudenos.license.refresh());
       setLicense(nextState);
       toast.success("License Refreshed", "The local license state is up to date.");
     } catch (error) {
@@ -105,8 +105,8 @@ export function SubscriptionPage() {
   async function handleDeactivate() {
     setDeactivating(true);
     try {
-      await window.redcore.license.deactivate();
-      setLicense(normalizeLicenseState(await window.redcore.license.get()));
+      await window.oudenos.license.deactivate();
+      setLicense(normalizeLicenseState(await window.oudenos.license.get()));
       toast.success("License Removed", "This machine is back on the free tier.");
     } catch (error) {
       toast.error(

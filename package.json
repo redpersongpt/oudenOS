@@ -1,8 +1,8 @@
 {
-  "name": "redcore-eco",
+  "name": "oudenos-monorepo",
   "version": "1.0.0",
   "private": true,
-  "description": "redcore ecosystem — Web + Tuning + OS",
+  "description": "oudenos ecosystem — Web + Tuning + OS",
   "packageManager": "pnpm@9.15.4",
   "engines": {
     "node": ">=20"

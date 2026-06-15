@@ -7,7 +7,7 @@ import { requireAuth } from "../middleware/auth.js";
 import { apiRateLimit } from "../lib/rate-limit.js";
 
 // Reuse same allowed-redirect-hosts logic as subscription.ts
-const allowedRedirectHosts = (process.env.ALLOWED_REDIRECT_HOSTS ?? "redcoreos.net")
+const allowedRedirectHosts = (process.env.ALLOWED_REDIRECT_HOSTS ?? "ouden.cc")
   .split(",")
   .map((h) => h.trim())
   .filter(Boolean);
@@ -128,7 +128,7 @@ export const donationRoutes: FastifyPluginAsync = async (app) => {
     }
 
     const stripe = getStripe();
-    const appUrl = process.env.OS_APP_URL ?? process.env.APP_URL ?? "https://redcoreos.net";
+    const appUrl = process.env.OS_APP_URL ?? process.env.APP_URL ?? "https://ouden.cc";
     const [donation] = await db
       .insert(donations)
       .values({
@@ -159,8 +159,8 @@ export const donationRoutes: FastifyPluginAsync = async (app) => {
               price_data: {
                 currency: "usd",
                 product_data: {
-                  name: "redcore-OS Monthly Support",
-                  description: "Monthly donation to support redcore-OS development",
+                  name: "oudenOS Monthly Support",
+                  description: "Monthly donation to support oudenOS development",
                 },
                 unit_amount: amountCents,
                 recurring: { interval: "month" },
@@ -182,8 +182,8 @@ export const donationRoutes: FastifyPluginAsync = async (app) => {
               price_data: {
                 currency: "usd",
                 product_data: {
-                  name: "redcore-OS One-Time Donation",
-                  description: "Thank you for supporting redcore-OS development",
+                  name: "oudenOS One-Time Donation",
+                  description: "Thank you for supporting oudenOS development",
                 },
                 unit_amount: amountCents,
               },

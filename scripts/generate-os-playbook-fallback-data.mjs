@@ -354,7 +354,7 @@ function main() {
   const manifest = parseManifest(manifestText);
 
   const name = stripQuotes(
-    manifestText.match(/^name:\s*"([^"]+)"/m)?.[1] ?? "redcore-os-default",
+    manifestText.match(/^name:\s*"([^"]+)"/m)?.[1] ?? "oudenos-os-default",
   );
   const version = stripQuotes(
     manifestText.match(/^version:\s*"([^"]+)"/m)?.[1] ?? "1.0.0",

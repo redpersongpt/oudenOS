@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# ─── redcore VDS Production Deployment ──────────────────────────────────────
+# ─── oudenos VDS Production Deployment ──────────────────────────────────────
 # Target: Ubuntu 24.04 VDS (set VDS_IP env var)
 # Deploys: apps/web (Next.js standalone) only
-# Domain: redcoreos.net
+# Domain: ouden.cc
 #
 # Usage: Copy this script to VDS and run:
 #   chmod +x vds-deploy.sh && sudo ./vds-deploy.sh
@@ -13,12 +13,12 @@
 
 set -euo pipefail
 
-DOMAIN="redcoreos.net"
+DOMAIN="ouden.cc"
 CERTBOT_EMAIL="${CERTBOT_EMAIL:?ERROR: Set CERTBOT_EMAIL environment variable}"
-REPO_URL="https://github.com/redpersongpt/redcoreECO.git"
-APP_DIR="/opt/redcore/app"
-DATA_DIR="/opt/redcore/data"
-DOWNLOADS_DIR="/var/www/redcore-downloads"
+REPO_URL="https://github.com/redpersongpt/oudenOS.git"
+APP_DIR="/opt/oudenos/app"
+DATA_DIR="/opt/oudenos/data"
+DOWNLOADS_DIR="/var/www/oudenos-downloads"
 DEPLOY_USER="ubuntu"
 
 # ─── Validation ─────────────────────────────────────────────────────────────
@@ -48,20 +48,20 @@ ufw --force enable
 echo "═══ STEP 4/10: Directories ═══"
 mkdir -p "$APP_DIR" "$DATA_DIR"
 mkdir -p "$DOWNLOADS_DIR"/{os,tuning,archive}
-chown -R "$DEPLOY_USER":"$DEPLOY_USER" /opt/redcore "$DOWNLOADS_DIR"
+chown -R "$DEPLOY_USER":"$DEPLOY_USER" /opt/oudenos "$DOWNLOADS_DIR"
 
 echo "═══ STEP 5/10: Clone & Build ═══"
 sudo -u "$DEPLOY_USER" bash << 'BUILDEOF'
 set -euo pipefail
 
-cd /opt/redcore
+cd /opt/oudenos
 
 # Clone or pull
 if [ -d "app/.git" ]; then
   cd app && git pull origin main
 else
   rm -rf app
-  git clone https://github.com/redpersongpt/redcoreECO.git app
+  git clone https://github.com/redpersongpt/oudenOS.git app
   cd app
 fi
 
@@ -83,7 +83,7 @@ if [ ! -f "$ENV_FILE" ]; then
   SECRET=$(openssl rand -base64 32)
   sudo -u "$DEPLOY_USER" bash -c "cat > '$ENV_FILE'" << ENVEOF
 NODE_ENV=production
-DATABASE_URL=file:/opt/redcore/data/production.db
+DATABASE_URL=file:/opt/oudenos/data/production.db
 NEXTAUTH_URL=https://$DOMAIN
 NEXTAUTH_SECRET=$SECRET
 GOOGLE_CLIENT_ID=
@@ -100,20 +100,20 @@ else
 fi
 
 echo "═══ STEP 7/10: Initialize Database ═══"
-sudo -u "$DEPLOY_USER" bash -c "cd '$APP_DIR/apps/web' && DATABASE_URL='file:/opt/redcore/data/production.db' npx prisma db push --skip-generate"
+sudo -u "$DEPLOY_USER" bash -c "cd '$APP_DIR/apps/web' && DATABASE_URL='file:/opt/oudenos/data/production.db' npx prisma db push --skip-generate"
 
 echo "═══ STEP 8/10: PM2 ═══"
 sudo -u "$DEPLOY_USER" bash -c "cat > '$APP_DIR/ecosystem.config.cjs'" << 'PM2EOF'
 module.exports = {
   apps: [{
-    name: "redcore-web",
-    cwd: "/opt/redcore/app/apps/web/.next/standalone/apps/web",
+    name: "oudenos-web",
+    cwd: "/opt/oudenos/app/apps/web/.next/standalone/apps/web",
     script: "server.js",
     env: {
       NODE_ENV: "production",
       PORT: 3000,
       HOSTNAME: "127.0.0.1",
-      DATABASE_URL: "file:/opt/redcore/data/production.db",
+      DATABASE_URL: "file:/opt/oudenos/data/production.db",
     },
     max_memory_restart: "512M",
     restart_delay: 3000,
@@ -135,7 +135,7 @@ sudo -u "$DEPLOY_USER" bash -c "
   set -a
   source '$ENV_FILE' 2>/dev/null || true
   set +a
-  pm2 delete redcore-web 2>/dev/null || true
+  pm2 delete oudenos-web 2>/dev/null || true
   pm2 start ecosystem.config.cjs
   pm2 save
 "
@@ -147,16 +147,16 @@ if [ -n "$PM2_STARTUP" ]; then
 fi
 
 echo "═══ STEP 9/10: Nginx ═══"
-cat > /etc/nginx/sites-available/redcore << 'NGINX'
+cat > /etc/nginx/sites-available/oudenos << 'NGINX'
 server {
     listen 80;
-    server_name www.redcoreos.net;
-    return 301 https://redcoreos.net$request_uri;
+    server_name www.ouden.cc;
+    return 301 https://ouden.cc$request_uri;
 }
 
 server {
     listen 80;
-    server_name redcoreos.net;
+    server_name ouden.cc;
 
     location / {
         proxy_pass http://127.0.0.1:3000;
@@ -171,7 +171,7 @@ server {
     }
 
     location /downloads/ {
-        alias /var/www/redcore-downloads/;
+        alias /var/www/oudenos-downloads/;
         autoindex off;
         sendfile on;
         tcp_nopush on;
@@ -195,7 +195,7 @@ server {
 }
 NGINX
 
-ln -sf /etc/nginx/sites-available/redcore /etc/nginx/sites-enabled/
+ln -sf /etc/nginx/sites-available/oudenos /etc/nginx/sites-enabled/
 rm -f /etc/nginx/sites-enabled/default
 nginx -t && systemctl reload nginx
 
@@ -217,8 +217,8 @@ echo "════════════════════════�
 echo ""
 echo "  Website:   https://$DOMAIN"
 echo "  Downloads: https://$DOMAIN/downloads/"
-echo "  PM2:       pm2 status / pm2 logs redcore-web"
-echo "  Nginx:     /etc/nginx/sites-available/redcore"
+echo "  PM2:       pm2 status / pm2 logs oudenos-web"
+echo "  Nginx:     /etc/nginx/sites-available/oudenos"
 echo "  Env:       $ENV_FILE"
 echo "  Database:  $DATA_DIR/production.db"
 echo "  Releases:  $DOWNLOADS_DIR/{os,tuning,archive}/"

@@ -3,12 +3,12 @@
 // All download buttons on the site must use these functions.
 // Never hardcode version strings or download URLs in pages.
 
-const DEFAULT_OS_LATEST_URL = "https://redcoreos.net/downloads/os/latest.json";
+const DEFAULT_OS_LATEST_URL = "https://ouden.cc/downloads/os/latest.json";
 
 function getOsLatestUrl(): string {
   return (
-    process.env.REDCORE_OS_LATEST_URL ??
-    process.env.NEXT_PUBLIC_REDCORE_OS_LATEST_URL ??
+    process.env.OUDENOS_OS_LATEST_URL ??
+    process.env.NEXT_PUBLIC_OUDENOS_OS_LATEST_URL ??
     DEFAULT_OS_LATEST_URL
   );
 }
@@ -62,13 +62,13 @@ function validateManifest(data: unknown): ReleaseManifest | null {
   if (typeof d.sizeBytes !== "number" || d.sizeBytes <= 0) return null;
 
   return {
-    product: typeof d.product === "string" ? d.product : "redcore-os",
+    product: typeof d.product === "string" ? d.product : "oudenos-os",
     channel: typeof d.channel === "string" ? d.channel : "latest",
     version: d.version as string,
     versionTag: typeof d.versionTag === "string" ? d.versionTag : `v${d.version}`,
     commit: typeof d.commit === "string" ? d.commit : "",
     builtAt: typeof d.builtAt === "string" ? d.builtAt : "",
-    filename: typeof d.filename === "string" ? d.filename : "redcore-os-setup.exe",
+    filename: typeof d.filename === "string" ? d.filename : "oudenOS-setup.exe",
     releaseFilename: typeof d.releaseFilename === "string" ? d.releaseFilename : "",
     sizeBytes: d.sizeBytes as number,
     sha256: d.sha256 as string,
@@ -82,7 +82,7 @@ function validateManifest(data: unknown): ReleaseManifest | null {
  * Returns a structured DownloadState that tells the UI exactly what to render.
  * Never silently falls back to a potentially stale URL.
  */
-export async function getRedcoreOsDownloadState(): Promise<DownloadState> {
+export async function getOudenOsDownloadState(): Promise<DownloadState> {
   try {
     const response = await fetch(getOsLatestUrl(), {
       cache: "no-store",
@@ -157,6 +157,6 @@ export function formatDownloadSize(sizeBytes: number | null): string | null {
   return `${mb.toFixed(1)} MB`;
 }
 
-// Legacy REDCORE_OS_DOWNLOAD, getLatestRedcoreOsDownloadUrl, and
-// getLatestRedcoreOsDownloadManifest have been removed.
-// All download surfaces now use getRedcoreOsDownloadState() exclusively.
+// Legacy OUDENOS_OS_DOWNLOAD, getLatestOudenOsDownloadUrl, and
+// getLatestOudenOsDownloadManifest have been removed.
+// All download surfaces now use getOudenOsDownloadState() exclusively.

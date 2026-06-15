@@ -36,8 +36,8 @@ const outDir = path.resolve(readArg("--out-dir", path.join(repoRoot, "artifacts"
 const packageName = readArg(
   "--package-name",
   stateFile
-    ? `redcore-os-user-package-${version}-${commit}.apbx`
-    : `redcore-os-template-${version}-${commit}.apbx`,
+    ? `oudenos-os-user-package-${version}-${commit}.apbx`
+    : `oudenos-os-template-${version}-${commit}.apbx`,
 );
 
 const wizardMetadata = JSON.parse(fs.readFileSync(wizardPath, "utf8"));

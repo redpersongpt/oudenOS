@@ -39,7 +39,7 @@ const pages = [
   {
     title: "Why Ouden",
     description: "Scans your PC first, adapts to your setup, and every change is reversible.",
-    href: "/why-redcore",
+    href: "/why-oudenos",
   },
   {
     title: "Downloads",

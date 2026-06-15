@@ -1,4 +1,4 @@
-# redcore OS Consumer Windows Certification Harness
+# oudenOS Consumer Windows Certification Harness
 # One-command wrapper around the real post-apply verification harness.
 
 param(
@@ -22,7 +22,7 @@ Set-Location $repoRoot
 $timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
 $outputDir = Join-Path $OutputRoot $timestamp
 
-Write-Host "== redcore OS consumer certification =="
+Write-Host "== oudenOS consumer certification =="
 Write-Host "Repo:      $repoRoot"
 Write-Host "Profile:   $Profile"
 Write-Host "Preset:    $Preset"

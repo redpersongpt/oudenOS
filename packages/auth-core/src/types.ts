@@ -32,7 +32,7 @@ export interface AuthConfig {
 }
 
 export const DEFAULT_AUTH_CONFIG: Omit<AuthConfig, "secret"> = {
-  issuer: "redcore-platform",
+  issuer: "oudenos-platform",
   accessTokenExpiry: "15m",
   refreshTokenExpiry: "30d",
 };

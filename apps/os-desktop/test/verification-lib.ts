@@ -355,7 +355,7 @@ function parseManifest(text: string): {
   const lines = text.split(/\r?\n/);
   const phases: Array<{ id: string; name: string; modules: string[]; type: string | null }> = [];
   const profiles: Record<string, { overrides: string | null }> = {};
-  const playbookName = stripQuotes(text.match(/^name:\s*"([^"]+)"/m)?.[1] ?? "redcore-os-default");
+  const playbookName = stripQuotes(text.match(/^name:\s*"([^"]+)"/m)?.[1] ?? "oudenos-os-default");
   const playbookVersion = stripQuotes(text.match(/^version:\s*"([^"]+)"/m)?.[1] ?? "1.0.0");
 
   let mode = "";
@@ -1266,7 +1266,7 @@ export function writeJson(filePath: string, value: unknown): void {
 
 export function writeMatrixMarkdown(filePath: string, matrix: ActionVerificationMatrixEntry[]): void {
   const lines: string[] = [];
-  lines.push("# redcore OS Action Verification Matrix");
+  lines.push("# oudenOS Action Verification Matrix");
   lines.push("");
   lines.push("| Action ID | Tier | Proof Status | Readback | Rollback |");
   lines.push("| --- | --- | --- | --- | --- |");
@@ -1797,13 +1797,13 @@ class RpcClient {
 function findServiceExecutable(explicitPath?: string): string {
   const candidates = [
     explicitPath,
-    path.join(repoRoot, "services", "os-service", "target", "debug", "redcore-os-service.exe"),
-    path.join(repoRoot, "services", "os-service", "target", "release", "redcore-os-service.exe"),
+    path.join(repoRoot, "services", "os-service", "target", "debug", "oudenos-os-service.exe"),
+    path.join(repoRoot, "services", "os-service", "target", "release", "oudenos-os-service.exe"),
   ].filter(Boolean) as string[];
 
   const match = candidates.find((candidate) => fs.existsSync(candidate));
   if (!match) {
-    throw new Error("redcore-os-service.exe not found. Build services/os-service on Windows first.");
+    throw new Error("oudenos-os-service.exe not found. Build services/os-service on Windows first.");
   }
   return match;
 }

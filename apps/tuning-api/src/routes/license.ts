@@ -1,7 +1,7 @@
 import type { FastifyPluginAsync } from "fastify";
 
 // License Routes
-// Product decision: redcore-Tuning v1 uses LOCAL-FIRST licensing.
+// Product decision: oudenOS Tuning v1 uses LOCAL-FIRST licensing.
 //
 // The desktop app validates licenses offline using AES-256-GCM encrypted
 // cache with 30-day offline grace period (packages/license-client).
@@ -23,7 +23,7 @@ import type { FastifyPluginAsync } from "fastify";
 
 const OFFLINE_FIRST_RESPONSE = {
   status: "offline_first",
-  message: "redcore-Tuning v1 uses local-first licensing. Cloud validation will be available in a future release.",
+  message: "oudenOS Tuning v1 uses local-first licensing. Cloud validation will be available in a future release.",
   fallback: "The desktop client validates licenses locally with a 30-day offline grace period.",
 };
 

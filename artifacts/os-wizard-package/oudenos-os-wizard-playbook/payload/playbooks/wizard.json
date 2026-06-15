@@ -1,9 +1,9 @@
 {
-  "packageId": "redcore-os",
-  "title": "redcore OS Playbook",
-  "shortDescription": "Windows optimization playbook for redcore OS",
+  "packageId": "oudenos-os",
+  "title": "oudenOS Playbook",
+  "shortDescription": "Windows optimization playbook for oudenOS",
   "description": "A review-first Windows optimization playbook that stages cleanup, privacy hardening, and performance tuning through a guided wizard.",
-  "details": "redcore OS scans the current install, resolves a profile-aware plan, and packages the same decisions for wizard and ISO flows.",
+  "details": "oudenOS scans the current install, resolves a profile-aware plan, and packages the same decisions for wizard and ISO flows.",
   "version": "1.0",
   "uniqueId": "2cb0ed8d-2d5b-4e74-9c0d-df83cc3ab4d4",
   "upgradableFrom": "any",
@@ -19,14 +19,14 @@
   ],
   "useKernelDriver": false,
   "productCode": 410,
-  "git": "https://github.com/redpersongpt/redcoreOS",
-  "website": "https://redcoreos.net",
-  "donateLink": "https://redcoreos.net",
+  "git": "https://github.com/redpersongpt/oudenOS",
+  "website": "https://ouden.cc",
+  "donateLink": "https://ouden.cc",
   "supportsISO": true,
   "iso": {
     "disableBitLocker": true,
     "disableHardwareRequirements": true,
-    "injectPath": "sources/$OEM$/$1/redcore/wizard"
+    "injectPath": "sources/$OEM$/$1/oudenos/wizard"
   },
   "oobe": {
     "internet": "Request",

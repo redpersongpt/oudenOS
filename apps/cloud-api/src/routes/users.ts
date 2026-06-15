@@ -259,19 +259,19 @@ export const usersRoutes: FastifyPluginAsync = async (app) => {
       })
       .where(eq(users.id, request.userId));
 
-    const appUrl = process.env.APP_URL ?? "https://redcoreos.net";
+    const appUrl = process.env.APP_URL ?? "https://ouden.cc";
     const verifyLink = `${appUrl}/verify-email?token=${verificationToken}`;
 
     sendEmail({
       to: normalizedNew,
-      subject: "Verify your new redcore-Tuning email",
+      subject: "Verify your new oudenOS Tuning email",
       html: verifyEmailTemplate(user.name ?? "", verifyLink),
     }).catch((err) => app.log.error({ err }, "Failed to send email change verification"));
 
     // Notify old email as security alert
     sendEmail({
       to: user.email,
-      subject: "Your redcore-Tuning email was changed",
+      subject: "Your oudenOS Tuning email was changed",
       html: emailChangedTemplate(user.name ?? "", user.email),
     }).catch((err) => app.log.error({ err }, "Failed to send email change notification"));
 
@@ -654,7 +654,7 @@ export const usersRoutes: FastifyPluginAsync = async (app) => {
       .where(eq(machineActivations.userId, request.userId))
       .orderBy(desc(machineActivations.activatedAt));
 
-    reply.header("Content-Disposition", 'attachment; filename="redcore-data-export.json"');
+    reply.header("Content-Disposition", 'attachment; filename="oudenos-data-export.json"');
     return reply.send({
       exportedAt: new Date().toISOString(),
       user,
@@ -727,7 +727,7 @@ export const usersRoutes: FastifyPluginAsync = async (app) => {
     await db
       .update(users)
       .set({
-        email: `deleted+${request.userId}@redcore.invalid`,
+        email: `deleted+${request.userId}@ouden.invalid`,
         name: null,
         passwordHash: null,
         avatarUrl: null,

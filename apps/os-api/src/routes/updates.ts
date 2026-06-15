@@ -52,7 +52,7 @@ export default async function updateRoutes(app: FastifyInstance): Promise<void> 
     // Latest version from env or default
     const latestVersion = process.env.LATEST_APP_VERSION ?? '0.10.1';
     const downloadBaseUrl =
-      process.env.UPDATE_DOWNLOAD_URL ?? 'https://releases.redcore-os.com';
+      process.env.UPDATE_DOWNLOAD_URL ?? 'https://releases.ouden.cc';
     const isCritical = process.env.CRITICAL_UPDATE === 'true';
     const releaseNotes = process.env.RELEASE_NOTES ?? '';
     const publishedAt = process.env.RELEASE_PUBLISHED_AT ?? new Date().toISOString();
@@ -65,7 +65,7 @@ export default async function updateRoutes(app: FastifyInstance): Promise<void> 
         hasUpdate,
         latestVersion,
         downloadUrl: hasUpdate
-          ? `${downloadBaseUrl}/redcore-os-${latestVersion}-${platform}.exe`
+          ? `${downloadBaseUrl}/oudenos-os-${latestVersion}-${platform}.exe`
           : null,
         releaseNotes: hasUpdate ? releaseNotes : null,
         isCritical: hasUpdate ? isCritical : false,

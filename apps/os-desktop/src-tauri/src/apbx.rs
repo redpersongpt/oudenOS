@@ -373,7 +373,7 @@ fn render_resolved_config(
         "  injectPath: \"{}\"",
         wm.pointer("/iso/injectPath")
             .and_then(|v| v.as_str())
-            .unwrap_or("sources/$OEM$/$1/redcore/wizard")
+            .unwrap_or("sources/$OEM$/$1/oudenos/wizard")
     ));
     lines.push(format!(
         "  disableBitLocker: {}",

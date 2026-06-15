@@ -164,11 +164,11 @@ export const authRoutes: FastifyPluginAsync = async (app) => {
     if (!user) return reply.code(500).send({ error: "Registration failed" });
 
     // Send verification email (fire-and-forget; don't fail registration if email fails)
-    const appUrl = process.env.APP_URL ?? "https://redcoreos.net";
+    const appUrl = process.env.APP_URL ?? "https://ouden.cc";
     const verifyLink = `${appUrl}/verify-email?token=${verificationToken}`;
     sendEmail({
       to: normalizedEmail,
-      subject: "Verify your redcore-Tuning account",
+      subject: "Verify your oudenOS Tuning account",
       html: verifyEmailTemplate(user.name ?? "", verifyLink),
     }).catch((err) => app.log.error({ err }, "Failed to send verification email"));
 
@@ -328,7 +328,7 @@ export const authRoutes: FastifyPluginAsync = async (app) => {
         })
         .where(eq(users.id, user.id));
 
-      const appUrl = process.env.APP_URL ?? "https://redcoreos.net";
+      const appUrl = process.env.APP_URL ?? "https://ouden.cc";
       const resetLink = `${appUrl}/reset-password?token=${rawToken}`;
       sendEmail({
         to: email,
@@ -447,11 +447,11 @@ export const authRoutes: FastifyPluginAsync = async (app) => {
       })
       .where(eq(users.id, user.id));
 
-    const appUrl = process.env.APP_URL ?? "https://redcoreos.net";
+    const appUrl = process.env.APP_URL ?? "https://ouden.cc";
     const verifyLink = `${appUrl}/verify-email?token=${rawToken}`;
     sendEmail({
       to: user.email,
-      subject: "Verify your redcore-Tuning email",
+      subject: "Verify your oudenOS Tuning email",
       html: verifyEmailTemplate(user.name ?? "", verifyLink),
     }).catch((err) => app.log.error({ err }, "Failed to send verification email"));
 
@@ -507,7 +507,7 @@ export const authRoutes: FastifyPluginAsync = async (app) => {
     reply: import("fastify").FastifyReply;
   }) {
     const normalizedEmail = profile.email?.toLowerCase().trim();
-    const fallbackAppleEmail = `apple-${profile.id}@privaterelay.redcore.invalid`;
+    const fallbackAppleEmail = `apple-${profile.id}@privaterelay.ouden.invalid`;
     const accountEmail = normalizedEmail ?? fallbackAppleEmail;
 
     // 1. Check if this OAuth account is already linked

@@ -40,7 +40,7 @@ jobs:
         shell: pwsh
         run: |
           $psi = New-Object System.Diagnostics.ProcessStartInfo
-          $psi.FileName = (Resolve-Path "services\os-service\target\debug\redcore-os-service.exe").Path
+          $psi.FileName = (Resolve-Path "services\os-service\target\debug\oudenos-os-service.exe").Path
           $psi.RedirectStandardInput = $true
           $psi.RedirectStandardOutput = $true
           $psi.RedirectStandardError = $true

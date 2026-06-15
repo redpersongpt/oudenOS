@@ -1,5 +1,5 @@
 // Storage Tuning Module
-// Derived from the redcore internal storage-optimization notes.
+// Derived from the oudenos internal storage-optimization notes.
 
 import type { TuningActionDefinition } from "../types.js";
 

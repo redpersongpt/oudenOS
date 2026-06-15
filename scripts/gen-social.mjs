@@ -58,7 +58,7 @@ const bannerSvg = `<svg width="1500" height="500" viewBox="0 0 1500 500" fill="n
     <circle cx="0" cy="0" r="32" fill="#E8254B"/>
   </g>
   
-  <!-- Text: redcore OS -->
+  <!-- Text: oudenOS -->
   <text x="520" y="230" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="72" font-weight="800" letter-spacing="-2">
     <tspan fill="#f0f0f4">red</tspan><tspan fill="#E8254B">core</tspan><tspan fill="#a0a0ac" font-weight="400"> OS</tspan>
   </text>
@@ -70,7 +70,7 @@ const bannerSvg = `<svg width="1500" height="500" viewBox="0 0 1500 500" fill="n
   
   <!-- URL -->
   <text x="522" y="340" font-family="'SF Mono', 'Cascadia Code', monospace" font-size="16" fill="#E8254B" opacity="0.6" letter-spacing="1">
-    redcoreos.net
+    ouden.cc
   </text>
   
   <!-- Bottom accent line -->
@@ -94,19 +94,19 @@ const bannerSvg = `<svg width="1500" height="500" viewBox="0 0 1500 500" fill="n
 const s = (await import('sharp')).default;
 
 // Profile picture — 1024x1024
-await s(Buffer.from(pfpSvg)).resize(1024, 1024).png({ quality: 100 }).toFile('/tmp/social-assets/redcore-pfp-1024.png');
+await s(Buffer.from(pfpSvg)).resize(1024, 1024).png({ quality: 100 }).toFile('/tmp/social-assets/oudenos-pfp-1024.png');
 console.log('PFP 1024x1024 done');
 
 // Profile picture — 400x400 (Discord/Twitter)
-await s(Buffer.from(pfpSvg)).resize(400, 400).png({ quality: 100 }).toFile('/tmp/social-assets/redcore-pfp-400.png');
+await s(Buffer.from(pfpSvg)).resize(400, 400).png({ quality: 100 }).toFile('/tmp/social-assets/oudenos-pfp-400.png');
 console.log('PFP 400x400 done');
 
 // Banner — 1500x500 (Twitter/X)
-await s(Buffer.from(bannerSvg), { density: 150 }).resize(1500, 500).png({ quality: 100 }).toFile('/tmp/social-assets/redcore-banner-1500x500.png');
+await s(Buffer.from(bannerSvg), { density: 150 }).resize(1500, 500).png({ quality: 100 }).toFile('/tmp/social-assets/oudenos-banner-1500x500.png');
 console.log('Banner 1500x500 done');
 
 // Banner — 2560x1440 (YouTube) — same SVG scaled
-await s(Buffer.from(bannerSvg), { density: 300 }).resize(2560, 854).png({ quality: 100 }).toFile('/tmp/social-assets/redcore-banner-2560x854.png');
+await s(Buffer.from(bannerSvg), { density: 300 }).resize(2560, 854).png({ quality: 100 }).toFile('/tmp/social-assets/oudenos-banner-2560x854.png');
 console.log('Banner 2560x854 done');
 
 console.log('All done! Files in /tmp/social-assets/');

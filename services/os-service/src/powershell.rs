@@ -92,7 +92,7 @@ pub fn execute(script: &str) -> anyhow::Result<PsResult> {
 pub fn resolve_minsudo_path() -> Option<PathBuf> {
     let mut candidates = Vec::new();
 
-    if let Ok(from_env) = std::env::var("REDCORE_MINSUDO_PATH") {
+    if let Ok(from_env) = std::env::var("OUDENOS_MINSUDO_PATH") {
         candidates.push(PathBuf::from(from_env));
     }
 

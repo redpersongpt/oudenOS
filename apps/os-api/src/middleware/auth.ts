@@ -53,7 +53,7 @@ export async function signAccessToken(
     .setSubject(userId)
     .setIssuedAt()
     .setExpirationTime('15m')
-    .setIssuer('redcore-os')
+    .setIssuer('oudenos-os')
     .sign(getSecret());
 }
 
@@ -63,7 +63,7 @@ export async function signRefreshToken(userId: string): Promise<string> {
     .setSubject(userId)
     .setIssuedAt()
     .setExpirationTime('30d')
-    .setIssuer('redcore-os')
+    .setIssuer('oudenos-os')
     .sign(getSecret());
 }
 
@@ -71,7 +71,7 @@ export async function verifyToken(
   token: string,
 ): Promise<{ userId: string; role?: string; type: string }> {
   const { payload } = await jwtVerify(token, getSecret(), {
-    issuer: 'redcore-os',
+    issuer: 'oudenos-os',
   });
 
   if (!payload.sub) {

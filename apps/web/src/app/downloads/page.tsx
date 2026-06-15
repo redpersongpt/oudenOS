@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Navigation } from "@/components/brand/Navigation";
 import { FooterSection } from "@/components/sections/FooterSection";
 import {
-  getRedcoreOsDownloadState,
+  getOudenOsDownloadState,
   formatDownloadSize,
 } from "@/lib/downloads";
 import Link from "next/link";
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
 };
 
 export default async function DownloadsPage() {
-  const os = await getRedcoreOsDownloadState();
+  const os = await getOudenOsDownloadState();
 
   return (
     <>
@@ -84,7 +84,7 @@ export default async function DownloadsPage() {
                 </span>
               )}
               <Link
-                href="/redcore-os"
+                href="/oudenos-os"
                 className="text-[13px] text-[var(--text-disabled)] hover:text-[var(--text-secondary)] transition-colors"
               >
                 Learn more
@@ -109,7 +109,7 @@ export default async function DownloadsPage() {
               <p className="mb-4 text-[12px] text-amber-500/80">
                 {os.unavailableReason}. Check back shortly or visit the{" "}
                 <a
-                  href="https://github.com/redpersongpt/redcoreECO/releases"
+                  href="https://github.com/redpersongpt/oudenOS/releases"
                   className="underline hover:text-amber-400"
                 >
                   GitHub releases
@@ -162,7 +162,7 @@ export default async function DownloadsPage() {
                 Not yet available
               </span>
               <Link
-                href="/redcore-tuning"
+                href="/oudenos-tuning"
                 className="text-[13px] text-[var(--text-disabled)] hover:text-[var(--text-secondary)] transition-colors"
               >
                 Learn more
@@ -199,7 +199,7 @@ export default async function DownloadsPage() {
               The tool requires administrator privileges because it modifies
               system settings, services, and registry keys. A restore point
               is created before any changes. You can review the{" "}
-              <Link href="/redcore-os" className="text-[var(--color-ink-secondary)] hover:text-white transition-colors">
+              <Link href="/oudenos-os" className="text-[var(--color-ink-secondary)] hover:text-white transition-colors">
                 full description of what OudenOS does
               </Link>{" "}
               before running it.

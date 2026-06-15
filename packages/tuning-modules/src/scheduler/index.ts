@@ -1,6 +1,6 @@
 // Scheduler & MMCSS Tuning Module
 // Multimedia Class Scheduler Service profile optimization and process scheduling.
-// Sources: redcore MMCSS research notes, Microsoft MMCSS documentation.
+// Sources: oudenos MMCSS research notes, Microsoft MMCSS documentation.
 
 import type { TuningActionDefinition } from "../types.js";
 

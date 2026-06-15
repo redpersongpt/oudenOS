@@ -10,9 +10,9 @@ use crate::rollback;
 use serde_json::Value;
 
 #[cfg(windows)]
-const REDCORE_ACCENT_BGR: u32 = 0x00000000; // Pure black — matches Ouden monochrome theme
+const OUDENOS_ACCENT_BGR: u32 = 0x00000000; // Pure black — matches Ouden monochrome theme
 #[cfg(windows)]
-const REDCORE_DWM_ACCENT: u32 = 0xC4000000; // Black with opacity for DWM
+const OUDENOS_DWM_ACCENT: u32 = 0xC4000000; // Black with opacity for DWM
 
 /// Returns a JSON description of what personalization will be applied
 /// for the given device profile.
@@ -505,8 +505,8 @@ fn apply_accent_color() -> anyhow::Result<()> {
             -Name ColorPrevalence -Value 0 -Type DWord -Force; \
         Set-ItemProperty 'HKCU:\\SOFTWARE\\Microsoft\\Windows\\DWM' \
             -Name ColorPrevalence -Value 0 -Type DWord -Force",
-        REDCORE_ACCENT_BGR,
-        REDCORE_ACCENT_BGR,
+        OUDENOS_ACCENT_BGR,
+        OUDENOS_ACCENT_BGR,
     );
     let result = powershell::execute(&script)?;
     if !result.success {
@@ -516,13 +516,13 @@ fn apply_accent_color() -> anyhow::Result<()> {
         "HKCU",
         "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Accent",
         "AccentColorMenu",
-        REDCORE_ACCENT_BGR as i64,
+        OUDENOS_ACCENT_BGR as i64,
     )?;
     verify_registry_dword(
         "HKCU",
         "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Accent",
         "StartColorMenu",
-        REDCORE_ACCENT_BGR as i64,
+        OUDENOS_ACCENT_BGR as i64,
     )?;
     verify_registry_dword(
         "HKCU",
@@ -741,14 +741,14 @@ fn refresh_shell_ui() -> anyhow::Result<()> {
         Add-Type -TypeDefinition @'\n\
 using System;\n\
 using System.Runtime.InteropServices;\n\
-public static class RedcoreShellRefresh {\n\
+public static class OudenShellRefresh {\n\
     [DllImport(\"user32.dll\", SetLastError = true, CharSet = CharSet.Unicode)]\n\
     public static extern IntPtr SendMessageTimeout(IntPtr hWnd, int msg, UIntPtr wParam, string lParam, int fuFlags, int uTimeout, out UIntPtr lpdwResult);\n\
 }\n\
 '@; \
         $result = [UIntPtr]::Zero; \
-        [void][RedcoreShellRefresh]::SendMessageTimeout([IntPtr]0xffff, 0x001A, [UIntPtr]::Zero, 'ImmersiveColorSet', 2, 5000, [ref]$result); \
-        [void][RedcoreShellRefresh]::SendMessageTimeout([IntPtr]0xffff, 0x001A, [UIntPtr]::Zero, 'WindowsThemeElement', 2, 5000, [ref]$result)";
+        [void][OudenShellRefresh]::SendMessageTimeout([IntPtr]0xffff, 0x001A, [UIntPtr]::Zero, 'ImmersiveColorSet', 2, 5000, [ref]$result); \
+        [void][OudenShellRefresh]::SendMessageTimeout([IntPtr]0xffff, 0x001A, [UIntPtr]::Zero, 'WindowsThemeElement', 2, 5000, [ref]$result)";
     let result = powershell::execute(script)?;
     if !result.success {
         anyhow::bail!("Shell refresh failed: {}", result.stderr.trim());
@@ -846,7 +846,7 @@ fn apply_dark_mode() -> anyhow::Result<()> {
 
 #[cfg(not(windows))]
 fn apply_accent_color() -> anyhow::Result<()> {
-    tracing::info!("[simulated] Would set accent color to redcore brand red (#E8254B)");
+    tracing::info!("[simulated] Would set accent color to oudenos brand red (#E8254B)");
     Ok(())
 }
 

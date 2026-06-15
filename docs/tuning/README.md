@@ -1,4 +1,4 @@
-# redcore-Tuning
+# oudenOS Tuning
 
 Premium Windows optimization platform: Electron desktop shell + Rust privileged service + cloud licensing API.
 

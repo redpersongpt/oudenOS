@@ -102,7 +102,7 @@ export function BenchmarkStep() {
     }, 1800);
 
     try {
-      const res = await window.redcore.service.call("benchmark.run", {
+      const res = await window.oudenos.service.call("benchmark.run", {
         config: {
           type: "composite",
           durationSeconds: 10,

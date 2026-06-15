@@ -1,7 +1,7 @@
 use crate::db::Database;
 use serde::{Deserialize, Serialize};
 
-const CLOUD_API_BASE: &str = "https://api.redcoreos.net";
+const CLOUD_API_BASE: &str = "https://api.ouden.cc";
 const VALIDATE_TIMEOUT_SECS: u64 = 10;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -125,7 +125,7 @@ async fn validate_remote(cached: &LicenseState) -> Result<LicenseState, String> 
         None => return Err("No device ID in cached state".to_string()),
     };
 
-    let api_base = std::env::var("REDCORE_API_URL")
+    let api_base = std::env::var("OUDENOS_API_URL")
         .unwrap_or_else(|_| CLOUD_API_BASE.to_string());
     let url = format!("{}/v1/license/validate", api_base);
 
@@ -136,7 +136,7 @@ async fn validate_remote(cached: &LicenseState) -> Result<LicenseState, String> 
 
     let body = serde_json::json!({
         "deviceFingerprint": device_id,
-        "licenseKey": std::env::var("REDCORE_LICENSE_KEY").unwrap_or_default(),
+        "licenseKey": std::env::var("OUDENOS_LICENSE_KEY").unwrap_or_default(),
     });
 
     let response = client

@@ -17,8 +17,8 @@ TUNING_RES="$ROOT_DIR/apps/tuning-desktop/resources"
 
 # ── Verify OS desktop icons exist ────────────────────────────────────────
 required_files=(
-  "$OS_RES/redcore-icon.ico"
-  "$OS_RES/redcore-icon.png"
+  "$OS_RES/oudenos-icon.ico"
+  "$OS_RES/oudenos-icon.png"
   "$OS_RES/icon.png"
 )
 
@@ -37,8 +37,8 @@ fi
 
 # ── Sync to tuning-desktop (same icon mark, different product) ───────────
 mkdir -p "$TUNING_RES"
-cp "$OS_RES/redcore-icon.png" "$TUNING_RES/redcore-icon.png"
+cp "$OS_RES/oudenos-icon.png" "$TUNING_RES/oudenos-icon.png"
 cp "$OS_RES/favicon.png" "$TUNING_RES/favicon.png"
-cp "$OS_RES/redcore-icon.ico" "$TUNING_RES/redcore-icon.ico"
+cp "$OS_RES/oudenos-icon.ico" "$TUNING_RES/oudenos-icon.ico"
 
 echo "  Brand assets verified."

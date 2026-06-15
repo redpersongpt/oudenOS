@@ -60,7 +60,7 @@ const tiers: Tier[] = [
     name: 'Free',
     monthlyPrice: 0,
     annualPrice: 0,
-    description: 'Basic assessment and a taste of what redcore-OS can do.',
+    description: 'Basic assessment and a taste of what oudenOS can do.',
     features: [
       'Basic OS health assessment',
       '3 safe transformation actions',
@@ -180,16 +180,16 @@ function CellValue({ value }: { value: string | boolean }) {
 
 const faqs = [
   {
-    q: 'Is redcore-OS safe to use on my work computer?',
+    q: 'Is oudenOS safe to use on my work computer?',
     a: 'Yes. The Work PC profile is designed specifically for business environments. It automatically preserves domain join, Active Directory, RDP, printing services, VPN configurations, and SMB file sharing. None of your business-critical services are touched.',
   },
   {
     q: 'Can I undo changes after applying them?',
-    a: 'Absolutely. redcore-OS creates a full system snapshot before every transformation. You can restore any change individually or roll back the entire transformation with a single click.',
+    a: 'Absolutely. oudenOS creates a full system snapshot before every transformation. You can restore any change individually or roll back the entire transformation with a single click.',
   },
   {
     q: 'Does this require reinstalling Windows?',
-    a: 'No. redcore-OS transforms your existing Windows installation in place. There is no reinstall, no ISO creation, and no data migration. Your files, apps, and settings stay exactly where they are.',
+    a: 'No. oudenOS transforms your existing Windows installation in place. There is no reinstall, no ISO creation, and no data migration. Your files, apps, and settings stay exactly where they are.',
   },
   {
     q: 'What Windows versions are supported?',
@@ -209,7 +209,7 @@ const faqs = [
   },
   {
     q: "What's different from just running optimization scripts?",
-    a: 'redcore-OS is profile-aware — it detects your hardware and workload to apply the right optimizations. Every action is reversible with snapshot support. Changes are audited and logged. And it all happens through a guided wizard, not a command line.',
+    a: 'oudenOS is profile-aware — it detects your hardware and workload to apply the right optimizations. Every action is reversible with snapshot support. Changes are audited and logged. And it all happens through a guided wizard, not a command line.',
   },
 ] as const
 

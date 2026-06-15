@@ -1,5 +1,5 @@
 // @oudenos/auth-core
-// Shared JWT authentication for the redcoreECO platform.
+// Shared JWT authentication for the oudenOS platform.
 
 export {
   signAccessToken,

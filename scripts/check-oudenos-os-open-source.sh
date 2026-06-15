@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-TARGET_DIR="${1:?usage: check-redcore-os-open-source.sh <target-dir>}"
+TARGET_DIR="${1:?usage: check-oudenos-os-open-source.sh <target-dir>}"
 
 declare -a forbidden_files=(
   "render.yaml"
@@ -20,7 +20,7 @@ declare -a forbidden_patterns=(
   # Infrastructure / credentials
   "185\\.48\\.182\\.164"
   "185\\.48\\.182\\.165"
-  "postgres://redcore:"
+  "postgres://oudenos:"
   "sshpass"
   "-----BEGIN.*PRIVATE KEY"
   # Auth secrets

@@ -6,6 +6,6 @@ export default {
   out: "./drizzle",
   dialect: "postgresql",
   dbCredentials: {
-    url: process.env.DATABASE_URL ?? "postgres://localhost:5432/redcore",
+    url: process.env.DATABASE_URL ?? "postgres://localhost:5432/oudenos",
   },
 } satisfies Config;

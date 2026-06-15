@@ -2,8 +2,8 @@ import Link from "next/link";
 import { Logo } from "@/components/brand/Logo";
 
 const productLinks = [
-  { label: "OudenOS",         href: "/redcore-os" },
-  { label: "Ouden.Tuning",    href: "/redcore-tuning" },
+  { label: "OudenOS",         href: "/oudenos-os" },
+  { label: "Ouden.Tuning",    href: "/oudenos-tuning" },
   { label: "Downloads",       href: "/downloads" },
   { label: "Pricing",         href: "/#pricing" },
 ];
@@ -13,12 +13,12 @@ const resourceLinks = [
   { label: "Windows Debloat",    href: "/windows-debloat" },
   { label: "Windows 11 Debloat", href: "/windows-11-debloat" },
   { label: "Custom Windows",     href: "/custom-windows" },
-  { label: "Why Ouden",          href: "/why-redcore" },
+  { label: "Why Ouden",          href: "/why-oudenos" },
   { label: "Work PC Debloat",    href: "/work-pc-debloat" },
 ];
 
 const companyLinks = [
-  { label: "GitHub (Open Source)",  href: "https://github.com/redpersongpt/redcoreOS", external: true },
+  { label: "GitHub (Open Source)",  href: "https://github.com/redpersongpt/oudenOS", external: true },
   { label: "Donate",  href: "/donate" },
   { label: "Account", href: "/profile" },
   { label: "Privacy", href: "/privacy" },

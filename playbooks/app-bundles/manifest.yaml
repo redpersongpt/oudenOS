@@ -1,5 +1,5 @@
 # App Bundle manifest — profile-aware software recommendations
-name: "redcore-os-app-bundles"
+name: "oudenos-os-app-bundles"
 version: "1.0.0"
 
 bundles:

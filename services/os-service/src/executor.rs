@@ -979,18 +979,18 @@ fn read_registry_value(hive: &str, path: &str, value_name: &str) -> Option<Value
         "try {{ \
             $val = Get-ItemProperty -Path 'Registry::{}\\{}' -Name '{}' -ErrorAction Stop; \
             $raw = $val.'{}'; \
-            if ($null -eq $raw) {{ '__REDCORE_NULL__' }} \
-            elseif ($raw -is [string] -and $raw.Length -eq 0) {{ '__REDCORE_EMPTY_STRING__' }} \
+            if ($null -eq $raw) {{ '__OUDENOS_NULL__' }} \
+            elseif ($raw -is [string] -and $raw.Length -eq 0) {{ '__OUDENOS_EMPTY_STRING__' }} \
             else {{ $raw }} \
-         }} catch {{ '__REDCORE_MISSING__' }}",
+         }} catch {{ '__OUDENOS_MISSING__' }}",
         hive, escaped_path, ps_name, ps_name,
     );
     match powershell::execute(&script) {
         Ok(result) if result.success => {
             let trimmed = result.stdout.trim();
-            if trimmed.is_empty() || trimmed == "__REDCORE_MISSING__" {
+            if trimmed.is_empty() || trimmed == "__OUDENOS_MISSING__" {
                 None
-            } else if trimmed == "__REDCORE_NULL__" || trimmed == "__REDCORE_EMPTY_STRING__" {
+            } else if trimmed == "__OUDENOS_NULL__" || trimmed == "__OUDENOS_EMPTY_STRING__" {
                 Some(Value::String(String::new()))
             } else if let Ok(n) = trimmed.parse::<i64>() {
                 Some(Value::Number(n.into()))

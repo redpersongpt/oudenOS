@@ -104,8 +104,8 @@ function checkTauriConfig() {
     if (win.maximizable !== false) return fail("config:maximizable", "should be false");
 
     // Identity
-    if (config.productName !== "redcore OS") return fail("config:productName", config.productName);
-    if (config.identifier !== "net.redcoreos.os") return fail("config:identifier", config.identifier);
+    if (config.productName !== "oudenOS") return fail("config:productName", config.productName);
+    if (config.identifier !== "net.oudenos.os") return fail("config:identifier", config.identifier);
 
     // CSP
     if (!config.app?.security?.csp) return fail("config:csp", "no CSP defined");
@@ -122,8 +122,8 @@ async function checkServiceBinary() {
   const candidates = servicePath
     ? [resolve(servicePath)]
     : [
-        resolve(ROOT, "services/os-service/target/release/redcore-os-service.exe"),
-        resolve(ROOT, "services/os-service/target/debug/redcore-os-service.exe"),
+        resolve(ROOT, "services/os-service/target/release/oudenos-os-service.exe"),
+        resolve(ROOT, "services/os-service/target/debug/oudenos-os-service.exe"),
       ];
 
   let binaryPath = null;
@@ -152,8 +152,8 @@ async function checkJsonRpc(binaryPath) {
     stdio: ["pipe", "pipe", "pipe"],
     env: {
       ...process.env,
-      RUST_LOG: "redcore_os_service=warn",
-      REDCORE_PLAYBOOK_DIR: resolve(ROOT, "playbooks"),
+      RUST_LOG: "oudenos_os_service=warn",
+      OUDENOS_PLAYBOOK_DIR: resolve(ROOT, "playbooks"),
     },
   });
 
@@ -296,7 +296,7 @@ function checkStubs() {
 
 async function run() {
   console.log("");
-  console.log("  redcore OS — Tauri Migration Validation");
+  console.log("  oudenOS — Tauri Migration Validation");
   console.log("  ───────────────────────────────────────");
   console.log(`  Platform: ${process.platform}`);
   console.log(`  Tauri dir: ${TAURI_DIR}`);

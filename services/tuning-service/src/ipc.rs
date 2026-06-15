@@ -568,7 +568,7 @@ async fn dispatch(
             );
             #[cfg(windows)]
             {
-                let script = "shutdown /r /t 5 /c \"redcore-Tuning: reboot for tuning changes\"";
+                let script = "shutdown /r /t 5 /c \"oudenOS Tuning: reboot for tuning changes\"";
                 match crate::powershell::execute(script) {
                     Ok(_) => RpcResponse::ok(id, serde_json::json!({"scheduled": true, "delaySeconds": 5})),
                     Err(e) => RpcResponse::err(id, -30, format!("Reboot failed: {}", e)),

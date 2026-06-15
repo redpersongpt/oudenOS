@@ -1,5 +1,5 @@
-// redcore-OS Transformation Actions
-// Deeper than redcore-Tuning: AppX removal, task management, feature cleanup.
+// oudenOS Transformation Actions
+// Deeper than oudenOS Tuning: AppX removal, task management, feature cleanup.
 // Every action is profile-aware and respects Work PC preservation flags.
 
 import type { TransformAction } from "./transformation.js";

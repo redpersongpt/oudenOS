@@ -27,7 +27,7 @@ export async function sendEmail(opts: SendEmailOptions): Promise<void> {
     },
     body: JSON.stringify({
       personalizations: [{ to: [{ email: opts.to }] }],
-      from: { email: "noreply@redcoreos.net", name: "redcore-Tuning" },
+      from: { email: "noreply@ouden.cc", name: "oudenOS Tuning" },
       subject: opts.subject,
       content: [{ type: "text/html", value: opts.html }],
     }),
@@ -39,7 +39,7 @@ export async function sendEmail(opts: SendEmailOptions): Promise<void> {
   }
 }
 
-const APP_NAME = "redcore-Tuning";
+const APP_NAME = "oudenOS Tuning";
 
 export function verifyEmailHtml(name: string, link: string): string {
   return `

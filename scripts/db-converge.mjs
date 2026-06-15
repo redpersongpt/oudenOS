@@ -36,7 +36,7 @@ const DB_URL = process.env.DATABASE_URL;
 // ─── Environment validation ────────────────────────────────────────────────
 
 console.log("");
-console.log("  redcore — Database Convergence Operator");
+console.log("  oudenos — Database Convergence Operator");
 console.log("  ────────────────────────────────────────");
 
 if (!DB_URL) {

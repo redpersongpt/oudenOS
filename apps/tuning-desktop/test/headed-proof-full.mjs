@@ -104,7 +104,7 @@ app.whenReady().then(async () => {
           "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
           "font-src 'self' https://fonts.gstatic.com",
           "img-src 'self' data: https: http:",
-          "connect-src 'self' https://api.redcoreos.net",
+          "connect-src 'self' https://api.ouden.cc",
         ].join("; "),
       },
     });
@@ -144,9 +144,9 @@ app.whenReady().then(async () => {
 
   // ── Inject auth and reload for dashboard pages ──
   await win.webContents.executeJavaScript(`
-    localStorage.setItem('redcore-auth', JSON.stringify({
+    localStorage.setItem('oudenos-auth', JSON.stringify({
       state: {
-        user: { id: 'proof-user', email: 'proof@redcore.com', name: 'Proof User' },
+        user: { id: 'proof-user', email: 'proof@ouden.cc', name: 'Proof User' },
         accessToken: 'proof-token',
         refreshToken: 'proof-refresh',
         isAuthenticated: true

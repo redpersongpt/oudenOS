@@ -145,7 +145,7 @@ export default async function donationRoutes(app: FastifyInstance): Promise<void
     }
 
     const stripe = getStripe();
-    const appUrl = process.env.APP_URL ?? 'https://redcoreos.net';
+    const appUrl = process.env.APP_URL ?? 'https://ouden.cc';
 
     // Insert a pending donation record
     const [donation] = await db
@@ -179,8 +179,8 @@ export default async function donationRoutes(app: FastifyInstance): Promise<void
             price_data: {
               currency: 'usd',
               product_data: {
-                name: 'redcore-OS Monthly Support',
-                description: 'Monthly donation to support redcore-OS development',
+                name: 'oudenOS Monthly Support',
+                description: 'Monthly donation to support oudenOS development',
               },
               unit_amount: amountCents,
               recurring: { interval: 'month' },
@@ -204,8 +204,8 @@ export default async function donationRoutes(app: FastifyInstance): Promise<void
             price_data: {
               currency: 'usd',
               product_data: {
-                name: 'redcore-OS One-Time Donation',
-                description: 'Thank you for supporting redcore-OS development',
+                name: 'oudenOS One-Time Donation',
+                description: 'Thank you for supporting oudenOS development',
               },
               unit_amount: amountCents,
             },

@@ -78,7 +78,7 @@ if (!targetVersion) {
 const env = getEnvironmentCapabilities();
 
 console.log("");
-console.log("  redcore OS — Release Gate");
+console.log("  oudenOS — Release Gate");
 console.log("  ─────────────────────────");
 console.log(`  Environment: ${env.platform} (${env.canProveWindowsOnly ? "full" : "cross-platform only"})`);
 if (targetVersion) console.log(`  Target version: ${targetVersion}`);

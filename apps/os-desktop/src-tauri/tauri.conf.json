@@ -40,7 +40,7 @@
     "shortDescription": "Windows system optimization tool",
     "resources": {
       "../../../playbooks": "playbooks",
-      "../resources/redcore-icon.png": "redcore-icon.png"
+      "../resources/oudenos-icon.png": "oudenos-icon.png"
     },
     "windows": {
       "nsis": {

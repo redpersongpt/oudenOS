@@ -39,7 +39,7 @@ export function Nav() {
             <div className="h-3 w-3 rounded-sm bg-brand-500" />
           </div>
           <span className="text-[15px] font-semibold tracking-tight text-neutral-100">
-            redcore-OS
+            oudenOS
           </span>
         </Link>
 

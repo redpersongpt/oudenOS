@@ -69,7 +69,7 @@ jobs:
       # ── Validation: Full bridge test ────────────────────────────────────
       - name: "Validate: Tauri bridge + service integration"
         run: |
-          node scripts/validate-tauri-bridge.mjs --service-path services/os-service/target/debug/redcore-os-service.exe
+          node scripts/validate-tauri-bridge.mjs --service-path services/os-service/target/debug/oudenos-os-service.exe
 
       # ── TypeScript: Platform adapters compile ───────────────────────────
       - name: Install pnpm

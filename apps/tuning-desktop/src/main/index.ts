@@ -27,8 +27,8 @@ let currentLicense: LicenseState | null = null;
 const CACHE_DIR = path.join(app.getPath("userData"), "license");
 const LICENSE_KEY_PATH = path.join(CACHE_DIR, "license-key.txt");
 const DEVICE_FINGERPRINT = generateDeviceFingerprint();
-const DEFAULT_API_BASE = "https://api.redcoreos.net";
-const API_BASE = process.env.REDCORE_API_URL ?? DEFAULT_API_BASE;
+const DEFAULT_API_BASE = "https://api.ouden.cc";
+const API_BASE = process.env.OUDENOS_API_URL ?? DEFAULT_API_BASE;
 const API_ORIGIN = (() => {
   try {
     return new URL(API_BASE).origin;
@@ -59,7 +59,7 @@ function loadStoredLicenseKey(): string {
   if (existsSync(LICENSE_KEY_PATH)) {
     return normalizeLicenseKey(readFileSync(LICENSE_KEY_PATH, "utf8"));
   }
-  return normalizeLicenseKey(process.env.REDCORE_LICENSE_KEY ?? "");
+  return normalizeLicenseKey(process.env.OUDENOS_LICENSE_KEY ?? "");
 }
 
 function persistLicenseKey(licenseKey: string): void {
@@ -130,10 +130,10 @@ function getServicePath(): string {
   if (isDev) {
     return path.resolve(
       __dirname,
-      "../../../services/tuning-service/target/debug/redcore-service" + ext,
+      "../../../services/tuning-service/target/debug/oudenos-tuning-service" + ext,
     );
   }
-  return path.join(process.resourcesPath!, "redcore-service" + ext);
+  return path.join(process.resourcesPath!, "oudenos-tuning-service" + ext);
 }
 
 function startService(): void {
@@ -262,9 +262,9 @@ function stopService(): void {
 
 function resolveWindowIconPath(): string | undefined {
   const candidates = [
-    path.join(process.resourcesPath ?? "", "redcore-icon.png"),
-    path.resolve(__dirname, "../../resources/redcore-icon.png"),
-    path.resolve(app.getAppPath(), "resources/redcore-icon.png"),
+    path.join(process.resourcesPath ?? "", "oudenos-icon.png"),
+    path.resolve(__dirname, "../../resources/oudenos-icon.png"),
+    path.resolve(app.getAppPath(), "resources/oudenos-icon.png"),
   ];
 
   return candidates.find((candidate) => existsSync(candidate));

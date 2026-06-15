@@ -56,5 +56,5 @@ proof/
 .windsurf/
 
 artifacts/open-source/
-apps/redcore-os/apps/service-core/target/
-apps/redcore-tuning/proof-screenshots/preload-compiled.js
+apps/oudenos-os/apps/service-core/target/
+apps/oudenos-tuning/proof-screenshots/preload-compiled.js

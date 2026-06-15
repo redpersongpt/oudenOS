@@ -6,7 +6,7 @@ import postgres from "postgres";
 import * as schema from "./schema.js";
 
 const DATABASE_URL =
-  process.env.DATABASE_URL ?? "postgres://localhost:5432/redcore";
+  process.env.DATABASE_URL ?? "postgres://localhost:5432/oudenos";
 
 const pool = postgres(DATABASE_URL, {
   max: 20,

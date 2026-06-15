@@ -8,7 +8,7 @@ set -euo pipefail
 
 VDS_IP="${VDS_IP:?ERROR: Set VDS_IP environment variable}"
 VDS_USER="${VDS_USER:-ubuntu}"
-VDS_REPO="/home/${VDS_USER}/redcoreECO"
+VDS_REPO="/home/${VDS_USER}/oudenOS"
 
 echo "Deploying to VDS $VDS_IP..."
 echo ""
@@ -18,7 +18,7 @@ ssh "${VDS_USER}@${VDS_IP}" << 'EOF'
 set -euo pipefail
 
 echo "── Pull latest main from GitHub ──"
-cd ~/redcoreECO
+cd ~/oudenOS
 git pull origin main
 
 echo ""

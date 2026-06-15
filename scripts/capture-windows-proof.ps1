@@ -44,8 +44,8 @@ $ErrorActionPreference = "Stop"
 
 if (-not $ServicePath) {
     $candidates = @(
-        "services\os-service\target\release\redcore-os-service.exe",
-        "services\os-service\target\debug\redcore-os-service.exe"
+        "services\os-service\target\release\oudenos-os-service.exe",
+        "services\os-service\target\debug\oudenos-os-service.exe"
     )
     foreach ($c in $candidates) {
         if (Test-Path $c) { $ServicePath = $c; break }
@@ -53,7 +53,7 @@ if (-not $ServicePath) {
 }
 
 if (-not $ServicePath -or -not (Test-Path $ServicePath)) {
-    Write-Error "Service binary not found. Build with: cargo build --release -p redcore-os-service"
+    Write-Error "Service binary not found. Build with: cargo build --release -p oudenos-os-service"
     exit 1
 }
 
@@ -67,7 +67,7 @@ if (-not $OutputDir) {
 New-Item -ItemType Directory -Force -Path $OutputDir | Out-Null
 
 Write-Host ""
-Write-Host "  redcore OS — Windows Runtime Proof Capture"
+Write-Host "  oudenOS — Windows Runtime Proof Capture"
 Write-Host "  ──────────────────────────────────────────"
 Write-Host "  Binary:  $ServicePath"
 Write-Host "  Output:  $OutputDir"
@@ -76,7 +76,7 @@ Write-Host ""
 # ─── Start service ──────────────────────────────────────────────────────────
 
 $playbooks = Resolve-Path "playbooks" -ErrorAction SilentlyContinue
-$env:REDCORE_PLAYBOOK_DIR = if ($playbooks) { $playbooks.Path } else { "playbooks" }
+$env:OUDENOS_PLAYBOOK_DIR = if ($playbooks) { $playbooks.Path } else { "playbooks" }
 
 $psi = New-Object System.Diagnostics.ProcessStartInfo
 $psi.FileName = (Resolve-Path $ServicePath).Path
@@ -164,7 +164,7 @@ try {
         journalContext = @{
             package = @{
                 planId = "proof-$timestamp"
-                packageId = "redcore-os"
+                packageId = "oudenos-os"
                 packageRole = "user-resolved"
             }
             action = @{

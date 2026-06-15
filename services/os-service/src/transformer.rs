@@ -767,7 +767,7 @@ fn embedded_actions() -> Vec<Value> {
         // ══════════════════════════════════════════════════════════════════════
         // Actions 21–60: Aggressive performance/latency tuning
         // Registry paths, power GUIDs, BCD elements, and service names are
-        // copied verbatim from redcore-Tuning/packages/tuning-modules.
+        // copied verbatim from oudenOS Tuning/packages/tuning-modules.
         // ══════════════════════════════════════════════════════════════════════
 
         // ── 21. CPU: Disable Dynamic Tick ────────────────────────────────────

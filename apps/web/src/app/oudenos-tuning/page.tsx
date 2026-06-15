@@ -17,13 +17,13 @@ export const metadata: Metadata = {
     "hardware tuning",
   ],
   alternates: {
-    canonical: "https://ouden.cc/redcore-tuning",
+    canonical: "https://ouden.cc/oudenos-tuning",
   },
   openGraph: {
     title: "Ouden.Tuning — Machine-Aware Windows Optimization",
     description:
       "15+ tuning modules, benchmark lab, BIOS guidance. $12.99 one-time. Coming soon.",
-    url: "https://ouden.cc/redcore-tuning",
+    url: "https://ouden.cc/oudenos-tuning",
     type: "website",
   },
 };
@@ -42,10 +42,10 @@ const jsonLd = {
   },
   description:
     "Hardware-based Windows performance optimization with 15+ tuning modules, benchmark lab, and BIOS guidance.",
-  url: "https://ouden.cc/redcore-tuning",
+  url: "https://ouden.cc/oudenos-tuning",
 };
 
-export default function RedcoreTuningPage() {
+export default function OudenTuningPage() {
   return (
     <>
       <Navigation />
@@ -83,7 +83,7 @@ export default function RedcoreTuningPage() {
           </h2>
           <p className="text-[var(--text-secondary)] text-[15px] leading-relaxed mb-4">
             Where{" "}
-            <Link href="/redcore-os" className="text-[var(--accent)] hover:text-[var(--accent)]-bright transition-colors">
+            <Link href="/oudenos-os" className="text-[var(--accent)] hover:text-[var(--accent)]-bright transition-colors">
               OudenOS
             </Link>{" "}
             handles the software layer — removing bloat, hardening privacy,
@@ -199,7 +199,7 @@ export default function RedcoreTuningPage() {
                 Download OudenOS (free)
               </Link>
               <Link
-                href="/redcore-os"
+                href="/oudenos-os"
                 className="inline-flex items-center rounded-lg border border-[var(--border)] px-5 py-2.5 text-[13px] font-medium text-[var(--text-secondary)] transition-all hover:text-[var(--text-primary)] hover:border-[var(--border-visible)]"
               >
                 Learn about OudenOS

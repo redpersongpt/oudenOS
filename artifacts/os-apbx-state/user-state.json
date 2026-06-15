@@ -4,7 +4,7 @@
     "label": "Gaming Desktop",
     "confidence": 0.96,
     "isWorkPc": false,
-    "machineName": "REDCORE-RIG",
+    "machineName": "OUDENOS-RIG",
     "signals": [
       "Discrete GPU",
       "High refresh display"
@@ -69,7 +69,7 @@
     "disableTransparency": true
   },
   "resolvedPlaybook": {
-    "playbookName": "redcore-os-default",
+    "playbookName": "oudenos-os-default",
     "playbookVersion": "1.0.0",
     "profile": "gaming_desktop",
     "preset": "balanced",
@@ -10430,18 +10430,18 @@
     "steam"
   ],
   "serviceJournalState": {
-    "planId": "apbx:redcore-os:1.0.0:balanced:gaming_desktop",
+    "planId": "apbx:oudenos-os:1.0.0:balanced:gaming_desktop",
     "requiresReboot": true,
     "canResume": true,
     "package": {
-      "packageId": "redcore-os",
+      "packageId": "oudenos-os",
       "packageRole": "user-resolved",
       "packageVersion": "1.0.0",
       "packageSourceRef": "manifest.json",
       "actionProvenanceRef": "state/action-provenance.json",
       "executionJournalRef": "state/execution-journal.json",
       "sourceCommit": null,
-      "planId": "apbx:redcore-os:1.0.0:balanced:gaming_desktop"
+      "planId": "apbx:oudenos-os:1.0.0:balanced:gaming_desktop"
     },
     "currentActionId": "appx.remove-consumer-bloat",
     "currentActionProvenanceRef": "state/action-provenance.json#/actions/0",

@@ -966,7 +966,7 @@ async fn dispatch(db: &Database, req: &RpcRequest, start_time: Instant) -> RpcRe
         "appbundle.getRecommended" | "appbundle.resolve" | "appbundle.install" => RpcResponse::err(
             id,
             -100,
-            "App install system has been removed from RedcoreOS.".into(),
+            "App install system has been removed from OudenOS.".into(),
         ),
 
         // ── Execution Ledger: DB-backed plan/queue management ────────────
@@ -1144,7 +1144,7 @@ async fn dispatch(db: &Database, req: &RpcRequest, start_time: Instant) -> RpcRe
 fn resolve_playbook_dir() -> Option<std::path::PathBuf> {
     let mut candidates: Vec<std::path::PathBuf> = Vec::new();
 
-    if let Ok(from_env) = std::env::var("REDCORE_PLAYBOOK_DIR") {
+    if let Ok(from_env) = std::env::var("OUDENOS_PLAYBOOK_DIR") {
         candidates.push(std::path::PathBuf::from(from_env));
     }
 

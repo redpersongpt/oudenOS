@@ -9,7 +9,7 @@ import {
   CTAStrip,
   RelatedPages,
 } from "@/components/seo";
-import { getRedcoreOsDownloadState } from "@/lib/downloads";
+import { getOudenOsDownloadState } from "@/lib/downloads";
 import { Shield, RotateCcw } from "lucide-react";
 import Link from "next/link";
 
@@ -56,7 +56,7 @@ function buildJsonLd(downloadUrl: string | null) {
 }
 
 export default async function WindowsDebloatPage() {
-  const os = await getRedcoreOsDownloadState();
+  const os = await getOudenOsDownloadState();
   const downloadUrl = os.available ? os.url : null;
 
   return (

@@ -209,7 +209,7 @@ export function OnboardingPage() {
 
     setActivatingLicense(true);
     try {
-      await window.redcore.license.activate(normalized);
+      await window.oudenos.license.activate(normalized);
       toast.success("License Activated", "Premium features are now unlocked on this machine.");
       goNext();
     } catch (error) {
