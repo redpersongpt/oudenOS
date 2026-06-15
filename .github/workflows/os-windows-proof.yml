@@ -196,7 +196,6 @@ jobs:
               "network.disable-ipv6",
               "network.disable-llmnr",
               "network.disable-netbios",
-              "network.disable-teredo",
               # System
               "system.disable-update-auto-restart",
               "system.defer-feature-updates",
@@ -838,7 +837,7 @@ jobs:
           Write-Output "`n========================================"
           Write-Output "DEPTH PROOF SUMMARY"
           Write-Output "========================================"
-          Write-Output "Actions with executor result: $($applyResults.Count) / 61 ($expectedNonApplicableCount expected non-applicable)"
+          Write-Output "Actions with executor result: $($applyResults.Count) / $($depthActions.Count) ($expectedNonApplicableCount expected non-applicable)"
           Write-Output "Registry read-back verified: $verifiedCount / $($verifyChecks.Count)"
           Write-Output "Rollback snapshots: $($snapshotIds.Count) created, 2 restored"
           Write-Output "Profile blocking: work_pc (16 blocked + 12 allowed), vm_cautious, office_laptop"
