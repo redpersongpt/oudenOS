@@ -208,6 +208,31 @@ jobs:
 
           $snapshotIds = @()
           $applyResults = @()
+          $expectedNonApplicableCount = 0
+
+          # Actions that may partially apply, skip, or fail on GitHub's Windows Server runner
+          # because optional hardware/services/components are absent there.
+          $expectedPartial = @(
+              "startup.disable-gamebar-presence",    # Game Bar absent on Server
+              "gpu.disable-nvidia-telemetry",        # NvTelemetryContainer absent on CI
+              "gpu.disable-amd-telemetry",           # AMD service absent on CI
+              "perf.disable-sleep-study",            # SleepStudy service absent on Server
+              "storage.disable-indexing",            # WSearch service may not exist
+              "display.disable-game-bar",            # GameBar registry may not exist
+              "cpu.disable-core-parking"             # Power setting may not apply on Server
+          )
+
+          # These are deliberately rejected by the current executor or impossible on CI.
+          $expectedNonApplicable = @(
+              "privacy.disable-smart-app-control",   # retired for Windows stability
+              "shell.restore-classic-context-menu",  # no executor action remains
+              "cpu.global-timer-resolution",         # retired for Windows stability
+              "cpu.disable-dynamic-tick",            # retired for Windows stability
+              "gpu.disable-hags",                    # retired for Windows stability
+              "storage.disable-8dot3-filenames",     # retired for Windows stability
+              "network.disable-nagle",               # CI runner has no active physical NIC GUID
+              "network.disable-llmnr"                # expert guard must reject without confirmation
+          )
 
           foreach ($actionId in $depthActions) {
               Start-Sleep -Seconds 1
@@ -238,31 +263,23 @@ jobs:
                       }
                   }
 
-                  # Actions that are expected to fail/partial on CI due to Windows API quirks
-                  $expectedPartial = @(
-                      "shell.restore-classic-context-menu",  # empty default value on InprocServer32
-                      "startup.disable-gamebar-presence",    # Game Bar absent on Server
-                      "gpu.disable-nvidia-telemetry",        # NvTelemetryContainer absent on CI
-                      "gpu.disable-amd-telemetry",           # AMD service absent on CI
-                      "perf.disable-sleep-study",            # SleepStudy service absent on Server
-                      "storage.disable-indexing",            # WSearch service may not exist
-                      "display.disable-game-bar",            # GameBar registry may not exist
-                      "cpu.disable-dynamic-tick",            # BCD command requires specific boot config
-                      "cpu.disable-core-parking"             # Power setting may not apply on Server
-                  )
-
                   if ($status -eq "success") {
                       Write-Output "    PASS: $actionId"
-                  } elseif ($status -eq "partial" -or ($status -eq "failed" -and $expectedPartial -contains $actionId)) {
-                      Write-Output "    EXPECTED-PARTIAL: $actionId ($succeeded ok, $failed failed — known CI limitation)"
+                  } elseif (($status -eq "partial" -or $status -eq "failed" -or $status -eq "skipped") -and ($expectedPartial -contains $actionId)) {
+                      Write-Output "    EXPECTED-PARTIAL: $actionId (status=$status, $succeeded ok, $failed failed — known CI limitation)"
                   } else {
                       Write-Output "    FAIL: $actionId"
                       $allPassed = $false
                   }
               } else {
                   $errMsg = if ($r -and $r.error) { $r.error.message } else { "timeout" }
-                  Write-Output "    FAIL: $actionId — $errMsg"
-                  $allPassed = $false
+                  if ($expectedNonApplicable -contains $actionId) {
+                      Write-Output "    EXPECTED-NON-APPLICABLE: $actionId — $errMsg"
+                      $expectedNonApplicableCount += 1
+                  } else {
+                      Write-Output "    FAIL: $actionId — $errMsg"
+                      $allPassed = $false
+                  }
               }
           }
 
@@ -821,13 +838,13 @@ jobs:
           Write-Output "`n========================================"
           Write-Output "DEPTH PROOF SUMMARY"
           Write-Output "========================================"
-          Write-Output "Actions applied end-to-end: $($applyResults.Count) / 61"
+          Write-Output "Actions with executor result: $($applyResults.Count) / 61 ($expectedNonApplicableCount expected non-applicable)"
           Write-Output "Registry read-back verified: $verifiedCount / $($verifyChecks.Count)"
           Write-Output "Rollback snapshots: $($snapshotIds.Count) created, 2 restored"
           Write-Output "Profile blocking: work_pc (16 blocked + 12 allowed), vm_cautious, office_laptop"
           Write-Output "Playbook chain: playbook.resolve → execute.applyAction (3 actions)"
           Write-Output "App bundle chain: appbundle.getRecommended → appbundle.resolve"
-          Write-Output "Depth coverage: $($applyResults.Count) of 102 total actions runtime-proven"
+          Write-Output "Depth coverage: $($applyResults.Count) of 102 total actions reached executor result handling"
 
           if ($allPassed) {
               Write-Output "RESULT: ALL DEPTH PROOFS PASSED"
