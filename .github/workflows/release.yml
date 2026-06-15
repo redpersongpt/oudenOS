@@ -112,11 +112,13 @@ jobs:
         shell: bash
         run: |
           cat > RELEASE_NOTES.md <<'NOTES'
-          A small maintenance update.
+          This one is mostly about safety and making the download easier.
 
-          - Unified oudenOS branding across the app and website
-          - Fixed the Windows installer build and packaging
-          - Minor UI and stability fixes
+          - Risky changes now ask before they run, with a plain warning about what they do. Nothing high risk happens silently or in the safe profiles.
+          - Added extra guards so File Explorer, Start, the taskbar and Search can't be broken by an optimization.
+          - The download button on the site always grabs the newest version now, no hunting around.
+          - Cleared up the wording on the CPU setting (100% minimum processor state is not 100% CPU usage).
+          - More optimizations to choose from, plus a few extra setup questions so it fits your machine better.
           NOTES
 
       - name: Publish GitHub release
