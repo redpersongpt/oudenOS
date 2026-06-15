@@ -856,13 +856,13 @@ jobs:
       - name: Build OS desktop
         run: pnpm --dir apps/os-desktop build
 
-      - name: Production Electron smoke proof
-        run: pnpm --dir apps/os-desktop exec electron test/production-proof.mjs
+      - name: Production desktop smoke proof
+        run: pnpm --dir apps/os-desktop proof:production
 
-      - name: Upload OS smoke proof screenshots
+      - name: Upload OS smoke proof artifacts
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: os-desktop-proof-screenshots
+          name: os-desktop-proof-artifacts
           path: proof-screenshots-os/
           if-no-files-found: warn

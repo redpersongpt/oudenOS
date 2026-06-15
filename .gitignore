@@ -57,5 +57,6 @@ proof/
 
 artifacts/open-source/
 artifacts/os-source-catalog.json
+proof-screenshots-os/
 apps/oudenos-os/apps/service-core/target/
 apps/oudenos-tuning/proof-screenshots/preload-compiled.js
