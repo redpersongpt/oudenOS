@@ -2,6 +2,7 @@ use super::{
     LoadedPhase, LoadedPlaybook, PlaybookLoadTrace, PlaybookManifest, PlaybookModule,
     PlaybookNormalizationTrace, ProfileOverride,
 };
+use std::collections::{HashMap, HashSet};
 use std::path::{Path, PathBuf};
 
 /// Load the playbook from a directory containing manifest.yaml + module files.
@@ -91,6 +92,10 @@ pub fn load_playbook(playbook_dir: &Path) -> anyhow::Result<LoadedPlaybook> {
         }
     }
 
+    // Flatten `inherits:` chains so each profile carries its full effective set
+    // of blocked/optional/preserve lists and per-action overrides.
+    let profiles = resolve_profile_inheritance(profiles);
+
     let loaded_module_count = module_refs.len();
 
     let load_trace = PlaybookLoadTrace {
@@ -144,4 +149,78 @@ fn load_profile_override(path: &Path) -> anyhow::Result<ProfileOverride> {
     let text = std::fs::read_to_string(path)?;
     let profile_override: ProfileOverride = serde_yaml::from_str(&text)?;
     Ok(profile_override)
+}
+
+/// Resolve `inherits:` chains so each profile's blocked/optional/preserve lists
+/// and per-action `override`s include those of its ancestors. Child entries win
+/// on conflict. Missing parents and cycles are tolerated (logged + ignored).
+pub(crate) fn resolve_profile_inheritance(profiles: Vec<ProfileOverride>) -> Vec<ProfileOverride> {
+    let by_id: HashMap<String, ProfileOverride> = profiles
+        .iter()
+        .map(|p| (p.profile.clone(), p.clone()))
+        .collect();
+    profiles
+        .iter()
+        .map(|p| {
+            let mut visited = HashSet::new();
+            visited.insert(p.profile.clone());
+            merge_with_parents(p, &by_id, &mut visited)
+        })
+        .collect()
+}
+
+fn merge_with_parents(
+    child: &ProfileOverride,
+    by_id: &HashMap<String, ProfileOverride>,
+    visited: &mut HashSet<String>,
+) -> ProfileOverride {
+    let Some(parent_id) = child.inherits.clone() else {
+        return child.clone();
+    };
+    if !visited.insert(parent_id.clone()) {
+        // Already on the chain — cycle. Stop here with the child as-is.
+        tracing::warn!(
+            profile = child.profile.as_str(),
+            parent = parent_id.as_str(),
+            "profile inheritance cycle detected; ignoring further inheritance"
+        );
+        return child.clone();
+    }
+    let Some(parent) = by_id.get(&parent_id) else {
+        tracing::warn!(
+            profile = child.profile.as_str(),
+            parent = parent_id.as_str(),
+            "profile inherits an unknown parent; ignoring"
+        );
+        return child.clone();
+    };
+    let resolved_parent = merge_with_parents(parent, by_id, visited);
+    merge_profiles(&resolved_parent, child)
+}
+
+/// Merge `child` onto `base`: union the lists (parent first), child's per-action
+/// overrides win, and child keeps its own scalar fields.
+fn merge_profiles(base: &ProfileOverride, child: &ProfileOverride) -> ProfileOverride {
+    let mut merged = child.clone();
+    merged.blocked_actions = union_preserve_order(&base.blocked_actions, &child.blocked_actions);
+    merged.optional_actions = union_preserve_order(&base.optional_actions, &child.optional_actions);
+    merged.preservation_flags =
+        union_preserve_order(&base.preservation_flags, &child.preservation_flags);
+    let mut overrides = base.overrides.clone();
+    for (id, ov) in &child.overrides {
+        overrides.insert(id.clone(), ov.clone());
+    }
+    merged.overrides = overrides;
+    merged.inherits = None;
+    merged
+}
+
+fn union_preserve_order(base: &[String], child: &[String]) -> Vec<String> {
+    let mut out = base.to_vec();
+    for item in child {
+        if !out.contains(item) {
+            out.push(item.clone());
+        }
+    }
+    out
 }

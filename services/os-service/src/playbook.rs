@@ -4,10 +4,14 @@
 //
 // Architecture:
 //   manifest.yaml → phases → modules (*.yaml) → actions
-//   profiles/*.yaml → blockedActions, optionalActions, preservationFlags
+//   profiles/*.yaml → blockedActions/block, optionalActions, preservationFlags/
+//     preserve, inherits (parent profile), and override (per-action default).
+//     Escalating an action to default-on can never bypass the executor's
+//     protected shell/service/registry guards (see resolver::apply_profile_escalation).
 //   The loader produces a PlaybookPlan that the executor consumes.
 
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 use std::path::Path;
 
 mod advisory;
@@ -211,23 +215,51 @@ fn default_disable() -> String {
     "disable".into()
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+/// Per-action override declared by a profile. Currently only `default` is
+/// meaningful: `true` opts an otherwise-optional action into the plan,
+/// `false` demotes a default-on action to optional. Escalation to Included is
+/// bounded by the executor's protected-target guards (see resolver).
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct ProfileActionOverride {
+    #[serde(default)]
+    pub default: Option<bool>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct ProfileOverride {
+    #[serde(default)]
     pub profile: String,
+    // Accept both `label:` (work-pc, vm-cautious) and `name:` (gaming-desktop,
+    // low-spec, office-laptop) — older profiles used `name`.
+    #[serde(default, alias = "name")]
     pub label: String,
     #[serde(default)]
     pub description: String,
     #[serde(default)]
     pub preset: Option<String>,
-    #[serde(default)]
-    #[serde(rename = "blockedActions")]
+    // Accept both `blockedActions:` and the shorthand `block:` used by the
+    // inheritance-style profiles.
+    #[serde(default, rename = "blockedActions", alias = "block")]
     pub blocked_actions: Vec<String>,
-    #[serde(default)]
-    #[serde(rename = "optionalActions")]
+    #[serde(default, rename = "optionalActions")]
     pub optional_actions: Vec<String>,
-    #[serde(default)]
-    #[serde(rename = "preservationFlags")]
+    // Accept both `preservationFlags:` and the shorthand `preserve:`.
+    #[serde(default, rename = "preservationFlags", alias = "preserve")]
     pub preservation_flags: Vec<String>,
+    // Parent profile id to inherit blocked/optional/preserve/override from.
+    #[serde(default)]
+    pub inherits: Option<String>,
+    // Per-action default overrides (the `override:` map in the YAML).
+    #[serde(default, rename = "override")]
+    pub overrides: HashMap<String, ProfileActionOverride>,
+    // Informational only — modeled so deny_unknown_fields does not reject the
+    // profiles that carry them; not consumed by the resolver.
+    #[serde(default)]
+    pub modules: Vec<String>,
+    #[serde(default)]
+    pub notes: Vec<String>,
 }
 
 // ─── Loaded playbook (merged result) ────────────────────────────────────────
@@ -861,6 +893,43 @@ mod tests {
         assert_eq!(
             playbook.normalization_trace.total_catalog_actions,
             playbook.total_actions
+        );
+    }
+
+    #[test]
+    fn all_profiles_load_and_inheritance_flattens() {
+        let dir = playbook_dir();
+        if !dir.exists() {
+            return;
+        }
+
+        let playbook = load_playbook(&dir).unwrap();
+        // Every profile in the manifest must parse. This guards against schema
+        // drift and the historic bug where profiles using `inherits/override/
+        // preserve/block/name` silently failed to load (or dropped keys).
+        assert_eq!(
+            playbook.load_trace.loaded_profile_count, 8,
+            "all 8 manifest profiles must load successfully"
+        );
+
+        // budget_desktop inherits gaming_desktop and declares per-action overrides;
+        // after load, inheritance is flattened and the override map is populated.
+        let budget = playbook
+            .profiles
+            .iter()
+            .find(|p| p.profile == "budget_desktop")
+            .expect("budget_desktop must be loaded");
+        assert!(
+            budget.inherits.is_none(),
+            "inheritance must be flattened at load time"
+        );
+        assert_eq!(
+            budget
+                .overrides
+                .get("services.disable-sysmain")
+                .and_then(|o| o.default),
+            Some(true),
+            "budget_desktop override:services.disable-sysmain:default=true must parse"
         );
     }
 

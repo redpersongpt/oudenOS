@@ -22,6 +22,8 @@ pub(crate) fn resolve_action_status(
     build: u32,
     blocked_set: &HashSet<&str>,
     optional_set: &HashSet<&str>,
+    escalate_true: &HashSet<&str>,
+    escalate_false: &HashSet<&str>,
 ) -> ResolvedAction {
     let is_wildcard_blocked = blocked_set.iter().any(|pattern| {
         pattern.ends_with(".*") && action.id.starts_with(&pattern[..pattern.len() - 2])
@@ -48,6 +50,14 @@ pub(crate) fn resolve_action_status(
         determine_inclusion(action, optional_set)
     };
 
+    // Profile per-action override. A profile may demote a default-on action to
+    // optional, or escalate an otherwise-optional action into the plan. Crucial
+    // safety boundary: escalation can NEVER promote an expert-only, high/extreme
+    // risk, or protected-target (shell/login/security) action into Included.
+    // The executor apply-time guards remain authoritative regardless.
+    let (status, reason) =
+        apply_profile_escalation(action, status, reason, escalate_true, escalate_false);
+
     let risk_allowed = match preset {
         "conservative" => action.risk == "safe" || action.risk == "low",
         "balanced" => action.risk != "high" && action.risk != "extreme",
@@ -70,6 +80,47 @@ pub(crate) fn resolve_action_status(
         action: action.clone(),
         status: final_status,
         blocked_reason: reason,
+    }
+}
+
+/// Apply a profile's per-action `override` to a freshly-determined status.
+/// `escalate_false` demotes a default-on action to Optional (always safe).
+/// `escalate_true` opts an Optional action into Included, but ONLY when the
+/// action is not expert-only, not high/extreme risk, and does not touch a
+/// protected shell/login/security target — otherwise the escalation is refused
+/// and the action stays Optional. This keeps a profile from quietly forcing a
+/// dangerous change on; the executor guards are the authoritative backstop.
+fn apply_profile_escalation(
+    action: &PlaybookAction,
+    status: ActionStatus,
+    reason: Option<String>,
+    escalate_true: &HashSet<&str>,
+    escalate_false: &HashSet<&str>,
+) -> (ActionStatus, Option<String>) {
+    let id = action.id.as_str();
+    match status {
+        ActionStatus::Optional if escalate_true.contains(id) => {
+            if action.expert_only
+                || action.risk == "high"
+                || action.risk == "extreme"
+                || crate::executor::action_hits_protected_target(action)
+            {
+                (
+                    ActionStatus::Optional,
+                    Some(format!(
+                        "Profile escalation refused: '{}' is expert-only, high-risk, or affects a protected shell/login/security target",
+                        id
+                    )),
+                )
+            } else {
+                (ActionStatus::Included, None)
+            }
+        }
+        ActionStatus::Included if escalate_false.contains(id) => (
+            ActionStatus::Optional,
+            Some("Set optional by profile override".to_string()),
+        ),
+        other => (other, reason),
     }
 }
 
@@ -99,6 +150,25 @@ pub fn resolve_plan(
                 .collect()
         })
         .unwrap_or_default();
+    // Per-action `override:` escalations/demotions from the profile.
+    let escalate_true: HashSet<&str> = profile_override
+        .map(|override_data| {
+            override_data
+                .overrides
+                .iter()
+                .filter_map(|(id, ov)| (ov.default == Some(true)).then_some(id.as_str()))
+                .collect()
+        })
+        .unwrap_or_default();
+    let escalate_false: HashSet<&str> = profile_override
+        .map(|override_data| {
+            override_data
+                .overrides
+                .iter()
+                .filter_map(|(id, ov)| (ov.default == Some(false)).then_some(id.as_str()))
+                .collect()
+        })
+        .unwrap_or_default();
 
     let build = windows_build.unwrap_or(22631);
 
@@ -124,6 +194,8 @@ pub fn resolve_plan(
                 build,
                 &blocked_set,
                 &optional_set,
+                &escalate_true,
+                &escalate_false,
             ));
         }
 
@@ -141,6 +213,8 @@ pub fn resolve_plan(
                         build,
                         &blocked_set,
                         &optional_set,
+                        &escalate_true,
+                        &escalate_false,
                     ));
                 }
             }
@@ -168,7 +242,16 @@ pub fn resolve_plan(
         let resolved_actions: Vec<ResolvedAction> = winutil_actions_for_phase(phase)
             .into_iter()
             .map(|action| {
-                resolve_action_status(&action, profile, preset, build, &blocked_set, &optional_set)
+                resolve_action_status(
+                    &action,
+                    profile,
+                    preset,
+                    build,
+                    &blocked_set,
+                    &optional_set,
+                    &escalate_true,
+                    &escalate_false,
+                )
             })
             .collect();
 
@@ -276,4 +359,144 @@ fn tally_actions(
 
 fn total_action_count(phases: &[ResolvedPhase]) -> usize {
     phases.iter().map(|phase| phase.actions.len()).sum()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::resolve_action_status;
+    use crate::playbook::{ActionStatus, PlaybookAction, RegistryChange, ServiceChange};
+    use std::collections::HashSet;
+
+    fn base_action(id: &str) -> PlaybookAction {
+        PlaybookAction {
+            id: id.to_string(),
+            name: "Test action".to_string(),
+            description: String::new(),
+            rationale: String::new(),
+            risk: "low".to_string(),
+            tier: "free".to_string(),
+            default: false,
+            expert_only: false,
+            requires_reboot: false,
+            reversible: true,
+            estimated_seconds: 2,
+            blocked_profiles: Vec::new(),
+            min_windows_build: None,
+            registry_changes: Vec::new(),
+            service_changes: Vec::new(),
+            bcd_changes: Vec::new(),
+            power_changes: Vec::new(),
+            powershell_commands: Vec::new(),
+            packages: Vec::new(),
+            tasks: Vec::new(),
+            file_renames: Vec::new(),
+            tags: Vec::new(),
+            warning_message: None,
+        }
+    }
+
+    fn set(items: &[&'static str]) -> HashSet<&'static str> {
+        items.iter().copied().collect()
+    }
+
+    // Resolve a single action under a profile that escalates `escalate` to
+    // default-on. balanced preset / build 22631 are representative.
+    fn escalated_status(action: &PlaybookAction, escalate: &HashSet<&str>) -> ActionStatus {
+        let empty: HashSet<&str> = HashSet::new();
+        resolve_action_status(
+            action,
+            "gaming_desktop",
+            "balanced",
+            22631,
+            &empty,
+            &empty,
+            escalate,
+            &empty,
+        )
+        .status
+    }
+
+    #[test]
+    fn profile_escalates_safe_optional_action_into_included() {
+        let action = base_action("perf.safe-tweak");
+        let escalate = set(&["perf.safe-tweak"]);
+        assert_eq!(escalated_status(&action, &escalate), ActionStatus::Included);
+    }
+
+    #[test]
+    fn profile_cannot_escalate_protected_service_action() {
+        let mut action = base_action("services.disable-dcomlaunch");
+        action.service_changes = vec![ServiceChange {
+            name: "DcomLaunch".to_string(),
+            startup_type: "Disabled".to_string(),
+        }];
+        let escalate = set(&["services.disable-dcomlaunch"]);
+        assert_ne!(
+            escalated_status(&action, &escalate),
+            ActionStatus::Included,
+            "a profile must never escalate an action that disables a protected service"
+        );
+    }
+
+    #[test]
+    fn profile_cannot_escalate_shell_coupled_package_action() {
+        let mut action = base_action("appx.remove-search");
+        action.packages = vec!["Microsoft.Windows.Search".to_string()];
+        let escalate = set(&["appx.remove-search"]);
+        assert_ne!(
+            escalated_status(&action, &escalate),
+            ActionStatus::Included,
+            "a profile must never escalate removal of a shell-coupled package"
+        );
+    }
+
+    #[test]
+    fn profile_cannot_escalate_catastrophic_registry_action() {
+        let mut action = base_action("shell.hijack-winlogon");
+        action.registry_changes = vec![RegistryChange {
+            hive: "HKLM".to_string(),
+            path: r"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon".to_string(),
+            value_name: "Shell".to_string(),
+            value: serde_json::json!("malware.exe"),
+            value_type: "String".to_string(),
+        }];
+        let escalate = set(&["shell.hijack-winlogon"]);
+        assert_ne!(
+            escalated_status(&action, &escalate),
+            ActionStatus::Included,
+            "a profile must never escalate a Winlogon Shell hijack"
+        );
+    }
+
+    #[test]
+    fn profile_cannot_escalate_high_risk_security_action() {
+        let mut action = base_action("privacy.disable-smartscreen");
+        action.risk = "high".to_string();
+        let escalate = set(&["privacy.disable-smartscreen"]);
+        assert_ne!(
+            escalated_status(&action, &escalate),
+            ActionStatus::Included,
+            "a profile must never force a high-risk security action on by default"
+        );
+    }
+
+    #[test]
+    fn profile_default_false_override_demotes_included_action() {
+        let mut action = base_action("perf.default-on");
+        action.default = true;
+        let empty: HashSet<&str> = HashSet::new();
+        let escalate_false = set(&["perf.default-on"]);
+        let status = resolve_action_status(
+            &action,
+            "gaming_desktop",
+            "balanced",
+            22631,
+            &empty,
+            &empty,
+            &empty,
+            &escalate_false,
+        )
+        .status;
+        assert_eq!(status, ActionStatus::Optional);
+    }
 }

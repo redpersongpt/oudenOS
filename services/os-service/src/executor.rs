@@ -5,13 +5,13 @@
 
 use crate::db::Database;
 use crate::engine::ActionExecutionContract;
-use crate::playbook::{FileRename, RegistryChange};
+use crate::playbook::{FileRename, PlaybookAction, RegistryChange};
 #[cfg(windows)]
 use crate::powershell;
 use crate::rollback;
 use serde_json::Value;
 
-fn is_shell_coupled_package(package_name: &str) -> bool {
+pub(crate) fn is_shell_coupled_package(package_name: &str) -> bool {
     // These packages own Explorer, Start, taskbar, or shell-adjacent UX.
     const SHELL_COUPLED_PACKAGES: &[&str] = &[
         "Microsoft.Windows.ShellExperienceHost",
@@ -59,7 +59,7 @@ fn matches_protected_service_name(service_name: &str, protected_name: &str) -> b
         .is_some_and(|suffix| suffix.starts_with('_'))
 }
 
-fn is_protected_service(service_name: &str) -> bool {
+pub(crate) fn is_protected_service(service_name: &str) -> bool {
     // AppInfo/AppReadiness/UdkUserSvc/TimeBrokerSvc are explicitly protected
     // because older tweak packs disable them and wedge UAC, login, or shell UX.
     const PROTECTED_SERVICES: &[&str] = &[
@@ -117,7 +117,7 @@ fn is_protected_service(service_name: &str) -> bool {
 /// launches as the user's shell / login process; clobbering them can leave the
 /// machine with no desktop after reboot. This is defense-in-depth: the shipped
 /// playbooks never touch these, but a malformed or custom playbook could.
-fn is_protected_registry_target(path: &str, value_name: &str) -> bool {
+pub(crate) fn is_protected_registry_target(path: &str, value_name: &str) -> bool {
     let path_lower = path.to_ascii_lowercase();
     // Winlogon `Shell` / `Userinit` define the interactive shell and logon chain.
     if path_lower.contains("winlogon")
@@ -137,6 +137,26 @@ fn is_protected_registry_target(path: &str, value_name: &str) -> bool {
         return true;
     }
     false
+}
+
+/// True if any mutation in this action targets a shell-critical service, a
+/// shell-coupled package, or a catastrophic registry key. A profile must never
+/// be able to escalate such an action into the Included set; the resolver
+/// consults this, and these apply-time guards remain the authoritative last
+/// line of defense regardless.
+pub(crate) fn action_hits_protected_target(action: &PlaybookAction) -> bool {
+    action
+        .service_changes
+        .iter()
+        .any(|change| is_protected_service(&change.name))
+        || action
+            .packages
+            .iter()
+            .any(|package| is_shell_coupled_package(package))
+        || action
+            .registry_changes
+            .iter()
+            .any(|change| is_protected_registry_target(&change.path, &change.value_name))
 }
 
 /// Post-apply shell health gate (P0: oudenOS must never leave Windows with a

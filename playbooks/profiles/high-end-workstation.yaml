@@ -21,7 +21,7 @@ preserve:
   - remote_desktop
 
 override:
-  performance.aggressive-power:
+  power.high-performance-plan:
     default: true       # Workstations run on wall power
-  security.disable-mitigations:
+  security.disable-cpu-mitigations:
     default: false      # Keep security mitigations on workstation

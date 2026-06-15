@@ -19,7 +19,7 @@ preserve:
   - airplane_mode
 
 override:
-  performance.aggressive-power:
-    default: false    # Don't disable power management on laptops
-  performance.disable-core-parking:
-    default: false    # Core parking saves battery
+  power.high-performance-plan:
+    default: false    # Don't force the high-performance plan on laptops
+  cpu.disable-core-parking:
+    default: false    # Core parking saves battery on laptops
