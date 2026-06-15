@@ -37,7 +37,9 @@
     "start:cloud-api": "pnpm --filter @redcore/cloud-api start",
     "typecheck": "pnpm -r typecheck",
     "lint": "pnpm -r lint",
-    "build": "pnpm -r build"
+    "build": "pnpm -r build",
+    "secrets:scan": "gitleaks detect --source . --config gitleaks.toml --redact --verbose",
+    "secrets:scan:staged": "gitleaks protect --staged --config gitleaks.toml --redact"
   },
   "devDependencies": {
     "sharp": "^0.34.5"

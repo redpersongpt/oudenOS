@@ -1,0 +1,32 @@
+# gitleaks configuration for oudenOS
+# Run locally:   pnpm secrets:scan      (scans full git history)
+# Runs in CI on every push / PR (see .github/workflows/secret-scan.yml).
+title = "oudenOS gitleaks config"
+
+[extend]
+# Use gitleaks' built-in rule set (AWS, GCP, Stripe, GitHub, JWT, private keys, …).
+useDefault = true
+
+[allowlist]
+description = "Known-safe placeholders, synthetic fixtures, and the repo's own detection patterns"
+# Paths that intentionally contain placeholder/dummy values or detection patterns.
+paths = [
+  '''.*\.env\.example$''',
+  '''apps/cloud-api/env\.example$''',
+  # The repo's own pre-publish secret-checker stores PATTERN STRINGS, not values.
+  '''scripts/check-oudenos-os-open-source\.sh$''',
+  '''scripts/check-redcore-os-open-source\.sh$''',
+  # Lockfiles contain integrity hashes that look high-entropy but are not secrets.
+  '''pnpm-lock\.yaml$''',
+]
+# Obvious placeholder values that should never trip the scanner.
+regexes = [
+  '''(?i)change-me-to-a-secure-random-string''',
+  '''sk_test_\.\.\.''',
+  '''whsec_\.\.\.''',
+  '''price_\.\.\.''',
+  '''SG\.\.\.\.''',
+  '''postgres://postgres:password@localhost''',
+  '''postgresql://user:password@localhost''',
+  '''file:\./dev\.db''',
+]

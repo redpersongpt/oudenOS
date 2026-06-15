@@ -15,6 +15,31 @@ target/
 .env.*
 !.env.example
 
+# ─── Secrets / credentials — never commit these (see SECURITY.md) ───────────────
+# Private keys & certificates
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+id_rsa
+id_ed25519
+# Local databases (schema/migration .sql files ARE kept on purpose)
+*.sqlite
+*.sqlite3
+*.db
+# Logs, dumps, backups
+*.log
+*.dump
+*.bak
+*.old
+*.orig
+secrets.*
+credentials.*
+# Tauri updater signing keys
+*.tauri.key
+
 .DS_Store
 Thumbs.db
 .vscode/
