@@ -288,20 +288,39 @@ jobs:
     needs: [build-os-installer]
     if: github.ref == 'refs/heads/main'
     steps:
+      - name: Check deploy configuration
+        id: deploy
+        shell: bash
+        env:
+          VDS_SSH_KEY: ${{ secrets.VDS_SSH_KEY }}
+          VDS_IP: ${{ secrets.VDS_IP }}
+          VDS_USER: ${{ secrets.VDS_USER }}
+        run: |
+          if [ -n "$VDS_SSH_KEY" ] && [ -n "$VDS_IP" ] && [ -n "$VDS_USER" ]; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "VDS deploy secrets are not configured; skipping deploy."
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - uses: actions/checkout@v4
+        if: steps.deploy.outputs.enabled == 'true'
 
       - name: Setup Node.js
+        if: steps.deploy.outputs.enabled == 'true'
         uses: actions/setup-node@v4
         with:
           node-version: 22
 
       - name: Download OS installer
+        if: steps.deploy.outputs.enabled == 'true'
         uses: actions/download-artifact@v4
         with:
           name: oudenos-os-installer
           path: ./artifacts/os/
 
       - name: Install SSH key
+        if: steps.deploy.outputs.enabled == 'true'
         uses: shimataro/ssh-key-action@v2
         with:
           key: ${{ secrets.VDS_SSH_KEY }}
@@ -309,9 +328,11 @@ jobs:
           if_key_exists: replace
 
       - name: Add known hosts
+        if: steps.deploy.outputs.enabled == 'true'
         run: ssh-keyscan -H ${{ secrets.VDS_IP }} >> ~/.ssh/known_hosts 2>/dev/null
 
       - name: Prepare release artifacts
+        if: steps.deploy.outputs.enabled == 'true'
         id: prep
         run: |
           VERSION=$(node -p "require('./apps/os-desktop/package.json').version")
@@ -349,12 +370,14 @@ jobs:
           echo "RELEASE_NAME=${RELEASE_NAME}" >> "$GITHUB_OUTPUT"
 
       - name: Upload installer (before manifest)
+        if: steps.deploy.outputs.enabled == 'true'
         run: |
           ssh ${{ secrets.VDS_USER }}@${{ secrets.VDS_IP }} "mkdir -p /var/www/oudenos-downloads/os/releases /var/www/oudenos-downloads/os/archive"
           scp ./artifacts/os/publish/oudenOS-setup.exe ${{ secrets.VDS_USER }}@${{ secrets.VDS_IP }}:/var/www/oudenos-downloads/os/
           scp "./artifacts/os/publish/${{ steps.prep.outputs.RELEASE_NAME }}" ${{ secrets.VDS_USER }}@${{ secrets.VDS_IP }}:/var/www/oudenos-downloads/os/releases/
 
       - name: Verify installer reachable over HTTPS
+        if: steps.deploy.outputs.enabled == 'true'
         run: |
           echo "Checking installer is publicly reachable..."
 
@@ -386,10 +409,12 @@ jobs:
           rm -f /tmp/verify-installer.exe
 
       - name: Publish latest.json (after installer verified)
+        if: steps.deploy.outputs.enabled == 'true'
         run: |
           scp ./artifacts/os/publish/latest.json ${{ secrets.VDS_USER }}@${{ secrets.VDS_IP }}:/var/www/oudenos-downloads/os/
 
       - name: Verify latest.json reachable and coherent
+        if: steps.deploy.outputs.enabled == 'true'
         run: |
           echo "Checking latest.json is publicly reachable and coherent..."
 
