@@ -60,6 +60,20 @@ Every toggle maps to a real registry path, a real service, a real scheduled task
 - [YouTube](https://www.youtube.com/@redpersonn) — Subscribe for more
 - [ouden.cc](https://ouden.cc)
 
+## Repository Layout
+
+This is a monorepo. The free, open-source oudenOS app is the **`os-*` line**:
+
+- `apps/os-desktop` — the Tauri desktop wizard this README is about
+- `services/os-service` — the privileged Rust service that performs the system changes
+- `apps/os-api`, `apps/os-website`, `packages/os-shared-schema` — backend, site, and shared types
+
+oudenOS itself has **no licensing, payments, or premium tiers** — the "No paywalls" claim above holds for everything under the `os-*` line.
+
+The repo also contains a **legacy line (`tuning-*`)** — the older "oudenOS Tuning" Electron product (`apps/tuning-*`, `services/tuning-service`, `packages/tuning-*`). That codebase predates the current app and still includes subscription / Stripe / license code from when it was a paid product. It is kept for history and is **not** part of the free oudenOS app. The marketing site (`apps/web`) and the shared backend packages (`@oudenos/db`, `@oudenos/cloud-api`) serve both lines.
+
+The canonical desktop runtime is **Tauri** (the legacy `tuning-desktop` was Electron).
+
 ## License
 
 MIT
