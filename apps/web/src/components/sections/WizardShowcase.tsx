@@ -762,7 +762,7 @@ export function WizardShowcase() {
           className="mt-10 flex flex-col items-center gap-3"
         >
           <a
-            href="/downloads"
+            href="/api/downloads/latest"
             className="inline-flex items-center gap-2 rounded-lg bg-brand-500 px-5 py-2.5 text-[13px] font-semibold text-white shadow-lg shadow-brand-500/25 transition-all hover:bg-brand-600 hover:shadow-brand-500/35 hover:scale-[1.02] active:scale-[0.98]"
           >
             <Download size={15} />

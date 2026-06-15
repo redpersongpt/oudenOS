@@ -16,10 +16,26 @@ export function FinalReviewStep() {
   const effectivePersonalization = resolveEffectivePersonalization(detectedProfile?.id, personalization, answers);
   const [exportState, setExportState] = useState<"idle" | "busy" | "done" | "error">("idle");
   const [exportMessage, setExportMessage] = useState("");
+  const [acknowledged, setAcknowledged] = useState(false);
+
+  // High-risk = security/Defender/privacy or any expert/extreme action that the
+  // plan will actually apply. These are never in safe defaults; before applying
+  // them the user must explicitly acknowledge the tradeoff.
+  const highRiskActions = (resolvedPlaybook?.phases ?? [])
+    .flatMap((phase) => phase.actions)
+    .filter(
+      (a) =>
+        a.status === "Included" &&
+        (a.expertOnly || a.risk === "high" || a.risk === "extreme"),
+    );
+  const requiresAck = highRiskActions.length > 0;
 
   useEffect(() => {
-    setStepReady("final-review", Boolean(detectedProfile && resolvedPlaybook));
-  }, [detectedProfile, resolvedPlaybook, setStepReady]);
+    setStepReady(
+      "final-review",
+      Boolean(detectedProfile && resolvedPlaybook) && (!requiresAck || acknowledged),
+    );
+  }, [detectedProfile, resolvedPlaybook, requiresAck, acknowledged, setStepReady]);
 
   const handleExportPackage = async () => {
     if (!detectedProfile || !resolvedPlaybook) return;
@@ -118,6 +134,46 @@ export function FinalReviewStep() {
             ))}
           </div>
 
+          {requiresAck && (
+            <div className="rounded-xl border border-[#FF6B6B]/40 bg-[#FF6B6B]/[0.06] p-4">
+              <div className="flex items-center gap-2">
+                <AlertTriangle className="h-4 w-4 text-[#FF6B6B]" />
+                <p className="text-[12px] font-semibold text-[var(--text-display)]">
+                  {highRiskActions.length} high-risk change{highRiskActions.length === 1 ? "" : "s"} need your OK
+                </p>
+              </div>
+              <p className="mt-2 text-sm text-[var(--text-secondary)]">
+                Changing Windows Defender, security, or privacy settings can reduce system protection.
+                Continue only if you understand the risk and want oudenOS to apply these changes. You can
+                roll them back from the activity log — and a Windows restore point is recommended first.
+              </p>
+              <ul className="mt-3 space-y-1">
+                {highRiskActions.slice(0, 6).map((a) => (
+                  <li key={a.id} className="flex items-center gap-2 text-xs text-[var(--text-secondary)]">
+                    <span className="h-1 w-1 rounded-full bg-[#FF6B6B]" />
+                    {a.name}
+                  </li>
+                ))}
+                {highRiskActions.length > 6 && (
+                  <li className="text-xs text-[var(--text-disabled)]">
+                    +{highRiskActions.length - 6} more
+                  </li>
+                )}
+              </ul>
+              <label className="mt-4 flex items-start gap-3 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={acknowledged}
+                  onChange={(e) => setAcknowledged(e.target.checked)}
+                  className="mt-0.5 h-4 w-4 accent-[#FF6B6B]"
+                />
+                <span className="text-sm text-[var(--text-primary)]">
+                  I understand these are high-risk and I want oudenOS to apply them. This is my choice.
+                </span>
+              </label>
+            </div>
+          )}
+
           <div className="grid gap-4 xl:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
             <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4">
               <div className="flex items-center gap-2">
@@ -164,6 +220,7 @@ export function FinalReviewStep() {
                 <div className="mt-4 space-y-2 text-sm text-[var(--text-secondary)]">
                   <p>A rollback record is saved with the activity log.</p>
                   <p>You can save a copy of this plan before you apply it.</p>
+                  <p>File Explorer, Start, taskbar, and Search are protected — changes that could break the Windows shell are blocked or held for expert review.</p>
                 </div>
               </div>
 

@@ -5,6 +5,7 @@ import {
   getOudenOsDownloadState,
   formatDownloadSize,
 } from "@/lib/downloads";
+import { resolveLatestInstaller } from "@/lib/github-release";
 import Link from "next/link";
 
 export const metadata: Metadata = {
@@ -24,6 +25,11 @@ export const metadata: Metadata = {
 
 export default async function DownloadsPage() {
   const os = await getOudenOsDownloadState();
+  // The setup button always resolves the newest installer from GitHub Releases
+  // via /api/downloads/latest; the manifest below only feeds the size/sha detail.
+  const latest = await resolveLatestInstaller();
+  const displayVersion = latest?.version ?? os.version;
+  const setupAvailable = Boolean(latest) || os.available;
 
   return (
     <>
@@ -53,7 +59,7 @@ export default async function DownloadsPage() {
                   Free Windows optimization tool
                 </p>
               </div>
-              {os.available ? (
+              {setupAvailable ? (
                 <span className="inline-flex items-center rounded-full bg-white/10 px-3 py-1 text-[12px] font-medium text-white">
                   Available
                 </span>
@@ -71,18 +77,12 @@ export default async function DownloadsPage() {
             </p>
 
             <div className="flex flex-wrap items-center gap-4 mb-4">
-              {os.available && os.url ? (
-                <a
-                  href={os.url}
-                  className="inline-flex items-center rounded-full bg-white px-8 py-3 text-[14px] font-bold text-black transition-all hover:bg-[#E8E8E8]"
-                >
-                  Download OudenOS{os.version ? ` ${os.version}` : ""}
-                </a>
-              ) : (
-                <span className="inline-flex items-center rounded-lg border border-[var(--border)] px-5 py-2.5 text-[13px] font-medium text-[var(--text-disabled)] cursor-not-allowed">
-                  Download currently unavailable
-                </span>
-              )}
+              <a
+                href="/api/downloads/latest"
+                className="inline-flex items-center rounded-full bg-white px-8 py-3 text-[14px] font-bold text-black transition-all hover:bg-[#E8E8E8]"
+              >
+                Download OudenOS{displayVersion ? ` ${displayVersion}` : ""}
+              </a>
               <Link
                 href="/oudenos-os"
                 className="text-[13px] text-[var(--text-disabled)] hover:text-[var(--text-secondary)] transition-colors"

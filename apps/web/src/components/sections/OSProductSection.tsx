@@ -58,7 +58,7 @@ export function OSProductSection() {
             </div>
 
             <a
-              href="/downloads"
+              href="/api/downloads/latest"
               className="mt-8 w-full inline-flex items-center justify-center h-12 px-8 text-[14px] font-medium rounded-lg text-white cursor-pointer transition-colors duration-200 bg-brand-500 hover:bg-brand-600"
             >
               Download Free

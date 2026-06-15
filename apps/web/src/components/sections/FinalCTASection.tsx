@@ -61,7 +61,7 @@ export function FinalCTASection() {
           >
             {/* Primary */}
             <motion.a
-              href="/downloads"
+              href="/api/downloads/latest"
               className="inline-flex items-center gap-2.5 rounded-full bg-white px-8 py-4 text-[0.92rem] font-semibold text-black"
               whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.95 }}

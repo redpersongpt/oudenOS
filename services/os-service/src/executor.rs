@@ -126,7 +126,58 @@ fn is_protected_registry_target(path: &str, value_name: &str) -> bool {
     {
         return true;
     }
+    // Image File Execution Options "Debugger" on the shell host hijacks the
+    // process at launch — a classic way to brick Explorer / Task Manager.
+    if path_lower.contains("image file execution options")
+        && value_name.eq_ignore_ascii_case("Debugger")
+        && (path_lower.ends_with("\\explorer.exe")
+            || path_lower.ends_with("\\sihost.exe")
+            || path_lower.ends_with("\\taskmgr.exe"))
+    {
+        return true;
+    }
     false
+}
+
+/// Post-apply shell health gate (P0: oudenOS must never leave Windows with a
+/// broken shell). Confirms File Explorer is still running and that core
+/// shell/login services were not left Disabled. Defender / Windows Security
+/// services are intentionally NOT checked here — those are user-consented and
+/// separate from shell integrity. An inconclusive result is treated as healthy
+/// (defense-in-depth only) so a flaky probe never rolls back a good apply; only
+/// a definitive UNHEALTHY result forces rollback.
+#[cfg(windows)]
+fn check_shell_health() -> (bool, String) {
+    // Hard failure = a shell-critical service left Disabled (deterministic on any
+    // Windows). explorer.exe not running is only a NOTE: CI/headless sessions may
+    // legitimately have no interactive shell, so it must not trigger a rollback.
+    let script = "\
+        $bad = @(); $warn = @(); \
+        if (-not (Get-Process -Name explorer -ErrorAction SilentlyContinue)) { $warn += 'explorer.exe not running' }; \
+        $svcs = 'Themes','AppXSvc','RpcSs','DcomLaunch','ProfSvc','Winmgmt','StateRepository','UserManager'; \
+        foreach ($s in $svcs) { \
+            $svc = Get-Service -Name $s -ErrorAction SilentlyContinue; \
+            if ($svc -and $svc.StartType -eq 'Disabled') { $bad += ($s + ' disabled') } \
+        }; \
+        if ($bad.Count -eq 0) { $note = if ($warn.Count) { ' (note: ' + ($warn -join ', ') + ')' } else { '' }; Write-Output ('HEALTHY' + $note) } else { Write-Output ('UNHEALTHY: ' + ($bad -join ', ')) }";
+    match powershell::execute(script) {
+        Ok(r) => {
+            let out = r.stdout.trim().to_string();
+            if out.starts_with("UNHEALTHY") {
+                (false, out)
+            } else if out.contains("HEALTHY") {
+                (true, "shell healthy".to_string())
+            } else {
+                (true, format!("shell health inconclusive: {}", out))
+            }
+        }
+        Err(e) => (true, format!("shell health check could not run: {}", e)),
+    }
+}
+
+#[cfg(not(windows))]
+fn check_shell_health() -> (bool, String) {
+    (true, "shell health check skipped (non-Windows)".to_string())
 }
 
 /// Execute a tuning action, creating a rollback snapshot first, then applying
@@ -596,6 +647,38 @@ pub fn execute_action(
 
         // Finished all sections without triggering stop_on_failure
         break 'apply;
+    }
+
+    // ── Phase 3.5: Shell health gate (P0) ───────────────────────────────
+    // Even if every mutation reported OK at the PowerShell layer, an action
+    // could still have broken the Windows shell. If this action touched a
+    // shell-adjacent surface (services / AppX / registry), verify the shell is
+    // still healthy; a definitive failure is counted as a failure so the
+    // auto-rollback below fires and the outcome can never be reported "success".
+    let touched_shell_surface = !contract.service_changes.is_empty()
+        || !contract.packages.is_empty()
+        || !registry_changes.is_empty();
+    if touched_shell_surface && failed == 0 {
+        let (healthy, detail) = check_shell_health();
+        if healthy {
+            results.push(serde_json::json!({
+                "type": "shell_health",
+                "status": "success",
+                "note": detail,
+            }));
+        } else {
+            failed += 1;
+            tracing::error!(
+                action_id = action_id,
+                detail = detail.as_str(),
+                "Shell health check FAILED after apply — forcing rollback"
+            );
+            results.push(serde_json::json!({
+                "type": "shell_health",
+                "status": "failed",
+                "error": detail,
+            }));
+        }
     }
 
     // ── Phase 4: Audit log ──────────────────────────────────────────────
@@ -1327,7 +1410,7 @@ fn apply_file_rename(change: &FileRename) -> anyhow::Result<()> {
 
 #[cfg(test)]
 mod tests {
-    use super::{is_protected_service, is_shell_coupled_package};
+    use super::{is_protected_registry_target, is_protected_service, is_shell_coupled_package};
 
     #[test]
     fn shell_coupled_packages_stay_blocked() {
@@ -1349,6 +1432,56 @@ mod tests {
         assert!(is_protected_service("TimeBrokerSvc"));
         assert!(is_protected_service("UdkUserSvc_12345"));
         assert!(!is_protected_service("WSearch"));
+    }
+
+    #[test]
+    fn hard_protected_shell_services_are_all_covered() {
+        // The full shell/login/AppX-infrastructure set that must never be
+        // disabled by oudenOS. (explorer.exe / SearchHost / RuntimeBroker /
+        // ApplicationFrameHost are processes, not services — guarded by the
+        // post-apply shell health check, not this list.)
+        for svc in [
+            "AppXSvc",
+            "StateRepository",
+            "AppInfo",
+            "EventLog",
+            "RpcSs",
+            "Schedule",
+            "CryptSvc",
+            "Winmgmt",
+            "ProfSvc",
+            "UserManager",
+            "Themes",
+            "DcomLaunch",
+        ] {
+            assert!(is_protected_service(svc), "{svc} must be hard-protected");
+        }
+    }
+
+    #[test]
+    fn catastrophic_registry_targets_are_blocked() {
+        // Shell / login hijack vectors must be blocked regardless of playbook.
+        assert!(is_protected_registry_target(
+            r"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon",
+            "Shell"
+        ));
+        assert!(is_protected_registry_target(
+            r"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon",
+            "Userinit"
+        ));
+        assert!(is_protected_registry_target(
+            r"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\explorer.exe",
+            "Debugger"
+        ));
+        // Benign, legitimate tweaks must NOT be blocked.
+        assert!(!is_protected_registry_target(
+            r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced",
+            "HideFileExt"
+        ));
+        assert!(!is_protected_registry_target(
+            r"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon",
+            "AutoAdminLogon"
+        ));
     }
 }
 

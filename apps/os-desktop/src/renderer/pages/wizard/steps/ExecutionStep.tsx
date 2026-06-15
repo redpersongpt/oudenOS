@@ -378,6 +378,37 @@ export function ExecutionStep() {
         console.warn("[ExecutionStep] Failed to create DB ledger plan (non-fatal):", e);
       }
 
+      // Safety: try a Windows restore point once before applying anything. This is
+      // an extra layer on top of oudenOS's own rollback snapshots, never blocks the
+      // apply, and reports the real outcome (no fake "created").
+      if (!demoMode) {
+        try {
+          const rp = await serviceCall<{ status?: string; message?: string }>(
+            "system.createRestorePoint",
+            { description: "oudenOS pre-optimization restore point" },
+          );
+          const rpStatus = rp.ok && typeof rp.data.status === "string" ? rp.data.status : "failed";
+          if (rpStatus === "created") {
+            addLogEntry({ level: "success", category: "Safety", message: "Windows restore point created" });
+          } else if (rpStatus === "skipped") {
+            addLogEntry({ level: "info", category: "Safety", message: "Reused a recent Windows restore point" });
+          } else {
+            addLogEntry({
+              level: "info",
+              category: "Safety",
+              message: "No Windows restore point — oudenOS rollback snapshots still apply",
+              details: rp.ok ? (typeof rp.data.message === "string" ? rp.data.message : rpStatus) : rp.error,
+            });
+          }
+        } catch {
+          addLogEntry({
+            level: "info",
+            category: "Safety",
+            message: "No Windows restore point — oudenOS rollback snapshots still apply",
+          });
+        }
+      }
+
       // Phase 1: Apply playbook actions
       for (let i = 0; i < actionQueue.length; i++) {
         if (controller.signal.aborted) return;
