@@ -715,7 +715,7 @@ export function ExecutionStep() {
   // No playbook = nothing to execute (checked before useEffect starts)
   if (!resolvedPlaybook) {
     return (
-      <div className="flex h-full flex-col items-center justify-center gap-3 px-8">
+      <div className="flex min-h-full flex-col items-center justify-center gap-3 px-8">
         <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
           <circle cx="16" cy="16" r="14" stroke="var(--text-display)" strokeWidth="1.5" opacity="0.3" />
           <path d="M16 10v7M16 21v1" stroke="var(--text-display)" strokeWidth="1.5" strokeLinecap="round" />

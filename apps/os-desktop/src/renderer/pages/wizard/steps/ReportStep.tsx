@@ -196,7 +196,7 @@ export function ReportStep() {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -6 }}
       transition={{ duration: 0.35, ease: [0.25, 0.1, 0.25, 1] }}
-      className="flex h-full flex-col items-center justify-center gap-5 px-8"
+      className="flex min-h-full flex-col items-center justify-center gap-5 px-8"
     >
       {/* Success icon */}
       <motion.div

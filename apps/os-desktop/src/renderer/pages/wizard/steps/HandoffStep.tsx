@@ -36,7 +36,7 @@ export function HandoffStep() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3, ease: ND_EASE }}
-      className="flex h-full flex-col items-center justify-center gap-6 px-8 bg-[var(--black)]"
+      className="flex min-h-full flex-col items-center justify-center gap-6 px-8 bg-[var(--black)]"
     >
       <BoltIcon className="text-[var(--accent)]" />
 

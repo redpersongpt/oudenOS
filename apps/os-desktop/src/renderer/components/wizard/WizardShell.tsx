@@ -193,8 +193,11 @@ export function WizardShell({ children }: { children: ReactNode }) {
       <TitleBar />
       <div className="flex flex-1 overflow-hidden">
         {!welcome && <Rail />}
-        <main className="flex flex-1 flex-col overflow-hidden">
-          <div className="flex-1 overflow-hidden">{children}</div>
+        <main className="flex flex-1 flex-col overflow-hidden min-h-0">
+          {/* Step content scrolls when it's taller than the window — the rail and
+              the bottom bar stay fixed. min-h-0 is required so this flex child can
+              shrink below its content height and actually scroll. */}
+          <div className="flex-1 min-h-0 overflow-y-auto">{children}</div>
           {!welcome && <Bar />}
         </main>
       </div>

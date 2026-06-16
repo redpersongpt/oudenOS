@@ -88,7 +88,7 @@ export function RebootResumeStep() {
 
   if (!needsReboot || demoMode) {
     return (
-      <div className="flex h-full items-center justify-center">
+      <div className="flex min-h-full items-center justify-center">
         <div className="h-4 w-4 rounded-sm border-2 border-[var(--text-primary)] border-t-transparent animate-spin" />
       </div>
     );
@@ -265,7 +265,7 @@ export function RebootResumeStep() {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -8 }}
       transition={{ duration: 0.22, ease: [0.0, 0.0, 0.2, 1.0] }}
-      className="flex h-full flex-col items-center justify-center gap-6 px-8"
+      className="flex min-h-full flex-col items-center justify-center gap-6 px-8"
     >
       {resumePhase === "executing" ? (
         <>

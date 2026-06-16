@@ -333,7 +333,7 @@ export function PlaybookStrategyStep() {
 
   if (loading) {
     return (
-      <div className="flex h-full items-center justify-center px-8">
+      <div className="flex min-h-full items-center justify-center px-8">
         <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] px-5 py-4 text-sm text-[var(--text-secondary)]">
           Loading setup questions...
         </div>
@@ -343,7 +343,7 @@ export function PlaybookStrategyStep() {
 
   if (!current) {
     return (
-      <div className="flex h-full flex-col items-center justify-center gap-3 px-8 text-center">
+      <div className="flex min-h-full flex-col items-center justify-center gap-3 px-8 text-center">
         <TriangleAlert className="h-8 w-8 text-[var(--text-display)]" />
         <p className="text-sm text-[var(--text-secondary)]">{loadError ?? "No strategy questions available."}</p>
       </div>

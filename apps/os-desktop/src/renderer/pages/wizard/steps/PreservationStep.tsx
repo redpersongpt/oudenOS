@@ -29,7 +29,7 @@ export function PreservationStep() {
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35, ease: [0.25, 0.1, 0.25, 1] }}
-      className="flex h-full flex-col items-center justify-center gap-6 px-8 bg-[var(--black)]"
+      className="flex min-h-full flex-col items-center justify-center gap-6 px-8 bg-[var(--black)]"
     >
       {/* Header */}
       <div className="text-center">

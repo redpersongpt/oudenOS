@@ -399,7 +399,7 @@ export function PlaybookReviewStep() {
 
   if (!effectivePlaybook) {
     return (
-      <div className="flex h-full flex-col items-center justify-center gap-3 px-8">
+      <div className="flex min-h-full flex-col items-center justify-center gap-3 px-8">
         <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
           <path d="M12 9v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="var(--text-display)" strokeWidth="1.5" strokeLinecap="round" />
         </svg>

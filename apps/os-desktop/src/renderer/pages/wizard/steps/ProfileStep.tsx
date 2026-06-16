@@ -120,7 +120,7 @@ export function ProfileStep() {
 
   if (!p) {
     return (
-      <div className="flex h-full items-center justify-center bg-[var(--black)]">
+      <div className="flex min-h-full items-center justify-center bg-[var(--black)]">
         <p className="nd-label text-[var(--text-disabled)]">NO PROFILE DETECTED</p>
       </div>
     );
@@ -131,7 +131,7 @@ export function ProfileStep() {
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35, ease: [0.25, 0.1, 0.25, 1] }}
-      className="flex h-full flex-col items-center justify-center gap-6 px-8 bg-[var(--black)]"
+      className="flex min-h-full flex-col items-center justify-center gap-6 px-8 bg-[var(--black)]"
     >
       {/* Profile icon */}
       <motion.div
