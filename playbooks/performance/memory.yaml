@@ -86,7 +86,7 @@ actions:
   - id: perf.disable-page-combining
     name: "Disable Page Combining"
     description: "Disable memory page combining/deduplication to reduce CPU overhead"
-    rationale: "Page combining scans memory for identical pages and deduplicates them. This saves RAM but uses CPU. On systems with ample RAM, disabling removes the scan overhead."
+    rationale: "Page combining scans memory for identical pages and deduplicates them — saves RAM but costs CPU. On systems with ample RAM, disabling removes the scan overhead. Controlled via Disable-MMAgent -PageCombining (the supported mechanism); the old DisablePageCombining registry value did nothing."
     risk: low
     tier: free
     default: false
@@ -97,9 +97,5 @@ actions:
     blockedProfiles:
       - low_spec_system
       - vm_cautious
-    registryChanges:
-      - hive: HKLM
-        path: "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management"
-        valueName: DisablePageCombining
-        value: 1
-        valueType: DWord
+    powerShellCommands:
+      - "Disable-MMAgent -PageCombining"

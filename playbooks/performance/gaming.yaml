@@ -76,8 +76,8 @@ actions:
 
   - id: perf.ntfs-optimization
     name: "NTFS Filesystem Optimization"
-    description: "Disable NTFS 8.3 filename generation, last access timestamp, and enable large system awareness for reduced filesystem overhead"
-    rationale: "8.3 filenames are a DOS-era compatibility layer that adds overhead to every file creation. Last access timestamps cause a write on every file read. Both are unnecessary on modern gaming systems."
+    description: "Disable NTFS 8.3 short-filename generation and enable large system awareness for reduced filesystem overhead (last-access timestamps are handled separately by Disable Last Access Timestamp)"
+    rationale: "8.3 short filenames are a DOS-era compatibility layer that adds overhead to every file creation. (Last-access-timestamp disabling lives in its own action, storage.disable-last-access, so the same registry value isn't written twice with different settings.)"
     risk: low
     tier: free
     default: false
@@ -91,11 +91,6 @@ actions:
         path: "SYSTEM\\CurrentControlSet\\Control\\FileSystem"
         valueName: NtfsDisable8dot3NameCreation
         value: 1
-        valueType: DWord
-      - hive: HKLM
-        path: "SYSTEM\\CurrentControlSet\\Control\\FileSystem"
-        valueName: NtfsDisableLastAccessUpdate
-        value: 2147483649
         valueType: DWord
       - hive: HKLM
         path: "SYSTEM\\CurrentControlSet\\Control\\FileSystem"

@@ -105,17 +105,20 @@ actions:
         startupType: Disabled
 
   - id: gpu.disable-amd-telemetry
-    name: "Disable AMD Telemetry"
-    description: "Disable the AMD External Events Utility service that collects AMD driver telemetry data"
-    rationale: "AMD telemetry runs as a background service. Disabling it removes unnecessary CPU and network overhead from driver analytics collection."
-    risk: safe
+    name: "Disable AMD External Events Utility"
+    description: "Disable the AMD External Events Utility service. IMPORTANT: this service drives AMD FreeSync / Variable Refresh Rate — disabling it turns FreeSync/VRR off."
+    rationale: "AMD External Events Utility is commonly mislabeled as 'telemetry,' but it is the service that delivers FreeSync / Variable Refresh Rate events. Disabling it stops a background service but also disables FreeSync/VRR — so it is opt-in (off by default) and excluded from gaming profiles."
+    risk: medium
     tier: free
-    default: true
+    default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 3
     blockedProfiles:
       - vm_cautious
+      - gaming_desktop
+      - gaming_laptop
+    warningMessage: "Disabling this turns off AMD FreeSync / Variable Refresh Rate. Only disable it if you do NOT use a FreeSync/VRR display."
     serviceChanges:
       - name: "AMD External Events Utility"
         startupType: Disabled
@@ -220,11 +223,9 @@ actions:
         valueName: Start
         value: 4
         valueType: DWord
-      - hive: HKLM
-        path: "SYSTEM\\CurrentControlSet\\Services\\AMD External Events Utility"
-        valueName: Start
-        value: 4
-        valueType: DWord
+      # NOTE: "AMD External Events Utility" is intentionally NOT disabled here —
+      # it drives FreeSync/VRR. It lives in gpu.disable-amd-telemetry, which is
+      # opt-in, risk:medium, excluded from gaming profiles, and carries a VRR warning.
       - hive: HKLM
         path: "SYSTEM\\CurrentControlSet\\Services\\AUEPLauncher"
         valueName: Start

@@ -8,8 +8,8 @@ category: performance
 actions:
   - id: storage.disable-last-access
     name: "Disable NTFS Last Access Timestamp"
-    description: "Disable updating the last access timestamp on files and directories, reducing write I/O for every file read operation"
-    rationale: "By default, NTFS updates the LastAccessTime metadata on every file read. This generates substantial unnecessary write I/O for gaming workloads."
+    description: "Stop NTFS from writing a last-access timestamp every time a file is read (System-Managed, Last Access Disabled — fsutil flag 0x80000001). This is the single owner of this setting; reversible."
+    rationale: "By default NTFS updates LastAccessTime on every file read, generating constant small writes. Disabling it removes that write I/O. (Uses the System-Managed/Disabled value 0x80000001 so it agrees with the NTFS optimization action instead of writing a conflicting value to the same key.)"
     risk: safe
     tier: free
     default: true
@@ -21,7 +21,7 @@ actions:
       - hive: HKLM
         path: "SYSTEM\\CurrentControlSet\\Control\\FileSystem"
         valueName: NtfsDisableLastAccessUpdate
-        value: 2147483651
+        value: 2147483649
         valueType: DWord
 
   - id: storage.enable-write-caching

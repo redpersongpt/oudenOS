@@ -44,21 +44,28 @@ actions:
 
   - id: power.disable-hibernation
     name: "Disable Hibernation"
-    description: "Disable Windows hibernation, which removes the hibernation file (hiberfil.sys) and frees disk space equal to approximately 75% of installed RAM"
-    rationale: "On systems with Fast Startup already disabled, hibernation provides no benefit and consumes significant disk space. Disabling it ensures a clean kernel initialization on every boot."
+    description: "Turn off Windows hibernation, hide the Hibernate option from the power menu, and reclaim the hiberfil.sys disk space (roughly 40-75% of your RAM) after the next restart"
+    rationale: "On systems with Fast Startup already disabled, hibernation provides no benefit and consumes significant disk space. powercfg /hibernate off actually disables it and removes hiberfil.sys; the Session Manager\\Power key is where Windows reads HibernateEnabled (the old Control\\Power path was inert, so the value never took effect)."
     risk: safe
     tier: free
     default: false
-    requiresReboot: false
+    requiresReboot: true
     reversible: true
-    estimatedSeconds: 3
+    estimatedSeconds: 5
     blockedProfiles: []
     registryChanges:
       - hive: HKLM
-        path: "SYSTEM\\CurrentControlSet\\Control\\Power"
+        path: "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Power"
         valueName: HibernateEnabled
         value: 0
         valueType: DWord
+      - hive: HKLM
+        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FlyoutMenuSettings"
+        valueName: ShowHibernateOption
+        value: 0
+        valueType: DWord
+    powerShellCommands:
+      - "powercfg.exe /hibernate off"
 
   - id: power.disable-usb-selective-suspend
     name: "Disable USB Selective Suspend"

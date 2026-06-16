@@ -1991,7 +1991,7 @@
           ],
           "minWindowsBuild": null,
           "executionKinds": [
-            "registryChanges"
+            "powerShellCommands"
           ]
         },
         {
@@ -2081,15 +2081,17 @@
         },
         {
           "id": "gpu.disable-amd-telemetry",
-          "name": "Disable AMD Telemetry",
-          "description": "Disable the AMD External Events Utility service that collects AMD driver telemetry data",
-          "risk": "safe",
-          "default": true,
+          "name": "Disable AMD External Events Utility",
+          "description": "Disable the AMD External Events Utility service. IMPORTANT: this service drives AMD FreeSync / Variable Refresh Rate — disabling it turns FreeSync/VRR off.",
+          "risk": "medium",
+          "default": false,
           "expertOnly": false,
           "requiresReboot": false,
-          "warningMessage": null,
+          "warningMessage": "Disabling this turns off AMD FreeSync / Variable Refresh Rate. Only disable it if you do NOT use a FreeSync/VRR display.",
           "blockedProfiles": [
-            "vm_cautious"
+            "vm_cautious",
+            "gaming_desktop",
+            "gaming_laptop"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -2314,16 +2316,17 @@
         {
           "id": "power.disable-hibernation",
           "name": "Disable Hibernation",
-          "description": "Disable Windows hibernation, which removes the hibernation file (hiberfil.sys) and frees disk space equal to approximately 75% of installed RAM",
+          "description": "Turn off Windows hibernation, hide the Hibernate option from the power menu, and reclaim the hiberfil.sys disk space (roughly 40-75% of your RAM) after the next restart",
           "risk": "safe",
           "default": false,
           "expertOnly": false,
-          "requiresReboot": false,
+          "requiresReboot": true,
           "warningMessage": null,
           "blockedProfiles": [],
           "minWindowsBuild": null,
           "executionKinds": [
-            "registryChanges"
+            "registryChanges",
+            "powerShellCommands"
           ]
         },
         {
@@ -2400,7 +2403,7 @@
         {
           "id": "storage.disable-last-access",
           "name": "Disable NTFS Last Access Timestamp",
-          "description": "Disable updating the last access timestamp on files and directories, reducing write I/O for every file read operation",
+          "description": "Stop NTFS from writing a last-access timestamp every time a file is read (System-Managed, Last Access Disabled — fsutil flag 0x80000001). This is the single owner of this setting; reversible.",
           "risk": "safe",
           "default": true,
           "expertOnly": false,
@@ -2477,7 +2480,7 @@
         {
           "id": "perf.ntfs-optimization",
           "name": "NTFS Filesystem Optimization",
-          "description": "Disable NTFS 8.3 filename generation, last access timestamp, and enable large system awareness for reduced filesystem overhead",
+          "description": "Disable NTFS 8.3 short-filename generation and enable large system awareness for reduced filesystem overhead (last-access timestamps are handled separately by Disable Last Access Timestamp)",
           "risk": "low",
           "default": false,
           "expertOnly": false,

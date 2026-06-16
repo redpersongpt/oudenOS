@@ -808,13 +808,14 @@ fn embedded_actions() -> Vec<Value> {
             "id": "cpu.global-timer-resolution",
             "name": "Enable Global Timer Resolution Requests",
             "category": "cpu",
-            "description": "Set the GlobalTimerResolutionRequests registry key to restore system-wide timer resolution behavior on Windows 11+.",
-            "rationale": "Starting with Windows 10 2004, timer resolution requests became per-process instead of global. The GlobalTimerResolutionRequests registry key (Windows 11+ / Server 2022+) restores the pre-2004 global behavior, allowing one application's timer request to benefit all processes.",
+            "description": "Restore system-wide timer-resolution behavior via the GlobalTimerResolutionRequests key. Windows 11 / Server 2022+ only — the key simply does not exist in the Windows 10 kernel, so this action is build-gated to Win11 and will not show or apply below it.",
+            "rationale": "Starting with Windows 10 2004, timer resolution requests became per-process instead of global. The GlobalTimerResolutionRequests key (Windows 11 / Server 2022+) restores the pre-2004 global behavior. On Windows 10 the key is a no-op (the string is absent from ntoskrnl), so it is gated to build 22000 rather than silently writing a value that does nothing.",
             "risk": "low",
             "tier": "premium",
             "requiresReboot": true,
             "reversible": true,
             "estimatedSeconds": 3,
+            "minWindowsBuild": 22000,
             "allowedProfiles": ["gaming_desktop", "work_pc", "low_spec_system", "vm_cautious"],
             "blockedProfiles": [],
             "preservationConflicts": [],
@@ -1121,21 +1122,28 @@ fn embedded_actions() -> Vec<Value> {
             "id": "power.disable-hibernation",
             "name": "Disable Hibernation",
             "category": "power",
-            "description": "Disable Windows hibernation, which removes the hibernation file (hiberfil.sys) and frees disk space equal to approximately 75% of installed RAM.",
-            "rationale": "On systems with Fast Startup already disabled, hibernation provides no benefit and consumes significant disk space. Disabling it ensures a clean kernel initialization on every boot.",
+            "description": "Turn off Windows hibernation, hide the Hibernate option from the power menu, and reclaim the hiberfil.sys disk space (roughly 40-75% of your RAM) after the next restart.",
+            "rationale": "On systems with Fast Startup already disabled, hibernation provides no benefit and consumes significant disk space. powercfg /hibernate off actually disables it and removes hiberfil.sys; the Session Manager\\Power key is where Windows reads HibernateEnabled (the old Control\\Power path was inert).",
             "risk": "safe",
             "tier": "free",
-            "requiresReboot": false,
+            "requiresReboot": true,
             "reversible": true,
-            "estimatedSeconds": 3,
+            "estimatedSeconds": 5,
             "allowedProfiles": ["gaming_desktop", "work_pc", "low_spec_system", "vm_cautious", "office_laptop"],
             "blockedProfiles": [],
             "preservationConflicts": [],
             "registryChanges": [
                 {
                     "hive": "HKLM",
-                    "path": "SYSTEM\\CurrentControlSet\\Control\\Power",
+                    "path": "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Power",
                     "valueName": "HibernateEnabled",
+                    "valueType": "DWord",
+                    "value": 0
+                },
+                {
+                    "hive": "HKLM",
+                    "path": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FlyoutMenuSettings",
+                    "valueName": "ShowHibernateOption",
                     "valueType": "DWord",
                     "value": 0
                 }
@@ -1144,7 +1152,7 @@ fn embedded_actions() -> Vec<Value> {
             "taskChanges": [],
             "appxRemovals": [],
             "featureChanges": [],
-            "powerShellCommands": [],
+            "powerShellCommands": ["powercfg.exe /hibernate off"],
             "tags": ["power", "disk", "boot", "free"],
             "sideEffects": [
                 "Hibernate option is removed from the Power menu",
@@ -1482,7 +1490,7 @@ fn embedded_actions() -> Vec<Value> {
                     "path": "SYSTEM\\CurrentControlSet\\Control\\FileSystem",
                     "valueName": "NtfsDisableLastAccessUpdate",
                     "valueType": "DWord",
-                    "value": 2147483651u64
+                    "value": 2147483649u64
                 }
             ],
             "serviceChanges": [],
@@ -3193,16 +3201,17 @@ fn embedded_actions() -> Vec<Value> {
         serde_json::json!({
             "id": "gpu.disable-amd-telemetry",
             "category": "performance",
-            "name": "Disable AMD Telemetry",
-            "description": "Disable the AMD External Events Utility service that collects AMD driver telemetry data.",
-            "rationale": "AMD telemetry runs as a background service. Disabling it removes unnecessary CPU and network overhead from driver analytics collection.",
-            "risk": "safe",
+            "name": "Disable AMD External Events Utility",
+            "description": "Disable the AMD External Events Utility service. IMPORTANT: this service drives AMD FreeSync / Variable Refresh Rate — disabling it turns FreeSync/VRR off.",
+            "rationale": "AMD External Events Utility is commonly mislabeled as 'telemetry,' but it is the service that delivers FreeSync / Variable Refresh Rate events. Disabling it stops a background service but also disables FreeSync/VRR — so it is opt-in (off by default) and excluded from gaming profiles.",
+            "risk": "medium",
             "tier": "free",
+            "default": false,
             "requiresReboot": false,
             "reversible": true,
             "estimatedSeconds": 3,
-            "allowedProfiles": ["gaming_desktop", "work_pc", "low_spec_system", "office_laptop"],
-            "blockedProfiles": ["vm_cautious"],
+            "allowedProfiles": ["work_pc", "low_spec_system", "office_laptop"],
+            "blockedProfiles": ["vm_cautious", "gaming_desktop", "gaming_laptop"],
             "preservationConflicts": [],
             "actionType": "service",
             "registryChanges": [],
@@ -3213,9 +3222,9 @@ fn embedded_actions() -> Vec<Value> {
             "appxRemovals": [],
             "featureChanges": [],
             "powerShellCommands": [],
-            "tags": ["gpu", "amd", "telemetry", "privacy"],
-            "sideEffects": ["AMD driver telemetry will no longer be collected"],
-            "warningMessage": null
+            "tags": ["gpu", "amd", "freesync", "vrr"],
+            "sideEffects": ["AMD FreeSync / Variable Refresh Rate stops working until the service is re-enabled"],
+            "warningMessage": "Disabling this turns off AMD FreeSync / Variable Refresh Rate. Only disable it if you do NOT use a FreeSync/VRR display."
         }),
         // ── Privacy: Disable SmartScreen Filter ────────────────────────────
         serde_json::json!({
