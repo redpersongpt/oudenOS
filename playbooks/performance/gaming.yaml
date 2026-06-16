@@ -32,8 +32,8 @@ actions:
 
   - id: perf.mmcss-deep-tuning
     name: "MMCSS Deep Scheduler Tuning"
-    description: "Configure the Multimedia Class Scheduler Service for tighter gaming thread priority and lower system responsiveness ceiling"
-    rationale: "MMCSS manages thread priority for multimedia/gaming workloads. Reducing SystemResponsiveness to 0 dedicates more CPU time to MMCSS-registered game threads."
+    description: "Configure the Multimedia Class Scheduler Service (MMCSS) to favour foreground game threads, and lower the background reservation from the default 20% to 10%"
+    rationale: "MMCSS reserves a slice of CPU for low-priority/background work (default 20%). Lowering SystemResponsiveness to 10 leaves more for foreground game threads while keeping enough for audio. Some enthusiasts use 0 for maximum foreground priority, but 0 can starve MMCSS audio threads and cause stutter/crackle — so oudenOS uses the safer 10 (matching its other MMCSS actions, so the same key isn't written twice with different values). No guaranteed FPS change; this affects scheduling, not raw frame rate."
     risk: low
     tier: free
     default: false
@@ -46,7 +46,7 @@ actions:
       - hive: HKLM
         path: "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile"
         valueName: SystemResponsiveness
-        value: 0
+        value: 10
         valueType: DWord
       - hive: HKLM
         path: "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile"

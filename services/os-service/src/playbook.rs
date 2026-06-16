@@ -963,6 +963,37 @@ mod tests {
     }
 
     #[test]
+    fn mmcss_system_responsiveness_is_consistent() {
+        let dir = playbook_dir();
+        if !dir.exists() {
+            return;
+        }
+        let playbook = load_playbook(&dir).unwrap();
+        let values: Vec<Option<u64>> = playbook
+            .phases
+            .iter()
+            .flat_map(|phase| &phase.actions)
+            .flat_map(|action| &action.registry_changes)
+            .filter(|change| change.value_name == "SystemResponsiveness")
+            .map(|change| change.value.as_u64())
+            .collect();
+        assert!(
+            !values.is_empty(),
+            "expected at least one MMCSS SystemResponsiveness writer"
+        );
+        // Every MMCSS SystemResponsiveness writer must agree on 10 so two actions
+        // never write conflicting values (10 vs 0) to the same key. 0 is avoided
+        // intentionally — it can starve MMCSS audio threads and cause stutter.
+        for value in &values {
+            assert_eq!(
+                *value,
+                Some(10),
+                "all SystemResponsiveness writers must use 10 (balanced, audio-safe)"
+            );
+        }
+    }
+
+    #[test]
     fn test_resolved_plan_emits_traceable_boundaries() {
         let dir = playbook_dir();
         if !dir.exists() {

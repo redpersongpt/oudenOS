@@ -2463,7 +2463,7 @@
         {
           "id": "perf.mmcss-deep-tuning",
           "name": "MMCSS Deep Scheduler Tuning",
-          "description": "Configure the Multimedia Class Scheduler Service for tighter gaming thread priority and lower system responsiveness ceiling",
+          "description": "Configure the Multimedia Class Scheduler Service (MMCSS) to favour foreground game threads, and lower the background reservation from the default 20% to 10%",
           "risk": "low",
           "default": false,
           "expertOnly": false,

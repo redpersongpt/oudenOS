@@ -1040,7 +1040,7 @@ fn embedded_actions() -> Vec<Value> {
                     "path": "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile",
                     "valueName": "SystemResponsiveness",
                     "valueType": "DWord",
-                    "value": 0
+                    "value": 10
                 }
             ],
             "serviceChanges": [],
