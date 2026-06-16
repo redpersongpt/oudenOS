@@ -16,19 +16,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "vm_cautious",
-            "Microsoft.BingNews",
-            "Microsoft.BingWeather",
-            "Microsoft.MicrosoftSolitaireCollection",
-            "Microsoft.People",
-            "Microsoft.WindowsMaps",
-            "Microsoft.WindowsFeedbackHub",
-            "Microsoft.GetHelp",
-            "Microsoft.Getstarted",
-            "Microsoft.Todos",
-            "Microsoft.549981C3F5F10",
-            "Microsoft.MixedReality.Portal",
-            "Microsoft.SkypeApp"
+            "vm_cautious"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -45,8 +33,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "vm_cautious",
-            "Microsoft.549981C3F5F10"
+            "vm_cautious"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -63,8 +50,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "vm_cautious",
-            "Microsoft.MicrosoftOfficeHub"
+            "vm_cautious"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -82,8 +68,7 @@
           "warningMessage": null,
           "blockedProfiles": [
             "work_pc",
-            "vm_cautious",
-            "Microsoft.YourPhone"
+            "vm_cautious"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -100,8 +85,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "vm_cautious",
-            "microsoft.windowscommunicationsapps"
+            "vm_cautious"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -118,8 +102,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "vm_cautious",
-            "Microsoft.WindowsCamera"
+            "vm_cautious"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -136,8 +119,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "vm_cautious",
-            "Microsoft.WindowsAlarms"
+            "vm_cautious"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -154,8 +136,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "vm_cautious",
-            "Microsoft.WindowsSoundRecorder"
+            "vm_cautious"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -172,8 +153,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "vm_cautious",
-            "Microsoft.MicrosoftStickyNotes"
+            "vm_cautious"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -190,8 +170,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "vm_cautious",
-            "Microsoft.WindowsFeedbackHub"
+            "vm_cautious"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -208,8 +187,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "vm_cautious",
-            "Microsoft.WindowsMaps"
+            "vm_cautious"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -226,8 +204,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "vm_cautious",
-            "Microsoft.GetHelp"
+            "vm_cautious"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -244,8 +221,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "vm_cautious",
-            "Microsoft.PowerAutomateDesktop"
+            "vm_cautious"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -262,8 +238,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "vm_cautious",
-            "Microsoft.MicrosoftSolitaireCollection"
+            "vm_cautious"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -280,9 +255,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "vm_cautious",
-            "MicrosoftWindows.Client.WebExperience",
-            "hive: HKLM"
+            "vm_cautious"
           ],
           "minWindowsBuild": 22000,
           "executionKinds": [
@@ -300,12 +273,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "vm_cautious",
-            "Microsoft.XboxApp",
-            "Microsoft.XboxGamingOverlay",
-            "Microsoft.Xbox.TCUI",
-            "Microsoft.XboxGameCallableUI",
-            "Microsoft.XboxSpeechToTextOverlay"
+            "vm_cautious"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -322,13 +290,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "vm_cautious",
-            "Facebook",
-            "Instagram",
-            "BytedancePte.Ltd.TikTok",
-            "Twitter",
-            "LinkedIn",
-            "Flipboard"
+            "vm_cautious"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -345,13 +307,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "vm_cautious",
-            "SpotifyAB.SpotifyMusic",
-            "HULLLC.HULUPLUS",
-            "Disney",
-            "AmazonVideo.PrimeVideo",
-            "Netflix",
-            "iHeartRadio"
+            "vm_cautious"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -368,17 +324,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "vm_cautious",
-            "king.com.CandyCrushSaga",
-            "king.com.CandyCrushSodaSaga",
-            "king.com.CandyCrushFriends",
-            "king.com.BubbleWitch3Saga",
-            "king.com.FarmHeroesSaga",
-            "DisneyMagicKingdoms",
-            "Asphalt8Airborne",
-            "HiddenCity",
-            "FarmVille2CountryEscape",
-            "CaesarsSlotsFreeCasino"
+            "vm_cautious"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -395,16 +341,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "vm_cautious",
-            "AdobeSystemsIncorporated.AdobePhotoshopExpress",
-            "Duolingo-LearnLanguagesforFree",
-            "fitbit",
-            "DrawboardPDF",
-            "CyberLinkMediaSuiteEssentials",
-            "AutodeskSketchBook",
-            "ACGMediaPlayer",
-            "ActiproSoftwareLLC",
-            "EclipseManager"
+            "vm_cautious"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -421,9 +358,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "vm_cautious",
-            "Amazon.com.Amazon",
-            "AmazonVideo.PrimeVideo"
+            "vm_cautious"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -440,32 +375,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "vm_cautious",
-            "Clipchamp.Clipchamp",
-            "Microsoft.MicrosoftJournal",
-            "Microsoft.PCManager",
-            "MicrosoftTeams",
-            "MSTeams",
-            "Microsoft.Windows.DevHome",
-            "MicrosoftCorporationII.QuickAssist",
-            "Microsoft.News",
-            "Microsoft.Office.OneNote",
-            "Microsoft.Office.Sway",
-            "Microsoft.OneConnect",
-            "Microsoft.3DBuilder",
-            "Microsoft.NetworkSpeedTest",
-            "Microsoft.MicrosoftPowerBIForWindows",
-            "Microsoft.ZuneVideo",
-            "MicrosoftCorporationII.MicrosoftFamily",
-            "Microsoft.Print3D",
-            "Microsoft.Microsoft3DViewer",
-            "Microsoft.Messaging",
-            "Microsoft.BingFinance",
-            "Microsoft.BingSports",
-            "Microsoft.BingTranslator",
-            "Microsoft.BingFoodAndDrink",
-            "Microsoft.BingHealthAndFitness",
-            "Microsoft.BingTravel"
+            "vm_cautious"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -566,8 +476,7 @@
             "office_laptop",
             "vm_cautious",
             "low_spec_system",
-            "gaming_laptop",
-            "|"
+            "gaming_laptop"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -615,8 +524,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "vm_cautious",
-            "Clipchamp.Clipchamp"
+            "vm_cautious"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -633,9 +541,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "work_pc",
-            "MicrosoftTeams",
-            "MSTeams"
+            "work_pc"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -652,8 +558,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "vm_cautious",
-            "MicrosoftCorporationII.MicrosoftFamily"
+            "vm_cautious"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -670,9 +575,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "vm_cautious",
-            "Microsoft.BingNews",
-            "Microsoft.MicrosoftNews"
+            "vm_cautious"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -689,10 +592,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "vm_cautious",
-            "Microsoft.Microsoft3DViewer",
-            "Microsoft.MSPaint  # Paint 3D (classic Paint is separate)",
-            "Microsoft.3DBuilder"
+            "vm_cautious"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -710,8 +610,7 @@
           "warningMessage": null,
           "blockedProfiles": [
             "work_pc",
-            "office_laptop",
-            "Microsoft.OutlookForWindows"
+            "office_laptop"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -764,8 +663,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "work_pc",
-            "name: SysMain"
+            "work_pc"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -842,8 +740,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "office_laptop",
-            "name: MapsBroker"
+            "office_laptop"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -861,8 +758,7 @@
           "warningMessage": null,
           "blockedProfiles": [
             "work_pc",
-            "office_laptop",
-            "name: Spooler"
+            "office_laptop"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -879,8 +775,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "work_pc",
-            "hive: HKLM"
+            "work_pc"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -898,8 +793,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "vm_cautious",
-            "name: XblAuthManager"
+            "vm_cautious"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -916,8 +810,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "work_pc",
-            "name: Fax"
+            "work_pc"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -934,8 +827,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "work_pc",
-            "name: PhoneSvc"
+            "work_pc"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -969,8 +861,7 @@
           "blockedProfiles": [
             "office_laptop",
             "gaming_laptop",
-            "work_pc",
-            "name: bthserv"
+            "work_pc"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -1017,8 +908,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "office_laptop",
-            "name: lfsvc"
+            "office_laptop"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -1050,8 +940,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "work_pc",
-            "name: SCardSvr"
+            "work_pc"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -1068,8 +957,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "work_pc",
-            "name: seclogon"
+            "work_pc"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -1088,8 +976,7 @@
           "blockedProfiles": [
             "office_laptop",
             "gaming_laptop",
-            "work_pc",
-            "name: TabletInputService"
+            "work_pc"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -1122,8 +1009,7 @@
           "warningMessage": "You MUST restart your PC after this change. Using the desktop without restarting may cause File Explorer crashes when right-clicking or accessing notifications.",
           "blockedProfiles": [
             "work_pc",
-            "office_laptop",
-            "name: WpnUserService"
+            "office_laptop"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -1206,8 +1092,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "work_pc",
-            "name: \"OneDrive Reporting Task"
+            "work_pc"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -1224,8 +1109,7 @@
           "requiresReboot": true,
           "warningMessage": "If Windows Update is mid-operation, shutdown may hang for 10-20 minutes. Apply after a clean restart for best results.",
           "blockedProfiles": [
-            "work_pc",
-            "name: \"Schedule Scan"
+            "work_pc"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -1243,8 +1127,7 @@
           "warningMessage": null,
           "blockedProfiles": [
             "work_pc",
-            "office_laptop",
-            "name: \"Windows Defender Scheduled Scan"
+            "office_laptop"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -1261,8 +1144,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "office_laptop",
-            "name: \"MapsToastTask"
+            "office_laptop"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -1324,8 +1206,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "work_pc",
-            "name: \"ScheduledDefrag"
+            "work_pc"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -1342,8 +1223,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "work_pc",
-            "name: \".NET Framework NGEN v4.0.30319"
+            "work_pc"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -1360,8 +1240,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "work_pc",
-            "name: \"Regular Maintenance"
+            "work_pc"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -1393,8 +1272,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "work_pc",
-            "name: \"ProactiveScan"
+            "work_pc"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -1522,8 +1400,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "work_pc",
-            "hive: HKLM"
+            "work_pc"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -1645,8 +1522,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "work_pc",
-            "hive: HKLM"
+            "work_pc"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -1664,8 +1540,7 @@
           "warningMessage": null,
           "blockedProfiles": [
             "work_pc",
-            "office_laptop",
-            "hive: HKLM"
+            "office_laptop"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -1803,8 +1678,7 @@
           "warningMessage": null,
           "blockedProfiles": [
             "work_pc",
-            "vm_cautious",
-            "hive: HKLM"
+            "vm_cautious"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -1996,8 +1870,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "work_pc",
-            "hive: HKLM"
+            "work_pc"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -2029,8 +1902,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "work_pc",
-            "hive: HKLM"
+            "work_pc"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -2048,8 +1920,7 @@
           "warningMessage": null,
           "blockedProfiles": [
             "low_spec_system",
-            "vm_cautious",
-            "Disable-MMAgent -MemoryCompression"
+            "vm_cautious"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -2081,8 +1952,7 @@
           "requiresReboot": true,
           "warningMessage": null,
           "blockedProfiles": [
-            "work_pc",
-            "hive: HKLM"
+            "work_pc"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -2099,8 +1969,7 @@
           "requiresReboot": true,
           "warningMessage": null,
           "blockedProfiles": [
-            "vm_cautious",
-            "hive: HKLM"
+            "vm_cautious"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -2118,8 +1987,7 @@
           "warningMessage": null,
           "blockedProfiles": [
             "low_spec_system",
-            "vm_cautious",
-            "hive: HKLM"
+            "vm_cautious"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -2136,8 +2004,7 @@
           "requiresReboot": true,
           "warningMessage": null,
           "blockedProfiles": [
-            "vm_cautious",
-            "hive: HKLM"
+            "vm_cautious"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -2156,8 +2023,7 @@
           "blockedProfiles": [
             "work_pc",
             "office_laptop",
-            "vm_cautious",
-            "hive: HKLM"
+            "vm_cautious"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -2189,8 +2055,7 @@
           "requiresReboot": true,
           "warningMessage": null,
           "blockedProfiles": [
-            "vm_cautious",
-            "hive: HKLM"
+            "vm_cautious"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -2207,8 +2072,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "vm_cautious",
-            "name: NvTelemetryContainer"
+            "vm_cautious"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -2225,8 +2089,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "vm_cautious",
-            "name: \"AMD External Events Utility"
+            "vm_cautious"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -2258,8 +2121,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "work_pc",
-            "hive: HKCU"
+            "work_pc"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -2291,8 +2153,7 @@
           "requiresReboot": false,
           "warningMessage": "GeForce Experience overlay (Alt+Z), ShadowPlay recording, and automatic driver updates will stop working. Manual driver updates via nvidia.com will still work.",
           "blockedProfiles": [
-            "vm_cautious",
-            "name: NVDisplay.ContainerLocalSystem"
+            "vm_cautious"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -2309,8 +2170,7 @@
           "requiresReboot": false,
           "warningMessage": "AMD Adrenalin overlay, crash reporting, and automatic driver updates will stop working. Manual driver updates via amd.com will still work.",
           "blockedProfiles": [
-            "vm_cautious",
-            "hive: HKLM"
+            "vm_cautious"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -2343,8 +2203,7 @@
           "warningMessage": null,
           "blockedProfiles": [
             "vm_cautious",
-            "work_pc",
-            "hive: HKCU"
+            "work_pc"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -2362,8 +2221,7 @@
           "warningMessage": null,
           "blockedProfiles": [
             "office_laptop",
-            "low_spec_system",
-            "settingPath: \"54533251-82be-4824-96c1-47b60b740d00/0cc5b647-c1df-4637-891a-dec35c318583"
+            "low_spec_system"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -2381,8 +2239,7 @@
           "warningMessage": null,
           "blockedProfiles": [
             "office_laptop",
-            "low_spec_system",
-            "settingPath: \"54533251-82be-4824-96c1-47b60b740d00/be337238-0d82-4146-a960-4f3749d470c7"
+            "low_spec_system"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -2400,8 +2257,7 @@
           "warningMessage": null,
           "blockedProfiles": [
             "office_laptop",
-            "low_spec_system",
-            "settingPath: \"54533251-82be-4824-96c1-47b60b740d00/893dee8e-2bef-41e0-89c6-b55d0929964c"
+            "low_spec_system"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -2433,8 +2289,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "office_laptop",
-            "settingPath: \"SCHEME_CURRENT\\\\SUB_PROCESSOR\\\\PROCTHROTTLEMIN"
+            "office_laptop"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -2481,8 +2336,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "office_laptop",
-            "settingPath: \"2a737441-1930-4402-8d77-b2bebba308a3/48e6b7a6-50f5-4782-a5d4-53bb8f07e226"
+            "office_laptop"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -2499,8 +2353,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "office_laptop",
-            "settingPath: \"501a4d13-42af-4429-9fd1-a8218c268e20/ee12f906-d277-404b-b6da-e5fa1a576df5"
+            "office_laptop"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -2519,8 +2372,7 @@
           "blockedProfiles": [
             "office_laptop",
             "gaming_laptop",
-            "low_spec_system",
-            "hive: HKLM"
+            "low_spec_system"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -2538,8 +2390,7 @@
           "warningMessage": null,
           "blockedProfiles": [
             "office_laptop",
-            "gaming_laptop",
-            "settingPath: \"device_power_management"
+            "gaming_laptop"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -2616,8 +2467,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "work_pc",
-            "hive: HKLM"
+            "work_pc"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -2634,8 +2484,7 @@
           "requiresReboot": true,
           "warningMessage": null,
           "blockedProfiles": [
-            "work_pc",
-            "hive: HKLM"
+            "work_pc"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -2795,8 +2644,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "work_pc",
-            "hive: HKLM"
+            "work_pc"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -3119,8 +2967,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "vm_cautious",
-            "hive: HKLM"
+            "vm_cautious"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -3278,8 +3125,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "work_pc",
-            "hive: HKLM"
+            "work_pc"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -3296,8 +3142,7 @@
           "requiresReboot": true,
           "warningMessage": null,
           "blockedProfiles": [
-            "work_pc",
-            "hive: HKLM"
+            "work_pc"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -3400,8 +3245,7 @@
           "blockedProfiles": [
             "work_pc",
             "office_laptop",
-            "vm_cautious",
-            "hive: HKLM"
+            "vm_cautious"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -3420,8 +3264,7 @@
           "blockedProfiles": [
             "work_pc",
             "office_laptop",
-            "vm_cautious",
-            "hive: HKLM"
+            "vm_cautious"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -3503,8 +3346,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "work_pc",
-            "hive: HKLM"
+            "work_pc"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -3521,8 +3363,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "work_pc",
-            "hive: HKLM"
+            "work_pc"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -3541,8 +3382,7 @@
           "blockedProfiles": [
             "work_pc",
             "office_laptop",
-            "vm_cautious",
-            "hive: HKLM"
+            "vm_cautious"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -3559,8 +3399,7 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
-            "work_pc",
-            "hive: HKLM"
+            "work_pc"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -3579,8 +3418,7 @@
           "blockedProfiles": [
             "work_pc",
             "office_laptop",
-            "vm_cautious",
-            "hive: HKLM"
+            "vm_cautious"
           ],
           "minWindowsBuild": null,
           "executionKinds": [
@@ -3618,8 +3456,7 @@
           "warningMessage": "Allows potentially vulnerable drivers to load. Only disable if you need specific kernel tools like RW-Everything for XHCI IMOD or MSI utility.",
           "blockedProfiles": [
             "work_pc",
-            "office_laptop",
-            "hive: HKLM"
+            "office_laptop"
           ],
           "minWindowsBuild": null,
           "executionKinds": [

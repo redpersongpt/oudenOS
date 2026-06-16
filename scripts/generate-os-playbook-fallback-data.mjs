@@ -208,6 +208,16 @@ function parseActionChunk(chunk) {
   for (let index = 1; index < lines.length; index += 1) {
     const line = lines[index];
 
+    // End blockedProfiles collection as soon as a non-list line appears (the
+    // next field key, e.g. `    serviceChanges:` / `    registryChanges:`).
+    // Those keys `continue` from their own handlers below before the trailing
+    // stop-check could run, so without this the FIRST item of the following
+    // block (e.g. `      - name: MapsBroker`, `      - hive: HKLM`) leaked into
+    // blockedProfiles. Runs before every field handler so it covers all fields.
+    if (inBlockedProfiles && !line.startsWith("      - ")) {
+      inBlockedProfiles = false;
+    }
+
     if (line.startsWith("    name: ")) {
       action.name = stripQuotes(line.slice(10).trim());
       continue;
