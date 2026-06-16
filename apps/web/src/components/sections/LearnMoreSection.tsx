@@ -23,7 +23,7 @@ const pages = [
   },
   {
     title: "Windows 11 Debloat",
-    description: "Remove Copilot, Recall, telemetry, widgets, and Edge nags.",
+    description: "Remove Recall, telemetry, widgets, assistant panels, and Edge nags.",
     href: "/windows-11-debloat",
   },
   {

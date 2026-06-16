@@ -25,8 +25,8 @@ if [[ ! -d "${VDS_REPO}/.git" && -d "${HOME}/oudenOS/.git" ]]; then
 fi
 cd "${VDS_REPO}"
 
-if [[ -n "$(git status --porcelain)" ]]; then
-  echo "Remote repo has uncommitted changes; refusing to deploy." >&2
+if [[ -n "$(git status --porcelain --untracked-files=no)" ]]; then
+  echo "Remote repo has uncommitted tracked changes; refusing to deploy." >&2
   exit 1
 fi
 

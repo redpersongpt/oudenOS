@@ -355,7 +355,7 @@ function StrategyContent() {
 
 const REVIEW_ACTIONS = [
   { name: "Disable telemetry", phase: "Privacy", status: "included" as const },
-  { name: "Remove Copilot", phase: "Shell", status: "included" as const },
+  { name: "Remove assistant panel", phase: "Shell", status: "included" as const },
   { name: "Disable Game DVR", phase: "Performance", status: "included" as const },
   { name: "Optimize CPU scheduler", phase: "Performance", status: "included" as const },
   { name: "Disable print spooler", phase: "Services", status: "blocked" as const },
@@ -416,7 +416,7 @@ function ReviewContent() {
 const EXEC_ACTIONS = [
   "Disable telemetry services",
   "Remove advertising ID",
-  "Disable Copilot sidebar",
+  "Disable assistant sidebar",
   "Strip web search noise",
   "Disable Game DVR",
   "Optimize CPU scheduler",

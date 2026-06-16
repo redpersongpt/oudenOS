@@ -7,13 +7,19 @@ import { resolveLatestInstaller } from "@/lib/github-release";
 // resolved, fall back to the on-site downloads page (which shows a clear
 // "temporarily unavailable" state) instead of a dead link.
 export const runtime = "nodejs";
-export const revalidate = 300;
+export const dynamic = "force-dynamic";
+
+function temporaryRedirect(url: string | URL) {
+  const response = NextResponse.redirect(url, 302);
+  response.headers.set("Cache-Control", "no-store");
+  return response;
+}
 
 export async function GET(request: Request) {
   const installer = await resolveLatestInstaller();
   if (installer) {
-    return NextResponse.redirect(installer.downloadUrl, 302);
+    return temporaryRedirect(installer.downloadUrl);
   }
   const fallback = new URL("/downloads?status=unavailable", request.url);
-  return NextResponse.redirect(fallback, 302);
+  return temporaryRedirect(fallback);
 }

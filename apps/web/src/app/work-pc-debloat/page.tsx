@@ -83,7 +83,7 @@ export default function WorkPCDebloatPage() {
                 "Pre-installed apps (Clipchamp, Solitaire, News)",
                 "Start menu suggestions and lock screen tips",
                 "Widgets panel and news feed",
-                "Copilot integration (unless org-deployed)",
+                "Windows assistant integration (unless org-deployed)",
                 "Notification spam and feature announcements",
                 "Search highlights and web results in Start",
                 "Unnecessary scheduled tasks",

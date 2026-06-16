@@ -138,7 +138,7 @@ export default async function OudenOSPage() {
               heading: "Changed or removed",
               items: [
                 "Telemetry and diagnostic data collection",
-                "Copilot, Recall, and AI features",
+                "Windows assistant, Recall, and suggestion features",
                 "Pre-installed consumer apps",
                 "Widgets, suggestions, and ad notifications",
                 "Unnecessary background services",

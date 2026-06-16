@@ -137,7 +137,7 @@ export default async function WindowsDebloatPage() {
                 "Consumer telemetry and diagnostic data",
                 "Pre-installed apps (Clipchamp, News, Solitaire)",
                 "Advertising ID and activity tracking",
-                "Widgets, Copilot, and AI integrations",
+                "Widgets, assistant integrations, and suggestions",
                 "Search highlights and web results in Start",
                 "Notification suggestions and tips",
                 "Unnecessary scheduled tasks",
@@ -204,7 +204,7 @@ export default async function WindowsDebloatPage() {
             pages={[
               {
                 title: "Windows 11 Debloat",
-                description: "Remove Copilot, Recall, telemetry, and Edge nags specific to Windows 11.",
+                description: "Remove Recall, telemetry, assistant panels, and Edge nags specific to Windows 11.",
                 href: "/windows-11-debloat",
               },
               {

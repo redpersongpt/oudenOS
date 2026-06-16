@@ -13,13 +13,13 @@ import {
 import { Shield, RotateCcw } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Windows 11 Debloat — Remove Copilot, Recall, Telemetry",
+  title: "Windows 11 Debloat — Remove Recall, Telemetry, Assistant Bloat",
   description:
-    "Remove Copilot, Recall, telemetry, widgets, and Edge nags from Windows 11. OudenOS handles Windows 11 specific bloat with guided, reversible removal.",
+    "Remove Recall, telemetry, widgets, assistant panels, and Edge nags from Windows 11. OudenOS handles Windows 11 specific bloat with guided, reversible removal.",
   keywords: [
     "windows 11 debloat",
     "debloat windows 11",
-    "remove copilot windows 11",
+    "disable windows 11 assistant",
     "remove recall windows 11",
     "windows 11 telemetry",
     "disable windows 11 bloatware",
@@ -29,9 +29,9 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title:
-      "Windows 11 Debloat — Remove Copilot, Recall, Telemetry | Ouden",
+      "Windows 11 Debloat — Remove Recall, Telemetry, Assistant Bloat | Ouden",
     description:
-      "Guided removal of Windows 11 specific bloat including Copilot, Recall, telemetry, and Edge browser forcing.",
+      "Guided removal of Windows 11 specific bloat including Recall, telemetry, assistant panels, and Edge browser forcing.",
     url: "https://ouden.cc/windows-11-debloat",
     type: "article",
   },
@@ -45,13 +45,13 @@ export default function Windows11DebloatPage() {
         <article>
           <PageHero
             overline="Windows 11"
-            title="Windows 11 Debloat — Remove Copilot, Recall, Telemetry"
-            description="Windows 11 introduced a new generation of built-in features that many users did not ask for. From AI assistants to screenshot surveillance, the default installation is more opinionated than any previous Windows release. Here is what ships with Windows 11 that you might want to remove, and how Ouden handles each one."
+            title="Windows 11 Debloat — Remove Recall, Telemetry, Assistant Bloat"
+            description="Windows 11 introduced a new generation of built-in features that many users did not ask for. From assistant panels to screenshot surveillance, the default installation is more opinionated than any previous Windows release. Here is what ships with Windows 11 that you might want to remove, and how Ouden handles each one."
           />
 
           <QuickSummary
             items={[
-              "Copilot and AI assistant removal",
+              "Assistant feature removal",
               "Recall and activity history disabling",
               "Telemetry and diagnostic data blocking",
               "Widgets, suggestions, and notification cleanup",
@@ -65,7 +65,7 @@ export default function Windows11DebloatPage() {
             left={{
               heading: "Removed or disabled",
               items: [
-                "Copilot taskbar icon and background process",
+                "Windows assistant taskbar entry and background process",
                 "Recall screenshot surveillance",
                 "DiagTrack telemetry service",
                 "Advertising ID and activity history",
