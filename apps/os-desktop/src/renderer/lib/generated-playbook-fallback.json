@@ -1962,7 +1962,7 @@
         {
           "id": "perf.svchost-split-threshold",
           "name": "Optimize Svchost Split Threshold",
-          "description": "Raise SvcHostSplitThresholdInKB to reduce the number of svchost.exe process instances",
+          "description": "Group Windows background services into fewer svchost.exe processes by raising the split threshold above any RAM size — works the same on 8GB or 128GB machines",
           "risk": "low",
           "default": false,
           "expertOnly": false,

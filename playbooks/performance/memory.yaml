@@ -66,8 +66,8 @@ actions:
 
   - id: perf.svchost-split-threshold
     name: "Optimize Svchost Split Threshold"
-    description: "Raise SvcHostSplitThresholdInKB to reduce the number of svchost.exe process instances"
-    rationale: "Windows splits services into separate svchost.exe processes based on available RAM. On 8GB+ systems, this creates many small processes. Raising the threshold reduces process count and context-switch overhead."
+    description: "Group Windows background services into fewer svchost.exe processes by raising the split threshold above any RAM size — works the same on 8GB or 128GB machines"
+    rationale: "On systems with 3.5GB+ RAM, Windows runs most services in their own svchost.exe for isolation, which creates dozens of small processes. Setting SvcHostSplitThresholdInKB to its maximum (0xFFFFFFFF / 4294967295 KB) tells Windows to group them again — fewer processes and less memory overhead. RAM-independent (the old fixed 64GB value only worked on <=64GB systems). Reversible: the original threshold is restored on rollback. Safe on low-RAM machines (grouping reduces overhead)."
     risk: low
     tier: free
     default: false
@@ -80,7 +80,7 @@ actions:
       - hive: HKLM
         path: "SYSTEM\\CurrentControlSet\\Control"
         valueName: SvcHostSplitThresholdInKB
-        value: 67108864
+        value: 4294967295
         valueType: DWord
 
   - id: perf.disable-page-combining

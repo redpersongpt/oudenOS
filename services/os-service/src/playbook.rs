@@ -934,6 +934,35 @@ mod tests {
     }
 
     #[test]
+    fn svchost_split_threshold_uses_max_value() {
+        let dir = playbook_dir();
+        if !dir.exists() {
+            return;
+        }
+        let playbook = load_playbook(&dir).unwrap();
+        let action = playbook
+            .phases
+            .iter()
+            .flat_map(|phase| &phase.actions)
+            .find(|action| action.id == "perf.svchost-split-threshold")
+            .expect("perf.svchost-split-threshold must exist");
+        let reg = action
+            .registry_changes
+            .iter()
+            .find(|change| change.value_name == "SvcHostSplitThresholdInKB")
+            .expect("svchost action must set SvcHostSplitThresholdInKB");
+        // Max threshold (0xFFFFFFFF) so services un-split regardless of RAM, matching
+        // the built-in catalog. Guards against the old static 64 GB value (67108864),
+        // which only un-split on <=64 GB systems, drifting back and creating a
+        // YAML-vs-transformer conflict.
+        assert_eq!(
+            reg.value.as_u64(),
+            Some(4294967295),
+            "SvcHostSplitThresholdInKB must be 0xFFFFFFFF (RAM-independent un-split)"
+        );
+    }
+
+    #[test]
     fn test_resolved_plan_emits_traceable_boundaries() {
         let dir = playbook_dir();
         if !dir.exists() {
