@@ -994,6 +994,34 @@ mod tests {
     }
 
     #[test]
+    fn ai_settings_page_hide_is_opt_in_reversible_and_shell_safe() {
+        let dir = playbook_dir();
+        if !dir.exists() {
+            return;
+        }
+        let playbook = load_playbook(&dir).unwrap();
+        let action = playbook
+            .phases
+            .iter()
+            .flat_map(|phase| &phase.actions)
+            .find(|action| action.id == "privacy.hide-ai-settings-page")
+            .expect("privacy.hide-ai-settings-page must exist");
+        assert!(!action.default, "AI settings-page hide must be opt-in (default:false)");
+        assert!(action.reversible, "must be reversible");
+        let reg = action
+            .registry_changes
+            .iter()
+            .find(|change| change.value_name == "SettingsPageVisibility")
+            .expect("must set SettingsPageVisibility");
+        assert_eq!(reg.value.as_str(), Some("hide:aicomponents"));
+        // The winutil-derived AI action must never touch a shell-critical target.
+        assert!(
+            !crate::executor::action_hits_protected_target(action),
+            "AI settings-page hide must not hit a protected shell/service/registry target"
+        );
+    }
+
+    #[test]
     fn test_resolved_plan_emits_traceable_boundaries() {
         let dir = playbook_dir();
         if !dir.exists() {

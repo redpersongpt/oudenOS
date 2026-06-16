@@ -83,6 +83,25 @@ actions:
         value: 3
         valueType: DWord
 
+  - id: privacy.hide-ai-settings-page
+    name: "Hide AI Components Settings Page"
+    description: "Hide the 'AI components' page from the Windows Settings app. This is cosmetic/control only — it removes the AI settings entry but does not disable any AI service by itself. Reversible."
+    rationale: "Mirrors winutil's Windows-AI cleanup: SettingsPageVisibility=hide:aicomponents removes the AI components page from Settings. It is a reversible policy value and does not touch Explorer, Search, Start, the taskbar, or any service. Opt-in. (Concept from winutil WPFTweaksWindowsAI, MIT-licensed; reimplemented as oudenOS action metadata — see third_party/winutil/SOURCE.md.)"
+    risk: safe
+    tier: free
+    default: false
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    minWindowsBuild: 26100
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKLM
+        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer"
+        valueName: SettingsPageVisibility
+        value: "hide:aicomponents"
+        valueType: String
+
   - id: privacy.disable-edge-ai
     name: "Disable Edge AI Features"
     description: "Disable Copilot integration, AI sidebar, and AI-powered features in Microsoft Edge"

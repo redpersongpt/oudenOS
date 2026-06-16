@@ -1731,6 +1731,21 @@
           ]
         },
         {
+          "id": "privacy.hide-ai-settings-page",
+          "name": "Hide AI Components Settings Page",
+          "description": "Hide the 'AI components' page from the Windows Settings app. This is cosmetic/control only — it removes the AI settings entry but does not disable any AI service by itself. Reversible.",
+          "risk": "safe",
+          "default": false,
+          "expertOnly": false,
+          "requiresReboot": false,
+          "warningMessage": null,
+          "blockedProfiles": [],
+          "minWindowsBuild": 26100,
+          "executionKinds": [
+            "registryChanges"
+          ]
+        },
+        {
           "id": "privacy.disable-edge-ai",
           "name": "Disable Edge AI Features",
           "description": "Disable Copilot integration, AI sidebar, and AI-powered features in Microsoft Edge",
