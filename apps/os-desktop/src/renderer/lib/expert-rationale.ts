@@ -10,46 +10,46 @@ interface ActionRationale {
 
 const RATIONALE: Record<string, ActionRationale> = {
   // Privacy
-  "privacy.disable-telemetry": { why: "Stops Windows from sending usage data to Microsoft in the background." },
-  "privacy.disable-recall": { why: "Stops Windows from taking screenshots of everything you do for AI search." },
-  "privacy.disable-advertising-id": { why: "Stops apps from tracking you for targeted ads. No downside." },
-  "privacy.disable-click-to-do": { why: "Removes the AI overlay that analyzes your screen and suggests actions." },
-  "privacy.disable-ai-svc-autostart": { why: "The AI background service uses memory even when you're not using AI features." },
-  "privacy.disable-edge-ai": { why: "Stops Edge from sending your browsing activity to cloud AI services." },
-  "privacy.disable-paint-ai": { why: "Stops Paint from sending your images to Microsoft's cloud for AI processing." },
-  "privacy.disable-notepad-ai": { why: "Stops Notepad from sending your text to the cloud for AI features." },
+  "privacy.disable-telemetry": { why: "Windows quietly narrates what you do back to Microsoft. This hangs up the call." },
+  "privacy.disable-recall": { why: "Windows was screenshotting everything on your screen so AI could 'remember' it. Hard pass." },
+  "privacy.disable-advertising-id": { why: "Kills the ad ID apps use to profile you. Wild that you had to opt out of this." },
+  "privacy.disable-click-to-do": { why: "Removes the AI overlay that reads your screen and 'suggests' things nobody asked for." },
+  "privacy.disable-ai-svc-autostart": { why: "The AI service squats in your RAM whether you use it or not. Evicted." },
+  "privacy.disable-edge-ai": { why: "Stops Edge from shipping your browsing history off to cloud AI." },
+  "privacy.disable-paint-ai": { why: "Paint does not need the cloud to draw a circle. Disconnected." },
+  "privacy.disable-notepad-ai": { why: "Notepad is for notes — not for phoning the cloud about them." },
   "privacy.disable-location": {
-    why: "Stops Windows and apps from tracking your location.",
+    why: "Stops Windows and apps from following you around the map.",
     profileNote: { work_pc: "May affect VPN geo-detection on managed networks." },
   },
-  "privacy.disable-input-personalization": { why: "Stops Windows from collecting what you type and how you write." },
-  "privacy.disable-online-speech": { why: "Stops your voice data from being sent to Microsoft." },
-  "privacy.disable-find-my-device": { why: "Stops your PC from constantly reporting its location to Microsoft." },
+  "privacy.disable-input-personalization": { why: "Stops Windows from studying how you type." },
+  "privacy.disable-online-speech": { why: "Your voice stays on your machine instead of Microsoft's servers." },
+  "privacy.disable-find-my-device": { why: "Stops your PC from pinging Microsoft its location all day long." },
   "privacy.disable-smartscreen": {
-    why: "SmartScreen checks every file you download with Microsoft. Disabling stops this, but removes download protection.",
+    why: "SmartScreen runs every download past Microsoft before it opens. Turning it off removes that check — and the download protection that comes with it.",
     profileNote: { work_pc: "Not recommended — provides protection against malicious downloads." },
   },
 
   // Shell
-  "shell.disable-copilot": { why: "Removes the Copilot button and frees up memory it uses in the background." },
-  "shell.show-file-extensions": { why: "Shows file types (.exe, .pdf) in Explorer so you can spot disguised malware." },
-  "shell.enable-end-task": { why: "Lets you kill frozen apps directly from the taskbar without opening Task Manager." },
-  "shell.remove-cast-to-device": { why: "Removes the legacy Cast to Device menu entry that most people never use." },
-  "shell.remove-troubleshoot-compatibility": { why: "Removes the compatibility troubleshooter shortcut from right-click menus to cut clutter." },
-  "shell.remove-edit-with-paint3d": { why: "Hides the old Paint 3D menu entry so image file menus stay cleaner." },
-  "shell.hide-task-view": { why: "Removes the Task View button. You can still use Win+Tab." },
-  "shell.hide-widgets-button": { why: "Removes the Widgets button and stops background news/weather fetching." },
-  "shell.disable-web-search": { why: "Stops Start menu from sending your searches to Bing." },
-  "shell.disable-edge-ads": { why: "Stops Edge from showing shopping suggestions, new tab ads, and promotional popups." },
-  "shell.hide-chat-icon": { why: "Removes the Teams Chat icon from the taskbar. Teams still works if installed." },
-  "shell.disable-content-delivery": { why: "Stops Windows from silently installing suggested apps and showing welcome tips." },
+  "shell.disable-copilot": { why: "Evicts the Copilot button and the memory it squats on in the background." },
+  "shell.show-file-extensions": { why: "Shows real file types (.exe, .pdf) in Explorer — so 'invoice.pdf.exe' can't hide from you." },
+  "shell.enable-end-task": { why: "Adds 'End task' to the taskbar right-click, so you can kill a frozen app without opening Task Manager." },
+  "shell.remove-cast-to-device": { why: "Removes the Cast to Device entry nobody's clicked since 2017." },
+  "shell.remove-troubleshoot-compatibility": { why: "Clears the compatibility-troubleshooter clutter out of your right-click menu." },
+  "shell.remove-edit-with-paint3d": { why: "Hides the Paint 3D leftover Microsoft keeps pretending people use." },
+  "shell.hide-task-view": { why: "Removes the Task View button. Win+Tab still does the same thing." },
+  "shell.hide-widgets-button": { why: "Kills the Widgets button and the news/weather it fetches behind your back." },
+  "shell.disable-web-search": { why: "Your Start menu searches stop getting detoured through Bing." },
+  "shell.disable-edge-ads": { why: "Shuts off Edge's shopping 'suggestions', new-tab ads, and promo popups." },
+  "shell.hide-chat-icon": { why: "Drops the Teams Chat icon off the taskbar. Teams still works if you actually want it." },
+  "shell.disable-content-delivery": { why: "Stops Windows from silently installing 'suggested' apps and the welcome-tour tips." },
 
   // Performance
   "perf.mmcss-system-responsiveness": {
     why: "Gives more CPU to your games and active apps by reducing what Windows reserves for background tasks.",
     profileNote: { work_pc: "May affect background task performance during meetings." },
   },
-  "perf.disable-game-dvr": { why: "Stops the silent background game recording that eats GPU resources and causes frame drops." },
+  "perf.disable-game-dvr": { why: "Game DVR records your gameplay in the background — uninvited — eating GPU and dropping your frames. Off it goes." },
   "perf.disable-fullscreen-optimizations": { why: "Gives you true fullscreen instead of Windows' compatibility layer. Lower input lag." },
   "perf.disable-transparency": { why: "Removes the blur and see-through effects that use GPU resources." },
   "perf.disable-fault-tolerant-heap": { why: "Stops Windows from silently patching crashed apps, which uses extra memory." },
@@ -84,10 +84,10 @@ const RATIONALE: Record<string, ActionRationale> = {
   "gpu.tdr-delay": { why: "Gives the GPU more time before Windows thinks it crashed. Prevents false 'driver stopped responding' errors." },
 
   // AppX / Edge
-  "appx.remove-consumer-bloat": { why: "Removes apps like Candy Crush, TikTok, and Solitaire that you didn't ask for." },
-  "appx.remove-xbox-apps": { why: "Removes Xbox Game Bar and related apps that run in the background." },
-  "appx.disable-edge-updates": { why: "Stops Edge from updating itself automatically. Does not remove Edge." },
-  "appx.disable-edge-preload": { why: "Stops Edge from loading into memory at startup, even when you never open it. Saves 100-300MB RAM." },
+  "appx.remove-consumer-bloat": { why: "Boots Candy Crush, TikTok, Solitaire and the rest of the uninvited guests off your Start menu." },
+  "appx.remove-xbox-apps": { why: "Removes Xbox Game Bar and its background tagalongs. Keep it if you actually game on Xbox." },
+  "appx.disable-edge-updates": { why: "Stops Edge from updating itself on its own schedule. Edge stays installed." },
+  "appx.disable-edge-preload": { why: "Edge preloads into RAM at boot even when you never open it. This stops the freeloading — 100-300MB back." },
   "appx.remove-edge": {
     why: "Permanently deletes Edge. Cannot be undone. Some Windows features that need a browser will stop working.",
     antiCheatNote: "Some enterprise web apps require Edge. Verify before removing.",
@@ -98,8 +98,8 @@ const RATIONALE: Record<string, ActionRationale> = {
   },
 
   // Services
-  "services.disable-sysmain": { why: "Stops Windows from pre-loading apps into RAM. Not needed if you have an SSD." },
-  "services.disable-xbox-services": { why: "Stops Xbox services that run even if you don't use Xbox or Game Pass." },
+  "services.disable-sysmain": { why: "Stops Windows 'helpfully' preloading apps into RAM. Pointless once you're on an SSD." },
+  "services.disable-xbox-services": { why: "Shuts down Xbox services that keep running even if you've never opened Xbox." },
   "services.disable-print-spooler": {
     why: "The print service has known security flaws. Safe to turn off if you don't use a printer.",
     profileNote: { work_pc: "Preserved — printing is required for business workflows." },
@@ -113,7 +113,7 @@ const RATIONALE: Record<string, ActionRationale> = {
   },
 
   // Startup
-  "startup.disable-background-apps": { why: "Stops apps from running silently when you're not using them. Saves CPU and memory." },
+  "startup.disable-background-apps": { why: "Stops apps idling in the background when you're not even looking at them. CPU and RAM, reclaimed." },
   "startup.disable-autoplay": { why: "Stops USB drives from running programs automatically. Prevents a common way malware spreads." },
 
   // Security
@@ -179,16 +179,16 @@ export function getActionRationale(actionId: string, profile?: string): { why: s
 
 // Phase-level explanations
 export const PHASE_RATIONALE: Record<string, string> = {
-  cleanup: "Removes apps you didn't install (Candy Crush, TikTok, etc.) to free up space and stop background activity.",
-  services: "Turns off background services your PC doesn't need. Each one is checked for dependencies first.",
-  tasks: "Stops scheduled tasks that collect data, check for updates, and run maintenance while your PC is idle.",
-  privacy: "Reduces what Microsoft knows about you by disabling tracking, ads, AI features, and data collection.",
-  performance: "Makes your CPU, GPU, and system respond faster with lower delay.",
-  shell: "Cleans up the taskbar, right-click menus, search, and Explorer for a clutter-free desktop.",
-  "startup-shutdown": "Makes your PC boot faster by stopping background apps and unnecessary startup tasks.",
-  networking: "Reduces network delay for online gaming and removes old insecure protocols.",
-  security: "Adjusts Windows Update and security settings based on how much risk you're comfortable with.",
-  personalization: "Applies your visual preferences — dark mode, colors, taskbar layout, and transparency.",
+  cleanup: "Evicts the apps you never installed — Candy Crush, TikTok, the lot — and the background noise they drag in.",
+  services: "Switches off background services your PC doesn't need. Dependencies get checked first, so nothing important breaks.",
+  tasks: "Kills the scheduled tasks that phone home, check for updates, and run 'maintenance' while you're trying to use your PC.",
+  privacy: "Shrinks what Microsoft knows about you: tracking, ads, AI snooping, and the data collection you never opted into.",
+  performance: "Tunes CPU, GPU, and system responsiveness for less delay and more frames.",
+  shell: "Declutters the taskbar, right-click menus, search, and Explorer — the desktop you actually wanted.",
+  "startup-shutdown": "Boots faster by cutting the background apps and startup tasks piling up behind the login screen.",
+  networking: "Trims network delay for online play and retires old, insecure protocols.",
+  security: "Tunes Windows Update and security to the risk level you're actually comfortable with.",
+  personalization: "Your look: dark mode, colors, taskbar layout, transparency.",
 };
 
 // Blocked reason explanations

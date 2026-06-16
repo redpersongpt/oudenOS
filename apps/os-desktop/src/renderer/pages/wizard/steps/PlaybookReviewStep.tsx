@@ -10,6 +10,7 @@ import { useDecisionsStore } from "@/stores/decisions-store";
 import { buildMockResolvedPlaybook } from "@/lib/mock-playbook";
 import technicalDetails from "@/lib/generated-technical-details.json";
 import { serviceCall } from "@/lib/service";
+import { getActionRationale, PHASE_RATIONALE } from "@/lib/expert-rationale";
 
 // ---------------------------------------------------------------------------
 // Technical details types & helpers
@@ -235,6 +236,8 @@ const statusLabel: Record<string, string> = {
 };
 
 function ActionRow({ action }: { action: PlaybookResolvedAction }) {
+  const profile = useWizardStore((s) => s.detectedProfile?.id);
+  const rationale = getActionRationale(action.id, profile);
   return (
     <div className="flex items-start gap-3 px-4 py-2 border-b border-[var(--border)] last:border-0">
       <span className={`mt-1.5 w-1.5 h-1.5 rounded-full shrink-0 ${statusDot[action.status] ?? "bg-neutral-400"}`} />
@@ -245,6 +248,16 @@ function ActionRow({ action }: { action: PlaybookResolvedAction }) {
             {statusLabel[action.status] ?? action.status}
           </span>
         </div>
+        {/* Plain-language "why this is recommended" — visible product intelligence. */}
+        {rationale.why && (
+          <p className="mt-0.5 text-[11px] leading-snug text-[var(--text-secondary)]">{rationale.why}</p>
+        )}
+        {rationale.profileWarning && (
+          <p className="mt-0.5 text-[10px] leading-snug text-[#E6A23C]">⚠ {rationale.profileWarning}</p>
+        )}
+        {rationale.antiCheatNote && (
+          <p className="mt-0.5 text-[10px] leading-snug text-[var(--text-disabled)]">{rationale.antiCheatNote}</p>
+        )}
         <TechnicalDetails actionId={action.id} />
       </div>
     </div>
@@ -265,13 +278,20 @@ function PhaseSection({ phase, defaultOpen }: { phase: PlaybookPhase; defaultOpe
         onClick={() => setOpen(!open)}
         className="w-full flex items-center justify-between px-4 py-2.5 bg-[var(--surface)] hover:bg-[var(--surface-raised)] transition-colors"
       >
-        <div className="flex items-center gap-3">
-          <span className="font-data text-[13px] text-[var(--text-display)]">{phase.name}</span>
-          <span className="text-[10px] text-[var(--text-disabled)]">{includedCount} changes</span>
+        <div className="flex flex-col items-start gap-0.5 min-w-0 text-left">
+          <div className="flex items-center gap-3">
+            <span className="font-data text-[13px] text-[var(--text-display)]">{phase.name}</span>
+            <span className="text-[10px] text-[var(--text-disabled)]">{includedCount} changes</span>
+          </div>
+          {PHASE_RATIONALE[phase.id] && (
+            <span className="text-[10px] font-normal leading-snug text-[var(--text-secondary)]">
+              {PHASE_RATIONALE[phase.id]}
+            </span>
+          )}
         </div>
         <svg
           width="12" height="12" viewBox="0 0 12 12" fill="none"
-          className={`transition-transform duration-200 ${open ? "rotate-180" : ""}`}
+          className={`shrink-0 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
         >
           <path d="M3 4.5l3 3 3-3" stroke="var(--text-secondary)" strokeWidth="1.5" strokeLinecap="round" />
         </svg>
