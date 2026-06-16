@@ -2,104 +2,11 @@
 
 import { motion, useInView, useReducedMotion } from "framer-motion";
 import { useRef } from "react";
-import { Cpu, Shield, Wand2, Gauge, RotateCcw, Monitor } from "lucide-react";
 
 const ease = [0.16, 1, 0.3, 1] as const;
 
-type RailItem = {
-  label: string;
-  note: string;
-  icon: typeof Cpu;
-};
-
-const leftRail: RailItem[] = [
-  { label: "Hardware-based", note: "Scan before you touch", icon: Cpu },
-  { label: "Rollback", note: "Snapshots built in", icon: RotateCcw },
-  { label: "Privacy", note: "Tight by default", icon: Shield },
-];
-
-const rightRail: RailItem[] = [
-  { label: "Latency", note: "Tuned for feel", icon: Gauge },
-  { label: "Layered", note: "OS + Tuning", icon: Wand2 },
-  { label: "Windows", note: "Your install, refined", icon: Monitor },
-];
-
-function SideRail({
-  side,
-  items,
-}: {
-  side: "left" | "right";
-  items: RailItem[];
-}) {
-  const reduceMotion = useReducedMotion();
-  const alignClass = side === "left" ? "items-start" : "items-end";
-  const cardAlignClass = side === "left" ? "text-left" : "text-right";
-  const iconAlignClass = side === "left" ? "justify-start" : "justify-end";
-
-  return (
-    <div
-      className={[
-        "pointer-events-none fixed inset-y-24 hidden 2xl:flex w-52 flex-col justify-between",
-        side === "left" ? "left-6" : "right-6",
-      ].join(" ")}
-      aria-hidden="true"
-    >
-      <div className="absolute inset-y-8 left-1/2 w-px -translate-x-1/2 bg-gradient-to-b from-transparent via-border/80 to-transparent" />
-      <div className="relative flex h-full flex-col justify-between py-2">
-        {items.map((item, index) => (
-          <motion.div
-            key={item.label}
-            initial={{ opacity: 0, x: side === "left" ? -18 : 18, scale: 0.98 }}
-            animate={{ opacity: 1, x: 0, scale: 1 }}
-            transition={{
-              delay: 0.45 + index * 0.12,
-              duration: 0.7,
-              ease,
-            }}
-            className={`flex ${alignClass}`}
-          >
-            <div
-              className={[
-                "w-[170px] rounded-[1.2rem] border border-border/70 bg-surface/80 px-4 py-3 shadow-lg shadow-black/10 backdrop-blur-md",
-                cardAlignClass,
-              ].join(" ")}
-            >
-              <div
-                className={[
-                  "mb-2 inline-flex h-8 w-8 items-center justify-center rounded-full border border-border/70 bg-[var(--surface-raised)]/80",
-                  iconAlignClass,
-                ].join(" ")}
-              >
-                <item.icon className="h-3.5 w-3.5 text-[var(--color-ink-secondary)]" />
-              </div>
-              <p className="text-[0.8rem] font-semibold text-[var(--text-primary)]">
-                {item.label}
-              </p>
-              <p className="mt-1 text-[0.66rem] leading-[1.5] text-[var(--text-disabled)]">
-                {item.note}
-              </p>
-            </div>
-          </motion.div>
-        ))}
-      </div>
-      {!reduceMotion && (
-        <motion.div
-          className="absolute top-1/2 left-1/2 h-40 w-40 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/5 blur-3xl"
-          animate={{ opacity: [0.2, 0.5, 0.2], scale: [0.95, 1.05, 0.95] }}
-          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-        />
-      )}
-    </div>
-  );
-}
-
 export function LandingChrome() {
-  return (
-    <>
-      <SideRail side="left" items={leftRail} />
-      <SideRail side="right" items={rightRail} />
-    </>
-  );
+  return null;
 }
 
 export function SectionSeparator({
