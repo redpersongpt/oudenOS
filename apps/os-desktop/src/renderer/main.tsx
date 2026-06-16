@@ -54,16 +54,13 @@ platform().on("service-start-failed", (error) => {
   }, 500);
 });
 
+// macOS / non-Windows hosts run the backend in simulated mode. The user-facing
+// "this is a preview, nothing is applied" disclosure is shown in-flow on the
+// Welcome screen (see WelcomeStep). We deliberately do NOT overlay a fixed banner
+// here: the window is borderless (decorations:false), so a top:0 bar would cover
+// the custom title-bar's close/minimize buttons and the drag strip. Log only.
 platform().on("service-simulated-mode", (message) => {
   console.warn("[ouden] Simulated backend:", message);
-  setTimeout(() => {
-    const banner = document.createElement("div");
-    banner.style.cssText = "position:fixed;top:0;left:0;right:0;z-index:9999;background:#1d4ed8;color:white;padding:8px 16px;font-size:12px;text-align:center;font-family:system-ui";
-    banner.textContent = typeof message === "string"
-      ? message
-      : "Demo mode is active on this device. Changes will not be applied here.";
-    document.body.appendChild(banner);
-  }, 500);
 });
 
 const rootElement = document.getElementById("root");

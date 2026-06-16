@@ -202,13 +202,13 @@ export function WelcomeStep() {
         </div>
 
         {/* Admin warning */}
-        {runtime.checked && runtime.mode === "simulated" && (
+        {runtime.checked && runtime.platform !== "win32" && runtime.mode !== "live" && (
           <div className="mt-5 flex max-w-sm items-start gap-3 px-4 py-3" style={{ border: "1px solid rgba(96,165,250,0.45)", background: "rgba(59,130,246,0.06)" }}>
             <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" style={{ color: "var(--text-display)" }} />
             <div>
-              <p className="nd-label" style={{ color: "var(--text-display)" }}>Demo mode</p>
+              <p className="nd-label" style={{ color: "var(--text-display)" }}>macOS preview</p>
               <p className="mt-1 text-caption" style={{ color: "var(--text-display)" }}>
-                You can use the app here, but changes will not be applied on this machine.
+                Every screen and question here is exactly what the Windows app shows. This Mac build only previews the interface — it never changes anything on your computer. oudenOS applies tweaks on Windows only.
               </p>
             </div>
           </div>
