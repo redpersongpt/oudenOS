@@ -1,6 +1,6 @@
 {
   "name": "oudenos-monorepo",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "private": true,
   "description": "oudenos ecosystem — Web + Tuning + OS",
   "packageManager": "pnpm@9.15.4",

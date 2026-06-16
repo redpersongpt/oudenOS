@@ -112,13 +112,14 @@ jobs:
         shell: bash
         run: |
           cat > RELEASE_NOTES.md <<'NOTES'
-          This one is mostly about safety and making the download easier.
+          Mostly a correctness pass. Every tweak was fact-checked against winutil and valleyofdoom/PC-Tuning, and the ones that weren't actually doing anything got fixed or pulled.
 
-          - Risky changes now ask before they run, with a plain warning about what they do. Nothing high risk happens silently or in the safe profiles.
-          - Added extra guards so File Explorer, Start, the taskbar and Search can't be broken by an optimization.
-          - The download button on the site always grabs the newest version now, no hunting around.
-          - Cleared up the wording on the CPU setting (100% minimum processor state is not 100% CPU usage).
-          - More optimizations to choose from, plus a few extra setup questions so it fits your machine better.
+          - Hibernation was writing to the wrong registry key, so "disable hibernation" never freed the disk. It now uses powercfg properly.
+          - Stopped disabling the AMD service that FreeSync/VRR needs by default — it's opt-in now with a clear warning, and gaming profiles leave it alone.
+          - HAGS (GPU scheduling) is off by default with a warning that disabling it breaks DLSS Frame Generation.
+          - A timer tweak that does nothing on Windows 10 is now correctly gated to Windows 11.
+          - Fixed a couple of settings where two actions wrote different values to the same key, so the result isn't a coin flip anymore.
+          - File Explorer, Start, taskbar and Search protection got tougher: a raw registry write can no longer sneak past the guards to disable a shell service.
           NOTES
 
       - name: Publish GitHub release
