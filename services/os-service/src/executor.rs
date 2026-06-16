@@ -40,6 +40,10 @@ pub(crate) fn is_shell_coupled_package(package_name: &str) -> bool {
         "MicrosoftWindows.UndockedDevKit",
         "NcsiUwpApp",
     ];
+    // NOTE: Microsoft.549981C3F5F10 (Cortana) is deliberately NOT here. On
+    // current Windows (Win10 2004+ / Win11) Search is its own package/process
+    // (SearchHost.exe / SearchApp.exe), so removing the Cortana app does not
+    // break the search bar — appx.remove-cortana is a legitimate debloat.
 
     SHELL_COUPLED_PACKAGES
         .iter()
@@ -126,17 +130,50 @@ pub(crate) fn is_protected_registry_target(path: &str, value_name: &str) -> bool
     {
         return true;
     }
-    // Image File Execution Options "Debugger" on the shell host hijacks the
-    // process at launch — a classic way to brick Explorer / Task Manager.
+    // Image File Execution Options "Debugger" on a shell host hijacks the
+    // process at launch — a classic way to brick Explorer / Search / Start /
+    // Task Manager. Cover Explorer + Task Manager + the Search / Start / shell
+    // host processes (SearchHost is the Win11 search UI, SearchApp the Win10 one).
     if path_lower.contains("image file execution options")
         && value_name.eq_ignore_ascii_case("Debugger")
         && (path_lower.ends_with("\\explorer.exe")
             || path_lower.ends_with("\\sihost.exe")
-            || path_lower.ends_with("\\taskmgr.exe"))
+            || path_lower.ends_with("\\taskmgr.exe")
+            || path_lower.ends_with("\\searchhost.exe")
+            || path_lower.ends_with("\\searchapp.exe")
+            || path_lower.ends_with("\\startmenuexperiencehost.exe")
+            || path_lower.ends_with("\\shellexperiencehost.exe"))
     {
         return true;
     }
+    // A registry write to ...\Services\<name>\Start can disable a service
+    // WITHOUT going through the structured service guard (is_protected_service).
+    // Block any `Start` write that targets a shell-critical service, so a raw
+    // registry tweak can't quietly disable e.g. RpcSs / DcomLaunch / AppXSvc the
+    // way GPU-vendor services are disabled via Start=4. (WSearch is intentionally
+    // not protected — disabling it degrades search, it never bricks the shell.)
+    if value_name.eq_ignore_ascii_case("Start") {
+        if let Some(service) = service_name_from_registry_path(&path_lower) {
+            if is_protected_service(&service) {
+                return true;
+            }
+        }
+    }
     false
+}
+
+/// Extract the service name from a `...\services\<name>` registry path (the
+/// first segment after the last `\services\`). Returns None if the path is not
+/// under a Services key. Input is expected already lowercased.
+fn service_name_from_registry_path(path_lower: &str) -> Option<String> {
+    let idx = path_lower.rfind("\\services\\")?;
+    let rest = &path_lower[idx + "\\services\\".len()..];
+    let name = rest.split('\\').next().unwrap_or("");
+    if name.is_empty() {
+        None
+    } else {
+        Some(name.to_string())
+    }
 }
 
 /// True if any mutation in this action targets a shell-critical service, a
@@ -1556,6 +1593,33 @@ mod tests {
             r"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\explorer.exe",
             "Debugger"
         ));
+        // IFEO Debugger on the Search / Start / shell hosts must also be blocked.
+        for host in [
+            "searchhost.exe",
+            "searchapp.exe",
+            "startmenuexperiencehost.exe",
+            "shellexperiencehost.exe",
+        ] {
+            assert!(
+                is_protected_registry_target(
+                    &format!(
+                        r"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\{host}"
+                    ),
+                    "Debugger"
+                ),
+                "IFEO Debugger on {host} must be blocked"
+            );
+        }
+        // Registry-based service disable (Start=) must be blocked for protected
+        // services — a registry tweak cannot bypass is_protected_service.
+        assert!(is_protected_registry_target(
+            r"SYSTEM\CurrentControlSet\Services\DcomLaunch",
+            "Start"
+        ));
+        assert!(is_protected_registry_target(
+            r"SYSTEM\CurrentControlSet\Services\RpcSs",
+            "Start"
+        ));
         // Benign, legitimate tweaks must NOT be blocked.
         assert!(!is_protected_registry_target(
             r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced",
@@ -1565,6 +1629,24 @@ mod tests {
             r"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon",
             "AutoAdminLogon"
         ));
+        // Disabling a NON-protected service via Start= stays allowed (GPU vendor
+        // services, WSearch — these degrade/optimize, they never brick the shell).
+        assert!(!is_protected_registry_target(
+            r"SYSTEM\CurrentControlSet\Services\GpuEnergyDrv",
+            "Start"
+        ));
+        assert!(!is_protected_registry_target(
+            r"SYSTEM\CurrentControlSet\Services\WSearch",
+            "Start"
+        ));
+    }
+
+    #[test]
+    fn cortana_removal_is_not_shell_coupled() {
+        // On current Windows (Win10 2004+ / Win11) Search is decoupled from
+        // Cortana (SearchHost/SearchApp), so removing the Cortana app does NOT
+        // break the search bar. appx.remove-cortana must stay allowed.
+        assert!(!is_shell_coupled_package("Microsoft.549981C3F5F10"));
     }
 }
 
