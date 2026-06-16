@@ -2115,8 +2115,8 @@
         },
         {
           "id": "perf.disable-fullscreen-optimizations",
-          "name": "Disable Fullscreen Optimizations Globally",
-          "description": "Disable fullscreen optimizations globally by setting FSE behavior mode, preventing Windows from using borderless windowed mode for fullscreen applications",
+          "name": "Disable Fullscreen Optimizations (system default)",
+          "description": "Set the per-user GameConfigStore default so new fullscreen apps prefer exclusive fullscreen over the FSO/borderless path. NOTE: modern Windows 10/11 increasingly decides FSO per-game (via each EXE's compatibility flag), so this changes the system default but a game's own setting can still override it.",
           "risk": "low",
           "default": true,
           "expertOnly": false,

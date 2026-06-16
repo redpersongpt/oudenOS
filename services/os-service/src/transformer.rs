@@ -3122,6 +3122,13 @@ fn embedded_actions() -> Vec<Value> {
                 {
                     "hive": "HKCU",
                     "path": "System\\GameConfigStore",
+                    "valueName": "GameDVR_DXGIHonorFSEWindowsCompatible",
+                    "value": 1,
+                    "valueType": "DWord"
+                },
+                {
+                    "hive": "HKCU",
+                    "path": "System\\GameConfigStore",
                     "valueName": "GameDVR_FSEBehaviorMode",
                     "value": 2,
                     "valueType": "DWord"

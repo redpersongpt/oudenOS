@@ -147,9 +147,9 @@ actions:
         valueType: DWord
 
   - id: perf.disable-fullscreen-optimizations
-    name: "Disable Fullscreen Optimizations Globally"
-    description: "Disable fullscreen optimizations globally by setting FSE behavior mode, preventing Windows from using borderless windowed mode for fullscreen applications"
-    rationale: "Windows fullscreen optimizations can add input lag and cause frame pacing issues in some games by routing them through the DWM compositor instead of using exclusive fullscreen."
+    name: "Disable Fullscreen Optimizations (system default)"
+    description: "Set the per-user GameConfigStore default so new fullscreen apps prefer exclusive fullscreen over the FSO/borderless path. NOTE: modern Windows 10/11 increasingly decides FSO per-game (via each EXE's compatibility flag), so this changes the system default but a game's own setting can still override it."
+    rationale: "Fullscreen optimizations route games through the DWM compositor, which can add input lag and frame-pacing jitter. Setting GameDVR_DXGIHonorFSEWindowsCompatible=1 (the value winutil uses) plus the FSE behavior mode changes the system-wide default. It is not a guaranteed per-game fix — per-EXE compatibility flags win — so no FPS promise."
     risk: low
     tier: free
     default: true
@@ -159,6 +159,11 @@ actions:
     blockedProfiles:
       - work_pc
     registryChanges:
+      - hive: HKCU
+        path: "System\\GameConfigStore"
+        valueName: GameDVR_DXGIHonorFSEWindowsCompatible
+        value: 1
+        valueType: DWord
       - hive: HKCU
         path: "System\\GameConfigStore"
         valueName: GameDVR_FSEBehaviorMode
