@@ -58,3 +58,31 @@ actions:
         valueName: AllowOnlineTips
         value: 0
         valueType: DWord
+
+  - id: privacy.disable-cloud-content-policy
+    name: "Block Cloud Content Delivery (machine-wide)"
+    description: "Disable Windows suggested content, tips, and consumer feature delivery at the machine-policy level"
+    rationale: "Windows keeps fetching 'suggested' apps, tips, and promo content in the background — network, disk, and CPU you never asked to spend. The machine-wide CloudContent policy stops it more completely than the per-user toggles, so there's less background churn mid-game. Reversible. Does not touch Start, Search, or the Store itself."
+    risk: low
+    tier: free
+    default: false
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKLM
+        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent"
+        valueName: DisableThirdPartySuggestions
+        value: 1
+        valueType: DWord
+      - hive: HKLM
+        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent"
+        valueName: DisableCloudOptimizedContent
+        value: 1
+        valueType: DWord
+      - hive: HKLM
+        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent"
+        valueName: DisableWindowsConsumerFeatures
+        value: 1
+        valueType: DWord

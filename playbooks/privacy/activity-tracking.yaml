@@ -108,3 +108,23 @@ actions:
         valueName: DisableLocation
         value: 1
         valueType: DWord
+
+  - id: privacy.disable-cross-device-experiences
+    name: "Disable Cross-Device Experiences (CDP)"
+    description: "Turn off the Connected Devices Platform behind Phone Link, Nearby Share, and cross-device handoff"
+    rationale: "The Connected Devices Platform runs background discovery and sync even when you aren't using Phone Link or Nearby Share — small but constant CPU and network. Off means those stay free while gaming. Leave it on if you actively use Phone Link or Nearby Share. Reversible."
+    risk: low
+    tier: free
+    default: false
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles:
+      - work_pc
+      - office_laptop
+    registryChanges:
+      - hive: HKLM
+        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\System"
+        valueName: EnableCdp
+        value: 0
+        valueType: DWord

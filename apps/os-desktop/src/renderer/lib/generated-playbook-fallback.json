@@ -1576,6 +1576,21 @@
           ]
         },
         {
+          "id": "privacy.disable-cloud-content-policy",
+          "name": "Block Cloud Content Delivery (machine-wide)",
+          "description": "Disable Windows suggested content, tips, and consumer feature delivery at the machine-policy level",
+          "risk": "low",
+          "default": false,
+          "expertOnly": false,
+          "requiresReboot": false,
+          "warningMessage": null,
+          "blockedProfiles": [],
+          "minWindowsBuild": null,
+          "executionKinds": [
+            "registryChanges"
+          ]
+        },
+        {
           "id": "privacy.disable-clipboard-history",
           "name": "Disable Clipboard History & Cloud Sync",
           "description": "Disable Windows clipboard history and cross-device clipboard synchronization",
@@ -1631,6 +1646,25 @@
           "warningMessage": null,
           "blockedProfiles": [
             "work_pc",
+            "hive: HKLM"
+          ],
+          "minWindowsBuild": null,
+          "executionKinds": [
+            "registryChanges"
+          ]
+        },
+        {
+          "id": "privacy.disable-cross-device-experiences",
+          "name": "Disable Cross-Device Experiences (CDP)",
+          "description": "Turn off the Connected Devices Platform behind Phone Link, Nearby Share, and cross-device handoff",
+          "risk": "low",
+          "default": false,
+          "expertOnly": false,
+          "requiresReboot": false,
+          "warningMessage": null,
+          "blockedProfiles": [
+            "work_pc",
+            "office_laptop",
             "hive: HKLM"
           ],
           "minWindowsBuild": null,
@@ -1858,6 +1892,21 @@
           "description": "Disable AI-powered text generation and rewriting in Notepad",
           "risk": "safe",
           "default": true,
+          "expertOnly": false,
+          "requiresReboot": false,
+          "warningMessage": null,
+          "blockedProfiles": [],
+          "minWindowsBuild": 26100,
+          "executionKinds": [
+            "registryChanges"
+          ]
+        },
+        {
+          "id": "privacy.disable-system-ai-access",
+          "name": "Block System AI Model Access",
+          "description": "Stop apps from using on-device generative AI models system-wide",
+          "risk": "low",
+          "default": false,
           "expertOnly": false,
           "requiresReboot": false,
           "warningMessage": null,

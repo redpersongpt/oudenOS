@@ -184,3 +184,22 @@ actions:
         valueName: DisableAIFeatures
         value: 1
         valueType: DWord
+
+  - id: privacy.disable-system-ai-access
+    name: "Block System AI Model Access"
+    description: "Stop apps from using on-device generative AI models system-wide"
+    rationale: "On Copilot+ / AI PCs, background apps can run on-device generative AI on the NPU and CPU. Forcing that access off keeps the NPU, CPU, and RAM free for your games instead. Fully reversible; flip it back if you start using on-device AI tools."
+    risk: low
+    tier: free
+    default: false
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    minWindowsBuild: 26100
+    registryChanges:
+      - hive: HKLM
+        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\AppPrivacy"
+        valueName: LetAppsAccessGenerativeAI
+        value: 2
+        valueType: DWord
