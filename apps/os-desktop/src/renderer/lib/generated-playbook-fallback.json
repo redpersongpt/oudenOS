@@ -2283,8 +2283,8 @@
         },
         {
           "id": "power.high-performance-plan",
-          "name": "Activate High Performance Power Plan",
-          "description": "Set the active power plan to Windows High Performance, preventing CPU frequency scaling and sleep transitions. This holds the CPU at its top clock speed — it does not mean 100% CPU usage — but it may increase idle power draw, heat, and fan noise.",
+          "name": "Lock CPU to Maximum Clock (current power plan)",
+          "description": "Pin the ACTIVE power plan's minimum and maximum processor state to 100% so the CPU holds its top clock instead of down-clocking. This modifies your CURRENT power plan — it does NOT switch to Windows' separate High Performance plan. 100% minimum processor state holds the clock high; it does NOT mean 100% CPU usage. May increase idle power draw, heat, and fan noise.",
           "risk": "low",
           "default": false,
           "expertOnly": false,

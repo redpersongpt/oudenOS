@@ -1058,10 +1058,10 @@ fn embedded_actions() -> Vec<Value> {
         // ── 28. Power: High Performance Plan ─────────────────────────────────
         serde_json::json!({
             "id": "power.high-performance-plan",
-            "name": "Activate High Performance Power Plan",
+            "name": "Lock CPU to Maximum Clock (current power plan)",
             "category": "power",
-            "description": "Set the active power plan to Windows High Performance (GUID: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c), preventing CPU frequency scaling and sleep transitions.",
-            "rationale": "The Balanced power plan dynamically scales CPU frequency and allows C-state transitions, introducing latency when the CPU must ramp up. High Performance keeps the CPU at maximum frequency.",
+            "description": "Pin the ACTIVE power plan's minimum and maximum processor state to 100% so the CPU holds its top clock instead of down-clocking. Modifies your CURRENT plan — it does NOT switch to Windows' separate High Performance plan. 100% minimum processor state holds the clock high; it does NOT mean 100% CPU usage.",
+            "rationale": "Down-clocking and C-state transitions add latency when the CPU must ramp back up. Pinning processor state to 100% keeps the clock at maximum (clock speed, not CPU utilization), applied to the active plan (SCHEME_CURRENT) so the user's chosen plan is preserved.",
             "risk": "low",
             "tier": "premium",
             "requiresReboot": false,

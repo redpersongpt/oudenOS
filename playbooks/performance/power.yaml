@@ -7,9 +7,9 @@ category: performance
 
 actions:
   - id: power.high-performance-plan
-    name: "Activate High Performance Power Plan"
-    description: "Set the active power plan to Windows High Performance, preventing CPU frequency scaling and sleep transitions. This holds the CPU at its top clock speed — it does not mean 100% CPU usage — but it may increase idle power draw, heat, and fan noise."
-    rationale: "The Balanced power plan dynamically scales CPU frequency and allows C-state transitions, introducing latency when the CPU must ramp up. High Performance keeps the CPU clock at maximum (not CPU utilization), trading higher idle power and heat for lower latency."
+    name: "Lock CPU to Maximum Clock (current power plan)"
+    description: "Pin the ACTIVE power plan's minimum and maximum processor state to 100% so the CPU holds its top clock instead of down-clocking. This modifies your CURRENT power plan — it does NOT switch to Windows' separate High Performance plan. 100% minimum processor state holds the clock high; it does NOT mean 100% CPU usage. May increase idle power draw, heat, and fan noise."
+    rationale: "Down-clocking and C-state transitions add latency when the CPU must ramp back up. Pinning processor state to 100% keeps the clock at maximum (clock speed, not CPU utilization). It is applied to SCHEME_CURRENT — tuning whatever plan is active rather than switching plans — so your chosen plan is preserved and the change reverses cleanly via rollback."
     risk: low
     tier: premium
     default: false
