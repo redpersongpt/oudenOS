@@ -43,7 +43,7 @@ export function WelcomeStep() {
   }, []);
 
   return (
-    <div className="relative flex h-full w-full overflow-hidden" style={{ background: "var(--black)" }}>
+    <div className="relative flex min-h-full w-full overflow-hidden" style={{ background: "var(--black)" }}>
       {/* Breathing glow behind logo — absolute, centered high */}
       <motion.div
         className="absolute pointer-events-none"
@@ -90,7 +90,7 @@ export function WelcomeStep() {
         }
       `}</style>
 
-      <div className="relative z-10 flex flex-1 min-h-0 flex-col items-center justify-center px-6 py-8">
+      <div className="relative z-10 flex min-h-full flex-1 flex-col items-center justify-center px-6 py-8">
         {/* TERTIARY — version, top-right */}
         <motion.div
           className="absolute top-6 right-6 nd-label-sm"

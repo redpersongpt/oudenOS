@@ -36,7 +36,7 @@ function ThankYouScreen({ amount, onBack }: { amount: number; onBack: () => void
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.96 }}
       transition={{ type: "spring", stiffness: 280, damping: 26 }}
-      className="flex h-full flex-col items-center justify-center gap-6 px-8 text-center"
+      className="flex min-h-full flex-col items-center justify-center gap-6 px-8 text-center"
     >
       {/* Animated heart */}
       <motion.div

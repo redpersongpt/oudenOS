@@ -54,3 +54,7 @@ artifacts/os-source-catalog.json
 proof-screenshots-os/
 apps/oudenos-os/apps/service-core/target/
 apps/oudenos-tuning/proof-screenshots/preload-compiled.js
+
+# macOS sidecar build output
+target-mac/
+.demo/
