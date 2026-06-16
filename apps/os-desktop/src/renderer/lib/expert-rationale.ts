@@ -80,7 +80,7 @@ const RATIONALE: Record<string, ActionRationale> = {
   // GPU
   "gpu.disable-nvidia-container": { why: "Stops NVIDIA background services that collect data. You can still update drivers manually." },
   "gpu.disable-amd-services": { why: "Stops AMD background services that collect data. You can still update drivers manually." },
-  "gpu.disable-hags": { why: "Lets Windows manage GPU memory instead of the GPU itself. More predictable on some systems." },
+  "gpu.disable-hags": { why: "Hands GPU scheduling back to Windows — can smooth frame times on some setups. But NVIDIA DLSS Frame Generation REQUIRES HAGS on, so leave it enabled if you use DLSS Frame Gen. Off by default; opt in only if you know you want it." },
   "gpu.tdr-delay": { why: "Gives the GPU more time before Windows thinks it crashed. Prevents false 'driver stopped responding' errors." },
 
   // AppX / Edge

@@ -1225,10 +1225,11 @@ fn embedded_actions() -> Vec<Value> {
             "id": "gpu.disable-hags",
             "name": "Disable Hardware-Accelerated GPU Scheduling (HAGS)",
             "category": "gpu",
-            "description": "Disable HAGS by setting HwSchMode to 1. HAGS moves GPU scheduling from the CPU to the GPU itself, but can hurt frame time consistency on many systems.",
-            "rationale": "HAGS improves frame time consistency on some systems but worsens it on others. Disabling provides more predictable behavior.",
+            "description": "Disable HAGS by setting HwSchMode to 1. IMPORTANT: modern NVIDIA features — notably DLSS Frame Generation — REQUIRE HAGS enabled. Keep HAGS on if you use DLSS Frame Gen; disabling can help frame-time consistency on some older/competitive setups. Off by default — opt in only if you understand the trade-off.",
+            "rationale": "HAGS moves GPU scheduling from the CPU to the GPU. It can improve frame-time consistency on some systems and worsen it on others, and DLSS Frame Generation depends on it. So it is off by default and opt-in: competitive / legacy-latency users may choose it manually, while DLSS-FG users should leave HAGS enabled.",
             "risk": "low",
             "tier": "premium",
+            "default": false,
             "requiresReboot": true,
             "reversible": true,
             "estimatedSeconds": 3,
@@ -1249,9 +1250,9 @@ fn embedded_actions() -> Vec<Value> {
             "appxRemovals": [],
             "featureChanges": [],
             "powerShellCommands": [],
-            "tags": ["gpu", "latency", "gaming", "hags"],
-            "sideEffects": ["Games that benefit from HAGS may see slightly higher CPU overhead"],
-            "warningMessage": null
+            "tags": ["gpu", "latency", "hags", "dlss"],
+            "sideEffects": ["DLSS Frame Generation and other HAGS-dependent NVIDIA features stop working until HAGS is re-enabled"],
+            "warningMessage": "Disabling Hardware-Accelerated GPU Scheduling may affect features like DLSS Frame Generation on supported NVIDIA GPUs. Leave it enabled if you use DLSS Frame Gen."
         }),
         // ── 34. GPU: NVIDIA Disable Dynamic P-State ──────────────────────────
         serde_json::json!({
