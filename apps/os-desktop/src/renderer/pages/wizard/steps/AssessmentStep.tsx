@@ -184,8 +184,15 @@ export function AssessmentStep() {
     const completeWithDemoProfile = async () => {
       setDemoMode(true);
       setDetectedProfile(DEMO_PROFILE);
-      setStatuses(Object.fromEntries(CATEGORIES.map((c) => [c.id, "done"])));
+      // Let the scan animation actually play instead of snapping straight to the
+      // next step: stage each category to "done" in sequence, then advance.
+      for (const c of CATEGORIES) {
+        await new Promise((r) => setTimeout(r, 280));
+        if (aborted) return;
+        setStatuses((prev) => ({ ...prev, [c.id]: "done" }));
+      }
       setStepReady("assessment", true);
+      await new Promise((r) => setTimeout(r, 900));
       if (!aborted) completeStep("assessment");
     };
 

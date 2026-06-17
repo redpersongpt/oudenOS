@@ -139,7 +139,6 @@ function Screen({
   title,
   desc,
   note,
-  centeredOptions = false,
   children,
 }: {
   icon: LucideIcon;
@@ -147,7 +146,6 @@ function Screen({
   title: string;
   desc: string;
   note?: string | null;
-  centeredOptions?: boolean;
   children: ReactNode;
 }) {
   return (
@@ -198,7 +196,7 @@ function Screen({
           <div className="mt-1.5 min-h-[1.8rem]" />
         )}
       </div>
-      <div className={`min-h-0 flex-1 px-6 pb-5 ${centeredOptions ? "overflow-hidden" : "overflow-y-auto scrollbar-thin"}`}>
+      <div className="min-h-0 flex-1 px-6 pb-5 overflow-y-auto scrollbar-thin">
         {children}
       </div>
     </div>
@@ -378,11 +376,9 @@ export function PlaybookStrategyStep() {
                 <div
                   key={question.key}
                   className={`h-1 flex-1 ${
-                    questionIndex <= clampedIndex
+                    questionIndex <= clampedIndex || isQuestionSatisfied(question, answers)
                       ? "bg-[var(--accent)]"
-                      : isQuestionSatisfied(question, answers)
-                        ? "bg-emerald-400"
-                        : "bg-[var(--border)]"
+                      : "bg-[var(--border-visible)]"
                   }`}
                 />
               ))}
@@ -407,7 +403,6 @@ export function PlaybookStrategyStep() {
               title={current.title}
               desc={current.desc}
               note={current.note}
-              centeredOptions={centeredOptions}
             >
               <div
                 className={`mx-auto flex w-full max-w-[920px] flex-col gap-3 ${
