@@ -8,7 +8,6 @@ import { useWizardStore } from "@/stores/wizard-store";
 import { WelcomeStep }          from "./steps/WelcomeStep";
 import { AssessmentStep }       from "./steps/AssessmentStep";
 import { ProfileStep }          from "./steps/ProfileStep";
-import { PreservationStep }     from "./steps/PreservationStep";
 import { PlaybookStrategyStep } from "./steps/PlaybookStrategyStep";
 import { PlaybookReviewStep }   from "./steps/PlaybookReviewStep";
 import { PersonalizationStep }  from "./steps/PersonalizationStep";
@@ -28,7 +27,6 @@ export function WizardPage() {
         {currentStep === "welcome"            && <WelcomeStep          key="welcome"            />}
         {currentStep === "assessment"         && <AssessmentStep       key="assessment"         />}
         {currentStep === "profile"            && <ProfileStep          key="profile"            />}
-        {currentStep === "preservation"       && <PreservationStep     key="preservation"       />}
         {currentStep === "playbook-strategy"  && <PlaybookStrategyStep key="playbook-strategy"  />}
         {currentStep === "playbook-review"    && <PlaybookReviewStep   key="playbook-review"    />}
         {currentStep === "personalization"    && <PersonalizationStep  key="personalization"    />}

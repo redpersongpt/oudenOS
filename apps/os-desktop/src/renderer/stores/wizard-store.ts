@@ -10,7 +10,6 @@ export type WizardStepId =
   | "welcome"
   | "assessment"
   | "profile"
-  | "preservation"
   | "playbook-strategy"
   | "playbook-review"
   | "personalization"
@@ -274,7 +273,6 @@ const INITIAL_STEPS: WizardStep[] = [
   { id: "welcome",            label: "Welcome",           status: "current" },
   { id: "assessment",         label: "Assessment",        status: "locked"  },
   { id: "profile",            label: "Profile",           status: "locked"  },
-  { id: "preservation",       label: "Preservation",      status: "locked"  },
   { id: "playbook-strategy",  label: "Strategy",          status: "locked"  },
   { id: "playbook-review",    label: "Playbook Review",   status: "locked"  },
   { id: "personalization",    label: "Personalization",   status: "locked"  },
@@ -290,7 +288,6 @@ const INITIAL_STEP_READINESS: Record<WizardStepId, boolean> = {
   welcome: true,
   assessment: false,
   profile: false,
-  preservation: true,
   "playbook-strategy": false,
   "playbook-review": false,
   personalization: true,
