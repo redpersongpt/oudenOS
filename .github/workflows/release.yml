@@ -22,6 +22,9 @@ jobs:
     name: Build and Publish OudenOS
     runs-on: windows-latest
     timeout-minutes: 45
+    outputs:
+      tag: ${{ steps.version.outputs.TAG }}
+      version: ${{ steps.version.outputs.VERSION }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -133,3 +136,66 @@ jobs:
           prerelease: ${{ contains(steps.version.outputs.TAG, 'alpha') || contains(steps.version.outputs.TAG, 'beta') || contains(steps.version.outputs.TAG, 'rc') }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # macOS demo build. The Mac app is a NON-FUNCTIONAL preview: its UI and
+  # questionnaire are 1:1 with the Windows app, but it never changes the system
+  # (the privileged service runs in simulated mode on non-Windows hosts). We ship
+  # it on every release so Mac users can see exactly what the app looks like.
+  macos-demo:
+    name: Build and attach macOS demo DMG
+    needs: release
+    runs-on: macos-14
+    timeout-minutes: 45
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.4
+          run_install: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-apple-darwin
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build OS service (macOS, simulated backend)
+        working-directory: services/os-service
+        env:
+          CARGO_TARGET_DIR: target-mac
+        run: cargo build --release
+
+      - name: Build renderer
+        run: pnpm --dir apps/os-desktop build
+
+      - name: Build macOS .app
+        # App bundle only — the dmg target's bundle_dmg.sh uses AppleScript to
+        # lay out the disk-image window, which fails on headless CI runners.
+        run: pnpm --dir apps/os-desktop exec tauri build --config src-tauri/tauri.conf.mac.json --bundles app
+
+      - name: Package and attach DMG
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ needs.release.outputs.tag }}
+          VERSION: ${{ needs.release.outputs.version }}
+        run: |
+          APP="apps/os-desktop/src-tauri/target/release/bundle/macos/OudenOS.app"
+          if [ ! -d "$APP" ]; then
+            echo "App bundle not found at $APP"
+            exit 1
+          fi
+          DMG="oudenOS-${VERSION}-macOS-demo-AppleSilicon.dmg"
+          hdiutil create -volname "oudenOS demo" -srcfolder "$APP" -ov -format UDZO "$DMG"
+          ls -lh "$DMG"
+          gh release upload "$TAG" "$DMG" --clobber
