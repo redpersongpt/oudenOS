@@ -8,12 +8,14 @@ import { useDecisionsStore } from "@/stores/decisions-store";
 import { resolveEffectivePersonalization } from "@/lib/personalization-resolution";
 import { platform } from "@/lib/platform";
 import { useActionLocalizer } from "@/i18n/content-overlay";
+import { useT } from "@/i18n";
 
 const ND_EASE = [0.25, 0.1, 0.25, 1] as const;
 
 export function FinalReviewStep() {
   const { detectedProfile, resolvedPlaybook, personalization, setStepReady } = useWizardStore();
   const answers = useDecisionsStore((state) => state.answers);
+  const { t } = useT();
   const localize = useActionLocalizer();
   const effectivePersonalization = resolveEffectivePersonalization(detectedProfile?.id, personalization, answers);
   const [exportState, setExportState] = useState<"idle" | "busy" | "done" | "error">("idle");
@@ -52,23 +54,23 @@ export function FinalReviewStep() {
     });
     if (result.ok) {
       setExportState("done");
-      setExportMessage("Plan saved.");
+      setExportMessage(t("final.planSaved"));
       return;
     }
     if (result.cancelled) { setExportState("idle"); return; }
     setExportState("error");
-    setExportMessage(typeof result.error === "string" ? result.error : "Could not save the plan.");
+    setExportMessage(typeof result.error === "string" ? result.error : t("final.saveError"));
   };
 
   const pb = resolvedPlaybook;
 
   const personalizationList = [
-    effectivePersonalization.darkMode && "Dark look",
-    effectivePersonalization.brandAccent && "Accent color",
-    effectivePersonalization.taskbarCleanup && "Taskbar cleanup",
-    effectivePersonalization.explorerCleanup && "Explorer cleanup",
-    effectivePersonalization.transparency && "Transparency kept",
-    effectivePersonalization.wallpaper && "Wallpaper pack",
+    effectivePersonalization.darkMode && t("final.persDarkLook"),
+    effectivePersonalization.brandAccent && t("final.persAccentColor"),
+    effectivePersonalization.taskbarCleanup && t("final.persTaskbarCleanup"),
+    effectivePersonalization.explorerCleanup && t("final.persExplorerCleanup"),
+    effectivePersonalization.transparency && t("final.persTransparency"),
+    effectivePersonalization.wallpaper && t("final.persWallpaper"),
   ].filter(Boolean) as string[];
   const planHighlights = pb?.decisionSummary?.selectedEffects.slice(0, 3) ?? [];
   const rebootCount = pb?.phases.reduce(
@@ -84,9 +86,9 @@ export function FinalReviewStep() {
       className="flex h-full min-h-0 flex-col px-6 py-6 bg-[var(--black)] overflow-hidden"
     >
       <div className="mb-4 shrink-0">
-        <p className="text-[11px] font-medium text-[var(--accent)]">Ready to apply</p>
-        <h2 className="mt-2 font-display text-title text-[var(--text-display)]">Final check</h2>
-        <p className="mt-2 max-w-[780px] text-sm text-[var(--text-secondary)]">Review the changes before you apply them.</p>
+        <p className="text-[11px] font-medium text-[var(--accent)]">{t("final.eyebrow")}</p>
+        <h2 className="mt-2 font-display text-title text-[var(--text-display)]">{t("final.title")}</h2>
+        <p className="mt-2 max-w-[780px] text-sm text-[var(--text-secondary)]">{t("final.subtitle")}</p>
       </div>
 
       <div className="min-h-0 flex-1 overflow-y-auto scrollbar-thin pr-1">
@@ -95,27 +97,27 @@ export function FinalReviewStep() {
             {[
               {
                 key: "machine",
-                label: "Target machine",
-                value: detectedProfile?.label ?? "Unknown",
+                label: t("final.targetMachine"),
+                value: detectedProfile?.label ?? t("final.unknown"),
                 meta: detectedProfile?.machineName ?? "—",
               },
               {
                 key: "mode",
-                label: "Plan mode",
+                label: t("final.planMode"),
                 value: pb?.preset ?? "—",
-                meta: pb?.decisionSummary?.riskLevel ? `${pb.decisionSummary.riskLevel} tradeoff` : "No tradeoff summary",
+                meta: pb?.decisionSummary?.riskLevel ? t("final.tradeoff", { risk: pb.decisionSummary.riskLevel }) : t("final.noTradeoff"),
               },
               {
                 key: "changes",
-                label: "Changes now",
+                label: t("final.changesNow"),
                 value: pb ? `${pb.totalIncluded}` : "—",
-                meta: pb ? `${pb.totalBlocked} held back · ${pb.phases.length} sections` : "No plan loaded",
+                meta: pb ? t("final.heldBackSections", { blocked: pb.totalBlocked, sections: pb.phases.length }) : t("final.noPlanLoaded"),
               },
               {
                 key: "restart",
-                label: "Restart impact",
+                label: t("final.restartImpact"),
                 value: rebootCount > 0 ? `${rebootCount}` : "0",
-                meta: rebootCount > 0 ? "some changes need a restart" : "no restart required",
+                meta: rebootCount > 0 ? t("final.restartSome") : t("final.restartNone"),
               },
             ].map(({ key, label, value, meta }, i) => (
               <motion.div
@@ -141,13 +143,11 @@ export function FinalReviewStep() {
               <div className="flex items-center gap-2">
                 <AlertTriangle className="h-4 w-4 text-[#FF6B6B]" />
                 <p className="text-[12px] font-semibold text-[var(--text-display)]">
-                  {highRiskActions.length} high-risk change{highRiskActions.length === 1 ? "" : "s"} need your OK
+                  {t("final.highRiskHeading", { count: highRiskActions.length })}
                 </p>
               </div>
               <p className="mt-2 text-sm text-[var(--text-secondary)]">
-                Changing Windows Defender, security, or privacy settings can reduce system protection.
-                Continue only if you understand the risk and want oudenOS to apply these changes. You can
-                roll them back from the activity log — and a Windows restore point is recommended first.
+                {t("final.highRiskWarning")}
               </p>
               <ul className="mt-3 space-y-1">
                 {highRiskActions.slice(0, 6).map((a) => (
@@ -158,7 +158,7 @@ export function FinalReviewStep() {
                 ))}
                 {highRiskActions.length > 6 && (
                   <li className="text-xs text-[var(--text-disabled)]">
-                    +{highRiskActions.length - 6} more
+                    {t("final.moreCount", { count: highRiskActions.length - 6 })}
                   </li>
                 )}
               </ul>
@@ -170,7 +170,7 @@ export function FinalReviewStep() {
                   className="mt-0.5 h-4 w-4 accent-[#FF6B6B]"
                 />
                 <span className="text-sm text-[var(--text-primary)]">
-                  I understand these are high-risk and I want oudenOS to apply them. This is my choice.
+                  {t("final.ackLabel")}
                 </span>
               </label>
             </div>
@@ -180,12 +180,12 @@ export function FinalReviewStep() {
             <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4">
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="h-4 w-4 text-[var(--accent)]" />
-                  <p className="text-[11px] font-medium text-[var(--text-primary)]">What happens next</p>
+                  <p className="text-[11px] font-medium text-[var(--text-primary)]">{t("final.whatHappensNext")}</p>
               </div>
               <div className="mt-4 space-y-3 text-sm text-[var(--text-secondary)]">
-                <p>{pb?.totalIncluded ?? 0} changes will be applied in order.</p>
-                <p>A rollback record is created before any changes are made.</p>
-                <p>{pb?.totalBlocked ?? 0} changes will stay unchanged.</p>
+                <p>{t("final.nextApplied", { count: pb?.totalIncluded ?? 0 })}</p>
+                <p>{t("final.nextRollback")}</p>
+                <p>{t("final.nextUnchanged", { count: pb?.totalBlocked ?? 0 })}</p>
               </div>
               {planHighlights.length > 0 && (
                 <div className="mt-4 space-y-2">
@@ -203,10 +203,10 @@ export function FinalReviewStep() {
               <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4">
                 <div className="flex items-center gap-2">
                   <WandSparkles className="h-4 w-4 text-[var(--accent)]" />
-                  <p className="text-[11px] font-medium text-[var(--text-primary)]">Look and feel</p>
+                  <p className="text-[11px] font-medium text-[var(--text-primary)]">{t("final.lookAndFeel")}</p>
                 </div>
                 <div className="mt-4 flex flex-wrap gap-2">
-                  {(personalizationList.length > 0 ? personalizationList : ["Default settings"]).map((item) => (
+                  {(personalizationList.length > 0 ? personalizationList : [t("final.defaultSettings")]).map((item) => (
                     <span key={item} className="rounded-full border border-[var(--border)] bg-[var(--black)] px-3 py-1 text-xs text-[var(--text-secondary)]">
                       {item}
                     </span>
@@ -217,12 +217,12 @@ export function FinalReviewStep() {
               <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4">
                 <div className="flex items-center gap-2">
                   <RotateCcw className="h-4 w-4 text-[var(--accent)]" />
-                  <p className="text-[11px] font-medium text-[var(--text-primary)]">Safety</p>
+                  <p className="text-[11px] font-medium text-[var(--text-primary)]">{t("final.safety")}</p>
                 </div>
                 <div className="mt-4 space-y-2 text-sm text-[var(--text-secondary)]">
-                  <p>A rollback record is saved with the activity log.</p>
-                  <p>You can save a copy of this plan before you apply it.</p>
-                  <p>File Explorer, Start, taskbar, and Search are protected — changes that could break the Windows shell are blocked or held for expert review.</p>
+                  <p>{t("final.safetyRollback")}</p>
+                  <p>{t("final.safetySaveCopy")}</p>
+                  <p>{t("final.safetyShellProtected")}</p>
                 </div>
               </div>
 
@@ -230,7 +230,7 @@ export function FinalReviewStep() {
                 <div className="rounded-xl border border-white/[0.12] bg-white/[0.04] p-4">
                   <div className="flex items-center gap-2">
                     <Shield className="h-4 w-4 text-[var(--text-display)]" />
-                    <p className="text-[11px] font-medium text-[var(--text-display)]">Warnings</p>
+                    <p className="text-[11px] font-medium text-[var(--text-display)]">{t("final.warnings")}</p>
                   </div>
                   <div className="mt-3 space-y-2">
                     {pb.decisionSummary.warnings.slice(0, 4).map((warning) => (
@@ -254,9 +254,9 @@ export function FinalReviewStep() {
           className="flex items-center gap-2 border border-[var(--border)] rounded-sm px-4 py-2 font-mono text-label tracking-label text-[var(--text-secondary)] uppercase transition-colors duration-150 ease-nd hover:bg-[var(--surface)] disabled:opacity-30 disabled:cursor-not-allowed"
         >
           <Archive className="h-3.5 w-3.5" />
-          {exportState === "busy" ? "Saving..." : "Save plan"}
+          {exportState === "busy" ? t("final.saving") : t("final.savePlan")}
         </button>
-        <span className="text-xs text-[var(--text-secondary)]">Optional. Saves a copy of the plan before changes are applied.</span>
+        <span className="text-xs text-[var(--text-secondary)]">{t("final.saveHelper")}</span>
         {exportMessage && (
           <span className={`nd-status ${exportState === "error" ? "text-[#FF6B6B]" : "text-[var(--success)]"}`}>
             {exportMessage}

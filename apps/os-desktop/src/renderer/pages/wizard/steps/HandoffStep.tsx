@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { platform } from "@/lib/platform";
+import { useT } from "@/i18n";
 
 const ND_EASE = [0.25, 0.1, 0.25, 1] as const;
 
@@ -31,6 +32,7 @@ function PlayIcon() {
 }
 
 export function HandoffStep() {
+  const { t } = useT();
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -41,9 +43,9 @@ export function HandoffStep() {
       <BoltIcon className="text-[var(--accent)]" />
 
       <div className="text-center">
-        <h2 className="font-display text-title text-[var(--text-display)]">YOU'RE SET</h2>
+        <h2 className="font-display text-title text-[var(--text-display)]">{t("handoff.title")}</h2>
         <p className="mt-2 text-[12px] text-[var(--text-secondary)] max-w-sm">
-          Your system is cleaned up and running lean. Windows is finally doing what you told it to.
+          {t("handoff.subtitle")}
         </p>
       </div>
 
@@ -54,14 +56,14 @@ export function HandoffStep() {
           className="flex items-center gap-3 w-full px-4 py-2.5 border border-[var(--border)] bg-[var(--surface)] rounded-sm transition-colors duration-150 ease-nd hover:bg-[var(--surface-raised)]"
         >
           <StarIcon />
-          <span className="text-[12px] text-[var(--text-primary)]">Drop a star on GitHub if this saved you hours of googling</span>
+          <span className="text-[12px] text-[var(--text-primary)]">{t("handoff.github")}</span>
         </button>
         <button
           onClick={() => platform().shell.openExternal("https://www.youtube.com/@redpersonn")}
           className="flex items-center gap-3 w-full px-4 py-2.5 border border-[var(--border)] bg-[var(--surface)] rounded-sm transition-colors duration-150 ease-nd hover:bg-[var(--surface-raised)]"
         >
           <PlayIcon />
-          <span className="text-[12px] text-[var(--text-primary)]">Subscribe for deep dives, benchmarks, and more tools</span>
+          <span className="text-[12px] text-[var(--text-primary)]">{t("handoff.youtube")}</span>
         </button>
       </div>
 
@@ -70,13 +72,13 @@ export function HandoffStep() {
           onClick={() => platform().shell.openExternal("https://ouden.cc")}
           className="flex items-center gap-2 bg-[var(--text-display)] text-[var(--black)] px-6 py-2.5 rounded-sm font-mono text-[11px] tracking-[0.08em] uppercase transition-opacity duration-150 ease-nd hover:opacity-90"
         >
-          OPEN TUNING
+          {t("handoff.openTuning")}
         </button>
         <button
           onClick={() => platform().window.close()}
           className="px-6 py-2.5 border border-[var(--border)] rounded-sm font-mono text-[11px] tracking-[0.08em] text-[var(--text-secondary)] uppercase transition-colors duration-150 ease-nd hover:bg-[var(--surface)]"
         >
-          CLOSE
+          {t("handoff.close")}
         </button>
       </div>
     </motion.div>

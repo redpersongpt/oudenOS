@@ -5,6 +5,7 @@
 
 import { useEffect, useRef, useState, useMemo } from "react";
 import { motion, AnimatePresence, useSpring, useTransform } from "framer-motion";
+import { useT, type TFunction } from "@/i18n";
 import { useWizardStore } from "@/stores/wizard-store";
 import type { ActionDecisionProvenance, ExecutionJournalEntry } from "@/stores/wizard-store";
 import { useDecisionsStore } from "@/stores/decisions-store";
@@ -155,7 +156,7 @@ function StatTile({
 }
 
 // Timeline item — card-style row
-function TimelineItem({ action, index }: { action: CompletedAction; index: number }) {
+function TimelineItem({ action, index, t }: { action: CompletedAction; index: number; t: TFunction }) {
   const failed = action.status === "failed";
   const skipped = action.status === "skipped";
   return (
@@ -219,7 +220,7 @@ function TimelineItem({ action, index }: { action: CompletedAction; index: numbe
             ? "bg-[var(--text-disabled)]/10 text-[var(--text-secondary)]"
             : "bg-[var(--success)]/10 text-[var(--success)]/70"
       }`}>
-        {failed ? "fail" : skipped ? "skip" : "ok"}
+        {failed ? t("execution.badge.fail") : skipped ? t("execution.badge.skip") : t("execution.badge.ok")}
       </span>
     </motion.div>
   );
@@ -262,6 +263,7 @@ function SpinningQuote({ isActive }: { isActive: boolean }) {
 // Component
 
 export function ExecutionStep() {
+  const { t } = useT();
   const { detectedProfile, resolvedPlaybook, personalization, demoMode, completeStep, setExecutionResult, setResolvedPlaybook } = useWizardStore();
   const answers = useDecisionsStore((state) => state.answers);
   const addLogEntry = useLogStore((state) => state.addEntry);
@@ -554,9 +556,9 @@ export function ExecutionStep() {
       let personalizationApplied = false;
       const personalizationStartedAt = new Date().toISOString();
       try {
-        setCurrentAction("Applying personalization");
+        setCurrentAction(t("execution.personalization.applying"));
         setCurrentActionId("personalize.apply");
-        setCurrentPhase("Personalization");
+        setCurrentPhase(t("execution.phase.personalization"));
         const persResult = await serviceCall("personalize.apply", {
           profile: detectedProfile?.id ?? "gaming_desktop",
           options: effectivePersonalization,
@@ -664,7 +666,7 @@ export function ExecutionStep() {
         ...playbook,
         actionProvenance,
       };
-      setCompletionTruth(ledgerIsAuthoritative ? "Verified by service" : "Local summary only");
+      setCompletionTruth(ledgerIsAuthoritative ? t("execution.truth.verified") : t("execution.truth.local"));
       setResolvedPlaybook(executionAwarePlaybook);
       setExecutionResult({
         applied: ledgerApplied,
@@ -720,7 +722,7 @@ export function ExecutionStep() {
           <circle cx="16" cy="16" r="14" stroke="var(--text-display)" strokeWidth="1.5" opacity="0.3" />
           <path d="M16 10v7M16 21v1" stroke="var(--text-display)" strokeWidth="1.5" strokeLinecap="round" />
         </svg>
-        <p className="text-sm text-[var(--text-secondary)]">No plan is ready to apply. Go back and review it first.</p>
+        <p className="text-sm text-[var(--text-secondary)]">{t("execution.noPlan")}</p>
       </div>
     );
   }
@@ -740,9 +742,9 @@ export function ExecutionStep() {
         <div className="flex w-full max-w-[640px] min-h-0 flex-1 flex-col items-center">
 
           {/* Minimal header */}
-          <p className="nd-label-sm text-[var(--text-secondary)]">APPLYING CHANGES</p>
+          <p className="nd-label-sm text-[var(--text-secondary)]">{t("execution.header.applyingChanges")}</p>
           <p className="text-sm text-[var(--text-secondary)] mt-1">
-            Step {completed.length + (currentAction ? 1 : 0)} of {totalActions}
+            {t("execution.header.step", { current: completed.length + (currentAction ? 1 : 0), total: totalActions })}
           </p>
 
           {/* Thin progress bar */}
@@ -757,7 +759,7 @@ export function ExecutionStep() {
           </div>
           <div className="flex justify-between w-full mt-1.5">
             <span className="text-[10px] text-[var(--text-secondary)] font-data">{progress}%</span>
-            <span className="text-[10px] text-[var(--text-secondary)] font-data">{remaining} remaining</span>
+            <span className="text-[10px] text-[var(--text-secondary)] font-data">{t("execution.progress.remaining", { count: remaining })}</span>
           </div>
 
           {/* Current action card */}
@@ -770,9 +772,9 @@ export function ExecutionStep() {
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
               >
-                <p className="nd-label-sm text-[var(--text-secondary)]">{currentPhase ?? "Preparing"}</p>
+                <p className="nd-label-sm text-[var(--text-secondary)]">{currentPhase ?? t("execution.card.preparing")}</p>
                 <p className="mt-1 text-[14px] text-[var(--text-display)] truncate">
-                  {currentAction ?? (isDone ? "Done" : "Starting...")}
+                  {currentAction ?? (isDone ? t("execution.card.done") : t("execution.card.starting"))}
                 </p>
               </motion.div>
             </AnimatePresence>
@@ -781,15 +783,15 @@ export function ExecutionStep() {
 
           {/* Stats row */}
           <div className="mt-4 grid grid-cols-3 gap-2 w-full">
-            <StatTile label="Applied" value={applied} tone="success" />
-            <StatTile label="Failed" value={failCount} tone="danger" />
-            <StatTile label="Remaining" value={remaining} />
+            <StatTile label={t("execution.stat.applied")} value={applied} tone="success" />
+            <StatTile label={t("execution.stat.failed")} value={failCount} tone="danger" />
+            <StatTile label={t("execution.stat.remaining")} value={remaining} />
           </div>
 
           {/* Timeline */}
           <div className="mt-4 w-full border border-[var(--border)] rounded-sm flex-1 min-h-0">
             <div className="px-3 py-2 border-b border-[var(--border)] flex justify-between items-center">
-              <span className="nd-label-sm text-[var(--text-secondary)]">Activity</span>
+              <span className="nd-label-sm text-[var(--text-secondary)]">{t("execution.timeline.activity")}</span>
               <span className="text-[10px] text-[var(--text-disabled)] font-data">{completed.length}</span>
             </div>
             <div
@@ -798,11 +800,11 @@ export function ExecutionStep() {
             >
               <div className="flex flex-col gap-0.5">
                 {(completed as CompletedAction[]).map((action, i) => (
-                  <TimelineItem key={`${action.label}-${i}`} action={action} index={i} />
+                  <TimelineItem key={`${action.label}-${i}`} action={action} index={i} t={t} />
                 ))}
                 {completed.length === 0 && (
                   <p className="py-6 text-center text-[11px] text-[var(--text-disabled)]">
-                    Waiting for first action...
+                    {t("execution.timeline.waiting")}
                   </p>
                 )}
               </div>
@@ -825,12 +827,12 @@ export function ExecutionStep() {
                     : "text-[var(--success)]"
               }`}>
                 {failCount > 0
-                  ? "Completed with issues"
+                  ? t("execution.done.withIssues")
                   : applied === 0 && skippedCount > 0
-                    ? "No changes applied — all items were skipped"
+                    ? t("execution.done.allSkipped")
                     : skippedCount > 0
-                      ? `Applied with ${skippedCount} item${skippedCount === 1 ? "" : "s"} skipped`
-                      : "All changes applied successfully"}
+                      ? t("execution.done.appliedWithSkipped", { count: skippedCount })
+                      : t("execution.done.success")}
               </p>
               {completionTruth && (
                 <p className="text-[10px] text-[var(--text-secondary)] mt-1">{completionTruth}</p>

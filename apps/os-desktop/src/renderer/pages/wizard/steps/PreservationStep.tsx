@@ -2,27 +2,29 @@
 
 import { motion } from "framer-motion";
 import { useWizardStore } from "@/stores/wizard-store";
+import { useT } from "@/i18n";
 
 const ND_EASE = [0.25, 0.1, 0.25, 1] as const;
 
-const PRESERVED_SERVICES = [
-  { id: "spooler", label: "Print Spooler",   detail: "Local and network printing" },
-  { id: "rdp",     label: "Remote Desktop",  detail: "Remote support and remote work" },
-  { id: "smb",     label: "SMB file sharing", detail: "Network files and printers" },
-  { id: "domain",  label: "Domain services",  detail: "Active Directory connectivity" },
-  { id: "gpo",     label: "Group Policy",     detail: "Company policy settings" },
-];
+// Service ids only — user-facing label/detail come from i18n keys
+// "preservation.service.<id>.label" / ".detail".
+const PRESERVED_SERVICE_IDS = ["spooler", "rdp", "smb", "domain", "gpo"] as const;
 
-const BLOCKED_ACTIONS = [
-  "Disable Remote Registry",
-  "Remove Defender Credential Guard",
-  "Disable SMB1 compatibility",
-  "Remove domain trust certificates",
-];
+// Work-PC blocked actions, by stable index → "preservation.blocked.<i>".
+const BLOCKED_ACTION_COUNT = 4;
+
+// Consumer safeguard lines, by stable index → "preservation.safeguard.<i>".
+const SAFEGUARD_COUNT = 3;
 
 export function PreservationStep() {
   const { detectedProfile } = useWizardStore();
+  const { t } = useT();
   const isWorkPc = detectedProfile?.isWorkPc ?? false;
+
+  const services = isWorkPc ? PRESERVED_SERVICE_IDS : PRESERVED_SERVICE_IDS.slice(0, 3);
+  const rightItems = isWorkPc
+    ? Array.from({ length: BLOCKED_ACTION_COUNT }, (_, i) => t(`preservation.blocked.${i}`))
+    : Array.from({ length: SAFEGUARD_COUNT }, (_, i) => t(`preservation.safeguard.${i}`));
 
   return (
     <motion.div
@@ -33,20 +35,20 @@ export function PreservationStep() {
     >
       {/* Header */}
       <div className="text-center">
-        <h2 className="font-display text-title text-[var(--text-display)]">PRESERVATION</h2>
+        <h2 className="font-display text-title text-[var(--text-display)]">{t("preservation.title")}</h2>
         <p className="mt-2 nd-label text-[var(--text-secondary)]">
-          {isWorkPc ? "These settings stay in place for work systems." : "These items stay unchanged unless you choose otherwise."}
+          {isWorkPc ? t("preservation.subtitle.work") : t("preservation.subtitle.home")}
         </p>
       </div>
 
       <div className="flex w-full max-w-xl gap-4">
         {/* Protected */}
         <div className="flex-1 border border-success-400/20 bg-[var(--success)]/[0.02] p-4 rounded-sm">
-          <div className="mb-3 nd-label text-[var(--success)]">Protected</div>
+          <div className="mb-3 nd-label text-[var(--success)]">{t("preservation.protected")}</div>
           <div className="flex flex-col gap-0">
-            {(isWorkPc ? PRESERVED_SERVICES : PRESERVED_SERVICES.slice(0, 3)).map((svc, i) => (
+            {services.map((id, i) => (
               <motion.div
-                key={svc.id}
+                key={id}
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.04, duration: 0.25, ease: ND_EASE }}
@@ -54,8 +56,8 @@ export function PreservationStep() {
               >
                 <div className="w-3 h-0.5 bg-[var(--success)] shrink-0" />
                 <div>
-                  <p className="font-mono text-caption tracking-label text-[var(--text-primary)]">{svc.label}</p>
-                  <p className="nd-label-sm text-[var(--text-disabled)]">{svc.detail}</p>
+                  <p className="font-mono text-caption tracking-label text-[var(--text-primary)]">{t(`preservation.service.${id}.label`)}</p>
+                  <p className="nd-label-sm text-[var(--text-disabled)]">{t(`preservation.service.${id}.detail`)}</p>
                 </div>
               </motion.div>
             ))}
@@ -64,13 +66,9 @@ export function PreservationStep() {
 
         {/* Blocked */}
         <div className="flex-1 border border-[var(--border)] bg-[var(--surface)] p-4 rounded-sm">
-          <div className="mb-3 nd-label text-[var(--text-disabled)]">{isWorkPc ? "Held back for safety" : "Default safeguards"}</div>
+          <div className="mb-3 nd-label text-[var(--text-disabled)]">{isWorkPc ? t("preservation.blocked.heading") : t("preservation.safeguard.heading")}</div>
           <div className="flex flex-col gap-0">
-            {(isWorkPc ? BLOCKED_ACTIONS : [
-              "Remote access stays available when needed",
-              "High-risk security changes stay off by default",
-              "Optional changes do not apply automatically",
-            ]).map((action, i) => (
+            {rightItems.map((action, i) => (
               <motion.div
                 key={action}
                 initial={{ opacity: 0, y: 8 }}
@@ -93,7 +91,7 @@ export function PreservationStep() {
         transition={{ delay: 0.4, duration: 0.3, ease: ND_EASE }}
         className="nd-label-sm text-[var(--text-disabled)]"
       >
-        {isWorkPc ? "Work profile safeguards are on." : "Safety safeguards stay on unless you change them."}
+        {isWorkPc ? t("preservation.assurance.work") : t("preservation.assurance.home")}
       </motion.div>
     </motion.div>
   );

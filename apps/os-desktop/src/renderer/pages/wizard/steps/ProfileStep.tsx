@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useWizardStore } from "@/stores/wizard-store";
 import type { DetectedProfile } from "@/stores/wizard-store";
+import { useT } from "@/i18n";
 
 const ND_EASE = [0.25, 0.1, 0.25, 1] as const;
 
@@ -99,14 +100,15 @@ function useCountUp(target: number, duration = 1000): number {
 }
 
 const PROFILE_OPTIONS = [
-  { id: "gaming_desktop", label: "GAMING DESKTOP", desc: "AGGRESSIVE PERFORMANCE, MAX FPS" },
-  { id: "office_laptop", label: "OFFICE LAPTOP", desc: "BATTERY-SAFE, KEEP PRODUCTIVITY" },
-  { id: "work_pc", label: "WORK PC", desc: "PRESERVE ENTERPRISE SERVICES" },
-  { id: "vm_cautious", label: "VIRTUAL MACHINE", desc: "SKIP HARDWARE TWEAKS" },
-  { id: "low_spec_system", label: "LOW SPEC", desc: "LIGHTWEIGHT CLEANUP" },
+  { id: "gaming_desktop", label: "GAMING DESKTOP", labelKey: "profile.option.gaming_desktop.label", descKey: "profile.option.gaming_desktop.desc" },
+  { id: "office_laptop", label: "OFFICE LAPTOP", labelKey: "profile.option.office_laptop.label", descKey: "profile.option.office_laptop.desc" },
+  { id: "work_pc", label: "WORK PC", labelKey: "profile.option.work_pc.label", descKey: "profile.option.work_pc.desc" },
+  { id: "vm_cautious", label: "VIRTUAL MACHINE", labelKey: "profile.option.vm_cautious.label", descKey: "profile.option.vm_cautious.desc" },
+  { id: "low_spec_system", label: "LOW SPEC", labelKey: "profile.option.low_spec_system.label", descKey: "profile.option.low_spec_system.desc" },
 ] as const;
 
 export function ProfileStep() {
+  const { t } = useT();
   const { detectedProfile, setDetectedProfile, setStepReady, demoMode } = useWizardStore();
   const p = detectedProfile;
   const signals = Array.isArray(p?.signals) ? p.signals : [];
@@ -121,7 +123,7 @@ export function ProfileStep() {
   if (!p) {
     return (
       <div className="flex min-h-full items-center justify-center bg-[var(--black)]">
-        <p className="nd-label text-[var(--text-disabled)]">NO PROFILE DETECTED</p>
+        <p className="nd-label text-[var(--text-disabled)]">{t("profile.noProfile")}</p>
       </div>
     );
   }
@@ -163,10 +165,9 @@ export function ProfileStep() {
         >
           <div className="w-3 h-0.5 bg-[var(--text-display)] mt-1.5 shrink-0" />
           <div>
-            <p className="nd-label text-[var(--text-display)]">SAMPLE DATA</p>
+            <p className="nd-label text-[var(--text-display)]">{t("profile.sampleData.title")}</p>
             <p className="mt-1 text-caption text-[var(--text-secondary)]">
-              No system scan ran — the optimization service isn&apos;t available here. The
-              profile and signals shown are an example, not your PC&apos;s detected hardware.
+              {t("profile.sampleData.body")}
             </p>
           </div>
         </motion.div>
@@ -191,7 +192,7 @@ export function ProfileStep() {
           className="w-full max-w-xs"
         >
           <div className="flex justify-between mb-1">
-            <span className="nd-label text-[var(--text-secondary)]">CONFIDENCE</span>
+            <span className="nd-label text-[var(--text-secondary)]">{t("profile.confidence")}</span>
             <span className="font-mono text-label tracking-label text-[var(--accent)]">
               {displayConfidence}%
             </span>
@@ -220,7 +221,7 @@ export function ProfileStep() {
           animate={{ opacity: 1 }}
           className="nd-label text-[var(--accent)]"
         >
-          [MANUAL SELECTION]
+          {t("profile.manualSelection")}
         </motion.div>
       )}
 
@@ -249,9 +250,9 @@ export function ProfileStep() {
         >
           <div className="w-3 h-0.5 bg-[var(--text-display)] mt-1.5 shrink-0" />
           <div>
-            <p className="nd-label text-[var(--text-display)]">WORK PC DETECTED</p>
+            <p className="nd-label text-[var(--text-display)]">{t("profile.workPc.title")}</p>
             <p className="mt-1 text-caption text-[var(--text-secondary)]">
-              Business-critical services preserved. Aggressive optimizations blocked.
+              {t("profile.workPc.body")}
             </p>
           </div>
         </motion.div>
@@ -268,7 +269,7 @@ export function ProfileStep() {
           onClick={() => setShowOverride(!showOverride)}
           className="flex items-center gap-2 mx-auto nd-label-sm text-[var(--text-disabled)] hover:text-[var(--text-secondary)] transition-colors duration-150 ease-nd"
         >
-          <span>SWITCH PROFILE</span>
+          <span>{t("profile.switchProfile")}</span>
           <motion.svg
             width="12" height="12" viewBox="0 0 12 12" fill="none"
             animate={{ rotate: showOverride ? 180 : 0 }}
@@ -317,9 +318,9 @@ export function ProfileStep() {
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className={`font-mono text-caption tracking-label ${isActive ? "text-[var(--accent)]" : "text-[var(--text-secondary)]"}`}>
-                          {opt.label}
+                          {t(opt.labelKey)}
                         </p>
-                        <p className="nd-label-sm text-[var(--text-disabled)] mt-0.5">{opt.desc}</p>
+                        <p className="nd-label-sm text-[var(--text-disabled)] mt-0.5">{t(opt.descKey)}</p>
                       </div>
                       {isActive && <div className="w-3 h-0.5 bg-[var(--accent)] shrink-0" />}
                     </motion.button>

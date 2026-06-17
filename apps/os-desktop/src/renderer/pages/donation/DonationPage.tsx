@@ -6,6 +6,7 @@ import { motion, AnimatePresence, stagger, useAnimate } from "framer-motion";
 import { Heart, ExternalLink, ArrowLeft, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { platform } from "@/lib/platform";
+import { useT } from "@/i18n";
 
 // Mock wall of fame
 
@@ -29,6 +30,7 @@ const PRESET_AMOUNTS = [3, 5, 10, 25] as const;
 // Thank-you screen
 
 function ThankYouScreen({ amount, onBack }: { amount: number; onBack: () => void }) {
+  const { t } = useT();
   return (
     <motion.div
       key="thankyou"
@@ -69,12 +71,12 @@ function ThankYouScreen({ amount, onBack }: { amount: number; onBack: () => void
         transition={{ delay: 0.25, duration: 0.28, ease: [0.0, 0.0, 0.2, 1.0] }}
         className="space-y-1.5"
       >
-        <h2 className="text-xl font-medium text-[var(--text-primary)]">Thank you!</h2>
+        <h2 className="text-xl font-medium text-[var(--text-primary)]">{t("donation.thankyou.heading")}</h2>
         <p className="text-sm text-[var(--text-secondary)]">
-          Your ${amount} support means everything to this project.
+          {t("donation.thankyou.message", { amount })}
         </p>
         <p className="text-xs text-[var(--text-secondary)]">
-          You're now part of the Wall of Fame.
+          {t("donation.thankyou.wall")}
         </p>
       </motion.div>
 
@@ -85,7 +87,7 @@ function ThankYouScreen({ amount, onBack }: { amount: number; onBack: () => void
         className="flex gap-3"
       >
         <Button variant="secondary" size="md" onClick={onBack}>
-          Back
+          {t("donation.back")}
         </Button>
         <Button
           variant="primary"
@@ -94,7 +96,7 @@ function ThankYouScreen({ amount, onBack }: { amount: number; onBack: () => void
             platform().window.close();
           }}
         >
-          Close
+          {t("donation.close")}
         </Button>
       </motion.div>
     </motion.div>
@@ -104,6 +106,7 @@ function ThankYouScreen({ amount, onBack }: { amount: number; onBack: () => void
 // Main component
 
 export function DonationPage() {
+  const { t } = useT();
   const [selected, setSelected] = useState<number>(5);
   const [custom, setCustom] = useState("");
   const [donated, setDonated] = useState(false);
@@ -140,7 +143,12 @@ export function DonationPage() {
   }
 
   return (
-    <div className="flex h-full flex-col">
+    // DonationPage only renders standalone at /donation (the wizard's support
+    // step is a separate component), and html/body/#root have no height — so it
+    // owns its viewport height with h-screen instead of h-full, which would
+    // otherwise collapse and clip with no scroll. The form's own min-h-0 +
+    // overflow-y-auto "wall of fame" still scrolls inside this.
+    <div className="flex h-screen flex-col">
       <AnimatePresence mode="wait">
         {donated ? (
           <ThankYouScreen
@@ -169,9 +177,9 @@ export function DonationPage() {
                   <Heart className="h-5 w-5 text-red-400" />
                 </motion.div>
                 <div>
-                  <h2 className="text-base font-medium text-[var(--text-primary)]">Support Ouden</h2>
+                  <h2 className="text-base font-medium text-[var(--text-primary)]">{t("donation.title")}</h2>
                   <p className="text-xs text-[var(--text-secondary)]">
-                    Help keep it free and open for everyone
+                    {t("donation.subtitle")}
                   </p>
                 </div>
               </div>
@@ -180,14 +188,14 @@ export function DonationPage() {
                 className="flex items-center gap-1 text-xs text-[var(--text-secondary)] transition-colors hover:text-[var(--text-secondary)]"
               >
                 <ArrowLeft className="h-3.5 w-3.5" />
-                Back
+                {t("donation.back")}
               </button>
             </div>
 
             {/* Amount selection */}
             <div>
               <p className="mb-2.5 text-[11px] font-medium uppercase tracking-wider text-[var(--text-secondary)]">
-                Choose amount
+                {t("donation.chooseAmount")}
               </p>
               <div className="flex gap-2">
                 {PRESET_AMOUNTS.map((amt) => (
@@ -230,7 +238,7 @@ export function DonationPage() {
                       setCustom(e.target.value);
                       if (e.target.value) setSelected(0);
                     }}
-                    placeholder="Custom"
+                    placeholder={t("donation.custom")}
                     className="w-full rounded-sm border border-white/[0.08] bg-[var(--surface-raised)] py-2.5 pl-7 pr-3 text-sm text-[var(--text-primary)] placeholder-ink-tertiary outline-none transition-all focus:border-brand-500/50 focus:bg-[var(--surface-raised)] focus:ring-1 focus:ring-brand-500/20"
                   />
                 </div>
@@ -242,7 +250,7 @@ export function DonationPage() {
               <div className="mb-2.5 flex items-center gap-1.5">
                 <Sparkles className="h-3.5 w-3.5 text-amber-400" />
                 <p className="text-[11px] font-medium uppercase tracking-wider text-[var(--text-secondary)]">
-                  Wall of Fame
+                  {t("donation.wallOfFame")}
                 </p>
               </div>
               <div
@@ -280,7 +288,7 @@ export function DonationPage() {
                 icon={<Heart className="h-4 w-4" />}
                 className="flex-1"
               >
-                Donate ${effectiveAmount > 0 ? effectiveAmount : "—"}
+                {t("donation.donate", { amount: effectiveAmount > 0 ? effectiveAmount : "—" })}
                 <ExternalLink className="ml-1 h-3 w-3 opacity-50" />
               </Button>
               <Button
@@ -290,7 +298,7 @@ export function DonationPage() {
                   platform().window.close();
                 }}
               >
-                Skip
+                {t("donation.skip")}
               </Button>
             </div>
           </motion.div>

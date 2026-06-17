@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { useWizardStore } from "@/stores/wizard-store";
 import { platform } from "@/lib/platform";
+import { useT } from "@/i18n";
 
 const ND_EASE = [0.25, 0.1, 0.25, 1] as const;
 
@@ -16,6 +17,7 @@ function HeartIcon({ className }: { className?: string }) {
 
 export function DonationStep() {
   const { completeDonation } = useWizardStore();
+  const { t } = useT();
 
   return (
     <motion.div
@@ -27,9 +29,9 @@ export function DonationStep() {
       <HeartIcon className="text-[var(--accent)]" />
 
       <div className="text-center">
-        <h2 className="font-display text-title text-[var(--text-display)]">SUPPORT</h2>
+        <h2 className="font-display text-title text-[var(--text-display)]">{t("donation.step.heading")}</h2>
         <p className="mt-2 text-[12px] text-[var(--text-secondary)] max-w-sm">
-          This whole thing is free and open source. Built by one person. If it saved you a reinstall or three hours of registry hunting, throwing a few bucks would genuinely help.
+          {t("donation.step.blurb")}
         </p>
       </div>
 
@@ -38,13 +40,13 @@ export function DonationStep() {
           onClick={() => platform().shell.openExternal("https://ouden.cc/support")}
           className="flex items-center gap-2 bg-[var(--text-display)] text-[var(--black)] px-6 py-2.5 rounded-sm font-mono text-[11px] tracking-[0.08em] uppercase transition-opacity duration-150 ease-nd hover:opacity-90"
         >
-          SUPPORT
+          {t("donation.step.support")}
         </button>
         <button
           onClick={completeDonation}
           className="px-6 py-2.5 border border-[var(--border)] rounded-sm font-mono text-[11px] tracking-[0.08em] text-[var(--text-secondary)] uppercase transition-colors duration-150 ease-nd hover:bg-[var(--surface)]"
         >
-          SKIP
+          {t("donation.step.skip")}
         </button>
       </div>
     </motion.div>

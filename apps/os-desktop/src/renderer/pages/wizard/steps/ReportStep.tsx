@@ -9,6 +9,7 @@ import { useDecisionsStore } from "@/stores/decisions-store";
 import { useLogStore } from "@/stores/log-store";
 import { resolveEffectivePersonalization } from "@/lib/personalization-resolution";
 import { platform } from "@/lib/platform";
+import { useT } from "@/i18n";
 
 const RICKROLL_URL = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
 
@@ -38,6 +39,7 @@ interface LedgerQueryResult {
 }
 
 export function ReportStep() {
+  const { t } = useT();
   const { executionResult, resolvedPlaybook, detectedProfile, personalization, gotoDonation } = useWizardStore();
   const answers = useDecisionsStore((state) => state.answers);
   const effectivePersonalization = useMemo(
@@ -118,14 +120,14 @@ export function ReportStep() {
       const result = await platform().log.saveToDesktop(text);
       if (result.ok) {
         setLogExportState("done");
-        setLogExportMessage("Activity log saved successfully.");
+        setLogExportMessage(t("report.log.saved"));
         window.setTimeout(() => {
           setLogExportState("idle");
           setLogExportMessage("");
         }, 2500);
       } else {
         setLogExportState("error");
-        setLogExportMessage("Could not save the activity log. Try again.");
+        setLogExportMessage(t("report.log.error"));
         window.setTimeout(() => {
           setLogExportState("idle");
           setLogExportMessage("");
@@ -133,7 +135,7 @@ export function ReportStep() {
       }
     } catch {
       setLogExportState("error");
-      setLogExportMessage("Could not save the activity log. Try again.");
+      setLogExportMessage(t("report.log.error"));
       window.setTimeout(() => {
         setLogExportState("idle");
         setLogExportMessage("");
@@ -169,7 +171,7 @@ export function ReportStep() {
 
     if (exportResult.ok) {
       setExportState("done");
-      setExportMessage("Package saved successfully.");
+      setExportMessage(t("report.package.saved"));
       window.setTimeout(() => {
         setExportState("idle");
         setExportMessage("");
@@ -183,7 +185,7 @@ export function ReportStep() {
     }
 
     setExportState("error");
-    setExportMessage("Could not save the package. Try again.");
+    setExportMessage(t("report.package.error"));
     window.setTimeout(() => {
       setExportState("idle");
       setExportMessage("");
@@ -217,9 +219,9 @@ export function ReportStep() {
 
       {/* Title */}
       <div className="text-center">
-        <h2 className="text-[18px] font-medium text-[var(--text-primary)]">Changes applied</h2>
+        <h2 className="text-[18px] font-medium text-[var(--text-primary)]">{t("report.title")}</h2>
         <p className="mt-1 text-[11px] text-[var(--text-secondary)]">
-          The selected changes have been applied
+          {t("report.subtitle")}
         </p>
         <div className="mt-3 flex flex-col items-center gap-2">
           <div className="flex items-center gap-2">
@@ -229,7 +231,7 @@ export function ReportStep() {
               className="inline-flex items-center gap-2 rounded-sm border border-white/[0.12] bg-[var(--surface-raised)] px-4 py-2 text-[11px] font-medium text-[var(--text-primary)] transition-all hover:border-white/[0.22] hover:bg-white/[0.09] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40"
             >
               <Archive className="h-3.5 w-3.5 shrink-0" />
-              {exportState === "busy" ? "Exporting..." : exportState === "done" ? "Exported" : "Save package"}
+              {exportState === "busy" ? t("report.package.busy") : exportState === "done" ? t("report.package.done") : t("report.package.save")}
             </button>
             <button
               onClick={handleExportLog}
@@ -237,7 +239,7 @@ export function ReportStep() {
               className="inline-flex items-center gap-2 rounded-sm border border-white/[0.12] bg-[var(--surface-raised)] px-4 py-2 text-[11px] font-medium text-[var(--text-primary)] transition-all hover:border-white/[0.22] hover:bg-white/[0.09] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40"
             >
               <FileText className="h-3.5 w-3.5 shrink-0" />
-              {logExportState === "busy" ? "Saving..." : logExportState === "done" ? "Saved" : "Save activity log"}
+              {logExportState === "busy" ? t("report.log.busy") : logExportState === "done" ? t("report.log.done") : t("report.log.save")}
             </button>
           </div>
           {exportMessage && (
@@ -256,9 +258,9 @@ export function ReportStep() {
       {/* Stats */}
       <div className="flex gap-3">
         {[
-          { value: appliedPlaybookActions || rendererResult.applied, label: "Applied", color: "text-[var(--success)]", icon: Check },
-          { value: failedActions || rendererResult.failed, label: "Needs attention", color: (failedActions || rendererResult.failed) > 0 ? "text-[var(--accent)]" : "text-[var(--text-disabled)]", icon: AlertTriangle },
-          { value: preservedActions.length || rendererResult.preserved, label: "Left unchanged", color: "text-[var(--text-secondary)]", icon: Shield },
+          { value: appliedPlaybookActions || rendererResult.applied, label: t("report.stat.applied"), color: "text-[var(--success)]", icon: Check },
+          { value: failedActions || rendererResult.failed, label: t("report.stat.needsAttention"), color: (failedActions || rendererResult.failed) > 0 ? "text-[var(--accent)]" : "text-[var(--text-disabled)]", icon: AlertTriangle },
+          { value: preservedActions.length || rendererResult.preserved, label: t("report.stat.leftUnchanged"), color: "text-[var(--text-secondary)]", icon: Shield },
         ].map(({ value, label, color, icon: Icon }, i) => (
           <motion.div
             key={label}
@@ -286,9 +288,9 @@ export function ReportStep() {
           <div className="flex items-start gap-2 rounded-sm bg-[var(--surface)] border border-[var(--border)] px-3 py-2">
             <Check className="mt-0.5 h-3 w-3 shrink-0 text-[var(--success)]" />
             <p className="text-[10px] leading-relaxed text-[var(--text-secondary)]">
-              <span className="font-medium text-[var(--text-primary)]">{appliedPlaybookActions || pb.totalIncluded} changes</span> were applied across {pb.phases.length} sections.
+              <span className="font-medium text-[var(--text-primary)]">{t("report.summary.appliedCount", { count: appliedPlaybookActions || pb.totalIncluded })}</span> {t("report.summary.appliedAcross", { sections: pb.phases.length })}
               {executionResult?.truthSource === "local" && (
-                <span className="ml-1 text-white/70">(service data was not available)</span>
+                <span className="ml-1 text-white/70">{t("report.summary.localData")}</span>
               )}
             </p>
           </div>
@@ -298,12 +300,12 @@ export function ReportStep() {
             <div className="flex items-start gap-2 rounded-sm bg-[var(--surface)] border border-[var(--border)] px-3 py-2">
               <Shield className="mt-0.5 h-3 w-3 shrink-0 text-[var(--text-display)]" />
               <p className="text-[10px] leading-relaxed text-[var(--text-secondary)]">
-                <span className="font-medium text-[var(--text-primary)]">{preservedActions.length} changes were left unchanged</span>
+                <span className="font-medium text-[var(--text-primary)]">{t("report.preserved.count", { count: preservedActions.length })}</span>
                 {userChoicePreserved.length > 0
-                  ? ` — ${userChoicePreserved.length} because of your choices.`
+                  ? t("report.preserved.userChoice", { count: userChoicePreserved.length })
                   : detectedProfile?.isWorkPc
-                  ? " — to keep work settings in place."
-                  : " — because they did not fit this setup."}
+                  ? t("report.preserved.workPc")
+                  : t("report.preserved.noFit")}
               </p>
             </div>
           )}
@@ -313,7 +315,7 @@ export function ReportStep() {
             <div className="flex items-start gap-2 rounded-sm bg-[var(--surface)] border border-[var(--border)] px-3 py-2">
               <Lock className="mt-0.5 h-3 w-3 shrink-0 text-purple-400" />
               <p className="text-[10px] leading-relaxed text-[var(--text-secondary)]">
-                <span className="font-medium text-[var(--text-primary)]">{pb.totalExpertOnly} advanced changes</span> were not included.
+                <span className="font-medium text-[var(--text-primary)]">{t("report.expertOnly.count", { count: pb.totalExpertOnly })}</span> {t("report.expertOnly.suffix")}
               </p>
             </div>
           )}
@@ -322,7 +324,7 @@ export function ReportStep() {
             <div className="flex items-start gap-2 rounded-sm bg-[var(--surface)] border border-[var(--border)] px-3 py-2">
               <Lock className="mt-0.5 h-3 w-3 shrink-0 text-[var(--text-secondary)]" />
               <p className="text-[10px] leading-relaxed text-[var(--text-secondary)]">
-                <span className="font-medium text-[var(--text-primary)]">{profileSafeguards.length} actions</span> blocked automatically — not compatible with your PC type or Windows version.
+                <span className="font-medium text-[var(--text-primary)]">{t("report.safeguards.count", { count: profileSafeguards.length })}</span> {t("report.safeguards.suffix")}
               </p>
             </div>
           )}
@@ -347,13 +349,13 @@ export function ReportStep() {
         transition={{ delay: 0.4 }}
         className="w-full max-w-md rounded-sm border border-[var(--border)] bg-[var(--surface)] px-4 py-3"
       >
-        <p className="text-[11px] font-medium text-[var(--text-primary)] mb-2">How to undo changes</p>
+        <p className="text-[11px] font-medium text-[var(--text-primary)] mb-2">{t("report.undo.title")}</p>
         <div className="space-y-1.5 text-[10px] text-[var(--text-secondary)] leading-relaxed">
-          <p><span className="text-[var(--text-primary)] font-medium">System Restore:</span> Windows saved a restore point before we started. Open Start → type "Create a restore point" → System Restore → pick the point from today.</p>
-          <p><span className="text-[var(--text-primary)] font-medium">Registry:</span> Every registry key we changed has its old value saved. Re-run OudenOS and it will detect previous changes.</p>
-          <p><span className="text-[var(--text-primary)] font-medium">Services:</span> Open <span className="font-mono text-[9px] bg-[var(--surface-raised)] px-1 rounded">services.msc</span> and set any service back to Automatic or Manual.</p>
-          <p><span className="text-[var(--text-primary)] font-medium">Removed apps:</span> Open Microsoft Store and reinstall anything you want back.</p>
-          <p><span className="text-[var(--text-primary)] font-medium">Full reset:</span> Settings → System → Recovery → Reset this PC keeps your files but restores all Windows defaults.</p>
+          <p><span className="text-[var(--text-primary)] font-medium">{t("report.undo.systemRestore.label")}</span> {t("report.undo.systemRestore.body")}</p>
+          <p><span className="text-[var(--text-primary)] font-medium">{t("report.undo.registry.label")}</span> {t("report.undo.registry.body")}</p>
+          <p><span className="text-[var(--text-primary)] font-medium">{t("report.undo.services.label")}</span> {t("report.undo.services.bodyBefore")}<span className="font-mono text-[9px] bg-[var(--surface-raised)] px-1 rounded">services.msc</span>{t("report.undo.services.bodyAfter")}</p>
+          <p><span className="text-[var(--text-primary)] font-medium">{t("report.undo.removedApps.label")}</span> {t("report.undo.removedApps.body")}</p>
+          <p><span className="text-[var(--text-primary)] font-medium">{t("report.undo.fullReset.label")}</span> {t("report.undo.fullReset.body")}</p>
         </div>
       </motion.div>
 
@@ -365,7 +367,7 @@ export function ReportStep() {
         onClick={handleFooterClick}
         className="text-[10px] text-[var(--text-disabled)] cursor-default select-none"
       >
-        Snapshots saved before each action
+        {t("report.footer.snapshots")}
       </motion.p>
 
       {/* Optional donation CTA */}
@@ -377,7 +379,7 @@ export function ReportStep() {
         className="flex items-center gap-1.5 rounded-sm border border-pink-500/20 bg-pink-500/[0.06] px-3.5 py-1.5 text-[10px] font-medium text-pink-400 transition-all hover:border-pink-500/35 hover:bg-pink-500/10"
       >
         <Heart className="h-3 w-3" strokeWidth={2} />
-        Support the project
+        {t("report.support")}
       </motion.button>
     </motion.div>
   );

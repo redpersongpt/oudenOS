@@ -3,26 +3,27 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useWizardStore } from "@/stores/wizard-store";
 import type { DetectedProfile } from "@/stores/wizard-store";
 import { platform } from "@/lib/platform";
+import { useT } from "@/i18n";
 
-const SCAN_QUOTES = [
-  "Checking system details...",
-  "Reviewing installed apps...",
-  "Checking work profile signals...",
-  "Reviewing background software...",
-  "Checking services...",
-  "Checking virtualization...",
-  "Reviewing startup items...",
-  "Reading system settings...",
-];
+const SCAN_QUOTE_KEYS = [
+  "assessment.quote.systemDetails",
+  "assessment.quote.installedApps",
+  "assessment.quote.workProfile",
+  "assessment.quote.backgroundSoftware",
+  "assessment.quote.services",
+  "assessment.quote.virtualization",
+  "assessment.quote.startupItems",
+  "assessment.quote.systemSettings",
+] as const;
 
 const CATEGORIES = [
-  { id: "windows",  label: "Windows version",     desc: "Build and edition" },
-  { id: "packages", label: "Installed apps",      desc: "Software inventory" },
-  { id: "startup",  label: "Startup programs",    desc: "Boot impact" },
-  { id: "services", label: "Background services", desc: "Running services" },
-  { id: "tasks",    label: "Scheduled tasks",     desc: "Recurring tasks" },
-  { id: "signals",  label: "Work profile",        desc: "Company-managed signals" },
-  { id: "vm",       label: "Virtualization",      desc: "Virtual machine check" },
+  { id: "windows",  labelKey: "assessment.cat.windows.label",  descKey: "assessment.cat.windows.desc" },
+  { id: "packages", labelKey: "assessment.cat.packages.label", descKey: "assessment.cat.packages.desc" },
+  { id: "startup",  labelKey: "assessment.cat.startup.label",  descKey: "assessment.cat.startup.desc" },
+  { id: "services", labelKey: "assessment.cat.services.label", descKey: "assessment.cat.services.desc" },
+  { id: "tasks",    labelKey: "assessment.cat.tasks.label",    descKey: "assessment.cat.tasks.desc" },
+  { id: "signals",  labelKey: "assessment.cat.signals.label",  descKey: "assessment.cat.signals.desc" },
+  { id: "vm",       labelKey: "assessment.cat.vm.label",       descKey: "assessment.cat.vm.desc" },
 ] as const;
 
 type Status = "idle" | "scanning" | "done";
@@ -167,6 +168,7 @@ async function withTimeout<T>(promise: Promise<T>, timeoutMs: number, label: str
 // ── Component ───────────────────────────────────────────────────────────
 
 export function AssessmentStep() {
+  const { t } = useT();
   const { completeStep, setDetectedProfile, setDemoMode, setStepReady } = useWizardStore();
   const [statuses, setStatuses] = useState<Record<string, Status>>(
     Object.fromEntries(CATEGORIES.map((c) => [c.id, "idle"]))
@@ -248,13 +250,13 @@ export function AssessmentStep() {
   const done = Object.values(statuses).filter((s) => s === "done").length;
   const isScanning = done < CATEGORIES.length;
 
-  const [quoteIdx, setQuoteIdx] = useState(() => Math.floor(Math.random() * SCAN_QUOTES.length));
+  const [quoteIdx, setQuoteIdx] = useState(() => Math.floor(Math.random() * SCAN_QUOTE_KEYS.length));
   useEffect(() => {
     if (!isScanning) return;
     const interval = setInterval(() => {
       setQuoteIdx((prev) => {
         let next: number;
-        do { next = Math.floor(Math.random() * SCAN_QUOTES.length); } while (next === prev && SCAN_QUOTES.length > 1);
+        do { next = Math.floor(Math.random() * SCAN_QUOTE_KEYS.length); } while (next === prev && SCAN_QUOTE_KEYS.length > 1);
         return next;
       });
     }, 2500);
@@ -283,10 +285,10 @@ export function AssessmentStep() {
       {/* Header */}
       <div className="text-center">
         <h2 className="font-display text-title text-[var(--text-display)]">
-          {isScanning ? "Checking your system" : "Assessment complete"}
+          {isScanning ? t("assessment.title.scanning") : t("assessment.title.done")}
         </h2>
         <p className="mt-2 nd-label text-[var(--text-secondary)]">
-          {isScanning ? "Looking at hardware, software, and current settings" : "Your system profile is ready"}
+          {isScanning ? t("assessment.subtitle.scanning") : t("assessment.subtitle.done")}
         </p>
 
         {/* Status text */}
@@ -301,7 +303,7 @@ export function AssessmentStep() {
                 transition={{ duration: 0.2, ease: ND_EASE }}
                 className="nd-status text-[var(--text-disabled)]"
               >
-                {SCAN_QUOTES[quoteIdx]}
+                {t(SCAN_QUOTE_KEYS[quoteIdx])}
               </motion.p>
             </AnimatePresence>
           </div>
@@ -343,13 +345,13 @@ export function AssessmentStep() {
                 <span className={`font-mono text-caption tracking-label ${
                   st === "done" ? "text-[var(--text-primary)]" : st === "scanning" ? "text-[var(--text-display)]" : "text-[var(--text-disabled)]"
                 }`}>
-                  {cat.label}
+                  {t(cat.labelKey)}
                 </span>
               </div>
 
               {/* Desc */}
               <span className="nd-label-sm text-[var(--text-disabled)]">
-                {cat.desc}
+                {t(cat.descKey)}
               </span>
             </motion.div>
           );
@@ -370,7 +372,7 @@ export function AssessmentStep() {
         </div>
         <div className="mt-2 flex justify-between">
           <span className="nd-label-sm text-[var(--text-disabled)]">
-            {isScanning ? "[SCANNING...]" : "[COMPLETE]"}
+            {isScanning ? t("assessment.progress.scanning") : t("assessment.progress.complete")}
           </span>
           <span className="font-mono text-label tracking-label text-[var(--text-disabled)]">
             {done}/{CATEGORIES.length}
@@ -387,7 +389,7 @@ export function AssessmentStep() {
           className="flex items-center gap-3 border border-success-400/20 bg-[var(--success)]/[0.04] px-4 py-2 rounded-sm"
         >
           <div className="w-3 h-0.5 bg-[var(--success)]" />
-          <span className="nd-label text-[var(--success)]">SYSTEM SCANNED — BUILDING PROFILE</span>
+          <span className="nd-label text-[var(--success)]">{t("assessment.completion")}</span>
         </motion.div>
       )}
     </motion.div>

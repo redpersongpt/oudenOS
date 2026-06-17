@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { RotateCw, AlertCircle, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { useT } from "@/i18n";
 import { useWizardStore } from "@/stores/wizard-store";
 import type { ExecutionJournalEntry } from "@/stores/wizard-store";
 import { buildRebootJournalContext, getPendingRebootProvenanceRefs } from "@/lib/package-journal";
@@ -45,6 +46,7 @@ interface JournalState {
 }
 
 export function RebootResumeStep() {
+  const { t } = useT();
   const { resolvedPlaybook, executionResult, detectedProfile, skipStep, completeStep, setExecutionResult } = useWizardStore();
   const [resumePhase, setResumePhase] = useState<"idle" | "resuming" | "executing" | "done">("idle");
   const [rebootError, setRebootError] = useState<string | null>(null);
@@ -105,10 +107,10 @@ export function RebootResumeStep() {
           : undefined,
       });
       if (!result.ok) {
-        setRebootError("Reboot failed. Please restart your computer manually.");
+        setRebootError(t("reboot.error.rebootFailed"));
       }
     } catch {
-      setRebootError("Reboot failed. Please restart your computer manually.");
+      setRebootError(t("reboot.error.rebootFailed"));
     }
   };
 
@@ -279,9 +281,9 @@ export function RebootResumeStep() {
           </motion.div>
 
           <div className="flex flex-col items-center gap-1.5 text-center">
-            <h2 className="text-lg font-medium text-[var(--text-primary)]">Resuming Execution</h2>
+            <h2 className="text-lg font-medium text-[var(--text-primary)]">{t("reboot.resuming.title")}</h2>
             <p className="max-w-sm text-xs text-[var(--text-secondary)]">
-              Applying remaining actions from the service execution ledger
+              {t("reboot.resuming.subtitle")}
             </p>
           </div>
 
@@ -319,9 +321,9 @@ export function RebootResumeStep() {
               />
             </div>
             <div className="mt-2 flex justify-between text-[10px] text-[var(--text-secondary)] font-mono-metric">
-              <span>{resumeProgress.completed} applied</span>
-              {resumeProgress.failed > 0 && <span className="text-[#FF6B6B]">{resumeProgress.failed} failed</span>}
-              <span>{resumeProgress.total - resumeProgress.completed - resumeProgress.failed} remaining</span>
+              <span>{t("reboot.progress.applied", { count: resumeProgress.completed })}</span>
+              {resumeProgress.failed > 0 && <span className="text-[#FF6B6B]">{t("reboot.progress.failed", { count: resumeProgress.failed })}</span>}
+              <span>{t("reboot.progress.remaining", { count: resumeProgress.total - resumeProgress.completed - resumeProgress.failed })}</span>
             </div>
           </div>
         </>
@@ -338,15 +340,15 @@ export function RebootResumeStep() {
           </motion.div>
 
           <div className="flex flex-col items-center gap-1.5 text-center">
-            <h2 className="text-lg font-medium text-[var(--text-primary)]">Restart Recommended</h2>
+            <h2 className="text-lg font-medium text-[var(--text-primary)]">{t("reboot.prompt.title")}</h2>
             <p className="max-w-sm text-xs text-[var(--text-secondary)]">
-              Some optimizations require a restart to take effect. You can restart now or continue and restart later.
+              {t("reboot.prompt.subtitle")}
             </p>
             {resolvedPlaybook && (
               <p className="max-w-sm text-[10px] text-[var(--text-secondary)]">
-                Resume chain: {journalState?.planId ?? buildRebootJournalContext(resolvedPlaybook, detectedProfile?.id).planId}
+                {t("reboot.prompt.resumeChain", { planId: journalState?.planId ?? buildRebootJournalContext(resolvedPlaybook, detectedProfile?.id).planId })}
                 {" · "}
-                {journalState?.totalRemaining ?? (journalState?.pendingRebootProvenanceRefs.length ?? getPendingRebootProvenanceRefs(resolvedPlaybook, executionResult).length)} pending actions
+                {t("reboot.prompt.pendingActions", { count: journalState?.totalRemaining ?? (journalState?.pendingRebootProvenanceRefs.length ?? getPendingRebootProvenanceRefs(resolvedPlaybook, executionResult).length) })}
               </p>
             )}
           </div>
@@ -360,15 +362,15 @@ export function RebootResumeStep() {
 
           <div className="flex gap-3">
             <Button variant="primary" size="md" onClick={handleRestart} icon={<RotateCw className="h-4 w-4" />}>
-              Restart Now
+              {t("reboot.button.restartNow")}
             </Button>
             <Button variant="secondary" size="md" onClick={handleResume} disabled={resumePhase === "resuming"}>
-              {resumePhase === "resuming" ? "Loading..." : "Resume Without Restart"}
+              {resumePhase === "resuming" ? t("reboot.button.loading") : t("reboot.button.resumeWithoutRestart")}
             </Button>
           </div>
 
           <button onClick={handleSkip} className="text-[11px] text-[var(--text-secondary)] hover:text-[var(--text-secondary)] transition-colors">
-            Skip and restart later
+            {t("reboot.button.skip")}
           </button>
         </>
       )}

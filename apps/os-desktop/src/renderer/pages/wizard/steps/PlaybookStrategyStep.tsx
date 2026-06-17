@@ -27,6 +27,7 @@ import { useWizardStore } from "@/stores/wizard-store";
 import { serviceCall } from "@/lib/service";
 import questionnaireFallback from "@/lib/questionnaire-fallback.json";
 import { useLocalizedQuestionnaire } from "@/i18n/content-overlay";
+import { useT } from "@/i18n";
 import {
   computeQuestionnaireImpact,
   derivePlaybookPreset,
@@ -205,6 +206,7 @@ function Screen({
 }
 
 export function PlaybookStrategyStep() {
+  const { t } = useT();
   const { answers, setAnswer, applyAnswers } = useDecisionsStore();
   const { detectedProfile, playbookPreset, setPlaybookPreset, setStepReady, goBack, goNext, demoMode } = useWizardStore();
   const [rawSchema, setRawSchema] = useState<QuestionnaireSchema | null>(null);
@@ -337,7 +339,7 @@ export function PlaybookStrategyStep() {
     return (
       <div className="flex min-h-full items-center justify-center px-8">
         <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] px-5 py-4 text-sm text-[var(--text-secondary)]">
-          Loading setup questions...
+          {t("strategy.loading")}
         </div>
       </div>
     );
@@ -347,7 +349,7 @@ export function PlaybookStrategyStep() {
     return (
       <div className="flex min-h-full flex-col items-center justify-center gap-3 px-8 text-center">
         <TriangleAlert className="h-8 w-8 text-[var(--text-display)]" />
-        <p className="text-sm text-[var(--text-secondary)]">{loadError ?? "No strategy questions available."}</p>
+        <p className="text-sm text-[var(--text-secondary)]">{loadError ?? t("strategy.noQuestions")}</p>
       </div>
     );
   }
@@ -365,9 +367,9 @@ export function PlaybookStrategyStep() {
       <div className="shrink-0 border-b border-[var(--border)] px-6 py-3">
         <div className="flex items-center justify-between gap-4">
           <div>
-            <p className="nd-label text-[var(--accent)]">STRATEGY</p>
+            <p className="nd-label text-[var(--accent)]">{t("strategy.eyebrow")}</p>
             <p className="mt-1 font-mono text-label tracking-label text-[var(--text-disabled)]">
-              QUESTION {String(clampedIndex + 1).padStart(2, "0")} / {String(activeQuestions.length).padStart(2, "0")}
+              {t("strategy.questionCounter", { current: String(clampedIndex + 1).padStart(2, "0"), total: String(activeQuestions.length).padStart(2, "0") })}
             </p>
           </div>
           <div className="min-w-[220px] max-w-[320px] flex-1">
@@ -441,24 +443,24 @@ export function PlaybookStrategyStep() {
         <div className="mb-2 flex flex-wrap items-center justify-between gap-3">
           <div className="flex flex-wrap items-center gap-4">
             <span className="nd-label text-[var(--text-secondary)]">
-              <span className="font-mono text-[var(--text-display)]">{impact.estimatedActions}</span> changes
+              <span className="font-mono text-[var(--text-display)]">{impact.estimatedActions}</span> {t("strategy.changes")}
             </span>
             {impact.estimatedPreserved > 0 ? (
               <span className="nd-label text-[var(--text-display)]">
-                <span className="font-mono">{impact.estimatedPreserved}</span> left unchanged
+                <span className="font-mono">{impact.estimatedPreserved}</span> {t("strategy.leftUnchanged")}
               </span>
             ) : null}
             {impact.rebootRequired ? (
-              <span className="nd-label-sm text-[var(--text-display)]">Restart likely</span>
+              <span className="nd-label-sm text-[var(--text-display)]">{t("strategy.restartLikely")}</span>
             ) : null}
           </div>
           {impact.warnings.length > 0 ? (
             <span className="flex items-center gap-1 nd-label-sm text-[var(--accent)]">
               <AlertTriangle className="h-2.5 w-2.5" />
-              {impact.warnings.length} item{impact.warnings.length > 1 ? "s" : ""} to review
+              {t("strategy.itemsToReview", { count: impact.warnings.length })}
             </span>
           ) : (
-            <span className="nd-label-sm text-[var(--text-disabled)]">{flashStatus === "saved" ? "Saved" : ""}</span>
+            <span className="nd-label-sm text-[var(--text-disabled)]">{flashStatus === "saved" ? t("strategy.saved") : ""}</span>
           )}
         </div>
 
@@ -467,7 +469,7 @@ export function PlaybookStrategyStep() {
             onClick={handleBack}
             className="flex items-center gap-1 nd-label text-[var(--text-secondary)] transition-colors duration-150 ease-nd hover:text-[var(--text-primary)]"
           >
-            <ChevronLeft className="h-3.5 w-3.5" /> BACK
+            <ChevronLeft className="h-3.5 w-3.5" /> {t("strategy.back")}
           </button>
 
           <button
@@ -479,7 +481,7 @@ export function PlaybookStrategyStep() {
                 : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
             } transition-colors duration-150 ease-nd`}
           >
-            NEXT <ChevronRight className="h-3.5 w-3.5" />
+            {t("strategy.next")} <ChevronRight className="h-3.5 w-3.5" />
           </button>
         </div>
       </div>

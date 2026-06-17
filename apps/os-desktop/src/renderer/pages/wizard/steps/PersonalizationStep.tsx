@@ -6,6 +6,7 @@ import { useWizardStore } from "@/stores/wizard-store";
 import type { PersonalizationPreferences } from "@/stores/wizard-store";
 import { useDecisionsStore } from "@/stores/decisions-store";
 import { resolveEffectivePersonalization } from "@/lib/personalization-resolution";
+import { useT, type TFunction } from "@/i18n";
 
 const ND_EASE = [0.25, 0.1, 0.25, 1] as const;
 
@@ -60,7 +61,7 @@ function ToggleRow({ label, desc, checked, disabled = false, onChange }: {
 
 // Windows 11 faithful desktop preview
 
-function DesktopPreview({ prefs }: { prefs: PersonalizationPreferences }) {
+function DesktopPreview({ prefs, t }: { prefs: PersonalizationPreferences; t: TFunction }) {
   const accent = prefs.brandAccent ? "#E8E8E8" : "#888";
 
   // Desktop background
@@ -112,7 +113,7 @@ function DesktopPreview({ prefs }: { prefs: PersonalizationPreferences }) {
             className="text-[6px] leading-none select-none"
             style={{ color: "rgba(255,255,255,0.7)" }}
           >
-            Recycle Bin
+            {t("personalization.preview.recycleBin")}
           </span>
         </div>
         {/* Another icon with .exe hint when explorer cleanup is on */}
@@ -162,7 +163,7 @@ function DesktopPreview({ prefs }: { prefs: PersonalizationPreferences }) {
             className="select-none"
             style={{ fontSize: 10, color: winText, transition: "color 300ms ease" }}
           >
-            Settings
+            {t("personalization.preview.settings")}
           </span>
           {/* Window controls */}
           <div className="flex items-center gap-[6px]">
@@ -336,6 +337,7 @@ function DesktopPreview({ prefs }: { prefs: PersonalizationPreferences }) {
 
 export function PersonalizationStep() {
   const { personalization, setPersonalization, detectedProfile } = useWizardStore();
+  const { t } = useT();
   const answers = useDecisionsStore((state) => state.answers);
   const profileId = detectedProfile?.id;
   const isWorkPc = detectedProfile?.isWorkPc ?? false;
@@ -358,20 +360,20 @@ export function PersonalizationStep() {
     setPersonalization({ [key]: !personalization[key] });
 
   const toggles = [
-    { label: "Dark mode",        desc: "Use the dark theme for Windows and apps",      key: "darkMode" as const,        disabled: false },
-    { label: "Accent color",     desc: "Use the standard Ouden accent color",          key: "brandAccent" as const,     disabled: false },
-    { label: "Wallpaper",        desc: "Set the default desktop wallpaper",            key: "wallpaper" as const,       disabled: false },
-    { label: "Transparency",     desc: "Use transparency effects in Windows",          key: "transparency" as const,    disabled: isLowSpec || transparencyForcedOff },
-    { label: "Taskbar cleanup",  desc: "Hide Task View, Widgets, and Chat",            key: "taskbarCleanup" as const,  disabled: isWorkPc },
-    { label: "Explorer cleanup", desc: "Show file extensions and hide recent items",   key: "explorerCleanup" as const, disabled: isWorkPc },
+    { label: t("personalization.toggle.darkMode.label"),        desc: t("personalization.toggle.darkMode.desc"),        key: "darkMode" as const,        disabled: false },
+    { label: t("personalization.toggle.brandAccent.label"),     desc: t("personalization.toggle.brandAccent.desc"),     key: "brandAccent" as const,     disabled: false },
+    { label: t("personalization.toggle.wallpaper.label"),       desc: t("personalization.toggle.wallpaper.desc"),       key: "wallpaper" as const,       disabled: false },
+    { label: t("personalization.toggle.transparency.label"),    desc: t("personalization.toggle.transparency.desc"),    key: "transparency" as const,    disabled: isLowSpec || transparencyForcedOff },
+    { label: t("personalization.toggle.taskbarCleanup.label"),  desc: t("personalization.toggle.taskbarCleanup.desc"),  key: "taskbarCleanup" as const,  disabled: isWorkPc },
+    { label: t("personalization.toggle.explorerCleanup.label"), desc: t("personalization.toggle.explorerCleanup.desc"), key: "explorerCleanup" as const, disabled: isWorkPc },
   ];
 
   const note = isWorkPc
-    ? "Some appearance changes are turned off for work systems."
+    ? t("personalization.note.work")
     : isLowSpec
-      ? "Transparency is turned off on this system."
+      ? t("personalization.note.lowSpec")
       : transparencyForcedOff
-        ? "Transparency is off because of your strategy choice."
+        ? t("personalization.note.transparencyOff")
         : null;
 
   return (
@@ -383,8 +385,8 @@ export function PersonalizationStep() {
     >
       {/* Header */}
       <div className="shrink-0 text-center">
-        <h2 className="font-display text-title text-[var(--text-display)]">Personalization</h2>
-        <p className="mt-2 nd-label text-[var(--text-secondary)]">Choose how Windows should look after setup.</p>
+        <h2 className="font-display text-title text-[var(--text-display)]">{t("personalization.title")}</h2>
+        <p className="mt-2 nd-label text-[var(--text-secondary)]">{t("personalization.subtitle")}</p>
       </div>
 
       {/* Content: scrollable */}
@@ -393,7 +395,7 @@ export function PersonalizationStep() {
 
           {/* Preview */}
           <div className="w-full max-w-[480px]">
-            <DesktopPreview prefs={personalization} />
+            <DesktopPreview prefs={personalization} t={t} />
           </div>
 
           {/* Toggles list */}
