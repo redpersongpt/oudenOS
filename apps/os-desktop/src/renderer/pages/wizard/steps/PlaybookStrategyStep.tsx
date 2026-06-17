@@ -26,6 +26,7 @@ import { useDecisionsStore, type QuestionAnswer } from "@/stores/decisions-store
 import { useWizardStore } from "@/stores/wizard-store";
 import { serviceCall } from "@/lib/service";
 import questionnaireFallback from "@/lib/questionnaire-fallback.json";
+import { useLocalizedQuestionnaire } from "@/i18n/content-overlay";
 import {
   computeQuestionnaireImpact,
   derivePlaybookPreset,
@@ -206,7 +207,8 @@ function Screen({
 export function PlaybookStrategyStep() {
   const { answers, setAnswer, applyAnswers } = useDecisionsStore();
   const { detectedProfile, playbookPreset, setPlaybookPreset, setStepReady, goBack, goNext, demoMode } = useWizardStore();
-  const [schema, setSchema] = useState<QuestionnaireSchema | null>(null);
+  const [rawSchema, setRawSchema] = useState<QuestionnaireSchema | null>(null);
+  const schema = useLocalizedQuestionnaire(rawSchema);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [index, setIndex] = useState(0);
@@ -233,21 +235,21 @@ export function PlaybookStrategyStep() {
       });
       if (cancelled) return;
       if (result.ok) {
-        setSchema(result.data);
+        setRawSchema(result.data);
         if (Object.keys(answers).length === 0) {
           applyAnswers({
             aggressionPreset: context.isWorkPc ? "balanced" : "aggressive",
           });
         }
       } else if (demoMode) {
-        setSchema(questionnaireFallback as unknown as QuestionnaireSchema);
+        setRawSchema(questionnaireFallback as unknown as QuestionnaireSchema);
         if (Object.keys(answers).length === 0) {
           applyAnswers({
             aggressionPreset: context.isWorkPc ? "balanced" : "aggressive",
           });
         }
       } else {
-        setSchema(null);
+        setRawSchema(null);
         setLoadError(result.error || "Could not load setup questions.");
       }
       setLoading(false);

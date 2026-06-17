@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { AlertTriangle } from "lucide-react";
 import { useWizardStore } from "@/stores/wizard-store";
 import { platform } from "@/lib/platform";
+import { useT } from "@/i18n";
 
 const RICKROLL_URL = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
 const ND = { ease: [0.25, 0.1, 0.25, 1] as const };
@@ -21,6 +22,7 @@ const TAGLINES = [
 
 export function WelcomeStep() {
   const { goNext } = useWizardStore();
+  const { t } = useT();
   const [runtime, setRuntime] = useState({ checked: false, isAdmin: true, platform: "unknown", mode: "demo" });
   const [logoClicks, setLogoClicks] = useState(0);
   const [tagIdx, setTagIdx] = useState(0);
@@ -150,7 +152,7 @@ export function WelcomeStep() {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5, duration: 0.35, ease: ND.ease }}
         >
-          Operating system
+          {t("welcome.os")}
         </motion.p>
 
         {/* Divider */}
@@ -174,16 +176,16 @@ export function WelcomeStep() {
               className="nd-label-sm"
               style={{ color: "var(--text-disabled)" }}
             >
-              {TAGLINES[tagIdx]}
+              {t(`welcome.tagline.${tagIdx}`)}
             </motion.p>
           </AnimatePresence>
         </div>
 
         {/* Feature chips — stagger from left */}
         <div className="mt-6 flex max-w-md flex-wrap justify-center gap-2">
-          {FEATURES.map((t, i) => (
+          {FEATURES.map((feat, i) => (
             <motion.span
-              key={t}
+              key={feat}
               initial={{ opacity: 0, x: -8 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.65 + i * 0.07, duration: 0.3, ease: ND.ease }}
@@ -196,7 +198,7 @@ export function WelcomeStep() {
                 transition: "filter 150ms ease",
               }}
             >
-              {t}
+              {t(`welcome.feature.${i}`)}
             </motion.span>
           ))}
         </div>
@@ -206,9 +208,9 @@ export function WelcomeStep() {
           <div className="mt-5 flex max-w-sm items-start gap-3 px-4 py-3" style={{ border: "1px solid rgba(96,165,250,0.45)", background: "rgba(59,130,246,0.06)" }}>
             <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" style={{ color: "var(--text-display)" }} />
             <div>
-              <p className="nd-label" style={{ color: "var(--text-display)" }}>macOS preview</p>
+              <p className="nd-label" style={{ color: "var(--text-display)" }}>{t("welcome.preview.title")}</p>
               <p className="mt-1 text-caption" style={{ color: "var(--text-display)" }}>
-                Every screen and question here is exactly what the Windows app shows. This Mac build only previews the interface — it never changes anything on your computer. oudenOS applies tweaks on Windows only.
+                {t("welcome.preview.body")}
               </p>
             </div>
           </div>
@@ -218,9 +220,9 @@ export function WelcomeStep() {
           <div className="mt-5 flex max-w-sm items-start gap-3 px-4 py-3" style={{ border: "1px solid rgba(255,255,255,0.12)", background: "rgba(255,255,255,0.04)" }}>
             <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" style={{ color: "var(--text-display)" }} />
             <div>
-              <p className="nd-label" style={{ color: "var(--text-display)" }}>Administrator access required</p>
+              <p className="nd-label" style={{ color: "var(--text-display)" }}>{t("welcome.admin.title")}</p>
               <p className="mt-1 text-caption" style={{ color: "var(--text-display)" }}>
-                Run the app as administrator to apply all changes.
+                {t("welcome.admin.body")}
               </p>
             </div>
           </div>
@@ -238,7 +240,7 @@ export function WelcomeStep() {
             className="flex items-center gap-3 px-6 py-3 font-mono text-[13px] uppercase tracking-[0.06em] transition-opacity duration-200 hover:opacity-85"
             style={{ background: "var(--text-display)", color: "var(--black)", minHeight: 44 }}
           >
-            Start assessment
+            {t("welcome.cta")}
             <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
           </button>
         </motion.div>
@@ -251,7 +253,7 @@ export function WelcomeStep() {
           animate={{ opacity: 1 }}
           transition={{ delay: 1.05, duration: 0.3, ease: ND.ease }}
         >
-          Rollback available · stays on this machine
+          {t("welcome.footer")}
         </motion.p>
       </div>
     </div>

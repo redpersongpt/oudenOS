@@ -7,12 +7,14 @@ import { useWizardStore } from "@/stores/wizard-store";
 import { useDecisionsStore } from "@/stores/decisions-store";
 import { resolveEffectivePersonalization } from "@/lib/personalization-resolution";
 import { platform } from "@/lib/platform";
+import { useActionLocalizer } from "@/i18n/content-overlay";
 
 const ND_EASE = [0.25, 0.1, 0.25, 1] as const;
 
 export function FinalReviewStep() {
   const { detectedProfile, resolvedPlaybook, personalization, setStepReady } = useWizardStore();
   const answers = useDecisionsStore((state) => state.answers);
+  const localize = useActionLocalizer();
   const effectivePersonalization = resolveEffectivePersonalization(detectedProfile?.id, personalization, answers);
   const [exportState, setExportState] = useState<"idle" | "busy" | "done" | "error">("idle");
   const [exportMessage, setExportMessage] = useState("");
@@ -151,7 +153,7 @@ export function FinalReviewStep() {
                 {highRiskActions.slice(0, 6).map((a) => (
                   <li key={a.id} className="flex items-center gap-2 text-xs text-[var(--text-secondary)]">
                     <span className="h-1 w-1 rounded-full bg-[#FF6B6B]" />
-                    {a.name}
+                    {localize(a).name}
                   </li>
                 ))}
                 {highRiskActions.length > 6 && (

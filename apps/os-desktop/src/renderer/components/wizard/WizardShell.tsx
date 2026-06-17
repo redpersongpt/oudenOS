@@ -5,23 +5,16 @@ import { useWizardStore } from "@/stores/wizard-store";
 import type { WizardStepId } from "@/stores/wizard-store";
 import { platform } from "@/lib/platform";
 import { LogoMark } from "@/components/brand/Logo";
+import { useT } from "@/i18n";
+import { useLangStore } from "@/stores/lang-store";
 
 const ND = { ease: [0.25, 0.1, 0.25, 1] as const };
 
-const LABELS: Record<WizardStepId, string> = {
-  welcome: "WELCOME", assessment: "ASSESSMENT", profile: "PROFILE",
-  preservation: "PRESERVATION", "playbook-strategy": "STRATEGY",
-  "playbook-review": "PLAN", personalization: "PERSONALIZE",
-  "final-review": "REVIEW",
-  execution: "APPLY", "reboot-resume": "REBOOT",
-  report: "COMPLETE", donation: "SUPPORT", handoff: "NEXT STEPS",
-};
-
-const CTA: Partial<Record<WizardStepId, string>> = {
-  welcome: "BEGIN", "playbook-strategy": "REVIEW",
-  "playbook-review": "PERSONALIZE",
-  "final-review": "APPLY", report: "NEXT STEPS", profile: "CONFIGURE",
-};
+// Steps with a custom primary-button label (key `cta.<step>` in the dictionaries).
+// Everything else uses `cta.default`. Nav labels live under `nav.<step>`.
+const CTA_STEPS = new Set<WizardStepId>([
+  "welcome", "playbook-strategy", "playbook-review", "final-review", "report", "profile",
+]);
 
 const NO_BAR = new Set<WizardStepId>(["playbook-strategy", "execution", "donation", "handoff"]);
 
@@ -29,6 +22,7 @@ const NO_BAR = new Set<WizardStepId>(["playbook-strategy", "execution", "donatio
 
 function Rail() {
   const { currentStep, steps } = useWizardStore();
+  const { t } = useT();
   const ci = steps.findIndex((s) => s.id === currentStep);
 
   return (
@@ -39,7 +33,7 @@ function Rail() {
       {/* Brand mark */}
       <div className="mb-6 flex items-center gap-2">
         <LogoMark size={16} />
-        <span className="nd-label" style={{ color: "var(--accent)" }}>SETUP</span>
+        <span className="nd-label" style={{ color: "var(--accent)" }}>{t("rail.setup")}</span>
       </div>
 
       <nav className="flex flex-1 flex-col">
@@ -73,7 +67,7 @@ function Rail() {
                   color: cur ? "var(--text-display)" : done ? "var(--text-secondary)" : "var(--text-disabled)",
                 }}
               >
-                {LABELS[step.id]}
+                {t(`nav.${step.id}`)}
               </span>
             </div>
           );
@@ -94,6 +88,7 @@ function Rail() {
 
 function Bar() {
   const { currentStep, progress, canGoBack, canGoNext, goBack, goNext } = useWizardStore();
+  const { t } = useT();
   if (NO_BAR.has(currentStep) || currentStep === "execution") return null;
 
   return (
@@ -107,7 +102,7 @@ function Bar() {
           className="flex items-center gap-2 nd-label transition-opacity duration-150 hover:opacity-80"
           style={{ color: "var(--text-secondary)" }}
         >
-          <ArrowLeft className="h-3 w-3" /> BACK
+          <ArrowLeft className="h-3 w-3" /> {t("bar.back")}
         </button>
       ) : <div className="w-12" />}
 
@@ -140,7 +135,7 @@ function Bar() {
           cursor: canGoNext ? "pointer" : "not-allowed",
         }}
       >
-        {CTA[currentStep] ?? "CONTINUE"}
+        {CTA_STEPS.has(currentStep) ? t(`cta.${currentStep}`) : t("cta.default")}
         <ArrowRight className="h-3 w-3" />
       </button>
     </div>
@@ -149,21 +144,40 @@ function Bar() {
 
 /* ── Title bar — minimal, --black bg ─────────────────────────────────── */
 
+function LangToggle() {
+  const { t, lang } = useT();
+  const toggle = useLangStore((s) => s.toggle);
+  return (
+    <button
+      onClick={toggle}
+      className="no-drag mr-1 flex items-center gap-1 px-2 font-mono text-label tracking-[0.08em] transition-opacity duration-150 hover:opacity-80"
+      aria-label={t("lang.toggle")}
+      title={t("lang.toggle")}
+    >
+      <span style={{ color: lang === "en" ? "var(--text-display)" : "var(--text-disabled)" }}>EN</span>
+      <span style={{ color: "var(--border-visible)" }}>/</span>
+      <span style={{ color: lang === "tr" ? "var(--text-display)" : "var(--text-disabled)" }}>TR</span>
+    </button>
+  );
+}
+
 function TitleBar() {
+  const { t } = useT();
   return (
     <div
       className="flex h-8 shrink-0 items-center justify-between px-4 drag-region"
       style={{ background: "var(--black)", borderBottom: "1px solid var(--border)" }}
     >
       <span className="nd-label-sm no-drag" style={{ color: "var(--text-disabled)" }}>
-        OUDEN · OS
+        {t("titlebar.brand")}
       </span>
       <div className="flex items-center no-drag">
+        <LangToggle />
         <button
           onClick={() => platform().window.minimize()}
           className="flex h-6 w-8 items-center justify-center transition-opacity duration-150 hover:opacity-80"
           style={{ color: "var(--text-disabled)" }}
-          aria-label="Minimize"
+          aria-label={t("titlebar.minimize")}
         >
           <svg width="10" height="1" viewBox="0 0 10 1" fill="currentColor"><rect width="10" height="1" /></svg>
         </button>
@@ -173,7 +187,7 @@ function TitleBar() {
           style={{ color: "var(--text-disabled)" }}
           onMouseEnter={(e) => { e.currentTarget.style.background = "var(--accent)"; e.currentTarget.style.color = "var(--text-display)"; }}
           onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "var(--text-disabled)"; }}
-          aria-label="Close"
+          aria-label={t("titlebar.close")}
         >
           <svg width="10" height="10" viewBox="0 0 10 10" stroke="currentColor" strokeWidth="1.2"><line x1="1" y1="1" x2="9" y2="9"/><line x1="9" y1="1" x2="1" y2="9"/></svg>
         </button>

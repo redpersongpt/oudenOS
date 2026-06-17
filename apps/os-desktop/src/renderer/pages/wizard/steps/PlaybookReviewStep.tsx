@@ -11,6 +11,7 @@ import { buildMockResolvedPlaybook } from "@/lib/mock-playbook";
 import technicalDetails from "@/lib/generated-technical-details.json";
 import { serviceCall } from "@/lib/service";
 import { getActionRationale, PHASE_RATIONALE } from "@/lib/expert-rationale";
+import { useActionLocalizer } from "@/i18n/content-overlay";
 
 // ---------------------------------------------------------------------------
 // Technical details types & helpers
@@ -237,13 +238,15 @@ const statusLabel: Record<string, string> = {
 
 function ActionRow({ action }: { action: PlaybookResolvedAction }) {
   const profile = useWizardStore((s) => s.detectedProfile?.id);
+  const localize = useActionLocalizer();
+  const a = localize(action);
   const rationale = getActionRationale(action.id, profile);
   return (
     <div className="flex items-start gap-3 px-4 py-2 border-b border-[var(--border)] last:border-0">
       <span className={`mt-1.5 w-1.5 h-1.5 rounded-full shrink-0 ${statusDot[action.status] ?? "bg-neutral-400"}`} />
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-3">
-          <span className="text-[12px] text-[var(--text-primary)] flex-1 min-w-0 truncate">{action.name}</span>
+          <span className="text-[12px] text-[var(--text-primary)] flex-1 min-w-0 truncate">{a.name}</span>
           <span className={`shrink-0 text-[10px] px-2 py-0.5 rounded-sm border ${statusBadge[action.status] ?? statusBadge.Blocked}`}>
             {statusLabel[action.status] ?? action.status}
           </span>
