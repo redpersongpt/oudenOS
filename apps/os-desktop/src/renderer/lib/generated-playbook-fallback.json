@@ -786,12 +786,12 @@
         {
           "id": "services.disable-xbox-services",
           "name": "Disable Xbox Background Services",
-          "description": "Disable Xbox Live Auth, Game Save, Networking, and Accessory services",
+          "description": "Disable Xbox Live Auth (XblAuthManager), Game Save, Networking, and Accessory services",
           "risk": "low",
           "default": false,
           "expertOnly": false,
           "requiresReboot": false,
-          "warningMessage": null,
+          "warningMessage": "This breaks Xbox app and Game Pass sign-in, cloud game saves, and Xbox multiplayer — including some PC Game Pass titles. Only disable it if you don't use Xbox, Game Pass, or Store games. It's fully reversible.",
           "blockedProfiles": [
             "vm_cautious"
           ],

@@ -51,12 +51,13 @@ actions:
 
   - id: services.disable-xbox-services
     name: "Disable Xbox Background Services"
-    description: "Disable Xbox Live Auth, Game Save, Networking, and Accessory services"
-    rationale: "Xbox services run in the background even without Xbox hardware or Game Pass. They consume resources and maintain network connections."
+    description: "Disable Xbox Live Auth (XblAuthManager), Game Save, Networking, and Accessory services"
+    rationale: "These services run in the background even without Xbox hardware. If you don't use the Xbox app, Game Pass, or Microsoft Store games, turning them off frees resources and closes idle network connections."
     risk: low
     tier: free
     default: false
     requiresReboot: false
+    warningMessage: "This breaks Xbox app and Game Pass sign-in, cloud game saves, and Xbox multiplayer — including some PC Game Pass titles. Only disable it if you don't use Xbox, Game Pass, or Store games. It's fully reversible."
     reversible: true
     estimatedSeconds: 3
     blockedProfiles:

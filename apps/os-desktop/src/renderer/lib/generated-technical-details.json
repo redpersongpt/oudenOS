@@ -489,7 +489,7 @@
         "hive": "HKLM",
         "path": "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile",
         "valueName": "SystemResponsiveness",
-        "value": 0,
+        "value": 10,
         "valueType": "DWord"
       },
       {
@@ -536,13 +536,6 @@
         "path": "SYSTEM\\CurrentControlSet\\Control\\FileSystem",
         "valueName": "NtfsDisable8dot3NameCreation",
         "value": 1,
-        "valueType": "DWord"
-      },
-      {
-        "hive": "HKLM",
-        "path": "SYSTEM\\CurrentControlSet\\Control\\FileSystem",
-        "valueName": "NtfsDisableLastAccessUpdate",
-        "value": 2147483649,
         "valueType": "DWord"
       },
       {
@@ -676,6 +669,13 @@
       {
         "hive": "HKCU",
         "path": "System\\GameConfigStore",
+        "valueName": "GameDVR_DXGIHonorFSEWindowsCompatible",
+        "value": 1,
+        "valueType": "DWord"
+      },
+      {
+        "hive": "HKCU",
+        "path": "System\\GameConfigStore",
         "valueName": "GameDVR_FSEBehaviorMode",
         "value": 2,
         "valueType": "DWord"
@@ -710,13 +710,6 @@
       {
         "hive": "HKLM",
         "path": "SYSTEM\\CurrentControlSet\\Services\\AMD Crash Defender Service",
-        "valueName": "Start",
-        "value": 4,
-        "valueType": "DWord"
-      },
-      {
-        "hive": "HKLM",
-        "path": "SYSTEM\\CurrentControlSet\\Services\\AMD External Events Utility",
         "valueName": "Start",
         "value": 4,
         "valueType": "DWord"
@@ -882,18 +875,7 @@
         "hive": "HKLM",
         "path": "SYSTEM\\CurrentControlSet\\Control",
         "valueName": "SvcHostSplitThresholdInKB",
-        "value": 67108864,
-        "valueType": "DWord"
-      }
-    ]
-  },
-  "perf.disable-page-combining": {
-    "registryChanges": [
-      {
-        "hive": "HKLM",
-        "path": "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management",
-        "valueName": "DisablePageCombining",
-        "value": 1,
+        "value": 4294967295,
         "valueType": "DWord"
       }
     ]
@@ -925,8 +907,15 @@
     "registryChanges": [
       {
         "hive": "HKLM",
-        "path": "SYSTEM\\CurrentControlSet\\Control\\Power",
+        "path": "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Power",
         "valueName": "HibernateEnabled",
+        "value": 0,
+        "valueType": "DWord"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FlyoutMenuSettings",
+        "valueName": "ShowHibernateOption",
         "value": 0,
         "valueType": "DWord"
       }
@@ -974,7 +963,7 @@
         "hive": "HKLM",
         "path": "SYSTEM\\CurrentControlSet\\Control\\FileSystem",
         "valueName": "NtfsDisableLastAccessUpdate",
-        "value": 2147483651,
+        "value": 2147483649,
         "valueType": "DWord"
       }
     ]
@@ -1141,6 +1130,17 @@
       }
     ]
   },
+  "privacy.disable-cross-device-experiences": {
+    "registryChanges": [
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\System",
+        "valueName": "EnableCdp",
+        "value": 0,
+        "valueType": "DWord"
+      }
+    ]
+  },
   "privacy.disable-app-launch-tracking": {
     "registryChanges": [
       {
@@ -1170,6 +1170,31 @@
         "path": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer",
         "valueName": "AllowOnlineTips",
         "value": 0,
+        "valueType": "DWord"
+      }
+    ]
+  },
+  "privacy.disable-cloud-content-policy": {
+    "registryChanges": [
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent",
+        "valueName": "DisableThirdPartySuggestions",
+        "value": 1,
+        "valueType": "DWord"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent",
+        "valueName": "DisableCloudOptimizedContent",
+        "value": 1,
+        "valueType": "DWord"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent",
+        "valueName": "DisableWindowsConsumerFeatures",
+        "value": 1,
         "valueType": "DWord"
       }
     ]
@@ -1232,6 +1257,17 @@
         "valueName": "Start",
         "value": 3,
         "valueType": "DWord"
+      }
+    ]
+  },
+  "privacy.hide-ai-settings-page": {
+    "registryChanges": [
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer",
+        "valueName": "SettingsPageVisibility",
+        "value": "hide:aicomponents",
+        "valueType": "String"
       }
     ]
   },
@@ -1327,6 +1363,17 @@
         "path": "SOFTWARE\\Policies\\WindowsNotepad",
         "valueName": "DisableAIFeatures",
         "value": 1,
+        "valueType": "DWord"
+      }
+    ]
+  },
+  "privacy.disable-system-ai-access": {
+    "registryChanges": [
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\AppPrivacy",
+        "valueName": "LetAppsAccessGenerativeAI",
+        "value": 2,
         "valueType": "DWord"
       }
     ]
