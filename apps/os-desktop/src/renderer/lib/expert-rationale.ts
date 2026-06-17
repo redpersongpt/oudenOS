@@ -2,6 +2,14 @@
 // Maps action IDs to human-readable "why" explanations.
 // Used by PlaybookReview, Execution, and Report steps.
 
+import rationaleTr from "@/i18n/rationale-tr.json";
+
+type RationaleLang = "en" | "tr";
+const TR = rationaleTr as {
+  actions: Record<string, { why?: string; profileWarning?: Record<string, string>; antiCheatNote?: string }>;
+  phases: Record<string, string>;
+};
+
 interface ActionRationale {
   why: string;
   profileNote?: Record<string, string>;
@@ -166,14 +174,15 @@ const RATIONALE: Record<string, ActionRationale> = {
   },
 };
 
-export function getActionRationale(actionId: string, profile?: string): { why: string; profileWarning?: string; antiCheatNote?: string } {
+export function getActionRationale(actionId: string, profile?: string, lang: RationaleLang = "en"): { why: string; profileWarning?: string; antiCheatNote?: string } {
   const r = RATIONALE[actionId];
   if (!r) return { why: "" };
+  const tr = lang === "tr" ? TR.actions[actionId] : undefined;
 
   return {
-    why: r.why,
-    profileWarning: profile && r.profileNote?.[profile],
-    antiCheatNote: r.antiCheatNote,
+    why: tr?.why || r.why,
+    profileWarning: profile ? (tr?.profileWarning?.[profile] ?? r.profileNote?.[profile]) : undefined,
+    antiCheatNote: tr?.antiCheatNote ?? r.antiCheatNote,
   };
 }
 
@@ -190,6 +199,11 @@ export const PHASE_RATIONALE: Record<string, string> = {
   security: "Tunes Windows Update and security to the risk level you're actually comfortable with.",
   personalization: "Your look: dark mode, colors, taskbar layout, transparency.",
 };
+
+export function getPhaseRationale(phaseId: string, lang: RationaleLang = "en"): string {
+  if (lang === "tr") return TR.phases[phaseId] || PHASE_RATIONALE[phaseId] || "";
+  return PHASE_RATIONALE[phaseId] || "";
+}
 
 // Blocked reason explanations
 export function getBlockedExplanation(actionId: string, reason: string | null, profile: string): string {

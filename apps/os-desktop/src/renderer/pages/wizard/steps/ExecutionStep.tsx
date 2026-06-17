@@ -6,6 +6,7 @@
 import { useEffect, useRef, useState, useMemo } from "react";
 import { motion, AnimatePresence, useSpring, useTransform } from "framer-motion";
 import { useT, type TFunction } from "@/i18n";
+import spinnerQuotesTr from "@/i18n/spinner-quotes-tr.json";
 import { useWizardStore } from "@/stores/wizard-store";
 import type { ActionDecisionProvenance, ExecutionJournalEntry } from "@/stores/wizard-store";
 import { useDecisionsStore } from "@/stores/decisions-store";
@@ -228,6 +229,8 @@ function TimelineItem({ action, index, t }: { action: CompletedAction; index: nu
 
 // Spinning Quote — italic, fade transition
 function SpinningQuote({ isActive }: { isActive: boolean }) {
+  const { lang } = useT();
+  const quotes = lang === "tr" ? (spinnerQuotesTr as string[]) : SPINNING_QUOTES;
   const [idx, setIdx] = useState(() => Math.floor(Math.random() * SPINNING_QUOTES.length));
 
   useEffect(() => {
@@ -254,7 +257,7 @@ function SpinningQuote({ isActive }: { isActive: boolean }) {
         transition={{ duration: 0.35, ease: [0.0, 0.0, 0.2, 1.0] }}
         className="text-[11px] italic text-[var(--text-secondary)] select-none text-center mt-2"
       >
-        {SPINNING_QUOTES[idx]}
+        {quotes[idx]}
       </motion.p>
     </AnimatePresence>
   );

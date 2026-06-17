@@ -10,7 +10,7 @@ import { useDecisionsStore } from "@/stores/decisions-store";
 import { buildMockResolvedPlaybook } from "@/lib/mock-playbook";
 import technicalDetails from "@/lib/generated-technical-details.json";
 import { serviceCall } from "@/lib/service";
-import { getActionRationale, PHASE_RATIONALE } from "@/lib/expert-rationale";
+import { getActionRationale, getPhaseRationale } from "@/lib/expert-rationale";
 import { useActionLocalizer } from "@/i18n/content-overlay";
 import { useT } from "@/i18n";
 
@@ -231,11 +231,11 @@ const statusBadge: Record<string, string> = {
 };
 
 function ActionRow({ action }: { action: PlaybookResolvedAction }) {
-  const { t } = useT();
+  const { t, lang } = useT();
   const profile = useWizardStore((s) => s.detectedProfile?.id);
   const localize = useActionLocalizer();
   const a = localize(action);
-  const rationale = getActionRationale(action.id, profile);
+  const rationale = getActionRationale(action.id, profile, lang);
   const statusLabel: Record<string, string> = {
     Included:   t("plan.statusIncluded"),
     Blocked:    t("plan.statusBlocked"),
@@ -274,9 +274,10 @@ function ActionRow({ action }: { action: PlaybookResolvedAction }) {
 // ---------------------------------------------------------------------------
 
 function PhaseSection({ phase, defaultOpen }: { phase: PlaybookPhase; defaultOpen: boolean }) {
-  const { t } = useT();
+  const { t, lang } = useT();
   const [open, setOpen] = useState(defaultOpen);
   const includedCount = phase.actions.filter(a => a.status === "Included").length;
+  const phaseRationale = getPhaseRationale(phase.id, lang);
 
   return (
     <div className="border border-[var(--border)] rounded-sm overflow-hidden">
@@ -289,9 +290,9 @@ function PhaseSection({ phase, defaultOpen }: { phase: PlaybookPhase; defaultOpe
             <span className="font-data text-[13px] text-[var(--text-display)]">{phase.name}</span>
             <span className="text-[10px] text-[var(--text-disabled)]">{t("plan.changesCount", { count: includedCount })}</span>
           </div>
-          {PHASE_RATIONALE[phase.id] && (
+          {phaseRationale && (
             <span className="text-[10px] font-normal leading-snug text-[var(--text-secondary)]">
-              {PHASE_RATIONALE[phase.id]}
+              {phaseRationale}
             </span>
           )}
         </div>

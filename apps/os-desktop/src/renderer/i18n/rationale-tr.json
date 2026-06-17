@@ -1,0 +1,296 @@
+{
+  "actions": {
+    "privacy.disable-telemetry": {
+      "why": "Windows, ne yaptığını usulca Microsoft'a fısıldıyor. Bu, telefonu suratına kapatıyor."
+    },
+    "privacy.disable-recall": {
+      "why": "Windows, yapay zeka 'hatırlasın' diye ekranındaki her şeyin ekran görüntüsünü alıyordu. Asla."
+    },
+    "privacy.disable-advertising-id": {
+      "why": "Uygulamaların seni fişlemek için kullandığı reklam kimliğini öldürür. Bunu kapatmak zorunda kalman zaten çılgınlık."
+    },
+    "privacy.disable-click-to-do": {
+      "why": "Ekranını okuyup kimsenin istemediği şeyleri 'öneren' yapay zeka katmanını kaldırır."
+    },
+    "privacy.disable-ai-svc-autostart": {
+      "why": "Yapay zeka servisi, kullansan da kullanmasan da RAM'ine çöküyor. Tahliye edildi."
+    },
+    "privacy.disable-edge-ai": {
+      "why": "Edge'in tarama geçmişini bulut yapay zekasına yollamasını engeller."
+    },
+    "privacy.disable-paint-ai": {
+      "why": "Paint'in bir daire çizmek için buluta ihtiyacı yok. Bağlantı kesildi."
+    },
+    "privacy.disable-notepad-ai": {
+      "why": "Not Defteri notlar içindir — onları buluta ihbar etmek için değil."
+    },
+    "privacy.disable-location": {
+      "why": "Windows'un ve uygulamaların seni harita üzerinde takip etmesini durdurur.",
+      "profileWarning": {
+        "work_pc": "Yönetilen ağlarda VPN konum tespitini etkileyebilir."
+      }
+    },
+    "privacy.disable-input-personalization": {
+      "why": "Windows'un nasıl yazdığını incelemesini durdurur."
+    },
+    "privacy.disable-online-speech": {
+      "why": "Sesin, Microsoft'un sunucuları yerine kendi makinende kalır."
+    },
+    "privacy.disable-find-my-device": {
+      "why": "PC'nin gün boyu konumunu Microsoft'a sinyallemesini durdurur."
+    },
+    "privacy.disable-smartscreen": {
+      "why": "SmartScreen her indirmeyi açılmadan önce Microsoft'tan geçirir. Kapatmak bu kontrolü kaldırır — ve beraberinde gelen indirme korumasını da.",
+      "profileWarning": {
+        "work_pc": "Önerilmez — zararlı indirmelere karşı koruma sağlar."
+      }
+    },
+    "shell.disable-copilot": {
+      "why": "Copilot düğmesini ve arka planda çöktüğü hafızayı tahliye eder."
+    },
+    "shell.show-file-extensions": {
+      "why": "Gerçek dosya türlerini (.exe, .pdf) Dosya Gezgini'nde gösterir — böylece 'invoice.pdf.exe' senden saklanamaz."
+    },
+    "shell.enable-end-task": {
+      "why": "Görev çubuğu sağ tık menüsüne 'Görevi sonlandır' ekler, böylece donmuş bir uygulamayı Görev Yöneticisi'ni açmadan öldürebilirsin."
+    },
+    "shell.remove-cast-to-device": {
+      "why": "2017'den beri kimsenin tıklamadığı Aygıta Yayınla seçeneğini kaldırır."
+    },
+    "shell.remove-troubleshoot-compatibility": {
+      "why": "Sağ tık menyünden uyumluluk sorun gidericisi karmaşasını temizler."
+    },
+    "shell.remove-edit-with-paint3d": {
+      "why": "Microsoft'un hâlâ kullanılıyormuş gibi yaptığı Paint 3D kalıntısını gizler."
+    },
+    "shell.hide-task-view": {
+      "why": "Görev Görünümü düğmesini kaldırır. Win+Tab yine aynı işi yapıyor."
+    },
+    "shell.hide-widgets-button": {
+      "why": "Widget'lar düğmesini ve arkandan çektiği haber/hava durumunu öldürür."
+    },
+    "shell.disable-web-search": {
+      "why": "Başlat menüsü aramaların artık Bing'e sapmıyor."
+    },
+    "shell.disable-edge-ads": {
+      "why": "Edge'in alışveriş 'önerilerini', yeni sekme reklamlarını ve promosyon açılır pencerelerini kapatır."
+    },
+    "shell.hide-chat-icon": {
+      "why": "Teams Chat simgesini görev çubuğundan atar. Gerçekten istiyorsan Teams yine çalışıyor."
+    },
+    "shell.disable-content-delivery": {
+      "why": "Windows'un sessizce 'önerilen' uygulamaları ve karşılama-turu ipuçlarını yüklemesini durdurur."
+    },
+    "perf.mmcss-system-responsiveness": {
+      "why": "Windows'un arka plan görevlerine ayırdığını azaltarak oyunlarına ve aktif uygulamalarına daha fazla CPU verir.",
+      "profileWarning": {
+        "work_pc": "Toplantılar sırasında arka plan görev performansını etkileyebilir."
+      }
+    },
+    "perf.disable-game-dvr": {
+      "why": "Game DVR, oyununu arka planda — davetsizce — kaydedip GPU'nu yiyor ve FPS'ini düşürüyor. Kapanıyor."
+    },
+    "perf.disable-fullscreen-optimizations": {
+      "why": "Windows'un uyumluluk katmanı yerine sana gerçek tam ekran verir. Daha az giriş gecikmesi."
+    },
+    "perf.disable-transparency": {
+      "why": "GPU kaynağı tüketen bulanıklık ve saydamlık efektlerini kaldırır."
+    },
+    "perf.disable-fault-tolerant-heap": {
+      "why": "Windows'un çöken uygulamaları sessizce yamalamasını durdurur, ki bu fazladan bellek kullanır."
+    },
+    "perf.disable-sticky-keys": {
+      "why": "Shift tuşu açılır penceresinin tam ekran oyunları bölmesini durdurur."
+    },
+    "perf.disable-service-host-split": {
+      "why": "Daha az bellek kullanmak için arka plan servislerini bir araya toplar."
+    },
+    "perf.disable-paging-executive": {
+      "why": "Önemli sistem kodunu diske takas etmek yerine RAM'de tutar."
+    },
+    "cpu.win32-priority-separation": {
+      "why": "Kullandığın uygulamanın arka plan uygulamalarına göre 3 kat daha fazla CPU zamanı almasını sağlar."
+    },
+    "cpu.disable-core-parking": {
+      "why": "Tüm CPU çekirdeklerini uyanık tutar, böylece uyanmak için 1-5ms harcamak yerine anında yanıt verirler.",
+      "profileWarning": {
+        "office_laptop": "Uygulanmadı — bataryada güç tüketimini ve ısıyı artırır.",
+        "gaming_laptop": "Uygulanmadı — dizüstülerde termal yönetim daha kritiktir."
+      }
+    },
+    "cpu.global-timer-resolution": {
+      "why": "Oyun zamanlamasını daha az hassas hale getiren bir Windows 11 değişikliğini düzeltir."
+    },
+    "power.disable-fast-startup": {
+      "why": "PC'nin anlık görüntü kaydetmek yerine tamamen kapanmasını sağlar. Eski durumdan kaynaklı sürücü sorunlarını önler."
+    },
+    "power.disable-modern-standby": {
+      "why": "PC'nin uyku sırasında kısmen aktif kalmasını durdurur, ki bu güç israf eder ve bataryayı tüketir.",
+      "profileWarning": {
+        "office_laptop": "Uygulanmadı — Modern Bekleme, dizüstülerde hızlı uyanma ve arka plan senkronizasyonu için önemlidir.",
+        "gaming_laptop": "Uygulanmadı — termal yönetimde sorun çıkarabilecek uyku davranışını değiştirir."
+      }
+    },
+    "power.disable-hibernation": {
+      "why": "RAM'in kadar disk alanı (8-64GB) açar ve temiz kapanmalar sağlar."
+    },
+    "gpu.disable-nvidia-container": {
+      "why": "Veri toplayan NVIDIA arka plan servislerini durdurur. Sürücüleri yine de elle güncelleyebilirsin."
+    },
+    "gpu.disable-amd-services": {
+      "why": "Veri toplayan AMD arka plan servislerini durdurur. Sürücüleri yine de elle güncelleyebilirsin."
+    },
+    "gpu.disable-hags": {
+      "why": "GPU zamanlamasını Windows'a geri verir — bazı sistemlerde frame sürelerini düzeltebilir. Ama NVIDIA DLSS Frame Generation, HAGS'ın açık olmasını ZORUNLU kılar, yani DLSS Frame Gen kullanıyorsan açık bırak. Varsayılan olarak kapalı; sadece gerçekten istediğini biliyorsan aç."
+    },
+    "gpu.tdr-delay": {
+      "why": "GPU'ya, Windows çöktü sanmadan önce daha fazla süre tanır. Yanlış 'sürücü yanıt vermeyi durdurdu' hatalarını önler."
+    },
+    "appx.remove-consumer-bloat": {
+      "why": "Candy Crush, TikTok, Solitaire ve geri kalan davetsiz misafirleri Başlat menünden tekmeler."
+    },
+    "appx.remove-xbox-apps": {
+      "why": "Xbox Game Bar'ı ve arka plandaki yandaşlarını kaldırır. Gerçekten Xbox'ta oynuyorsan kalsın."
+    },
+    "appx.disable-edge-updates": {
+      "why": "Edge'in kendi kafasına göre kendini güncellemesini durdurur. Edge yüklü kalır."
+    },
+    "appx.disable-edge-preload": {
+      "why": "Edge'i hiç açmasan bile açılışta RAM'e önyükleniyor. Bu beleşçiliği durdurur — 100-300MB geri gelir."
+    },
+    "appx.remove-edge": {
+      "why": "Edge'i kalıcı olarak siler. Geri alınamaz. Tarayıcı gerektiren bazı Windows özellikleri çalışmayı durdurur.",
+      "antiCheatNote": "Bazı kurumsal web uygulamaları Edge gerektirir. Kaldırmadan önce doğrula."
+    },
+    "appx.remove-edge-webview": {
+      "why": "WebView2; Teams, Widget'lar ve birçok uygulama için gerekli. Kaldırmak bunları BOZAR.",
+      "profileWarning": {
+        "work_pc": "İş bilgisayarlarında ASLA kaldırma — Teams ve kurumsal uygulamalar WebView2 gerektirir."
+      }
+    },
+    "services.disable-sysmain": {
+      "why": "Windows'un uygulamaları 'iyi niyetle' RAM'e önyüklemesini durdurur. SSD'deysen zaten anlamsız."
+    },
+    "services.disable-xbox-services": {
+      "why": "Xbox'ı hiç açmamış olsan bile çalışmaya devam eden Xbox servislerini kapatır."
+    },
+    "services.disable-print-spooler": {
+      "why": "Yazdırma servisinin bilinen güvenlik açıkları var. Yazıcı kullanmıyorsan kapatmak güvenli.",
+      "profileWarning": {
+        "work_pc": "Korundu — iş akışları için yazdırma gerekli."
+      }
+    },
+    "network.disable-nagle": {
+      "why": "Oyun verisini paketleri bir araya getirmek için beklemek yerine anında gönderir. Çevrimiçi oyun gecikmesini azaltır."
+    },
+    "network.disable-offloading": {
+      "why": "CPU'nun ağ paketlerini doğrudan işlemesini sağlar, çevrimiçi oyunlarda daha hızlı yanıt verir.",
+      "profileWarning": {
+        "work_pc": "Uygulanmadı — yönetilen ağlarda bağlantı sorunlarına neden olabilir."
+      }
+    },
+    "startup.disable-background-apps": {
+      "why": "Sen bakmıyorken bile arka planda boş boş duran uygulamaları durdurur. CPU ve RAM geri kazanıldı."
+    },
+    "startup.disable-autoplay": {
+      "why": "USB sürücülerin programları otomatik çalıştırmasını durdurur. Zararlı yazılımın yaygın bir yayılma yolunu önler."
+    },
+    "security.disable-delivery-optimization": {
+      "why": "Windows'un, güncellemeleri başkalarının PC'lerine yüklemek için internetini kullanmasını durdurur."
+    },
+    "security.disable-update-asap": {
+      "why": "Windows'un seni, daha az kararlı olabilecek erken önizleme güncellemelerine dahil etmesini durdurur."
+    },
+    "perf.disable-mouse-acceleration": {
+      "why": "1:1 fare girişi için işaretçi ivmelenmesini kaldırır. MouseSpeed=0 sana ham sensör hareketini verir."
+    },
+    "perf.disable-mpos": {
+      "why": "Multi-Plane Overlay'leri devre dışı bırakır (OverlayTestMode=5). Belirli GPU/monitör kombinasyonlarındaki frame pacing sorunlarını düzeltir."
+    },
+    "perf.disable-last-access-time": {
+      "why": "NTFS'in her dosya okumasında zaman damgası yazmasını durdurur. Disk I/O'sunu azaltır."
+    },
+    "perf.disable-device-power-saving": {
+      "why": "USB, NIC ve PCI aygıtlarının, uyanma gecikmesi ekleyen düşük güç durumlarına girmesini önler."
+    },
+    "network.disable-nagle-algorithm": {
+      "why": "TCP paket toplamayı devre dışı bırakır (TcpAckFrequency=1, TCPNoDelay=1). Oyunlar için ağ gidiş-dönüş süresini azaltır."
+    },
+    "perf.disable-memory-compression": {
+      "why": "Disable-MMAgent çalıştırır. Sıkıştırmaya ihtiyaç olmayan 16GB+ sistemlerde CPU yükünü azaltır."
+    },
+    "perf.fix-ndu-memory-leak": {
+      "why": "ndu.sys Start=4 ayarlar. Bilinen Windows ağ veri kullanımı sürücüsü bellek sızıntısını düzeltir."
+    },
+    "gpu.disable-mpo-dwm": {
+      "why": "DWM OverlayTestMode=5 ayarlar. Daha tutarlı frame pacing için klasik masaüstü birleştirmeyi zorlar."
+    },
+    "cpu.aggressive-boost": {
+      "why": "Yük altında CPU'yu maksimum turbo frekansında tutar. Maksimum performans için güç/ısıdan ödün verir."
+    },
+    "cpu.min-processor-state-100": {
+      "why": "MinProcessorState'i %100'e ayarlar. CPU tam hızda kalır — frame'ler arası hız düşürme yok."
+    },
+    "perf.disable-gamebar-presence": {
+      "why": "GameBarPresenceWriter arka plan sürecini öldürür. Sürekli çalışır ama Oyun Modu için gerekli değildir."
+    },
+    "perf.legacy-flip-presentation": {
+      "why": "Hardware: Legacy Flip'i (gerçek özel tam ekran) zorlar. Daha düşük giriş gecikmesi için DWM birleştirmesini atlar."
+    },
+    "perf.disable-auto-maintenance": {
+      "why": "Windows'un rastgele zamanlarda defrag, tarama ve temizlik yapmasını durdurur. Bakımı sen elle yaparsın."
+    },
+    "perf.disable-auto-sign-on": {
+      "why": "Yeniden başlatmalardan sonra otomatik oturum açmayı önler. Güvenlik iyileştirmesi, performans bedeli yok."
+    },
+    "perf.disable-store-auto-updates": {
+      "why": "Microsoft Store'un arka planda uygulama güncellemeleri indirmesini durdurur."
+    },
+    "privacy.powershell-telemetry-optout": {
+      "why": "POWERSHELL_TELEMETRY_OPTOUT=1 ayarlar. PowerShell varsayılan olarak telemetri gönderir — bu onu durdurur."
+    },
+    "privacy.disable-typing-insights": {
+      "why": "Windows'un yazım kalıplarını analiz etmesini durdurur. InsightsEnabled=0."
+    },
+    "privacy.disable-msrt": {
+      "why": "Kötü Amaçlı Yazılım Temizleme Aracı'nın Windows Update üzerinden gönderilmesini önler."
+    },
+    "network.qos-dscp-fix": {
+      "why": "Çok NIC'li sistemlerde QoS DSCP paket etiketlemesini düzeltir. Oyun trafiğinin öncelik işareti almasını sağlar."
+    },
+    "power.disable-device-power-saving": {
+      "why": "USB, NIC ve PCI aygıtlarında güç tasarrufunu devre dışı bırakır. Uyanma gecikmesini ortadan kaldırır.",
+      "profileWarning": {
+        "office_laptop": "Uygulanmadı — aygıt güç tasarrufu batarya ömrü için önemlidir."
+      }
+    },
+    "security.full-defender-disable": {
+      "why": "Nükleer seçenek: 9 Defender servisinin tamamını + SmartScreen'i öldürür. ~500MB RAM açar ve MsMpEng.exe CPU yükünü tamamen kaldırır.",
+      "profileWarning": {
+        "work_pc": "İş bilgisayarlarında ASLA devre dışı bırakma — kurumsal uyumluluk aktif antivirüs gerektirir."
+      },
+      "antiCheatNote": "Bazı anti-cheat sistemleri (FACEIT, Vanguard) Defender'ın çalışıyor olmasını gerektirebilir."
+    },
+    "security.disable-vulnerable-driver-blocklist": {
+      "why": "Engellenmiş sürücülerin yüklenmesine izin verir. RW-Everything (XHCI IMOD) ve MSI Utility araçları için gereklidir."
+    },
+    "security.disable-cpu-mitigations": {
+      "why": "Mikrokod DLL'ini yeniden adlandırarak + registry ile Spectre/Meltdown azaltmalarını devre dışı bırakır. CPU'ya bağlı işlerde %2-15 performans kazancı.",
+      "profileWarning": {
+        "work_pc": "Hassas veri işleyen sistemlerde ASLA devre dışı bırakma."
+      }
+    }
+  },
+  "phases": {
+    "cleanup": "Hiç kurmadığın o uygulamaları kapı dışarı ediyor — Candy Crush, TikTok, hepsi — ve arkalarında sürükledikleri gürültüyü de.",
+    "services": "PC'nin ihtiyaç duymadığı arka plan servislerini kapatıyor. Önce bağımlılıkları kontrol ediyor, böylece önemli bir şey çökmüyor.",
+    "tasks": "Sen PC'ni kullanmaya çalışırken eve telefon eden, güncelleme arayan ve 'bakım' yapan zamanlanmış görevleri infaz ediyor.",
+    "privacy": "Microsoft'un seni ne kadar tanıdığını kısıyor: takip, reklam, AI ayıklaması ve hiç onaylamadığın o veri toplama işi.",
+    "performance": "CPU, GPU ve sistem tepkiselliğini ayarlıyor — daha az gecikme, daha çok FPS.",
+    "shell": "Görev çubuğunu, sağ tık menülerini, aramayı ve Dosya Gezgini'ni sadeleştiriyor — aslında istediğin masaüstü buydu.",
+    "startup-shutdown": "Açılış ekranının arkasında birikip duran arka plan uygulamalarını ve başlangıç görevlerini keserek daha hızlı açılıyor.",
+    "networking": "Online oyun için ağ gecikmesini kısıyor ve eski, güvensiz protokolleri emekliye ayırıyor.",
+    "security": "Windows Update ve güvenliği, gerçekten rahat ettiğin risk seviyesine göre ayarlıyor.",
+    "personalization": "Senin tarzın: koyu mod, renkler, görev çubuğu düzeni, şeffaflık."
+  }
+}
