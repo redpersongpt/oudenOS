@@ -218,7 +218,10 @@ jobs:
               "perf.disable-sleep-study",            # SleepStudy service absent on Server
               "storage.disable-indexing",            # WSearch service may not exist
               "display.disable-game-bar",            # GameBar registry may not exist
-              "cpu.disable-core-parking"             # Power setting may not apply on Server
+              "cpu.disable-core-parking",            # Power setting may not apply on Server
+              "services.disable-diagnostic-policy-host-collector",  # Diagnostics Hub collector absent on Server
+              "services.disable-diagnostic-execution",             # diagsvc absent on Server
+              "services.disable-data-usage"          # DusmSvc may be absent on Server
           )
 
           # These are deliberately rejected by the current executor or impossible on CI.

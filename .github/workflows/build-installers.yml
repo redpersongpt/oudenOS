@@ -212,6 +212,9 @@ jobs:
       - name: Build Tauri installer
         working-directory: apps/os-desktop
         run: pnpm tauri:build
+        env:
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
 
       - name: Copy installer to stable name
         shell: pwsh
