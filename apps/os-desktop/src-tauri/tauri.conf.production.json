@@ -1,5 +1,6 @@
 {
   "bundle": {
+    "createUpdaterArtifacts": true,
     "resources": {
       "../../../services/os-service/target/release/oudenos-os-service.exe": "oudenos-os-service.exe",
       "../../../playbooks": "playbooks",

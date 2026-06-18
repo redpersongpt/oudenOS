@@ -59,6 +59,12 @@
   "plugins": {
     "shell": {
       "open": true
+    },
+    "updater": {
+      "endpoints": [
+        "https://github.com/redpersongpt/oudenOS/releases/latest/download/latest.json"
+      ],
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDQzRjc2ODFDNkI2QTkzOTIKUldTU2sycHJIR2ozUTNMWXpSMnhGbnhPcENUdVIxK3dheXJ0cjBkZmZ6ZDlvbTdkUzhjTzQxTm0K"
     }
   }
 }
