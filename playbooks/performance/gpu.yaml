@@ -25,27 +25,6 @@ actions:
         value: 4
         valueType: DWord
 
-  - id: gpu.nvidia-disable-dynamic-pstate
-    name: "Lock NVIDIA GPU to P-State 0 (Maximum Performance)"
-    description: "Disable dynamic P-State switching on NVIDIA GPUs by setting DisableDynamicPstate=1, forcing the GPU to remain at maximum clocks at all times"
-    rationale: "NVIDIA GPUs dynamically transition between power states. These transitions introduce latency spikes of 5-50ms as the GPU ramps clocks. Locking to P-State 0 eliminates transition latency."
-    risk: medium
-    tier: premium
-    default: false
-    requiresReboot: true
-    reversible: true
-    estimatedSeconds: 3
-    blockedProfiles:
-      - work_pc
-      - office_laptop
-      - vm_cautious
-    registryChanges:
-      - hive: HKLM
-        path: "SYSTEM\\CurrentControlSet\\Control\\Class\\{4d36e968-e325-11ce-bfc1-08002be10318}\\0000"
-        valueName: DisableDynamicPstate
-        value: 1
-        valueType: DWord
-
   - id: gpu.tdr-delay
     name: "Increase TDR Timeout to 10 Seconds"
     description: "Increase the Timeout Detection and Recovery (TDR) delay from the default 2 seconds to 10 seconds, preventing false GPU resets during heavy load spikes"
@@ -67,25 +46,6 @@ actions:
         path: "SYSTEM\\CurrentControlSet\\Control\\GraphicsDrivers"
         valueName: TdrDdiDelay
         value: 10
-        valueType: DWord
-
-  - id: gpu.msi-mode
-    name: "Enable GPU MSI (Message Signaled Interrupts) Mode"
-    description: "Enable Message Signaled Interrupts for the GPU, replacing legacy line-based interrupts with in-band PCIe messages for lower interrupt latency"
-    rationale: "MSI mode eliminates the need for the GPU to use shared IRQ lines. MSI writes interrupt data directly to memory via PCIe, reducing DPC latency for GPU interrupts."
-    risk: medium
-    tier: premium
-    default: false
-    requiresReboot: true
-    reversible: true
-    estimatedSeconds: 3
-    blockedProfiles:
-      - vm_cautious
-    registryChanges:
-      - hive: HKLM
-        path: "SYSTEM\\CurrentControlSet\\Enum\\PCI\\<GPU Device ID>\\<Instance>\\Device Parameters\\Interrupt Management\\MessageSignaledInterruptProperties"
-        valueName: MSISupported
-        value: 1
         valueType: DWord
 
   - id: gpu.disable-nvidia-telemetry

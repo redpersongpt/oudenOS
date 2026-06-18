@@ -156,12 +156,6 @@ fn is_blocked(action_id: &str, profile: &str, preservation: &Value) -> bool {
         "power.disable-usb-selective-suspend" => profile == "office_laptop",
         "power.disable-pcie-link-state-pm" => profile == "office_laptop",
 
-        // ── GPU actions ──
-        "gpu.nvidia-disable-dynamic-pstate" => {
-            profile == "work_pc" || profile == "office_laptop" || profile == "vm_cautious"
-        }
-        "gpu.msi-mode" => profile == "vm_cautious",
-
         // ── Service actions blocked per profile ──
         "services.disable-sysmain" => profile == "work_pc",
         "services.disable-print-spooler" => {
@@ -1254,45 +1248,6 @@ fn embedded_actions() -> Vec<Value> {
             "sideEffects": ["DLSS Frame Generation and other HAGS-dependent NVIDIA features stop working until HAGS is re-enabled"],
             "warningMessage": "Disabling Hardware-Accelerated GPU Scheduling may affect features like DLSS Frame Generation on supported NVIDIA GPUs. Leave it enabled if you use DLSS Frame Gen."
         }),
-        // ── 34. GPU: NVIDIA Disable Dynamic P-State ──────────────────────────
-        serde_json::json!({
-            "id": "gpu.nvidia-disable-dynamic-pstate",
-            "name": "Lock NVIDIA GPU to P-State 0 (Maximum Performance)",
-            "category": "gpu",
-            "description": "Disable dynamic P-State switching on NVIDIA GPUs by setting DisableDynamicPstate=1, forcing the GPU to remain at maximum clocks at all times.",
-            "rationale": "NVIDIA GPUs dynamically transition between power states. These transitions introduce latency spikes of 5-50ms as the GPU ramps clocks. Locking to P-State 0 eliminates transition latency.",
-            "risk": "medium",
-            "tier": "premium",
-            "requiresReboot": true,
-            "reversible": true,
-            "estimatedSeconds": 3,
-            "allowedProfiles": ["gaming_desktop", "low_spec_system"],
-            "blockedProfiles": ["work_pc", "office_laptop", "vm_cautious"],
-            "preservationConflicts": [],
-            "registryChanges": [
-                {
-                    "hive": "HKLM",
-                    "path": "SYSTEM\\CurrentControlSet\\Control\\Class\\{4d36e968-e325-11ce-bfc1-08002be10318}\\0000",
-                    "valueName": "DisableDynamicPstate",
-                    "valueType": "DWord",
-                    "value": 1
-                }
-            ],
-            "serviceChanges": [],
-            "taskChanges": [],
-            "appxRemovals": [],
-            "featureChanges": [],
-            "powerShellCommands": [],
-            "tags": ["gpu", "nvidia", "latency", "pstate", "gaming", "advanced"],
-            "sideEffects": [
-                "GPU runs at maximum clocks even at desktop idle",
-                "Significantly higher idle power consumption and GPU temperature",
-                "Fan noise will increase at idle",
-                "NVIDIA-only; AMD GPUs use a different P-State mechanism",
-                "Registry path assumes GPU is at adapter index 0000"
-            ],
-            "warningMessage": "NVIDIA-only tweak. GPU will run at max clocks at all times, increasing power and temperature."
-        }),
         // ── 35. GPU: TDR Delay ───────────────────────────────────────────────
         serde_json::json!({
             "id": "gpu.tdr-delay",
@@ -1332,42 +1287,6 @@ fn embedded_actions() -> Vec<Value> {
             "tags": ["gpu", "stability", "tdr"],
             "sideEffects": ["Genuine GPU hangs will take longer to recover from"],
             "warningMessage": null
-        }),
-        // ── 36. GPU: MSI Mode ────────────────────────────────────────────────
-        serde_json::json!({
-            "id": "gpu.msi-mode",
-            "name": "Enable GPU MSI (Message Signaled Interrupts) Mode",
-            "category": "gpu",
-            "description": "Enable Message Signaled Interrupts for the GPU, replacing legacy line-based interrupts with in-band PCIe messages for lower interrupt latency.",
-            "rationale": "MSI mode eliminates the need for the GPU to use shared IRQ lines. MSI writes interrupt data directly to memory via PCIe, reducing DPC latency for GPU interrupts.",
-            "risk": "medium",
-            "tier": "premium",
-            "requiresReboot": true,
-            "reversible": true,
-            "estimatedSeconds": 3,
-            "allowedProfiles": ["gaming_desktop", "work_pc", "low_spec_system", "office_laptop"],
-            "blockedProfiles": ["vm_cautious"],
-            "preservationConflicts": [],
-            "registryChanges": [
-                {
-                    "hive": "HKLM",
-                    "path": "SYSTEM\\CurrentControlSet\\Enum\\PCI\\<GPU Device ID>\\<Instance>\\Device Parameters\\Interrupt Management\\MessageSignaledInterruptProperties",
-                    "valueName": "MSISupported",
-                    "valueType": "DWord",
-                    "value": 1
-                }
-            ],
-            "serviceChanges": [],
-            "taskChanges": [],
-            "appxRemovals": [],
-            "featureChanges": [],
-            "powerShellCommands": [],
-            "tags": ["gpu", "latency", "interrupt", "msi"],
-            "sideEffects": [
-                "Requires identifying GPU PCI device path; incorrect path has no effect",
-                "Some older GPUs may not support MSI properly"
-            ],
-            "warningMessage": "GPU PCI device path must be detected at runtime. Incorrect path has no effect."
         }),
         // ── 37. Network: Disable Nagle ───────────────────────────────────────
         serde_json::json!({
@@ -3764,8 +3683,8 @@ mod tests {
         let all = get_actions(None);
         assert_eq!(
             all.len(),
-            95,
-            "Expected exactly 95 embedded actions, got {}",
+            93,
+            "Expected exactly 93 embedded actions, got {}",
             all.len()
         );
     }
@@ -3892,10 +3811,6 @@ mod tests {
             "GPU energy driver must be blocked on vm_cautious"
         );
         assert!(
-            !ids.contains(&"gpu.msi-mode"),
-            "GPU MSI mode must be blocked on vm_cautious"
-        );
-        assert!(
             !ids.contains(&"startup.disable-gamebar-presence"),
             "GameBar presence must be blocked on vm_cautious"
         );
@@ -3934,7 +3849,6 @@ mod tests {
             "power.high-performance-plan",
             "power.disable-usb-selective-suspend",
             "power.disable-pcie-link-state-pm",
-            "gpu.nvidia-disable-dynamic-pstate",
         ];
         for blocked in &must_block {
             assert!(

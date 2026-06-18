@@ -141,15 +141,12 @@ jobs:
         shell: bash
         run: |
           cat > RELEASE_NOTES.md <<'NOTES'
-          Settings, an in-app updater, Turkish, and more tweaks.
+          Critical fix. Update from any earlier version.
 
-          - New Settings panel (the gear, top-right): check for and install updates, switch language (English / Türkçe), and quick links to donate, GitHub, and YouTube.
-          - In-app auto-updater — oudenOS now updates itself: signed, verified, one click.
-          - Full Turkish translation with a language toggle; it starts in your system's language.
-          - Added safe, opt-in optimizations: EventTranscript logging, cross-app app diagnostics, online font streaming, settings sync, CPU power throttling (EcoQoS), and a few background services (Diagnostics Hub, Diagnostic Execution, Data Usage, Biometric). The ones with trade-offs are off by default with clear warnings.
-          - The Xbox-services tweak now spells out that it breaks Xbox / Game Pass sign-in.
-          - Dropped the static "preservation" interstitial and fixed a batch of UI bugs (reboot-screen controls, a Back button that could re-run changes, an invisible restart button, update-check messaging, skipped counts).
-          - File Explorer, Start, taskbar and Search stay protected — every new tweak was checked against the shell-safety guards.
+          - Removed two GPU tweaks that could leave the machine on a black screen with only a cursor after the next reboot (recoverable only via System Restore): "Enable GPU MSI mode" and "Lock NVIDIA P-State 0". Forcing MSI mode can stop the GPU driver from loading on some hardware, dropping Windows to the basic display adapter. These are gone from the catalog entirely — the few microseconds of latency were never worth an unbootable desktop.
+          - Fixed Turkish: the setup questions were showing in English even in Turkish mode. The whole questionnaire now translates.
+
+          If a previous version left you on a black screen: boot into Recovery → System Restore, or Safe Boot and run the rollback from the activity log.
 
           macOS users: the attached .dmg is a non-functional preview — the same screens and questions as the Windows app, but it never changes your Mac.
           NOTES

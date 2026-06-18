@@ -34,7 +34,6 @@ blockedActions:
   # Shell — business users expect defaults
   - shell.reduce-search-box
   # GPU — not relevant for work
-  - gpu.nvidia-disable-dynamic-pstate
 
 # Actions that should be default=false (optional) instead of default=true
 optionalActions:

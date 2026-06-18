@@ -7,8 +7,16 @@
   "version": "2.0",
   "uniqueId": "2cb0ed8d-2d5b-4e74-9c0d-df83cc3ab4d4",
   "upgradableFrom": "any",
-  "supportedBuilds": [19045, 22631, 26100],
-  "requirements": ["NoPendingUpdates", "Internet", "PluggedIn"],
+  "supportedBuilds": [
+    19045,
+    22631,
+    26100
+  ],
+  "requirements": [
+    "NoPendingUpdates",
+    "Internet",
+    "PluggedIn"
+  ],
   "useKernelDriver": false,
   "productCode": 410,
   "git": "https://github.com/redpersongpt/oudenOS",
@@ -107,7 +115,6 @@
         }
       ]
     },
-
     {
       "key": "highPerformancePlan",
       "icon": "Zap",
@@ -126,7 +133,9 @@
           "danger": false,
           "behavior": {
             "value": true,
-            "includeActions": ["power.high-performance-plan"],
+            "includeActions": [
+              "power.high-performance-plan"
+            ],
             "estimatedActions": 1,
             "riskLevel": "safe",
             "requiresReboot": false,
@@ -142,14 +151,15 @@
           "danger": false,
           "behavior": {
             "value": false,
-            "blockActions": ["power.high-performance-plan"],
+            "blockActions": [
+              "power.high-performance-plan"
+            ],
             "blockReason": "You chose to keep the Balanced power plan.",
             "estimatedBlocked": 1
           }
         }
       ]
     },
-
     {
       "key": "disableFastStartup",
       "icon": "Power",
@@ -168,7 +178,9 @@
           "danger": false,
           "behavior": {
             "value": true,
-            "includeActions": ["power.disable-fast-startup"],
+            "includeActions": [
+              "power.disable-fast-startup"
+            ],
             "estimatedActions": 1,
             "riskLevel": "safe",
             "requiresReboot": false,
@@ -184,14 +196,15 @@
           "danger": false,
           "behavior": {
             "value": false,
-            "blockActions": ["power.disable-fast-startup"],
+            "blockActions": [
+              "power.disable-fast-startup"
+            ],
             "blockReason": "You chose to keep Fast Startup enabled.",
             "estimatedBlocked": 1
           }
         }
       ]
     },
-
     {
       "key": "disableHibernation",
       "icon": "Battery",
@@ -210,7 +223,9 @@
           "danger": false,
           "behavior": {
             "value": true,
-            "includeActions": ["power.disable-hibernation"],
+            "includeActions": [
+              "power.disable-hibernation"
+            ],
             "estimatedActions": 1,
             "riskLevel": "safe",
             "requiresReboot": false,
@@ -226,14 +241,15 @@
           "danger": false,
           "behavior": {
             "value": false,
-            "blockActions": ["power.disable-hibernation"],
+            "blockActions": [
+              "power.disable-hibernation"
+            ],
             "blockReason": "You chose to keep hibernation enabled.",
             "estimatedBlocked": 1
           }
         }
       ]
     },
-
     {
       "key": "disableIndexing",
       "icon": "Search",
@@ -252,7 +268,10 @@
           "danger": false,
           "behavior": {
             "value": true,
-            "includeActions": ["storage.disable-indexing", "services.disable-tiledatamodelsvc"],
+            "includeActions": [
+              "storage.disable-indexing",
+              "services.disable-tiledatamodelsvc"
+            ],
             "estimatedActions": 2,
             "riskLevel": "safe",
             "requiresReboot": false,
@@ -268,14 +287,16 @@
           "danger": false,
           "behavior": {
             "value": false,
-            "blockActions": ["storage.disable-indexing", "services.disable-tiledatamodelsvc"],
+            "blockActions": [
+              "storage.disable-indexing",
+              "services.disable-tiledatamodelsvc"
+            ],
             "blockReason": "You chose to keep Windows Search indexing active.",
             "estimatedBlocked": 2
           }
         }
       ]
     },
-
     {
       "key": "disableBackgroundApps",
       "icon": "Cpu",
@@ -296,7 +317,9 @@
           "danger": false,
           "behavior": {
             "value": true,
-            "includeActions": ["startup.disable-background-apps"],
+            "includeActions": [
+              "startup.disable-background-apps"
+            ],
             "estimatedActions": 1,
             "riskLevel": "safe",
             "requiresReboot": true,
@@ -314,14 +337,15 @@
           "danger": false,
           "behavior": {
             "value": false,
-            "blockActions": ["startup.disable-background-apps"],
+            "blockActions": [
+              "startup.disable-background-apps"
+            ],
             "blockReason": "You chose to allow apps to run in the background.",
             "estimatedBlocked": 1
           }
         }
       ]
     },
-
     {
       "key": "disableSysmain",
       "icon": "HardDrive",
@@ -340,7 +364,9 @@
           "danger": false,
           "behavior": {
             "value": true,
-            "includeActions": ["services.disable-sysmain"],
+            "includeActions": [
+              "services.disable-sysmain"
+            ],
             "estimatedActions": 1,
             "riskLevel": "safe",
             "requiresReboot": false,
@@ -356,14 +382,15 @@
           "danger": false,
           "behavior": {
             "value": false,
-            "blockActions": ["services.disable-sysmain"],
+            "blockActions": [
+              "services.disable-sysmain"
+            ],
             "blockReason": "You chose to keep SysMain enabled.",
             "estimatedBlocked": 1
           }
         }
       ]
     },
-
     {
       "key": "disableAutomaticMaintenance",
       "icon": "Wrench",
@@ -382,7 +409,10 @@
           "danger": false,
           "behavior": {
             "value": true,
-            "includeActions": ["startup.disable-automatic-maintenance", "perf.disable-auto-maintenance"],
+            "includeActions": [
+              "startup.disable-automatic-maintenance",
+              "perf.disable-auto-maintenance"
+            ],
             "estimatedActions": 2,
             "riskLevel": "safe",
             "requiresReboot": false,
@@ -398,14 +428,16 @@
           "danger": false,
           "behavior": {
             "value": false,
-            "blockActions": ["startup.disable-automatic-maintenance", "perf.disable-auto-maintenance"],
+            "blockActions": [
+              "startup.disable-automatic-maintenance",
+              "perf.disable-auto-maintenance"
+            ],
             "blockReason": "You chose to keep automatic maintenance enabled.",
             "estimatedBlocked": 2
           }
         }
       ]
     },
-
     {
       "key": "optimizeThreadPriority",
       "icon": "Cpu",
@@ -426,7 +458,10 @@
           "danger": false,
           "behavior": {
             "value": true,
-            "includeActions": ["cpu.win32-priority-separation", "perf.csrss-high-priority"],
+            "includeActions": [
+              "cpu.win32-priority-separation",
+              "perf.csrss-high-priority"
+            ],
             "estimatedActions": 2,
             "riskLevel": "safe",
             "requiresReboot": false,
@@ -442,14 +477,16 @@
           "danger": false,
           "behavior": {
             "value": false,
-            "blockActions": ["cpu.win32-priority-separation", "perf.csrss-high-priority"],
+            "blockActions": [
+              "cpu.win32-priority-separation",
+              "perf.csrss-high-priority"
+            ],
             "blockReason": "You chose to keep the default Win32PrioritySeparation value.",
             "estimatedBlocked": 2
           }
         }
       ]
     },
-
     {
       "key": "keepPrinterSupport",
       "icon": "Wrench",
@@ -468,7 +505,10 @@
           "danger": false,
           "behavior": {
             "value": false,
-            "includeActions": ["services.disable-print-spooler", "services.disable-fax"],
+            "includeActions": [
+              "services.disable-print-spooler",
+              "services.disable-fax"
+            ],
             "estimatedActions": 2,
             "riskLevel": "safe",
             "requiresReboot": false,
@@ -484,14 +524,16 @@
           "danger": false,
           "behavior": {
             "value": true,
-            "blockActions": ["services.disable-print-spooler", "services.disable-fax"],
+            "blockActions": [
+              "services.disable-print-spooler",
+              "services.disable-fax"
+            ],
             "blockReason": "You indicated this PC uses a printer.",
             "estimatedBlocked": 2
           }
         }
       ]
     },
-
     {
       "key": "keepRemoteAccess",
       "icon": "Globe",
@@ -510,7 +552,10 @@
           "danger": false,
           "behavior": {
             "value": false,
-            "includeActions": ["services.disable-remote-services", "services.disable-phone-service"],
+            "includeActions": [
+              "services.disable-remote-services",
+              "services.disable-phone-service"
+            ],
             "estimatedActions": 2,
             "riskLevel": "safe",
             "requiresReboot": false,
@@ -526,14 +571,16 @@
           "danger": false,
           "behavior": {
             "value": true,
-            "blockActions": ["services.disable-remote-services", "services.disable-phone-service"],
+            "blockActions": [
+              "services.disable-remote-services",
+              "services.disable-phone-service"
+            ],
             "blockReason": "You indicated this PC uses remote access or phone linking.",
             "estimatedBlocked": 2
           }
         }
       ]
     },
-
     {
       "key": "disableAutoplay",
       "icon": "HardDrive",
@@ -552,7 +599,9 @@
           "danger": false,
           "behavior": {
             "value": true,
-            "includeActions": ["startup.disable-autoplay"],
+            "includeActions": [
+              "startup.disable-autoplay"
+            ],
             "estimatedActions": 1,
             "riskLevel": "safe",
             "requiresReboot": false,
@@ -568,14 +617,15 @@
           "danger": false,
           "behavior": {
             "value": false,
-            "blockActions": ["startup.disable-autoplay"],
+            "blockActions": [
+              "startup.disable-autoplay"
+            ],
             "blockReason": "You chose to keep AutoPlay enabled.",
             "estimatedBlocked": 1
           }
         }
       ]
     },
-
     {
       "key": "disableLastAccessTime",
       "icon": "Clock",
@@ -596,7 +646,10 @@
           "danger": false,
           "behavior": {
             "value": true,
-            "includeActions": ["storage.disable-last-access", "perf.ntfs-optimization"],
+            "includeActions": [
+              "storage.disable-last-access",
+              "perf.ntfs-optimization"
+            ],
             "estimatedActions": 2,
             "riskLevel": "safe",
             "requiresReboot": false,
@@ -612,14 +665,16 @@
           "danger": false,
           "behavior": {
             "value": false,
-            "blockActions": ["storage.disable-last-access", "perf.ntfs-optimization"],
+            "blockActions": [
+              "storage.disable-last-access",
+              "perf.ntfs-optimization"
+            ],
             "blockReason": "You chose to keep NTFS last-access timestamps.",
             "estimatedBlocked": 2
           }
         }
       ]
     },
-
     {
       "key": "svcHostSplitThreshold",
       "icon": "Cpu",
@@ -638,7 +693,9 @@
           "danger": false,
           "behavior": {
             "value": true,
-            "includeActions": ["perf.svchost-split-threshold"],
+            "includeActions": [
+              "perf.svchost-split-threshold"
+            ],
             "estimatedActions": 1,
             "riskLevel": "safe",
             "requiresReboot": false,
@@ -654,14 +711,15 @@
           "danger": false,
           "behavior": {
             "value": false,
-            "blockActions": ["perf.svchost-split-threshold"],
+            "blockActions": [
+              "perf.svchost-split-threshold"
+            ],
             "blockReason": "You chose to keep the default svchost grouping.",
             "estimatedBlocked": 1
           }
         }
       ]
     },
-
     {
       "key": "disableFaultTolerantHeap",
       "icon": "Cpu",
@@ -682,7 +740,9 @@
           "danger": false,
           "behavior": {
             "value": true,
-            "includeActions": ["perf.disable-prefetch"],
+            "includeActions": [
+              "perf.disable-prefetch"
+            ],
             "estimatedActions": 1,
             "riskLevel": "moderate",
             "requiresReboot": false,
@@ -700,14 +760,15 @@
           "danger": false,
           "behavior": {
             "value": false,
-            "blockActions": ["perf.disable-prefetch"],
+            "blockActions": [
+              "perf.disable-prefetch"
+            ],
             "blockReason": "You chose to keep Fault Tolerant Heap enabled.",
             "estimatedBlocked": 1
           }
         }
       ]
     },
-
     {
       "key": "telemetryLevel",
       "icon": "Eye",
@@ -803,7 +864,6 @@
         }
       ]
     },
-
     {
       "key": "disableActivityFeed",
       "icon": "Eye",
@@ -822,7 +882,9 @@
           "danger": false,
           "behavior": {
             "value": true,
-            "includeActions": ["privacy.disable-activity-feed"],
+            "includeActions": [
+              "privacy.disable-activity-feed"
+            ],
             "estimatedActions": 1,
             "riskLevel": "safe",
             "requiresReboot": false,
@@ -838,14 +900,15 @@
           "danger": false,
           "behavior": {
             "value": false,
-            "blockActions": ["privacy.disable-activity-feed"],
+            "blockActions": [
+              "privacy.disable-activity-feed"
+            ],
             "blockReason": "You chose to keep the Activity Feed enabled.",
             "estimatedBlocked": 1
           }
         }
       ]
     },
-
     {
       "key": "disableClipboardHistory",
       "icon": "Eye",
@@ -864,7 +927,9 @@
           "danger": false,
           "behavior": {
             "value": true,
-            "includeActions": ["privacy.disable-clipboard-history"],
+            "includeActions": [
+              "privacy.disable-clipboard-history"
+            ],
             "estimatedActions": 1,
             "riskLevel": "safe",
             "requiresReboot": false,
@@ -880,14 +945,15 @@
           "danger": false,
           "behavior": {
             "value": false,
-            "blockActions": ["privacy.disable-clipboard-history"],
+            "blockActions": [
+              "privacy.disable-clipboard-history"
+            ],
             "blockReason": "You chose to keep Clipboard History enabled.",
             "estimatedBlocked": 1
           }
         }
       ]
     },
-
     {
       "key": "disableLocation",
       "icon": "Globe",
@@ -906,7 +972,10 @@
           "danger": false,
           "behavior": {
             "value": true,
-            "includeActions": ["privacy.disable-location", "services.disable-geolocation"],
+            "includeActions": [
+              "privacy.disable-location",
+              "services.disable-geolocation"
+            ],
             "estimatedActions": 2,
             "riskLevel": "safe",
             "requiresReboot": false,
@@ -922,14 +991,16 @@
           "danger": false,
           "behavior": {
             "value": false,
-            "blockActions": ["privacy.disable-location", "services.disable-geolocation"],
+            "blockActions": [
+              "privacy.disable-location",
+              "services.disable-geolocation"
+            ],
             "blockReason": "You chose to keep Location Services enabled.",
             "estimatedBlocked": 2
           }
         }
       ]
     },
-
     {
       "key": "disableAdvertisingId",
       "icon": "Eye",
@@ -948,7 +1019,9 @@
           "danger": false,
           "behavior": {
             "value": true,
-            "includeActions": ["privacy.disable-advertising-id"],
+            "includeActions": [
+              "privacy.disable-advertising-id"
+            ],
             "estimatedActions": 1,
             "riskLevel": "safe",
             "requiresReboot": false,
@@ -964,14 +1037,15 @@
           "danger": false,
           "behavior": {
             "value": false,
-            "blockActions": ["privacy.disable-advertising-id"],
+            "blockActions": [
+              "privacy.disable-advertising-id"
+            ],
             "blockReason": "You chose to keep the Advertising ID.",
             "estimatedBlocked": 1
           }
         }
       ]
     },
-
     {
       "key": "disableTailoredExperiences",
       "icon": "Eye",
@@ -990,7 +1064,9 @@
           "danger": false,
           "behavior": {
             "value": true,
-            "includeActions": ["privacy.disable-tailored-experiences"],
+            "includeActions": [
+              "privacy.disable-tailored-experiences"
+            ],
             "estimatedActions": 1,
             "riskLevel": "safe",
             "requiresReboot": false,
@@ -1006,14 +1082,15 @@
           "danger": false,
           "behavior": {
             "value": false,
-            "blockActions": ["privacy.disable-tailored-experiences"],
+            "blockActions": [
+              "privacy.disable-tailored-experiences"
+            ],
             "blockReason": "You chose to allow Tailored Experiences.",
             "estimatedBlocked": 1
           }
         }
       ]
     },
-
     {
       "key": "disableSpeechPersonalization",
       "icon": "Volume2",
@@ -1032,7 +1109,9 @@
           "danger": false,
           "behavior": {
             "value": true,
-            "includeActions": ["privacy.disable-online-speech"],
+            "includeActions": [
+              "privacy.disable-online-speech"
+            ],
             "estimatedActions": 1,
             "riskLevel": "safe",
             "requiresReboot": false,
@@ -1048,14 +1127,15 @@
           "danger": false,
           "behavior": {
             "value": false,
-            "blockActions": ["privacy.disable-online-speech"],
+            "blockActions": [
+              "privacy.disable-online-speech"
+            ],
             "blockReason": "You chose to keep online speech personalisation.",
             "estimatedBlocked": 1
           }
         }
       ]
     },
-
     {
       "key": "disableDeliveryOptimization",
       "icon": "Globe",
@@ -1074,7 +1154,9 @@
           "danger": false,
           "behavior": {
             "value": true,
-            "includeActions": ["security.disable-delivery-optimization"],
+            "includeActions": [
+              "security.disable-delivery-optimization"
+            ],
             "estimatedActions": 1,
             "riskLevel": "safe",
             "requiresReboot": false,
@@ -1090,14 +1172,15 @@
           "danger": false,
           "behavior": {
             "value": false,
-            "blockActions": ["security.disable-delivery-optimization"],
+            "blockActions": [
+              "security.disable-delivery-optimization"
+            ],
             "blockReason": "You chose to keep Delivery Optimization enabled.",
             "estimatedBlocked": 1
           }
         }
       ]
     },
-
     {
       "key": "disableErrorReporting",
       "icon": "Eye",
@@ -1116,7 +1199,10 @@
           "danger": false,
           "behavior": {
             "value": true,
-            "includeActions": ["privacy.disable-error-reporting", "services.disable-wer-service"],
+            "includeActions": [
+              "privacy.disable-error-reporting",
+              "services.disable-wer-service"
+            ],
             "estimatedActions": 2,
             "riskLevel": "safe",
             "requiresReboot": false,
@@ -1132,14 +1218,16 @@
           "danger": false,
           "behavior": {
             "value": false,
-            "blockActions": ["privacy.disable-error-reporting", "services.disable-wer-service"],
+            "blockActions": [
+              "privacy.disable-error-reporting",
+              "services.disable-wer-service"
+            ],
             "blockReason": "You chose to keep Windows Error Reporting enabled.",
             "estimatedBlocked": 2
           }
         }
       ]
     },
-
     {
       "key": "disableCloudContent",
       "icon": "Eye",
@@ -1191,7 +1279,6 @@
         }
       ]
     },
-
     {
       "key": "disableWpbt",
       "icon": "Shield",
@@ -1210,7 +1297,9 @@
           "danger": false,
           "behavior": {
             "value": true,
-            "includeActions": ["privacy.disable-find-my-device"],
+            "includeActions": [
+              "privacy.disable-find-my-device"
+            ],
             "estimatedActions": 1,
             "riskLevel": "safe",
             "requiresReboot": false,
@@ -1226,14 +1315,15 @@
           "danger": false,
           "behavior": {
             "value": false,
-            "blockActions": ["privacy.disable-find-my-device"],
+            "blockActions": [
+              "privacy.disable-find-my-device"
+            ],
             "blockReason": "You chose to keep Find My Device enabled.",
             "estimatedBlocked": 1
           }
         }
       ]
     },
-
     {
       "key": "powershellTelemetryOptout",
       "icon": "Eye",
@@ -1252,7 +1342,9 @@
           "danger": false,
           "behavior": {
             "value": true,
-            "includeActions": ["privacy.powershell-telemetry-optout"],
+            "includeActions": [
+              "privacy.powershell-telemetry-optout"
+            ],
             "estimatedActions": 1,
             "riskLevel": "safe",
             "requiresReboot": false,
@@ -1268,14 +1360,15 @@
           "danger": false,
           "behavior": {
             "value": false,
-            "blockActions": ["privacy.powershell-telemetry-optout"],
+            "blockActions": [
+              "privacy.powershell-telemetry-optout"
+            ],
             "blockReason": "You chose to keep PowerShell telemetry.",
             "estimatedBlocked": 1
           }
         }
       ]
     },
-
     {
       "key": "enableGameMode",
       "icon": "Gamepad2",
@@ -1294,7 +1387,9 @@
           "danger": false,
           "behavior": {
             "value": true,
-            "includeActions": ["startup.enable-game-mode"],
+            "includeActions": [
+              "startup.enable-game-mode"
+            ],
             "estimatedActions": 1,
             "riskLevel": "safe",
             "requiresReboot": false,
@@ -1310,14 +1405,15 @@
           "danger": false,
           "behavior": {
             "value": false,
-            "blockActions": ["startup.enable-game-mode"],
+            "blockActions": [
+              "startup.enable-game-mode"
+            ],
             "blockReason": "You chose not to enable Game Mode.",
             "estimatedBlocked": 1
           }
         }
       ]
     },
-
     {
       "key": "disableGameDvr",
       "icon": "Gamepad2",
@@ -1367,7 +1463,6 @@
         }
       ]
     },
-
     {
       "key": "disableFullscreenOptimizations",
       "icon": "MonitorSpeaker",
@@ -1386,7 +1481,9 @@
           "danger": false,
           "behavior": {
             "value": true,
-            "includeActions": ["perf.disable-fullscreen-optimizations"],
+            "includeActions": [
+              "perf.disable-fullscreen-optimizations"
+            ],
             "estimatedActions": 1,
             "riskLevel": "safe",
             "requiresReboot": false,
@@ -1402,14 +1499,15 @@
           "danger": false,
           "behavior": {
             "value": false,
-            "blockActions": ["perf.disable-fullscreen-optimizations"],
+            "blockActions": [
+              "perf.disable-fullscreen-optimizations"
+            ],
             "blockReason": "You chose to keep Fullscreen Optimizations enabled.",
             "estimatedBlocked": 1
           }
         }
       ]
     },
-
     {
       "key": "legacyFlipPresentation",
       "icon": "MonitorSpeaker",
@@ -1428,7 +1526,9 @@
           "danger": false,
           "behavior": {
             "value": true,
-            "includeActions": ["perf.legacy-flip-presentation"],
+            "includeActions": [
+              "perf.legacy-flip-presentation"
+            ],
             "estimatedActions": 1,
             "riskLevel": "safe",
             "requiresReboot": false,
@@ -1444,14 +1544,15 @@
           "danger": false,
           "behavior": {
             "value": false,
-            "blockActions": ["perf.legacy-flip-presentation"],
+            "blockActions": [
+              "perf.legacy-flip-presentation"
+            ],
             "blockReason": "You chose to use the default presentation path.",
             "estimatedBlocked": 1
           }
         }
       ]
     },
-
     {
       "key": "disableTransparency",
       "icon": "Eye",
@@ -1470,7 +1571,9 @@
           "danger": false,
           "behavior": {
             "value": true,
-            "includeActions": ["perf.disable-transparency"],
+            "includeActions": [
+              "perf.disable-transparency"
+            ],
             "estimatedActions": 1,
             "riskLevel": "safe",
             "requiresReboot": false,
@@ -1486,14 +1589,15 @@
           "danger": false,
           "behavior": {
             "value": false,
-            "blockActions": ["perf.disable-transparency"],
+            "blockActions": [
+              "perf.disable-transparency"
+            ],
             "blockReason": "You chose to keep transparency effects.",
             "estimatedBlocked": 1
           }
         }
       ]
     },
-
     {
       "key": "disableMouseAcceleration",
       "icon": "MonitorSpeaker",
@@ -1512,7 +1616,10 @@
           "danger": false,
           "behavior": {
             "value": true,
-            "includeActions": ["perf.disable-pointer-acceleration", "display.disable-pointer-acceleration"],
+            "includeActions": [
+              "perf.disable-pointer-acceleration",
+              "display.disable-pointer-acceleration"
+            ],
             "estimatedActions": 2,
             "riskLevel": "safe",
             "requiresReboot": false,
@@ -1528,14 +1635,16 @@
           "danger": false,
           "behavior": {
             "value": false,
-            "blockActions": ["perf.disable-pointer-acceleration", "display.disable-pointer-acceleration"],
+            "blockActions": [
+              "perf.disable-pointer-acceleration",
+              "display.disable-pointer-acceleration"
+            ],
             "blockReason": "You chose to keep pointer acceleration enabled.",
             "estimatedBlocked": 2
           }
         }
       ]
     },
-
     {
       "key": "disableStickyKeys",
       "icon": "Wrench",
@@ -1554,7 +1663,9 @@
           "danger": false,
           "behavior": {
             "value": true,
-            "includeActions": ["perf.disable-sticky-keys"],
+            "includeActions": [
+              "perf.disable-sticky-keys"
+            ],
             "estimatedActions": 1,
             "riskLevel": "safe",
             "requiresReboot": false,
@@ -1570,14 +1681,15 @@
           "danger": false,
           "behavior": {
             "value": false,
-            "blockActions": ["perf.disable-sticky-keys"],
+            "blockActions": [
+              "perf.disable-sticky-keys"
+            ],
             "blockReason": "You chose to keep Sticky Keys prompts enabled.",
             "estimatedBlocked": 1
           }
         }
       ]
     },
-
     {
       "key": "disableMemoryCompression",
       "icon": "Cpu",
@@ -1598,7 +1710,9 @@
           "danger": false,
           "behavior": {
             "value": true,
-            "includeActions": ["memory.disable-compression"],
+            "includeActions": [
+              "memory.disable-compression"
+            ],
             "estimatedActions": 1,
             "riskLevel": "moderate",
             "requiresReboot": true,
@@ -1616,14 +1730,15 @@
           "danger": false,
           "behavior": {
             "value": false,
-            "blockActions": ["memory.disable-compression"],
+            "blockActions": [
+              "memory.disable-compression"
+            ],
             "blockReason": "You chose to keep memory compression enabled.",
             "estimatedBlocked": 1
           }
         }
       ]
     },
-
     {
       "key": "disableCoreParking",
       "icon": "Cpu",
@@ -1644,7 +1759,10 @@
           "danger": false,
           "behavior": {
             "value": true,
-            "includeActions": ["cpu.disable-core-parking", "cpu.min-processor-state-100"],
+            "includeActions": [
+              "cpu.disable-core-parking",
+              "cpu.min-processor-state-100"
+            ],
             "estimatedActions": 2,
             "riskLevel": "moderate",
             "requiresReboot": false,
@@ -1660,14 +1778,16 @@
           "danger": false,
           "behavior": {
             "value": false,
-            "blockActions": ["cpu.disable-core-parking", "cpu.min-processor-state-100"],
+            "blockActions": [
+              "cpu.disable-core-parking",
+              "cpu.min-processor-state-100"
+            ],
             "blockReason": "You chose to allow core parking.",
             "estimatedBlocked": 2
           }
         }
       ]
     },
-
     {
       "key": "aggressiveBoostMode",
       "icon": "Zap",
@@ -1688,7 +1808,9 @@
           "danger": false,
           "behavior": {
             "value": true,
-            "includeActions": ["cpu.aggressive-boost-mode"],
+            "includeActions": [
+              "cpu.aggressive-boost-mode"
+            ],
             "estimatedActions": 1,
             "riskLevel": "moderate",
             "requiresReboot": false,
@@ -1706,14 +1828,15 @@
           "danger": false,
           "behavior": {
             "value": false,
-            "blockActions": ["cpu.aggressive-boost-mode"],
+            "blockActions": [
+              "cpu.aggressive-boost-mode"
+            ],
             "blockReason": "You chose to keep the default CPU boost mode.",
             "estimatedBlocked": 1
           }
         }
       ]
     },
-
     {
       "key": "mmcssTuning",
       "icon": "Gamepad2",
@@ -1765,7 +1888,6 @@
         }
       ]
     },
-
     {
       "key": "disableGpuTelemetry",
       "icon": "MonitorSpeaker",
@@ -1817,54 +1939,6 @@
         }
       ]
     },
-
-    {
-      "key": "gpuPstateLock",
-      "icon": "MonitorSpeaker",
-      "label": "NVIDIA P-State Lock",
-      "title": "Lock NVIDIA GPU to P-State 0 (maximum performance)?",
-      "desc": "NVIDIA dynamic P-states ramp GPU clocks up and down based on load. During frame rendering the GPU can spend time in a lower P-state before detecting the load spike and boosting. Locking P-State 0 keeps the GPU at maximum clocks at all times, eliminating ramp-up latency. performance research documents this for desktop rigs.",
-      "note": "Sets gpu.nvidia-disable-dynamic-pstate. Writes to NVIDIA driver registry keys under HKLM\\SYSTEM\\CurrentControlSet\\Control\\Class\\{4d36e968-...}. Not recommended for laptops — causes thermal throttling on restricted cooling.",
-      "visibility": {
-        "minPreset": "aggressive",
-        "excludeLaptop": true
-      },
-      "options": [
-        {
-          "value": true,
-          "title": "Yes — lock GPU to P0",
-          "desc": "NVIDIA GPU stays at maximum clocks. No ramp-up latency. Higher idle power draw and temps.",
-          "badge": "Advanced",
-          "badgeColor": "bg-purple-500/15 text-purple-400",
-          "danger": false,
-          "behavior": {
-            "value": true,
-            "includeActions": ["gpu.nvidia-disable-dynamic-pstate", "gpu.msi-mode"],
-            "estimatedActions": 2,
-            "riskLevel": "moderate",
-            "requiresReboot": false,
-            "warnings": [
-              "Idle power consumption increases significantly. Not suitable for laptops or systems with weak cooling."
-            ]
-          }
-        },
-        {
-          "value": false,
-          "title": "No — allow dynamic P-states",
-          "desc": "GPU clocks scale with workload. Lower idle temps and power draw.",
-          "badge": null,
-          "badgeColor": null,
-          "danger": false,
-          "behavior": {
-            "value": false,
-            "blockActions": ["gpu.nvidia-disable-dynamic-pstate", "gpu.msi-mode"],
-            "blockReason": "You chose to allow dynamic GPU P-states.",
-            "estimatedBlocked": 2
-          }
-        }
-      ]
-    },
-
     {
       "key": "disableDevicePowerSaving",
       "icon": "Battery",
@@ -1916,7 +1990,6 @@
         }
       ]
     },
-
     {
       "key": "stripSearchWebNoise",
       "icon": "Search",
@@ -1968,7 +2041,6 @@
         }
       ]
     },
-
     {
       "key": "edgeBehavior",
       "icon": "Globe",
@@ -2048,7 +2120,6 @@
         }
       ]
     },
-
     {
       "key": "disableCopilot",
       "icon": "Sparkles",
@@ -2098,7 +2169,6 @@
         }
       ]
     },
-
     {
       "key": "disableAiApps",
       "icon": "Sparkles",
@@ -2160,7 +2230,6 @@
         }
       ]
     },
-
     {
       "key": "cleanupTaskbar",
       "icon": "MonitorSpeaker",
@@ -2218,7 +2287,6 @@
         }
       ]
     },
-
     {
       "key": "cleanupContextMenu",
       "icon": "Wrench",
@@ -2268,7 +2336,6 @@
         }
       ]
     },
-
     {
       "key": "cleanupExplorer",
       "icon": "HardDrive",
@@ -2318,7 +2385,6 @@
         }
       ]
     },
-
     {
       "key": "enableEndTask",
       "icon": "Wrench",
@@ -2337,7 +2403,9 @@
           "danger": false,
           "behavior": {
             "value": true,
-            "includeActions": ["shell.enable-end-task"],
+            "includeActions": [
+              "shell.enable-end-task"
+            ],
             "estimatedActions": 1,
             "riskLevel": "safe",
             "requiresReboot": false,
@@ -2353,14 +2421,15 @@
           "danger": false,
           "behavior": {
             "value": false,
-            "blockActions": ["shell.enable-end-task"],
+            "blockActions": [
+              "shell.enable-end-task"
+            ],
             "blockReason": "You chose not to add End Task to the taskbar.",
             "estimatedBlocked": 1
           }
         }
       ]
     },
-
     {
       "key": "disableNetbios",
       "icon": "Globe",
@@ -2379,7 +2448,9 @@
           "danger": false,
           "behavior": {
             "value": true,
-            "includeActions": ["network.disable-llmnr"],
+            "includeActions": [
+              "network.disable-llmnr"
+            ],
             "estimatedActions": 1,
             "riskLevel": "safe",
             "requiresReboot": false,
@@ -2395,14 +2466,15 @@
           "danger": false,
           "behavior": {
             "value": false,
-            "blockActions": ["network.disable-llmnr"],
+            "blockActions": [
+              "network.disable-llmnr"
+            ],
             "blockReason": "You chose to keep NetBIOS and LLMNR.",
             "estimatedBlocked": 1
           }
         }
       ]
     },
-
     {
       "key": "disableIpv6",
       "icon": "Globe",
@@ -2449,7 +2521,6 @@
         }
       ]
     },
-
     {
       "key": "disableTeredo",
       "icon": "Globe",
@@ -2493,7 +2564,6 @@
         }
       ]
     },
-
     {
       "key": "disableNagle",
       "icon": "Globe",
@@ -2537,7 +2607,6 @@
         }
       ]
     },
-
     {
       "key": "disableUsbSelectiveSuspend",
       "icon": "Zap",
@@ -2556,7 +2625,9 @@
           "danger": false,
           "behavior": {
             "value": true,
-            "includeActions": ["power.disable-usb-selective-suspend"],
+            "includeActions": [
+              "power.disable-usb-selective-suspend"
+            ],
             "estimatedActions": 1,
             "riskLevel": "safe",
             "requiresReboot": false,
@@ -2572,14 +2643,15 @@
           "danger": false,
           "behavior": {
             "value": false,
-            "blockActions": ["power.disable-usb-selective-suspend"],
+            "blockActions": [
+              "power.disable-usb-selective-suspend"
+            ],
             "blockReason": "You chose to keep USB Selective Suspend.",
             "estimatedBlocked": 1
           }
         }
       ]
     },
-
     {
       "key": "disablePcieLinkStatePm",
       "icon": "Zap",
@@ -2600,7 +2672,9 @@
           "danger": false,
           "behavior": {
             "value": true,
-            "includeActions": ["power.disable-pcie-link-state-pm"],
+            "includeActions": [
+              "power.disable-pcie-link-state-pm"
+            ],
             "estimatedActions": 1,
             "riskLevel": "safe",
             "requiresReboot": false,
@@ -2616,14 +2690,15 @@
           "danger": false,
           "behavior": {
             "value": false,
-            "blockActions": ["power.disable-pcie-link-state-pm"],
+            "blockActions": [
+              "power.disable-pcie-link-state-pm"
+            ],
             "blockReason": "You chose to keep PCIe Link State Power Management.",
             "estimatedBlocked": 1
           }
         }
       ]
     },
-
     {
       "key": "disableSmartScreen",
       "icon": "Shield",
@@ -2644,7 +2719,9 @@
           "danger": true,
           "behavior": {
             "value": true,
-            "includeActions": ["privacy.disable-smartscreen"],
+            "includeActions": [
+              "privacy.disable-smartscreen"
+            ],
             "estimatedActions": 1,
             "riskLevel": "high",
             "requiresReboot": false,
@@ -2662,14 +2739,15 @@
           "danger": false,
           "behavior": {
             "value": false,
-            "blockActions": ["privacy.disable-smartscreen"],
+            "blockActions": [
+              "privacy.disable-smartscreen"
+            ],
             "blockReason": "You chose to keep SmartScreen enabled.",
             "estimatedBlocked": 1
           }
         }
       ]
     },
-
     {
       "key": "disableDefender",
       "icon": "Shield",
@@ -2708,7 +2786,9 @@
           "danger": false,
           "behavior": {
             "value": "reduce",
-            "includeActions": ["security.disable-defender-cloud"],
+            "includeActions": [
+              "security.disable-defender-cloud"
+            ],
             "estimatedActions": 1,
             "riskLevel": "moderate",
             "requiresReboot": false,
@@ -2743,7 +2823,6 @@
         }
       ]
     },
-
     {
       "key": "disableHvci",
       "icon": "Shield",
@@ -2764,7 +2843,9 @@
           "danger": true,
           "behavior": {
             "value": true,
-            "includeActions": ["security.disable-hvci"],
+            "includeActions": [
+              "security.disable-hvci"
+            ],
             "estimatedActions": 1,
             "riskLevel": "high",
             "requiresReboot": true,
@@ -2783,14 +2864,15 @@
           "danger": false,
           "behavior": {
             "value": false,
-            "blockActions": ["security.disable-hvci"],
+            "blockActions": [
+              "security.disable-hvci"
+            ],
             "blockReason": "You chose to keep HVCI enabled.",
             "estimatedBlocked": 1
           }
         }
       ]
     },
-
     {
       "key": "disableVbs",
       "icon": "Shield",
@@ -2811,7 +2893,9 @@
           "danger": true,
           "behavior": {
             "value": true,
-            "includeActions": ["security.disable-vbs"],
+            "includeActions": [
+              "security.disable-vbs"
+            ],
             "estimatedActions": 1,
             "riskLevel": "high",
             "requiresReboot": true,
@@ -2832,14 +2916,15 @@
           "danger": false,
           "behavior": {
             "value": false,
-            "blockActions": ["security.disable-vbs"],
+            "blockActions": [
+              "security.disable-vbs"
+            ],
             "blockReason": "You chose to keep VBS enabled.",
             "estimatedBlocked": 1
           }
         }
       ]
     },
-
     {
       "key": "reduceMitigations",
       "icon": "Shield",
@@ -2860,7 +2945,9 @@
           "danger": true,
           "behavior": {
             "value": true,
-            "includeActions": ["security.reduce-ssbd-mitigation"],
+            "includeActions": [
+              "security.reduce-ssbd-mitigation"
+            ],
             "estimatedActions": 1,
             "riskLevel": "high",
             "requiresReboot": true,
@@ -2879,14 +2966,15 @@
           "danger": false,
           "behavior": {
             "value": false,
-            "blockActions": ["security.reduce-ssbd-mitigation"],
+            "blockActions": [
+              "security.reduce-ssbd-mitigation"
+            ],
             "blockReason": "You chose to keep SSBD mitigation.",
             "estimatedBlocked": 1
           }
         }
       ]
     },
-
     {
       "key": "disableCpuMitigations",
       "icon": "Shield",
@@ -2907,7 +2995,9 @@
           "danger": true,
           "behavior": {
             "value": true,
-            "includeActions": ["security.disable-cpu-mitigations"],
+            "includeActions": [
+              "security.disable-cpu-mitigations"
+            ],
             "estimatedActions": 1,
             "riskLevel": "high",
             "requiresReboot": true,
@@ -2927,14 +3017,15 @@
           "danger": false,
           "behavior": {
             "value": false,
-            "blockActions": ["security.disable-cpu-mitigations"],
+            "blockActions": [
+              "security.disable-cpu-mitigations"
+            ],
             "blockReason": "You chose to keep CPU mitigations.",
             "estimatedBlocked": 1
           }
         }
       ]
     },
-
     {
       "key": "disableVulnerableDriverBlocklist",
       "icon": "Shield",
@@ -2955,7 +3046,9 @@
           "danger": true,
           "behavior": {
             "value": true,
-            "includeActions": ["security.disable-vulnerable-driver-blocklist"],
+            "includeActions": [
+              "security.disable-vulnerable-driver-blocklist"
+            ],
             "estimatedActions": 1,
             "riskLevel": "high",
             "requiresReboot": false,
@@ -2974,14 +3067,15 @@
           "danger": false,
           "behavior": {
             "value": false,
-            "blockActions": ["security.disable-vulnerable-driver-blocklist"],
+            "blockActions": [
+              "security.disable-vulnerable-driver-blocklist"
+            ],
             "blockReason": "You chose to keep the Vulnerable Driver Blocklist.",
             "estimatedBlocked": 1
           }
         }
       ]
     },
-
     {
       "key": "disableWindowsUpdate",
       "icon": "Shield",

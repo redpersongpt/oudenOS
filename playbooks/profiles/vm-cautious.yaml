@@ -10,10 +10,8 @@ blockedActions:
   - appx.*
   # GPU — no real GPU in VM
   - perf.gpu-energy-driver-disable
-  - gpu.msi-mode
   - gpu.disable-nvidia-telemetry
   - gpu.disable-amd-telemetry
-  - gpu.nvidia-disable-dynamic-pstate
   - gpu.tdr-delay
   # Startup — no Game Bar in VM
   - startup.disable-gamebar-presence

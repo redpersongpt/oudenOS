@@ -15,7 +15,6 @@ blockedActions:
   - power.disable-usb-selective-suspend
   - power.disable-pcie-link-state-pm
   # GPU actions - not relevant for office laptops
-  - gpu.nvidia-disable-dynamic-pstate
   # Security mitigations - must remain enabled
   - security.reduce-ssbd-mitigation
   - security.disable-hvci

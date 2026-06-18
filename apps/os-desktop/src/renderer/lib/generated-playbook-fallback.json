@@ -2152,25 +2152,6 @@
           ]
         },
         {
-          "id": "gpu.nvidia-disable-dynamic-pstate",
-          "name": "Lock NVIDIA GPU to P-State 0 (Maximum Performance)",
-          "description": "Disable dynamic P-State switching on NVIDIA GPUs by setting DisableDynamicPstate=1, forcing the GPU to remain at maximum clocks at all times",
-          "risk": "medium",
-          "default": false,
-          "expertOnly": false,
-          "requiresReboot": true,
-          "warningMessage": null,
-          "blockedProfiles": [
-            "work_pc",
-            "office_laptop",
-            "vm_cautious"
-          ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
-        },
-        {
           "id": "gpu.tdr-delay",
           "name": "Increase TDR Timeout to 10 Seconds",
           "description": "Increase the Timeout Detection and Recovery (TDR) delay from the default 2 seconds to 10 seconds, preventing false GPU resets during heavy load spikes",
@@ -2180,23 +2161,6 @@
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
-        },
-        {
-          "id": "gpu.msi-mode",
-          "name": "Enable GPU MSI (Message Signaled Interrupts) Mode",
-          "description": "Enable Message Signaled Interrupts for the GPU, replacing legacy line-based interrupts with in-band PCIe messages for lower interrupt latency",
-          "risk": "medium",
-          "default": false,
-          "expertOnly": false,
-          "requiresReboot": true,
-          "warningMessage": null,
-          "blockedProfiles": [
-            "vm_cautious"
-          ],
           "minWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
@@ -3652,7 +3616,6 @@
         "power.high-performance-plan",
         "power.disable-usb-selective-suspend",
         "power.disable-pcie-link-state-pm",
-        "gpu.nvidia-disable-dynamic-pstate",
         "security.reduce-ssbd-mitigation",
         "security.disable-hvci"
       ],
@@ -3676,8 +3639,7 @@
         "network.disable-ipv6",
         "network.disable-llmnr",
         "network.disable-netbios",
-        "shell.reduce-search-box",
-        "gpu.nvidia-disable-dynamic-pstate"
+        "shell.reduce-search-box"
       ],
       "optionalActions": [
         "shell.disable-copilot"
@@ -3695,10 +3657,8 @@
       "blockedActions": [
         "appx.*",
         "perf.gpu-energy-driver-disable",
-        "gpu.msi-mode",
         "gpu.disable-nvidia-telemetry",
         "gpu.disable-amd-telemetry",
-        "gpu.nvidia-disable-dynamic-pstate",
         "gpu.tdr-delay",
         "startup.disable-gamebar-presence",
         "appx.remove-your-phone"
