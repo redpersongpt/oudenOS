@@ -140,3 +140,89 @@ actions:
         valueName: DontOfferThroughWUAU
         value: 1
         valueType: DWord
+
+  - id: privacy.disable-event-transcript
+    name: "Disable Telemetry Event Transcript Logging"
+    description: "Stop Windows writing the local EventTranscript.db diagnostic event log, and stop OneSettings policy downloads that can re-arm telemetry"
+    rationale: "Separate from the telemetry upload service: this stops the on-disk event-transcript SQLite store from being written at all, and stops the OneSettings config refresh that can quietly re-enable telemetry settings. Fully reversible."
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKLM
+        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Diagnostics\\DiagTrack\\EventTranscriptKey"
+        valueName: EnableEventTranscript
+        value: 0
+        valueType: DWord
+      - hive: HKLM
+        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection"
+        valueName: DisableOneSettingsDownloads
+        value: 1
+        valueType: DWord
+
+  - id: privacy.disable-app-diagnostic-access
+    name: "Block Apps From Reading Other Apps' Diagnostic Info"
+    description: "Force-deny the App Privacy 'diagnostic information' capability so Store apps can't query diagnostic/usage data about other running apps"
+    rationale: "Stops UWP/Store apps from reading diagnostic and usage data about other processes. Reversible — flip it back if a monitoring/overlay tool you rely on needs it."
+    risk: low
+    tier: free
+    default: true
+    requiresReboot: false
+    warningMessage: "Apps that legitimately read cross-app diagnostic/usage info (some hardware monitors, game-overlay stats panels) may lose that data. Reversible."
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKLM
+        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\AppPrivacy"
+        valueName: LetAppsGetDiagnosticInfo
+        value: 2
+        valueType: DWord
+
+  - id: privacy.disable-font-providers
+    name: "Disable Online Font Providers (Font Streaming)"
+    description: "Stop Windows contacting Microsoft to stream/download missing fonts on demand"
+    rationale: "Online font streaming reaches out to Microsoft whenever a document or page asks for a font you don't have. Off means it uses a local substitute instead — one less background call. Reversible."
+    risk: low
+    tier: free
+    default: true
+    requiresReboot: true
+    warningMessage: "Documents or web pages referencing a font you don't have installed fall back to a substitute instead of downloading it. Takes effect after a reboot (or restarting the Font Cache service)."
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: HKLM
+        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\System"
+        valueName: EnableFontProviders
+        value: 0
+        valueType: DWord
+
+  - id: privacy.disable-settings-sync
+    name: "Disable Sync Your Settings to Microsoft Account"
+    description: "Turn off roaming of Windows settings (theme, language, accessibility, some credentials) to your Microsoft account"
+    rationale: "Stops your settings being synced up to Microsoft and pushed to your other devices. Opt-in — only useful if you specifically don't want settings roaming. Reversible by setting both values back to 0."
+    risk: low
+    tier: free
+    default: false
+    requiresReboot: false
+    warningMessage: "Settings (theme, language, some credentials, accessibility) will no longer roam to your other Windows devices, and the 'Sync your settings' page is locked off. Reversible."
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles:
+      - work_pc
+    registryChanges:
+      - hive: HKLM
+        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\SettingSync"
+        valueName: DisableSettingSync
+        value: 2
+        valueType: DWord
+      - hive: HKLM
+        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\SettingSync"
+        valueName: DisableSettingSyncUserOverride
+        value: 1
+        valueType: DWord

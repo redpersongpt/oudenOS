@@ -129,3 +129,34 @@ actions:
         startupType: Disabled
       - name: lfsvc
         startupType: Disabled
+
+  - id: services.disable-diagnostic-policy-host-collector
+    name: "Disable Diagnostics Hub Standard Collector"
+    description: "Disable diagnosticshub.standardcollector.service — the ETW trace collector used by Visual Studio diagnostics"
+    rationale: "Collects diagnostic traces for tooling most people never use. Safe to disable on a normal machine; re-enable if you do VS profiling."
+    risk: safe
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    serviceChanges:
+      - name: diagnosticshub.standardcollector.service
+        startupType: Disabled
+
+  - id: services.disable-diagnostic-execution
+    name: "Disable Diagnostic Execution Service (diagsvc)"
+    description: "Disable diagsvc, the service that runs scenario-based diagnostics"
+    rationale: "Runs background diagnostic scenarios. Disabling frees the resource; the only cost is the automated troubleshooters."
+    risk: low
+    tier: free
+    default: true
+    requiresReboot: false
+    warningMessage: "The built-in 'Get Help / Troubleshoot' automated wizards (legacy MSDT troubleshooters) may not run while this is off. Re-enable if you need a Windows troubleshooter."
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    serviceChanges:
+      - name: diagsvc
+        startupType: Disabled

@@ -862,5 +862,47 @@
     "name": "Savunmasız Sürücü Engelleme Listesini Kapat",
     "description": "Belirli sürücülerin yüklenmesini engelleyen Microsoft Savunmasız Sürücü Engelleme Listesi'ni kapat",
     "warningMessage": "Potansiyel olarak savunmasız sürücülerin yüklenmesine izin verir. Yalnızca XHCI IMOD için RW-Everything veya MSI yardımcı aracı gibi belirli çekirdek araçlarına ihtiyacın varsa kapat."
+  },
+  "privacy.disable-event-transcript": {
+    "name": "Telemetri Event Transcript Günlüğünü Kapat",
+    "description": "Windows'un yerel EventTranscript.db tanılama olay günlüğünü yazmasını durdurur ve telemetriyi yeniden açabilen OneSettings politika indirmelerini engeller"
+  },
+  "privacy.disable-app-diagnostic-access": {
+    "name": "Uygulamaların Diğer Uygulamaların Tanılama Bilgisini Okumasını Engelle",
+    "description": "App Privacy 'tanılama bilgisi' iznini zorla reddeder; Store uygulamaları diğer çalışan uygulamaların tanılama/kullanım verisini sorgulayamaz",
+    "warningMessage": "Uygulamalar arası tanılama/kullanım bilgisini meşru okuyan uygulamalar (bazı donanım izleyiciler, oyun-overlay istatistik panelleri) bu veriyi kaybedebilir. Geri alınabilir."
+  },
+  "privacy.disable-font-providers": {
+    "name": "Çevrimiçi Font Sağlayıcılarını Kapat (Font Streaming)",
+    "description": "Windows'un eksik fontları istek üzerine Microsoft'tan indirmesini/akıtmasını durdurur",
+    "warningMessage": "Yüklü olmayan bir fonta atıf yapan belge veya web sayfaları indirmek yerine yerine bir font kullanır. Yeniden başlatmadan sonra (ya da Font Cache servisini yeniden başlatınca) etkinleşir."
+  },
+  "privacy.disable-settings-sync": {
+    "name": "Ayarları Microsoft Hesabına Eşitlemeyi Kapat",
+    "description": "Windows ayarlarının (tema, dil, erişilebilirlik, bazı kimlik bilgileri) Microsoft hesabına eşitlenmesini kapatır",
+    "warningMessage": "Ayarlar artık diğer Windows cihazlarına taşınmaz ve 'Ayarlarını eşitle' sayfası kapatılır. Geri alınabilir."
+  },
+  "power.disable-power-throttling": {
+    "name": "CPU Güç Kısıtlamasını Kapat (EcoQoS)",
+    "description": "Windows'un arka plan saydığı thread'leri düşük saate çekmesini (EcoQoS güç kısıtlaması) durdurur",
+    "warningMessage": "Arka plan thread'leri artık düşük saate inmediği için güç tüketimini ve ısıyı artırır — pille çalışan laptoplarda önerilmez. Saf ön plan iş yükünde kazanç küçük. Geri alınabilir."
+  },
+  "services.disable-diagnostic-policy-host-collector": {
+    "name": "Diagnostics Hub Standard Collector'ı Kapat",
+    "description": "diagnosticshub.standardcollector.service'i kapatır — Visual Studio tanılamasının kullandığı ETW iz toplayıcısı"
+  },
+  "services.disable-diagnostic-execution": {
+    "name": "Diagnostic Execution Service'i (diagsvc) Kapat",
+    "description": "Senaryo tabanlı tanılama çalıştıran diagsvc servisini kapatır",
+    "warningMessage": "Yerleşik 'Yardım Al / Sorun Giderme' otomatik sihirbazları (eski MSDT sorun gidericiler) bu kapalıyken çalışmayabilir. İhtiyacın olursa yeniden aç."
+  },
+  "services.disable-data-usage": {
+    "name": "Veri Kullanımı Servisini (DusmSvc) Kapat",
+    "description": "DusmSvc'i kapatır — ağ başına veri kullanımını ölçen Data Usage servisi"
+  },
+  "services.disable-biometric-service": {
+    "name": "Windows Biometric Servisini (WbioSrvc) Kapat",
+    "description": "WbioSrvc'i kapatır — yalnızca parmak izi okuyucusu veya yüz kamerası OLMAYAN makinede yap",
+    "warningMessage": "WbioSrvc'i kapatmak Windows Hello parmak izi ve yüz girişini bozar. Yalnızca biyometrik donanımı OLMAYAN sistemde kapat — yoksa o giriş yöntemini kaybedersin (PIN/parola çalışır). Geri alınabilir."
   }
 }

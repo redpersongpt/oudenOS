@@ -284,3 +284,36 @@ actions:
     serviceChanges:
       - name: WpnUserService
         startupType: Disabled
+
+  - id: services.disable-data-usage
+    name: "Disable Data Usage (DusmSvc)"
+    description: "Disable DusmSvc — the Data Usage Subscription Management service that meters per-network data usage"
+    rationale: "Tracks network data usage for the metered-connection UI. Off frees a small background service; you lose the per-network data-usage stats in Settings."
+    risk: low
+    tier: free
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    serviceChanges:
+      - name: DusmSvc
+        startupType: Disabled
+
+  - id: services.disable-biometric-service
+    name: "Disable Windows Biometric Service (WbioSrvc)"
+    description: "Disable WbioSrvc — only do this on a machine with NO fingerprint reader or face camera"
+    rationale: "Drives Windows Hello biometric hardware. On a system with no biometric hardware it does nothing useful; disabling frees it. Opt-in and blocked on laptops by default because most have a fingerprint/face sensor."
+    risk: medium
+    tier: free
+    default: false
+    requiresReboot: false
+    warningMessage: "Disabling WbioSrvc breaks Windows Hello fingerprint and face sign-in. Only disable on a system with NO fingerprint reader or biometric camera — otherwise you lose that sign-in method (PIN/password still work). Reversible."
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles:
+      - gaming_laptop
+      - office_laptop
+    serviceChanges:
+      - name: WbioSrvc
+        startupType: Disabled

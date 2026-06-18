@@ -957,6 +957,17 @@
       }
     ]
   },
+  "power.disable-power-throttling": {
+    "registryChanges": [
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Control\\Power\\PowerThrottling",
+        "valueName": "PowerThrottlingOff",
+        "value": 1,
+        "valueType": "DWord"
+      }
+    ]
+  },
   "storage.disable-last-access": {
     "registryChanges": [
       {
@@ -1557,6 +1568,64 @@
       }
     ]
   },
+  "privacy.disable-event-transcript": {
+    "registryChanges": [
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Diagnostics\\DiagTrack\\EventTranscriptKey",
+        "valueName": "EnableEventTranscript",
+        "value": 0,
+        "valueType": "DWord"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection",
+        "valueName": "DisableOneSettingsDownloads",
+        "value": 1,
+        "valueType": "DWord"
+      }
+    ]
+  },
+  "privacy.disable-app-diagnostic-access": {
+    "registryChanges": [
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\AppPrivacy",
+        "valueName": "LetAppsGetDiagnosticInfo",
+        "value": 2,
+        "valueType": "DWord"
+      }
+    ]
+  },
+  "privacy.disable-font-providers": {
+    "registryChanges": [
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\System",
+        "valueName": "EnableFontProviders",
+        "value": 0,
+        "valueType": "DWord"
+      }
+    ]
+  },
+  "privacy.disable-settings-sync": {
+    "registryChanges": [
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\SettingSync",
+        "valueName": "DisableSettingSync",
+        "value": 2,
+        "valueType": "DWord"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\SettingSync",
+        "valueName": "DisableSettingSyncUserOverride",
+        "value": 1,
+        "valueType": "DWord"
+      }
+    ]
+  },
   "security.disable-defender-realtime": {
     "registryChanges": [
       {
@@ -2057,6 +2126,22 @@
       }
     ]
   },
+  "services.disable-data-usage": {
+    "serviceChanges": [
+      {
+        "name": "DusmSvc",
+        "startupType": "Disabled"
+      }
+    ]
+  },
+  "services.disable-biometric-service": {
+    "serviceChanges": [
+      {
+        "name": "WbioSrvc",
+        "startupType": "Disabled"
+      }
+    ]
+  },
   "services.disable-diagtrack": {
     "serviceChanges": [
       {
@@ -2121,6 +2206,22 @@
       },
       {
         "name": "lfsvc",
+        "startupType": "Disabled"
+      }
+    ]
+  },
+  "services.disable-diagnostic-policy-host-collector": {
+    "serviceChanges": [
+      {
+        "name": "diagnosticshub.standardcollector.service",
+        "startupType": "Disabled"
+      }
+    ]
+  },
+  "services.disable-diagnostic-execution": {
+    "serviceChanges": [
+      {
+        "name": "diagsvc",
         "startupType": "Disabled"
       }
     ]

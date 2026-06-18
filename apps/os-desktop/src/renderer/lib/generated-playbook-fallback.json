@@ -748,6 +748,36 @@
           ]
         },
         {
+          "id": "services.disable-diagnostic-policy-host-collector",
+          "name": "Disable Diagnostics Hub Standard Collector",
+          "description": "Disable diagnosticshub.standardcollector.service — the ETW trace collector used by Visual Studio diagnostics",
+          "risk": "safe",
+          "default": true,
+          "expertOnly": false,
+          "requiresReboot": false,
+          "warningMessage": null,
+          "blockedProfiles": [],
+          "minWindowsBuild": null,
+          "executionKinds": [
+            "serviceChanges"
+          ]
+        },
+        {
+          "id": "services.disable-diagnostic-execution",
+          "name": "Disable Diagnostic Execution Service (diagsvc)",
+          "description": "Disable diagsvc, the service that runs scenario-based diagnostics",
+          "risk": "low",
+          "default": true,
+          "expertOnly": false,
+          "requiresReboot": false,
+          "warningMessage": "The built-in 'Get Help / Troubleshoot' automated wizards (legacy MSDT troubleshooters) may not run while this is off. Re-enable if you need a Windows troubleshooter.",
+          "blockedProfiles": [],
+          "minWindowsBuild": null,
+          "executionKinds": [
+            "serviceChanges"
+          ]
+        },
+        {
           "id": "services.disable-print-spooler",
           "name": "Disable Print Spooler",
           "description": "Disable Print Spooler — manages print queues. Safe to disable on systems with no printers.",
@@ -1009,6 +1039,39 @@
           "warningMessage": "You MUST restart your PC after this change. Using the desktop without restarting may cause File Explorer crashes when right-clicking or accessing notifications.",
           "blockedProfiles": [
             "work_pc",
+            "office_laptop"
+          ],
+          "minWindowsBuild": null,
+          "executionKinds": [
+            "serviceChanges"
+          ]
+        },
+        {
+          "id": "services.disable-data-usage",
+          "name": "Disable Data Usage (DusmSvc)",
+          "description": "Disable DusmSvc — the Data Usage Subscription Management service that meters per-network data usage",
+          "risk": "low",
+          "default": true,
+          "expertOnly": false,
+          "requiresReboot": false,
+          "warningMessage": null,
+          "blockedProfiles": [],
+          "minWindowsBuild": null,
+          "executionKinds": [
+            "serviceChanges"
+          ]
+        },
+        {
+          "id": "services.disable-biometric-service",
+          "name": "Disable Windows Biometric Service (WbioSrvc)",
+          "description": "Disable WbioSrvc — only do this on a machine with NO fingerprint reader or face camera",
+          "risk": "medium",
+          "default": false,
+          "expertOnly": false,
+          "requiresReboot": false,
+          "warningMessage": "Disabling WbioSrvc breaks Windows Hello fingerprint and face sign-in. Only disable on a system with NO fingerprint reader or biometric camera — otherwise you lose that sign-in method (PIN/password still work). Reversible.",
+          "blockedProfiles": [
+            "gaming_laptop",
             "office_laptop"
           ],
           "minWindowsBuild": null,
@@ -1399,6 +1462,68 @@
           "expertOnly": false,
           "requiresReboot": false,
           "warningMessage": null,
+          "blockedProfiles": [
+            "work_pc"
+          ],
+          "minWindowsBuild": null,
+          "executionKinds": [
+            "registryChanges"
+          ]
+        },
+        {
+          "id": "privacy.disable-event-transcript",
+          "name": "Disable Telemetry Event Transcript Logging",
+          "description": "Stop Windows writing the local EventTranscript.db diagnostic event log, and stop OneSettings policy downloads that can re-arm telemetry",
+          "risk": "safe",
+          "default": true,
+          "expertOnly": false,
+          "requiresReboot": false,
+          "warningMessage": null,
+          "blockedProfiles": [],
+          "minWindowsBuild": null,
+          "executionKinds": [
+            "registryChanges"
+          ]
+        },
+        {
+          "id": "privacy.disable-app-diagnostic-access",
+          "name": "Block Apps From Reading Other Apps' Diagnostic Info",
+          "description": "Force-deny the App Privacy 'diagnostic information' capability so Store apps can't query diagnostic/usage data about other running apps",
+          "risk": "low",
+          "default": true,
+          "expertOnly": false,
+          "requiresReboot": false,
+          "warningMessage": "Apps that legitimately read cross-app diagnostic/usage info (some hardware monitors, game-overlay stats panels) may lose that data. Reversible.",
+          "blockedProfiles": [],
+          "minWindowsBuild": null,
+          "executionKinds": [
+            "registryChanges"
+          ]
+        },
+        {
+          "id": "privacy.disable-font-providers",
+          "name": "Disable Online Font Providers (Font Streaming)",
+          "description": "Stop Windows contacting Microsoft to stream/download missing fonts on demand",
+          "risk": "low",
+          "default": true,
+          "expertOnly": false,
+          "requiresReboot": true,
+          "warningMessage": "Documents or web pages referencing a font you don't have installed fall back to a substitute instead of downloading it. Takes effect after a reboot (or restarting the Font Cache service).",
+          "blockedProfiles": [],
+          "minWindowsBuild": null,
+          "executionKinds": [
+            "registryChanges"
+          ]
+        },
+        {
+          "id": "privacy.disable-settings-sync",
+          "name": "Disable Sync Your Settings to Microsoft Account",
+          "description": "Turn off roaming of Windows settings (theme, language, accessibility, some credentials) to your Microsoft account",
+          "risk": "low",
+          "default": false,
+          "expertOnly": false,
+          "requiresReboot": false,
+          "warningMessage": "Settings (theme, language, some credentials, accessibility) will no longer roam to your other Windows devices, and the 'Sync your settings' page is locked off. Reversible.",
           "blockedProfiles": [
             "work_pc"
           ],
@@ -2413,6 +2538,24 @@
           "minWindowsBuild": null,
           "executionKinds": [
             "powerChanges"
+          ]
+        },
+        {
+          "id": "power.disable-power-throttling",
+          "name": "Disable CPU Power Throttling (EcoQoS)",
+          "description": "Stop Windows down-clocking threads it classifies as background work (EcoQoS power throttling)",
+          "risk": "low",
+          "default": false,
+          "expertOnly": false,
+          "requiresReboot": false,
+          "warningMessage": "Increases power draw and heat because background threads no longer down-clock — not recommended on battery-powered laptops. The gain on a pure foreground workload is small. Reversible.",
+          "blockedProfiles": [
+            "gaming_laptop",
+            "office_laptop"
+          ],
+          "minWindowsBuild": null,
+          "executionKinds": [
+            "registryChanges"
           ]
         },
         {
