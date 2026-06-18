@@ -84,6 +84,11 @@ jobs:
 
       - name: Build Tauri installer
         working-directory: apps/os-desktop
+        env:
+          # Required: production builds create signed updater artifacts.
+          # Add these in the repo's Actions secrets (see docs/UPDATER.md).
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
         run: pnpm tauri:build
 
       - name: Prepare release asset
@@ -111,6 +116,27 @@ jobs:
           "SHA256=$sha" >> $env:GITHUB_OUTPUT
           "SIZE=$size" >> $env:GITHUB_OUTPUT
 
+          # Updater feed: createUpdaterArtifacts emits a .sig next to the
+          # installer. The signature is over the file bytes, so the rename above
+          # doesn't invalidate it. Build latest.json pointing at the published
+          # asset URL so the in-app updater can verify + install.
+          $sig = Get-ChildItem -Path "apps/os-desktop/src-tauri/target/release/bundle/nsis/*.sig" | Select-Object -First 1
+          if (-not $sig) {
+            throw "No updater .sig found — is TAURI_SIGNING_PRIVATE_KEY set in Actions secrets?"
+          }
+          $sigContent = (Get-Content $sig.FullName -Raw).Trim()
+          $downloadUrl = "https://github.com/redpersongpt/oudenOS/releases/download/${{ steps.version.outputs.TAG }}/$stableName"
+          $latest = [ordered]@{
+            version   = "${{ steps.version.outputs.VERSION }}"
+            pub_date  = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
+            platforms = [ordered]@{
+              "windows-x86_64" = [ordered]@{ signature = $sigContent; url = $downloadUrl }
+            }
+          }
+          $latestPath = "apps/os-desktop/dist/installers/latest.json"
+          $latest | ConvertTo-Json -Depth 6 | Set-Content -Path $latestPath -Encoding utf8
+          "LATEST_PATH=$latestPath" >> $env:GITHUB_OUTPUT
+
       - name: Create release notes
         shell: bash
         run: |
@@ -131,7 +157,9 @@ jobs:
           tag_name: ${{ steps.version.outputs.TAG }}
           name: OudenOS ${{ steps.version.outputs.VERSION }}
           body_path: RELEASE_NOTES.md
-          files: ${{ steps.asset.outputs.ASSET_PATH }}
+          files: |
+            ${{ steps.asset.outputs.ASSET_PATH }}
+            ${{ steps.asset.outputs.LATEST_PATH }}
           draft: false
           prerelease: ${{ contains(steps.version.outputs.TAG, 'alpha') || contains(steps.version.outputs.TAG, 'beta') || contains(steps.version.outputs.TAG, 'rc') }}
         env:
