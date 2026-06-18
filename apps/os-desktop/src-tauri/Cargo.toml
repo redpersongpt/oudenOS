@@ -1,6 +1,6 @@
 [package]
 name = "oudenos-os-desktop"
-version = "1.0.3"
+version = "1.0.4"
 description = "oudenOS desktop app"
 authors = ["oudenos"]
 edition = "2021"

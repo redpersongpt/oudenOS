@@ -141,14 +141,17 @@ jobs:
         shell: bash
         run: |
           cat > RELEASE_NOTES.md <<'NOTES'
-          Mostly a correctness pass. Every tweak was fact-checked against winutil and valleyofdoom/PC-Tuning, and the ones that weren't actually doing anything got fixed or pulled.
+          Settings, an in-app updater, Turkish, and more tweaks.
 
-          - Hibernation was writing to the wrong registry key, so "disable hibernation" never freed the disk. It now uses powercfg properly.
-          - Stopped disabling the AMD service that FreeSync/VRR needs by default — it's opt-in now with a clear warning, and gaming profiles leave it alone.
-          - HAGS (GPU scheduling) is off by default with a warning that disabling it breaks DLSS Frame Generation.
-          - A timer tweak that does nothing on Windows 10 is now correctly gated to Windows 11.
-          - Fixed a couple of settings where two actions wrote different values to the same key, so the result isn't a coin flip anymore.
-          - File Explorer, Start, taskbar and Search protection got tougher: a raw registry write can no longer sneak past the guards to disable a shell service.
+          - New Settings panel (the gear, top-right): check for and install updates, switch language (English / Türkçe), and quick links to donate, GitHub, and YouTube.
+          - In-app auto-updater — oudenOS now updates itself: signed, verified, one click.
+          - Full Turkish translation with a language toggle; it starts in your system's language.
+          - Added safe, opt-in optimizations: EventTranscript logging, cross-app app diagnostics, online font streaming, settings sync, CPU power throttling (EcoQoS), and a few background services (Diagnostics Hub, Diagnostic Execution, Data Usage, Biometric). The ones with trade-offs are off by default with clear warnings.
+          - The Xbox-services tweak now spells out that it breaks Xbox / Game Pass sign-in.
+          - Dropped the static "preservation" interstitial and fixed a batch of UI bugs (reboot-screen controls, a Back button that could re-run changes, an invisible restart button, update-check messaging, skipped counts).
+          - File Explorer, Start, taskbar and Search stay protected — every new tweak was checked against the shell-safety guards.
+
+          macOS users: the attached .dmg is a non-functional preview — the same screens and questions as the Windows app, but it never changes your Mac.
           NOTES
 
       - name: Publish GitHub release
