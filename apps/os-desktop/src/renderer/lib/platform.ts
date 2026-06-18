@@ -32,6 +32,16 @@ export interface ExportResult {
   [key: string]: unknown;
 }
 
+export interface UpdateInfo {
+  // null = couldn't check (offline, demo host, no feed). Distinct from
+  // available:false which means "checked and you're on the latest".
+  available: boolean;
+  currentVersion: string;
+  version?: string;
+  notes?: string;
+  error?: string;
+}
+
 // ---------------------------------------------------------------------------
 // Platform API — the single interface components depend on
 // ---------------------------------------------------------------------------
@@ -55,6 +65,14 @@ export interface PlatformAPI {
   };
   wizard: {
     exportPackage: (state: Record<string, unknown>) => Promise<ExportResult>;
+  };
+  updater: {
+    // Resolves the latest release vs the running version. Never throws — returns
+    // { available:false, error } when it can't check (demo host, offline).
+    check: () => Promise<UpdateInfo>;
+    // Downloads and installs the pending update, then relaunches. onProgress
+    // reports 0..100. No-op/throws only if there is no pending update.
+    downloadAndInstall: (onProgress?: (percent: number) => void) => Promise<void>;
   };
 }
 

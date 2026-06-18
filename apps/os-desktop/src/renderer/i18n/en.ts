@@ -294,4 +294,19 @@ export const en: Record<string, string> = {
   "handoff.youtube": "Subscribe for deep dives, benchmarks, and more tools",
   "handoff.openTuning": "OPEN TUNING",
   "handoff.close": "CLOSE",
+
+  // -- Settings panel --
+  "settings.title": "Settings",
+  "settings.close": "Close",
+  "settings.update.heading": "UPDATE",
+  "settings.update.checking": "Checking for updates…",
+  "settings.update.uptodate": "You're on the latest version",
+  "settings.update.available": "Update available — v{version}",
+  "settings.update.current": "Current: v{version}",
+  "settings.update.downloading": "Downloading update…",
+  "settings.update.button": "Update now",
+  "settings.update.recheck": "Check again",
+  "settings.language.heading": "LANGUAGE",
+  "settings.links.heading": "LINKS",
+  "settings.donate": "Donate",
 };

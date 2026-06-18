@@ -2,7 +2,12 @@
 // Canonical runtime for oudenOS desktop (since v0.2.0).
 // Uses Tauri v2 APIs via window.__TAURI__ (withGlobalTauri: true).
 
-import type { PlatformAPI, ServiceStatus, SaveResult, ExportResult } from "./platform";
+import type { PlatformAPI, ServiceStatus, SaveResult, ExportResult, UpdateInfo } from "./platform";
+
+// Holds the Update handle between check() and downloadAndInstall().
+type DownloadEvent = { event: string; data?: { contentLength?: number; chunkLength?: number } };
+type PendingUpdate = { version: string; body?: string | null; downloadAndInstall: (cb: (e: DownloadEvent) => void) => Promise<void> };
+let _pendingUpdate: PendingUpdate | null = null;
 
 declare global {
   interface Window {
@@ -91,6 +96,45 @@ export const tauriBackend: PlatformAPI = {
       const tauri = getTauri();
       if (!tauri) return { ok: false, error: "Tauri runtime unavailable" };
       return tauri.core.invoke<ExportResult>("export_package", { state });
+    },
+  },
+
+  updater: {
+    check: async (): Promise<UpdateInfo> => {
+      const currentVersion = `v${__APP_VERSION__}`;
+      // No Tauri runtime (browser demo) → nothing to check.
+      if (!getTauri()) return { available: false, currentVersion, error: "no-runtime" };
+      try {
+        const { check } = await import("@tauri-apps/plugin-updater");
+        const update = await check();
+        if (update) {
+          _pendingUpdate = update as unknown as PendingUpdate;
+          return { available: true, currentVersion, version: update.version, notes: update.body ?? undefined };
+        }
+        return { available: false, currentVersion };
+      } catch (e) {
+        // On the macOS demo there is no update feed for this target — degrade
+        // quietly to "up to date" rather than surfacing a scary error.
+        return { available: false, currentVersion, error: String(e) };
+      }
+    },
+    downloadAndInstall: async (onProgress?: (percent: number) => void): Promise<void> => {
+      if (!_pendingUpdate) {
+        const { check } = await import("@tauri-apps/plugin-updater");
+        _pendingUpdate = (await check()) as unknown as PendingUpdate | null;
+      }
+      if (!_pendingUpdate) throw new Error("No update available");
+      let total = 0;
+      let received = 0;
+      await _pendingUpdate.downloadAndInstall((e: DownloadEvent) => {
+        if (e.event === "Started") total = e.data?.contentLength ?? 0;
+        else if (e.event === "Progress") {
+          received += e.data?.chunkLength ?? 0;
+          if (total > 0) onProgress?.(Math.min(100, Math.round((received / total) * 100)));
+        } else if (e.event === "Finished") onProgress?.(100);
+      });
+      const { relaunch } = await import("@tauri-apps/plugin-process");
+      await relaunch();
     },
   },
 };

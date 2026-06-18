@@ -293,4 +293,19 @@ export const tr: Record<string, string> = {
   "handoff.youtube": "Detaylı incelemeler, kıyaslamalar ve daha fazla araç için abone ol",
   "handoff.openTuning": "TUNING'İ AÇ",
   "handoff.close": "KAPAT",
+
+  // -- Settings panel --
+  "settings.title": "Ayarlar",
+  "settings.close": "Kapat",
+  "settings.update.heading": "GÜNCELLEME",
+  "settings.update.checking": "Güncellemeler kontrol ediliyor…",
+  "settings.update.uptodate": "En güncel sürümdesin",
+  "settings.update.available": "Güncelleme var — v{version}",
+  "settings.update.current": "Şu an: v{version}",
+  "settings.update.downloading": "Güncelleme indiriliyor…",
+  "settings.update.button": "Şimdi güncelle",
+  "settings.update.recheck": "Tekrar kontrol et",
+  "settings.language.heading": "DİL",
+  "settings.links.heading": "BAĞLANTILAR",
+  "settings.donate": "Bağış yap",
 };

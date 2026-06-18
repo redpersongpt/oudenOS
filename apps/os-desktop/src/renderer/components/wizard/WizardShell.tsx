@@ -1,12 +1,12 @@
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { motion } from "framer-motion";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight, Settings } from "lucide-react";
 import { useWizardStore } from "@/stores/wizard-store";
 import type { WizardStepId } from "@/stores/wizard-store";
 import { platform } from "@/lib/platform";
 import { LogoMark } from "@/components/brand/Logo";
 import { useT } from "@/i18n";
-import { useLangStore } from "@/stores/lang-store";
+import { SettingsPanel } from "@/components/settings/SettingsPanel";
 
 const ND = { ease: [0.25, 0.1, 0.25, 1] as const };
 
@@ -144,24 +144,7 @@ function Bar() {
 
 /* ── Title bar — minimal, --black bg ─────────────────────────────────── */
 
-function LangToggle() {
-  const { t, lang } = useT();
-  const toggle = useLangStore((s) => s.toggle);
-  return (
-    <button
-      onClick={toggle}
-      className="no-drag mr-1 flex items-center gap-1 px-2 font-mono text-label tracking-[0.08em] transition-opacity duration-150 hover:opacity-80"
-      aria-label={t("lang.toggle")}
-      title={t("lang.toggle")}
-    >
-      <span style={{ color: lang === "en" ? "var(--text-display)" : "var(--text-disabled)" }}>EN</span>
-      <span style={{ color: "var(--border-visible)" }}>/</span>
-      <span style={{ color: lang === "tr" ? "var(--text-display)" : "var(--text-disabled)" }}>TR</span>
-    </button>
-  );
-}
-
-function TitleBar() {
+function TitleBar({ onOpenSettings }: { onOpenSettings: () => void }) {
   const { t } = useT();
   return (
     <div
@@ -172,7 +155,15 @@ function TitleBar() {
         {t("titlebar.brand")}
       </span>
       <div className="flex items-center no-drag">
-        <LangToggle />
+        <button
+          onClick={onOpenSettings}
+          className="mr-0.5 flex h-6 w-8 items-center justify-center transition-opacity duration-150 hover:opacity-80"
+          style={{ color: "var(--text-disabled)" }}
+          aria-label={t("settings.title")}
+          title={t("settings.title")}
+        >
+          <Settings className="h-3.5 w-3.5" />
+        </button>
         <button
           onClick={() => platform().window.minimize()}
           className="flex h-6 w-8 items-center justify-center transition-opacity duration-150 hover:opacity-80"
@@ -201,10 +192,11 @@ function TitleBar() {
 export function WizardShell({ children }: { children: ReactNode }) {
   const { currentStep } = useWizardStore();
   const welcome = currentStep === "welcome";
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   return (
     <div className="flex h-screen w-screen flex-col overflow-hidden" style={{ background: "var(--black)" }}>
-      <TitleBar />
+      <TitleBar onOpenSettings={() => setSettingsOpen(true)} />
       <div className="flex flex-1 overflow-hidden">
         {!welcome && <Rail />}
         <main className="flex flex-1 flex-col overflow-hidden min-h-0">
@@ -215,6 +207,7 @@ export function WizardShell({ children }: { children: ReactNode }) {
           {!welcome && <Bar />}
         </main>
       </div>
+      {settingsOpen && <SettingsPanel onClose={() => setSettingsOpen(false)} />}
     </div>
   );
 }
