@@ -267,7 +267,7 @@ function SpinningQuote({ isActive }: { isActive: boolean }) {
 
 export function ExecutionStep() {
   const { t } = useT();
-  const { detectedProfile, resolvedPlaybook, personalization, demoMode, completeStep, setExecutionResult, setResolvedPlaybook } = useWizardStore();
+  const { detectedProfile, resolvedPlaybook, personalization, demoMode, playbookPreset, completeStep, setExecutionResult, setResolvedPlaybook } = useWizardStore();
   const answers = useDecisionsStore((state) => state.answers);
   const addLogEntry = useLogStore((state) => state.addEntry);
   const effectivePersonalization = useMemo(
@@ -279,10 +279,10 @@ export function ExecutionStep() {
   useEffect(() => {
     if (demoMode && !resolvedPlaybook) {
       const profile = detectedProfile?.id ?? "gaming_desktop";
-      const mock = buildMockResolvedPlaybook(profile, "aggressive");
+      const mock = buildMockResolvedPlaybook(profile, playbookPreset ?? "balanced");
       setResolvedPlaybook(mock);
     }
-  }, [demoMode, resolvedPlaybook, detectedProfile?.id, setResolvedPlaybook]);
+  }, [demoMode, resolvedPlaybook, detectedProfile?.id, playbookPreset, setResolvedPlaybook]);
 
   // Build action queue from resolved playbook
   const actionQueue = useMemo<ExecutableAction[]>(() => {
@@ -649,7 +649,9 @@ export function ExecutionStep() {
         ? ledgerResult.data!.totalFailed!
         : journalEntries.filter((entry) => entry.status === "failed").length;
 
-      const skipped = personalizationFailed ? 1 : 0;
+      // Count actions the plan actually skipped — not personalization failure,
+      // which is tracked separately via personalizationApplied.
+      const skipped = journalEntries.filter((entry) => entry.status === "skipped").length;
       const executionJournalRef = playbook.packageRefs?.executionJournalRef ?? "state/execution-journal.json";
       const journalIndexMap = new Map(journalEntries.map((entry, idx) => [entry.id, idx]));
       const actionProvenance = (playbook.actionProvenance ?? []).map((entry) => {

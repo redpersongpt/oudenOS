@@ -16,14 +16,21 @@ const CTA_STEPS = new Set<WizardStepId>([
   "welcome", "playbook-strategy", "playbook-review", "final-review", "report", "profile",
 ]);
 
-const NO_BAR = new Set<WizardStepId>(["playbook-strategy", "execution", "donation", "handoff"]);
+// Steps that render their own primary controls (no generic bottom bar).
+const NO_BAR = new Set<WizardStepId>(["playbook-strategy", "execution", "reboot-resume", "donation", "handoff"]);
+// Steps you can't go back from — once applied/reported, BACK must not re-enter
+// execution and re-run actions.
+const NO_BACK = new Set<WizardStepId>(["reboot-resume", "report", "handoff"]);
 
 /* ── Sidebar rail — bracket-style nav, divider rows ─────────────────── */
 
 function Rail() {
   const { currentStep, steps } = useWizardStore();
   const { t } = useT();
-  const ci = steps.findIndex((s) => s.id === currentStep);
+  // currentStep can be a side-trip not in the ordered list (donation) → clamp to
+  // the end so the counter doesn't read "00 / NN" with nothing highlighted.
+  const rawCi = steps.findIndex((s) => s.id === currentStep);
+  const ci = rawCi < 0 ? steps.length - 1 : rawCi;
 
   return (
     <aside
@@ -96,7 +103,7 @@ function Bar() {
       className="flex h-12 shrink-0 items-center justify-between px-5"
       style={{ background: "var(--black)", borderTop: "1px solid var(--border)" }}
     >
-      {canGoBack ? (
+      {canGoBack && !NO_BACK.has(currentStep) ? (
         <button
           onClick={goBack}
           className="flex items-center gap-2 nd-label transition-opacity duration-150 hover:opacity-80"

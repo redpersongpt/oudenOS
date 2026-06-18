@@ -48,7 +48,9 @@ platform().on("service-start-failed", (error) => {
   // Show a visible warning so the user knows changes won't apply
   setTimeout(() => {
     const banner = document.createElement("div");
-    banner.style.cssText = "position:fixed;top:0;left:0;right:0;z-index:9999;background:#dc2626;color:white;padding:8px 16px;font-size:12px;text-align:center;font-family:system-ui";
+    // top:32px keeps it below the 32px custom title bar so it never covers the
+    // close/minimize buttons on the borderless window.
+    banner.style.cssText = "position:fixed;top:32px;left:0;right:0;z-index:9999;background:#dc2626;color:white;padding:8px 16px;font-size:12px;text-align:center;font-family:system-ui";
     banner.textContent = `The service is not available. You can review the app, but changes cannot be applied. (${error})`;
     document.body.appendChild(banner);
   }, 500);

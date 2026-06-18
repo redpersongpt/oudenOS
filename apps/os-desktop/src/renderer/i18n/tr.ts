@@ -308,4 +308,5 @@ export const tr: Record<string, string> = {
   "settings.language.heading": "DİL",
   "settings.links.heading": "BAĞLANTILAR",
   "settings.donate": "Bağış yap",
+  "settings.update.error": "Güncelleme kontrol edilemedi",
 };

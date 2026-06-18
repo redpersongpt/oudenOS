@@ -309,4 +309,5 @@ export const en: Record<string, string> = {
   "settings.language.heading": "LANGUAGE",
   "settings.links.heading": "LINKS",
   "settings.donate": "Donate",
+  "settings.update.error": "Couldn't check for updates",
 };

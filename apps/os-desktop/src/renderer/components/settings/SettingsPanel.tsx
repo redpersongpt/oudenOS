@@ -93,7 +93,7 @@ function UpdateSection() {
           )}
           {state.kind === "error" && (
             <>
-              <p className="text-sm text-[var(--text-secondary)]">{t("settings.update.uptodate")}</p>
+              <p className="text-sm text-[var(--text-secondary)]">{t("settings.update.error")}</p>
               <p className="nd-label-sm mt-0.5 text-[var(--text-disabled)]">v{__APP_VERSION__}</p>
             </>
           )}
