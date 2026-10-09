@@ -58,3 +58,11 @@ apps/oudenos-tuning/proof-screenshots/preload-compiled.js
 # macOS sidecar build output
 target-mac/
 .demo/
+
+# Apple and store signing material (App Store Connect API keys, profiles)
+*.p8
+*.mobileprovision
+*.cer
+credentials
+credentials.json
+service-account*.json
