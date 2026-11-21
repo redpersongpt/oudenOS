@@ -22,7 +22,8 @@ struct RpcRequest {
 
 #[derive(Debug, Serialize)]
 struct RpcResponse {
-    id: u64,
+    /// Request id; `null` only for a parse error (JSON-RPC -32700).
+    id: serde_json::Value,
     #[serde(skip_serializing_if = "Option::is_none")]
     result: Option<serde_json::Value>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -92,7 +93,7 @@ struct RpcRebootJournalContext {
 impl RpcResponse {
     fn ok(id: u64, value: serde_json::Value) -> Self {
         Self {
-            id,
+            id: serde_json::json!(id),
             result: Some(value),
             error: None,
         }
@@ -100,11 +101,34 @@ impl RpcResponse {
 
     fn err(id: u64, code: i32, message: String) -> Self {
         Self {
-            id,
+            id: serde_json::json!(id),
             result: None,
             error: Some(RpcError { code, message }),
         }
     }
+
+    fn parse_error(message: String) -> Self {
+        Self {
+            id: serde_json::Value::Null,
+            result: None,
+            error: Some(RpcError { code: -32700, message }),
+        }
+    }
+}
+
+/// Parse one stdin line. A leading UTF-8 BOM (Windows PowerShell 5.1
+/// clients emit one before the first line) and surrounding whitespace are
+/// stripped; blank lines are ignored (`Ok(None)`); anything that still is not
+/// a valid request yields a JSON-RPC parse error response (id null).
+fn parse_request_line(line: &str) -> Result<Option<RpcRequest>, RpcResponse> {
+    let cleaned = line.trim_start_matches('\u{feff}').trim();
+    if cleaned.is_empty() {
+        return Ok(None);
+    }
+    serde_json::from_str::<RpcRequest>(cleaned).map(Some).map_err(|e| {
+        tracing::warn!("Invalid RPC request: {}", e);
+        RpcResponse::parse_error(format!("Parse error: {}", e))
+    })
 }
 
 /// Serve JSON-RPC over stdio.
@@ -158,10 +182,11 @@ pub async fn serve(db: Database) -> Result<()> {
     tracing::info!("IPC server ready (stdio mode)");
 
     while let Some(line) = lines.next_line().await? {
-        let request: RpcRequest = match serde_json::from_str(&line) {
-            Ok(req) => req,
-            Err(e) => {
-                tracing::warn!("Invalid RPC request: {}", e);
+        let request: RpcRequest = match parse_request_line(&line) {
+            Ok(Some(req)) => req,
+            Ok(None) => continue,
+            Err(parse_error) => {
+                let _ = resp_tx.send(parse_error);
                 continue;
             }
         };
@@ -432,21 +457,19 @@ fn dispatch(db: &Database, req: &RpcRequest, start_time: Instant) -> RpcResponse
                 }
             };
 
-            // Fail fast with a clear message if not elevated, rather than letting
-            // each privileged PowerShell call fail mid-apply with access-denied.
-            if !crate::powershell::is_elevated() {
-                return RpcResponse::err(
-                    id,
-                    -403,
-                    "oudenOS is not running with administrator privileges. \
-                     Relaunch oudenOS as administrator before applying system changes."
-                        .into(),
-                );
-            }
-
             if !valid_action_id(action_id) {
                 return RpcResponse::err(id, -3, "Invalid actionId".into());
             }
+
+            // SECURITY: Never accept actionData directly from the renderer.
+            // The definition must be an action of the LOADED playbook (YAML
+            // modules + guide/translated manual entries); anything else —
+            // including ids that only exist in the embedded transformer.rs
+            // catalog — is rejected before any other step.
+            let action_data = match resolve_apply_definition(action_id) {
+                Ok(def) => def,
+                Err((code, message)) => return RpcResponse::err(id, code, message),
+            };
 
             if is_retired_unsafe_action(action_id) {
                 return RpcResponse::err(
@@ -456,38 +479,17 @@ fn dispatch(db: &Database, req: &RpcRequest, start_time: Instant) -> RpcResponse
                 );
             }
 
-            // SECURITY: Never accept actionData directly from the renderer.
-            // Always resolve from trusted playbook definitions (cached) to
-            // prevent PowerShell / registry / service injection via IPC.
-            let action_data = {
-                let Some(playbook_dir) = resolve_playbook_dir() else {
-                    return RpcResponse::err(id, -50, "Playbook directory not found".into());
-                };
-                match catalog::find_action_definition(&playbook_dir, action_id) {
-                    Ok(Some(def)) => def,
-                    // Embedded legacy catalog (transformer.rs): only reachable
-                    // for ids the playbook does not define; retired ids are
-                    // filtered by get_actions and gating below still applies.
-                    Ok(None) => match transformer::get_actions(None)
-                        .into_iter()
-                        .find(|a| a.get("id").and_then(|v| v.as_str()) == Some(action_id))
-                    {
-                        Some(def) => def,
-                        None => {
-                            return RpcResponse::err(
-                                id,
-                                -20,
-                                format!("Action not found: {}", action_id),
-                            );
-                        }
-                    },
-                    Err(e) => {
-                        tracing::error!(action_id = action_id, error = %e, "Playbook action lookup failed");
-                        return RpcResponse::err(id, -20, format!("Action lookup failed: {}", e));
-                    }
-                }
-            };
-
+            // Fail fast with a clear message if not elevated, rather than letting
+            // each privileged call fail mid-apply with access-denied.
+            if !crate::powershell::is_elevated() {
+                return RpcResponse::err(
+                    id,
+                    -403,
+                    "oudenOS is not running with administrator privileges. \
+                     Relaunch oudenOS as administrator before applying system changes."
+                        .into(),
+                );
+            }
             // Build / hardware gating with the service's own facts — never
             // the client's build number.
             let build = facts::effective_windows_build(None);
@@ -1283,6 +1285,23 @@ fn dispatch(db: &Database, req: &RpcRequest, start_time: Instant) -> RpcResponse
 
 // ─── Playbook directory resolution ──────────────────────────────────────────
 
+/// Definition lookup for execute.applyAction: only actions of the loaded
+/// playbook catalog are applicable. No fallback to the embedded
+/// transformer.rs catalog. Errors are (RPC code, message).
+fn resolve_apply_definition(action_id: &str) -> Result<serde_json::Value, (i32, String)> {
+    let Some(playbook_dir) = resolve_playbook_dir() else {
+        return Err((-50, "Playbook directory not found".into()));
+    };
+    match catalog::find_action_definition(&playbook_dir, action_id) {
+        Ok(Some(def)) => Ok(def),
+        Ok(None) => Err((-20, format!("Action not found: {}", action_id))),
+        Err(e) => {
+            tracing::error!(action_id = action_id, error = %e, "Playbook action lookup failed");
+            Err((-20, format!("Action lookup failed: {}", e)))
+        }
+    }
+}
+
 /// Resolve the playbook directory (see catalog::resolve_playbook_dir).
 fn resolve_playbook_dir() -> Option<std::path::PathBuf> {
     catalog::resolve_playbook_dir()
@@ -1477,4 +1496,69 @@ fn query_audit_log(db: &Database, limit: usize) -> anyhow::Result<Vec<serde_json
         .collect::<Result<Vec<_>, _>>()?;
 
     Ok(entries)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn transformer_only_ids_are_unknown_actions() {
+        if resolve_playbook_dir().is_none() {
+            return;
+        }
+        let db = Database::open_in_memory().unwrap();
+        for action_id in ["network.disable-nagle", "cpu.win32-priority-separation", "display.disable-game-bar"] {
+            // Sanity: the id exists only in the embedded catalog.
+            assert!(transformer::get_actions(None)
+                .iter()
+                .any(|a| a.get("id").and_then(|v| v.as_str()) == Some(action_id)));
+            let (code, _) = resolve_apply_definition(action_id).unwrap_err();
+            assert_eq!(code, -20, "{action_id} must be an unknown action");
+
+            // Full dispatch: rejected with -20 before elevation or any
+            // executor/registry step, and nothing is recorded as executed.
+            let req = RpcRequest {
+                id: 7,
+                method: "execute.applyAction".into(),
+                params: serde_json::json!({ "actionId": action_id }),
+            };
+            let resp = dispatch(&db, &req, Instant::now());
+            assert_eq!(resp.error.as_ref().map(|e| e.code), Some(-20), "{action_id}");
+        }
+        let executed: i64 = db
+            .conn()
+            .query_row("SELECT COUNT(*) FROM action_outcomes", [], |r| r.get(0))
+            .unwrap();
+        assert_eq!(executed, 0);
+        let snapshots: i64 = db
+            .conn()
+            .query_row("SELECT COUNT(*) FROM rollback_snapshots", [], |r| r.get(0))
+            .unwrap();
+        assert_eq!(snapshots, 0);
+    }
+
+    #[test]
+    fn bom_and_blank_lines_are_tolerated() {
+        let req = parse_request_line("\u{feff}{\"id\":1,\"method\":\"system.status\",\"params\":{}}")
+            .unwrap()
+            .unwrap();
+        assert_eq!(req.id, 1);
+        assert_eq!(req.method, "system.status");
+        assert!(parse_request_line("").unwrap().is_none());
+        assert!(parse_request_line("   \r").unwrap().is_none());
+        assert!(parse_request_line("\u{feff}").unwrap().is_none());
+        // params may be omitted
+        assert!(parse_request_line("{\"id\":2,\"method\":\"system.status\"}").unwrap().is_some());
+    }
+
+    #[test]
+    fn unparseable_line_yields_jsonrpc_parse_error() {
+        let err = parse_request_line("\u{feff}not json").unwrap_err();
+        let json = serde_json::to_value(&err).unwrap();
+        assert_eq!(json["id"], serde_json::Value::Null);
+        assert_eq!(json["error"]["code"], -32700);
+        let missing_method = parse_request_line("{\"id\":3}").unwrap_err();
+        assert_eq!(serde_json::to_value(&missing_method).unwrap()["error"]["code"], -32700);
+    }
 }

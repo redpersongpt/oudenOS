@@ -43,7 +43,15 @@ pub fn availability() -> Value {
     .ok()
     .flatten()
     .and_then(|v| v.as_u64());
-    classify_availability(policy, policy_sr, interval)
+    let product_type = read_value(
+        Hive::Hklm,
+        "SYSTEM\\CurrentControlSet\\Control\\ProductOptions",
+        "ProductType",
+    )
+    .ok()
+    .flatten()
+    .and_then(|v| v.as_str().map(str::to_string));
+    classify_availability_for_sku(product_type.as_deref(), policy, policy_sr, interval)
 }
 
 #[cfg(not(windows))]
@@ -53,6 +61,29 @@ pub fn availability() -> Value {
         "state": "unsupported",
         "message": "Windows System Restore is only available on Windows.",
     })
+}
+
+/// Availability including the SKU: System Restore exists only on client
+/// Windows (ProductOptions\ProductType "WinNT"). "ServerNT" / "LanmanNT"
+/// (Server, domain controller) report `unavailable` without trying
+/// Checkpoint-Computer. An unreadable product type is treated as client.
+pub(crate) fn classify_availability_for_sku(
+    product_type: Option<&str>,
+    disable_config: Option<u64>,
+    disable_sr: Option<u64>,
+    interval: Option<u64>,
+) -> Value {
+    if let Some(pt) = product_type {
+        if pt.eq_ignore_ascii_case("ServerNT") || pt.eq_ignore_ascii_case("LanmanNT") {
+            return json!({
+                "available": false,
+                "state": "unsupported_sku",
+                "message": "Windows Server editions do not include System Restore. oudenOS rollback snapshots still apply.",
+                "productType": pt,
+            });
+        }
+    }
+    classify_availability(disable_config, disable_sr, interval)
 }
 
 pub(crate) fn classify_availability(disable_config: Option<u64>, disable_sr: Option<u64>, interval: Option<u64>) -> Value {
@@ -176,5 +207,17 @@ mod tests {
         assert_eq!(classify_availability(None, Some(1), None)["state"], "disabled");
         assert_eq!(classify_availability(None, None, Some(0))["state"], "off");
         assert_eq!(classify_availability(None, None, Some(1))["available"], true);
+    }
+
+    #[test]
+    fn server_skus_are_unavailable_without_trying() {
+        for pt in ["ServerNT", "LanmanNT", "servernt"] {
+            let r = classify_availability_for_sku(Some(pt), None, None, Some(1));
+            assert_eq!(r["available"], false, "{pt}");
+            assert_eq!(r["state"], "unsupported_sku");
+        }
+        assert_eq!(classify_availability_for_sku(Some("WinNT"), None, None, Some(1))["available"], true);
+        assert_eq!(classify_availability_for_sku(None, None, None, None)["available"], true);
+        assert_eq!(classify_availability_for_sku(Some("WinNT"), Some(1), None, None)["state"], "disabled");
     }
 }
