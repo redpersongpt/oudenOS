@@ -1,24 +1,11 @@
 # Profile Override: VM / Cautious
-
 profile: vm_cautious
-label: "Virtual Machine"
 description: "Virtual machine — blocks hardware-specific and AppX operations"
-preset: conservative
 
 blockedActions:
-  # All AppX — VMs don't have full Store support
   - appx.*
-  # GPU — no real GPU in VM
-  - perf.gpu-energy-driver-disable
-  - gpu.disable-nvidia-telemetry
-  - gpu.disable-amd-telemetry
   - gpu.tdr-delay
-  # Startup — no Game Bar in VM
-  - startup.disable-gamebar-presence
-  # Your Phone — no phone integration in VM
-  - appx.remove-your-phone
-
-preservationFlags:
-  - virtual_hardware
-  - no_gpu
-  - no_appx_store
+  - gpu.disable-nvidia-container
+  - gpu.disable-amd-services
+  - power.disable-device-power-saving
+  - storage.disable-write-cache-flushing

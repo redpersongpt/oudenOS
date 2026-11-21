@@ -8,106 +8,108 @@ actions:
   - id: shell.hide-task-view
     name: "Hide Task View Button"
     description: "Remove the Task View button from the taskbar"
-    risk: safe
-    tier: free
+    risk: "safe"
+    tier: "free"
     default: true
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
     blockedProfiles: []
     registryChanges:
-      - hive: HKCU
+      - hive: "HKCU"
         path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced"
-        valueName: ShowTaskViewButton
+        valueName: "ShowTaskViewButton"
         value: 0
-        valueType: DWord
+        valueType: "DWord"
 
   - id: shell.hide-widgets-button
-    name: "Hide Widgets Button (Win11)"
-    minWindowsBuild: 22000
-    description: "Remove the Widgets button from the taskbar"
-    risk: safe
-    tier: free
+    name: "Disable Widgets (policy)"
+    description: "Turn off Widgets with the supported AllowNewsAndInterests policy, which also removes the taskbar button. On current Windows 11 builds Windows may block third-party tools from changing this setting; if oudenOS reports it as skipped, turn Widgets off in Settings > Personalization > Taskbar. The policy may be ignored on Windows 11 Home."
+    rationale: "AllowNewsAndInterests is the documented policy (Pro/Enterprise/Education). The UserChoice Protection Driver (UCPD) on 23H2/24H2/25H2 also protects this value and the TaskbarDa button value against writes from scripting hosts and non-Microsoft-signed programs, so the write is often reported as skipped. It still applies on builds and updates without that protection."
+    risk: "safe"
+    tier: "free"
     default: true
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
     blockedProfiles: []
+    minWindowsBuild: 22000
+    warningMessage: "Windows may block this change on current Windows 11 builds (reported as skipped). In that case turn Widgets off in Settings > Personalization > Taskbar. May be ignored on Windows 11 Home."
     registryChanges:
-      - hive: HKCU
-        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced"
-        valueName: TaskbarDa
+      - hive: "HKLM"
+        path: "SOFTWARE\\Policies\\Microsoft\\Dsh"
+        valueName: "AllowNewsAndInterests"
         value: 0
-        valueType: DWord
+        valueType: "DWord"
 
   - id: shell.reduce-search-box
-    name: "Reduce Search Box"
-    description: "Reduce the taskbar search box to an icon"
-    risk: safe
-    tier: free
+    name: "Show Search as an Icon (policy)"
+    description: "Set the SearchOnTaskbarMode policy to 1 (search icon only). Documented values: 0 hide, 1 icon only, 2 icon and label, 3 search box. Windows 11 24H2 (build 26100) and later."
+    rationale: "The policy key is not protected by UCPD, so it applies even where the per-user value is blocked."
+    risk: "safe"
+    tier: "free"
     default: true
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
-    blockedProfiles: [work_pc]
+    blockedProfiles:
+      - "work_pc"
+    minWindowsBuild: 26100
     registryChanges:
-      - hive: HKCU
-        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Search"
-        valueName: SearchboxTaskbarMode
+      - hive: "HKLM"
+        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Search"
+        valueName: "SearchOnTaskbarMode"
         value: 1
-        valueType: DWord
+        valueType: "DWord"
 
   - id: shell.disable-copilot
     name: "Disable Windows Copilot (Win11)"
-    minWindowsBuild: 22000
-    description: "Disable the Copilot AI sidebar and remove the taskbar button"
-    risk: safe
-    tier: free
+    description: "Turn off the built-in Copilot sidebar and its taskbar button (Windows 11 23H2 and earlier; on 24H2 Copilot is an app — use Remove Copilot App)"
+    risk: "safe"
+    tier: "free"
     default: true
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
     blockedProfiles: []
+    minWindowsBuild: 22000
+    maxWindowsBuild: 22631
     registryChanges:
-      - hive: HKCU
+      - hive: "HKCU"
         path: "Software\\Policies\\Microsoft\\Windows\\WindowsCopilot"
-        valueName: TurnOffWindowsCopilot
+        valueName: "TurnOffWindowsCopilot"
         value: 1
-        valueType: DWord
-      - hive: HKLM
-        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsCopilot"
-        valueName: TurnOffWindowsCopilot
-        value: 1
-        valueType: DWord
-      - hive: HKCU
+        valueType: "DWord"
+      - hive: "HKCU"
         path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced"
-        valueName: ShowCopilotButton
+        valueName: "ShowCopilotButton"
         value: 0
-        valueType: DWord
+        valueType: "DWord"
 
   - id: shell.hide-chat-icon
     name: "Hide Teams Chat Icon"
     description: "Remove the Teams Chat icon from the taskbar"
-    risk: safe
-    tier: free
+    risk: "safe"
+    tier: "free"
     default: true
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
-    minWindowsBuild: 22000
     blockedProfiles: []
+    minWindowsBuild: 22000
+    maxWindowsBuild: 22621
     registryChanges:
-      - hive: HKCU
+      - hive: "HKCU"
         path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced"
-        valueName: TaskbarMn
+        valueName: "TaskbarMn"
         value: 0
-        valueType: DWord
+        valueType: "DWord"
 
   - id: shell.enable-end-task
     name: "Enable End Task in Taskbar"
     description: "Show End Task option when right-clicking apps on the taskbar"
-    risk: safe
-    tier: free
+    risk: "safe"
+    tier: "free"
     default: true
     requiresReboot: false
     reversible: true
@@ -115,25 +117,45 @@ actions:
     blockedProfiles: []
     minWindowsBuild: 22631
     registryChanges:
-      - hive: HKCU
+      - hive: "HKCU"
         path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\\TaskbarDeveloperSettings"
-        valueName: TaskbarEndTask
+        valueName: "TaskbarEndTask"
         value: 1
-        valueType: DWord
+        valueType: "DWord"
 
   - id: shell.disable-meet-now
     name: "Hide Meet Now"
-    description: "Hide the Meet Now / Chat icon from the system tray"
-    risk: safe
-    tier: free
+    description: "Hide the Meet Now icon from the system tray (Windows 10 only)"
+    risk: "safe"
+    tier: "free"
     default: true
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
     blockedProfiles: []
+    maxWindowsBuild: 19045
     registryChanges:
-      - hive: HKCU
+      - hive: "HKCU"
         path: "Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer"
-        valueName: HideSCAMeetNow
+        valueName: "HideSCAMeetNow"
         value: 1
-        valueType: DWord
+        valueType: "DWord"
+
+  - id: shell.reduce-search-box-user
+    name: "Show Search as an Icon (per-user setting)"
+    description: "Set the per-user SearchboxTaskbarMode value to 1 (icon only). On current Windows 11 builds Windows may block third-party tools from changing it (reported as skipped); then change it in Settings > Personalization > Taskbar."
+    rationale: "Kept separate from the policy action so a blocked per-user write cannot roll back the policy. Works on Windows 10 and builds without UCPD protection of the Search key."
+    risk: "safe"
+    tier: "free"
+    default: true
+    expertOnly: false
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 3
+    blockedProfiles: []
+    registryChanges:
+      - hive: "HKCU"
+        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Search"
+        valueName: "SearchboxTaskbarMode"
+        value: 1
+        valueType: "DWord"

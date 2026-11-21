@@ -1,8 +1,7 @@
-# Performance: Storage Optimization
-
+# Performance: Storage
 module: performance.storage
-name: "Storage Optimization"
-description: "Optimize storage performance: disable NTFS last access timestamps, 8.3 filenames, enable write caching, and disable search indexing"
+name: "Storage"
+description: "NTFS last-access timestamps, write-cache flushing (opt-in, UPS only) and search indexing"
 category: performance
 
 actions:
@@ -10,54 +9,57 @@ actions:
     name: "Disable NTFS Last Access Timestamp"
     description: "Stop NTFS from writing a last-access timestamp every time a file is read (System-Managed, Last Access Disabled — fsutil flag 0x80000001). This is the single owner of this setting; reversible."
     rationale: "By default NTFS updates LastAccessTime on every file read, generating constant small writes. Disabling it removes that write I/O. (Uses the System-Managed/Disabled value 0x80000001 so it agrees with the NTFS optimization action instead of writing a conflicting value to the same key.)"
-    risk: safe
-    tier: free
-    default: true
-    requiresReboot: false
+    risk: "safe"
+    tier: "free"
+    default: false
+    requiresReboot: true
     reversible: true
     estimatedSeconds: 2
     blockedProfiles: []
     registryChanges:
-      - hive: HKLM
+      - hive: "HKLM"
         path: "SYSTEM\\CurrentControlSet\\Control\\FileSystem"
-        valueName: NtfsDisableLastAccessUpdate
+        valueName: "NtfsDisableLastAccessUpdate"
         value: 2147483649
-        valueType: DWord
-
-  - id: storage.enable-write-caching
-    name: "Enable Disk Write Caching"
-    description: "Enable write caching on storage devices, allowing the OS to buffer writes in RAM before flushing to disk for improved I/O throughput"
-    rationale: "Write caching allows the storage driver to acknowledge writes before they reach the physical media, dramatically improving random write performance."
-    risk: low
-    tier: free
-    default: true
-    requiresReboot: false
-    reversible: true
-    estimatedSeconds: 3
-    blockedProfiles: []
-    registryChanges:
-      - hive: HKLM
-        path: "SYSTEM\\CurrentControlSet\\Enum\\SCSI\\<device>\\<instance>\\Device Parameters\\Disk"
-        valueName: UserWriteCacheSetting
-        value: 1
-        valueType: DWord
-      - hive: HKLM
-        path: "SYSTEM\\CurrentControlSet\\Enum\\SCSI\\<device>\\<instance>\\Device Parameters\\Disk"
-        valueName: CacheIsPowerProtected
-        value: 1
-        valueType: DWord
+        valueType: "DWord"
 
   - id: storage.disable-indexing
     name: "Disable Windows Search Indexing Service"
     description: "Disable the Windows Search indexing service (WSearch) which continuously scans and indexes file contents in the background"
-    rationale: "The Windows Search indexer consumes disk I/O, CPU, and memory by continuously crawling files for content indexing. On gaming systems, disabling it eliminates background I/O contention."
-    risk: low
-    tier: free
-    default: true
+    rationale: "The indexer uses background disk I/O. With it off, Start menu, Explorer and Outlook searches become much slower (winutil marks this CAUTION). Mainly worthwhile on HDDs."
+    risk: "medium"
+    tier: "free"
+    default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 3
     blockedProfiles: []
+    warningMessage: "Start menu, File Explorer and Outlook searches become much slower without the index. Reversible."
     serviceChanges:
-      - name: WSearch
-        startupType: Disabled
+      - name: "WSearch"
+        startupType: "Disabled"
+
+  - id: storage.disable-write-cache-flushing
+    name: "Turn Off Write-Cache Buffer Flushing"
+    description: "Enable write caching and mark SCSI/NVMe disks as power-protected so Windows stops flushing the write cache (CacheIsPowerProtected=1). Only for PCs on a UPS or with very reliable power."
+    rationale: "PC-Tuning 11.36: only \"if your system has a backup power supply or is not prone to power failures\"."
+    risk: "high"
+    tier: "free"
+    default: false
+    expertOnly: false
+    requiresReboot: true
+    reversible: true
+    estimatedSeconds: 3
+    blockedProfiles: []
+    warningMessage: "A power cut or hard crash can lose or corrupt recently written data. Only use with a UPS or very reliable power. Reversible."
+    registryChanges:
+      - hive: "HKLM"
+        path: "SYSTEM\\CurrentControlSet\\Enum\\SCSI\\<device>\\<instance>\\Device Parameters\\Disk"
+        valueName: "UserWriteCacheSetting"
+        value: 1
+        valueType: "DWord"
+      - hive: "HKLM"
+        path: "SYSTEM\\CurrentControlSet\\Enum\\SCSI\\<device>\\<instance>\\Device Parameters\\Disk"
+        valueName: "CacheIsPowerProtected"
+        value: 1
+        valueType: "DWord"

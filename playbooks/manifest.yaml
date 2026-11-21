@@ -61,7 +61,7 @@ phases:
 
   - id: performance
     name: "Performance Optimization"
-    description: "CPU scheduling, memory management, GPU, and latency tuning"
+    description: "Opt-in power, memory, capture and input settings — measure them on your own system"
     modules:
       - performance/cpu-scheduler.yaml
       - performance/memory.yaml
@@ -87,19 +87,16 @@ phases:
     modules:
       - startup-shutdown/startup.yaml
       - startup-shutdown/shutdown.yaml
-      - startup-shutdown/boot.yaml
 
   - id: networking
     name: "Network Security"
-    description: "Disable legacy protocols and harden network stack"
+    description: "Legacy name-resolution hardening"
     modules:
-      - networking/protocols.yaml
-      - networking/latency.yaml
       - networking/security.yaml
 
   - id: security
     name: "Security Tuning"
-    description: "Adjust security mitigations for performance (expert-only)"
+    description: "Opt-in security trade-offs and Windows Update control"
     modules:
       - security/mitigations.yaml
       - security/update-control.yaml

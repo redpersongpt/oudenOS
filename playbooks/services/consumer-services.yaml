@@ -10,310 +10,243 @@ actions:
     name: "Disable Print Spooler"
     description: "Disable Print Spooler — manages print queues. Safe to disable on systems with no printers."
     rationale: "Print Spooler loads multiple DLLs and has been the target of critical security vulnerabilities (PrintNightmare CVE-2021-34527). Disabling eliminates this attack surface."
-    risk: low
-    tier: free
+    risk: "low"
+    tier: "free"
     default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
     blockedProfiles:
-      - work_pc
-      - office_laptop
+      - "work_pc"
+      - "office_laptop"
     serviceChanges:
-      - name: Spooler
-        startupType: Disabled
+      - name: "Spooler"
+        startupType: "Disabled"
 
   - id: services.disable-remote-services
     name: "Disable Remote Access Services"
     description: "Disable Remote Desktop, Remote Registry, and Remote Assistance — external connection listeners"
     rationale: "Remote access services maintain listening sockets and authentication state. On a dedicated PC without remote administration needs, they are pure attack surface."
-    risk: safe
-    tier: free
+    risk: "safe"
+    tier: "free"
     default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 3
     blockedProfiles:
-      - work_pc
+      - "work_pc"
     registryChanges:
-      - hive: HKLM
+      - hive: "HKLM"
         path: "SYSTEM\\CurrentControlSet\\Control\\Remote Assistance"
-        valueName: fAllowToGetHelp
+        valueName: "fAllowToGetHelp"
         value: 0
-        valueType: DWord
+        valueType: "DWord"
     serviceChanges:
-      - name: RemoteRegistry
-        startupType: Disabled
-      - name: TermService
-        startupType: Disabled
-      - name: SessionEnv
-        startupType: Disabled
+      - name: "RemoteRegistry"
+        startupType: "Disabled"
+      - name: "TermService"
+        startupType: "Disabled"
+      - name: "SessionEnv"
+        startupType: "Disabled"
 
   - id: services.disable-xbox-services
     name: "Disable Xbox Background Services"
     description: "Disable Xbox Live Auth (XblAuthManager), Game Save, Networking, and Accessory services"
     rationale: "These services run in the background even without Xbox hardware. If you don't use the Xbox app, Game Pass, or Microsoft Store games, turning them off frees resources and closes idle network connections."
-    risk: low
-    tier: free
+    risk: "low"
+    tier: "free"
     default: false
     requiresReboot: false
-    warningMessage: "This breaks Xbox app and Game Pass sign-in, cloud game saves, and Xbox multiplayer — including some PC Game Pass titles. Only disable it if you don't use Xbox, Game Pass, or Store games. It's fully reversible."
     reversible: true
     estimatedSeconds: 3
     blockedProfiles:
-      - vm_cautious
+      - "vm_cautious"
+    warningMessage: "Breaks Xbox app and PC Game Pass sign-in, cloud saves and Xbox multiplayer, including some Game Pass titles. Only for PCs that never use Xbox, Game Pass or Store games. Reversible."
     serviceChanges:
-      - name: XblAuthManager
-        startupType: Disabled
-      - name: XblGameSave
-        startupType: Disabled
-      - name: XboxNetApiSvc
-        startupType: Disabled
-      - name: XboxGipSvc
-        startupType: Disabled
+      - name: "XblAuthManager"
+        startupType: "Disabled"
+      - name: "XblGameSave"
+        startupType: "Disabled"
+      - name: "XboxNetApiSvc"
+        startupType: "Disabled"
+      - name: "XboxGipSvc"
+        startupType: "Disabled"
 
   - id: services.disable-fax
     name: "Disable Fax Service"
     description: "Disable the Fax service — legacy fax modem support"
     rationale: "Fax service is a legacy holdover. It loads COM objects and maintains network listeners for fax reception."
-    risk: safe
-    tier: free
+    risk: "safe"
+    tier: "free"
     default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
     blockedProfiles:
-      - work_pc
+      - "work_pc"
     serviceChanges:
-      - name: Fax
-        startupType: Disabled
+      - name: "Fax"
+        startupType: "Disabled"
 
   - id: services.disable-phone-service
     name: "Disable Phone Service"
     description: "Disable PhoneSvc — telephony state management for Your Phone / Phone Link"
-    rationale: "PhoneSvc manages telephony state for the Phone Link companion app. Unnecessary unless actively using Phone Link."
-    risk: safe
-    tier: free
+    rationale: "PhoneSvc manages telephony state for Phone Link. Not needed once Phone Link is removed."
+    risk: "safe"
+    tier: "free"
     default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
     blockedProfiles:
-      - work_pc
+      - "work_pc"
     serviceChanges:
-      - name: PhoneSvc
-        startupType: Disabled
+      - name: "PhoneSvc"
+        startupType: "Disabled"
 
   - id: services.disable-wallet-service
     name: "Disable Wallet Service"
     description: "Disable WalletService — NFC tap-to-pay and wallet credential management"
     rationale: "WalletService manages NFC payment credentials. Desktops have no NFC hardware, laptops rarely use it."
-    risk: safe
-    tier: free
+    risk: "safe"
+    tier: "free"
     default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
     blockedProfiles: []
     serviceChanges:
-      - name: WalletService
-        startupType: Disabled
+      - name: "WalletService"
+        startupType: "Disabled"
 
   - id: services.disable-bluetooth-support
     name: "Disable Bluetooth Support Service"
     description: "Disable bthserv — Bluetooth device discovery and pairing"
     rationale: "On desktop systems without Bluetooth hardware, this service runs idle. On systems with Bluetooth, enable manually."
-    risk: low
-    tier: free
+    risk: "low"
+    tier: "free"
     default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
     blockedProfiles:
-      - office_laptop
-      - gaming_laptop
-      - work_pc
+      - "office_laptop"
+      - "gaming_laptop"
+      - "work_pc"
     serviceChanges:
-      - name: bthserv
-        startupType: Disabled
-
-  - id: services.disable-alljoyn-router
-    name: "Disable AllJoyn Router"
-    description: "Disable AllJoyn Router Service — IoT device communication protocol"
-    rationale: "AllJoyn is an IoT protocol rarely used on desktop Windows. The router service listens for device advertisements."
-    risk: safe
-    tier: free
-    default: false
-    requiresReboot: false
-    reversible: true
-    estimatedSeconds: 2
-    blockedProfiles: []
-    serviceChanges:
-      - name: AJRouter
-        startupType: Disabled
-
-  - id: services.disable-mixed-reality
-    name: "Disable Windows Mixed Reality"
-    description: "Disable MixedRealityOpenXRSvc and Windows Perception services"
-    rationale: "Windows Mixed Reality services run idle on systems without VR headsets. They load perception-related DLLs unnecessarily."
-    risk: safe
-    tier: free
-    default: false
-    requiresReboot: false
-    reversible: true
-    estimatedSeconds: 3
-    blockedProfiles: []
-    serviceChanges:
-      - name: MixedRealityOpenXRSvc
-        startupType: Disabled
-      - name: spectrum
-        startupType: Disabled
+      - name: "bthserv"
+        startupType: "Disabled"
 
   - id: services.disable-geolocation
     name: "Disable Geolocation Service"
     description: "Disable lfsvc — Windows location framework service"
     rationale: "Geolocation service provides location data to apps. On desktops this typically uses IP-based geolocation with limited accuracy and a privacy cost."
-    risk: safe
-    tier: free
+    risk: "safe"
+    tier: "free"
     default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
     blockedProfiles:
-      - office_laptop
+      - "office_laptop"
     serviceChanges:
-      - name: lfsvc
-        startupType: Disabled
+      - name: "lfsvc"
+        startupType: "Disabled"
 
   - id: services.disable-wmp-network-sharing
     name: "Disable Windows Media Player Network Sharing"
     description: "Disable WMPNetworkSvc — DLNA/UPnP media server"
     rationale: "WMP Network Sharing acts as a media server, exposing media files over the local network. Unnecessary unless streaming media to other devices."
-    risk: safe
-    tier: free
+    risk: "safe"
+    tier: "free"
     default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
     blockedProfiles: []
     serviceChanges:
-      - name: WMPNetworkSvc
-        startupType: Disabled
+      - name: "WMPNetworkSvc"
+        startupType: "Disabled"
 
   - id: services.disable-smart-card
     name: "Disable Smart Card Services"
     description: "Disable SCardSvr and ScDeviceEnum — smart card reader support"
     rationale: "Smart card services maintain reader device state. Unnecessary on systems without smart card hardware."
-    risk: safe
-    tier: free
+    risk: "safe"
+    tier: "free"
     default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
     blockedProfiles:
-      - work_pc
+      - "work_pc"
     serviceChanges:
-      - name: SCardSvr
-        startupType: Disabled
-      - name: ScDeviceEnum
-        startupType: Disabled
+      - name: "SCardSvr"
+        startupType: "Disabled"
+      - name: "ScDeviceEnum"
+        startupType: "Disabled"
 
   - id: services.disable-secondary-logon
     name: "Disable Secondary Logon"
     description: "Disable seclogon — 'Run as different user' support"
     rationale: "Secondary Logon allows running processes under alternate credentials. On single-user systems, this is unnecessary attack surface."
-    risk: low
-    tier: free
+    risk: "low"
+    tier: "free"
     default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
     blockedProfiles:
-      - work_pc
+      - "work_pc"
     serviceChanges:
-      - name: seclogon
-        startupType: Disabled
-
-  - id: services.disable-touch-keyboard
-    name: "Disable Touch Keyboard & Handwriting"
-    description: "Disable TabletInputService — touch keyboard, handwriting, and pen input"
-    rationale: "On desktop systems without touch screens, this service loads input method editors and handwriting recognition unnecessarily. Laptops with touchscreens need this."
-    risk: low
-    tier: free
-    default: false
-    requiresReboot: false
-    reversible: true
-    estimatedSeconds: 2
-    blockedProfiles:
-      - office_laptop
-      - gaming_laptop
-      - work_pc
-    serviceChanges:
-      - name: TabletInputService
-        startupType: Disabled
+      - name: "seclogon"
+        startupType: "Disabled"
 
   - id: services.disable-wer-service
     name: "Disable Windows Error Reporting Service"
     description: "Disable WerSvc — crash dump collection and upload"
     rationale: "WerSvc collects crash dumps and uploads them to Microsoft. Disabling prevents automatic crash data exfiltration while keeping local crash handling intact."
-    risk: safe
-    tier: free
-    default: false
-    requiresReboot: false
-    reversible: true
-    estimatedSeconds: 2
-    blockedProfiles: []
-    serviceChanges:
-      - name: WerSvc
-        startupType: Disabled
-
-  - id: services.disable-push-notifications
-    name: "Disable Windows Push Notification Service"
-    description: "Disable WpnUserService — per-user push notification relay. WpnService (system) is kept to prevent Explorer notification crashes. A reboot is REQUIRED before the change takes effect safely."
-    rationale: "WPN user service relays cloud push notifications from Store apps. The system WpnService must stay enabled as Explorer's notification system depends on it. Without a reboot after disabling WpnUserService, Explorer may crash when accessing notification-related context menus or toast handlers."
-    risk: low
-    tier: free
-    default: false
-    requiresReboot: true
-    warningMessage: "You MUST restart your PC after this change. Using the desktop without restarting may cause File Explorer crashes when right-clicking or accessing notifications."
-    reversible: true
-    estimatedSeconds: 3
-    blockedProfiles:
-      - work_pc
-      - office_laptop
-    serviceChanges:
-      - name: WpnUserService
-        startupType: Disabled
-
-  - id: services.disable-data-usage
-    name: "Disable Data Usage (DusmSvc)"
-    description: "Disable DusmSvc — the Data Usage Subscription Management service that meters per-network data usage"
-    rationale: "Tracks network data usage for the metered-connection UI. Off frees a small background service; you lose the per-network data-usage stats in Settings."
-    risk: low
-    tier: free
+    risk: "safe"
+    tier: "free"
     default: true
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
     blockedProfiles: []
     serviceChanges:
-      - name: DusmSvc
-        startupType: Disabled
+      - name: "WerSvc"
+        startupType: "Disabled"
+
+  - id: services.disable-data-usage
+    name: "Disable Data Usage (DusmSvc)"
+    description: "Disable DusmSvc — the Data Usage Subscription Management service that meters per-network data usage"
+    rationale: "Tracks network data usage for the metered-connection UI. Off frees a small background service; you lose the per-network data-usage stats in Settings."
+    risk: "low"
+    tier: "free"
+    default: false
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    warningMessage: "Settings > Network > Data usage stops showing per-network statistics. Reversible."
+    serviceChanges:
+      - name: "DusmSvc"
+        startupType: "Disabled"
 
   - id: services.disable-biometric-service
     name: "Disable Windows Biometric Service (WbioSrvc)"
     description: "Disable WbioSrvc — only do this on a machine with NO fingerprint reader or face camera"
     rationale: "Drives Windows Hello biometric hardware. On a system with no biometric hardware it does nothing useful; disabling frees it. Opt-in and blocked on laptops by default because most have a fingerprint/face sensor."
-    risk: medium
-    tier: free
+    risk: "medium"
+    tier: "free"
     default: false
     requiresReboot: false
-    warningMessage: "Disabling WbioSrvc breaks Windows Hello fingerprint and face sign-in. Only disable on a system with NO fingerprint reader or biometric camera — otherwise you lose that sign-in method (PIN/password still work). Reversible."
     reversible: true
     estimatedSeconds: 2
     blockedProfiles:
-      - gaming_laptop
-      - office_laptop
+      - "gaming_laptop"
+      - "office_laptop"
+    warningMessage: "Disabling WbioSrvc breaks Windows Hello fingerprint and face sign-in. Only disable on a system with NO fingerprint reader or biometric camera — otherwise you lose that sign-in method (PIN/password still work). Reversible."
     serviceChanges:
-      - name: WbioSrvc
-        startupType: Disabled
+      - name: "WbioSrvc"
+        startupType: "Disabled"

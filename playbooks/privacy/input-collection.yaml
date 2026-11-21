@@ -1,8 +1,7 @@
-# Privacy: Input Collection
-
+# Privacy: Input & Data Collection
 module: privacy.input-collection
-name: "Input & Data Collection Reduction"
-description: "Disable input personalization, device monitoring, app reprovisioning, and SmartScreen filter"
+name: "Input & Data Collection"
+description: "Online speech, touch/typing data, contact harvesting, feedback prompts, Find My Device and SmartScreen"
 category: privacy
 
 actions:
@@ -10,163 +9,137 @@ actions:
     name: "Disable Input Personalization"
     description: "Disable implicit text and ink collection used for input personalization"
     rationale: "Prevents Windows from collecting typing and inking patterns to build a local user profile"
-    risk: safe
-    tier: free
+    risk: "safe"
+    tier: "free"
     default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
     blockedProfiles: []
     registryChanges:
-      - hive: HKCU
+      - hive: "HKCU"
         path: "SOFTWARE\\Microsoft\\InputPersonalization"
-        valueName: RestrictImplicitTextCollection
+        valueName: "RestrictImplicitTextCollection"
         value: 1
-        valueType: DWord
-      - hive: HKCU
+        valueType: "DWord"
+      - hive: "HKCU"
         path: "SOFTWARE\\Microsoft\\InputPersonalization"
-        valueName: RestrictImplicitInkCollection
+        valueName: "RestrictImplicitInkCollection"
         value: 1
-        valueType: DWord
-
-  - id: privacy.disable-device-monitoring
-    name: "Disable Device Install Monitoring"
-    description: "Disable system restore points for device installations via policy"
-    rationale: "Prevents automatic restore point creation during device driver installs, reducing disk I/O"
-    risk: safe
-    tier: free
-    default: false
-    requiresReboot: false
-    reversible: true
-    estimatedSeconds: 2
-    blockedProfiles: []
-    registryChanges:
-      - hive: HKLM
-        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\DeviceInstall\\Settings"
-        valueName: DisableSystemRestore
-        value: 1
-        valueType: DWord
-
-  - id: privacy.block-app-reprovisioning
-    name: "Block Removed Apps from Reinstalling"
-    description: "Block previously removed AppX packages from being reinstalled by Windows Update by creating the Deprovisioned registry key"
-    rationale: "Windows Update can silently reinstall removed AppX packages during feature updates"
-    risk: low
-    tier: free
-    default: false
-    requiresReboot: false
-    reversible: true
-    estimatedSeconds: 3
-    blockedProfiles: []
-    powerShellCommands:
-      - "$key = 'HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Appx\\AppxAllUserStore\\Deprovisioned'; if (!(Test-Path $key)) { New-Item -Path $key -Force | Out-Null }"
+        valueType: "DWord"
+      - hive: "HKLM"
+        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\TextInput"
+        valueName: "AllowLinguisticDataCollection"
+        value: 0
+        valueType: "DWord"
 
   - id: privacy.disable-online-speech
     name: "Disable Online Speech Recognition"
     description: "Opt out of online speech recognition data collection"
     rationale: "Windows sends speech data to Microsoft for cloud-based recognition improvements"
-    risk: safe
-    tier: free
-    default: true
+    risk: "safe"
+    tier: "free"
+    default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
     blockedProfiles: []
     registryChanges:
-      - hive: HKCU
+      - hive: "HKCU"
         path: "SOFTWARE\\Microsoft\\Speech_OneCore\\Settings\\OnlineSpeechPrivacy"
-        valueName: HasAccepted
+        valueName: "HasAccepted"
         value: 0
-        valueType: DWord
+        valueType: "DWord"
 
   - id: privacy.disable-tipc
     name: "Disable Touch Input Collection"
     description: "Disable touch keyboard and handwriting data collection"
     rationale: "TIPC sends touch and handwriting patterns to Microsoft"
-    risk: safe
-    tier: free
+    risk: "safe"
+    tier: "free"
     default: true
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
     blockedProfiles: []
     registryChanges:
-      - hive: HKCU
+      - hive: "HKCU"
         path: "SOFTWARE\\Microsoft\\Input\\TIPC"
-        valueName: Enabled
+        valueName: "Enabled"
         value: 0
-        valueType: DWord
+        valueType: "DWord"
 
   - id: privacy.disable-harvest-contacts
     name: "Disable Contact Harvesting"
     description: "Prevent trained data store from harvesting contacts for input prediction"
     rationale: "Windows mines contact names for keyboard prediction improvements"
-    risk: safe
-    tier: free
-    default: true
+    risk: "safe"
+    tier: "free"
+    default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
     blockedProfiles: []
     registryChanges:
-      - hive: HKCU
+      - hive: "HKCU"
         path: "SOFTWARE\\Microsoft\\InputPersonalization\\TrainedDataStore"
-        valueName: HarvestContacts
+        valueName: "HarvestContacts"
         value: 0
-        valueType: DWord
+        valueType: "DWord"
 
   - id: privacy.disable-siuf
     name: "Disable Feedback Frequency"
     description: "Set Windows feedback solicitation frequency to never"
     rationale: "SIUF periodically prompts users for feedback, collecting usage patterns"
-    risk: safe
-    tier: free
+    risk: "safe"
+    tier: "free"
     default: true
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
     blockedProfiles: []
     registryChanges:
-      - hive: HKCU
+      - hive: "HKCU"
         path: "SOFTWARE\\Microsoft\\Siuf\\Rules"
-        valueName: NumberOfSIUFInPeriod
+        valueName: "NumberOfSIUFInPeriod"
         value: 0
-        valueType: DWord
+        valueType: "DWord"
 
   - id: privacy.disable-find-my-device
     name: "Disable Find My Device"
     description: "Disable the Find My Device location tracking feature"
     rationale: "Find My Device continuously reports device location to Microsoft"
-    risk: safe
-    tier: free
-    default: true
+    risk: "safe"
+    tier: "free"
+    default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
     blockedProfiles: []
     registryChanges:
-      - hive: HKLM
+      - hive: "HKLM"
         path: "SOFTWARE\\Policies\\Microsoft\\FindMyDevice"
-        valueName: AllowFindMyDevice
+        valueName: "AllowFindMyDevice"
         value: 0
-        valueType: DWord
+        valueType: "DWord"
 
   - id: privacy.disable-smartscreen
     name: "Disable SmartScreen Filter"
     description: "Disable the Windows SmartScreen filter that checks downloaded files and visited websites against Microsoft's reputation database"
-    rationale: "SmartScreen sends file hashes and URLs to Microsoft servers for reputation checks. Disabling it removes this telemetry and network latency at the cost of reduced download protection."
-    risk: high
-    tier: free
+    rationale: "SmartScreen checks downloaded files and apps against Microsoft's reputation service. Turning it off removes that check and the protection it gives against malicious downloads. It has no measurable gaming impact."
+    risk: "high"
+    tier: "free"
     default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
     blockedProfiles:
-      - work_pc
-      - vm_cautious
+      - "work_pc"
+      - "vm_cautious"
+    warningMessage: "Downloaded programs are no longer reputation-checked before they run. Only turn this off if you understand the risk. Reversible."
     registryChanges:
-      - hive: HKLM
+      - hive: "HKLM"
         path: "SOFTWARE\\Policies\\Microsoft\\Windows\\System"
-        valueName: EnableSmartScreen
+        valueName: "EnableSmartScreen"
         value: 0
-        valueType: DWord
+        valueType: "DWord"

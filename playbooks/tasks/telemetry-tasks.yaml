@@ -8,10 +8,10 @@ category: tasks
 actions:
   - id: tasks.disable-telemetry-tasks
     name: "Disable Telemetry Collector Tasks"
-    description: "Disable Application Experience, CEIP, and Compatibility Appraiser scheduled tasks"
+    description: "Disable the Compatibility Appraiser (both the old and the 24H2 \"Exp\" name), ProgramDataUpdater, StartupAppTask and the CEIP Consolidator/UsbCeip tasks. Tasks that do not exist on this build are skipped."
     rationale: "These tasks collect and upload diagnostic data in the background, consuming CPU and network resources"
-    risk: safe
-    tier: free
+    risk: "safe"
+    tier: "free"
     default: false
     requiresReboot: false
     reversible: true
@@ -20,9 +20,9 @@ actions:
     tasks:
       - name: "Microsoft Compatibility Appraiser"
         path: "\\Microsoft\\Windows\\Application Experience\\"
-      - name: "ProgramDataUpdater"
+      - name: "Microsoft Compatibility Appraiser Exp"
         path: "\\Microsoft\\Windows\\Application Experience\\"
-      - name: "AitAgent"
+      - name: "ProgramDataUpdater"
         path: "\\Microsoft\\Windows\\Application Experience\\"
       - name: "StartupAppTask"
         path: "\\Microsoft\\Windows\\Application Experience\\"
@@ -30,15 +30,13 @@ actions:
         path: "\\Microsoft\\Windows\\Customer Experience Improvement Program\\"
       - name: "UsbCeip"
         path: "\\Microsoft\\Windows\\Customer Experience Improvement Program\\"
-      - name: "KernelCeipTask"
-        path: "\\Microsoft\\Windows\\Customer Experience Improvement Program\\"
 
   - id: tasks.disable-diagnostic-tasks
     name: "Disable Diagnostic Data Tasks"
-    description: "Disable DiskDiagnostic, MemoryDiagnostic, and other diagnostic data tasks"
+    description: "Disable the disk diagnostic data collector and disk-footprint diagnostics tasks (Storage Sense and the memory diagnostic are left alone)"
     rationale: "Diagnostic tasks run periodic system scans that consume I/O and CPU for data Microsoft uses for product improvement"
-    risk: safe
-    tier: free
+    risk: "safe"
+    tier: "free"
     default: false
     requiresReboot: false
     reversible: true
@@ -49,18 +47,14 @@ actions:
         path: "\\Microsoft\\Windows\\DiskDiagnostic\\"
       - name: "Diagnostics"
         path: "\\Microsoft\\Windows\\DiskFootprint\\"
-      - name: "StorageSense"
-        path: "\\Microsoft\\Windows\\DiskFootprint\\"
-      - name: "RunFullMemoryDiagnostic"
-        path: "\\Microsoft\\Windows\\MemoryDiagnostic\\"
 
   - id: tasks.disable-feedback-tasks
-    name: "Disable Feedback & Error Reporting Tasks"
-    description: "Disable Windows Error Reporting and Feedback scheduled tasks"
+    name: "Disable Error Report Queue Task"
+    description: "Disable the Windows Error Reporting QueueReporting task that uploads queued crash reports"
     rationale: "Error reporting tasks collect crash data and feedback prompts. Disabling prevents background crash data upload."
-    risk: safe
-    tier: free
-    default: false
+    risk: "safe"
+    tier: "free"
+    default: true
     requiresReboot: false
     reversible: true
     estimatedSeconds: 3
@@ -68,84 +62,22 @@ actions:
     tasks:
       - name: "QueueReporting"
         path: "\\Microsoft\\Windows\\Windows Error Reporting\\"
-      - name: "BrowserReporting"
-        path: "\\Microsoft\\Windows\\Windows Error Reporting\\"
-
-  - id: tasks.disable-cloud-content-tasks
-    name: "Disable Cloud Content & Spotlight Tasks"
-    description: "Disable Windows Spotlight, cloud content delivery, and lock screen suggestion tasks. Disabling CloudExperienceHostLauncher may cause significantly slower first login on new user profiles."
-    rationale: "Cloud content tasks download promotional content, lock screen suggestions, and app suggestions from Microsoft servers. WARNING: CloudExperienceHostLauncher is used during login for OOBE and new-profile provisioning. Disabling it can cause 5-20 minute login delays on fresh profiles as Windows waits for the task to timeout."
-    risk: low
-    tier: free
-    default: false
-    requiresReboot: false
-    warningMessage: "May cause significantly slower first login on new user profiles (5-20 minutes). Windows waits for CloudExperienceHost to timeout during profile provisioning."
-    reversible: true
-    estimatedSeconds: 3
-    blockedProfiles: []
-    tasks:
-      - name: "CloudExperienceHostLauncher"
-        path: "\\Microsoft\\Windows\\CloudExperienceHost\\"
-      - name: "CreateObjectTask"
-        path: "\\Microsoft\\Windows\\CloudExperienceHost\\"
-
-  - id: tasks.disable-onedrive-tasks
-    name: "Disable OneDrive Sync Tasks"
-    description: "Disable OneDrive automatic sync and reporting scheduled tasks"
-    rationale: "OneDrive sync tasks consume bandwidth and disk I/O in the background"
-    risk: medium
-    tier: free
-    default: false
-    requiresReboot: false
-    reversible: true
-    estimatedSeconds: 3
-    blockedProfiles:
-      - work_pc
-    tasks:
-      - name: "OneDrive Reporting Task"
-        path: "\\Microsoft\\Windows\\OneDrive\\"
-      - name: "OneDrive Standalone Update Task"
-        path: "\\Microsoft\\Windows\\OneDrive\\"
-
-  - id: tasks.disable-update-tasks
-    name: "Disable Update Orchestrator Tasks"
-    description: "Disable Windows Update Orchestrator scheduled tasks to reduce background update activity. May cause 10-20 minute shutdown delays if disabled while an update cycle is in progress."
-    rationale: "Prevents unexpected update downloads and restarts during use. WARNING: If Windows Update is mid-operation when these tasks are disabled, shutdown can hang for 10-20 minutes waiting for the orchestrator cycle to complete. Apply this AFTER a clean shutdown, not during active update checks."
-    risk: medium
-    tier: free
-    default: false
-    requiresReboot: true
-    warningMessage: "If Windows Update is mid-operation, shutdown may hang for 10-20 minutes. Apply after a clean restart for best results."
-    reversible: true
-    estimatedSeconds: 5
-    blockedProfiles:
-      - work_pc
-    tasks:
-      - name: "Schedule Scan"
-        path: "\\Microsoft\\Windows\\UpdateOrchestrator\\"
-      - name: "Schedule Scan Static Task"
-        path: "\\Microsoft\\Windows\\UpdateOrchestrator\\"
-      - name: "USO_UxBroker"
-        path: "\\Microsoft\\Windows\\UpdateOrchestrator\\"
-      - name: "Schedule Work"
-        path: "\\Microsoft\\Windows\\UpdateOrchestrator\\"
-      - name: "Schedule Wake To Work"
-        path: "\\Microsoft\\Windows\\UpdateOrchestrator\\"
 
   - id: tasks.disable-defender-tasks
     name: "Disable Windows Defender Scheduled Scans"
-    description: "Disable automatic Defender scan scheduling (manual scans still work)"
-    rationale: "Defender scheduled scans can cause significant I/O load. Disabling auto-scheduling allows manual scan control."
-    risk: medium
-    tier: free
+    description: "Disable Defender's scheduled scan, cache maintenance, cleanup and verification tasks. Real-time protection and manual scans are not affected."
+    rationale: "Scheduled scans cause periodic disk load. Without them you must run scans yourself."
+    risk: "medium"
+    tier: "free"
     default: false
     expertOnly: true
     requiresReboot: false
     reversible: true
     estimatedSeconds: 4
     blockedProfiles:
-      - work_pc
-      - office_laptop
+      - "work_pc"
+      - "office_laptop"
+    warningMessage: "Defender will no longer run its periodic full scans or signature verification on a schedule. Run scans manually."
     tasks:
       - name: "Windows Defender Scheduled Scan"
         path: "\\Microsoft\\Windows\\Windows Defender\\"
@@ -160,14 +92,14 @@ actions:
     name: "Disable Offline Maps Tasks"
     description: "Disable offline map data download and update tasks"
     rationale: "Maps tasks periodically check for and download offline map data in the background"
-    risk: safe
-    tier: free
+    risk: "safe"
+    tier: "free"
     default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
     blockedProfiles:
-      - office_laptop
+      - "office_laptop"
     tasks:
       - name: "MapsToastTask"
         path: "\\Microsoft\\Windows\\Maps\\"
@@ -175,11 +107,11 @@ actions:
         path: "\\Microsoft\\Windows\\Maps\\"
 
   - id: tasks.disable-speech-tasks
-    name: "Disable Speech & Handwriting Tasks"
-    description: "Disable speech model and handwriting data collection tasks"
+    name: "Disable Speech Model Download Task"
+    description: "Disable the background speech-model download task"
     rationale: "Speech tasks collect and process speech/handwriting samples for Microsoft personalization"
-    risk: safe
-    tier: free
+    risk: "safe"
+    tier: "free"
     default: false
     requiresReboot: false
     reversible: true
@@ -188,24 +120,22 @@ actions:
     tasks:
       - name: "SpeechModelDownloadTask"
         path: "\\Microsoft\\Windows\\Speech\\"
-      - name: "HeadsetButtonPress"
-        path: "\\Microsoft\\Windows\\Speech\\"
 
   - id: tasks.disable-flighting-tasks
-    name: "Disable Windows Insider & Flighting Tasks"
-    description: "Disable Windows Insider Program telemetry and flighting tasks"
-    rationale: "Flighting tasks check for preview builds and collect flight-specific telemetry. Unnecessary unless enrolled in Windows Insider."
-    risk: safe
-    tier: free
+    name: "Disable Feature Usage Reporting Tasks"
+    description: "Disable the FeatureConfig usage-data reporting/flushing tasks and the OneSettings refresh task"
+    rationale: "These tasks upload feature-usage data and refresh remote configuration. Feature rollout tasks (ReconcileFeatures) are intentionally left alone."
+    risk: "safe"
+    tier: "free"
     default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 3
     blockedProfiles: []
     tasks:
-      - name: "FlightAgentTask"
+      - name: "UsageDataReporting"
         path: "\\Microsoft\\Windows\\Flighting\\FeatureConfig\\"
-      - name: "OneSettings"
-        path: "\\Microsoft\\Windows\\Flighting\\OneSettings\\"
+      - name: "UsageDataFlushing"
+        path: "\\Microsoft\\Windows\\Flighting\\FeatureConfig\\"
       - name: "RefreshCache"
         path: "\\Microsoft\\Windows\\Flighting\\OneSettings\\"

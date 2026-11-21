@@ -1,48 +1,25 @@
-# AppX: Gaming Apps Removal
-
+# Appx: Xbox Apps
 module: appx.gaming-apps
-name: "Gaming & Widgets App Removal"
-description: "Remove Windows Widgets and Xbox companion apps"
+name: "Xbox Apps"
+description: "Remove Xbox apps for PCs that never use Xbox, Game Pass or Store games"
 category: appx
 
 actions:
-  - id: appx.remove-widgets
-    name: "Remove Widgets"
-    description: "Remove Windows Widgets (WebExperience) and disable via registry"
-    rationale: "Removes resource-consuming widgets panel and prevents accidental activation"
-    risk: low
-    tier: free
-    default: false
-    requiresReboot: false
-    reversible: false
-    estimatedSeconds: 10
-    minWindowsBuild: 22000
-    blockedProfiles:
-      - vm_cautious
-    packages:
-      - MicrosoftWindows.Client.WebExperience
-    registryChanges:
-      - hive: HKLM
-        path: "SOFTWARE\\Policies\\Microsoft\\Dsh"
-        valueName: AllowNewsAndInterests
-        value: 0
-        valueType: DWord
-
   - id: appx.remove-xbox-apps
     name: "Remove Xbox Apps"
-    description: "Remove Xbox companion apps (XboxApp, GamingOverlay, Xbox.TCUI, XboxGameCallableUI, XboxSpeechToTextOverlay)"
-    rationale: "Removes Xbox social features and overlay processes that consume resources during gaming"
-    risk: low
-    tier: free
+    description: "Remove the Xbox app, Xbox TCUI and speech-to-text overlay. The Game Bar overlay is kept because Windows uses it to register games (Game Mode depends on that)."
+    rationale: "Only for PCs that never use the Xbox app, PC Game Pass or Microsoft Store games. Removing apps rarely changes FPS; it removes background sign-in and update noise."
+    risk: "low"
+    tier: "free"
     default: false
     requiresReboot: false
     reversible: false
     estimatedSeconds: 15
     blockedProfiles:
-      - vm_cautious
+      - "vm_cautious"
+    warningMessage: "Breaks the Xbox app, PC Game Pass and Microsoft Store games that use Xbox sign-in. Reinstalling requires the Microsoft Store."
     packages:
-      - Microsoft.XboxApp
-      - Microsoft.XboxGamingOverlay
-      - Microsoft.Xbox.TCUI
-      - Microsoft.XboxGameCallableUI
-      - Microsoft.XboxSpeechToTextOverlay
+      - "Microsoft.GamingApp"
+      - "Microsoft.XboxApp"
+      - "Microsoft.Xbox.TCUI"
+      - "Microsoft.XboxSpeechToTextOverlay"

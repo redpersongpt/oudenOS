@@ -1,27 +1,16 @@
 # Profile: High-end Workstation
-# Preserves development tools, professional services, Hyper-V, WSL.
-# Focuses on latency reduction and resource optimization.
 
 profile: high_end_workstation
+name: "High-end Workstation"
 
-block:
+blockedActions:
   - services.disable-print-spooler        # Workstations often print
   - services.disable-remote-services      # May need remote access
   - services.disable-secondary-logon      # Dev tools use RunAs
-  - services.disable-bluetooth-support    # Workstations may use BT peripherals
+  - services.disable-bluetooth-support    # BT peripherals
   - appx.remove-outlook-new               # May use new Outlook
-  - tasks.disable-maintenance-tasks       # Let maintenance run on workstations
-
-preserve:
-  - print_spooler
-  - rdp_server
-  - hyper_v
-  - wsl
-  - developer_mode
-  - remote_desktop
+  - perf.disable-auto-maintenance         # Let maintenance (and TRIM) run
 
 override:
-  power.high-performance-plan:
-    default: true       # Workstations run on wall power
   security.disable-cpu-mitigations:
-    default: false      # Keep security mitigations on workstation
+    default: false      # Keep security mitigations on workstations

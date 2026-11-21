@@ -1,243 +1,138 @@
-# Performance: GPU Optimization
-
+# Performance: GPU & Game Capture
 module: performance.gpu
-name: "GPU Performance Optimization"
-description: "Optimize GPU performance by disabling energy monitoring, HAGS, dynamic P-states, telemetry, Game DVR, fullscreen optimizations, and transparency"
+name: "GPU & Game Capture"
+description: "Game capture, fullscreen behaviour, GPU timeout and GPU-vendor background services"
 category: performance
 
 actions:
-  - id: perf.gpu-energy-driver-disable
-    name: "Disable GPU Energy Driver"
-    description: "Disable the GpuEnergyDrv driver that monitors GPU energy usage and causes DPC latency spikes"
-    rationale: "GpuEnergyDrv is a known source of DPC latency; disabling it improves real-time audio/video performance"
-    risk: low
-    tier: free
-    default: false
-    requiresReboot: true
-    reversible: true
-    estimatedSeconds: 2
-    blockedProfiles:
-      - vm_cautious
-    registryChanges:
-      - hive: HKLM
-        path: "SYSTEM\\CurrentControlSet\\Services\\GpuEnergyDrv"
-        valueName: Start
-        value: 4
-        valueType: DWord
-
   - id: gpu.tdr-delay
     name: "Increase TDR Timeout to 10 Seconds"
     description: "Increase the Timeout Detection and Recovery (TDR) delay from the default 2 seconds to 10 seconds, preventing false GPU resets during heavy load spikes"
-    rationale: "The default 2-second TDR timeout causes false GPU resets during shader compilation, heavy compute loads, or driver transitions."
-    risk: low
-    tier: premium
+    rationale: "The default 2-second GPU timeout can trigger false \"display driver stopped responding\" resets during long shader compiles or compute loads. 10 seconds gives the driver more time; a real hang then takes longer to recover."
+    risk: "low"
+    tier: "premium"
     default: true
-    requiresReboot: false
+    requiresReboot: true
     reversible: true
     estimatedSeconds: 2
     blockedProfiles: []
     registryChanges:
-      - hive: HKLM
+      - hive: "HKLM"
         path: "SYSTEM\\CurrentControlSet\\Control\\GraphicsDrivers"
-        valueName: TdrDelay
+        valueName: "TdrDelay"
         value: 10
-        valueType: DWord
-      - hive: HKLM
+        valueType: "DWord"
+      - hive: "HKLM"
         path: "SYSTEM\\CurrentControlSet\\Control\\GraphicsDrivers"
-        valueName: TdrDdiDelay
+        valueName: "TdrDdiDelay"
         value: 10
-        valueType: DWord
-
-  - id: gpu.disable-nvidia-telemetry
-    name: "Disable Nvidia Telemetry Services"
-    description: "Disable the NvTelemetryContainer service that collects and transmits Nvidia driver usage data"
-    rationale: "Nvidia telemetry runs as a background service consuming CPU and network resources to send driver usage analytics. Disabling it eliminates this overhead."
-    risk: safe
-    tier: free
-    default: true
-    requiresReboot: false
-    reversible: true
-    estimatedSeconds: 3
-    blockedProfiles:
-      - vm_cautious
-    serviceChanges:
-      - name: NvTelemetryContainer
-        startupType: Disabled
-
-  - id: gpu.disable-amd-telemetry
-    name: "Disable AMD External Events Utility"
-    description: "Disable the AMD External Events Utility service. IMPORTANT: this service drives AMD FreeSync / Variable Refresh Rate — disabling it turns FreeSync/VRR off."
-    rationale: "AMD External Events Utility is commonly mislabeled as 'telemetry,' but it is the service that delivers FreeSync / Variable Refresh Rate events. Disabling it stops a background service but also disables FreeSync/VRR — so it is opt-in (off by default) and excluded from gaming profiles."
-    risk: medium
-    tier: free
-    default: false
-    requiresReboot: false
-    reversible: true
-    estimatedSeconds: 3
-    blockedProfiles:
-      - vm_cautious
-      - gaming_desktop
-      - gaming_laptop
-    warningMessage: "Disabling this turns off AMD FreeSync / Variable Refresh Rate. Only disable it if you do NOT use a FreeSync/VRR display."
-    serviceChanges:
-      - name: "AMD External Events Utility"
-        startupType: Disabled
+        valueType: "DWord"
 
   - id: perf.disable-game-dvr
-    name: "Disable Game DVR"
-    description: "Disable Game DVR background recording to reduce GPU/CPU overhead during gaming"
-    rationale: "Game DVR silently records gameplay, consuming GPU resources and increasing frame times"
-    risk: medium
-    tier: free
+    name: "Disable Game DVR Background Recording"
+    description: "Turn off Game DVR / background capture (the \"record what happened\" buffer). Game Bar itself stays installed and usable."
+    rationale: "Upstream PC-Tuning toggle pair (AppCaptureEnabled, GameDVR_Enabled). Background recording keeps a video-encode buffer running. Game Bar is still needed to register games (\"Remember this is a game\"), so it is not removed. Measure before/after with a frame-time capture (PresentMon or CapFrameX, several runs) — no repeatable gain is promised."
+    risk: "low"
+    tier: "free"
     default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 3
     blockedProfiles: []
     registryChanges:
-      - hive: HKCU
+      - hive: "HKCU"
+        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\GameDVR"
+        valueName: "AppCaptureEnabled"
+        value: 0
+        valueType: "DWord"
+      - hive: "HKCU"
         path: "System\\GameConfigStore"
-        valueName: GameDVR_Enabled
+        valueName: "GameDVR_Enabled"
         value: 0
-        valueType: DWord
-      - hive: HKLM
-        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\GameDVR"
-        valueName: AllowGameDVR
-        value: 0
-        valueType: DWord
+        valueType: "DWord"
 
   - id: perf.disable-fullscreen-optimizations
-    name: "Disable Fullscreen Optimizations (system default)"
-    description: "Set the per-user GameConfigStore default so new fullscreen apps prefer exclusive fullscreen over the FSO/borderless path. NOTE: modern Windows 10/11 increasingly decides FSO per-game (via each EXE's compatibility flag), so this changes the system default but a game's own setting can still override it."
-    rationale: "Fullscreen optimizations route games through the DWM compositor, which can add input lag and frame-pacing jitter. Setting GameDVR_DXGIHonorFSEWindowsCompatible=1 (the value winutil uses) plus the FSE behavior mode changes the system-wide default. It is not a guaranteed per-game fix — per-EXE compatibility flags win — so no FPS promise."
-    risk: low
-    tier: free
-    default: true
+    name: "Prefer Exclusive Fullscreen (system-wide FSO off)"
+    description: "Set the system-wide GameConfigStore values that make fullscreen games prefer exclusive fullscreen over fullscreen optimizations. A game's own compatibility setting still wins."
+    rationale: "Exact keys from PC-Tuning 11.42.4 (GameDVR_FSEBehavior=2, GameDVR_DXGIHonorFSEWindowsCompatible=1). PC-Tuning stresses this is not a recommendation of which presentation mode to use: try the per-game \"Disable fullscreen optimizations\" checkbox first. Exclusive fullscreen also turns off Windows colour management/Auto HDR for that game. Measure before/after with a frame-time capture (PresentMon or CapFrameX, several runs) — no repeatable gain is promised."
+    risk: "low"
+    tier: "free"
+    default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
     blockedProfiles:
-      - work_pc
+      - "work_pc"
     registryChanges:
-      - hive: HKCU
+      - hive: "HKCU"
         path: "System\\GameConfigStore"
-        valueName: GameDVR_DXGIHonorFSEWindowsCompatible
-        value: 1
-        valueType: DWord
-      - hive: HKCU
-        path: "System\\GameConfigStore"
-        valueName: GameDVR_FSEBehaviorMode
+        valueName: "GameDVR_FSEBehavior"
         value: 2
-        valueType: DWord
+        valueType: "DWord"
+      - hive: "HKCU"
+        path: "System\\GameConfigStore"
+        valueName: "GameDVR_DXGIHonorFSEWindowsCompatible"
+        value: 1
+        valueType: "DWord"
 
   - id: perf.disable-transparency
     name: "Disable Window Transparency Effects"
     description: "Disable window transparency effects (acrylic, blur) that use GPU compositing for translucent title bars and taskbar"
-    rationale: "Transparency effects require GPU compositing passes that consume VRAM bandwidth and GPU cycles. Disabling them frees GPU resources for applications and reduces compositor latency."
-    risk: safe
-    tier: free
-    default: true
+    rationale: "Cosmetic: removes acrylic/blur effects. The GPU cost of these effects is tiny on modern hardware; choose it if you prefer the look."
+    risk: "safe"
+    tier: "free"
+    default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
     blockedProfiles: []
     registryChanges:
-      - hive: HKCU
+      - hive: "HKCU"
         path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize"
-        valueName: EnableTransparency
+        valueName: "EnableTransparency"
         value: 0
-        valueType: DWord
+        valueType: "DWord"
 
   - id: gpu.disable-nvidia-container
     name: "Disable Nvidia Container Services"
     description: "Disable NVDisplay.ContainerLocalSystem and NvContainerLocalSystem background services that run telemetry, overlay, and update checks."
-    rationale: "Nvidia Container services consume CPU and GPU resources for overlay rendering, telemetry collection, and driver update checks. Disabling them reduces driver overhead."
-    risk: low
-    tier: free
+    rationale: "Stops the NVIDIA container services. No repeatable FPS gain has been measured; offered for users who do not use NVIDIA's control software."
+    risk: "medium"
+    tier: "free"
     default: false
     expertOnly: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 3
-    warningMessage: "GeForce Experience overlay (Alt+Z), ShadowPlay recording, and automatic driver updates will stop working. Manual driver updates via nvidia.com will still work."
     blockedProfiles:
-      - vm_cautious
+      - "vm_cautious"
+    requires:
+      gpuVendor: "nvidia"
+    warningMessage: "Disabling the NVIDIA display container (NVDisplay.ContainerLocalSystem) breaks NVIDIA Control Panel and NVIDIA App features; the overlay, recording and automatic driver updates also stop. Re-enable the services to get them back."
     serviceChanges:
-      - name: NVDisplay.ContainerLocalSystem
-        startupType: Disabled
-      - name: NvContainerLocalSystem
-        startupType: Disabled
+      - name: "NVDisplay.ContainerLocalSystem"
+        startupType: "Disabled"
+      - name: "NvContainerLocalSystem"
+        startupType: "Disabled"
 
   - id: gpu.disable-amd-services
     name: "Disable AMD Background Services"
-    description: "Disable AMD Crash Defender, External Events Utility, and AUEPLauncher services that run crash monitoring, event processing, and update checks."
-    rationale: "AMD background services consume CPU resources for crash analysis and event handling. Disabling them reduces driver overhead on AMD GPU systems."
-    risk: low
-    tier: free
+    description: "Disable the AMD Crash Defender and AMD User Experience Program launcher services"
+    rationale: "Background crash reporting and UX-program services. No repeatable FPS gain has been measured. The External Events Utility (FreeSync) is intentionally left alone."
+    risk: "low"
+    tier: "free"
     default: false
     expertOnly: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 3
-    warningMessage: "AMD Adrenalin overlay, crash reporting, and automatic driver updates will stop working. Manual driver updates via amd.com will still work."
     blockedProfiles:
-      - vm_cautious
-    registryChanges:
-      - hive: HKLM
-        path: "SYSTEM\\CurrentControlSet\\Services\\AMD Crash Defender Service"
-        valueName: Start
-        value: 4
-        valueType: DWord
-      # NOTE: "AMD External Events Utility" is intentionally NOT disabled here —
-      # it drives FreeSync/VRR. It lives in gpu.disable-amd-telemetry, which is
-      # opt-in, risk:medium, excluded from gaming profiles, and carries a VRR warning.
-      - hive: HKLM
-        path: "SYSTEM\\CurrentControlSet\\Services\\AUEPLauncher"
-        valueName: Start
-        value: 4
-        valueType: DWord
-
-  - id: perf.disable-gamebar-presence
-    name: "Disable GameBar Presence Writer"
-    description: "Disable the GameBarPresenceWriter background process"
-    rationale: "GameBarPresenceWriter runs persistently without being required for Game Mode or Game Bar to function. Disabling it removes unnecessary CPU overhead."
-    risk: safe
-    tier: free
-    default: true
-    expertOnly: false
-    requiresReboot: false
-    reversible: true
-    estimatedSeconds: 2
-    blockedProfiles: []
-    registryChanges:
-      - hive: HKLM
-        path: "SOFTWARE\\Microsoft\\WindowsRuntime\\ActivatableClassId\\Windows.Gaming.GameBar.PresenceServer.Internal.PresenceWriter"
-        valueName: ActivationType
-        value: 0
-        valueType: DWord
-
-  - id: perf.legacy-flip-presentation
-    name: "Force Legacy Flip Presentation"
-    description: "Force games to use Hardware: Legacy Flip (exclusive fullscreen) instead of composed flip"
-    rationale: "Legacy Flip bypasses DWM composition entirely for lower input latency. Composed flip adds a frame of latency via the DWM layer."
-    risk: moderate
-    tier: free
-    default: false
-    expertOnly: false
-    requiresReboot: false
-    reversible: true
-    estimatedSeconds: 2
-    blockedProfiles:
-      - vm_cautious
-      - work_pc
-    registryChanges:
-      - hive: HKCU
-        path: "System\\GameConfigStore"
-        valueName: GameDVR_DXGIHonorFSEWindowsCompatible
-        value: 1
-        valueType: DWord
-      - hive: HKCU
-        path: "System\\GameConfigStore"
-        valueName: GameDVR_FSEBehavior
-        value: 2
-        valueType: DWord
+      - "vm_cautious"
+    requires:
+      gpuVendor: "amd"
+    warningMessage: "AMD crash reporting and the UX-program launcher stop. Adrenalin and FreeSync keep working."
+    serviceChanges:
+      - name: "AMD Crash Defender Service"
+        startupType: "Disabled"
+      - name: "AUEPLauncher"
+        startupType: "Disabled"

@@ -1,24 +1,23 @@
-# Performance: Latency Optimization
-
+# Performance: CPU Power Policy
 module: performance.latency
-name: "Latency Optimization"
-description: "Optimize CPU and scheduler settings for lowest latency: dynamic tick, timer resolution, core parking, boost mode, processor state, MMCSS gaming profile"
+name: "CPU Power Policy"
+description: "Opt-in processor power-policy settings (core parking, boost mode, minimum processor state). Benchmark them on your own system."
 category: performance
 
 actions:
   - id: cpu.disable-core-parking
     name: "Disable CPU Core Parking"
-    description: "Set minimum processor cores to 100% on AC power, preventing Windows from parking cores during low load. Parked cores introduce 1-5 ms wake latency."
-    rationale: "Core parking idles unused cores to save power. Adds <1ms wake latency on modern CPUs. Disable for lowest possible latency."
-    risk: low
-    tier: premium
-    default: true
+    description: "Set the minimum number of unparked cores to 100% on AC power in the active power plan, so Windows never parks cores."
+    rationale: "Core parking saves power by idling cores. Disabling it raises idle power and heat; on many modern CPUs (especially Ryzen X3D) no gain is measurable. Measure before/after with a frame-time capture (PresentMon or CapFrameX, several runs) — no repeatable gain is promised."
+    risk: "low"
+    tier: "premium"
+    default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 3
     blockedProfiles:
-      - office_laptop
-      - low_spec_system
+      - "office_laptop"
+      - "low_spec_system"
     powerChanges:
       - settingPath: "54533251-82be-4824-96c1-47b60b740d00/0cc5b647-c1df-4637-891a-dec35c318583"
         newValue: "100"
@@ -26,88 +25,35 @@ actions:
   - id: cpu.aggressive-boost-mode
     name: "Aggressive Processor Boost Mode"
     description: "Set processor performance boost policy to Aggressive (mode 2). This prioritizes sustained maximum turbo frequency over power efficiency."
-    rationale: "Default boost mode may downscale frequency under sustained load to save power. Aggressive mode tells the OS to keep boosting as long as thermal and power limits allow."
-    risk: low
-    tier: premium
-    default: true
+    rationale: "Sets the processor boost policy to Aggressive on AC power. Raises power and heat; gains are workload- and CPU-dependent. Measure before/after with a frame-time capture (PresentMon or CapFrameX, several runs) — no repeatable gain is promised."
+    risk: "low"
+    tier: "premium"
+    default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 3
     blockedProfiles:
-      - office_laptop
-      - low_spec_system
+      - "office_laptop"
+      - "low_spec_system"
     powerChanges:
       - settingPath: "54533251-82be-4824-96c1-47b60b740d00/be337238-0d82-4146-a960-4f3749d470c7"
         newValue: "2"
 
   - id: cpu.min-processor-state-100
-    name: "Set Minimum Processor State to 100%"
-    description: "Keeps the CPU from dropping too aggressively into low-power states so it can react faster under load by holding the clock-frequency floor at 100%. This is a clock-speed setting and does not mean 100% CPU usage, but it may increase idle power draw, heat, and fan noise."
-    rationale: "Holds the clock-frequency floor (minimum processor state) at 100% so the CPU does not downclock between bursts of work, eliminating frequency scaling transitions (~1-2ms). It does not raise CPU utilization; idle power draw, heat, and fan noise increase."
-    risk: low
-    tier: premium
-    default: true
+    name: "Set Minimum Processor State to 100% (current plan)"
+    description: "Hold the active power plan's minimum (and maximum) processor state at 100% on AC power. Does not switch power plans and does not mean 100% CPU usage, but raises idle power draw, heat and fan noise."
+    rationale: "Some users prefer a fixed clock floor. Do not assume it beats Balanced: on AMD Ryzen X3D CPUs Balanced is often equal or better. Benchmark Balanced vs this setting on your own system. Measure before/after with a frame-time capture (PresentMon or CapFrameX, several runs) — no repeatable gain is promised."
+    risk: "low"
+    tier: "premium"
+    default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 3
     blockedProfiles:
-      - office_laptop
-      - low_spec_system
+      - "office_laptop"
+      - "low_spec_system"
     powerChanges:
       - settingPath: "54533251-82be-4824-96c1-47b60b740d00/893dee8e-2bef-41e0-89c6-b55d0929964c"
         newValue: "100"
       - settingPath: "54533251-82be-4824-96c1-47b60b740d00/bc5038f7-23e0-4960-96da-33abaf5935ec"
         newValue: "100"
-
-  - id: scheduler.mmcss-gaming-profile
-    name: "MMCSS Gaming Profile - Maximum Priority"
-    description: "Configure the Multimedia Class Scheduler Service (MMCSS) Games task profile with maximum GPU priority (8), elevated CPU scheduling priority (6), High scheduling category, and a 1 ms clock rate"
-    rationale: "MMCSS manages thread priorities for multimedia applications. GPU Priority=8, Scheduling Category=High, Priority=6 places game threads above most background processes."
-    risk: low
-    tier: premium
-    default: true
-    requiresReboot: false
-    reversible: true
-    estimatedSeconds: 5
-    blockedProfiles: []
-    registryChanges:
-      - hive: HKLM
-        path: "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Games"
-        valueName: "GPU Priority"
-        value: 8
-        valueType: DWord
-      - hive: HKLM
-        path: "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Games"
-        valueName: Priority
-        value: 6
-        valueType: DWord
-      - hive: HKLM
-        path: "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Games"
-        valueName: "Scheduling Category"
-        value: "High"
-        valueType: String
-      - hive: HKLM
-        path: "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Games"
-        valueName: "Clock Rate"
-        value: 10000
-        valueType: DWord
-      - hive: HKLM
-        path: "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Games"
-        valueName: Affinity
-        value: 0
-        valueType: DWord
-      - hive: HKLM
-        path: "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Games"
-        valueName: "Background Only"
-        value: "False"
-        valueType: String
-      - hive: HKLM
-        path: "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile"
-        valueName: NetworkThrottlingIndex
-        value: 4294967295
-        valueType: DWord
-      - hive: HKLM
-        path: "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile"
-        valueName: SystemResponsiveness
-        value: 10
-        valueType: DWord

@@ -1,9 +1,0 @@
-# Networking: Protocol Optimization
-# IPv6 disable and Teredo disable REMOVED — breaks connectivity on many ISPs.
-
-module: networking.protocols
-name: "Protocol Optimization"
-description: "Protocol tweaks — currently disabled for safety"
-category: networking
-
-actions: []

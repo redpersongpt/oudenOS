@@ -14,15 +14,20 @@ interface ActionRationale {
   why: string;
   profileNote?: Record<string, string>;
   antiCheatNote?: string;
+  // Inline Turkish for entries rewritten in v1.1; takes precedence over
+  // i18n/rationale-tr.json (which may still hold the older wording).
+  tr?: { why?: string; antiCheatNote?: string };
 }
 
 const RATIONALE: Record<string, ActionRationale> = {
   // Privacy
-  "privacy.disable-telemetry": { why: "Windows quietly narrates what you do back to Microsoft. This hangs up the call." },
+  "privacy.disable-telemetry": { why: "Windows quietly narrates what you do back to Microsoft. This turns the volume down to the minimum your edition allows." ,
+    tr: { why: "Windows yaptıklarını sessizce Microsoft'a anlatır. Bu, sesi sürümünün izin verdiği en düşük seviyeye indirir." } },
   "privacy.disable-recall": { why: "Windows was screenshotting everything on your screen so AI could 'remember' it. Hard pass." },
   "privacy.disable-advertising-id": { why: "Kills the ad ID apps use to profile you. Wild that you had to opt out of this." },
   "privacy.disable-click-to-do": { why: "Removes the AI overlay that reads your screen and 'suggests' things nobody asked for." },
-  "privacy.disable-ai-svc-autostart": { why: "The AI service squats in your RAM whether you use it or not. Evicted." },
+  "privacy.disable-ai-svc-autostart": { why: "Turns off the Windows AI background service on builds that have it.",
+    tr: { why: "Bulunan sürümlerde Windows yapay zekâ arka plan servisini kapatır." } },
   "privacy.disable-edge-ai": { why: "Stops Edge from shipping your browsing history off to cloud AI." },
   "privacy.disable-paint-ai": { why: "Paint does not need the cloud to draw a circle. Disconnected." },
   "privacy.disable-notepad-ai": { why: "Notepad is for notes — not for phoning the cloud about them." },
@@ -32,145 +37,161 @@ const RATIONALE: Record<string, ActionRationale> = {
   },
   "privacy.disable-input-personalization": { why: "Stops Windows from studying how you type." },
   "privacy.disable-online-speech": { why: "Your voice stays on your machine instead of Microsoft's servers." },
-  "privacy.disable-find-my-device": { why: "Stops your PC from pinging Microsoft its location all day long." },
+  "privacy.disable-find-my-device": { why: "Stops your PC from reporting its location for Find My Device." ,
+    tr: { why: "PC'nin Cihazımı Bul için konum bildirmesini durdurur." } },
   "privacy.disable-smartscreen": {
-    why: "SmartScreen runs every download past Microsoft before it opens. Turning it off removes that check — and the download protection that comes with it.",
+    why: "SmartScreen runs every download past Microsoft before it opens. Turning it off removes that check — and the download protection that comes with it. No gaming impact.",
     profileNote: { work_pc: "Not recommended — provides protection against malicious downloads." },
+    tr: { why: "SmartScreen her indirmeyi açılmadan önce Microsoft'tan geçirir. Kapatmak bu denetimi — ve getirdiği indirme korumasını — kaldırır. Oyun performansına etkisi yoktur." },
   },
+  "privacy.disable-wpbt": { why: "Stops the motherboard from slipping vendor software (like Armoury Crate) into Windows on its own.",
+    tr: { why: "Anakartın üretici yazılımlarını (Armoury Crate gibi) kendiliğinden Windows'a sokmasını durdurur." } },
 
   // Shell
-  "shell.disable-copilot": { why: "Evicts the Copilot button and the memory it squats on in the background." },
+  "shell.disable-copilot": { why: "Turns off the built-in Copilot sidebar on older Windows 11 builds." ,
+    tr: { why: "Eski Windows 11 sürümlerinde yerleşik Copilot kenar çubuğunu kapatır." } },
+  "appx.remove-copilot-app": { why: "Removes the Copilot app — the only thing that actually works on 24H2.",
+    tr: { why: "Copilot uygulamasını kaldırır — 24H2'de gerçekten işe yarayan tek yol bu." } },
   "shell.show-file-extensions": { why: "Shows real file types (.exe, .pdf) in Explorer — so 'invoice.pdf.exe' can't hide from you." },
   "shell.enable-end-task": { why: "Adds 'End task' to the taskbar right-click, so you can kill a frozen app without opening Task Manager." },
   "shell.remove-cast-to-device": { why: "Removes the Cast to Device entry nobody's clicked since 2017." },
   "shell.remove-troubleshoot-compatibility": { why: "Clears the compatibility-troubleshooter clutter out of your right-click menu." },
-  "shell.remove-edit-with-paint3d": { why: "Hides the Paint 3D leftover Microsoft keeps pretending people use." },
+  "shell.remove-edit-with-paint3d": { why: "Hides the Paint 3D leftover on builds that still ship it." ,
+    tr: { why: "Hâlâ içeren sürümlerde Paint 3D kalıntısını gizler." } },
   "shell.hide-task-view": { why: "Removes the Task View button. Win+Tab still does the same thing." },
-  "shell.hide-widgets-button": { why: "Kills the Widgets button and the news/weather it fetches behind your back." },
+  "shell.hide-widgets-button": { why: "Turns Widgets off by policy — the button goes with it, and so does the news feed it fetched.",
+    tr: { why: "Pencere Öğeleri'ni ilkeyle kapatır — düğme ve getirdiği haber akışı da gider." } },
   "shell.disable-web-search": { why: "Your Start menu searches stop getting detoured through Bing." },
   "shell.disable-edge-ads": { why: "Shuts off Edge's shopping 'suggestions', new-tab ads, and promo popups." },
-  "shell.hide-chat-icon": { why: "Drops the Teams Chat icon off the taskbar. Teams still works if you actually want it." },
+  "shell.hide-chat-icon": { why: "Drops the old Teams Chat icon off the taskbar on 22H2." ,
+    tr: { why: "22H2'de eski Teams Sohbet simgesini görev çubuğundan kaldırır." } },
   "shell.disable-content-delivery": { why: "Stops Windows from silently installing 'suggested' apps and the welcome-tour tips." },
 
-  // Performance
-  "perf.mmcss-system-responsiveness": {
-    why: "Gives more CPU to your games and active apps by reducing what Windows reserves for background tasks.",
-    profileNote: { work_pc: "May affect background task performance during meetings." },
-  },
-  "perf.disable-game-dvr": { why: "Game DVR records your gameplay in the background — uninvited — eating GPU and dropping your frames. Off it goes." },
-  "perf.disable-fullscreen-optimizations": { why: "Gives you true fullscreen instead of Windows' compatibility layer. Lower input lag." },
-  "perf.disable-transparency": { why: "Removes the blur and see-through effects that use GPU resources." },
-  "perf.disable-fault-tolerant-heap": { why: "Stops Windows from silently patching crashed apps, which uses extra memory." },
+  // Performance — all opt-in; no FPS promises
+  "perf.disable-game-dvr": { why: "Stops the background 'record what happened' buffer. Game Bar stays so Windows can still recognise your games. Measure before/after.",
+    tr: { why: "Arka plandaki 'olanı kaydet' tamponunu durdurur. Windows oyunlarını tanıyabilsin diye Game Bar kalır. Öncesini ve sonrasını ölç." } },
+  "perf.disable-fullscreen-optimizations": { why: "Makes games prefer exclusive fullscreen. Not a recommendation of which mode is better — try the per-game checkbox first and measure.",
+    tr: { why: "Oyunların özel tam ekranı tercih etmesini sağlar. Hangi modun daha iyi olduğuna dair bir öneri değil — önce oyun başına kutuyu dene ve ölç." } },
+  "perf.disable-transparency": { why: "Removes the blur and see-through effects. Cosmetic.",
+    tr: { why: "Bulanıklık ve saydamlık efektlerini kaldırır. Görsel bir tercih." } },
+  "perf.disable-fault-tolerant-heap": { why: "Stops Windows from silently patching around apps that keep crashing.",
+    tr: { why: "Windows'un sürekli çöken uygulamaları sessizce yamalamasını durdurur." } },
   "perf.disable-sticky-keys": { why: "Stops the Shift key popup from interrupting fullscreen games." },
-  "perf.disable-service-host-split": { why: "Groups background services together to use less memory." },
-  "perf.disable-paging-executive": { why: "Keeps important system code in RAM instead of swapping to disk." },
-  "cpu.win32-priority-separation": { why: "Makes the app you're using get 3x more CPU time than background apps." },
+  "perf.svchost-split-threshold": { why: "Groups background services into fewer processes. Can upset Xbox controller services, so gaming profiles skip it.",
+    tr: { why: "Arka plan servislerini daha az işlemde toplar. Xbox kumanda servislerini bozabildiği için oyun profilleri bunu atlar." } },
+  "perf.disable-pointer-acceleration": { why: "1:1 desktop cursor. Most modern games use raw input anyway — this is a preference, not a boost.",
+    tr: { why: "Masaüstünde 1:1 imleç. Çoğu modern oyun zaten ham giriş kullanır — bu bir tercih, performans artışı değil." } },
+  "memory.disable-compression": { why: "Trades a little paging for a little CPU. Only worth trying with lots of RAM — measure it.",
+    tr: { why: "Biraz sayfalamayı biraz CPU ile takas eder. Yalnızca bol RAM'de denemeye değer — ölç." } },
   "cpu.disable-core-parking": {
-    why: "Keeps all CPU cores awake so they respond instantly instead of taking 1-5ms to wake up.",
+    why: "Keeps all cores unparked. More idle power and heat; often no measurable gain on modern CPUs (Ryzen X3D especially). Measure it.",
     profileNote: {
       office_laptop: "Not applied — increases power consumption and heat on battery.",
       gaming_laptop: "Not applied — thermal management is more critical on laptops.",
     },
+    tr: { why: "Tüm çekirdekleri uyanık tutar. Daha fazla boşta güç ve ısı; modern işlemcilerde (özellikle Ryzen X3D) çoğu zaman ölçülebilir kazanç yok. Ölç." },
   },
-  "cpu.global-timer-resolution": { why: "Fixes a Windows 11 change that made game timing less accurate." },
+  "cpu.aggressive-boost-mode": { why: "Boosts harder for longer on AC power. More heat; results depend on your CPU — measure it.",
+    tr: { why: "Prizdeyken daha uzun ve daha agresif turbo yapar. Daha fazla ısı; sonuç işlemcine bağlı — ölç." } },
+  "cpu.min-processor-state-100": { why: "Holds the clock floor at 100% without switching plans. Balanced is often as good or better on Ryzen X3D — benchmark both.",
+    tr: { why: "Plan değiştirmeden saat tabanını %100'de tutar. Ryzen X3D'de Dengeli çoğu zaman eşit veya daha iyi — ikisini de ölç." } },
 
   // Power
   "power.disable-fast-startup": { why: "Makes your PC fully shut down instead of saving a snapshot. Prevents driver issues from stale state." },
   "power.disable-modern-standby": {
-    why: "Stops your PC from staying partially active during sleep, which wastes power and drains battery.",
+    why: "Switches sleep to classic S3 on desktops. Check that sleep still works afterwards.",
     profileNote: {
       office_laptop: "Not applied — Modern Standby is important for quick wake and background sync on laptops.",
-      gaming_laptop: "Not applied — changes sleep behavior which may cause issues with thermal management.",
+      gaming_laptop: "Not applied — desktops only.",
     },
+    tr: { why: "Masaüstlerinde uykuyu klasik S3'e geçirir. Sonrasında uykunun çalıştığını kontrol et." },
   },
-  "power.disable-hibernation": { why: "Frees disk space equal to your RAM (8-64GB) and ensures clean shutdowns." },
+  "power.disable-hibernation": { why: "Frees the hibernation file (several GB) and ensures clean shutdowns.",
+    tr: { why: "Hazırda bekletme dosyasını (birkaç GB) boşaltır ve temiz kapanış sağlar." } },
+  "power.disable-device-power-saving": {
+    why: "Stops Windows switching devices off to save power. Desktops only; undo in Device Manager.",
+    profileNote: { office_laptop: "Not applied — device power saving is important for battery life." },
+    tr: { why: "Windows'un güç tasarrufu için cihazları kapatmasını durdurur. Yalnızca masaüstü; Aygıt Yöneticisi'nden geri alınır." },
+  },
 
   // GPU
-  "gpu.disable-nvidia-container": { why: "Stops NVIDIA background services that collect data. You can still update drivers manually." },
-  "gpu.disable-amd-services": { why: "Stops AMD background services that collect data. You can still update drivers manually." },
-  "gpu.disable-hags": { why: "Hands GPU scheduling back to Windows — can smooth frame times on some setups. But NVIDIA DLSS Frame Generation REQUIRES HAGS on, so leave it enabled if you use DLSS Frame Gen. Off by default; opt in only if you know you want it." },
+  "gpu.disable-nvidia-container": { why: "Stops NVIDIA's container services — and with them NVIDIA Control Panel and the NVIDIA App. No measured FPS gain.",
+    tr: { why: "NVIDIA'nın konteyner servislerini — ve onlarla birlikte NVIDIA Denetim Masası ile NVIDIA App'i — durdurur. Ölçülmüş bir FPS kazancı yok." } },
+  "gpu.disable-amd-services": { why: "Stops AMD crash reporting and the UX-program launcher. FreeSync is not touched.",
+    tr: { why: "AMD çökme raporlamasını ve UX programı başlatıcısını durdurur. FreeSync'e dokunulmaz." } },
   "gpu.tdr-delay": { why: "Gives the GPU more time before Windows thinks it crashed. Prevents false 'driver stopped responding' errors." },
 
   // AppX / Edge
-  "appx.remove-consumer-bloat": { why: "Boots Candy Crush, TikTok, Solitaire and the rest of the uninvited guests off your Start menu." },
-  "appx.remove-xbox-apps": { why: "Removes Xbox Game Bar and its background tagalongs. Keep it if you actually game on Xbox." },
-  "appx.disable-edge-updates": { why: "Stops Edge from updating itself on its own schedule. Edge stays installed." },
-  "appx.disable-edge-preload": { why: "Edge preloads into RAM at boot even when you never open it. This stops the freeloading — 100-300MB back." },
+  "appx.remove-consumer-bloat": { why: "Boots Candy Crush, Solitaire and the rest of the uninvited guests off your Start menu. Less clutter — not more FPS.",
+    tr: { why: "Candy Crush, Solitaire ve diğer davetsiz misafirleri Başlat menüsünden çıkarır. Daha az kalabalık — daha fazla FPS değil." } },
+  "appx.remove-xbox-apps": { why: "Removes the Xbox app and its helpers. Keep them if you use Game Pass.",
+    tr: { why: "Xbox uygulamasını ve yardımcılarını kaldırır. Game Pass kullanıyorsan kalsın." } },
+  "appx.disable-edge-updates": { why: "Stops Edge (and WebView2) updating itself. Security updates stop too — re-enable when you can.",
+    tr: { why: "Edge'in (ve WebView2'nin) kendini güncellemesini durdurur. Güvenlik güncellemeleri de durur — fırsat bulunca yeniden aç." } },
+  "appx.disable-edge-preload": { why: "Edge preloads into RAM at sign-in even when you never open it. This stops the freeloading." ,
+    tr: { why: "Edge, hiç açmasan bile oturum açılışında belleğe yüklenir. Bu bedavacılığı durdurur." } },
   "appx.remove-edge": {
-    why: "Permanently deletes Edge. Cannot be undone. Some Windows features that need a browser will stop working.",
+    why: "Permanently deletes the Edge browser. WebView2 stays. Some Windows links that need a browser will stop working.",
     antiCheatNote: "Some enterprise web apps require Edge. Verify before removing.",
-  },
-  "appx.remove-edge-webview": {
-    why: "WebView2 is needed by Teams, Widgets, and many apps. Removing it WILL break them.",
-    profileNote: { work_pc: "NEVER remove on work PCs — Teams and enterprise apps require WebView2." },
+    tr: { why: "Edge tarayıcısını kalıcı olarak siler. WebView2 kalır. Tarayıcı gerektiren bazı Windows bağlantıları çalışmaz." },
   },
 
   // Services
-  "services.disable-sysmain": { why: "Stops Windows 'helpfully' preloading apps into RAM. Pointless once you're on an SSD." },
-  "services.disable-xbox-services": { why: "Shuts down Xbox services that keep running even if you've never opened Xbox." },
+  "services.disable-sysmain": { why: "Stops Windows preloading apps into RAM. Skipped automatically if you still have a hard drive.",
+    tr: { why: "Windows'un uygulamaları belleğe önceden yüklemesini durdurur. Hâlâ HDD'n varsa otomatik atlanır." } },
+  "services.disable-xbox-services": { why: "Shuts down Xbox services. Breaks Game Pass — only for PCs that never use it.",
+    tr: { why: "Xbox servislerini kapatır. Game Pass'i bozar — yalnızca hiç kullanmayan PC'ler için." } },
   "services.disable-print-spooler": {
     why: "The print service has known security flaws. Safe to turn off if you don't use a printer.",
     profileNote: { work_pc: "Preserved — printing is required for business workflows." },
   },
 
-  // Network
-  "network.disable-nagle": { why: "Sends game data immediately instead of waiting to bundle packets. Reduces online game delay." },
-  "network.disable-offloading": {
-    why: "Lets your CPU handle network packets directly for faster response in online games.",
-    profileNote: { work_pc: "Not applied — may cause connectivity issues on managed networks." },
-  },
-
   // Startup
-  "startup.disable-background-apps": { why: "Stops apps idling in the background when you're not even looking at them. CPU and RAM, reclaimed." },
+  "startup.disable-background-apps": { why: "Store apps only run while open. Their background notifications stop too.",
+    tr: { why: "Store uygulamaları yalnızca açıkken çalışır. Arka plan bildirimleri de durur." } },
   "startup.disable-autoplay": { why: "Stops USB drives from running programs automatically. Prevents a common way malware spreads." },
+  "startup.enable-game-mode": { why: "Keeps Game Mode on — the Windows default. No measurable difference either way; not a boost.",
+    tr: { why: "Oyun Modu'nu açık tutar — Windows varsayılanı. İki durumda da ölçülebilir fark yok; bir hızlandırma değil." } },
 
-  // Security
+  // Security / updates
   "security.disable-delivery-optimization": { why: "Stops Windows from using your internet to upload updates to other people's PCs." },
   "security.disable-update-asap": { why: "Stops Windows from opting you into early preview updates that may be less stable." },
-
-  // PC-Tuning derived optimizations
-  "perf.disable-mouse-acceleration": { why: "Removes pointer acceleration for 1:1 mouse input. MouseSpeed=0 gives you raw sensor movement." },
-  "perf.disable-mpos": { why: "Disables Multi-Plane Overlays (OverlayTestMode=5). Fixes frame pacing issues on certain GPU/monitor combos." },
-  "perf.disable-last-access-time": { why: "Stops NTFS from writing timestamps on every file read. Reduces disk I/O." },
-  "perf.disable-device-power-saving": { why: "Prevents USB, NIC, and PCI devices from entering low-power states that add wake latency." },
-  "network.disable-nagle-algorithm": { why: "Disables TCP packet batching (TcpAckFrequency=1, TCPNoDelay=1). Reduces network round-trip time for games." },
-  "perf.disable-memory-compression": { why: "Runs Disable-MMAgent. Saves CPU overhead on 16GB+ systems where compression isn't needed." },
-  "perf.fix-ndu-memory-leak": { why: "Sets ndu.sys Start=4. Fixes the known Windows network data usage driver memory leak." },
-  "gpu.disable-mpo-dwm": { why: "Sets DWM OverlayTestMode=5. Forces classic desktop composition for more consistent frame pacing." },
-  "cpu.aggressive-boost": { why: "Keeps CPU at maximum turbo frequency under load. Trades power/heat for maximum performance." },
-  "cpu.min-processor-state-100": { why: "Sets MinProcessorState to 100%. CPU stays at full speed — no downclocking between frames." },
-
-  // PC-Tuning derived — newly added playbook actions
-  "perf.disable-gamebar-presence": { why: "Kills the GameBarPresenceWriter background process. It runs constantly but isn't needed for Game Mode." },
-  "perf.legacy-flip-presentation": { why: "Forces Hardware: Legacy Flip (true exclusive fullscreen). Bypasses DWM composition for lower input latency." },
-  "perf.disable-auto-maintenance": { why: "Stops Windows from running defrag, scans, and cleanup at random times. You maintain manually." },
+  "perf.disable-driver-updates-via-wu": { why: "Stops Windows Update swapping out drivers you installed yourself. You handle driver updates from now on.",
+    tr: { why: "Windows Update'in kendi kurduğun sürücüleri değiştirmesini durdurur. Sürücü güncellemeleri artık sende." } },
+  "perf.disable-auto-maintenance": { why: "Stops scheduled maintenance — including SSD TRIM. Run Optimize Drives yourself.",
+    tr: { why: "Zamanlanmış bakımı — SSD TRIM dahil — durdurur. Sürücüleri İyileştir'i kendin çalıştır." } },
   "perf.disable-auto-sign-on": { why: "Prevents auto-login after restarts. Security improvement, no performance cost." },
-  "perf.disable-store-auto-updates": { why: "Stops Microsoft Store from downloading app updates in the background." },
+  "perf.disable-store-auto-updates": { why: "Stops Microsoft Store from updating apps in the background — including security fixes.",
+    tr: { why: "Microsoft Store'un uygulamaları arka planda güncellemesini — güvenlik düzeltmeleri dahil — durdurur." } },
   "privacy.powershell-telemetry-optout": { why: "Sets POWERSHELL_TELEMETRY_OPTOUT=1. PowerShell sends telemetry by default — this stops it." },
   "privacy.disable-typing-insights": { why: "Stops Windows from analyzing your typing patterns. InsightsEnabled=0." },
-  "privacy.disable-msrt": { why: "Prevents the Malicious Software Removal Tool from being delivered via Windows Update." },
-  "network.qos-dscp-fix": { why: "Fixes QoS DSCP packet tagging on multi-NIC systems. Ensures game traffic gets priority marking." },
-  "power.disable-device-power-saving": {
-    why: "Disables power saving on USB, NIC, and PCI devices. Eliminates wake-up latency.",
-    profileNote: {
-      office_laptop: "Not applied — device power saving is important for battery life.",
-    },
+  "privacy.disable-msrt": { why: "Stops the monthly Malicious Software Removal Tool. One less malware cleanup pass.",
+    tr: { why: "Aylık Kötü Amaçlı Yazılım Temizleme Aracı'nı durdurur. Bir kötü amaçlı yazılım temizliği eksilir." } },
+  "security.disable-defender-realtime": {
+    why: "Policy-level only: ignored while Tamper Protection is on. Removes real-time malware protection once it applies.",
+    profileNote: { work_pc: "NEVER disable on work PCs — enterprise compliance requires active AV." },
+    antiCheatNote: "Some anti-cheat systems may expect Defender to be running.",
+    tr: { why: "Yalnızca ilke düzeyinde: Kurcalama Koruması açıkken yok sayılır. Uygulandığında gerçek zamanlı kötü amaçlı yazılım korumasını kaldırır.", antiCheatNote: "Bazı hile önleme sistemleri Defender'ın çalışmasını bekleyebilir." },
   },
-  "security.full-defender-disable": {
-    why: "Nuclear option: kills all 9 Defender services + SmartScreen. Frees ~500MB RAM and removes MsMpEng.exe CPU overhead entirely.",
-    profileNote: {
-      work_pc: "NEVER disable on work PCs — enterprise compliance requires active AV.",
-    },
-    antiCheatNote: "Some anti-cheat systems (FACEIT, Vanguard) may require Defender to be running.",
+  "security.disable-hvci": {
+    why: "Turns off Memory Integrity. Weaker kernel protection; no FPS promise — measure it.",
+    antiCheatNote: "Vanguard and FACEIT may require HVCI, TPM 2.0 and Secure Boot.",
+    tr: { why: "Bellek Bütünlüğü'nü kapatır. Daha zayıf çekirdek koruması; FPS vaadi yok — ölç.", antiCheatNote: "Vanguard ve FACEIT; HVCI, TPM 2.0 ve Güvenli Önyükleme gerektirebilir." },
+  },
+  "security.disable-vbs": {
+    why: "Requests VBS and Credential Guard off. Firmware-locked VBS needs SVM/IOMMU off in the BIOS instead.",
+    antiCheatNote: "Vanguard and FACEIT may require HVCI/VBS, TPM 2.0 and Secure Boot.",
+    tr: { why: "VBS ve Credential Guard'ın kapatılmasını ister. Donanım yazılımıyla kilitli VBS için BIOS'ta SVM/IOMMU kapatılmalı.", antiCheatNote: "Vanguard ve FACEIT; HVCI/VBS, TPM 2.0 ve Güvenli Önyükleme gerektirebilir." },
   },
   "security.disable-vulnerable-driver-blocklist": {
-    why: "Allows blocked drivers to load. Required for RW-Everything (XHCI IMOD) and MSI Utility tools.",
+    why: "Lets blocked drivers load. Some low-level tuning tools (e.g. RW-Everything) need it.",
+    tr: { why: "Engellenen sürücülerin yüklenmesine izin verir. Bazı düşük seviye ayar araçları (ör. RW-Everything) buna ihtiyaç duyar." },
   },
   "security.disable-cpu-mitigations": {
-    why: "Disables Spectre/Meltdown mitigations by renaming microcode DLL + registry. 2-15% perf gain on CPU-bound workloads.",
-    profileNote: {
-      work_pc: "NEVER disable on systems handling sensitive data.",
-    },
+    why: "Disables Spectre/Meltdown mitigations. Can be SLOWER on newer CPUs, and FACEIT requires them — benchmark and revert if it doesn't help.",
+    profileNote: { work_pc: "NEVER disable on systems handling sensitive data." },
+    antiCheatNote: "FACEIT requires CPU mitigations to be enabled.",
+    tr: { why: "Spectre/Meltdown önlemlerini kapatır. Yeni işlemcilerde daha YAVAŞ olabilir ve FACEIT bunları gerektirir — ölç, fayda yoksa geri al.", antiCheatNote: "FACEIT, CPU önlemlerinin açık olmasını gerektirir." },
   },
 };
 
@@ -178,11 +199,12 @@ export function getActionRationale(actionId: string, profile?: string, lang: Rat
   const r = RATIONALE[actionId];
   if (!r) return { why: "" };
   const tr = lang === "tr" ? TR.actions[actionId] : undefined;
+  const inline = lang === "tr" ? r.tr : undefined;
 
   return {
-    why: tr?.why || r.why,
+    why: inline?.why || tr?.why || r.why,
     profileWarning: profile ? (tr?.profileWarning?.[profile] ?? r.profileNote?.[profile]) : undefined,
-    antiCheatNote: tr?.antiCheatNote ?? r.antiCheatNote,
+    antiCheatNote: inline?.antiCheatNote ?? tr?.antiCheatNote ?? r.antiCheatNote,
   };
 }
 
@@ -192,10 +214,10 @@ export const PHASE_RATIONALE: Record<string, string> = {
   services: "Switches off background services your PC doesn't need. Dependencies get checked first, so nothing important breaks.",
   tasks: "Kills the scheduled tasks that phone home, check for updates, and run 'maintenance' while you're trying to use your PC.",
   privacy: "Shrinks what Microsoft knows about you: tracking, ads, AI snooping, and the data collection you never opted into.",
-  performance: "Tunes CPU, GPU, and system responsiveness for less delay and more frames.",
+  performance: "Opt-in power, capture, memory and input settings. No FPS promises — measure them on your own system.",
   shell: "Declutters the taskbar, right-click menus, search, and Explorer — the desktop you actually wanted.",
-  "startup-shutdown": "Boots faster by cutting the background apps and startup tasks piling up behind the login screen.",
-  networking: "Trims network delay for online play and retires old, insecure protocols.",
+  "startup-shutdown": "Background Store apps, AutoPlay and shutdown timeouts.",
+  networking: "Retires an old, abusable name-resolution protocol (LLMNR).",
   security: "Tunes Windows Update and security to the risk level you're actually comfortable with.",
   personalization: "Your look: dark mode, colors, taskbar layout, transparency.",
 };

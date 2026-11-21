@@ -1,11 +1,52 @@
 {
-  "appx.remove-consumer-bloat": {
-    "name": "Tüketici Şişirme Uygulamalarını Kaldır",
-    "description": "Önyüklü tüketici uygulamalarını kaldırır: BingNews, BingWeather, Solitaire, People, Maps, FeedbackHub, GetHelp, Getstarted, Todos, Cortana, MixedReality, Skype"
+  "guide.health.gpu-pcie-link": {
+    "name": "Ekran kartının PCIe bağlantısını kontrol et",
+    "description": "Bir oyun açıkken ekran kartının mevcut PCIe nesli ve hat genişliğini en yüksek değerle karşılaştır. Birçok kart için x8 normaldir; daha düşük genişlik ya da nesil genellikle anakart kılavuzunda anlatılan bir yuva ya da M.2 hat paylaşımı sorununa işaret eder.",
+    "warningMessage": "Değişiklikten önce ve sonra kendi sisteminde ölç (PresentMon veya CapFrameX ile kare sürelerini kaydet)."
   },
-  "appx.remove-cortana": {
-    "name": "ÇÖP Cortana Uygulamasını Kaldır",
-    "description": "Cortana UWP uygulamasını kaldırır"
+  "guide.health.ram-profile": {
+    "name": "Bellek hızını ve kanallarını kontrol et",
+    "description": "Belleğin çift kanal modunda ve kit destekliyorsa XMP/EXPO ile belirtilen hızda çalıştığını doğrula; BIOS'ta profili açtıktan sonra kararlılığı test et.",
+    "warningMessage": "Değişiklikten önce ve sonra kendi sisteminde ölç (PresentMon veya CapFrameX ile kare sürelerini kaydet)."
+  },
+  "guide.health.vbs-hypervisor": {
+    "name": "VBS / HVCI ödünleşimini anla",
+    "description": "Sanallaştırma tabanlı güvenlik çekirdeği korur ve işlemciye yüklenen oyunlarda işlemci zamanına mal olabilir. Bazı hile koruma sistemleri (FACEIT, Riot Vanguard) bunu gerektirebilir. Bu bilinçli bir güvenlik ödünleşimidir; oudenOS yalnızca durumu bildirir.",
+    "warningMessage": "Değişiklikten önce ve sonra kendi sisteminde ölç (PresentMon veya CapFrameX ile kare sürelerini kaydet)."
+  },
+  "guide.health.refresh-rate": {
+    "name": "Ekranın en yüksek yenileme hızını kullan",
+    "description": "Monitörün mevcut çözünürlükte desteklediği en yüksek yenileme hızında çalıştığını, kablonun ve bağlantı noktasının da bunu desteklediğini kontrol et.",
+    "warningMessage": "Değişiklikten önce ve sonra kendi sisteminde ölç (PresentMon veya CapFrameX ile kare sürelerini kaydet)."
+  },
+  "guide.health.power-plan": {
+    "name": "Güç planını varsayma, ölç",
+    "description": "AMD X3D işlemcilerde Dengeli plan oyunlarda çoğu zaman Yüksek/Nihai Performans kadar iyi ya da daha iyidir. İkisini de kendi sisteminde ölç.",
+    "warningMessage": "Değişiklikten önce ve sonra kendi sisteminde ölç (PresentMon veya CapFrameX ile kare sürelerini kaydet)."
+  },
+  "guide.health.bios-age": {
+    "name": "Ürün yazılımının yaşını gözden geçir",
+    "description": "Yaklaşık bir yıldan eski ürün yazılımında kararlılık ve güvenlik düzeltmeleri eksik olabilir. Yalnızca anakart üreticisinin kararlı sürümüne güncelle; BitLocker açıksa önce kurtarma anahtarını yedekle.",
+    "warningMessage": "Değişiklikten önce ve sonra kendi sisteminde ölç (PresentMon veya CapFrameX ile kare sürelerini kaydet)."
+  },
+  "guide.health.chipset-driver": {
+    "name": "Yonga seti sürücüsünü kontrol et",
+    "description": "AMD ya da Intel yonga seti paketinin kurulu olup olmadığına ve ne kadar eski olduğuna bak. AMD X3D işlemcilerde oyunlar için çekirdek park sürücüsünü AMD yonga seti paketi sağlar.",
+    "warningMessage": "Değişiklikten önce ve sonra kendi sisteminde ölç (PresentMon veya CapFrameX ile kare sürelerini kaydet)."
+  },
+  "guide.health.thermals": {
+    "name": "Yük altındaki sıcaklıkları kontrol et",
+    "description": "Isıl kısıtlama, herhangi bir kayıt defteri ayarından daha fazla performans kaybettirir. oudenOS mümkün olduğunda NVIDIA ekran kartı sıcaklığını okur; oyun sırasında işlemci sıcaklığı için HWiNFO gibi bir izleme aracı kullan.",
+    "warningMessage": "Değişiklikten önce ve sonra kendi sisteminde ölç (PresentMon veya CapFrameX ile kare sürelerini kaydet)."
+  },
+  "guide.health.smt-state": {
+    "name": "SMT ayarını bil",
+    "description": "SMT/Hyper-Threading açık olması iş istasyonu ve çoklu görev kullanımı için doğrudur; bazı X3D sistemlerde kapatmak belirli oyunlarda kare süresi tutarlılığını artırabilir. Karar vermeden önce ölç.",
+    "warningMessage": "Değişiklikten önce ve sonra kendi sisteminde ölç (PresentMon veya CapFrameX ile kare sürelerini kaydet)."
+  },
+  "appx.remove-consumer-bloat": {
+    "name": "Önyüklü Tüketici Uygulamalarını Kaldır",
+    "description": "Önyüklü tüketici uygulamalarını kaldırır: Haberler, Hava Durumu, Solitaire, Kişiler, Haritalar, Geri Bildirim Merkezi, Yardım Al, İpuçları, To Do, Cortana, Karma Gerçeklik Portalı, Skype. Kurulu olmayan paketler atlanır."
   },
   "appx.remove-office-hub": {
     "name": "Get Office Hub'ı Kaldır",
@@ -35,33 +76,14 @@
     "name": "Yapışkan Notlar'ı Kaldır",
     "description": "Yerleşik Yapışkan Notlar uygulamasını kaldırır (Microsoft.MicrosoftStickyNotes)"
   },
-  "appx.remove-feedback-hub": {
-    "name": "Feedback Hub'ı Kaldır",
-    "description": "Feedback Hub uygulamasını kaldırır (Microsoft.WindowsFeedbackHub)"
-  },
-  "appx.remove-maps": {
-    "name": "Windows Haritalar'ı Kaldır",
-    "description": "Yerleşik Windows Haritalar uygulamasını kaldırır (Microsoft.WindowsMaps)"
-  },
-  "appx.remove-get-help": {
-    "name": "Yardım Al'ı Kaldır",
-    "description": "Yardım Al uygulamasını kaldırır (Microsoft.GetHelp)"
-  },
   "appx.remove-power-automate": {
     "name": "Power Automate'i Kaldır",
     "description": "Power Automate Desktop uygulamasını kaldırır (Microsoft.PowerAutomateDesktop)"
   },
-  "appx.remove-solitaire": {
-    "name": "Solitaire'i Kaldır lol",
-    "description": "Solitaire Collection uygulamasını kaldırır (Microsoft.MicrosoftSolitaireCollection)"
-  },
-  "appx.remove-widgets": {
-    "name": "Widget'ları Kaldır",
-    "description": "Windows Widget'larını (WebExperience) kaldırır ve registry üzerinden devre dışı bırakır"
-  },
   "appx.remove-xbox-apps": {
     "name": "Xbox Uygulamalarını Kaldır",
-    "description": "Xbox eşlik uygulamalarını kaldırır (XboxApp, GamingOverlay, Xbox.TCUI, XboxGameCallableUI, XboxSpeechToTextOverlay)"
+    "description": "Xbox uygulamasını, Xbox TCUI'yi ve konuşmayı metne dönüştürme katmanını kaldırır. Windows oyunları tanımak için Game Bar'ı kullandığından (Oyun Modu buna bağlıdır) Game Bar katmanı korunur.",
+    "warningMessage": "Xbox uygulamasını, PC Game Pass'i ve Xbox oturumu kullanan Microsoft Store oyunlarını bozar. Yeniden kurmak Microsoft Store gerektirir."
   },
   "appx.remove-social-media": {
     "name": "Sosyal Medya Uygulamalarını Kaldır",
@@ -81,19 +103,20 @@
   },
   "appx.remove-shopping-amazon": {
     "name": "Amazon ve Alışveriş Uygulamalarını Kaldır",
-    "description": "Önyüklü Amazon uygulamasını ve alışverişle ilgili şişirme yazılımlarını kaldırır"
+    "description": "Önyüklü Amazon alışveriş uygulamasını kaldırır (Prime Video, yayın denemeleri aksiyonunda ele alınır)"
   },
   "appx.remove-ms-extended-bloat": {
     "name": "Genişletilmiş Microsoft Şişirmesini Kaldır",
-    "description": "Ek Microsoft uygulamalarını kaldırır: Clipchamp, Journal, PC Manager, Teams (eski+yeni), DevHome, Quick Assist, News, OneNote, Sway, OneConnect, 3DBuilder, NetworkSpeedTest, PowerBI, ZuneVideo, Family Safety"
+    "description": "Ek Microsoft uygulamalarını kaldırır: Clipchamp, Journal, PC Manager, Teams (tüketici, eski ve yeni), Dev Home, Hızlı Yardım, Haberler, OneNote (Store), Sway, OneConnect, 3D Builder, 3D Görüntüleyici, Paint 3D, Ağ Hız Testi, Power BI, Filmler ve TV, Aile, Print 3D, Mesajlaşma ve eski Bing uygulamaları."
   },
   "appx.remove-copilot-app": {
     "name": "Copilot Uygulamasını Kaldır",
-    "description": "Microsoft Copilot AppX paketini ve AI Hub'ı kaldırır"
+    "description": "Microsoft Copilot uygulama paketini (Microsoft.Copilot) kaldırır. Windows 11 24H2+ sürümünde Copilot'tan kurtulmanın tek etkili yolu budur; eski TurnOffWindowsCopilot ilkesi artık uygulamaya etki etmez."
   },
   "appx.disable-edge-updates": {
     "name": "Edge Otomatik Güncellemelerini Kapat",
-    "description": "Edge'in Microsoft Edge Update servisi üzerinden kendini otomatik güncellemesini ve yeniden yüklemesini engeller. Yalnızca registry politikası — Edge'i kaldırmaz."
+    "description": "Edge'in Microsoft Edge Update servisi üzerinden kendini otomatik güncellemesini ve yeniden yüklemesini engeller. Yalnızca registry politikası — Edge'i kaldırmaz.",
+    "warningMessage": "Edge Update, oudenOS dahil birçok uygulamanın kullandığı WebView2 çalışma zamanını da günceller. Kapalıyken Edge ve WebView2, yeniden açana kadar güvenlik güncellemesi almaz."
   },
   "appx.disable-edge-preload": {
     "name": "Edge Ön Yükleme ve Arka Planı Kapat",
@@ -105,45 +128,17 @@
   },
   "appx.remove-edge": {
     "name": "Microsoft Edge'i Kaldır",
-    "description": "setup.exe zorla kaldırma bayrağıyla Microsoft Edge'i kalıcı olarak kaldırır ve yeniden yüklenmesini önlemek için AppX provisioning'i siler. Bu işlem geri alınamaz — gerekirse Edge'i microsoft.com'dan yeniden yüklemen gerekir.",
+    "description": "Microsoft Edge tarayıcısını kalıcı olarak kaldırır. WebView2 çalışma zamanına DOKUNULMAZ. Yükleyicinin ihtiyaç duyduğu yer tutucu dosya oluşturulduktan sonra zorla kaldırma bayrağı kullanılır, ardından yeniden kurulmaması için AppX hazırlığı kaldırılır. Edge profil klasörün yerinde bırakılır.",
     "warningMessage": "Bu işlem Microsoft Edge'i kalıcı olarak kaldırır. Windows içinden geri alınamaz — yeniden yüklemek için Edge'i microsoft.com'dan indirmen gerekir. Web bağlantılarını Edge üzerinden açan bazı Windows özellikleri (Yardım, Geri Bildirim, bazı Ayarlar sayfaları) açılmayacaktır. Devam etmeden önce alternatif bir tarayıcının kurulu olduğundan emin ol."
-  },
-  "appx.remove-edge-webview": {
-    "name": "Edge WebView2 Runtime'ı Kaldır",
-    "description": "Microsoft Edge WebView2 runtime'ı kaldırır. Bu, birçok modern masaüstü uygulamasının kendi arayüzünde web içeriği göstermek için kullandığı paylaşımlı bir sistem bileşenidir. Kaldırmak, ona bağımlı uygulamaları BOZAR.",
-    "warningMessage": "WebView2 paylaşımlı bir sistem bileşenidir. Kaldırmak şunları BOZAR: Microsoft Teams, Windows Widget'ları, bazı yükleyici arayüzleri, bazı Electron uygulamaları ve gömülü web görünümü kullanan her uygulama. Bu geri alınamaz — WebView2'yi developer.microsoft.com'dan manuel olarak indirip yeniden yüklemen gerekir. Sistemindeki hiçbir uygulamanın buna bağımlı olmadığından emin değilsen bunu KALDIRMA."
-  },
-  "appx.remove-copilot": {
-    "name": "Microsoft BloatPilot'ı Kaldır",
-    "description": "Microsoft Copilot uygulamasını kaldırır ve Copilot entegrasyon noktalarını devre dışı bırakır"
-  },
-  "appx.remove-recall": {
-    "name": "Windows Recall'ı Kapat",
-    "description": "Windows Recall'ı kapatır — yapay zeka destekli, ekran görüntüsü tabanlı etkinlik geçmişi"
-  },
-  "appx.remove-clipchamp": {
-    "name": "Clipchamp'ı Kaldır",
-    "description": "Microsoft'un çöp video editörünü kaldırır"
-  },
-  "appx.remove-teams-consumer": {
-    "name": "Microsoft Teams'i Kaldır (Tüketici)",
-    "description": "Windows 11'de önyüklü gelen Microsoft Teams'in tüketici sürümünü kaldırır"
-  },
-  "appx.remove-family-safety": {
-    "name": "Microsoft Family'yi Kaldır",
-    "description": "Microsoft Family Safety / Family uygulamasını kaldırır"
-  },
-  "appx.remove-news": {
-    "name": "Microsoft News / Start'ı Kaldır",
-    "description": "Microsoft News ve MSN haber akışı entegrasyonunu kaldırır"
-  },
-  "appx.remove-3d-apps": {
-    "name": "3D Viewer ve Paint 3D'yi Kaldır",
-    "description": "3D Viewer, Paint 3D ve 3D Builder'ı kaldırır"
   },
   "appx.remove-outlook-new": {
     "name": "Yeni Bloatlook'u Kaldır",
     "description": "Mail ve Takvim'in yerine geçen yeni Outlook şişirme uygulamasını kaldırır"
+  },
+  "appx.disable-recall-feature": {
+    "name": "Recall İsteğe Bağlı Özelliğini Kaldır",
+    "description": "\"Recall\" Windows isteğe bağlı özelliğini Windows PowerShell 5.1 içinde Disable-WindowsOptionalFeature ile kapatır (PowerShell 7, DISM'de takılabilir). Özellik yoksa atlanır.",
+    "warningMessage": "Otomatik geri alınamaz. Geri yüklemek için: Enable-WindowsOptionalFeature -Online -FeatureName \"Recall\" (ardından yeniden başlat)."
   },
   "services.disable-diagtrack": {
     "name": "Connected User Experiences'ı Kapat (DiagTrack)",
@@ -157,14 +152,6 @@
     "name": "SysMain'i Kapat (Superfetch)",
     "description": "Sık kullanılan uygulamaları belleğe önceden yükleyen SysMain servisini (eski adıyla Superfetch) kapatır"
   },
-  "services.disable-sleep-study": {
-    "name": "Sleep Study'yi Kapat",
-    "description": "Uyku/bekleme sırasında enerji kullanım verisi tutan SleepStudy servisini kapatır"
-  },
-  "services.disable-tiledatamodelsvc": {
-    "name": "Tile Data Model Server'ı Kapat",
-    "description": "tiledatamodelsvc'yi kapatır — Başlat Menüsü kutucuk verilerini dizinler"
-  },
   "services.disable-wisvc": {
     "name": "Windows Insider Servisini Kapat",
     "description": "wisvc'yi kapatır — Windows Insider Program flight/önizleme yönetimi"
@@ -174,8 +161,17 @@
     "description": "RetailDemo'yu kapatır — mağaza demo deneyimi yönetimi"
   },
   "services.disable-map-services": {
-    "name": "Harita İndirme ve Broker'ı Kapat",
-    "description": "MapsBroker ve lfsvc'yi kapatır — çevrimdışı harita verisi indirme ve konum belirleme"
+    "name": "İndirilen Haritalar Yöneticisini Kapat",
+    "description": "MapsBroker'ı (çevrimdışı harita indirme yöneticisi) kapatır"
+  },
+  "services.disable-diagnostic-policy-host-collector": {
+    "name": "Diagnostics Hub Standard Collector'ı Kapat",
+    "description": "diagnosticshub.standardcollector.service'i kapatır — Visual Studio tanılamasının kullandığı ETW iz toplayıcısı"
+  },
+  "services.disable-diagnostic-execution": {
+    "name": "Diagnostic Execution Service'i (diagsvc) Kapat",
+    "description": "Senaryo tabanlı tanılama çalıştıran diagsvc servisini kapatır",
+    "warningMessage": "Yerleşik 'Yardım Al / Sorun Giderme' otomatik sihirbazları (eski MSDT sorun gidericiler) bu kapalıyken çalışmayabilir. İhtiyacın olursa yeniden aç."
   },
   "services.disable-print-spooler": {
     "name": "Print Spooler'ı Kapat",
@@ -188,7 +184,7 @@
   "services.disable-xbox-services": {
     "name": "Xbox Arka Plan Servislerini Kapat",
     "description": "Xbox Live Auth (XblAuthManager), Game Save, Networking ve Accessory servislerini kapatır",
-    "warningMessage": "Bu işlem Xbox uygulaması ve Game Pass oturum açmayı, bulut oyun kayıtlarını ve Xbox çok oyunculu özelliğini bozar — bazı PC Game Pass oyunları dahil. Yalnızca Xbox, Game Pass veya Store oyunları kullanmıyorsan kapat. Tamamen geri alınabilir."
+    "warningMessage": "Xbox uygulaması ve PC Game Pass oturumunu, bulut kayıtlarını ve bazı Game Pass oyunları dahil Xbox çok oyunculu modunu bozar. Yalnızca Xbox, Game Pass veya Store oyunlarını hiç kullanmayan PC'ler için. Geri alınabilir."
   },
   "services.disable-fax": {
     "name": "Faks Servisini Kapat",
@@ -206,14 +202,6 @@
     "name": "Bluetooth Destek Servisini Kapat",
     "description": "bthserv'i kapatır — Bluetooth cihaz keşfi ve eşleştirme"
   },
-  "services.disable-alljoyn-router": {
-    "name": "AllJoyn Router'ı Kapat",
-    "description": "AllJoyn Router Service'i kapatır — IoT cihaz iletişim protokolü"
-  },
-  "services.disable-mixed-reality": {
-    "name": "Windows Mixed Reality'yi Kapat",
-    "description": "MixedRealityOpenXRSvc ve Windows Perception servislerini kapatır"
-  },
   "services.disable-geolocation": {
     "name": "Konum Servisini Kapat",
     "description": "lfsvc'yi kapatır — Windows konum çerçevesi servisi"
@@ -230,84 +218,52 @@
     "name": "Secondary Logon'ı Kapat",
     "description": "seclogon'ı kapatır — 'Farklı kullanıcı olarak çalıştır' desteği"
   },
-  "services.disable-touch-keyboard": {
-    "name": "Dokunmatik Klavye ve El Yazısını Kapat",
-    "description": "TabletInputService'i kapatır — dokunmatik klavye, el yazısı ve kalem girişi"
-  },
   "services.disable-wer-service": {
     "name": "Windows Error Reporting Servisini Kapat",
     "description": "WerSvc'yi kapatır — çökme dökümü toplama ve yükleme"
   },
-  "services.disable-push-notifications": {
-    "name": "Windows Push Notification Servisini Kapat",
-    "description": "WpnUserService'i kapatır — kullanıcı başına push bildirim aktarımı. Explorer bildirim çökmelerini önlemek için WpnService (sistem) açık bırakılır. Değişiklik güvenli şekilde etkili olmadan önce yeniden başlatma GEREKLİ.",
-    "warningMessage": "Bu değişiklikten sonra PC'ni yeniden başlatman ŞART. Yeniden başlatmadan masaüstünü kullanmak, sağ tıklarken veya bildirimlere erişirken Dosya Gezgini çökmelerine yol açabilir."
+  "services.disable-data-usage": {
+    "name": "Veri Kullanımı Servisini (DusmSvc) Kapat",
+    "description": "DusmSvc'i kapatır — ağ başına veri kullanımını ölçen Data Usage servisi",
+    "warningMessage": "Ayarlar > Ağ > Veri kullanımı artık ağ başına istatistik göstermez. Geri alınabilir."
+  },
+  "services.disable-biometric-service": {
+    "name": "Windows Biometric Servisini (WbioSrvc) Kapat",
+    "description": "WbioSrvc'i kapatır — yalnızca parmak izi okuyucusu veya yüz kamerası OLMAYAN makinede yap",
+    "warningMessage": "WbioSrvc'i kapatmak Windows Hello parmak izi ve yüz girişini bozar. Yalnızca biyometrik donanımı OLMAYAN sistemde kapat — yoksa o giriş yöntemini kaybedersin (PIN/parola çalışır). Geri alınabilir."
   },
   "tasks.disable-telemetry-tasks": {
     "name": "Telemetri Toplayıcı Görevlerini Kapat",
-    "description": "Application Experience, CEIP ve Compatibility Appraiser zamanlanmış görevlerini kapatır"
+    "description": "Uyumluluk Değerlendiricisi (eski ad ve 24H2'deki \"Exp\" adı), ProgramDataUpdater, StartupAppTask ve CEIP Consolidator/UsbCeip görevlerini kapatır. Bu sürümde bulunmayan görevler atlanır."
   },
   "tasks.disable-diagnostic-tasks": {
     "name": "Tanılama Verisi Görevlerini Kapat",
-    "description": "DiskDiagnostic, MemoryDiagnostic ve diğer tanılama verisi görevlerini kapatır"
+    "description": "Disk tanılama veri toplayıcısını ve disk kullanım tanılama görevlerini kapatır (Depolama Algısı ve bellek tanılamaya dokunulmaz)"
   },
   "tasks.disable-feedback-tasks": {
-    "name": "Geri Bildirim ve Hata Raporlama Görevlerini Kapat",
-    "description": "Windows Error Reporting ve Feedback zamanlanmış görevlerini kapatır"
-  },
-  "tasks.disable-cloud-content-tasks": {
-    "name": "Bulut İçeriği ve Spotlight Görevlerini Kapat",
-    "description": "Windows Spotlight, bulut içerik dağıtımı ve kilit ekranı öneri görevlerini kapatır. CloudExperienceHostLauncher'ı kapatmak, yeni kullanıcı profillerinde ilk oturum açmayı belirgin biçimde yavaşlatabilir.",
-    "warningMessage": "Yeni kullanıcı profillerinde ilk oturum açmayı belirgin biçimde yavaşlatabilir (5-20 dakika). Profil hazırlanırken Windows, CloudExperienceHost'un zaman aşımına uğramasını bekler."
-  },
-  "tasks.disable-onedrive-tasks": {
-    "name": "OneDrive Senkronizasyon Görevlerini Kapat",
-    "description": "OneDrive otomatik senkronizasyon ve raporlama zamanlanmış görevlerini kapatır"
-  },
-  "tasks.disable-update-tasks": {
-    "name": "Update Orchestrator Görevlerini Kapat",
-    "description": "Arka plandaki güncelleme etkinliğini azaltmak için Windows Update Orchestrator zamanlanmış görevlerini kapatır. Bir güncelleme döngüsü sürerken kapatılırsa 10-20 dakikalık kapanma gecikmelerine yol açabilir.",
-    "warningMessage": "Windows Update bir işlemin ortasındaysa, kapanma 10-20 dakika takılabilir. En iyi sonuç için temiz bir yeniden başlatmadan sonra uygula."
+    "name": "Hata Raporu Kuyruk Görevini Kapat",
+    "description": "Kuyruktaki çökme raporlarını yükleyen Windows Hata Bildirimi QueueReporting görevini kapatır"
   },
   "tasks.disable-defender-tasks": {
     "name": "Windows Defender Zamanlanmış Taramalarını Kapat",
-    "description": "Otomatik Defender tarama zamanlamasını kapatır (manuel taramalar yine çalışır)"
+    "description": "Defender'ın zamanlanmış tarama, önbellek bakımı, temizlik ve doğrulama görevlerini kapatır. Gerçek zamanlı koruma ve elle tarama etkilenmez.",
+    "warningMessage": "Defender artık düzenli tam taramalarını ve imza doğrulamasını zamanlanmış olarak yapmaz. Taramaları elle çalıştır."
   },
   "tasks.disable-maps-tasks": {
     "name": "Çevrimdışı Harita Görevlerini Kapat",
     "description": "Çevrimdışı harita verisi indirme ve güncelleme görevlerini kapatır"
   },
   "tasks.disable-speech-tasks": {
-    "name": "Konuşma ve El Yazısı Görevlerini Kapat",
-    "description": "Konuşma modeli ve el yazısı verisi toplama görevlerini kapatır"
+    "name": "Konuşma Modeli İndirme Görevini Kapat",
+    "description": "Arka planda konuşma modeli indiren görevi kapatır"
   },
   "tasks.disable-flighting-tasks": {
-    "name": "Windows Insider ve Flighting Görevlerini Kapat",
-    "description": "Windows Insider Program telemetri ve flighting görevlerini kapatır"
-  },
-  "tasks.disable-app-suggestion-tasks": {
-    "name": "Uygulama Önerisi ve Yükleme Görevlerini Kapat",
-    "description": "Store uygulaması otomatik yükleme, CloudContent ve önyüklü uygulama provisioning görevlerini kapatır"
-  },
-  "tasks.disable-defrag-tasks": {
-    "name": "Otomatik Disk Birleştirmeyi Kapat",
-    "description": "ScheduledDefrag'i kapatır — otomatik disk birleştirme ve optimizasyon"
-  },
-  "tasks.disable-dotnet-tasks": {
-    "name": ".NET Framework Görevlerini Kapat",
-    "description": ".NET NGEN ve telemetri arka plan görevlerini kapatır"
-  },
-  "tasks.disable-maintenance-tasks": {
-    "name": "Otomatik Bakımı Kapat",
-    "description": "PC'yi güncellemeler için uyandıran otomatik bakım zamanlayıcısını kapatır"
+    "name": "Özellik Kullanım Raporlama Görevlerini Kapat",
+    "description": "FeatureConfig kullanım verisi raporlama/boşaltma görevlerini ve OneSettings yenileme görevini kapatır"
   },
   "tasks.disable-power-efficiency-tasks": {
     "name": "Güç Verimliliği Tanılamasını Kapat",
     "description": "AnalyzeSystem'i kapatır — arka planda güç verimliliği tanılama verisi toplama"
-  },
-  "tasks.disable-chkdsk-tasks": {
-    "name": "Otomatik CHKDSK'yi Kapat",
-    "description": "ProactiveScan'i kapatır — arka planda disk sağlığı izleme ve otomatik chkdsk"
   },
   "tasks.disable-device-census": {
     "name": "Device Census'u Kapat",
@@ -315,7 +271,7 @@
   },
   "privacy.disable-telemetry": {
     "name": "Tanılama Verisini Minimuma Çek",
-    "description": "Windows tanılama veri toplamayı Güvenlik seviyesine (minimum) ayarlar"
+    "description": "Tanılama verisini izin verilen en düşük seviyeye ayarlar; tanılama günlüğü/döküm toplamayı ve geri bildirim bildirimlerini sınırlar. AllowTelemetry=0 (Güvenlik) yalnızca Enterprise, Education, IoT ve Server sürümlerinde uygulanır; Home/Pro bunu Gerekli seviyesine çeker."
   },
   "privacy.disable-ceip": {
     "name": "Müşteri Deneyimi Programını Kapat",
@@ -341,6 +297,25 @@
     "name": "MSRT'nin Windows Update ile Dağıtımını Kapat",
     "description": "Kötü Amaçlı Yazılımları Temizleme Aracı'nın (MSRT) Windows Update üzerinden sunulmasını engeller"
   },
+  "privacy.disable-event-transcript": {
+    "name": "Telemetri Event Transcript Günlüğünü Kapat",
+    "description": "Windows'un yerel EventTranscript.db tanılama olay günlüğünü yazmasını durdurur ve telemetriyi yeniden açabilen OneSettings politika indirmelerini engeller"
+  },
+  "privacy.disable-app-diagnostic-access": {
+    "name": "Uygulamaların Diğer Uygulamaların Tanılama Bilgisini Okumasını Engelle",
+    "description": "App Privacy 'tanılama bilgisi' iznini zorla reddeder; Store uygulamaları diğer çalışan uygulamaların tanılama/kullanım verisini sorgulayamaz",
+    "warningMessage": "Uygulamalar arası tanılama/kullanım bilgisini meşru okuyan uygulamalar (bazı donanım izleyiciler, oyun-overlay istatistik panelleri) bu veriyi kaybedebilir. Geri alınabilir."
+  },
+  "privacy.disable-font-providers": {
+    "name": "Çevrimiçi Font Sağlayıcılarını Kapat (Font Streaming)",
+    "description": "Windows'un eksik fontları istek üzerine Microsoft'tan indirmesini/akıtmasını durdurur",
+    "warningMessage": "Yüklü olmayan bir fonta atıf yapan belge veya web sayfaları indirmek yerine yerine bir font kullanır. Yeniden başlatmadan sonra (ya da Font Cache servisini yeniden başlatınca) etkinleşir."
+  },
+  "privacy.disable-settings-sync": {
+    "name": "Ayarları Microsoft Hesabına Eşitlemeyi Kapat",
+    "description": "Windows ayarlarının Microsoft hesabına eşitlenmesini kapatır (yalnızca Windows 10; Windows 11'de bunun yerini Windows Yedekleme aldı)",
+    "warningMessage": "Ayarlar artık diğer Windows cihazlarına taşınmaz ve 'Ayarlarını eşitle' sayfası kapatılır. Geri alınabilir."
+  },
   "privacy.disable-app-launch-tracking": {
     "name": "Uygulama Açılış Takibini Kapat",
     "description": "Başlat menüsü kişiselleştirmesi için hangi uygulamaları açtığının izlenmesini durdurur"
@@ -353,9 +328,9 @@
     "name": "Çevrimiçi İpuçlarını Kapat",
     "description": "Microsoft'tan gelen çevrimiçi ipuçları ve yardım içeriğini kapatır"
   },
-  "privacy.disable-cloud-content-policy": {
-    "name": "Bulut İçerik Dağıtımını Engelle (makine geneli)",
-    "description": "Windows önerilen içerik, ipuçları ve tüketici özelliği dağıtımını makine ilkesi düzeyinde kapatır"
+  "privacy.brave-debloat": {
+    "name": "Brave Ek Özelliklerini Kısıtla (kuruluysa)",
+    "description": "Brave tarayıcı ilkeleri: Rewards, Wallet, VPN, Leo yapay zekâ sohbeti, News, Talk, Tor pencereleri, kullanım pingleri, P3A, URL tabanlı veri toplama, genişletilmiş Güvenli Tarama raporlaması ve ölçüm raporlaması kapanır. Brave kurulu değilse zararsızdır."
   },
   "privacy.disable-clipboard-history": {
     "name": "Pano Geçmişi ve Bulut Senkronizasyonunu Kapat",
@@ -363,11 +338,11 @@
   },
   "privacy.disable-activity-feed": {
     "name": "Etkinlik Geçmişi ve Zaman Çizelgesini Kapat",
-    "description": "Windows etkinlik akışını, zaman çizelgesini ve etkinlik verisinin Microsoft'a yüklenmesini kapatır"
+    "description": "Windows'un etkinlik geçmişini yayımlamasını ve yüklemesini durdurur. Akışın kendisi açık kalır, çünkü kapatmak pano geçmişini de bozar (winutil d1a6179)."
   },
   "privacy.disable-cloud-content": {
     "name": "Bulut İçerik ve Önerileri Kapat",
-    "description": "Windows Spotlight, önerilen uygulamalar, ipuçları ve buluttan gelen içeriği kapatır"
+    "description": "Microsoft tüketici özelliklerini (otomatik yüklenen önerilen uygulamalar), bulut tabanlı içerikleri, hesap durumu içeriklerini ve üçüncü taraf önerilerini ilke ile kapatır"
   },
   "privacy.disable-location": {
     "name": "Konum Hizmetlerini Kapat",
@@ -377,17 +352,13 @@
     "name": "Cihazlar Arası Deneyimleri Kapat (CDP)",
     "description": "Phone Link, Yakındaki Paylaşım ve cihazlar arası aktarmanın arkasındaki Connected Devices Platform'u kapatır"
   },
+  "privacy.disable-wpbt": {
+    "name": "Donanım Yazılımının Enjekte Ettiği Programları Engelle (WPBT)",
+    "description": "Anakart donanım yazılımının Windows Platform İkili Tablosu (WPBT) ile enjekte ettiği programların Windows'ta çalışmasını durdurur — bazı üreticiler bunu Armoury Crate gibi araçları otomatik kurmak için kullanır."
+  },
   "privacy.disable-input-personalization": {
     "name": "Giriş Kişiselleştirmesini Kapat",
     "description": "Giriş kişiselleştirmesi için kullanılan örtük metin ve kalem girişi toplamayı kapatır"
-  },
-  "privacy.disable-device-monitoring": {
-    "name": "Aygıt Kurulum İzlemeyi Kapat",
-    "description": "Aygıt kurulumları için sistem geri yükleme noktası oluşturmayı ilkeyle kapatır"
-  },
-  "privacy.block-app-reprovisioning": {
-    "name": "Kaldırılan Uygulamaların Yeniden Kurulmasını Engelle",
-    "description": "Deprovisioned registry anahtarını oluşturarak daha önce kaldırılan AppX paketlerinin Windows Update tarafından yeniden kurulmasını engeller"
   },
   "privacy.disable-online-speech": {
     "name": "Çevrimiçi Konuşma Tanımayı Kapat",
@@ -411,19 +382,21 @@
   },
   "privacy.disable-smartscreen": {
     "name": "SmartScreen Filtresini Kapat",
-    "description": "İndirilen dosyaları ve ziyaret edilen siteleri Microsoft'un itibar veritabanıyla karşılaştıran Windows SmartScreen filtresini kapatır"
+    "description": "İndirilen dosyaları ve ziyaret edilen siteleri Microsoft'un itibar veritabanıyla karşılaştıran Windows SmartScreen filtresini kapatır",
+    "warningMessage": "İndirilen programlar artık çalışmadan önce itibar denetiminden geçmez. Riski anlıyorsan kapat. Geri alınabilir."
   },
   "privacy.disable-recall": {
     "name": "Windows Recall'u Kapat",
-    "description": "Ekran etkinliğini yakalayan Windows Recall yapay zeka özelliğini kapatır"
+    "description": "Ekran etkinliğini yakalayan Windows Recall yapay zeka özelliğini kapatır",
+    "warningMessage": "AllowRecallEnablement=0 Recall bileşenini de kaldırır; sonradan yeniden açmak isteğe bağlı özelliğin tekrar indirilmesini gerektirir."
   },
   "privacy.disable-click-to-do": {
     "name": "Click to Do'yu Kapat",
     "description": "Yapay zeka destekli Click to Do katman özelliğini kapatır"
   },
   "privacy.disable-ai-svc-autostart": {
-    "name": "Yapay Zeka Servisinin Otomatik Başlamasını Engelle",
-    "description": "Windows AI Fabric servisini otomatik yerine manuel açılışa ayarlar"
+    "name": "Windows AI Fabric Servisini Kapat",
+    "description": "WSAIFabricSvc servisini kapatır (yalnızca bazı Windows 11 24H2+ sürümlerinde bulunur; yoksa atlanır)"
   },
   "privacy.hide-ai-settings-page": {
     "name": "Yapay Zeka Bileşenleri Ayar Sayfasını Gizle",
@@ -445,25 +418,19 @@
     "name": "Sistem Yapay Zeka Modeli Erişimini Engelle",
     "description": "Uygulamaların cihaz üzerindeki üretken yapay zeka modellerini sistem genelinde kullanmasını engeller"
   },
-  "perf.mmcss-system-responsiveness": {
-    "name": "MMCSS Sistem Yanıt Verme Ayarı",
-    "description": "Multimedya/oyun görevlerine daha fazla CPU ayırır (arka plana %10 ayrılır)"
-  },
   "perf.disable-sticky-keys": {
     "name": "Yapışkan Tuşlar Kısayolunu Kapat",
     "description": "Oyunun ortasında devreye giren 5×Shift yapışkan tuşlar kısayolunu kapatır"
   },
   "perf.disable-driver-updates-via-wu": {
-    "name": "Sürücü Güncellemelerini Windows Update'ten Çıkar",
-    "description": "Windows Update'in sürücü güncellemelerini otomatik kurmasını engeller"
-  },
-  "cpu.win32-priority-separation": {
-    "name": "İş Parçacığı Önceliğini Optimize Et",
-    "description": "Ön plana ağırlık veren zamanlama için Win32PrioritySeparation değerini ayarlar"
+    "name": "Windows Update'in Sürücü Yüklemesini Durdur",
+    "description": "Windows Update'in ve aygıt kurulumunun sürücü ve aygıt meta verisi indirmesini durdurur. Ardından GPU, yonga seti ve diğer sürücüleri kendin kur.",
+    "warningMessage": "Yeni donanım otomatik sürücü almaz; güvenlik düzeltmeleri dahil sürücü güncellemelerinden sen sorumlusun."
   },
   "perf.disable-auto-maintenance": {
     "name": "Otomatik Bakımı Kapat",
-    "description": "Windows Otomatik Bakım zamanlayıcısını kapatır"
+    "description": "Windows Otomatik Bakım zamanlayıcısını kapatır",
+    "warningMessage": "Zamanlanmış sürücü iyileştirme (SSD TRIM) ve diğer bakım işleri durur. Zaman zaman Sürücüleri İyileştir'i elle çalıştır."
   },
   "perf.disable-auto-sign-on": {
     "name": "Yeniden Başlatmada Otomatik Oturum Açmayı Kapat",
@@ -471,15 +438,16 @@
   },
   "perf.disable-store-auto-updates": {
     "name": "Store Otomatik Güncellemelerini Kapat",
-    "description": "Microsoft Store'un uygulama güncellemelerini otomatik indirmesini engeller"
+    "description": "Microsoft Store'un uygulama güncellemelerini otomatik indirmesini engeller",
+    "warningMessage": "Store uygulamaları güvenlik düzeltmeleri dahil artık otomatik güncellenmez. Store'dan elle güncelle."
+  },
+  "perf.disable-fault-tolerant-heap": {
+    "name": "Hata Toleranslı Yığını Kapat",
+    "description": "Tekrar tekrar çöken uygulamalara sessizce yığın önlemleri uygulayan Hata Toleranslı Yığın'ı (FTH) kapatır"
   },
   "memory.disable-compression": {
     "name": "Bellek Sıkıştırmayı Kapat",
     "description": "Boştaki sayfaları sayfa dosyasına yazmak yerine sıkıştıran Windows bellek sıkıştırma aracısını kapatır"
-  },
-  "perf.clear-page-file-on-shutdown": {
-    "name": "Kapanışta Sayfa Dosyasını Temizle",
-    "description": "Sanal bellekte veri kalıntısı kalmaması için kapanışta sayfa dosyası içeriğini sıfırlar"
   },
   "perf.disable-prefetch": {
     "name": "Prefetch'i Kapat",
@@ -487,44 +455,20 @@
   },
   "perf.svchost-split-threshold": {
     "name": "Svchost Bölme Eşiğini Optimize Et",
-    "description": "Bölme eşiğini herhangi bir RAM boyutunun üzerine çıkararak Windows arka plan servislerini daha az svchost.exe işleminde toplar — 8 GB'ta da 128 GB'ta da aynı çalışır"
-  },
-  "perf.disable-page-combining": {
-    "name": "Sayfa Birleştirmeyi Kapat",
-    "description": "CPU yükünü azaltmak için bellek sayfası birleştirme/yinelenenleri kaldırma özelliğini kapatır"
-  },
-  "perf.gpu-energy-driver-disable": {
-    "name": "GPU Energy Driver'ı Kapat",
-    "description": "GPU enerji kullanımını izleyen ve DPC gecikme sıçramalarına yol açan GpuEnergyDrv sürücüsünü kapatır"
-  },
-  "gpu.nvidia-disable-dynamic-pstate": {
-    "name": "NVIDIA GPU'yu P-State 0'a Kilitle (Maksimum Performans)",
-    "description": "DisableDynamicPstate=1 ayarıyla NVIDIA GPU'larda dinamik P-State geçişini kapatır, GPU'yu sürekli maksimum saat hızında tutmaya zorlar"
+    "description": "Bölme eşiğini RAM miktarının üstüne (0xFFFFFFFF) çıkararak Windows'un servisleri ayrı svchost.exe işlemlerine bölmesini durdurur. Daha az işlem, biraz daha az bellek.",
+    "warningMessage": "Xbox aksesuar servislerini (kumandalar) \"Başlatılıyor\" durumunda bırakabilir ve servis yalıtımını azaltır. Geri alınabilir."
   },
   "gpu.tdr-delay": {
     "name": "TDR Zaman Aşımını 10 Saniyeye Çıkar",
     "description": "Timeout Detection and Recovery (TDR) gecikmesini varsayılan 2 saniyeden 10 saniyeye çıkararak ağır yük sıçramalarında yanlış GPU sıfırlamalarını önler"
   },
-  "gpu.msi-mode": {
-    "name": "GPU MSI (Message Signaled Interrupts) Modunu Aç",
-    "description": "GPU için Message Signaled Interrupts'ı açar; eski hat tabanlı kesmeleri bant içi PCIe mesajlarıyla değiştirerek kesme gecikmesini düşürür"
-  },
-  "gpu.disable-nvidia-telemetry": {
-    "name": "Nvidia Telemetri Servislerini Kapat",
-    "description": "Nvidia sürücü kullanım verisini toplayıp ileten NvTelemetryContainer servisini kapatır"
-  },
-  "gpu.disable-amd-telemetry": {
-    "name": "AMD External Events Utility'yi Kapat",
-    "description": "AMD External Events Utility servisini kapatır. ÖNEMLİ: bu servis AMD FreeSync / Değişken Yenileme Hızı'nı (VRR) çalıştırır — kapatmak FreeSync/VRR'yi devre dışı bırakır.",
-    "warningMessage": "Bunu kapatmak AMD FreeSync / Değişken Yenileme Hızı'nı (VRR) devre dışı bırakır. Yalnızca FreeSync/VRR'li bir ekran KULLANMIYORSAN kapat."
-  },
   "perf.disable-game-dvr": {
-    "name": "Game DVR'ı Kapat",
-    "description": "Oyun sırasında GPU/CPU yükünü azaltmak için Game DVR arka plan kaydını kapatır"
+    "name": "Game DVR Arka Plan Kaydını Kapat",
+    "description": "Game DVR / arka plan kaydını (\"olanı kaydet\" tamponu) kapatır. Game Bar kurulu ve kullanılabilir kalır."
   },
   "perf.disable-fullscreen-optimizations": {
-    "name": "Tam Ekran Optimizasyonlarını Kapat (sistem varsayılanı)",
-    "description": "Kullanıcı bazlı GameConfigStore varsayılanını ayarlayarak yeni tam ekran uygulamaların FSO/kenarlıksız yol yerine özel tam ekranı tercih etmesini sağlar. NOT: modern Windows 10/11 giderek FSO'yu oyun bazında (her EXE'nin uyumluluk bayrağıyla) belirliyor, dolayısıyla bu sistem varsayılanını değiştirir ama oyunun kendi ayarı yine de geçersiz kılabilir."
+    "name": "Özel Tam Ekranı Tercih Et (sistem geneli FSO kapalı)",
+    "description": "Tam ekran oyunların tam ekran iyileştirmeleri yerine özel tam ekranı tercih etmesini sağlayan sistem geneli GameConfigStore değerlerini ayarlar. Oyunun kendi uyumluluk ayarı yine önceliklidir."
   },
   "perf.disable-transparency": {
     "name": "Pencere Saydamlık Efektlerini Kapat",
@@ -533,40 +477,24 @@
   "gpu.disable-nvidia-container": {
     "name": "Nvidia Container Servislerini Kapat",
     "description": "Telemetri, katman ve güncelleme kontrolü çalıştıran NVDisplay.ContainerLocalSystem ve NvContainerLocalSystem arka plan servislerini kapatır.",
-    "warningMessage": "GeForce Experience katmanı (Alt+Z), ShadowPlay kaydı ve otomatik sürücü güncellemeleri çalışmayı durdurur. nvidia.com üzerinden manuel sürücü güncellemeleri çalışmaya devam eder."
+    "warningMessage": "NVIDIA ekran konteynerini (NVDisplay.ContainerLocalSystem) kapatmak NVIDIA Denetim Masası ve NVIDIA App özelliklerini bozar; katman, kayıt ve otomatik sürücü güncellemeleri de durur. Geri almak için servisleri yeniden aç."
   },
   "gpu.disable-amd-services": {
     "name": "AMD Arka Plan Servislerini Kapat",
-    "description": "Çökme izleme, olay işleme ve güncelleme kontrolü çalıştıran AMD Crash Defender, External Events Utility ve AUEPLauncher servislerini kapatır.",
-    "warningMessage": "AMD Adrenalin katmanı, çökme raporlama ve otomatik sürücü güncellemeleri çalışmayı durdurur. amd.com üzerinden manuel sürücü güncellemeleri çalışmaya devam eder."
-  },
-  "perf.disable-gamebar-presence": {
-    "name": "GameBar Presence Writer'ı Kapat",
-    "description": "GameBarPresenceWriter arka plan işlemini kapatır"
-  },
-  "perf.legacy-flip-presentation": {
-    "name": "Legacy Flip Sunumunu Zorla",
-    "description": "Oyunları composed flip yerine Donanım: Legacy Flip (özel tam ekran) kullanmaya zorlar"
+    "description": "AMD Crash Defender ve AMD Kullanıcı Deneyimi Programı başlatıcı servislerini kapatır",
+    "warningMessage": "AMD çökme raporlama ve UX programı başlatıcısı durur. Adrenalin ve FreeSync çalışmaya devam eder."
   },
   "cpu.disable-core-parking": {
     "name": "CPU Çekirdek Park Etmeyi Kapat",
-    "description": "AC güçte minimum işlemci çekirdeğini %100'e ayarlayarak Windows'un düşük yükte çekirdek park etmesini önler. Park edilen çekirdekler 1-5 ms uyanma gecikmesi getirir."
+    "description": "Etkin güç planında prizdeyken park edilmeyen minimum çekirdek sayısını %100 yapar; Windows çekirdekleri hiç park etmez."
   },
   "cpu.aggressive-boost-mode": {
     "name": "Agresif İşlemci Boost Modu",
     "description": "İşlemci performans boost ilkesini Agresif (mod 2) olarak ayarlar. Bu, sürekli maksimum turbo frekansını güç verimliliğinin önüne koyar."
   },
   "cpu.min-processor-state-100": {
-    "name": "Minimum İşlemci Durumunu %100 Yap",
-    "description": "Saat frekansı tabanını %100'de tutarak CPU'nun çok agresif şekilde düşük güç durumlarına düşmesini engeller, böylece yük altında daha hızlı tepki verir. Bu bir saat hızı ayarıdır, %100 CPU kullanımı anlamına gelmez; ama boştayken güç tüketimini, sıcaklığı ve fan sesini artırabilir."
-  },
-  "scheduler.mmcss-gaming-profile": {
-    "name": "MMCSS Oyun Profili - Maksimum Öncelik",
-    "description": "Multimedia Class Scheduler Service (MMCSS) Games görev profilini maksimum GPU önceliği (8), yükseltilmiş CPU zamanlama önceliği (6), High zamanlama kategorisi ve 1 ms saat hızıyla yapılandırır"
-  },
-  "power.high-performance-plan": {
-    "name": "CPU'yu Maksimum Saate Kilitle (mevcut güç planı)",
-    "description": "AKTİF güç planının minimum ve maksimum işlemci durumunu %100'e sabitler, böylece CPU saatini düşürmek yerine en üst seviyede tutar. Bu, MEVCUT güç planını değiştirir — Windows'un ayrı Yüksek Performans planına GEÇMEZ. %100 minimum işlemci durumu saati yüksek tutar; %100 CPU kullanımı anlamına GELMEZ. Boştayken güç tüketimini, sıcaklığı ve fan sesini artırabilir."
+    "name": "Minimum İşlemci Durumunu %100 Yap (mevcut plan)",
+    "description": "Etkin güç planının minimum (ve maksimum) işlemci durumunu prizdeyken %100'de tutar. Güç planını değiştirmez ve %100 CPU kullanımı anlamına gelmez, ancak boştaki güç tüketimini, ısıyı ve fan sesini artırır."
   },
   "power.disable-fast-startup": {
     "name": "Hızlı Başlatmayı Kapat (Hibrit Kapatma)",
@@ -578,7 +506,7 @@
   },
   "power.disable-usb-selective-suspend": {
     "name": "USB Seçmeli Askıya Almayı Kapat",
-    "description": "Hem AC hem DC güçte USB seçmeli askıya almayı kapatır, böylece Windows'un boşta kalan USB cihazlarının gücünü kesmesini önler"
+    "description": "Etkin güç planında (prizdeyken) USB seçmeli askıya almayı kapatır; Windows boştaki USB cihazlarını kapatmaz"
   },
   "power.disable-pcie-link-state-pm": {
     "name": "PCIe Bağlantı Durumu Güç Yönetimini Kapat",
@@ -590,32 +518,32 @@
     "warningMessage": "Uyku davranışını Modern Standby'dan eski S3'e değiştirir. Anında uyanma ve arka plan senkronizasyonu artık çalışmaz. Yeniden başlattıktan sonra uykunun doğru çalıştığını doğrula."
   },
   "power.disable-device-power-saving": {
-    "name": "Aygıt Güç Tasarrufunu Kapat",
-    "description": "USB, NIC ve PCI aygıtları için güç yönetimini kapatır"
+    "name": "Cihaz Güç Tasarrufunu Kapat (tüm cihazlar)",
+    "description": "Bunu sunan her cihazda \"Güç tasarrufu için bilgisayarın bu aygıtı kapatmasına izin ver\" seçeneğini kaldırır (MSPower_DeviceEnable). Yalnızca masaüstü.",
+    "warningMessage": "Otomatik geri alınamaz: geri almak için ilgili cihazlarda Aygıt Yöneticisi'nden \"Bilgisayarın bu aygıtı kapatmasına izin ver\" seçeneğini yeniden işaretle."
+  },
+  "power.disable-power-throttling": {
+    "name": "CPU Güç Kısıtlamasını Kapat (EcoQoS)",
+    "description": "Windows'un arka plan saydığı thread'leri düşük saate çekmesini (EcoQoS güç kısıtlaması) durdurur",
+    "warningMessage": "Arka plan thread'leri artık düşük saate inmediği için güç tüketimini ve ısıyı artırır — pille çalışan laptoplarda önerilmez. Saf ön plan iş yükünde kazanç küçük. Geri alınabilir."
   },
   "storage.disable-last-access": {
     "name": "NTFS Son Erişim Zaman Damgasını Kapat",
     "description": "NTFS'in her dosya okuduğunda son erişim zaman damgası yazmasını durdurur (Sistem Yönetimli, Son Erişim Kapalı — fsutil bayrağı 0x80000001). Bu ayarın tek sahibi budur; geri alınabilir."
   },
-  "storage.enable-write-caching": {
-    "name": "Disk Yazma Önbelleğini Aç",
-    "description": "Depolama aygıtlarında yazma önbelleğini açar; işletim sisteminin yazma işlemlerini diske aktarmadan önce RAM'de tamponlayarak G/Ç verimini artırmasını sağlar"
-  },
   "storage.disable-indexing": {
     "name": "Windows Arama Dizinleme Servisini Kapat",
-    "description": "Arka planda dosya içeriklerini sürekli tarayıp dizinleyen Windows Search dizinleme servisini (WSearch) kapatır"
+    "description": "Arka planda dosya içeriklerini sürekli tarayıp dizinleyen Windows Search dizinleme servisini (WSearch) kapatır",
+    "warningMessage": "Dizin olmadan Başlat menüsü, Dosya Gezgini ve Outlook aramaları çok yavaşlar. Geri alınabilir."
   },
-  "perf.csrss-high-priority": {
-    "name": "CSRSS İşlem Önceliğini Yükselt",
-    "description": "Client/Server Runtime Subsystem'in yükseltilmiş öncelikte çalışmasını sağlamak için CsrssHighPriority değerini ayarlar"
-  },
-  "perf.mmcss-deep-tuning": {
-    "name": "MMCSS Derin Zamanlayıcı İnce Ayarı",
-    "description": "Multimedia Class Scheduler Service'i (MMCSS) ön plandaki oyun iş parçacıklarını kayıracak şekilde yapılandırır ve arka plan rezervasyonunu varsayılan %20'den %10'a düşürür"
+  "storage.disable-write-cache-flushing": {
+    "name": "Yazma Önbelleği Boşaltmayı Kapat",
+    "description": "Yazma önbelleğini etkinleştirir ve SCSI/NVMe diskleri güç korumalı olarak işaretler; böylece Windows yazma önbelleğini boşaltmayı bırakır (CacheIsPowerProtected=1). Yalnızca UPS'li veya çok güvenilir elektriği olan PC'ler için.",
+    "warningMessage": "Elektrik kesintisi veya sert çökme, son yazılan verilerin kaybolmasına ya da bozulmasına yol açabilir. Yalnızca UPS veya çok güvenilir elektrikle kullan. Geri alınabilir."
   },
   "perf.ntfs-optimization": {
-    "name": "NTFS Dosya Sistemi Optimizasyonu",
-    "description": "Dosya sistemi yükünü azaltmak için NTFS 8.3 kısa dosya adı üretimini kapatır ve large system awareness'ı açar (son erişim zaman damgaları Son Erişim Zaman Damgasını Kapat ile ayrı ele alınır)"
+    "name": "NTFS 8.3 Kısa Ad Oluşturmayı Kapat",
+    "description": "NTFS'nin yeni dosyalar için DOS tarzı 8.3 kısa ad oluşturmasını durdurur (fsutil 8dot3name set 1 ile aynı). Var olan kısa adlar korunur."
   },
   "perf.disable-pointer-acceleration": {
     "name": "Fare İşaretçi İvmesini Kapat",
@@ -626,16 +554,17 @@
     "description": "Görev çubuğundan Görev Görünümü (Task View) butonunu kaldır"
   },
   "shell.hide-widgets-button": {
-    "name": "Widget Butonunu Gizle (Win11)",
-    "description": "Görev çubuğundan Widget butonunu kaldır"
+    "name": "Pencere Öğelerini Kapat (ilke)",
+    "description": "Pencere Öğelerini desteklenen AllowNewsAndInterests ilkesiyle kapatır; bu görev çubuğu düğmesini de kaldırır. Güncel Windows 11 sürümlerinde Windows, üçüncü taraf araçların bu ayarı değiştirmesini engelleyebilir; oudenOS bunu atlandı olarak bildirirse Pencere Öğelerini Ayarlar > Kişiselleştirme > Görev çubuğu'ndan kapat. İlke Windows 11 Home'da yok sayılabilir.",
+    "warningMessage": "Windows bu değişikliği güncel Windows 11 sürümlerinde engelleyebilir (atlandı olarak bildirilir). Bu durumda Pencere Öğelerini Ayarlar > Kişiselleştirme > Görev çubuğu'ndan kapat. Windows 11 Home'da yok sayılabilir."
   },
   "shell.reduce-search-box": {
-    "name": "Arama Kutusunu Küçült",
-    "description": "Görev çubuğundaki arama kutusunu tek bir simgeye küçült"
+    "name": "Arama'yı Simge Olarak Göster (ilke)",
+    "description": "SearchOnTaskbarMode ilkesini 1 (yalnızca arama simgesi) yapar. Belgelenmiş değerler: 0 gizli, 1 yalnızca simge, 2 simge ve etiket, 3 arama kutusu. Windows 11 24H2 (derleme 26100) ve sonrası."
   },
   "shell.disable-copilot": {
     "name": "Windows Copilot'u Kapat (Win11)",
-    "description": "Copilot AI kenar çubuğunu kapat ve görev çubuğu butonunu kaldır"
+    "description": "Yerleşik Copilot kenar çubuğunu ve görev çubuğu düğmesini kapatır (Windows 11 23H2 ve öncesi; 24H2'de Copilot bir uygulamadır — Copilot Uygulamasını Kaldır'ı kullan)"
   },
   "shell.hide-chat-icon": {
     "name": "Teams Chat Simgesini Gizle",
@@ -647,7 +576,11 @@
   },
   "shell.disable-meet-now": {
     "name": "Meet Now'u Gizle",
-    "description": "Sistem tepsisinden Meet Now / Chat simgesini gizle"
+    "description": "Sistem tepsisindeki Şimdi Toplantı Yap simgesini gizler (yalnızca Windows 10)"
+  },
+  "shell.reduce-search-box-user": {
+    "name": "Arama'yı Simge Olarak Göster (kullanıcı ayarı)",
+    "description": "Kullanıcı başına SearchboxTaskbarMode değerini 1 (yalnızca simge) yapar. Güncel Windows 11 sürümlerinde Windows, üçüncü taraf araçların bunu değiştirmesini engelleyebilir (atlandı olarak bildirilir); o zaman Ayarlar > Kişiselleştirme > Görev çubuğu'ndan değiştir."
   },
   "shell.remove-cast-to-device": {
     "name": "'Cihaza Yayınla'yı Kaldır",
@@ -659,7 +592,7 @@
   },
   "shell.remove-edit-with-paint3d": {
     "name": "'Paint 3D ile Düzenle'yi Kaldır",
-    "description": "Kullanımdan kalkmış Paint 3D sağ tık menü girdisini gizle"
+    "description": "Paint 3D sağ tık girdisini gizler (Paint 3D artık 24H2 ile gelmiyor)"
   },
   "shell.disable-search-highlights": {
     "name": "Arama Önerilerini Kapat",
@@ -680,6 +613,14 @@
   "shell.explorer-default-this-pc": {
     "name": "Gezgin'i Bu Bilgisayar'a Aç",
     "description": "Dosya Gezgini'ni Giriş/Hızlı Erişim yerine Bu Bilgisayar'a açılacak şekilde ayarla"
+  },
+  "shell.remove-home-gallery": {
+    "name": "Gezginde Giriş ve Galeri'yi Gizle",
+    "description": "Dosya Gezgini gezinti bölmesindeki Giriş ve Galeri girdilerini gizler (winutil RemoveHomeAndGallery). \"Gezgini Bu Bilgisayar'da aç\" ile birlikte kullan."
+  },
+  "shell.enable-long-paths": {
+    "name": "Uzun Dosya Yollarını Etkinleştir",
+    "description": "Destekleyen uygulamalar için 260 karakterden uzun yollara izin verir (LongPathsEnabled=1)"
   },
   "shell.disable-web-search": {
     "name": "Başlat'ta Web Aramasını Kapat",
@@ -721,103 +662,49 @@
     "name": "Edge Reklamlarını ve Önerilerini Kapat",
     "description": "Microsoft Edge'den reklamları, alışverişi, tavsiyeleri ve tanıtım içeriğini kaldır"
   },
-  "shell.disable-settings-ads": {
-    "name": "Ayarlar Reklamlarını Kapat",
-    "description": "Windows Ayarlar'dan Microsoft 365 ve tanıtım içeriğini kaldır"
-  },
   "startup.disable-background-apps": {
-    "name": "Arka Plan Uygulamalarını Kapat",
-    "description": "Kaynak kullanımını azaltmak için UWP uygulamalarının arka planda çalışmasını engelle. Windows 11 24H2+ üzerinde bu, Gezgin sağ tık menüsü işleyicilerini ve kabuk arayüzünü etkileyebilir.",
-    "warningMessage": "Windows 11 24H2+ üzerinde tüm arka plan uygulamalarını kapatmak Dosya Gezgini sağ tık menülerinin takılmasına veya çökmesine neden olabilir. Bunu yaşarsan Ayarlar > Uygulamalar > Yüklü uygulamalar > Gelişmiş seçenekler yolundan arka plan uygulamalarını tekrar aç."
+    "name": "Store Uygulamalarının Arka Planda Çalışmasını Engelle (ilke)",
+    "description": "LetAppsRunInBackground ilkesiyle Store/UWP uygulamalarının arka planda çalışmasını zorla engeller. Windows 11 genel anahtarı kaldırdığı için desteklenen yol ilkedir. Windows 11 Home'da yok sayılabilir.",
+    "warningMessage": "Store uygulamaları (Phone Link, Posta, Teams vb.) arka planda eşitleme ve bildirim yapmaz. 24H2'de Dosya Gezgini sağ tık menüleri sorun çıkarırsa bunu geri al. Geri alınabilir."
   },
   "startup.disable-cortana": {
-    "name": "Cortana Açılışını Kapat",
-    "description": "Cortana'nın Windows açılışında başlamasını engelle"
-  },
-  "startup.disable-automatic-maintenance": {
-    "name": "Otomatik Bakımı Kapat",
-    "description": "Boşta kalma sürelerinde disk birleştirme, Windows Update kontrolleri ve güvenlik taramaları gibi zamanlanmış görevleri çalıştıran Windows Otomatik Bakımı'nı kapat"
-  },
-  "startup.disable-gamebar-presence": {
-    "name": "GameBarPresenceWriter'ı Kapat",
-    "description": "Game Bar katmanı kullanılmasa bile her oyunla birlikte çalışan GameBarPresenceWriter arka plan sürecini kapat"
+    "name": "Cortana / Arama Yardımcısı İlkesini Kapat",
+    "description": "AllowCortana=0 ayarlar (PC-Tuning'in önerdiği gibi web arama ilkesiyle birlikte)"
   },
   "startup.disable-autoplay": {
     "name": "Otomatik Kullan ve Otomatik Çalıştır'ı Kapat",
     "description": "Çıkarılabilir sürücüler takıldığında otomatik medya oynatmayı ve program çalıştırmayı kapat"
   },
   "startup.enable-game-mode": {
-    "name": "Oyun Modu'nu Aç",
-    "description": "Oyun süreçlerine öncelik vermek ve arka plan müdahalesini azaltmak için Windows Oyun Modu'nu aç"
+    "name": "Oyun Modu Açık Kalsın",
+    "description": "Oyun Modu'nun açık olduğundan (Windows varsayılanı) emin olur — AllowAutoGameMode ve AutoGameModeEnabled değerlerini ayarlar"
   },
   "startup.disable-cloud-notifications": {
     "name": "Bulut Bildirimi Ağ Kullanımını Kapat",
-    "description": "Windows Push Bildirim Sistemi'nin bildirim teslimi için Microsoft bulut sunucularına ağ çağrısı yapmasını engelle"
+    "description": "Windows Push Bildirim Sistemi'nin bildirim teslimi için Microsoft bulut sunucularına ağ çağrısı yapmasını engelle",
+    "warningMessage": "Bulut anlık bildirimlerine dayanan uygulamalar (Teams, Phone Link, posta uygulamaları) kapalıyken bildirim alamaz. Yerel bildirimler çalışmaya devam eder."
   },
   "shutdown.decrease-shutdown-time": {
     "name": "Kapanma Süresini Kısalt",
     "description": "Daha hızlı kapanma için uygulama sonlandırma zaman aşımlarını düşür. Görevleri otomatik sonlandırmaz — Windows takılan uygulamaları kapatmadan önce yine de sorar."
   },
   "shutdown.force-end-apps": {
-    "name": "Uygulamaları Zorla Sonlandır",
-    "description": "Daha hızlı servis kapanması için WaitToKillServiceTimeout değerini düşür"
-  },
-  "display.disable-game-bar": {
-    "name": "Game Bar ve Game DVR'ı Kapat",
-    "description": "Xbox Game Bar katmanını ve Game DVR arka plan kaydını kapat, böylece yakalama hattını görüntü yolundan çıkar"
-  },
-  "display.disable-pointer-acceleration": {
-    "name": "Fare İmleci İvmelenmesini Kapat",
-    "description": "MouseSpeed, MouseThreshold1 ve MouseThreshold2 değerlerini 0 yaparak Windows imleç ivmelenmesini (İmleç Hassasiyetini Artır) kapat"
-  },
-  "audio.disable-enhancements": {
-    "name": "Ses İyileştirmelerini Kapat",
-    "description": "Ses işleme yükünü ve DPC gecikmesini azaltmak için Windows ses iyileştirmelerini (uzamsal ses, ekolayzer, sanal surround, ses düzeyi eşitleme) kapat"
-  },
-  "audio.exclusive-mode": {
-    "name": "WASAPI Özel Mod Önceliğini Yapılandır",
-    "description": "Ses uç noktaları için WASAPI özel modun açık olmasını sağla; böylece oyunlar ve uygulamalar Windows ses karıştırıcısını atlayıp en düşük gecikmeyle doğrudan donanıma erişebilir"
+    "name": "Servis Kapanma Bekleme Süresini Kısalt",
+    "description": "WaitToKillServiceTimeout değerini 3 saniyeye düşürür; kapanışta takılan servisler daha erken durdurulur. Uygulamalarını zorla kapatmaz."
   },
   "network.disable-llmnr": {
     "name": "LLMNR'yi Kapat",
     "description": "Link-Local Multicast Name Resolution'ı kapat — NTLM hash yakalama saldırılarını önler"
   },
-  "network.disable-smbv1": {
-    "name": "SMBv1 Protokolünü Kapat",
-    "description": "Eski SMBv1 dosya paylaşım protokolünü kapat (WannaCry saldırı vektörü)"
-  },
-  "network.harden-windows-firewall-defaults": {
-    "name": "Windows Güvenlik Duvarı Varsayılanlarını Sıkılaştır",
-    "description": "Tüm güvenlik duvarı profillerinde gelen trafiği engelle, giden trafiğe izin ver"
-  },
-  "network.disable-teredo": {
-    "name": "Teredo Tünellemeyi Kapat",
-    "description": "IPv6 paketlerini IPv4 UDP datagramları içine kapsülleyerek gecikme yükü ekleyen Teredo IPv6 tünellemesini kapat."
-  },
-  "network.disable-netbios": {
-    "name": "TCP/IP Üzerinden NetBIOS'u Kapat",
-    "description": "NodeType değerini P-node (2), NetbiosOptions değerini devre dışı (2) yaparak TCP/IP üzerinden NetBIOS'u kapat; böylece NetBIOS ad çözümlemesini ve oturum servislerini önle."
-  },
-  "network.disable-nagle": {
-    "name": "Nagle Algoritmasını Kapat (TCPNoDelay)",
-    "description": "Nagle algoritmasını kapat ve TCP onaylama sıklığını 1 yap; böylece küçük paketler tamponlanmak yerine anında gönderilir."
-  },
-  "network.rss-queues-2": {
-    "name": "RSS Kuyruklarını 2 Olarak Ayarla",
-    "description": "Receive Side Scaling'i 2 RSS kuyruğu kullanacak şekilde yapılandır; böylece NIC kesme işleme yükü, aşırı tahsis yapılmadan 2 CPU çekirdeğine dağıtılır."
-  },
-  "security.reduce-ssbd-mitigation": {
-    "name": "Speculative Store Bypass (SSBD) Önlemini Azalt",
-    "description": "FeatureSettingsOverride registry anahtarları üzerinden SSBD önlemini kapat. Syscall yoğun iş yüklerinde %2-8 performans yükünü azaltır ama sistemi CVE-2018-3639'a açık hale getirir."
-  },
   "security.disable-hvci": {
     "name": "Hypervisor Destekli Kod Bütünlüğünü Kapat",
-    "description": "Çekirdek modu kod bütünlüğünü hypervisor üzerinden doğrulayan ve her sürücü yüklemesine ve bazı sistem çağrılarına yük ekleyen HVCI'yi (Hypervisor-enforced Code Integrity) kapat"
+    "description": "Çekirdek modu kod bütünlüğünü hypervisor üzerinden doğrulayan ve her sürücü yüklemesine ve bazı sistem çağrılarına yük ekleyen HVCI'yi (Hypervisor-enforced Code Integrity) kapat",
+    "warningMessage": "Bellek Bütünlüğü, çekirdeği kötü amaçlı veya açık barındıran sürücülerden korur. Vanguard (Valorant/League) ve FACEIT; HVCI, TPM 2.0 veya Güvenli Önyükleme olmadan çalışmayı reddedebilir. Geri alınabilir: Windows Güvenliği > Cihaz güvenliği > Çekirdek yalıtımı'ndan Bellek Bütünlüğü'nü yeniden aç."
   },
   "security.disable-cpu-mitigations": {
     "name": "CPU Mikrokod Önlemlerini Kapat (Spectre/Meltdown)",
     "description": "Mikrokod güncelleme DLL'lerini yeniden adlandırarak Spectre/Meltdown CPU önlemlerini kapat. mcupdate_GenuineIntel.dll (Intel) veya mcupdate_AuthenticAMD.dll (AMD) dosyalarını etkiler. TrustedInstaller yetkisi gerektirir.",
-    "warningMessage": "AŞIRI GÜVENLİK RİSKİ. CPU önlemlerini kapatmak sistemini Spectre, Meltdown, MDS ve L1TF saldırılarına açık hale getirir. Yalnızca internete kapalı, tek amaçlı oyun PC'leri için uygundur. TrustedInstaller yükseltmesi gerektirir."
+    "warningMessage": "Sistemi Spectre/Meltdown sınıfı saldırılara açar, yeni işlemcilerde daha yavaş olabilir ve FACEIT bu önlemleri gerektirir. TrustedInstaller gerektirir. Fayda yoksa geri al."
   },
   "security.disable-update-asap": {
     "name": "Erken Erişim Güncellemelerini Kapat",
@@ -827,10 +714,6 @@
     "name": "Teslim Optimizasyonunu Kapat",
     "description": "Bant genişliğini başka PC'ler için kullanan eşler arası Windows Update teslimini kapat"
   },
-  "security.disable-bitlocker-auto-encrypt": {
-    "name": "BitLocker Otomatik Şifrelemeyi Kapat",
-    "description": "Windows'un BitLocker cihaz şifrelemesini otomatik etkinleştirmesini engelle"
-  },
   "system.disable-update-auto-restart": {
     "name": "Windows Update Otomatik Yeniden Başlatmayı Engelle",
     "description": "NoAutoRebootWithLoggedOnUsers değerini 1 yaparak Windows Update'in oturum açıkken PC'yi otomatik yeniden başlatmasını engelle"
@@ -839,70 +722,34 @@
     "name": "Özellik Güncellemelerini 365 Gün Ertele",
     "description": "Windows özellik güncellemelerini 365 gün ertele; yalnızca güvenlik ve kalite güncellemelerinin yüklenmesine izin verirken büyük sürüm yükseltmelerini geciktir"
   },
+  "system.pin-feature-update": {
+    "name": "Mevcut Windows Sürümünde Kal",
+    "description": "Windows'u şu an çalışan sürüme sabitler (DisplayVersion'dan okunan TargetReleaseVersion + ProductVersion + TargetReleaseVersionInfo). Güvenlik ve kalite güncellemeleri yüklenmeye devam eder; sürüm yükseltmeleri bekletilir. Windows 11 Home'da yok sayılabilir.",
+    "warningMessage": "Otomatik geri alınamaz. Geri almak için HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate altındaki TargetReleaseVersion, ProductVersion ve TargetReleaseVersionInfo değerlerini sil. Sürümünün desteği bitmeden sabitlemeyi kaldır."
+  },
+  "system.disable-auto-update": {
+    "name": "Otomatik Windows Güncellemelerini Kapat",
+    "description": "Windows Update'in güncellemeleri kendiliğinden indirip yüklememesi için NoAutoUpdate ilkesini ayarlar. Güncellemeleri elle denetlemelisin.",
+    "warningMessage": "Güvenlik güncellemeleri artık otomatik yüklenmez. Windows Update'i düzenli olarak elle denetle. Geri alınabilir."
+  },
   "security.disable-defender-realtime": {
-    "name": "Defender Gerçek Zamanlı Korumayı Kapat",
-    "description": "Tamper Protection bypass'ı üzerinden Windows Defender gerçek zamanlı taramasını kapat. MsMpEng.exe arka plan tarama yükünü ortadan kaldırır.",
-    "warningMessage": "Defender'ı kapatmak son gerçek zamanlı zararlı yazılım bariyerini kaldırır. Yalnızca web'de gezinmenin ve güvenilmeyen indirmelerin olmadığı, tek amaçlı oyun PC'leri için uygundur."
+    "name": "Defender Gerçek Zamanlı Korumayı Kapat (ilke)",
+    "description": "Defender gerçek zamanlı koruma ilkelerini (gerçek zamanlı izleme, davranış izleme, erişimde tarama, indirme/ek taraması (IOAV) ve etkinleştirmede tarama) ayarlar. Kurcalama Koruması açıkken (varsayılan) Microsoft Defender bu ilkeleri yok sayar (değişiklik başarılı görünebilir ama etkisi olmaz) — önce Windows Güvenliği'nde Kurcalama Koruması'nı kapat.",
+    "warningMessage": "Gerçek zamanlı kötü amaçlı yazılım korumasını kaldırır. Kurcalama Koruması açıkken yok sayılır. Bazı hile önleyiciler Defender'ın çalışmasını bekleyebilir. Geri alınabilir (geri alma ilke değerlerini eski haline getirir)."
   },
   "security.disable-defender-cloud": {
     "name": "Defender Bulut Korumasını Kapat",
-    "description": "Defender bulut tabanlı korumayı ve otomatik örnek gönderimini kapat"
+    "description": "Defender bulut tabanlı korumayı (MAPS) ve otomatik örnek gönderimini ilke ile kapatır. Kurcalama Koruması açıkken yok sayılır.",
+    "warningMessage": "Yalnızca bulut korumasının yakalayacağı yeni tehditler kaçabilir. Kurcalama Koruması açıkken yok sayılır. Geri alınabilir."
   },
   "security.disable-vbs": {
-    "name": "Sanallaştırma Tabanlı Güvenliği (VBS) Kapat",
-    "description": "HVCI, Credential Guard ve diğer sanallaştırma destekli güvenlik özelliklerini etkinleştiren hypervisor katmanı olan VBS'yi kapat",
-    "warningMessage": "VBS, Vanguard gibi hile önleme sistemleri için gereklidir. Kapatmak bazı oyunların başlamasını engelleyebilir."
-  },
-  "security.full-defender-disable": {
-    "name": "Windows Defender'ı Tamamen Kapat (Servisler + Sürücüler)",
-    "description": "Windows Defender'ı servis düzeyinde tamamen kapat — WinDefend, WdFilter, WdBoot, WdNisSvc, WdNisDrv, SecurityHealthService, wscsvc, Sense, MsSecCore. Ayrıca SmartScreen ve WTDS'yi kapatır ve açılış girdilerini kaldırır.",
-    "warningMessage": "BU, TÜM ANTİVİRÜS KORUMASINI KALDIRIR. Sisteminde sıfır zararlı yazılım savunması kalır. Yalnızca internete kapalı veya tek amaçlı oyun PC'lerinde kullan. Önce Windows Güvenliği ayarlarından Tamper Protection'ı elle kapatman gerekir — yoksa servis değişiklikleri TrustedInstaller tarafından engellenir ve bu işlem zaman aşımına uğrar. Windows 10 22H2+ ve Windows 11'de Tamper Protection, bu işlem uygulansa bile servislerin kapatılmasını tamamen engelleyebilir."
+    "name": "Sanallaştırma Tabanlı Güvenliği (VBS) ve Credential Guard'ı Kapat",
+    "description": "VBS'nin kapatılmasını ister: EnableVirtualizationBasedSecurity=0 (sistem ve ilke), Bellek Bütünlüğü kapalı ve Credential Guard kapalı (her iki konumda LsaCfgFlags=0 — Credential Guard, Windows 11 22H2+ Enterprise/Education'da varsayılan olarak açıktır). Yeniden başlatma gerekir. Hyper-V, WSL2, Windows Sandbox veya Sanal Makine Platformu hypervisor'ı çalışır tutar.",
+    "warningMessage": "Kimlik bilgisi ve çekirdek korumasını zayıflatır. Credential Guard/VBS UEFI kilidiyle açıldıysa bu değerler yok sayılır: Microsoft'un belgelediği çıkış yolu, bir sonraki açılışta klavyeden onaylanan SecConfig.efi önyükleme girdisidir (loadoptions DISABLE-LSA-ISO); donanım yazılımında SVM/VT-x'i kapatmak yedek yoldur. Riot'un destek sayfalarına göre Vanguard sisteme bağlı olarak Bellek Bütünlüğü (HVCI/VBS), TPM 2.0, Güvenli Önyükleme ve IOMMU gerektirebilir; VALORANT'ın isteğe bağlı İsteğe Bağlı Vanguard modu VBS + HVCI gerektirir. FACEIT de bunları isteyebilir (THE FINALS Güvenli Önyükleme ister). UEFI kilidi yoksa geri alınabilir."
   },
   "security.disable-vulnerable-driver-blocklist": {
     "name": "Savunmasız Sürücü Engelleme Listesini Kapat",
     "description": "Belirli sürücülerin yüklenmesini engelleyen Microsoft Savunmasız Sürücü Engelleme Listesi'ni kapat",
     "warningMessage": "Potansiyel olarak savunmasız sürücülerin yüklenmesine izin verir. Yalnızca XHCI IMOD için RW-Everything veya MSI yardımcı aracı gibi belirli çekirdek araçlarına ihtiyacın varsa kapat."
-  },
-  "privacy.disable-event-transcript": {
-    "name": "Telemetri Event Transcript Günlüğünü Kapat",
-    "description": "Windows'un yerel EventTranscript.db tanılama olay günlüğünü yazmasını durdurur ve telemetriyi yeniden açabilen OneSettings politika indirmelerini engeller"
-  },
-  "privacy.disable-app-diagnostic-access": {
-    "name": "Uygulamaların Diğer Uygulamaların Tanılama Bilgisini Okumasını Engelle",
-    "description": "App Privacy 'tanılama bilgisi' iznini zorla reddeder; Store uygulamaları diğer çalışan uygulamaların tanılama/kullanım verisini sorgulayamaz",
-    "warningMessage": "Uygulamalar arası tanılama/kullanım bilgisini meşru okuyan uygulamalar (bazı donanım izleyiciler, oyun-overlay istatistik panelleri) bu veriyi kaybedebilir. Geri alınabilir."
-  },
-  "privacy.disable-font-providers": {
-    "name": "Çevrimiçi Font Sağlayıcılarını Kapat (Font Streaming)",
-    "description": "Windows'un eksik fontları istek üzerine Microsoft'tan indirmesini/akıtmasını durdurur",
-    "warningMessage": "Yüklü olmayan bir fonta atıf yapan belge veya web sayfaları indirmek yerine yerine bir font kullanır. Yeniden başlatmadan sonra (ya da Font Cache servisini yeniden başlatınca) etkinleşir."
-  },
-  "privacy.disable-settings-sync": {
-    "name": "Ayarları Microsoft Hesabına Eşitlemeyi Kapat",
-    "description": "Windows ayarlarının (tema, dil, erişilebilirlik, bazı kimlik bilgileri) Microsoft hesabına eşitlenmesini kapatır",
-    "warningMessage": "Ayarlar artık diğer Windows cihazlarına taşınmaz ve 'Ayarlarını eşitle' sayfası kapatılır. Geri alınabilir."
-  },
-  "power.disable-power-throttling": {
-    "name": "CPU Güç Kısıtlamasını Kapat (EcoQoS)",
-    "description": "Windows'un arka plan saydığı thread'leri düşük saate çekmesini (EcoQoS güç kısıtlaması) durdurur",
-    "warningMessage": "Arka plan thread'leri artık düşük saate inmediği için güç tüketimini ve ısıyı artırır — pille çalışan laptoplarda önerilmez. Saf ön plan iş yükünde kazanç küçük. Geri alınabilir."
-  },
-  "services.disable-diagnostic-policy-host-collector": {
-    "name": "Diagnostics Hub Standard Collector'ı Kapat",
-    "description": "diagnosticshub.standardcollector.service'i kapatır — Visual Studio tanılamasının kullandığı ETW iz toplayıcısı"
-  },
-  "services.disable-diagnostic-execution": {
-    "name": "Diagnostic Execution Service'i (diagsvc) Kapat",
-    "description": "Senaryo tabanlı tanılama çalıştıran diagsvc servisini kapatır",
-    "warningMessage": "Yerleşik 'Yardım Al / Sorun Giderme' otomatik sihirbazları (eski MSDT sorun gidericiler) bu kapalıyken çalışmayabilir. İhtiyacın olursa yeniden aç."
-  },
-  "services.disable-data-usage": {
-    "name": "Veri Kullanımı Servisini (DusmSvc) Kapat",
-    "description": "DusmSvc'i kapatır — ağ başına veri kullanımını ölçen Data Usage servisi"
-  },
-  "services.disable-biometric-service": {
-    "name": "Windows Biometric Servisini (WbioSrvc) Kapat",
-    "description": "WbioSrvc'i kapatır — yalnızca parmak izi okuyucusu veya yüz kamerası OLMAYAN makinede yap",
-    "warningMessage": "WbioSrvc'i kapatmak Windows Hello parmak izi ve yüz girişini bozar. Yalnızca biyometrik donanımı OLMAYAN sistemde kapat — yoksa o giriş yöntemini kaybedersin (PIN/parola çalışır). Geri alınabilir."
   }
 }

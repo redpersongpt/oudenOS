@@ -8,8 +8,8 @@
       "actions": [
         {
           "id": "appx.remove-consumer-bloat",
-          "name": "Remove Consumer Bloat Apps",
-          "description": "Remove pre-installed consumer apps: BingNews, BingWeather, Solitaire, People, Maps, FeedbackHub, GetHelp, Getstarted, Todos, Cortana, MixedReality, Skype",
+          "name": "Remove Preinstalled Consumer Apps",
+          "description": "Remove preinstalled consumer apps: News, Weather, Solitaire, People, Maps, Feedback Hub, Get Help, Tips, To Do, Cortana, Mixed Reality Portal, Skype. Packages that are not installed are skipped.",
           "risk": "low",
           "default": false,
           "expertOnly": false,
@@ -19,23 +19,7 @@
             "vm_cautious"
           ],
           "minWindowsBuild": null,
-          "executionKinds": [
-            "packages"
-          ]
-        },
-        {
-          "id": "appx.remove-cortana",
-          "name": "Remove TRASH Cortana App",
-          "description": "Remove the Cortana UWP application",
-          "risk": "low",
-          "default": false,
-          "expertOnly": false,
-          "requiresReboot": false,
-          "warningMessage": null,
-          "blockedProfiles": [
-            "vm_cautious"
-          ],
-          "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "packages"
           ]
@@ -53,6 +37,7 @@
             "vm_cautious"
           ],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "packages"
           ]
@@ -71,6 +56,7 @@
             "vm_cautious"
           ],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "packages"
           ]
@@ -88,6 +74,7 @@
             "vm_cautious"
           ],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "packages"
           ]
@@ -105,6 +92,7 @@
             "vm_cautious"
           ],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "packages"
           ]
@@ -122,6 +110,7 @@
             "vm_cautious"
           ],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "packages"
           ]
@@ -139,6 +128,7 @@
             "vm_cautious"
           ],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "packages"
           ]
@@ -156,57 +146,7 @@
             "vm_cautious"
           ],
           "minWindowsBuild": null,
-          "executionKinds": [
-            "packages"
-          ]
-        },
-        {
-          "id": "appx.remove-feedback-hub",
-          "name": "Remove Feedback Hub",
-          "description": "Remove the Feedback Hub app (Microsoft.WindowsFeedbackHub)",
-          "risk": "safe",
-          "default": false,
-          "expertOnly": false,
-          "requiresReboot": false,
-          "warningMessage": null,
-          "blockedProfiles": [
-            "vm_cautious"
-          ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "packages"
-          ]
-        },
-        {
-          "id": "appx.remove-maps",
-          "name": "Remove Windows Maps",
-          "description": "Remove the built-in Windows Maps app (Microsoft.WindowsMaps)",
-          "risk": "safe",
-          "default": false,
-          "expertOnly": false,
-          "requiresReboot": false,
-          "warningMessage": null,
-          "blockedProfiles": [
-            "vm_cautious"
-          ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "packages"
-          ]
-        },
-        {
-          "id": "appx.remove-get-help",
-          "name": "Remove Get Help",
-          "description": "Remove the Get Help app (Microsoft.GetHelp)",
-          "risk": "safe",
-          "default": false,
-          "expertOnly": false,
-          "requiresReboot": false,
-          "warningMessage": null,
-          "blockedProfiles": [
-            "vm_cautious"
-          ],
-          "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "packages"
           ]
@@ -224,58 +164,25 @@
             "vm_cautious"
           ],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "packages"
-          ]
-        },
-        {
-          "id": "appx.remove-solitaire",
-          "name": "Remove Solitaire lmfao",
-          "description": "Remove the Solitaire Collection app (Microsoft.MicrosoftSolitaireCollection)",
-          "risk": "safe",
-          "default": false,
-          "expertOnly": false,
-          "requiresReboot": false,
-          "warningMessage": null,
-          "blockedProfiles": [
-            "vm_cautious"
-          ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "packages"
-          ]
-        },
-        {
-          "id": "appx.remove-widgets",
-          "name": "Remove Widgets",
-          "description": "Remove Windows Widgets (WebExperience) and disable via registry",
-          "risk": "low",
-          "default": false,
-          "expertOnly": false,
-          "requiresReboot": false,
-          "warningMessage": null,
-          "blockedProfiles": [
-            "vm_cautious"
-          ],
-          "minWindowsBuild": 22000,
-          "executionKinds": [
-            "packages",
-            "registryChanges"
           ]
         },
         {
           "id": "appx.remove-xbox-apps",
           "name": "Remove Xbox Apps",
-          "description": "Remove Xbox companion apps (XboxApp, GamingOverlay, Xbox.TCUI, XboxGameCallableUI, XboxSpeechToTextOverlay)",
+          "description": "Remove the Xbox app, Xbox TCUI and speech-to-text overlay. The Game Bar overlay is kept because Windows uses it to register games (Game Mode depends on that).",
           "risk": "low",
           "default": false,
           "expertOnly": false,
           "requiresReboot": false,
-          "warningMessage": null,
+          "warningMessage": "Breaks the Xbox app, PC Game Pass and Microsoft Store games that use Xbox sign-in. Reinstalling requires the Microsoft Store.",
           "blockedProfiles": [
             "vm_cautious"
           ],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "packages"
           ]
@@ -293,6 +200,7 @@
             "vm_cautious"
           ],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "packages"
           ]
@@ -310,6 +218,7 @@
             "vm_cautious"
           ],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "packages"
           ]
@@ -327,6 +236,7 @@
             "vm_cautious"
           ],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "packages"
           ]
@@ -344,6 +254,7 @@
             "vm_cautious"
           ],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "packages"
           ]
@@ -351,7 +262,7 @@
         {
           "id": "appx.remove-shopping-amazon",
           "name": "Remove Amazon & Shopping Apps",
-          "description": "Remove preinstalled Amazon app and shopping-related bloatware",
+          "description": "Remove the preinstalled Amazon shopping app (Prime Video is handled by the streaming-trials action)",
           "risk": "safe",
           "default": false,
           "expertOnly": false,
@@ -361,6 +272,7 @@
             "vm_cautious"
           ],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "packages"
           ]
@@ -368,7 +280,7 @@
         {
           "id": "appx.remove-ms-extended-bloat",
           "name": "Remove Extended Microsoft Bloat",
-          "description": "Remove additional Microsoft apps: Clipchamp, Journal, PC Manager, Teams (old+new), DevHome, Quick Assist, News, OneNote, Sway, OneConnect, 3DBuilder, NetworkSpeedTest, PowerBI, ZuneVideo, Family Safety",
+          "description": "Remove additional Microsoft apps: Clipchamp, Journal, PC Manager, Teams (consumer, old and new), Dev Home, Quick Assist, News, OneNote (store), Sway, OneConnect, 3D Builder, 3D Viewer, Paint 3D, Network Speed Test, Power BI, Movies & TV, Family, Print 3D, Messaging and the old Bing apps.",
           "risk": "low",
           "default": false,
           "expertOnly": false,
@@ -378,6 +290,7 @@
             "vm_cautious"
           ],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "packages"
           ]
@@ -385,14 +298,15 @@
         {
           "id": "appx.remove-copilot-app",
           "name": "Remove Copilot App",
-          "description": "Remove the Microsoft Copilot AppX package and AI Hub",
+          "description": "Remove the Microsoft Copilot app package (Microsoft.Copilot). On Windows 11 24H2+ this is the only effective way to get rid of Copilot; the old TurnOffWindowsCopilot policy no longer applies to the app.",
           "risk": "safe",
           "default": false,
           "expertOnly": false,
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": null,
+          "minWindowsBuild": 22000,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "packages"
           ]
@@ -401,13 +315,14 @@
           "id": "appx.disable-edge-updates",
           "name": "Disable Edge Auto-Updates",
           "description": "Prevent Edge from auto-updating and reinstalling itself via the Microsoft Edge Update service. Registry policy only — does not remove Edge.",
-          "risk": "safe",
+          "risk": "medium",
           "default": false,
           "expertOnly": false,
           "requiresReboot": false,
-          "warningMessage": null,
+          "warningMessage": "Edge Update also updates the WebView2 runtime used by many apps (including oudenOS). With it disabled, Edge and WebView2 stop receiving security updates until you re-enable it.",
           "blockedProfiles": [],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges",
             "serviceChanges"
@@ -418,12 +333,13 @@
           "name": "Disable Edge Preloading & Background",
           "description": "Prevent Edge from preloading at startup, running startup boost, and staying resident in background when closed. Registry policy only.",
           "risk": "safe",
-          "default": false,
+          "default": true,
           "expertOnly": false,
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
@@ -433,12 +349,13 @@
           "name": "Disable Edge Default Browser Prompts",
           "description": "Stop Edge from prompting users to set it as the default browser and showing first-run experience screens.",
           "risk": "safe",
-          "default": false,
+          "default": true,
           "expertOnly": false,
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
@@ -446,7 +363,7 @@
         {
           "id": "appx.remove-edge",
           "name": "Remove Microsoft Edge",
-          "description": "Permanently uninstall Microsoft Edge using the setup.exe force-uninstall flag and remove AppX provisioning to prevent reinstallation. This action cannot be undone — Edge must be reinstalled from microsoft.com if needed.",
+          "description": "Permanently uninstall Microsoft Edge (the browser). The WebView2 runtime is NOT touched. Uses the installer's force-uninstall flag after creating the stub file the installer requires, then removes the AppX provisioning so it is not reinstalled. Your Edge profile folder is left in place.",
           "risk": "high",
           "default": false,
           "expertOnly": true,
@@ -458,145 +375,9 @@
             "vm_cautious"
           ],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "powerShellCommands"
-          ]
-        },
-        {
-          "id": "appx.remove-edge-webview",
-          "name": "Remove Edge WebView2 Runtime",
-          "description": "Remove the Microsoft Edge WebView2 runtime. This is a shared system component used by many modern desktop applications for rendering web content inside their UI. Removing it WILL break applications that depend on it.",
-          "risk": "extreme",
-          "default": false,
-          "expertOnly": true,
-          "requiresReboot": true,
-          "warningMessage": "WebView2 is a shared system component. Removing it WILL break: Microsoft Teams, Windows Widgets, some installer UIs, some Electron apps, and any app using embedded web views. This cannot be undone — you must manually download and reinstall WebView2 from developer.microsoft.com. Do NOT remove this unless you are certain no app on your system depends on it.",
-          "blockedProfiles": [
-            "work_pc",
-            "office_laptop",
-            "vm_cautious",
-            "low_spec_system",
-            "gaming_laptop"
-          ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "powerShellCommands"
-          ]
-        },
-        {
-          "id": "appx.remove-copilot",
-          "name": "Remove Microsoft BloatPilot",
-          "description": "Remove the Microsoft Copilot app and disable Copilot integration points",
-          "risk": "safe",
-          "default": false,
-          "expertOnly": false,
-          "requiresReboot": false,
-          "warningMessage": null,
-          "blockedProfiles": [],
-          "minWindowsBuild": 22000,
-          "executionKinds": [
-            "packages",
-            "registryChanges"
-          ]
-        },
-        {
-          "id": "appx.remove-recall",
-          "name": "Disable Windows Recall",
-          "description": "Disable Windows Recall — AI-powered screenshot-based activity history",
-          "risk": "safe",
-          "default": false,
-          "expertOnly": false,
-          "requiresReboot": false,
-          "warningMessage": null,
-          "blockedProfiles": [],
-          "minWindowsBuild": 26100,
-          "executionKinds": [
-            "registryChanges"
-          ]
-        },
-        {
-          "id": "appx.remove-clipchamp",
-          "name": "Remove Clipchamp",
-          "description": "Remove Microsoft's trash video editor",
-          "risk": "safe",
-          "default": false,
-          "expertOnly": false,
-          "requiresReboot": false,
-          "warningMessage": null,
-          "blockedProfiles": [
-            "vm_cautious"
-          ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "packages"
-          ]
-        },
-        {
-          "id": "appx.remove-teams-consumer",
-          "name": "Remove Microsoft Teams (Consumer)",
-          "description": "Remove the consumer version of Microsoft Teams pre-installed in Windows 11",
-          "risk": "low",
-          "default": false,
-          "expertOnly": false,
-          "requiresReboot": false,
-          "warningMessage": null,
-          "blockedProfiles": [
-            "work_pc"
-          ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "packages"
-          ]
-        },
-        {
-          "id": "appx.remove-family-safety",
-          "name": "Remove Microsoft Family",
-          "description": "Remove Microsoft Family Safety / Family app",
-          "risk": "safe",
-          "default": false,
-          "expertOnly": false,
-          "requiresReboot": false,
-          "warningMessage": null,
-          "blockedProfiles": [
-            "vm_cautious"
-          ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "packages"
-          ]
-        },
-        {
-          "id": "appx.remove-news",
-          "name": "Remove Microsoft News / Start",
-          "description": "Remove Microsoft News and MSN news feed integration",
-          "risk": "safe",
-          "default": false,
-          "expertOnly": false,
-          "requiresReboot": false,
-          "warningMessage": null,
-          "blockedProfiles": [
-            "vm_cautious"
-          ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "packages"
-          ]
-        },
-        {
-          "id": "appx.remove-3d-apps",
-          "name": "Remove 3D Viewer & Paint 3D",
-          "description": "Remove 3D Viewer, Paint 3D, and 3D Builder",
-          "risk": "safe",
-          "default": false,
-          "expertOnly": false,
-          "requiresReboot": false,
-          "warningMessage": null,
-          "blockedProfiles": [
-            "vm_cautious"
-          ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "packages"
           ]
         },
         {
@@ -613,8 +394,25 @@
             "office_laptop"
           ],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "packages"
+          ]
+        },
+        {
+          "id": "appx.disable-recall-feature",
+          "name": "Remove the Recall Optional Feature",
+          "description": "Disable the \"Recall\" Windows optional feature with Disable-WindowsOptionalFeature, run in Windows PowerShell 5.1 (PowerShell 7 can hang in DISM). Skipped when the feature is not present.",
+          "risk": "medium",
+          "default": false,
+          "expertOnly": false,
+          "requiresReboot": true,
+          "warningMessage": "Not automatically reversible. To restore: Enable-WindowsOptionalFeature -Online -FeatureName \"Recall\" (then restart).",
+          "blockedProfiles": [],
+          "minWindowsBuild": 26100,
+          "maxWindowsBuild": null,
+          "executionKinds": [
+            "powerShellCommands"
           ]
         }
       ]
@@ -628,12 +426,13 @@
           "name": "Disable Connected User Experiences (DiagTrack)",
           "description": "Disable the Connected User Experiences and Telemetry service (DiagTrack) — primary Windows telemetry pipeline",
           "risk": "safe",
-          "default": false,
+          "default": true,
           "expertOnly": false,
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "serviceChanges"
           ]
@@ -643,12 +442,13 @@
           "name": "Disable WAP Push Message Routing",
           "description": "Disable dmwappushservice — routes telemetry data from DiagTrack to Microsoft",
           "risk": "safe",
-          "default": false,
+          "default": true,
           "expertOnly": false,
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "serviceChanges"
           ]
@@ -666,36 +466,7 @@
             "work_pc"
           ],
           "minWindowsBuild": null,
-          "executionKinds": [
-            "serviceChanges"
-          ]
-        },
-        {
-          "id": "services.disable-sleep-study",
-          "name": "Disable Sleep Study",
-          "description": "Disable SleepStudy service that logs energy usage data during sleep/standby",
-          "risk": "safe",
-          "default": false,
-          "expertOnly": false,
-          "requiresReboot": false,
-          "warningMessage": null,
-          "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "serviceChanges"
-          ]
-        },
-        {
-          "id": "services.disable-tiledatamodelsvc",
-          "name": "Disable Tile Data Model Server",
-          "description": "Disable tiledatamodelsvc — indexes Start Menu tile data",
-          "risk": "safe",
-          "default": false,
-          "expertOnly": false,
-          "requiresReboot": false,
-          "warningMessage": null,
-          "blockedProfiles": [],
-          "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "serviceChanges"
           ]
@@ -711,6 +482,7 @@
           "warningMessage": null,
           "blockedProfiles": [],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "serviceChanges"
           ]
@@ -726,14 +498,15 @@
           "warningMessage": null,
           "blockedProfiles": [],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "serviceChanges"
           ]
         },
         {
           "id": "services.disable-map-services",
-          "name": "Disable Map Download & Broker",
-          "description": "Disable MapsBroker and lfsvc — offline map data download and geolocation",
+          "name": "Disable Downloaded Maps Manager",
+          "description": "Disable MapsBroker — the offline-maps download manager",
           "risk": "safe",
           "default": false,
           "expertOnly": false,
@@ -743,6 +516,7 @@
             "office_laptop"
           ],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "serviceChanges"
           ]
@@ -752,12 +526,13 @@
           "name": "Disable Diagnostics Hub Standard Collector",
           "description": "Disable diagnosticshub.standardcollector.service — the ETW trace collector used by Visual Studio diagnostics",
           "risk": "safe",
-          "default": true,
+          "default": false,
           "expertOnly": false,
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "serviceChanges"
           ]
@@ -767,12 +542,13 @@
           "name": "Disable Diagnostic Execution Service (diagsvc)",
           "description": "Disable diagsvc, the service that runs scenario-based diagnostics",
           "risk": "low",
-          "default": true,
+          "default": false,
           "expertOnly": false,
           "requiresReboot": false,
           "warningMessage": "The built-in 'Get Help / Troubleshoot' automated wizards (legacy MSDT troubleshooters) may not run while this is off. Re-enable if you need a Windows troubleshooter.",
           "blockedProfiles": [],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "serviceChanges"
           ]
@@ -791,6 +567,7 @@
             "office_laptop"
           ],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "serviceChanges"
           ]
@@ -808,6 +585,7 @@
             "work_pc"
           ],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges",
             "serviceChanges"
@@ -821,11 +599,12 @@
           "default": false,
           "expertOnly": false,
           "requiresReboot": false,
-          "warningMessage": "This breaks Xbox app and Game Pass sign-in, cloud game saves, and Xbox multiplayer — including some PC Game Pass titles. Only disable it if you don't use Xbox, Game Pass, or Store games. It's fully reversible.",
+          "warningMessage": "Breaks Xbox app and PC Game Pass sign-in, cloud saves and Xbox multiplayer, including some Game Pass titles. Only for PCs that never use Xbox, Game Pass or Store games. Reversible.",
           "blockedProfiles": [
             "vm_cautious"
           ],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "serviceChanges"
           ]
@@ -843,6 +622,7 @@
             "work_pc"
           ],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "serviceChanges"
           ]
@@ -860,6 +640,7 @@
             "work_pc"
           ],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "serviceChanges"
           ]
@@ -875,6 +656,7 @@
           "warningMessage": null,
           "blockedProfiles": [],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "serviceChanges"
           ]
@@ -894,36 +676,7 @@
             "work_pc"
           ],
           "minWindowsBuild": null,
-          "executionKinds": [
-            "serviceChanges"
-          ]
-        },
-        {
-          "id": "services.disable-alljoyn-router",
-          "name": "Disable AllJoyn Router",
-          "description": "Disable AllJoyn Router Service — IoT device communication protocol",
-          "risk": "safe",
-          "default": false,
-          "expertOnly": false,
-          "requiresReboot": false,
-          "warningMessage": null,
-          "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "serviceChanges"
-          ]
-        },
-        {
-          "id": "services.disable-mixed-reality",
-          "name": "Disable Windows Mixed Reality",
-          "description": "Disable MixedRealityOpenXRSvc and Windows Perception services",
-          "risk": "safe",
-          "default": false,
-          "expertOnly": false,
-          "requiresReboot": false,
-          "warningMessage": null,
-          "blockedProfiles": [],
-          "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "serviceChanges"
           ]
@@ -941,6 +694,7 @@
             "office_laptop"
           ],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "serviceChanges"
           ]
@@ -956,6 +710,7 @@
           "warningMessage": null,
           "blockedProfiles": [],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "serviceChanges"
           ]
@@ -973,6 +728,7 @@
             "work_pc"
           ],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "serviceChanges"
           ]
@@ -990,25 +746,7 @@
             "work_pc"
           ],
           "minWindowsBuild": null,
-          "executionKinds": [
-            "serviceChanges"
-          ]
-        },
-        {
-          "id": "services.disable-touch-keyboard",
-          "name": "Disable Touch Keyboard & Handwriting",
-          "description": "Disable TabletInputService — touch keyboard, handwriting, and pen input",
-          "risk": "low",
-          "default": false,
-          "expertOnly": false,
-          "requiresReboot": false,
-          "warningMessage": null,
-          "blockedProfiles": [
-            "office_laptop",
-            "gaming_laptop",
-            "work_pc"
-          ],
-          "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "serviceChanges"
           ]
@@ -1018,30 +756,13 @@
           "name": "Disable Windows Error Reporting Service",
           "description": "Disable WerSvc — crash dump collection and upload",
           "risk": "safe",
-          "default": false,
+          "default": true,
           "expertOnly": false,
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
           "minWindowsBuild": null,
-          "executionKinds": [
-            "serviceChanges"
-          ]
-        },
-        {
-          "id": "services.disable-push-notifications",
-          "name": "Disable Windows Push Notification Service",
-          "description": "Disable WpnUserService — per-user push notification relay. WpnService (system) is kept to prevent Explorer notification crashes. A reboot is REQUIRED before the change takes effect safely.",
-          "risk": "low",
-          "default": false,
-          "expertOnly": false,
-          "requiresReboot": true,
-          "warningMessage": "You MUST restart your PC after this change. Using the desktop without restarting may cause File Explorer crashes when right-clicking or accessing notifications.",
-          "blockedProfiles": [
-            "work_pc",
-            "office_laptop"
-          ],
-          "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "serviceChanges"
           ]
@@ -1051,12 +772,13 @@
           "name": "Disable Data Usage (DusmSvc)",
           "description": "Disable DusmSvc — the Data Usage Subscription Management service that meters per-network data usage",
           "risk": "low",
-          "default": true,
+          "default": false,
           "expertOnly": false,
           "requiresReboot": false,
-          "warningMessage": null,
+          "warningMessage": "Settings > Network > Data usage stops showing per-network statistics. Reversible.",
           "blockedProfiles": [],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "serviceChanges"
           ]
@@ -1075,6 +797,7 @@
             "office_laptop"
           ],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "serviceChanges"
           ]
@@ -1088,7 +811,7 @@
         {
           "id": "tasks.disable-telemetry-tasks",
           "name": "Disable Telemetry Collector Tasks",
-          "description": "Disable Application Experience, CEIP, and Compatibility Appraiser scheduled tasks",
+          "description": "Disable the Compatibility Appraiser (both the old and the 24H2 \"Exp\" name), ProgramDataUpdater, StartupAppTask and the CEIP Consolidator/UsbCeip tasks. Tasks that do not exist on this build are skipped.",
           "risk": "safe",
           "default": false,
           "expertOnly": false,
@@ -1096,6 +819,7 @@
           "warningMessage": null,
           "blockedProfiles": [],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "tasks"
           ]
@@ -1103,7 +827,7 @@
         {
           "id": "tasks.disable-diagnostic-tasks",
           "name": "Disable Diagnostic Data Tasks",
-          "description": "Disable DiskDiagnostic, MemoryDiagnostic, and other diagnostic data tasks",
+          "description": "Disable the disk diagnostic data collector and disk-footprint diagnostics tasks (Storage Sense and the memory diagnostic are left alone)",
           "risk": "safe",
           "default": false,
           "expertOnly": false,
@@ -1111,70 +835,23 @@
           "warningMessage": null,
           "blockedProfiles": [],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "tasks"
           ]
         },
         {
           "id": "tasks.disable-feedback-tasks",
-          "name": "Disable Feedback & Error Reporting Tasks",
-          "description": "Disable Windows Error Reporting and Feedback scheduled tasks",
+          "name": "Disable Error Report Queue Task",
+          "description": "Disable the Windows Error Reporting QueueReporting task that uploads queued crash reports",
           "risk": "safe",
-          "default": false,
+          "default": true,
           "expertOnly": false,
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
           "minWindowsBuild": null,
-          "executionKinds": [
-            "tasks"
-          ]
-        },
-        {
-          "id": "tasks.disable-cloud-content-tasks",
-          "name": "Disable Cloud Content & Spotlight Tasks",
-          "description": "Disable Windows Spotlight, cloud content delivery, and lock screen suggestion tasks. Disabling CloudExperienceHostLauncher may cause significantly slower first login on new user profiles.",
-          "risk": "low",
-          "default": false,
-          "expertOnly": false,
-          "requiresReboot": false,
-          "warningMessage": "May cause significantly slower first login on new user profiles (5-20 minutes). Windows waits for CloudExperienceHost to timeout during profile provisioning.",
-          "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "tasks"
-          ]
-        },
-        {
-          "id": "tasks.disable-onedrive-tasks",
-          "name": "Disable OneDrive Sync Tasks",
-          "description": "Disable OneDrive automatic sync and reporting scheduled tasks",
-          "risk": "medium",
-          "default": false,
-          "expertOnly": false,
-          "requiresReboot": false,
-          "warningMessage": null,
-          "blockedProfiles": [
-            "work_pc"
-          ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "tasks"
-          ]
-        },
-        {
-          "id": "tasks.disable-update-tasks",
-          "name": "Disable Update Orchestrator Tasks",
-          "description": "Disable Windows Update Orchestrator scheduled tasks to reduce background update activity. May cause 10-20 minute shutdown delays if disabled while an update cycle is in progress.",
-          "risk": "medium",
-          "default": false,
-          "expertOnly": false,
-          "requiresReboot": true,
-          "warningMessage": "If Windows Update is mid-operation, shutdown may hang for 10-20 minutes. Apply after a clean restart for best results.",
-          "blockedProfiles": [
-            "work_pc"
-          ],
-          "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "tasks"
           ]
@@ -1182,17 +859,18 @@
         {
           "id": "tasks.disable-defender-tasks",
           "name": "Disable Windows Defender Scheduled Scans",
-          "description": "Disable automatic Defender scan scheduling (manual scans still work)",
+          "description": "Disable Defender's scheduled scan, cache maintenance, cleanup and verification tasks. Real-time protection and manual scans are not affected.",
           "risk": "medium",
           "default": false,
           "expertOnly": true,
           "requiresReboot": false,
-          "warningMessage": null,
+          "warningMessage": "Defender will no longer run its periodic full scans or signature verification on a schedule. Run scans manually.",
           "blockedProfiles": [
             "work_pc",
             "office_laptop"
           ],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "tasks"
           ]
@@ -1210,14 +888,15 @@
             "office_laptop"
           ],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "tasks"
           ]
         },
         {
           "id": "tasks.disable-speech-tasks",
-          "name": "Disable Speech & Handwriting Tasks",
-          "description": "Disable speech model and handwriting data collection tasks",
+          "name": "Disable Speech Model Download Task",
+          "description": "Disable the background speech-model download task",
           "risk": "safe",
           "default": false,
           "expertOnly": false,
@@ -1225,14 +904,15 @@
           "warningMessage": null,
           "blockedProfiles": [],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "tasks"
           ]
         },
         {
           "id": "tasks.disable-flighting-tasks",
-          "name": "Disable Windows Insider & Flighting Tasks",
-          "description": "Disable Windows Insider Program telemetry and flighting tasks",
+          "name": "Disable Feature Usage Reporting Tasks",
+          "description": "Disable the FeatureConfig usage-data reporting/flushing tasks and the OneSettings refresh task",
           "risk": "safe",
           "default": false,
           "expertOnly": false,
@@ -1240,72 +920,7 @@
           "warningMessage": null,
           "blockedProfiles": [],
           "minWindowsBuild": null,
-          "executionKinds": [
-            "tasks"
-          ]
-        },
-        {
-          "id": "tasks.disable-app-suggestion-tasks",
-          "name": "Disable App Suggestion & Install Tasks",
-          "description": "Disable Store app auto-install, CloudContent, and pre-installed app provisioning tasks",
-          "risk": "safe",
-          "default": false,
-          "expertOnly": false,
-          "requiresReboot": false,
-          "warningMessage": null,
-          "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "tasks"
-          ]
-        },
-        {
-          "id": "tasks.disable-defrag-tasks",
-          "name": "Disable Automatic Disk Defragmentation",
-          "description": "Disable ScheduledDefrag — automatic disk defragmentation and optimization",
-          "risk": "low",
-          "default": false,
-          "expertOnly": false,
-          "requiresReboot": false,
-          "warningMessage": null,
-          "blockedProfiles": [
-            "work_pc"
-          ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "tasks"
-          ]
-        },
-        {
-          "id": "tasks.disable-dotnet-tasks",
-          "name": "Disable .NET Framework Tasks",
-          "description": "Disable .NET NGEN and telemetry background tasks",
-          "risk": "low",
-          "default": false,
-          "expertOnly": false,
-          "requiresReboot": false,
-          "warningMessage": null,
-          "blockedProfiles": [
-            "work_pc"
-          ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "tasks"
-          ]
-        },
-        {
-          "id": "tasks.disable-maintenance-tasks",
-          "name": "Disable Automatic Maintenance",
-          "description": "Disable automatic maintenance scheduler that wakes PC for updates",
-          "risk": "low",
-          "default": false,
-          "expertOnly": false,
-          "requiresReboot": false,
-          "warningMessage": null,
-          "blockedProfiles": [
-            "work_pc"
-          ],
-          "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "tasks"
           ]
@@ -1321,23 +936,7 @@
           "warningMessage": null,
           "blockedProfiles": [],
           "minWindowsBuild": null,
-          "executionKinds": [
-            "tasks"
-          ]
-        },
-        {
-          "id": "tasks.disable-chkdsk-tasks",
-          "name": "Disable Automatic CHKDSK",
-          "description": "Disable ProactiveScan — background disk health monitoring and automatic chkdsk",
-          "risk": "low",
-          "default": false,
-          "expertOnly": false,
-          "requiresReboot": false,
-          "warningMessage": null,
-          "blockedProfiles": [
-            "work_pc"
-          ],
-          "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "tasks"
           ]
@@ -1353,6 +952,7 @@
           "warningMessage": null,
           "blockedProfiles": [],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "tasks"
           ]
@@ -1366,7 +966,7 @@
         {
           "id": "privacy.disable-telemetry",
           "name": "Set Diagnostic Data to Minimum",
-          "description": "Set Windows diagnostic data collection to Security level (minimum)",
+          "description": "Set diagnostic data to the minimum allowed level and limit diagnostic log/dump collection and feedback notifications. AllowTelemetry=0 (Security) is honored only on Enterprise, Education, IoT and Server; Home/Pro clamp it to Required.",
           "risk": "safe",
           "default": true,
           "expertOnly": false,
@@ -1374,6 +974,7 @@
           "warningMessage": null,
           "blockedProfiles": [],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
@@ -1389,6 +990,7 @@
           "warningMessage": null,
           "blockedProfiles": [],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
@@ -1404,6 +1006,7 @@
           "warningMessage": null,
           "blockedProfiles": [],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
@@ -1419,6 +1022,7 @@
           "warningMessage": null,
           "blockedProfiles": [],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
@@ -1434,6 +1038,7 @@
           "warningMessage": null,
           "blockedProfiles": [],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
@@ -1449,6 +1054,7 @@
           "warningMessage": null,
           "blockedProfiles": [],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
@@ -1457,7 +1063,7 @@
           "id": "privacy.disable-msrt",
           "name": "Disable MSRT Windows Update Delivery",
           "description": "Prevent Malicious Software Removal Tool from being offered via Windows Update",
-          "risk": "moderate",
+          "risk": "medium",
           "default": false,
           "expertOnly": false,
           "requiresReboot": false,
@@ -1466,6 +1072,7 @@
             "work_pc"
           ],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
@@ -1481,6 +1088,7 @@
           "warningMessage": null,
           "blockedProfiles": [],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
@@ -1490,12 +1098,13 @@
           "name": "Block Apps From Reading Other Apps' Diagnostic Info",
           "description": "Force-deny the App Privacy 'diagnostic information' capability so Store apps can't query diagnostic/usage data about other running apps",
           "risk": "low",
-          "default": true,
+          "default": false,
           "expertOnly": false,
           "requiresReboot": false,
           "warningMessage": "Apps that legitimately read cross-app diagnostic/usage info (some hardware monitors, game-overlay stats panels) may lose that data. Reversible.",
           "blockedProfiles": [],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
@@ -1505,12 +1114,13 @@
           "name": "Disable Online Font Providers (Font Streaming)",
           "description": "Stop Windows contacting Microsoft to stream/download missing fonts on demand",
           "risk": "low",
-          "default": true,
+          "default": false,
           "expertOnly": false,
           "requiresReboot": true,
           "warningMessage": "Documents or web pages referencing a font you don't have installed fall back to a substitute instead of downloading it. Takes effect after a reboot (or restarting the Font Cache service).",
           "blockedProfiles": [],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
@@ -1518,7 +1128,7 @@
         {
           "id": "privacy.disable-settings-sync",
           "name": "Disable Sync Your Settings to Microsoft Account",
-          "description": "Turn off roaming of Windows settings (theme, language, accessibility, some credentials) to your Microsoft account",
+          "description": "Turn off roaming of Windows settings to your Microsoft account (Windows 10 only; Windows 11 replaced this with Windows Backup)",
           "risk": "low",
           "default": false,
           "expertOnly": false,
@@ -1528,6 +1138,7 @@
             "work_pc"
           ],
           "minWindowsBuild": null,
+          "maxWindowsBuild": 19045,
           "executionKinds": [
             "registryChanges"
           ]
@@ -1537,12 +1148,13 @@
           "name": "Disable App Launch Tracking",
           "description": "Stop tracking which apps you open for Start menu personalization",
           "risk": "safe",
-          "default": true,
+          "default": false,
           "expertOnly": false,
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
@@ -1558,6 +1170,7 @@
           "warningMessage": null,
           "blockedProfiles": [],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
@@ -1573,21 +1186,23 @@
           "warningMessage": null,
           "blockedProfiles": [],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
         },
         {
-          "id": "privacy.disable-cloud-content-policy",
-          "name": "Block Cloud Content Delivery (machine-wide)",
-          "description": "Disable Windows suggested content, tips, and consumer feature delivery at the machine-policy level",
-          "risk": "low",
+          "id": "privacy.brave-debloat",
+          "name": "Lock Down Brave Extras (if installed)",
+          "description": "Brave browser policies: turn off Rewards, Wallet, VPN, Leo AI chat, News, Talk, Tor windows, usage pings, P3A, URL-keyed data collection, extended Safe Browsing reporting and metrics reporting. Harmless when Brave is not installed.",
+          "risk": "safe",
           "default": false,
           "expertOnly": false,
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
@@ -1597,12 +1212,13 @@
           "name": "Disable Clipboard History & Cloud Sync",
           "description": "Disable Windows clipboard history and cross-device clipboard synchronization",
           "risk": "safe",
-          "default": true,
+          "default": false,
           "expertOnly": false,
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
@@ -1610,7 +1226,7 @@
         {
           "id": "privacy.disable-activity-feed",
           "name": "Disable Activity History & Timeline",
-          "description": "Disable Windows activity feed, timeline, and activity data uploads to Microsoft",
+          "description": "Stop Windows publishing and uploading activity history. The activity feed itself is left on because turning it off also breaks clipboard history (winutil d1a6179).",
           "risk": "safe",
           "default": true,
           "expertOnly": false,
@@ -1618,6 +1234,7 @@
           "warningMessage": null,
           "blockedProfiles": [],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
@@ -1625,7 +1242,7 @@
         {
           "id": "privacy.disable-cloud-content",
           "name": "Disable Cloud Content & Suggestions",
-          "description": "Disable Windows Spotlight, suggested apps, tips, and cloud-delivered content",
+          "description": "Disable Microsoft consumer features (auto-installed suggested apps), Spotlight-style cloud content, account-state content and third-party suggestions via policy",
           "risk": "safe",
           "default": true,
           "expertOnly": false,
@@ -1633,6 +1250,7 @@
           "warningMessage": null,
           "blockedProfiles": [],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
@@ -1642,7 +1260,7 @@
           "name": "Disable Location Services",
           "description": "Disable Windows location services to prevent location tracking",
           "risk": "low",
-          "default": true,
+          "default": false,
           "expertOnly": false,
           "requiresReboot": false,
           "warningMessage": null,
@@ -1650,6 +1268,7 @@
             "work_pc"
           ],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
@@ -1668,6 +1287,23 @@
             "office_laptop"
           ],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
+          "executionKinds": [
+            "registryChanges"
+          ]
+        },
+        {
+          "id": "privacy.disable-wpbt",
+          "name": "Block Firmware-Injected Programs (WPBT)",
+          "description": "Stop Windows running executables that the motherboard firmware injects through the Windows Platform Binary Table (WPBT) — used by some vendors to auto-install utilities such as Armoury Crate.",
+          "risk": "low",
+          "default": false,
+          "expertOnly": false,
+          "requiresReboot": true,
+          "warningMessage": null,
+          "blockedProfiles": [],
+          "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
@@ -1683,38 +1319,9 @@
           "warningMessage": null,
           "blockedProfiles": [],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
-          ]
-        },
-        {
-          "id": "privacy.disable-device-monitoring",
-          "name": "Disable Device Install Monitoring",
-          "description": "Disable system restore points for device installations via policy",
-          "risk": "safe",
-          "default": false,
-          "expertOnly": false,
-          "requiresReboot": false,
-          "warningMessage": null,
-          "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
-        },
-        {
-          "id": "privacy.block-app-reprovisioning",
-          "name": "Block Removed Apps from Reinstalling",
-          "description": "Block previously removed AppX packages from being reinstalled by Windows Update by creating the Deprovisioned registry key",
-          "risk": "low",
-          "default": false,
-          "expertOnly": false,
-          "requiresReboot": false,
-          "warningMessage": null,
-          "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "powerShellCommands"
           ]
         },
         {
@@ -1722,12 +1329,13 @@
           "name": "Disable Online Speech Recognition",
           "description": "Opt out of online speech recognition data collection",
           "risk": "safe",
-          "default": true,
+          "default": false,
           "expertOnly": false,
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
@@ -1743,6 +1351,7 @@
           "warningMessage": null,
           "blockedProfiles": [],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
@@ -1752,12 +1361,13 @@
           "name": "Disable Contact Harvesting",
           "description": "Prevent trained data store from harvesting contacts for input prediction",
           "risk": "safe",
-          "default": true,
+          "default": false,
           "expertOnly": false,
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
@@ -1773,6 +1383,7 @@
           "warningMessage": null,
           "blockedProfiles": [],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
@@ -1782,12 +1393,13 @@
           "name": "Disable Find My Device",
           "description": "Disable the Find My Device location tracking feature",
           "risk": "safe",
-          "default": true,
+          "default": false,
           "expertOnly": false,
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
@@ -1800,12 +1412,13 @@
           "default": false,
           "expertOnly": false,
           "requiresReboot": false,
-          "warningMessage": null,
+          "warningMessage": "Downloaded programs are no longer reputation-checked before they run. Only turn this off if you understand the risk. Reversible.",
           "blockedProfiles": [
             "work_pc",
             "vm_cautious"
           ],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
@@ -1817,10 +1430,11 @@
           "risk": "safe",
           "default": true,
           "expertOnly": false,
-          "requiresReboot": false,
-          "warningMessage": null,
+          "requiresReboot": true,
+          "warningMessage": "AllowRecallEnablement=0 also removes the Recall component; re-enabling it later needs the optional feature to be downloaded again.",
           "blockedProfiles": [],
           "minWindowsBuild": 26100,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
@@ -1836,23 +1450,25 @@
           "warningMessage": null,
           "blockedProfiles": [],
           "minWindowsBuild": 26100,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
         },
         {
           "id": "privacy.disable-ai-svc-autostart",
-          "name": "Prevent AI Service Auto Start",
-          "description": "Set Windows AI Fabric service to manual startup instead of automatic",
+          "name": "Disable Windows AI Fabric Service",
+          "description": "Disable the WSAIFabricSvc service (present only on some Windows 11 24H2+ builds; skipped when absent)",
           "risk": "safe",
           "default": true,
           "expertOnly": false,
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
-          "minWindowsBuild": 22000,
+          "minWindowsBuild": 26100,
+          "maxWindowsBuild": null,
           "executionKinds": [
-            "registryChanges"
+            "serviceChanges"
           ]
         },
         {
@@ -1866,6 +1482,7 @@
           "warningMessage": null,
           "blockedProfiles": [],
           "minWindowsBuild": 26100,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
@@ -1881,6 +1498,7 @@
           "warningMessage": null,
           "blockedProfiles": [],
           "minWindowsBuild": 22000,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
@@ -1896,6 +1514,7 @@
           "warningMessage": null,
           "blockedProfiles": [],
           "minWindowsBuild": 26100,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
@@ -1911,6 +1530,7 @@
           "warningMessage": null,
           "blockedProfiles": [],
           "minWindowsBuild": 26100,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
@@ -1920,12 +1540,13 @@
           "name": "Block System AI Model Access",
           "description": "Stop apps from using on-device generative AI models system-wide",
           "risk": "low",
-          "default": false,
+          "default": true,
           "expertOnly": false,
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
           "minWindowsBuild": 26100,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
@@ -1937,23 +1558,6 @@
       "name": "Performance Optimization",
       "actions": [
         {
-          "id": "perf.mmcss-system-responsiveness",
-          "name": "Set MMCSS System Responsiveness",
-          "description": "Allocate more CPU to multimedia/gaming tasks (10% reserved for background)",
-          "risk": "low",
-          "default": false,
-          "expertOnly": false,
-          "requiresReboot": true,
-          "warningMessage": null,
-          "blockedProfiles": [
-            "work_pc"
-          ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
-        },
-        {
           "id": "perf.disable-sticky-keys",
           "name": "Disable Sticky Keys Shortcut",
           "description": "Disable the Shift×5 sticky keys shortcut that interrupts gameplay",
@@ -1964,38 +1568,25 @@
           "warningMessage": null,
           "blockedProfiles": [],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
         },
         {
           "id": "perf.disable-driver-updates-via-wu",
-          "name": "Exclude Driver Updates from Windows Update",
-          "description": "Prevent Windows Update from automatically installing driver updates",
+          "name": "Stop Windows Update Installing Drivers",
+          "description": "Stop Windows Update and device setup from downloading drivers and device metadata. Install GPU, chipset and other drivers yourself afterwards.",
           "risk": "low",
           "default": false,
           "expertOnly": false,
           "requiresReboot": false,
-          "warningMessage": null,
+          "warningMessage": "New hardware will not get drivers automatically, and you are responsible for driver updates (including security fixes).",
           "blockedProfiles": [
             "work_pc"
           ],
           "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
-        },
-        {
-          "id": "cpu.win32-priority-separation",
-          "name": "Optimize Thread Priority",
-          "description": "Set Win32PrioritySeparation for foreground-biased scheduling",
-          "risk": "low",
-          "default": true,
-          "expertOnly": false,
-          "requiresReboot": false,
-          "warningMessage": null,
-          "blockedProfiles": [],
-          "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
@@ -2004,15 +1595,16 @@
           "id": "perf.disable-auto-maintenance",
           "name": "Disable Automatic Maintenance",
           "description": "Disable Windows Automatic Maintenance scheduler",
-          "risk": "moderate",
+          "risk": "medium",
           "default": false,
           "expertOnly": false,
           "requiresReboot": false,
-          "warningMessage": null,
+          "warningMessage": "Scheduled drive optimization (SSD TRIM) and other maintenance stop. Run Optimize Drives manually from time to time.",
           "blockedProfiles": [
             "work_pc"
           ],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
@@ -2028,6 +1620,7 @@
           "warningMessage": null,
           "blockedProfiles": [],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
@@ -2036,15 +1629,32 @@
           "id": "perf.disable-store-auto-updates",
           "name": "Disable Store Auto-Updates",
           "description": "Prevent Microsoft Store from automatically downloading app updates",
-          "risk": "moderate",
+          "risk": "medium",
           "default": false,
           "expertOnly": false,
           "requiresReboot": false,
-          "warningMessage": null,
+          "warningMessage": "Store apps stop updating automatically, including security fixes. Update them from the Store manually.",
           "blockedProfiles": [
             "work_pc"
           ],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
+          "executionKinds": [
+            "registryChanges"
+          ]
+        },
+        {
+          "id": "perf.disable-fault-tolerant-heap",
+          "name": "Disable Fault Tolerant Heap",
+          "description": "Turn off the Fault Tolerant Heap, which silently applies heap mitigations to apps that crash repeatedly",
+          "risk": "low",
+          "default": false,
+          "expertOnly": false,
+          "requiresReboot": false,
+          "warningMessage": null,
+          "blockedProfiles": [],
+          "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
@@ -2063,23 +1673,9 @@
             "vm_cautious"
           ],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "powerShellCommands"
-          ]
-        },
-        {
-          "id": "perf.clear-page-file-on-shutdown",
-          "name": "Clear Page File on Shutdown",
-          "description": "Zero out the page file contents on shutdown to prevent data remnants in virtual memory",
-          "risk": "safe",
-          "default": false,
-          "expertOnly": false,
-          "requiresReboot": false,
-          "warningMessage": null,
-          "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
           ]
         },
         {
@@ -2095,6 +1691,7 @@
             "work_pc"
           ],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
@@ -2102,51 +1699,19 @@
         {
           "id": "perf.svchost-split-threshold",
           "name": "Optimize Svchost Split Threshold",
-          "description": "Group Windows background services into fewer svchost.exe processes by raising the split threshold above any RAM size — works the same on 8GB or 128GB machines",
+          "description": "Stop Windows from splitting services into separate svchost.exe processes by raising the split threshold above your RAM size (0xFFFFFFFF). Fewer processes, slightly less memory.",
           "risk": "low",
           "default": false,
           "expertOnly": false,
           "requiresReboot": true,
-          "warningMessage": null,
+          "warningMessage": "May leave Xbox accessory services (controllers) stuck on \"Starting\" and reduces service isolation. Reversible.",
           "blockedProfiles": [
-            "vm_cautious"
+            "vm_cautious",
+            "gaming_desktop",
+            "gaming_laptop"
           ],
           "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
-        },
-        {
-          "id": "perf.disable-page-combining",
-          "name": "Disable Page Combining",
-          "description": "Disable memory page combining/deduplication to reduce CPU overhead",
-          "risk": "low",
-          "default": false,
-          "expertOnly": true,
-          "requiresReboot": true,
-          "warningMessage": null,
-          "blockedProfiles": [
-            "low_spec_system",
-            "vm_cautious"
-          ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "powerShellCommands"
-          ]
-        },
-        {
-          "id": "perf.gpu-energy-driver-disable",
-          "name": "Disable GPU Energy Driver",
-          "description": "Disable the GpuEnergyDrv driver that monitors GPU energy usage and causes DPC latency spikes",
-          "risk": "low",
-          "default": false,
-          "expertOnly": false,
-          "requiresReboot": true,
-          "warningMessage": null,
-          "blockedProfiles": [
-            "vm_cautious"
-          ],
-          "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
@@ -2158,71 +1723,37 @@
           "risk": "low",
           "default": true,
           "expertOnly": false,
-          "requiresReboot": false,
+          "requiresReboot": true,
           "warningMessage": null,
           "blockedProfiles": [],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
         },
         {
-          "id": "gpu.disable-nvidia-telemetry",
-          "name": "Disable Nvidia Telemetry Services",
-          "description": "Disable the NvTelemetryContainer service that collects and transmits Nvidia driver usage data",
-          "risk": "safe",
-          "default": true,
-          "expertOnly": false,
-          "requiresReboot": false,
-          "warningMessage": null,
-          "blockedProfiles": [
-            "vm_cautious"
-          ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "serviceChanges"
-          ]
-        },
-        {
-          "id": "gpu.disable-amd-telemetry",
-          "name": "Disable AMD External Events Utility",
-          "description": "Disable the AMD External Events Utility service. IMPORTANT: this service drives AMD FreeSync / Variable Refresh Rate — disabling it turns FreeSync/VRR off.",
-          "risk": "medium",
-          "default": false,
-          "expertOnly": false,
-          "requiresReboot": false,
-          "warningMessage": "Disabling this turns off AMD FreeSync / Variable Refresh Rate. Only disable it if you do NOT use a FreeSync/VRR display.",
-          "blockedProfiles": [
-            "vm_cautious",
-            "gaming_desktop",
-            "gaming_laptop"
-          ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "serviceChanges"
-          ]
-        },
-        {
           "id": "perf.disable-game-dvr",
-          "name": "Disable Game DVR",
-          "description": "Disable Game DVR background recording to reduce GPU/CPU overhead during gaming",
-          "risk": "medium",
+          "name": "Disable Game DVR Background Recording",
+          "description": "Turn off Game DVR / background capture (the \"record what happened\" buffer). Game Bar itself stays installed and usable.",
+          "risk": "low",
           "default": false,
           "expertOnly": false,
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
         },
         {
           "id": "perf.disable-fullscreen-optimizations",
-          "name": "Disable Fullscreen Optimizations (system default)",
-          "description": "Set the per-user GameConfigStore default so new fullscreen apps prefer exclusive fullscreen over the FSO/borderless path. NOTE: modern Windows 10/11 increasingly decides FSO per-game (via each EXE's compatibility flag), so this changes the system default but a game's own setting can still override it.",
+          "name": "Prefer Exclusive Fullscreen (system-wide FSO off)",
+          "description": "Set the system-wide GameConfigStore values that make fullscreen games prefer exclusive fullscreen over fullscreen optimizations. A game's own compatibility setting still wins.",
           "risk": "low",
-          "default": true,
+          "default": false,
           "expertOnly": false,
           "requiresReboot": false,
           "warningMessage": null,
@@ -2230,6 +1761,7 @@
             "work_pc"
           ],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
@@ -2239,12 +1771,13 @@
           "name": "Disable Window Transparency Effects",
           "description": "Disable window transparency effects (acrylic, blur) that use GPU compositing for translucent title bars and taskbar",
           "risk": "safe",
-          "default": true,
+          "default": false,
           "expertOnly": false,
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
@@ -2253,15 +1786,16 @@
           "id": "gpu.disable-nvidia-container",
           "name": "Disable Nvidia Container Services",
           "description": "Disable NVDisplay.ContainerLocalSystem and NvContainerLocalSystem background services that run telemetry, overlay, and update checks.",
-          "risk": "low",
+          "risk": "medium",
           "default": false,
           "expertOnly": false,
           "requiresReboot": false,
-          "warningMessage": "GeForce Experience overlay (Alt+Z), ShadowPlay recording, and automatic driver updates will stop working. Manual driver updates via nvidia.com will still work.",
+          "warningMessage": "Disabling the NVIDIA display container (NVDisplay.ContainerLocalSystem) breaks NVIDIA Control Panel and NVIDIA App features; the overlay, recording and automatic driver updates also stop. Re-enable the services to get them back.",
           "blockedProfiles": [
             "vm_cautious"
           ],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "serviceChanges"
           ]
@@ -2269,59 +1803,27 @@
         {
           "id": "gpu.disable-amd-services",
           "name": "Disable AMD Background Services",
-          "description": "Disable AMD Crash Defender, External Events Utility, and AUEPLauncher services that run crash monitoring, event processing, and update checks.",
+          "description": "Disable the AMD Crash Defender and AMD User Experience Program launcher services",
           "risk": "low",
           "default": false,
           "expertOnly": false,
           "requiresReboot": false,
-          "warningMessage": "AMD Adrenalin overlay, crash reporting, and automatic driver updates will stop working. Manual driver updates via amd.com will still work.",
+          "warningMessage": "AMD crash reporting and the UX-program launcher stop. Adrenalin and FreeSync keep working.",
           "blockedProfiles": [
             "vm_cautious"
           ],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
-            "registryChanges"
-          ]
-        },
-        {
-          "id": "perf.disable-gamebar-presence",
-          "name": "Disable GameBar Presence Writer",
-          "description": "Disable the GameBarPresenceWriter background process",
-          "risk": "safe",
-          "default": true,
-          "expertOnly": false,
-          "requiresReboot": false,
-          "warningMessage": null,
-          "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
-        },
-        {
-          "id": "perf.legacy-flip-presentation",
-          "name": "Force Legacy Flip Presentation",
-          "description": "Force games to use Hardware: Legacy Flip (exclusive fullscreen) instead of composed flip",
-          "risk": "moderate",
-          "default": false,
-          "expertOnly": false,
-          "requiresReboot": false,
-          "warningMessage": null,
-          "blockedProfiles": [
-            "vm_cautious",
-            "work_pc"
-          ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
+            "serviceChanges"
           ]
         },
         {
           "id": "cpu.disable-core-parking",
           "name": "Disable CPU Core Parking",
-          "description": "Set minimum processor cores to 100% on AC power, preventing Windows from parking cores during low load. Parked cores introduce 1-5 ms wake latency.",
+          "description": "Set the minimum number of unparked cores to 100% on AC power in the active power plan, so Windows never parks cores.",
           "risk": "low",
-          "default": true,
+          "default": false,
           "expertOnly": false,
           "requiresReboot": false,
           "warningMessage": null,
@@ -2330,6 +1832,7 @@
             "low_spec_system"
           ],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "powerChanges"
           ]
@@ -2339,7 +1842,7 @@
           "name": "Aggressive Processor Boost Mode",
           "description": "Set processor performance boost policy to Aggressive (mode 2). This prioritizes sustained maximum turbo frequency over power efficiency.",
           "risk": "low",
-          "default": true,
+          "default": false,
           "expertOnly": false,
           "requiresReboot": false,
           "warningMessage": null,
@@ -2348,16 +1851,17 @@
             "low_spec_system"
           ],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "powerChanges"
           ]
         },
         {
           "id": "cpu.min-processor-state-100",
-          "name": "Set Minimum Processor State to 100%",
-          "description": "Keeps the CPU from dropping too aggressively into low-power states so it can react faster under load by holding the clock-frequency floor at 100%. This is a clock-speed setting and does not mean 100% CPU usage, but it may increase idle power draw, heat, and fan noise.",
+          "name": "Set Minimum Processor State to 100% (current plan)",
+          "description": "Hold the active power plan's minimum (and maximum) processor state at 100% on AC power. Does not switch power plans and does not mean 100% CPU usage, but raises idle power draw, heat and fan noise.",
           "risk": "low",
-          "default": true,
+          "default": false,
           "expertOnly": false,
           "requiresReboot": false,
           "warningMessage": null,
@@ -2366,38 +1870,7 @@
             "low_spec_system"
           ],
           "minWindowsBuild": null,
-          "executionKinds": [
-            "powerChanges"
-          ]
-        },
-        {
-          "id": "scheduler.mmcss-gaming-profile",
-          "name": "MMCSS Gaming Profile - Maximum Priority",
-          "description": "Configure the Multimedia Class Scheduler Service (MMCSS) Games task profile with maximum GPU priority (8), elevated CPU scheduling priority (6), High scheduling category, and a 1 ms clock rate",
-          "risk": "low",
-          "default": true,
-          "expertOnly": false,
-          "requiresReboot": false,
-          "warningMessage": null,
-          "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
-        },
-        {
-          "id": "power.high-performance-plan",
-          "name": "Lock CPU to Maximum Clock (current power plan)",
-          "description": "Pin the ACTIVE power plan's minimum and maximum processor state to 100% so the CPU holds its top clock instead of down-clocking. This modifies your CURRENT power plan — it does NOT switch to Windows' separate High Performance plan. 100% minimum processor state holds the clock high; it does NOT mean 100% CPU usage. May increase idle power draw, heat, and fan noise.",
-          "risk": "low",
-          "default": false,
-          "expertOnly": false,
-          "requiresReboot": false,
-          "warningMessage": null,
-          "blockedProfiles": [
-            "office_laptop"
-          ],
-          "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "powerChanges"
           ]
@@ -2413,6 +1886,7 @@
           "warningMessage": null,
           "blockedProfiles": [],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
@@ -2428,6 +1902,7 @@
           "warningMessage": null,
           "blockedProfiles": [],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges",
             "powerShellCommands"
@@ -2436,7 +1911,7 @@
         {
           "id": "power.disable-usb-selective-suspend",
           "name": "Disable USB Selective Suspend",
-          "description": "Disable USB selective suspend for both AC and DC power, preventing Windows from powering down USB devices during idle periods",
+          "description": "Disable USB selective suspend in the active power plan (AC power), so Windows does not power down idle USB devices",
           "risk": "low",
           "default": false,
           "expertOnly": false,
@@ -2446,6 +1921,7 @@
             "office_laptop"
           ],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "powerChanges"
           ]
@@ -2463,6 +1939,7 @@
             "office_laptop"
           ],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "powerChanges"
           ]
@@ -2482,26 +1959,28 @@
             "low_spec_system"
           ],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
         },
         {
           "id": "power.disable-device-power-saving",
-          "name": "Disable Device Power Saving",
-          "description": "Disable power management for USB, NIC, and PCI devices",
+          "name": "Disable Device Power Saving (all devices)",
+          "description": "Clear \"Allow the computer to turn off this device to save power\" on every device that exposes it (MSPower_DeviceEnable). Desktops only.",
           "risk": "low",
           "default": false,
           "expertOnly": false,
           "requiresReboot": false,
-          "warningMessage": null,
+          "warningMessage": "Not automatically reversible: to undo, re-tick \"Allow the computer to turn off this device\" in Device Manager for the affected devices.",
           "blockedProfiles": [
             "office_laptop",
             "gaming_laptop"
           ],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
-            "powerChanges"
+            "powerShellCommands"
           ]
         },
         {
@@ -2518,6 +1997,7 @@
             "office_laptop"
           ],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
@@ -2527,27 +2007,13 @@
           "name": "Disable NTFS Last Access Timestamp",
           "description": "Stop NTFS from writing a last-access timestamp every time a file is read (System-Managed, Last Access Disabled — fsutil flag 0x80000001). This is the single owner of this setting; reversible.",
           "risk": "safe",
-          "default": true,
+          "default": false,
           "expertOnly": false,
-          "requiresReboot": false,
+          "requiresReboot": true,
           "warningMessage": null,
           "blockedProfiles": [],
           "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
-        },
-        {
-          "id": "storage.enable-write-caching",
-          "name": "Enable Disk Write Caching",
-          "description": "Enable write caching on storage devices, allowing the OS to buffer writes in RAM before flushing to disk for improved I/O throughput",
-          "risk": "low",
-          "default": true,
-          "expertOnly": false,
-          "requiresReboot": false,
-          "warningMessage": null,
-          "blockedProfiles": [],
-          "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
@@ -2556,53 +2022,38 @@
           "id": "storage.disable-indexing",
           "name": "Disable Windows Search Indexing Service",
           "description": "Disable the Windows Search indexing service (WSearch) which continuously scans and indexes file contents in the background",
-          "risk": "low",
-          "default": true,
+          "risk": "medium",
+          "default": false,
           "expertOnly": false,
           "requiresReboot": false,
-          "warningMessage": null,
+          "warningMessage": "Start menu, File Explorer and Outlook searches become much slower without the index. Reversible.",
           "blockedProfiles": [],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "serviceChanges"
           ]
         },
         {
-          "id": "perf.csrss-high-priority",
-          "name": "Elevate CSRSS Process Priority",
-          "description": "Set CsrssHighPriority to ensure the Client/Server Runtime Subsystem runs at elevated priority",
-          "risk": "low",
+          "id": "storage.disable-write-cache-flushing",
+          "name": "Turn Off Write-Cache Buffer Flushing",
+          "description": "Enable write caching and mark SCSI/NVMe disks as power-protected so Windows stops flushing the write cache (CacheIsPowerProtected=1). Only for PCs on a UPS or with very reliable power.",
+          "risk": "high",
           "default": false,
           "expertOnly": false,
           "requiresReboot": true,
-          "warningMessage": null,
+          "warningMessage": "A power cut or hard crash can lose or corrupt recently written data. Only use with a UPS or very reliable power. Reversible.",
           "blockedProfiles": [],
           "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
-        },
-        {
-          "id": "perf.mmcss-deep-tuning",
-          "name": "MMCSS Deep Scheduler Tuning",
-          "description": "Configure the Multimedia Class Scheduler Service (MMCSS) to favour foreground game threads, and lower the background reservation from the default 20% to 10%",
-          "risk": "low",
-          "default": false,
-          "expertOnly": false,
-          "requiresReboot": false,
-          "warningMessage": null,
-          "blockedProfiles": [
-            "work_pc"
-          ],
-          "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
         },
         {
           "id": "perf.ntfs-optimization",
-          "name": "NTFS Filesystem Optimization",
-          "description": "Disable NTFS 8.3 short-filename generation and enable large system awareness for reduced filesystem overhead (last-access timestamps are handled separately by Disable Last Access Timestamp)",
+          "name": "Disable NTFS 8.3 Short-Name Creation",
+          "description": "Stop NTFS creating DOS-style 8.3 short names for new files (same as fsutil 8dot3name set 1). Existing short names are kept.",
           "risk": "low",
           "default": false,
           "expertOnly": false,
@@ -2612,6 +2063,7 @@
             "work_pc"
           ],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
@@ -2621,12 +2073,13 @@
           "name": "Disable Mouse Pointer Acceleration",
           "description": "Set mouse acceleration to 1:1 (6/11 speed, no acceleration curve)",
           "risk": "safe",
-          "default": true,
+          "default": false,
           "expertOnly": false,
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
@@ -2648,29 +2101,31 @@
           "warningMessage": null,
           "blockedProfiles": [],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
         },
         {
           "id": "shell.hide-widgets-button",
-          "name": "Hide Widgets Button (Win11)",
-          "description": "Remove the Widgets button from the taskbar",
+          "name": "Disable Widgets (policy)",
+          "description": "Turn off Widgets with the supported AllowNewsAndInterests policy, which also removes the taskbar button. On current Windows 11 builds Windows may block third-party tools from changing this setting; if oudenOS reports it as skipped, turn Widgets off in Settings > Personalization > Taskbar. The policy may be ignored on Windows 11 Home.",
           "risk": "safe",
           "default": true,
           "expertOnly": false,
           "requiresReboot": false,
-          "warningMessage": null,
+          "warningMessage": "Windows may block this change on current Windows 11 builds (reported as skipped). In that case turn Widgets off in Settings > Personalization > Taskbar. May be ignored on Windows 11 Home.",
           "blockedProfiles": [],
           "minWindowsBuild": 22000,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
         },
         {
           "id": "shell.reduce-search-box",
-          "name": "Reduce Search Box",
-          "description": "Reduce the taskbar search box to an icon",
+          "name": "Show Search as an Icon (policy)",
+          "description": "Set the SearchOnTaskbarMode policy to 1 (search icon only). Documented values: 0 hide, 1 icon only, 2 icon and label, 3 search box. Windows 11 24H2 (build 26100) and later.",
           "risk": "safe",
           "default": true,
           "expertOnly": false,
@@ -2679,7 +2134,8 @@
           "blockedProfiles": [
             "work_pc"
           ],
-          "minWindowsBuild": null,
+          "minWindowsBuild": 26100,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
@@ -2687,7 +2143,7 @@
         {
           "id": "shell.disable-copilot",
           "name": "Disable Windows Copilot (Win11)",
-          "description": "Disable the Copilot AI sidebar and remove the taskbar button",
+          "description": "Turn off the built-in Copilot sidebar and its taskbar button (Windows 11 23H2 and earlier; on 24H2 Copilot is an app — use Remove Copilot App)",
           "risk": "safe",
           "default": true,
           "expertOnly": false,
@@ -2695,6 +2151,7 @@
           "warningMessage": null,
           "blockedProfiles": [],
           "minWindowsBuild": 22000,
+          "maxWindowsBuild": 22631,
           "executionKinds": [
             "registryChanges"
           ]
@@ -2710,6 +2167,7 @@
           "warningMessage": null,
           "blockedProfiles": [],
           "minWindowsBuild": 22000,
+          "maxWindowsBuild": 22621,
           "executionKinds": [
             "registryChanges"
           ]
@@ -2725,6 +2183,7 @@
           "warningMessage": null,
           "blockedProfiles": [],
           "minWindowsBuild": 22631,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
@@ -2732,7 +2191,7 @@
         {
           "id": "shell.disable-meet-now",
           "name": "Hide Meet Now",
-          "description": "Hide the Meet Now / Chat icon from the system tray",
+          "description": "Hide the Meet Now icon from the system tray (Windows 10 only)",
           "risk": "safe",
           "default": true,
           "expertOnly": false,
@@ -2740,13 +2199,30 @@
           "warningMessage": null,
           "blockedProfiles": [],
           "minWindowsBuild": null,
+          "maxWindowsBuild": 19045,
+          "executionKinds": [
+            "registryChanges"
+          ]
+        },
+        {
+          "id": "shell.reduce-search-box-user",
+          "name": "Show Search as an Icon (per-user setting)",
+          "description": "Set the per-user SearchboxTaskbarMode value to 1 (icon only). On current Windows 11 builds Windows may block third-party tools from changing it (reported as skipped); then change it in Settings > Personalization > Taskbar.",
+          "risk": "safe",
+          "default": true,
+          "expertOnly": false,
+          "requiresReboot": false,
+          "warningMessage": null,
+          "blockedProfiles": [],
+          "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
         },
         {
           "id": "shell.remove-cast-to-device",
-          "name": "Remove 'Cast to Device",
+          "name": "Remove 'Cast to Device'",
           "description": "Remove Cast to Device from right-click menu",
           "risk": "safe",
           "default": true,
@@ -2755,13 +2231,14 @@
           "warningMessage": null,
           "blockedProfiles": [],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
         },
         {
           "id": "shell.remove-troubleshoot-compatibility",
-          "name": "Remove 'Troubleshoot compatibility",
+          "name": "Remove 'Troubleshoot compatibility'",
           "description": "Remove compatibility troubleshooter from .exe right-click",
           "risk": "safe",
           "default": true,
@@ -2772,14 +2249,15 @@
             "work_pc"
           ],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
         },
         {
           "id": "shell.remove-edit-with-paint3d",
-          "name": "Remove 'Edit with Paint 3D",
-          "description": "Hide deprecated Paint 3D context menu entry",
+          "name": "Remove 'Edit with Paint 3D'",
+          "description": "Hide the Paint 3D context-menu entry (Paint 3D is no longer shipped on 24H2)",
           "risk": "safe",
           "default": true,
           "expertOnly": false,
@@ -2787,6 +2265,7 @@
           "warningMessage": null,
           "blockedProfiles": [],
           "minWindowsBuild": null,
+          "maxWindowsBuild": 22631,
           "executionKinds": [
             "registryChanges"
           ]
@@ -2802,6 +2281,7 @@
           "warningMessage": null,
           "blockedProfiles": [],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
@@ -2817,6 +2297,7 @@
           "warningMessage": null,
           "blockedProfiles": [],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
@@ -2832,6 +2313,7 @@
           "warningMessage": null,
           "blockedProfiles": [],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
@@ -2847,6 +2329,7 @@
           "warningMessage": null,
           "blockedProfiles": [],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
@@ -2856,12 +2339,45 @@
           "name": "Open Explorer to This PC",
           "description": "Set File Explorer to open to This PC instead of Home/Quick Access",
           "risk": "safe",
+          "default": true,
+          "expertOnly": false,
+          "requiresReboot": false,
+          "warningMessage": null,
+          "blockedProfiles": [],
+          "minWindowsBuild": null,
+          "maxWindowsBuild": null,
+          "executionKinds": [
+            "registryChanges"
+          ]
+        },
+        {
+          "id": "shell.remove-home-gallery",
+          "name": "Hide Home and Gallery in Explorer",
+          "description": "Hide the Home and Gallery entries in the File Explorer navigation pane (winutil RemoveHomeAndGallery). Pair it with \"Open Explorer to This PC\".",
+          "risk": "low",
+          "default": false,
+          "expertOnly": false,
+          "requiresReboot": false,
+          "warningMessage": null,
+          "blockedProfiles": [],
+          "minWindowsBuild": 22621,
+          "maxWindowsBuild": null,
+          "executionKinds": [
+            "registryChanges"
+          ]
+        },
+        {
+          "id": "shell.enable-long-paths",
+          "name": "Enable Long File Paths",
+          "description": "Allow paths longer than 260 characters for apps that support it (LongPathsEnabled=1)",
+          "risk": "safe",
           "default": false,
           "expertOnly": false,
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
@@ -2877,6 +2393,7 @@
           "warningMessage": null,
           "blockedProfiles": [],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
@@ -2892,6 +2409,7 @@
           "warningMessage": null,
           "blockedProfiles": [],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
@@ -2907,6 +2425,7 @@
           "warningMessage": null,
           "blockedProfiles": [],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
@@ -2922,6 +2441,7 @@
           "warningMessage": null,
           "blockedProfiles": [],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
@@ -2937,6 +2457,7 @@
           "warningMessage": null,
           "blockedProfiles": [],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
@@ -2952,6 +2473,7 @@
           "warningMessage": null,
           "blockedProfiles": [],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
@@ -2967,6 +2489,7 @@
           "warningMessage": null,
           "blockedProfiles": [],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
@@ -2982,6 +2505,7 @@
           "warningMessage": null,
           "blockedProfiles": [],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
@@ -2997,6 +2521,7 @@
           "warningMessage": null,
           "blockedProfiles": [],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
@@ -3012,21 +2537,7 @@
           "warningMessage": null,
           "blockedProfiles": [],
           "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
-        },
-        {
-          "id": "shell.disable-settings-ads",
-          "name": "Disable Settings Ads",
-          "description": "Remove Microsoft 365 and promotional content from Windows Settings",
-          "risk": "safe",
-          "default": true,
-          "expertOnly": false,
-          "requiresReboot": false,
-          "warningMessage": null,
-          "blockedProfiles": [],
-          "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
@@ -3039,62 +2550,32 @@
       "actions": [
         {
           "id": "startup.disable-background-apps",
-          "name": "Disable Background Apps",
-          "description": "Prevent UWP apps from running in the background to reduce resource usage. On Windows 11 24H2+, this may affect Explorer context menu handlers and shell UX.",
+          "name": "Block Store Apps From Running in the Background (policy)",
+          "description": "Force-deny background execution for Store/UWP apps via the LetAppsRunInBackground policy. Windows 11 removed the global toggle, so the policy is the supported way. May be ignored on Windows 11 Home.",
           "risk": "medium",
           "default": false,
           "expertOnly": false,
           "requiresReboot": true,
-          "warningMessage": "On Windows 11 24H2+, disabling all background apps may cause File Explorer right-click menus to hang or crash. If you experience this, re-enable background apps via Settings > Apps > Installed apps > Advanced options.",
+          "warningMessage": "Store apps (Phone Link, Mail, Teams etc.) stop syncing and notifying in the background. If Explorer right-click menus misbehave on 24H2, revert this. Reversible.",
           "blockedProfiles": [],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
         },
         {
           "id": "startup.disable-cortana",
-          "name": "Disable Cortana Startup",
-          "description": "Prevent Cortana from launching at Windows startup",
+          "name": "Disable Cortana / Search Assistant Policy",
+          "description": "Set AllowCortana=0 (paired with the web-search policy as PC-Tuning recommends)",
           "risk": "low",
-          "default": false,
+          "default": true,
           "expertOnly": false,
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
           "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
-        },
-        {
-          "id": "startup.disable-automatic-maintenance",
-          "name": "Disable Automatic Maintenance",
-          "description": "Disable Windows Automatic Maintenance which runs scheduled tasks including disk defragmentation, Windows Update checks, and security scans during idle periods",
-          "risk": "low",
-          "default": false,
-          "expertOnly": false,
-          "requiresReboot": false,
-          "warningMessage": null,
-          "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
-        },
-        {
-          "id": "startup.disable-gamebar-presence",
-          "name": "Disable GameBarPresenceWriter",
-          "description": "Disable the GameBarPresenceWriter background process that runs alongside every game, even when Game Bar overlay is not used",
-          "risk": "safe",
-          "default": false,
-          "expertOnly": false,
-          "requiresReboot": false,
-          "warningMessage": null,
-          "blockedProfiles": [
-            "vm_cautious"
-          ],
-          "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
@@ -3104,27 +2585,29 @@
           "name": "Disable AutoPlay & AutoRun",
           "description": "Disable automatic media playback and program execution when inserting removable drives",
           "risk": "safe",
-          "default": false,
+          "default": true,
           "expertOnly": false,
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
         },
         {
           "id": "startup.enable-game-mode",
-          "name": "Enable Game Mode",
-          "description": "Enable Windows Game Mode to prioritize game processes and reduce background interference",
+          "name": "Keep Game Mode On",
+          "description": "Make sure Game Mode is enabled (the Windows default) — sets both AllowAutoGameMode and AutoGameModeEnabled",
           "risk": "safe",
-          "default": false,
+          "default": true,
           "expertOnly": false,
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
@@ -3137,9 +2620,10 @@
           "default": false,
           "expertOnly": false,
           "requiresReboot": false,
-          "warningMessage": null,
+          "warningMessage": "Apps that rely on cloud push (Teams, Phone Link, mail apps) stop receiving notifications while closed. Local notifications still work.",
           "blockedProfiles": [],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
@@ -3155,14 +2639,15 @@
           "warningMessage": null,
           "blockedProfiles": [],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
         },
         {
           "id": "shutdown.force-end-apps",
-          "name": "Force End Applications",
-          "description": "Reduce WaitToKillServiceTimeout for faster service shutdown",
+          "name": "Shorten Service Shutdown Timeout",
+          "description": "Lower WaitToKillServiceTimeout to 3 seconds so services that hang at shutdown are stopped sooner. Does not force-close your apps.",
           "risk": "low",
           "default": false,
           "expertOnly": false,
@@ -3170,66 +2655,7 @@
           "warningMessage": null,
           "blockedProfiles": [],
           "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
-        },
-        {
-          "id": "display.disable-game-bar",
-          "name": "Disable Game Bar and Game DVR",
-          "description": "Disable the Xbox Game Bar overlay and Game DVR background recording, removing the capture pipeline from the display path",
-          "risk": "safe",
-          "default": false,
-          "expertOnly": false,
-          "requiresReboot": false,
-          "warningMessage": null,
-          "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
-        },
-        {
-          "id": "display.disable-pointer-acceleration",
-          "name": "Disable Mouse Pointer Acceleration",
-          "description": "Disable Windows pointer acceleration (Enhance Pointer Precision) by setting MouseSpeed, MouseThreshold1, and MouseThreshold2 to 0",
-          "risk": "safe",
-          "default": false,
-          "expertOnly": false,
-          "requiresReboot": false,
-          "warningMessage": null,
-          "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
-        },
-        {
-          "id": "audio.disable-enhancements",
-          "name": "Disable Audio Enhancements",
-          "description": "Disable Windows audio enhancements (spatial audio, equalizer, virtual surround, loudness equalization) to reduce audio processing overhead and DPC latency",
-          "risk": "safe",
-          "default": false,
-          "expertOnly": false,
-          "requiresReboot": false,
-          "warningMessage": null,
-          "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
-        },
-        {
-          "id": "audio.exclusive-mode",
-          "name": "Configure WASAPI Exclusive Mode Priority",
-          "description": "Ensure WASAPI exclusive mode is enabled for audio endpoints, allowing games and applications to bypass the Windows audio mixer for direct hardware access with lowest latency",
-          "risk": "low",
-          "default": false,
-          "expertOnly": false,
-          "requiresReboot": false,
-          "warningMessage": null,
-          "blockedProfiles": [],
-          "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
@@ -3244,110 +2670,16 @@
           "id": "network.disable-llmnr",
           "name": "Disable LLMNR",
           "description": "Disable Link-Local Multicast Name Resolution — prevents NTLM hash capture attacks",
-          "risk": "safe",
+          "risk": "low",
           "default": false,
-          "expertOnly": true,
+          "expertOnly": false,
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [
             "work_pc"
           ],
           "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
-        },
-        {
-          "id": "network.disable-smbv1",
-          "name": "Disable SMBv1 Protocol",
-          "description": "Disable the legacy SMBv1 file sharing protocol (WannaCry vector)",
-          "risk": "low",
-          "default": false,
-          "expertOnly": true,
-          "requiresReboot": true,
-          "warningMessage": null,
-          "blockedProfiles": [
-            "work_pc"
-          ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
-        },
-        {
-          "id": "network.harden-windows-firewall-defaults",
-          "name": "Harden Windows Firewall Defaults",
-          "description": "Block inbound, allow outbound on all firewall profiles",
-          "risk": "safe",
-          "default": false,
-          "expertOnly": false,
-          "requiresReboot": false,
-          "warningMessage": null,
-          "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
-        },
-        {
-          "id": "network.disable-teredo",
-          "name": "Disable Teredo Tunneling",
-          "description": "Disable Teredo IPv6 tunneling which encapsulates IPv6 packets within IPv4 UDP datagrams, adding latency overhead.",
-          "risk": "safe",
-          "default": false,
-          "expertOnly": false,
-          "requiresReboot": false,
-          "warningMessage": null,
-          "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges",
-            "powerShellCommands"
-          ]
-        },
-        {
-          "id": "network.disable-netbios",
-          "name": "Disable NetBIOS over TCP/IP",
-          "description": "Disable NetBIOS over TCP/IP by setting NodeType to P-node (2) and NetbiosOptions to disabled (2), preventing NetBIOS name resolution and session services.",
-          "risk": "low",
-          "default": false,
-          "expertOnly": false,
-          "requiresReboot": true,
-          "warningMessage": null,
-          "blockedProfiles": [
-            "work_pc"
-          ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
-        },
-        {
-          "id": "network.disable-nagle",
-          "name": "Disable Nagle's Algorithm (TCPNoDelay)",
-          "description": "Disable Nagle's algorithm and set TCP acknowledgement frequency to 1, sending small packets immediately instead of buffering them.",
-          "risk": "low",
-          "default": false,
-          "expertOnly": false,
-          "requiresReboot": false,
-          "warningMessage": null,
-          "blockedProfiles": [],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
-        },
-        {
-          "id": "network.rss-queues-2",
-          "name": "Set RSS Queues to 2",
-          "description": "Configure Receive Side Scaling to use 2 RSS queues, distributing NIC interrupt processing across 2 CPU cores without over-allocating.",
-          "risk": "low",
-          "default": false,
-          "expertOnly": false,
-          "requiresReboot": false,
-          "warningMessage": null,
-          "blockedProfiles": [],
-          "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
@@ -3359,25 +2691,6 @@
       "name": "Security Tuning",
       "actions": [
         {
-          "id": "security.reduce-ssbd-mitigation",
-          "name": "Reduce Speculative Store Bypass (SSBD) Mitigation",
-          "description": "Disable the SSBD mitigation via FeatureSettingsOverride registry keys. This reduces a 2-8% performance overhead on syscall-heavy workloads but exposes the system to CVE-2018-3639.",
-          "risk": "high",
-          "default": false,
-          "expertOnly": true,
-          "requiresReboot": true,
-          "warningMessage": null,
-          "blockedProfiles": [
-            "work_pc",
-            "office_laptop",
-            "vm_cautious"
-          ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
-        },
-        {
           "id": "security.disable-hvci",
           "name": "Disable Hypervisor-enforced Code Integrity",
           "description": "Disable HVCI (Hypervisor-enforced Code Integrity) which validates kernel-mode code integrity using the hypervisor, adding overhead to every driver load and some system calls",
@@ -3385,13 +2698,14 @@
           "default": false,
           "expertOnly": true,
           "requiresReboot": true,
-          "warningMessage": null,
+          "warningMessage": "Memory Integrity protects the kernel from malicious or vulnerable drivers. Vanguard (Valorant/League) and FACEIT may refuse to run without HVCI, TPM 2.0 or Secure Boot. Reversible: turn Memory Integrity back on in Windows Security > Device security > Core isolation.",
           "blockedProfiles": [
             "work_pc",
             "office_laptop",
             "vm_cautious"
           ],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
@@ -3404,7 +2718,7 @@
           "default": false,
           "expertOnly": true,
           "requiresReboot": true,
-          "warningMessage": "EXTREME SECURITY RISK. Disabling CPU mitigations exposes your system to Spectre, Meltdown, MDS, and L1TF attacks. Only appropriate for air-gapped dedicated gaming PCs. Requires TrustedInstaller elevation.",
+          "warningMessage": "Exposes the system to Spectre/Meltdown-class attacks, can be slower on newer CPUs, and FACEIT requires the mitigations. Requires TrustedInstaller. Revert if it does not help.",
           "blockedProfiles": [
             "work_pc",
             "office_laptop",
@@ -3412,8 +2726,10 @@
             "low_spec_system"
           ],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
-            "registryChanges"
+            "registryChanges",
+            "fileRenames"
           ]
         },
         {
@@ -3427,6 +2743,7 @@
           "warningMessage": null,
           "blockedProfiles": [],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
@@ -3436,27 +2753,13 @@
           "name": "Disable Delivery Optimization",
           "description": "Disable peer-to-peer Windows Update delivery that uses your bandwidth for other PCs",
           "risk": "low",
-          "default": false,
+          "default": true,
           "expertOnly": false,
           "requiresReboot": false,
           "warningMessage": null,
           "blockedProfiles": [],
           "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges"
-          ]
-        },
-        {
-          "id": "security.disable-bitlocker-auto-encrypt",
-          "name": "Disable BitLocker Auto-Encryption",
-          "description": "Prevent Windows from automatically enabling BitLocker device encryption",
-          "risk": "low",
-          "default": false,
-          "expertOnly": false,
-          "requiresReboot": false,
-          "warningMessage": null,
-          "blockedProfiles": [],
-          "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
@@ -3474,6 +2777,7 @@
             "work_pc"
           ],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
@@ -3491,25 +2795,59 @@
             "work_pc"
           ],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
+          "executionKinds": [
+            "registryChanges"
+          ]
+        },
+        {
+          "id": "system.pin-feature-update",
+          "name": "Stay on the Current Windows Version",
+          "description": "Pin Windows to the version you are running now (TargetReleaseVersion + ProductVersion + TargetReleaseVersionInfo read from DisplayVersion). Security and quality updates keep installing; feature upgrades are held. May be ignored on Windows 11 Home.",
+          "risk": "medium",
+          "default": false,
+          "expertOnly": false,
+          "requiresReboot": false,
+          "warningMessage": "Not automatically reversible. To undo, delete TargetReleaseVersion, ProductVersion and TargetReleaseVersionInfo under HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate. Remove the pin before your version reaches end of support.",
+          "blockedProfiles": [],
+          "minWindowsBuild": null,
+          "maxWindowsBuild": null,
+          "executionKinds": [
+            "powerShellCommands"
+          ]
+        },
+        {
+          "id": "system.disable-auto-update",
+          "name": "Turn Off Automatic Windows Updates",
+          "description": "Set the NoAutoUpdate policy so Windows Update never downloads or installs updates on its own. You must check for updates manually.",
+          "risk": "high",
+          "default": false,
+          "expertOnly": true,
+          "requiresReboot": false,
+          "warningMessage": "Security updates no longer install automatically. Check Windows Update manually and regularly. Reversible.",
+          "blockedProfiles": [],
+          "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
         },
         {
           "id": "security.disable-defender-realtime",
-          "name": "Disable Defender Real-Time Protection",
-          "description": "Disable Windows Defender real-time scanning via Tamper Protection bypass. Eliminates the MsMpEng.exe background scanning overhead.",
+          "name": "Turn Off Defender Real-Time Protection (policy)",
+          "description": "Set the Defender real-time protection policies (real-time monitoring, behaviour monitoring, on-access, downloads/attachments (IOAV) and scan-on-enable). Microsoft Defender ignores these policies while Tamper Protection is on, which is the default (the change may appear to succeed but has no effect) — turn Tamper Protection off in Windows Security first.",
           "risk": "high",
           "default": false,
           "expertOnly": true,
           "requiresReboot": true,
-          "warningMessage": "Disabling Defender removes the last real-time malware guardrail. Only appropriate for dedicated gaming PCs with no web browsing or untrusted downloads.",
+          "warningMessage": "Removes real-time malware protection. Ignored while Tamper Protection is on. Some anti-cheats may expect Defender running. Reversible (policy values are restored on rollback).",
           "blockedProfiles": [
             "work_pc",
             "office_laptop",
             "vm_cautious"
           ],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
@@ -3517,57 +2855,39 @@
         {
           "id": "security.disable-defender-cloud",
           "name": "Disable Defender Cloud Protection",
-          "description": "Disable Defender cloud-delivered protection and automatic sample submission",
+          "description": "Turn off Defender cloud-delivered protection (MAPS) and automatic sample submission via policy. Ignored while Tamper Protection is on.",
           "risk": "medium",
           "default": false,
           "expertOnly": true,
           "requiresReboot": false,
-          "warningMessage": null,
+          "warningMessage": "New threats that only cloud protection would catch may be missed. Ignored while Tamper Protection is on. Reversible.",
           "blockedProfiles": [
             "work_pc"
           ],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
         },
         {
           "id": "security.disable-vbs",
-          "name": "Disable Virtualization-Based Security (VBS)",
-          "description": "Disable VBS — the hypervisor layer that enables HVCI, Credential Guard, and other virtualization-backed security features",
+          "name": "Turn Off Virtualization-Based Security (VBS) and Credential Guard",
+          "description": "Request VBS off: EnableVirtualizationBasedSecurity=0 (system and policy), Memory Integrity off, and Credential Guard off (LsaCfgFlags=0 in both locations — Credential Guard is on by default on Windows 11 22H2+ Enterprise/Education). Needs a reboot. Hyper-V, WSL2, Windows Sandbox or Virtual Machine Platform keep the hypervisor running.",
           "risk": "high",
           "default": false,
           "expertOnly": true,
           "requiresReboot": true,
-          "warningMessage": "VBS is required for anti-cheat systems like Vanguard. Disabling may prevent some games from launching.",
+          "warningMessage": "Weakens credential and kernel protection. If Credential Guard/VBS was enabled with a UEFI lock, these values are ignored: Microsoft's documented way out is the SecConfig.efi boot entry (loadoptions DISABLE-LSA-ISO) confirmed at the keyboard on the next boot; disabling SVM/VT-x in the firmware is the fallback. Riot's support pages say Vanguard may require Memory Integrity (HVCI/VBS), TPM 2.0, Secure Boot and IOMMU depending on the system, and VALORANT's optional On-Demand Vanguard mode requires VBS + HVCI; FACEIT may require them too (THE FINALS requires Secure Boot). Reversible unless UEFI-locked.",
           "blockedProfiles": [
             "work_pc",
             "office_laptop",
             "vm_cautious"
           ],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
-          ]
-        },
-        {
-          "id": "security.full-defender-disable",
-          "name": "Full Windows Defender Disable (Services + Drivers)",
-          "description": "Completely disable Windows Defender at the service level — WinDefend, WdFilter, WdBoot, WdNisSvc, WdNisDrv, SecurityHealthService, wscsvc, Sense, MsSecCore. Also disables SmartScreen, WTDS, and removes startup entries.",
-          "risk": "extreme",
-          "default": false,
-          "expertOnly": true,
-          "requiresReboot": true,
-          "warningMessage": "THIS REMOVES ALL ANTIVIRUS PROTECTION. Your system will have zero malware defense. Only use on air-gapped or dedicated gaming PCs. Tamper Protection must be disabled manually in Windows Security settings first — otherwise service changes will be blocked by TrustedInstaller and this action will time out. On Windows 10 22H2+ and Windows 11, Tamper Protection may prevent service disabling entirely even with this action applied.",
-          "blockedProfiles": [
-            "work_pc",
-            "office_laptop",
-            "vm_cautious"
-          ],
-          "minWindowsBuild": null,
-          "executionKinds": [
-            "registryChanges",
-            "serviceChanges"
           ]
         },
         {
@@ -3584,6 +2904,7 @@
             "office_laptop"
           ],
           "minWindowsBuild": null,
+          "maxWindowsBuild": null,
           "executionKinds": [
             "registryChanges"
           ]
@@ -3597,7 +2918,15 @@
       "optionalActions": []
     },
     "gaming_laptop": {
-      "blockedActions": [],
+      "blockedActions": [
+        "services.disable-bluetooth-support",
+        "services.disable-geolocation",
+        "services.disable-map-services",
+        "power.disable-pcie-link-state-pm",
+        "cpu.aggressive-boost-mode",
+        "cpu.min-processor-state-100",
+        "cpu.disable-core-parking"
+      ],
       "optionalActions": []
     },
     "budget_desktop": {
@@ -3605,7 +2934,14 @@
       "optionalActions": []
     },
     "high_end_workstation": {
-      "blockedActions": [],
+      "blockedActions": [
+        "services.disable-print-spooler",
+        "services.disable-remote-services",
+        "services.disable-secondary-logon",
+        "services.disable-bluetooth-support",
+        "appx.remove-outlook-new",
+        "perf.disable-auto-maintenance"
+      ],
       "optionalActions": []
     },
     "office_laptop": {
@@ -3613,11 +2949,10 @@
         "cpu.disable-core-parking",
         "cpu.aggressive-boost-mode",
         "cpu.min-processor-state-100",
-        "power.high-performance-plan",
         "power.disable-usb-selective-suspend",
         "power.disable-pcie-link-state-pm",
-        "security.reduce-ssbd-mitigation",
-        "security.disable-hvci"
+        "security.disable-hvci",
+        "security.disable-vbs"
       ],
       "optionalActions": []
     },
@@ -3626,20 +2961,21 @@
         "services.disable-print-spooler",
         "services.disable-remote-services",
         "services.disable-sysmain",
-        "tasks.disable-onedrive-tasks",
-        "tasks.disable-update-orchestrator",
         "privacy.disable-location",
         "privacy.disable-smartscreen",
-        "perf.mmcss-system-responsiveness",
         "perf.disable-fullscreen-optimizations",
-        "security.reduce-ssbd-mitigation",
         "security.disable-hvci",
+        "security.disable-vbs",
+        "security.disable-defender-realtime",
+        "security.disable-defender-cloud",
         "system.disable-update-auto-restart",
         "system.defer-feature-updates",
-        "network.disable-ipv6",
+        "system.pin-feature-update",
+        "system.disable-auto-update",
         "network.disable-llmnr",
-        "network.disable-netbios",
-        "shell.reduce-search-box"
+        "perf.disable-driver-updates-via-wu",
+        "shell.reduce-search-box",
+        "shell.reduce-search-box-user"
       ],
       "optionalActions": [
         "shell.disable-copilot"
@@ -3649,19 +2985,19 @@
       "blockedActions": [
         "cpu.disable-core-parking",
         "cpu.aggressive-boost-mode",
-        "cpu.min-processor-state-100"
+        "cpu.min-processor-state-100",
+        "memory.disable-compression"
       ],
       "optionalActions": []
     },
     "vm_cautious": {
       "blockedActions": [
         "appx.*",
-        "perf.gpu-energy-driver-disable",
-        "gpu.disable-nvidia-telemetry",
-        "gpu.disable-amd-telemetry",
         "gpu.tdr-delay",
-        "startup.disable-gamebar-presence",
-        "appx.remove-your-phone"
+        "gpu.disable-nvidia-container",
+        "gpu.disable-amd-services",
+        "power.disable-device-power-saving",
+        "storage.disable-write-cache-flushing"
       ],
       "optionalActions": []
     }

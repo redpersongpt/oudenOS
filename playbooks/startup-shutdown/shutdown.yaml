@@ -1,46 +1,47 @@
-# Startup/Shutdown: Shutdown Optimization
+# Startup: Shutdown Timeouts
 module: startup.shutdown
-name: "Shutdown Optimization"
-description: "Reduce shutdown time and auto-end hung applications"
+name: "Shutdown Timeouts"
+description: "Shorter app and service shutdown timeouts"
 category: startup
 
 actions:
   - id: shutdown.decrease-shutdown-time
     name: "Decrease Shutdown Time"
     description: "Reduce app kill timeouts for faster shutdown. Does NOT auto-end tasks — Windows will still ask before killing hung apps."
-    rationale: "Default 5000ms timeout delays shutdown; 3500ms balances speed with stability"
-    risk: low
-    tier: free
+    rationale: "Lowers how long Windows waits for apps to close at shutdown (default 5000 ms). Apps that save slowly may be closed sooner."
+    risk: "low"
+    tier: "free"
     default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
     blockedProfiles: []
     registryChanges:
-      - hive: HKCU
+      - hive: "HKCU"
         path: "Control Panel\\Desktop"
-        valueName: WaitToKillAppTimeout
+        valueName: "WaitToKillAppTimeout"
         value: "3500"
-        valueType: String
-      - hive: HKCU
+        valueType: "String"
+      - hive: "HKCU"
         path: "Control Panel\\Desktop"
-        valueName: HungAppTimeout
+        valueName: "HungAppTimeout"
         value: "3500"
-        valueType: String
+        valueType: "String"
 
   - id: shutdown.force-end-apps
-    name: "Force End Applications"
-    description: "Reduce WaitToKillServiceTimeout for faster service shutdown"
-    risk: low
-    tier: free
+    name: "Shorten Service Shutdown Timeout"
+    description: "Lower WaitToKillServiceTimeout to 3 seconds so services that hang at shutdown are stopped sooner. Does not force-close your apps."
+    rationale: "The default is 5000 ms. A shorter value speeds up shutdown when a service hangs; well-behaved services stop well within it."
+    risk: "low"
+    tier: "free"
     default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
     blockedProfiles: []
     registryChanges:
-      - hive: HKLM
+      - hive: "HKLM"
         path: "SYSTEM\\CurrentControlSet\\Control"
-        valueName: WaitToKillServiceTimeout
+        valueName: "WaitToKillServiceTimeout"
         value: "3000"
-        valueType: String
+        valueType: "String"
