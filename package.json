@@ -1,6 +1,6 @@
 {
   "name": "oudenos-monorepo",
-  "version": "1.0.5",
+  "version": "1.1.0",
   "private": true,
   "description": "oudenos ecosystem — Web + Tuning + OS",
   "packageManager": "pnpm@9.15.4",
@@ -16,9 +16,6 @@
     "dev:os": "pnpm --filter @oudenos/os-desktop dev",
     "demo:os:mac": "node scripts/run-os-mac-demo.mjs",
     "build:os": "pnpm --filter @oudenos/os-desktop build",
-    "sync:os:wizard": "pnpm --dir apps/os-desktop exec tsx ../../scripts/sync-os-wizard-metadata.ts",
-    "check:os:wizard": "pnpm --dir apps/os-desktop exec tsx ../../scripts/sync-os-wizard-metadata.ts --check",
-    "build:os:apbx": "pnpm --dir apps/os-desktop exec tsx ../../scripts/build-os-apbx-package.ts",
     "verify": "pnpm typecheck && echo '  typecheck: pass'",
     "verify:full": "pnpm typecheck",
     "smoke:os": "node scripts/smoke-test-os-service.mjs",

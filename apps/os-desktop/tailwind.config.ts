@@ -81,9 +81,9 @@ export default {
         danger:  { 400: "#FF6B6B", 500: "#E05555" },
       },
       fontFamily: {
-        display: ['"Doto"', "monospace"],
-        sans:    ['"Space Grotesk"', "system-ui", "sans-serif"],
-        mono:    ['"Space Mono"', "monospace"],
+        display: ['"Doto"', '"Cascadia Mono"', "Consolas", "ui-monospace", "monospace"],
+        sans:    ['"Space Grotesk"', '"Segoe UI Variable Text"', '"Segoe UI"', "system-ui", "sans-serif"],
+        mono:    ['"Space Mono"', '"Cascadia Mono"', "Consolas", "ui-monospace", "monospace"],
       },
       transitionTimingFunction: {
         nd: "cubic-bezier(0.25, 0.1, 0.25, 1)",

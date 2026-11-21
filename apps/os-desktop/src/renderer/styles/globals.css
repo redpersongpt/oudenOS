@@ -1,4 +1,6 @@
-@import url('https://fonts.googleapis.com/css2?family=Doto:wght@400;500;600;700&family=Space+Grotesk:wght@300;400;500;700&family=Space+Mono:wght@400;700&display=swap');
+/* No web-font @import: the CSP (font-src 'self') blocks remote fonts and an
+   elevated system tool must not phone home at startup. Fonts resolve to the
+   system stacks in tailwind.config.ts. */
 
 @tailwind base;
 @tailwind components;
@@ -33,7 +35,7 @@
   *, *::before, *::after { box-sizing: border-box; }
 
   html {
-    font-family: "Space Grotesk", system-ui, sans-serif;
+    font-family: "Space Grotesk", "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
@@ -64,7 +66,7 @@
 
 @layer components {
   .nd-label {
-    font-family: "Space Mono", monospace;
+    font-family: "Space Mono", "Cascadia Mono", Consolas, ui-monospace, monospace;
     font-size: 11px;
     line-height: 1.2;
     letter-spacing: 0.08em;
@@ -72,7 +74,7 @@
     color: var(--text-secondary);
   }
   .nd-label-sm {
-    font-family: "Space Mono", monospace;
+    font-family: "Space Mono", "Cascadia Mono", Consolas, ui-monospace, monospace;
     font-size: 9px;
     line-height: 1.2;
     letter-spacing: 0.1em;
@@ -80,7 +82,7 @@
     color: var(--text-secondary);
   }
   .nd-caption {
-    font-family: "Space Mono", monospace;
+    font-family: "Space Mono", "Cascadia Mono", Consolas, ui-monospace, monospace;
     font-size: 12px;
     line-height: 1.4;
     letter-spacing: 0.04em;
@@ -104,7 +106,7 @@
 
 @layer components {
   .nd-status {
-    font-family: "Space Mono", monospace;
+    font-family: "Space Mono", "Cascadia Mono", Consolas, ui-monospace, monospace;
     font-size: 11px;
     letter-spacing: 0.06em;
     text-transform: uppercase;
@@ -156,9 +158,9 @@
 /* ── DISPLAY FONT ─────────────────────────────────────────────────────── */
 
 @layer utilities {
-  .font-display { font-family: "Doto", monospace; }
+  .font-display { font-family: "Doto", "Cascadia Mono", Consolas, ui-monospace, monospace; }
   .font-data {
-    font-family: "Space Mono", monospace;
+    font-family: "Space Mono", "Cascadia Mono", Consolas, ui-monospace, monospace;
     font-variant-numeric: tabular-nums;
   }
 }
@@ -187,5 +189,19 @@
 
   .nd-execution-scan {
     animation: ndExecutionScan 1.2s ease-in-out infinite;
+  }
+}
+
+/* Keyboard focus must always be visible (WCAG 2.4.7). */-visible {
+  outline: 2px solid var(--interactive);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

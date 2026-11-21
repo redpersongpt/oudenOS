@@ -1,6 +1,6 @@
 [package]
 name = "oudenos-os-desktop"
-version = "1.0.5"
+version = "1.1.0"
 description = "oudenOS desktop app"
 authors = ["oudenos"]
 edition = "2021"
@@ -8,29 +8,33 @@ default-run = "OudenOS"
 
 [lib]
 name = "oudenos_os_desktop"
-crate-type = ["lib", "cdylib", "staticlib"]
+# Desktop-only app: no cdylib/staticlib (those exist for Tauri mobile and make
+# the GNU linker fail with "export ordinal too large").
+crate-type = ["lib"]
+# Unit tests live in tests/ and compile the Tauri-free modules directly; a test
+# harness linking Tauri cannot start on Windows without the app manifest.
+test = false
+doctest = false
 
 [[bin]]
 name = "OudenOS"
 path = "src/main.rs"
+# The bin carries a highestAvailable UAC manifest: its test harness would need elevation.
+test = false
 
 [build-dependencies]
-tauri-build = { version = "2", features = [] }
+tauri-build = { version = "2.7", features = [] }
 
 [dependencies]
-tauri = { version = "2", features = [] }
-tauri-plugin-shell = "2"
-tauri-plugin-dialog = "2"
-tauri-plugin-fs = "2"
-tauri-plugin-updater = "2"
-tauri-plugin-process = "2"
+tauri = { version = "2.12", features = [] }
+tauri-plugin-dialog = "2.8"
+tauri-plugin-updater = "2.14"
+tauri-plugin-process = "2.4"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
-tokio = { version = "1", features = ["process", "io-util", "sync", "time"] }
-open = "5"
+tokio = { version = "1.54", features = ["sync", "time", "rt"] }
+open = "5.4"
 sha2 = "0.10"
-zip = { version = "2", default-features = false, features = ["deflate"] }
+zip = { version = "2.6", default-features = false, features = ["deflate"] }
 walkdir = "2"
 
-[target.'cfg(not(windows))'.dependencies]
-libc = "0.2"

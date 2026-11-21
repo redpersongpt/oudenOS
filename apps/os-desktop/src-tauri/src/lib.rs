@@ -1,72 +1,39 @@
+// Logging to stderr must never be able to take the app down: `eprintln!`
+// panics when stderr is a closed pipe (e.g. the app was started by a launcher
+// that redirected stderr and then exited). A panic in the service stderr
+// forwarder would stop draining the service's pipe and break every request.
+macro_rules! elog {
+    ($($arg:tt)*) => {{
+        use std::io::Write as _;
+        let _ = writeln!(std::io::stderr(), $($arg)*);
+    }};
+}
 mod apbx;
-mod service_bridge;
+pub mod service_bridge;
+pub mod util;
 
 use service_bridge::ServiceBridge;
-use std::sync::atomic::{AtomicU32, Ordering};
+pub use util::{encode_log, ALLOWED_SERVICE_METHODS};
+use std::path::PathBuf;
+use std::sync::atomic::{AtomicBool, AtomicU32, Ordering};
 use std::sync::Arc;
 use tauri::{Emitter, Manager};
-use tokio::sync::Mutex;
 
 // Session-wide log call counter (prevents disk exhaustion via repeated calls)
 static LOG_CALLS: AtomicU32 = AtomicU32::new(0);
 const MAX_LOG_CALLS_PER_SESSION: u32 = 10;
 
-// Managed state: the service bridge singleton
+// Managed state: the service bridge singleton + "work in progress" flag that
+// blocks closing the window while changes are being applied.
 struct AppState {
-    bridge: Arc<Mutex<ServiceBridge>>,
+    bridge: Arc<ServiceBridge>,
+    busy: Arc<AtomicBool>,
+    resource_dir: PathBuf,
 }
 
 // ---------------------------------------------------------------------------
 // Tauri commands — the renderer calls these via invoke()
 // ---------------------------------------------------------------------------
-
-// SECURITY: Allowlist of RPC methods the renderer is permitted to invoke on
-// the privileged service. Any method not in this list is rejected at the
-// Tauri boundary so a compromised renderer (e.g. via XSS in playbook data)
-// cannot reach arbitrary privileged handlers.
-// Sync check: every entry here MUST have a handler in os-service/src/ipc.rs
-// dispatch(), and every renderer invoke() call MUST be listed here.
-// Dead entries (no handler) or missing entries (handler exists, not listed)
-// indicate a desync — audit on any change.
-const ALLOWED_SERVICE_METHODS: &[&str] = &[
-    // System / status
-    "system.status",
-    "system.reboot",
-    "system.elevationStatus",
-    "system.restorePointStatus",
-    "system.createRestorePoint",
-    // Assessment + classification + planning pipeline
-    "assess.full",
-    "classify.machine",
-    "transform.plan",
-    "transform.getActions",
-    "pipeline.assessClassifyPlan",
-    // Playbook resolution
-    "playbook.resolve",
-    // Questionnaire
-    "questionnaire.resolve",
-    // Personalization
-    "personalize.options",
-    "personalize.apply",
-    "personalize.revert",
-    // Execution + ledger (actionData is resolved server-side, never trusted from client)
-    "execute.applyAction",
-    "ledger.createPlan",
-    "ledger.markStarted",
-    "ledger.recordResult",
-    "ledger.completePlan",
-    "ledger.query",
-    // Rollback
-    "rollback.list",
-    "rollback.restore",
-    "rollback.audit",
-    // Journal / reboot resume
-    "journal.state",
-    "journal.resume",
-    "journal.cancel",
-    // Verification
-    "verify.registryValue",
-];
 
 #[tauri::command]
 async fn service_call(
@@ -74,21 +41,21 @@ async fn service_call(
     method: String,
     params: serde_json::Value,
 ) -> Result<serde_json::Value, String> {
-    // SECURITY: Reject any method not explicitly allowlisted.
     if !ALLOWED_SERVICE_METHODS.contains(&method.as_str()) {
-        eprintln!("[Tauri] Rejected unauthorized IPC method: {method}");
+        elog!("[Tauri] Rejected unauthorized IPC method: {method}");
         return Ok(serde_json::json!({
             "__serviceError": true,
             "error": format!("Method not allowed: {}", method)
         }));
     }
 
-    let mut bridge = state.bridge.lock().await;
-
-    if !bridge.is_running() {
+    let bridge = state.bridge.clone();
+    // A service that never started (missing binary) is "unavailable"; one that
+    // died mid-session gets a single restart attempt inside call().
+    if bridge.start_error().is_some() && !bridge.is_running() && bridge.restarted() {
         return Ok(serde_json::json!({
             "__serviceUnavailable": true,
-            "error": "Service not running. Running in demo mode."
+            "error": bridge.start_error().unwrap_or_default()
         }));
     }
 
@@ -96,24 +63,63 @@ async fn service_call(
         Ok(result) => Ok(result),
         Err(e) => Ok(serde_json::json!({
             "__serviceError": true,
-            "error": e.to_string()
+            "error": e.message,
+            // JSON-RPC code (e.g. -23 not applicable, -403 not elevated); null for transport errors
+            "code": e.code
         })),
+    }
+}
+
+async fn refresh_admin(bridge: &ServiceBridge) -> Option<bool> {
+    if let Some(v) = bridge.admin() {
+        return Some(v);
+    }
+    if !bridge.is_running() {
+        return None;
+    }
+    match bridge
+        .call("system.elevationStatus", serde_json::json!({}))
+        .await
+    {
+        Ok(v) => {
+            let elevated = v.get("isElevated").and_then(|b| b.as_bool()).unwrap_or(false);
+            bridge.set_admin(elevated);
+            Some(elevated)
+        }
+        Err(_) => None,
     }
 }
 
 #[tauri::command]
 async fn service_status(state: tauri::State<'_, AppState>) -> Result<serde_json::Value, String> {
-    let bridge = state.bridge.lock().await;
+    let bridge = state.bridge.clone();
+    let is_admin = refresh_admin(&bridge).await;
     Ok(serde_json::json!({
         "running": bridge.is_running(),
         "mode": bridge.mode(),
-        "isAdmin": bridge.is_admin(),
-        "platform": std::env::consts::OS
+        // null = unknown (service not running yet / elevation query failed)
+        "isAdmin": is_admin,
+        "platform": std::env::consts::OS,
+        "startError": bridge.start_error(),
+        "restarted": bridge.restarted(),
     }))
 }
 
+/// Explicit user "Retry" after a failed start.
 #[tauri::command]
-async fn save_log(content: String) -> Result<serde_json::Value, String> {
+async fn service_restart(state: tauri::State<'_, AppState>) -> Result<serde_json::Value, String> {
+    let bridge = state.bridge.clone();
+    if !bridge.is_running() {
+        bridge.shutdown();
+        if let Err(e) = bridge.start(&state.resource_dir) {
+            return Ok(serde_json::json!({ "ok": false, "error": e }));
+        }
+    }
+    Ok(serde_json::json!({ "ok": true }))
+}
+
+#[tauri::command]
+async fn save_log(app: tauri::AppHandle, content: String) -> Result<serde_json::Value, String> {
     // SECURITY: Cap log size to prevent a compromised renderer from filling
     // the user's disk.
     const MAX_LOG_SIZE: usize = 10 * 1024 * 1024; // 10 MB
@@ -124,7 +130,6 @@ async fn save_log(content: String) -> Result<serde_json::Value, String> {
         }));
     }
 
-    // SECURITY: Rate limit to prevent disk exhaustion via repeated calls.
     let call_count = LOG_CALLS.fetch_add(1, Ordering::Relaxed);
     if call_count >= MAX_LOG_CALLS_PER_SESSION {
         return Ok(serde_json::json!({
@@ -133,23 +138,26 @@ async fn save_log(content: String) -> Result<serde_json::Value, String> {
         }));
     }
 
-    let desktop = match dirs::desktop_dir() {
-        Some(d) => d,
-        None => return Ok(serde_json::json!({ "ok": false, "error": "Cannot find Desktop" })),
+    // Known-folder lookup: follows OneDrive folder redirection.
+    let dir = app
+        .path()
+        .desktop_dir()
+        .ok()
+        .filter(|d| d.is_dir())
+        .or_else(|| app.path().document_dir().ok().filter(|d| d.is_dir()))
+        .or_else(|| app.path().home_dir().ok());
+    let Some(dir) = dir else {
+        return Ok(serde_json::json!({ "ok": false, "error": "Cannot find the Desktop folder" }));
     };
 
-    let ts = chrono_free_timestamp();
-    let filename = format!("ouden-os-log-{ts}.txt");
-    let path = desktop.join(&filename);
+    let filename = format!("ouden-os-log-{}.txt", unix_timestamp());
+    let path = dir.join(&filename);
 
-    match std::fs::write(&path, &content) {
-        Ok(_) => Ok(serde_json::json!({
-            "ok": true,
-            "path": path.to_string_lossy()
-        })),
+    match std::fs::write(&path, encode_log(&content)) {
+        Ok(_) => Ok(serde_json::json!({ "ok": true, "path": path.to_string_lossy() })),
         Err(e) => Ok(serde_json::json!({
             "ok": false,
-            "error": e.to_string()
+            "error": format!("{} ({})", e, path.display())
         })),
     }
 }
@@ -163,6 +171,41 @@ async fn open_external(url: String) -> Result<(), String> {
 }
 
 #[tauri::command]
+fn set_busy(state: tauri::State<'_, AppState>, busy: bool) {
+    state.busy.store(busy, Ordering::SeqCst);
+}
+
+/// Relaunch this executable through UAC ("runas") and exit on success. If the
+/// user dismisses the UAC prompt, Start-Process fails and we stay open.
+#[tauri::command]
+async fn relaunch_as_admin(app: tauri::AppHandle) -> Result<(), String> {
+    #[cfg(windows)]
+    {
+        use std::os::windows::process::CommandExt;
+        let exe = std::env::current_exe().map_err(|e| e.to_string())?;
+        let exe = exe.to_string_lossy().replace('\'', "''");
+        let script = format!(
+            "$ErrorActionPreference='Stop'; Start-Process -FilePath '{exe}' -Verb RunAs"
+        );
+        let status = std::process::Command::new("powershell.exe")
+            .args(["-NoProfile", "-NonInteractive", "-Command", &script])
+            .creation_flags(0x08000000)
+            .status()
+            .map_err(|e| e.to_string())?;
+        if !status.success() {
+            return Err("cancelled".into());
+        }
+        app.exit(0);
+        Ok(())
+    }
+    #[cfg(not(windows))]
+    {
+        let _ = app;
+        Err("Only supported on Windows".into())
+    }
+}
+
+#[tauri::command]
 async fn export_package(
     app: tauri::AppHandle,
     state: apbx::ExportPackageRequest,
@@ -170,23 +213,13 @@ async fn export_package(
     let resource_dir = app
         .path()
         .resource_dir()
-        .unwrap_or_else(|_| std::path::PathBuf::from("."));
+        .unwrap_or_else(|_| PathBuf::from("."));
 
-    // Find playbook root and wizard.json
-    let playbook_root = [
-        resource_dir.join("playbooks"),
-        std::path::PathBuf::from("../../playbooks"),
-    ]
-    .into_iter()
-    .find(|p| p.is_dir());
-
-    let playbook_root = match playbook_root {
+    let playbook_root = match service_bridge::find_playbook_dir(&resource_dir) {
         Some(p) => p,
         None => {
-            return Ok(serde_json::to_value(apbx::ExportResult::err(
-                "Playbook directory not found",
-            ))
-            .map_err(|e| e.to_string())?)
+            return serde_json::to_value(apbx::ExportResult::err("Playbook directory not found"))
+                .map_err(|e| e.to_string())
         }
     };
 
@@ -201,44 +234,33 @@ async fn export_package(
     let version = wizard_metadata
         .get("version")
         .and_then(|v| v.as_str())
-        .unwrap_or("0.10.2");
+        .unwrap_or(env!("CARGO_PKG_VERSION"));
     let commit = wizard_metadata
         .get("commit")
         .and_then(|v| v.as_str())
         .unwrap_or("unknown");
 
-    let has_journal = state.execution_journal.is_some();
-    let default_name = if has_journal {
+    let default_name = if state.execution_journal.is_some() {
         format!("ouden-os-executed-package-{version}-{commit}.apbx")
     } else {
         format!("ouden-os-user-package-{version}-{commit}.apbx")
     };
 
-    // Show save dialog
-    let downloads = dirs::desktop_dir()
-        .map(|d| d.parent().unwrap_or(&d).join("Downloads"))
-        .unwrap_or_else(|| std::path::PathBuf::from("."));
-    let default_path = downloads.join(&default_name);
-
     use tauri_plugin_dialog::DialogExt;
-    let file_path = app
+    let mut dialog = app
         .dialog()
         .file()
         .set_title("Save Ouden OS Package")
         .set_file_name(&default_name)
-        .add_filter("Ouden OS Package", &["apbx", "zip"])
-        .blocking_save_file();
+        .add_filter("Ouden OS Package", &["apbx", "zip"]);
+    if let Ok(downloads) = app.path().download_dir() {
+        dialog = dialog.set_directory(downloads);
+    }
 
-    let output_path = match file_path {
-        Some(p) => p
-            .as_path()
-            .map(|pp| pp.to_path_buf())
-            .unwrap_or(default_path),
+    let output_path = match dialog.blocking_save_file().and_then(|p| p.into_path().ok()) {
+        Some(p) => p,
         None => {
-            return Ok(
-                serde_json::to_value(apbx::ExportResult::err("Export cancelled"))
-                    .map_err(|e| e.to_string())?,
-            )
+            return serde_json::to_value(apbx::ExportResult::cancelled()).map_err(|e| e.to_string())
         }
     };
 
@@ -250,13 +272,12 @@ async fn export_package(
         version,
         commit,
     ) {
-        Ok(result) => Ok(serde_json::to_value(result).map_err(|e| e.to_string())?),
-        Err(e) => Ok(serde_json::to_value(apbx::ExportResult::err(e)).map_err(|e| e.to_string())?),
+        Ok(result) => serde_json::to_value(result).map_err(|e| e.to_string()),
+        Err(e) => serde_json::to_value(apbx::ExportResult::err(e)).map_err(|e| e.to_string()),
     }
 }
 
-// Timestamp without pulling in chrono
-fn chrono_free_timestamp() -> String {
+fn unix_timestamp() -> String {
     let now = std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)
         .unwrap_or_default()
@@ -264,23 +285,17 @@ fn chrono_free_timestamp() -> String {
     format!("{now}")
 }
 
-// Desktop directory fallback
-mod dirs {
-    use std::path::PathBuf;
-
-    pub fn desktop_dir() -> Option<PathBuf> {
-        #[cfg(windows)]
-        {
-            std::env::var("USERPROFILE")
-                .ok()
-                .map(|p| PathBuf::from(p).join("Desktop"))
-        }
-        #[cfg(not(windows))]
-        {
-            std::env::var("HOME")
-                .ok()
-                .map(|p| PathBuf::from(p).join("Desktop"))
-        }
+/// Shrink the window to the monitor's work area (taskbar excluded) so the
+/// bottom action bar is never off-screen on small / high-DPI laptops.
+fn clamp_to_work_area(win: &tauri::WebviewWindow) {
+    let Ok(Some(monitor)) = win.current_monitor() else { return };
+    let area = monitor.work_area();
+    let Ok(outer) = win.outer_size() else { return };
+    let width = outer.width.min(area.size.width);
+    let height = outer.height.min(area.size.height);
+    if width != outer.width || height != outer.height {
+        let _ = win.set_size(tauri::PhysicalSize::new(width, height));
+        let _ = win.center();
     }
 }
 
@@ -290,80 +305,84 @@ mod dirs {
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    let bridge = Arc::new(Mutex::new(ServiceBridge::new()));
+    let bridge = Arc::new(ServiceBridge::new());
+    let busy = Arc::new(AtomicBool::new(false));
 
-    tauri::Builder::default()
-        .plugin(tauri_plugin_shell::init())
+    let app = tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
-        .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(tauri_plugin_process::init())
-        .manage(AppState {
-            bridge: bridge.clone(),
-        })
         .invoke_handler(tauri::generate_handler![
             service_call,
             service_status,
+            service_restart,
             save_log,
             open_external,
             export_package,
+            set_busy,
+            relaunch_as_admin,
         ])
-        .setup(move |app| {
-            let resource_dir = app
-                .path()
-                .resource_dir()
-                .unwrap_or_else(|_| std::path::PathBuf::from("."));
+        .setup({
+            let bridge = bridge.clone();
+            let busy = busy.clone();
+            move |app| {
+                let resource_dir = app
+                    .path()
+                    .resource_dir()
+                    .unwrap_or_else(|_| PathBuf::from("."));
+                elog!("[Tauri] resource_dir = {}", resource_dir.display());
 
-            eprintln!("[Tauri] resource_dir = {}", resource_dir.display());
+                app.manage(AppState {
+                    bridge: bridge.clone(),
+                    busy: busy.clone(),
+                    resource_dir: resource_dir.clone(),
+                });
 
-            // Start the privileged service — block briefly to ensure it's ready
-            // before the renderer sends its first IPC call
-            let bridge_clone = bridge.clone();
-            let res_dir = resource_dir.clone();
-            let win = app.get_webview_window("main");
-            tauri::async_runtime::spawn(async move {
-                let mut b = bridge_clone.lock().await;
-                match b.start(&res_dir) {
+                // Start the service synchronously so the very first renderer
+                // call never races the spawn. The start error (if any) is kept
+                // in the bridge and returned by service_status.
+                match bridge.start(&resource_dir) {
                     Ok(()) => {
-                        eprintln!("[Tauri] Service started successfully");
-                        if !cfg!(windows) {
-                            if let Some(ref w) = win {
-                                let _ = w.emit(
-                                    "service-simulated-mode",
-                                    "Simulated backend active on non-Windows host. No Windows mutations will be applied.",
-                                );
+                        let b = bridge.clone();
+                        tauri::async_runtime::spawn(async move {
+                            let _ = refresh_admin(&b).await;
+                        });
+                    }
+                    Err(e) => elog!("[Tauri] CRITICAL: Failed to start service: {e}"),
+                }
+
+                if let Some(win) = app.get_webview_window("main") {
+                    clamp_to_work_area(&win);
+                    let w = win.clone();
+                    let busy = busy.clone();
+                    win.on_window_event(move |event| match event {
+                        tauri::WindowEvent::Focused(_) => {
+                            let _ = w.show();
+                        }
+                        tauri::WindowEvent::CloseRequested { api, .. } => {
+                            if busy.load(Ordering::SeqCst) {
+                                api.prevent_close();
+                                let _ = w.emit("close-blocked", ());
                             }
                         }
-                    }
-                    Err(e) => {
-                        eprintln!("[Tauri] CRITICAL: Failed to start service: {e}");
-                        eprintln!("[Tauri] App will run in demo mode — no changes will be applied");
-                        // Emit event so renderer can show a warning
-                        if let Some(ref w) = win {
-                            let _ = w.emit("service-start-failed", e.clone());
-                        }
-                    }
+                        _ => {}
+                    });
+                    let w2 = win.clone();
+                    std::thread::spawn(move || {
+                        std::thread::sleep(std::time::Duration::from_millis(150));
+                        let _ = w2.show();
+                    });
                 }
-            });
-
-            // Show window once webview is ready
-            if let Some(win) = app.get_webview_window("main") {
-                let w = win.clone();
-                win.on_window_event(move |event| {
-                    if let tauri::WindowEvent::Focused(_) = event {
-                        let _ = w.show();
-                    }
-                });
-                // Show after a short delay to avoid white flash
-                let w2 = win.clone();
-                std::thread::spawn(move || {
-                    std::thread::sleep(std::time::Duration::from_millis(150));
-                    let _ = w2.show();
-                });
+                Ok(())
             }
-
-            Ok(())
         })
-        .run(tauri::generate_context!())
-        .expect("error while running tauri application");
+        .build(tauri::generate_context!())
+        .expect("error while building tauri application");
+
+    app.run(move |_handle, event| {
+        if let tauri::RunEvent::Exit = event {
+            // Stop the elevated service with the UI so it never lingers.
+            bridge.shutdown();
+        }
+    });
 }

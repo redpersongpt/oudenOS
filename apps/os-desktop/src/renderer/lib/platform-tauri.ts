@@ -3,6 +3,7 @@
 // Uses Tauri v2 APIs via window.__TAURI__ (withGlobalTauri: true).
 
 import type { PlatformAPI, ServiceStatus, SaveResult, ExportResult, UpdateInfo } from "./platform";
+import { normalizeStatus, UNAVAILABLE_STATUS } from "./runtime";
 
 // Holds the Update handle between check() and downloadAndInstall().
 type DownloadEvent = { event: string; data?: { contentLength?: number; chunkLength?: number } };
@@ -44,10 +45,36 @@ export const tauriBackend: PlatformAPI = {
       });
     },
 
+    // The ONLY place the raw shell status is read: normalised (platform
+    // "windows" → "win32", mode, nullable admin, start error) for every caller.
     status: async (): Promise<ServiceStatus> => {
       const tauri = getTauri();
-      if (!tauri) return { running: false, mode: "demo", isAdmin: false, platform: "unknown" };
-      return tauri.core.invoke<ServiceStatus>("service_status");
+      if (!tauri) return { ...UNAVAILABLE_STATUS };
+      return normalizeStatus(await tauri.core.invoke<unknown>("service_status"));
+    },
+
+    restart: async () => {
+      const tauri = getTauri();
+      if (!tauri) return { ok: false, error: "Tauri runtime unavailable" };
+      return tauri.core.invoke<{ ok: boolean; error?: string }>("service_restart");
+    },
+  },
+
+  app: {
+    setBusy: async (busy: boolean) => {
+      const tauri = getTauri();
+      if (!tauri) return;
+      await tauri.core.invoke("set_busy", { busy });
+    },
+    relaunchAsAdmin: async () => {
+      const tauri = getTauri();
+      if (!tauri) return false;
+      try {
+        await tauri.core.invoke("relaunch_as_admin");
+        return true;
+      } catch {
+        return false;
+      }
     },
   },
 
@@ -56,11 +83,18 @@ export const tauriBackend: PlatformAPI = {
     if (!tauri) return () => {};
 
     let unlisten: (() => void) | null = null;
+    let disposed = false;
     tauri.event
       .listen(channel, (event) => callback(event.payload))
-      .then((fn) => { unlisten = fn; });
+      .then((fn) => {
+        if (disposed) fn();
+        else unlisten = fn;
+      });
 
-    return () => { unlisten?.(); };
+    return () => {
+      disposed = true;
+      unlisten?.();
+    };
   },
 
   window: {
@@ -113,8 +147,6 @@ export const tauriBackend: PlatformAPI = {
         }
         return { available: false, currentVersion };
       } catch (e) {
-        // On the macOS demo there is no update feed for this target — degrade
-        // quietly to "up to date" rather than surfacing a scary error.
         return { available: false, currentVersion, error: String(e) };
       }
     },

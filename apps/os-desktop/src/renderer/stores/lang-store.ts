@@ -34,3 +34,15 @@ export const useLangStore = create<LangState>()(
     },
   ),
 );
+
+// Keep <html lang> in sync: CSS text-transform: uppercase is language-aware,
+// so Turkish needs lang="tr" to uppercase i → İ (not I).
+function applyDocumentLang(lang: Lang) {
+  try {
+    document.documentElement.lang = lang;
+  } catch {
+    // no DOM (tests)
+  }
+}
+applyDocumentLang(useLangStore.getState().lang);
+useLangStore.subscribe((state) => applyDocumentLang(state.lang));

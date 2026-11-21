@@ -67,7 +67,7 @@ export function StarField() {
       ctx.fillStyle = gradient;
       ctx.fillRect(glowX - 200, glowY - 200, 400, 400);
 
-      rafRef.current = requestAnimationFrame(draw);
+      if (!reduceMotion) rafRef.current = requestAnimationFrame(draw);
     }
 
     function onMouseMove(e: MouseEvent) {
@@ -75,14 +75,17 @@ export function StarField() {
       mouseRef.current.y = (e.clientY / window.innerHeight - 0.5) * 2;
     }
 
+    // prefers-reduced-motion: draw one static frame, no parallax loop.
+    const reduceMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
+    const onResize = () => { generateStars(); if (reduceMotion) draw(); };
     generateStars();
-    window.addEventListener("mousemove", onMouseMove);
-    window.addEventListener("resize", generateStars);
+    if (!reduceMotion) window.addEventListener("mousemove", onMouseMove);
+    window.addEventListener("resize", onResize);
     rafRef.current = requestAnimationFrame(draw);
 
     return () => {
       window.removeEventListener("mousemove", onMouseMove);
-      window.removeEventListener("resize", generateStars);
+      window.removeEventListener("resize", onResize);
       cancelAnimationFrame(rafRef.current);
     };
   }, []);

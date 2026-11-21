@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { platform } from "@/lib/platform";
+import { startOver } from "@/stores/session";
 import { useT } from "@/i18n";
 
 const ND_EASE = [0.25, 0.1, 0.25, 1] as const;
@@ -73,6 +74,12 @@ export function HandoffStep() {
           className="flex items-center gap-2 bg-[var(--text-display)] text-[var(--black)] px-6 py-2.5 rounded-sm font-mono text-[11px] tracking-[0.08em] uppercase transition-opacity duration-150 ease-nd hover:opacity-90"
         >
           {t("handoff.openTuning")}
+        </button>
+        <button
+          onClick={() => startOver()}
+          className="px-6 py-2.5 border border-[var(--border)] rounded-sm font-mono text-[11px] tracking-[0.08em] text-[var(--text-secondary)] uppercase transition-colors duration-150 ease-nd hover:bg-[var(--surface)]"
+        >
+          {t("common.startOver")}
         </button>
         <button
           onClick={() => platform().window.close()}

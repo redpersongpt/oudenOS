@@ -24,23 +24,26 @@ Every "debloat guide" on Reddit tells you to paste a PowerShell one-liner from s
 
 oudenOS is not that.
 
-It's a proper desktop wizard. It scans your hardware, figures out what you're running, and walks you through **63 specific questions** before it touches a single registry key. Every change gets snapshotted. You can undo everything. Nothing happens without you seeing exactly what it's going to do first.
+It's a proper desktop wizard. It scans your hardware, figures out what you're running, and then gives you a choice: one-click **Recommended** or **Gaming** setup, or the full **57-question** walkthrough if you want to decide everything yourself. Every change gets snapshotted. You can undo everything. Nothing happens without you seeing exactly what it's going to do first.
 
 ## How It Works
 
 1. **Scan** — Detects your CPU, GPU, RAM, disk, and every background service Microsoft is running behind your back
 2. **Profile** — Matches you to a hardware profile (gaming desktop, office laptop, work PC, VM, low-spec) so you don't accidentally nuke laptop battery management on a desktop
-3. **Questionnaire** — 63 questions across 7 categories. You pick exactly what changes. Nothing is on by default without your say
+3. **Quick setup or questionnaire** — Pick Recommended or Gaming and go straight to review, or answer up to 57 questions across 7 categories. Security trade-offs are never pre-ticked
 4. **Review** — Every registry key, every service, every scheduled task. No surprises
 5. **Apply** — Runs the changes with rollback snapshots saved to disk
 6. **Done** — Your PC boots faster, runs quieter, and stopped phoning home to Microsoft
 
 ## Features
 
-- **63 questions across 7 categories** — Essentials, Privacy, Performance, Shell, Networking, Security, and a preset selector
-- **Hardware detection** — Gaming desktop, office laptop, work PC, VM, low-spec. Your plan is built for YOUR machine
-- **200+ playbook actions** — Registry tweaks, service toggles, scheduled task removal, AppX cleanup, power plans
-- **Full rollback** — Every change is snapshotted before it runs. Undo anything
+- **One-click quick setups** — Recommended (safe cleanup and privacy) or Gaming (dedicated gaming PC), straight to the review screen
+- **57 questions across 7 categories** — Essentials, Privacy, Performance, Shell, Networking, Security, and a preset selector, for when you want full control
+- **Hardware detection** — Gaming desktop, office laptop, work PC, VM, low-spec. Your plan is built for YOUR machine, and actions that don't apply to your hardware or Windows build are left out
+- **System check** — Read-only checks for the things that actually decide your frame rate: GPU PCIe link, RAM profile, VBS, refresh rate, power plan, BIOS age. It tells you; it doesn't touch them
+- **168 playbook actions** — Registry tweaks, service toggles, scheduled task removal, AppX cleanup, power settings. Every one loads, is reachable, and is valid on current Windows 11 builds. Duplicates, dead Windows 10 leftovers and placebo tweaks were cut
+- **Full rollback** — Every change is snapshotted with its original type before it runs. Undo one action or everything
+- **No FPS promises** — Measure before and after with PresentMon or CapFrameX. If a tweak has no measured gain, the app says so
 - **Work PC safe** — Print Spooler, RDP, SMB, Group Policy, VPN all protected by default. We're not breaking your IT setup
 - **Win11 + Win10 22H2**
 - **Free. Open source. No paywalls.** This isn't a SaaS with a free tier

@@ -34,3 +34,10 @@ export function useT(): { t: TFunction; lang: Lang } {
     interpolate(dict[key] ?? en[key] ?? key, vars);
   return { t, lang };
 }
+
+/** Non-hook translation for code outside React render (error boundary, banners, logs). */
+export function tStatic(key: string, vars?: Record<string, string | number>): string {
+  const lang = useLangStore.getState().lang;
+  const dict = DICTS[lang] ?? en;
+  return interpolate(dict[key] ?? en[key] ?? key, vars);
+}

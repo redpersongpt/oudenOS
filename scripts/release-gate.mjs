@@ -20,7 +20,7 @@
 import { readdirSync, readFileSync, existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { join } from "node:path";
-import { execSync } from "node:child_process";
+import { execSync, spawnSync } from "node:child_process";
 import {
   WINDOWS_PROOF_ARTIFACTS,
   REBOOT_PROOF_ARTIFACTS,
@@ -114,16 +114,23 @@ console.log("  ── Cross-platform checks ──");
 // (validate-action-parity.mjs) was retired when that logic moved to Rust.
 
 // Check: No RELEASE_BLOCKER markers
-try {
-  const blockerOutput = execSync(
-    `grep -r "RELEASE_BLOCKER" --include="*.ts" --include="*.tsx" --include="*.rs" --include="*.yaml" --include="*.yml" -l . 2>/dev/null || true`,
-    { cwd: ROOT, encoding: "utf-8" }
-  ).trim();
-  const blockerFiles = blockerOutput ? blockerOutput.split("\n").filter(Boolean) : [];
-  check("no-release-blockers", blockerFiles.length === 0,
-    blockerFiles.length > 0 ? `found in: ${blockerFiles.join(", ")}` : "");
-} catch {
-  check("no-release-blockers", true, "grep not available, skipped");
+// `git grep` works on every platform (incl. Windows, where `grep` is usually
+// missing) and also covers hidden dirs such as .github/. Exit code 1 means
+// "no matches"; anything else that is not 0 is an error and FAILS the check —
+// it must never silently pass.
+{
+  const result = spawnSync(
+    "git",
+    ["grep", "-l", "RELEASE_BLOCKER", "--", "*.ts", "*.tsx", "*.rs", "*.yaml", "*.yml"],
+    { cwd: ROOT, encoding: "utf-8" },
+  );
+  if (result.error || (result.status !== 0 && result.status !== 1)) {
+    check("no-release-blockers", false, `git grep failed: ${result.error?.message ?? result.stderr?.trim() ?? `exit ${result.status}`}`);
+  } else {
+    const blockerFiles = (result.stdout ?? "").split(/\r?\n/).filter(Boolean);
+    check("no-release-blockers", blockerFiles.length === 0,
+      blockerFiles.length > 0 ? `found in: ${blockerFiles.join(", ")}` : "");
+  }
 }
 
 // Check 3: No hardcoded fallback URLs in download truth

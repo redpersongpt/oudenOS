@@ -139,16 +139,10 @@ node "$ROOT_DIR/scripts/build-os-wizard-package.mjs" \
   --commit "$COMMIT_SHA" \
   --out-dir "$WIZARD_BUILD_ROOT"
 
-echo "==> Building APBX template package"
-if pnpm --dir "$APP_DIR" exec tsx "$ROOT_DIR/scripts/build-os-apbx-package.ts" \
-  --version "$VERSION" \
-  --commit "$COMMIT_SHA" \
-  --out-dir "$APBX_BUILD_ROOT" \
-  --package-name "$APBX_STABLE_NAME"; then
-  APBX_AVAILABLE=1
-else
-  echo "WARN: APBX template build failed; continuing without APBX package" >&2
-fi
+# The standalone APBX template builder (scripts/build-os-apbx-package.ts) was
+# retired: it imported the deleted Electron-era apps/os-desktop/src/main/lib/apbx.ts.
+# .apbx packages are produced in-app by the Tauri shell (src-tauri/src/apbx.rs).
+echo "==> APBX template package: skipped (builder retired; export is in-app)"
 
 if [ ! -f "$INSTALLER_STABLE_PATH" ]; then
   echo "Installer not produced at $INSTALLER_STABLE_PATH" >&2

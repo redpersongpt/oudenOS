@@ -11,9 +11,7 @@
     "core:window:allow-show",
     "core:window:allow-hide",
     "core:window:allow-set-focus",
-    "shell:allow-open",
     "dialog:allow-save",
-    "fs:default",
     "updater:default",
     "process:default"
   ]

@@ -7,9 +7,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import { RotateCw, AlertCircle, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { useT } from "@/i18n";
+import { serviceCall } from "@/lib/service";
 import { useWizardStore } from "@/stores/wizard-store";
 import type { ExecutionJournalEntry } from "@/stores/wizard-store";
 import { buildRebootJournalContext, getPendingRebootProvenanceRefs } from "@/lib/package-journal";
+import { classifyActionCall } from "@/lib/service-errors";
+import { platform } from "@/lib/platform";
 
 interface RemainingAction {
   actionId: string;
@@ -47,7 +50,7 @@ interface JournalState {
 
 export function RebootResumeStep() {
   const { t } = useT();
-  const { resolvedPlaybook, executionResult, detectedProfile, skipStep, completeStep, setExecutionResult } = useWizardStore();
+  const { resolvedPlaybook, executionResult, detectedProfile, skipStep, completeStep, setExecutionResult, interruptedRun, setInterruptedRun, setExecuting, setLastRun, lastRun, acknowledgedActionIds } = useWizardStore();
   const [resumePhase, setResumePhase] = useState<"idle" | "resuming" | "executing" | "done">("idle");
   const [rebootError, setRebootError] = useState<string | null>(null);
   const [journalState, setJournalState] = useState<JournalState | null>(null);
@@ -62,20 +65,21 @@ export function RebootResumeStep() {
 
   const { demoMode } = useWizardStore();
 
-  // Auto-skip if no reboot needed OR if running in demo/simulated mode
+  // Auto-skip if no reboot needed OR if running in demo/simulated mode —
+  // but never after an interrupted apply: the user must see what happened.
+  const autoSkip = !interruptedRun && (!needsReboot || demoMode);
   useEffect(() => {
-    if (!needsReboot || demoMode) {
+    if (autoSkip) {
       const t = setTimeout(() => skipStep("reboot-resume"), 150);
       return () => clearTimeout(t);
     }
-  }, [needsReboot, demoMode, skipStep]);
+  }, [autoSkip, skipStep]);
 
   useEffect(() => {
-    if (!needsReboot) return;
+    if (!needsReboot && !interruptedRun) return;
     let cancelled = false;
     const loadJournalState = async () => {
       try {
-        const { serviceCall } = await import("@/lib/service");
         const result = await serviceCall<JournalState | null>("journal.state");
         if (!cancelled && result.ok) {
           setJournalState(result.data);
@@ -86,9 +90,9 @@ export function RebootResumeStep() {
     };
     loadJournalState();
     return () => { cancelled = true; };
-  }, [needsReboot]);
+  }, [needsReboot, interruptedRun]);
 
-  if (!needsReboot || demoMode) {
+  if (autoSkip) {
     return (
       <div className="flex min-h-full items-center justify-center">
         <div className="h-4 w-4 rounded-sm border-2 border-[var(--text-primary)] border-t-transparent animate-spin" />
@@ -99,7 +103,6 @@ export function RebootResumeStep() {
   const handleRestart = async () => {
     setRebootError(null);
     try {
-      const { serviceCall } = await import("@/lib/service");
       const result = await serviceCall("system.reboot", {
         reason: "playbook-reboot-required",
         journalContext: resolvedPlaybook
@@ -115,17 +118,18 @@ export function RebootResumeStep() {
   };
 
   const handleSkip = () => {
+    setInterruptedRun(false);
     completeStep("reboot-resume");
   };
 
   // True resume: load remaining actions from DB ledger and re-dispatch
   const handleResume = async () => {
     setResumePhase("resuming");
+    setInterruptedRun(false);
     const controller = new AbortController();
     abortRef.current = controller;
 
     try {
-      const { serviceCall } = await import("@/lib/service");
 
       // Call journal.resume — returns remainingActions from DB ledger
       const resumeResult = await serviceCall<ResumeResponse>("journal.resume");
@@ -146,9 +150,12 @@ export function RebootResumeStep() {
 
       // Re-dispatch remaining actions through execute.applyAction
       setResumePhase("executing");
+      setExecuting(true);
+      void platform().app.setBusy(true);
       setResumeProgress({ completed: 0, total: remainingActions.length, failed: 0 });
 
       const resumeJournal: ExecutionJournalEntry[] = [];
+      const resumeStartedAt = new Date().toISOString();
       let localCompleted = 0;
       let localFailed = 0;
 
@@ -172,7 +179,8 @@ export function RebootResumeStep() {
           // FinalReview (including its high-risk/expert actions) before the reboot,
           // so confirm every resumed action — the service backstop now also gates
           // risk "high"/"extreme", not just expert-only.
-          expertConfirmed: true,
+          // Only actions the user acknowledged at Final Review are confirmed.
+          ...(acknowledgedActionIds.includes(action.actionId) ? { expertConfirmed: true } : {}),
           journalContext: planId ? {
             package: {
               planId,
@@ -198,15 +206,11 @@ export function RebootResumeStep() {
         });
 
         const finishedAt = new Date().toISOString();
-        let status: "applied" | "failed" = "failed";
+        const outcome = classifyActionCall(execResult);
+        // "skipped" (already configured) counts as done, not as a failure.
+        const status: "applied" | "skipped" | "failed" = outcome.status;
 
-        if (execResult.ok) {
-          const rpcStatus = typeof execResult.data.status === "string" ? execResult.data.status : "failed";
-          const nestedFailures = typeof execResult.data.failed === "number" ? execResult.data.failed : 0;
-          status = rpcStatus === "success" && nestedFailures === 0 ? "applied" : "failed";
-        }
-
-        if (status === "applied") {
+        if (status !== "failed") {
           localCompleted++;
         } else {
           localFailed++;
@@ -228,11 +232,14 @@ export function RebootResumeStep() {
           packageSourceRef: action.packageSourceRef,
           provenanceRef: action.provenanceRef,
           resultRef: `state/execution-journal.json#/resume/${action.actionId}`,
-          errorMessage: status === "failed" ? "Resumed action execution failed." : null,
+          errorMessage: outcome.errorMessage,
         });
 
         setResumeProgress({ completed: localCompleted, total: remainingActions.length, failed: localFailed });
+        if (outcome.blocking) break; // rollback failed: stop resuming
       }
+      setExecuting(false);
+      void platform().app.setBusy(false);
 
       setCurrentAction(null);
 
@@ -250,11 +257,30 @@ export function RebootResumeStep() {
           failed: existing.failed + localFailed,
           journal: [...existing.journal, ...resumeJournal],
         });
+        if (lastRun) {
+          setLastRun({ ...lastRun, applied: lastRun.applied + localCompleted, failed: lastRun.failed + localFailed, finishedAt: new Date().toISOString() });
+        }
+      } else {
+        // Interrupted run with no saved result: report what the resume did.
+        setExecutionResult({
+          applied: localCompleted,
+          failed: localFailed,
+          skipped: 0,
+          preserved: 0,
+          personalizationApplied: false,
+          packageKind: "user-resolved",
+          packageRefs: null,
+          journal: resumeJournal,
+          truthSource: "local",
+          startedAt: resumeStartedAt,
+        });
       }
 
       setResumePhase("done");
       completeStep("reboot-resume");
     } catch (e) {
+      setExecuting(false);
+      void platform().app.setBusy(false);
       console.error("[RebootResumeStep] Resume execution error:", e);
       setResumePhase("done");
       completeStep("reboot-resume");
@@ -340,9 +366,9 @@ export function RebootResumeStep() {
           </motion.div>
 
           <div className="flex flex-col items-center gap-1.5 text-center">
-            <h2 className="text-lg font-medium text-[var(--text-primary)]">{t("reboot.prompt.title")}</h2>
+            <h2 className="text-lg font-medium text-[var(--text-primary)]">{interruptedRun ? t("reboot.interrupted.title") : t("reboot.prompt.title")}</h2>
             <p className="max-w-sm text-xs text-[var(--text-secondary)]">
-              {t("reboot.prompt.subtitle")}
+              {interruptedRun ? t("reboot.interrupted.subtitle") : t("reboot.prompt.subtitle")}
             </p>
             {resolvedPlaybook && (
               <p className="max-w-sm text-[10px] text-[var(--text-secondary)]">
@@ -361,16 +387,18 @@ export function RebootResumeStep() {
           )}
 
           <div className="flex gap-3">
+            {!interruptedRun && (
             <Button variant="primary" size="md" onClick={handleRestart} icon={<RotateCw className="h-4 w-4" />}>
               {t("reboot.button.restartNow")}
             </Button>
+            )}
             <Button variant="secondary" size="md" onClick={handleResume} disabled={resumePhase === "resuming"}>
-              {resumePhase === "resuming" ? t("reboot.button.loading") : t("reboot.button.resumeWithoutRestart")}
+              {resumePhase === "resuming" ? t("reboot.button.loading") : interruptedRun ? t("reboot.interrupted.resume") : t("reboot.button.resumeWithoutRestart")}
             </Button>
           </div>
 
           <button onClick={handleSkip} className="text-[11px] text-[var(--text-secondary)] hover:text-[var(--text-secondary)] transition-colors">
-            {t("reboot.button.skip")}
+            {interruptedRun ? t("reboot.interrupted.summary") : t("reboot.button.skip")}
           </button>
         </>
       )}

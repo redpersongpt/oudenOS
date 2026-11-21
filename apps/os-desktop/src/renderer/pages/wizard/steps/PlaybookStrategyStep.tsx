@@ -24,16 +24,15 @@ import {
 } from "lucide-react";
 import { useDecisionsStore, type QuestionAnswer } from "@/stores/decisions-store";
 import { useWizardStore } from "@/stores/wizard-store";
-import { serviceCall } from "@/lib/service";
-import questionnaireFallback from "@/lib/questionnaire-fallback.json";
+import { useQuestionnaireStore } from "@/stores/questionnaire-store";
 import { useLocalizedQuestionnaire } from "@/i18n/content-overlay";
 import { useT } from "@/i18n";
+import { fillUnanswered, setupForPreset } from "@/lib/quick-setup";
 import {
   computeQuestionnaireImpact,
   derivePlaybookPreset,
   getVisibleChapters,
   isQuestionSatisfied,
-  type QuestionnaireSchema,
   type StrategyIconName,
 } from "@/lib/wizard-question-model";
 
@@ -68,6 +67,9 @@ function Option({
   badge,
   badgeColor,
   danger,
+  recommended,
+  shortcut,
+  recommendedLabel,
 }: {
   selected: boolean;
   onClick: () => void;
@@ -76,17 +78,25 @@ function Option({
   badge?: string | null;
   badgeColor?: string | null;
   danger?: boolean | null;
+  recommended?: boolean;
+  shortcut?: number;
+  recommendedLabel: string;
 }) {
   return (
     <button
       type="button"
+      role="radio"
+      aria-checked={selected}
+      aria-keyshortcuts={shortcut ? String(shortcut) : undefined}
       onClick={onClick}
-      className={`h-full w-full appearance-none overflow-hidden rounded-2xl border px-4 py-4 text-left outline-none ring-0 shadow-none transition-colors focus:border-[var(--border)] focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 active:outline-none active:ring-0 ${
+      className={`h-full w-full appearance-none overflow-hidden rounded-2xl border px-4 py-4 text-left shadow-none transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--interactive)] ${
         selected
           ? danger
             ? "border-white/[0.16] bg-white/[0.04]"
             : "border-[var(--accent)] bg-[var(--surface-raised)]"
-          : "border-[var(--border)] bg-[var(--surface)] hover:bg-[var(--surface-raised)]"
+          : recommended
+            ? "border-dashed border-[var(--border-visible)] bg-[var(--surface)] hover:bg-[var(--surface-raised)]"
+            : "border-[var(--border)] bg-[var(--surface)] hover:bg-[var(--surface-raised)]"
       }`}
       style={{
         WebkitTapHighlightColor: "transparent",
@@ -122,6 +132,14 @@ function Option({
               }`}>
                 {badge}
               </span>
+            ) : null}
+            {recommended ? (
+              <span className="rounded-sm border border-[var(--border-visible)] px-1.5 py-px font-mono text-label uppercase tracking-label text-[var(--text-secondary)]">
+                {recommendedLabel}
+              </span>
+            ) : null}
+            {shortcut ? (
+              <span aria-hidden="true" className="ml-auto font-mono text-label text-[var(--text-disabled)]">{shortcut}</span>
             ) : null}
           </div>
           <p className="mt-1 text-[12px] leading-[1.45] text-[var(--text-secondary)]">
@@ -207,10 +225,15 @@ export function PlaybookStrategyStep() {
   const { t } = useT();
   const { answers, setAnswer, applyAnswers } = useDecisionsStore();
   const { detectedProfile, playbookPreset, setPlaybookPreset, setStepReady, goBack, goNext, demoMode } = useWizardStore();
-  const [rawSchema, setRawSchema] = useState<QuestionnaireSchema | null>(null);
+  const rawSchema = useQuestionnaireStore((s) => s.schema);
+  const quickSetups = useQuestionnaireStore((s) => s.quickSetups);
+  const serviceWindowsBuild = useQuestionnaireStore((s) => s.serviceWindowsBuild);
+  const loadStatus = useQuestionnaireStore((s) => s.status);
+  const loadErrorRaw = useQuestionnaireStore((s) => s.error);
+  const loadQuestionnaire = useQuestionnaireStore((s) => s.load);
   const schema = useLocalizedQuestionnaire(rawSchema);
-  const [loading, setLoading] = useState(true);
-  const [loadError, setLoadError] = useState<string | null>(null);
+  const loading = loadStatus === "loading" || loadStatus === "idle";
+  const loadError = loadStatus === "error" ? (loadErrorRaw ?? t("strategy.loadError")) : null;
   const [index, setIndex] = useState(0);
   const [pendingAdvanceKey, setPendingAdvanceKey] = useState<string | null>(null);
   const [flashStatus, setFlashStatus] = useState<"saved" | null>(null);
@@ -219,46 +242,24 @@ export function PlaybookStrategyStep() {
     () => ({
       isLaptop: detectedProfile?.id === "gaming_laptop" || detectedProfile?.id === "office_laptop",
       isWorkPc: detectedProfile?.isWorkPc ?? false,
-      windowsBuild: detectedProfile?.windowsBuild ?? 22631,
+      // the build the service resolved the questionnaire for is the truth
+      windowsBuild: serviceWindowsBuild ?? detectedProfile?.windowsBuild ?? null,
     }),
-    [detectedProfile],
+    [detectedProfile, serviceWindowsBuild],
   );
 
   useEffect(() => {
-    let cancelled = false;
-    const load = async () => {
-      setLoading(true);
-      setLoadError(null);
-      const result = await serviceCall<QuestionnaireSchema>("questionnaire.resolve", {
-        profile: detectedProfile?.id ?? "gaming_desktop",
-        windowsBuild: context.windowsBuild,
-      });
-      if (cancelled) return;
-      if (result.ok) {
-        setRawSchema(result.data);
-        if (Object.keys(answers).length === 0) {
-          applyAnswers({
-            aggressionPreset: context.isWorkPc ? "balanced" : "aggressive",
-          });
-        }
-      } else if (demoMode) {
-        setRawSchema(questionnaireFallback as unknown as QuestionnaireSchema);
-        if (Object.keys(answers).length === 0) {
-          applyAnswers({
-            aggressionPreset: context.isWorkPc ? "balanced" : "aggressive",
-          });
-        }
-      } else {
-        setRawSchema(null);
-        setLoadError(result.error || "Could not load setup questions.");
-      }
-      setLoading(false);
-    };
-    load();
-    return () => {
-      cancelled = true;
-    };
-  }, [applyAnswers, context.isWorkPc, context.windowsBuild, demoMode, detectedProfile?.id]);
+    if (!detectedProfile) return;
+    void loadQuestionnaire(detectedProfile.id, detectedProfile.windowsBuild, demoMode);
+  }, [demoMode, detectedProfile, loadQuestionnaire]);
+
+  // Default preset: balanced (safer, fewer questions). Only when nothing was answered yet.
+  useEffect(() => {
+    if (loadStatus !== "ready") return;
+    if (Object.keys(useDecisionsStore.getState().answers).length === 0) {
+      applyAnswers({ aggressionPreset: "balanced" });
+    }
+  }, [applyAnswers, loadStatus]);
 
   const activeQuestions = useMemo(
     () => getVisibleChapters(schema, answers, context).flatMap((chapter) => chapter.questions),
@@ -314,7 +315,12 @@ export function PlaybookStrategyStep() {
       window.setTimeout(() => {
         setPendingAdvanceKey(null);
         setFlashStatus(null);
-        goNext();
+        // Only leave when every visible question is answered; otherwise go to the first open one.
+        const state = useDecisionsStore.getState().answers;
+        const visible = getVisibleChapters(schema, state, context).flatMap((c) => c.questions);
+        const firstOpen = visible.findIndex((q) => !isQuestionSatisfied(q, state));
+        if (firstOpen < 0) goNext();
+        else setIndex(firstOpen);
       }, 120);
       return;
     }
@@ -333,9 +339,60 @@ export function PlaybookStrategyStep() {
     setIndex((prev) => Math.max(0, prev - 1));
   };
 
+  // Recommendations come from the service's quick setups (never computed here).
+  const recommendedSetup = useMemo(
+    () => setupForPreset(quickSetups, typeof answers.aggressionPreset === "string" ? answers.aggressionPreset : playbookPreset),
+    [answers.aggressionPreset, playbookPreset, quickSetups],
+  );
+  const remainingCount = activeQuestions.filter((q) => !isQuestionSatisfied(q, answers)).length;
+
+  const applyRecommendedForRest = () => {
+    if (!recommendedSetup) return;
+    const patch = fillUnanswered(activeQuestions, answers, recommendedSetup);
+    if (Object.keys(patch).length > 0) applyAnswers(patch);
+    // Visibility can change after the patch; jump to the first question still
+    // open, or move on when everything is answered.
+    window.setTimeout(() => {
+      const state = useDecisionsStore.getState().answers;
+      const visible = getVisibleChapters(schema, state, context).flatMap((c) => c.questions);
+      const firstOpen = visible.findIndex((q) => !isQuestionSatisfied(q, state));
+      if (firstOpen < 0) goNext();
+      else setIndex(firstOpen);
+    }, 0);
+  };
+
+  // Keyboard-first: 1-9 pick an option, Enter / → next, ← / Backspace back.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey) return;
+      if (document.querySelector('[role="dialog"]')) return;
+      const target = e.target as HTMLElement | null;
+      if (target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA")) return;
+      if (!current) return;
+      if (/^[1-9]$/.test(e.key)) {
+        const option = current.options[Number(e.key) - 1];
+        if (option) {
+          e.preventDefault();
+          selectAnswer(current.key, option.value as QuestionAnswer);
+        }
+      } else if (e.key === "ArrowRight" || (e.key === "Enter" && target?.getAttribute("role") !== "radio")) {
+        if (currentAnswered) {
+          e.preventDefault();
+          if (clampedIndex >= activeQuestions.length - 1) goNext();
+          else setIndex((prev) => Math.min(activeQuestions.length - 1, prev + 1));
+        }
+      } else if (e.key === "ArrowLeft" || e.key === "Backspace") {
+        e.preventDefault();
+        handleBack();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  });
+
   if (loading) {
     return (
-      <div className="flex min-h-full items-center justify-center px-8">
+      <div className="flex min-h-full items-center justify-center px-8" role="status">
         <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] px-5 py-4 text-sm text-[var(--text-secondary)]">
           {t("strategy.loading")}
         </div>
@@ -345,15 +402,32 @@ export function PlaybookStrategyStep() {
 
   if (!current) {
     return (
-      <div className="flex min-h-full flex-col items-center justify-center gap-3 px-8 text-center">
+      <div role="alert" className="flex min-h-full flex-col items-center justify-center gap-3 px-8 text-center">
         <TriangleAlert className="h-8 w-8 text-[var(--text-display)]" />
         <p className="text-sm text-[var(--text-secondary)]">{loadError ?? t("strategy.noQuestions")}</p>
+        <div className="mt-2 flex gap-3">
+          <button
+            onClick={() => goBack()}
+            className="rounded-sm px-4 py-2 text-[12px] text-[var(--text-secondary)]"
+            style={{ border: "1px solid var(--border)" }}
+          >
+            {t("common.back")}
+          </button>
+          <button
+            onClick={() => detectedProfile && void loadQuestionnaire(detectedProfile.id, detectedProfile.windowsBuild, demoMode, true)}
+            className="rounded-sm px-4 py-2 text-[12px] font-medium"
+            style={{ background: "var(--text-display)", color: "var(--black)" }}
+          >
+            {t("common.retry")}
+          </button>
+        </div>
       </div>
     );
   }
 
   const Icon = iconFor(current.icon);
   const centeredOptions = current.options.length <= 2;
+  const recommendedValue = recommendedSetup?.answers[current.key];
 
   return (
     <motion.div
@@ -368,6 +442,8 @@ export function PlaybookStrategyStep() {
             <p className="nd-label text-[var(--accent)]">{t("strategy.eyebrow")}</p>
             <p className="mt-1 font-mono text-label tracking-label text-[var(--text-disabled)]">
               {t("strategy.questionCounter", { current: String(clampedIndex + 1).padStart(2, "0"), total: String(activeQuestions.length).padStart(2, "0") })}
+              {" · "}
+              {remainingCount === 0 ? t("strategy.allAnswered") : t("strategy.remaining", { count: remainingCount })}
             </p>
           </div>
           <div className="min-w-[220px] max-w-[320px] flex-1">
@@ -405,6 +481,8 @@ export function PlaybookStrategyStep() {
               note={current.note}
             >
               <div
+                role="radiogroup"
+                aria-label={current.title}
                 className={`mx-auto flex w-full max-w-[920px] flex-col gap-3 ${
                   centeredOptions ? "pt-1" : ""
                 }`}
@@ -425,6 +503,9 @@ export function PlaybookStrategyStep() {
                       badge={option.badge}
                       badgeColor={option.badgeColor}
                       danger={option.danger}
+                      recommended={recommendedValue !== undefined && recommendedValue === option.value}
+                      recommendedLabel={t("strategy.recommended")}
+                      shortcut={optionIndex < 9 ? optionIndex + 1 : undefined}
                     />
                   </motion.div>
                 ))}
@@ -466,6 +547,16 @@ export function PlaybookStrategyStep() {
           >
             <ChevronLeft className="h-3.5 w-3.5" /> {t("strategy.back")}
           </button>
+
+          {recommendedSetup && remainingCount > 0 && (
+            <button
+              onClick={applyRecommendedForRest}
+              title={t("strategy.useRecommended.hint")}
+              className="rounded-full border border-[var(--border-visible)] px-3 py-1 font-mono text-[11px] tracking-[0.06em] text-[var(--text-primary)] transition-colors hover:bg-[var(--surface-raised)]"
+            >
+              {t("strategy.useRecommended", { count: remainingCount })}
+            </button>
+          )}
 
           <button
             onClick={() => setIndex((prev) => Math.min(activeQuestions.length - 1, prev + 1))}

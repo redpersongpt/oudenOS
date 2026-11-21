@@ -7,9 +7,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useWizardStore } from "@/stores/wizard-store";
 import type { ResolvedPlaybook, PlaybookPhase, PlaybookResolvedAction } from "@/stores/wizard-store";
 import { useDecisionsStore } from "@/stores/decisions-store";
-import { buildMockResolvedPlaybook } from "@/lib/mock-playbook";
 import technicalDetails from "@/lib/generated-technical-details.json";
-import { serviceCall } from "@/lib/service";
+import { resolvePlan } from "@/lib/plan-resolver";
+import { classifyBlockedReason, isNotApplicable } from "@/lib/blocked-reason";
 import { getActionRationale, getPhaseRationale } from "@/lib/expert-rationale";
 import { useActionLocalizer } from "@/i18n/content-overlay";
 import { useT } from "@/i18n";
@@ -236,6 +236,17 @@ function ActionRow({ action }: { action: PlaybookResolvedAction }) {
   const localize = useActionLocalizer();
   const a = localize(action);
   const rationale = getActionRationale(action.id, profile, lang);
+  const reasonView = action.status === "Included" ? null : classifyBlockedReason(action.blockedReason, action.status);
+  const notApplicable = reasonView?.kind === "notApplicable";
+  // Choice reasons are generated English sentences ("You chose …"); in Turkish
+  // show a translated summary instead of half-English text.
+  const reasonText = reasonView
+    ? reasonView.key
+      ? t(reasonView.key, reasonView.vars)
+      : reasonView.kind === "choice" && lang !== "en"
+        ? t("plan.reason.choice")
+        : reasonView.raw
+    : null;
   const statusLabel: Record<string, string> = {
     Included:   t("plan.statusIncluded"),
     Blocked:    t("plan.statusBlocked"),
@@ -245,14 +256,17 @@ function ActionRow({ action }: { action: PlaybookResolvedAction }) {
   };
   return (
     <div className="flex items-start gap-3 px-4 py-2 border-b border-[var(--border)] last:border-0">
-      <span className={`mt-1.5 w-1.5 h-1.5 rounded-full shrink-0 ${statusDot[action.status] ?? "bg-neutral-400"}`} />
+      <span className={`mt-1.5 w-1.5 h-1.5 rounded-full shrink-0 ${notApplicable ? "bg-neutral-500" : statusDot[action.status] ?? "bg-neutral-400"}`} />
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-3">
           <span className="text-[12px] text-[var(--text-primary)] flex-1 min-w-0 truncate">{a.name}</span>
-          <span className={`shrink-0 text-[10px] px-2 py-0.5 rounded-sm border ${statusBadge[action.status] ?? statusBadge.Blocked}`}>
-            {statusLabel[action.status] ?? action.status}
+          <span className={`shrink-0 text-[10px] px-2 py-0.5 rounded-sm border ${notApplicable ? statusBadge.BuildGated : statusBadge[action.status] ?? statusBadge.Blocked}`}>
+            {notApplicable ? t("plan.statusNotApplicable") : statusLabel[action.status] ?? action.status}
           </span>
         </div>
+        {reasonText && (
+          <p className="mt-0.5 text-[10px] leading-snug text-[var(--text-disabled)]">{reasonText}</p>
+        )}
         {/* Plain-language "why this is recommended" — visible product intelligence. */}
         {rationale.why && (
           <p className="mt-0.5 text-[11px] leading-snug text-[var(--text-secondary)]">{rationale.why}</p>
@@ -359,43 +373,43 @@ export function PlaybookReviewStep() {
   const [effectivePlaybook, setEffectivePlaybook] = useState<ResolvedPlaybook | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
 
+  const [attempt, setAttempt] = useState(0);
+
   useEffect(() => {
     setStepReady("playbook-review", false);
+    let cancelled = false;
 
     const load = async () => {
       const profile = detectedProfile?.id ?? "gaming_desktop";
-      const windowsBuild = detectedProfile?.windowsBuild ?? 22631;
       setLoading(true);
       setLoadError(null);
       try {
-        const result = await serviceCall<ResolvedPlaybook>("playbook.resolve", {
+        const result = await resolvePlan({
           profile,
           preset: playbookPreset,
-          windowsBuild,
+          windowsBuild: detectedProfile?.windowsBuild ?? null,
           answers,
+          demoMode,
         });
+        if (cancelled) return;
         if (result.ok) {
-          setEffectivePlaybook(result.data);
-        } else if (demoMode) {
-          setEffectivePlaybook(buildMockResolvedPlaybook(profile, playbookPreset, windowsBuild));
+          setEffectivePlaybook(result.playbook);
         } else {
           setEffectivePlaybook(null);
-          setLoadError(result.error || "Could not build the plan.");
+          setLoadError(result.error ?? t("plan.loadError"));
         }
-      } catch {
-        if (demoMode) {
-          setEffectivePlaybook(buildMockResolvedPlaybook(profile, playbookPreset, windowsBuild));
-        } else {
-          setEffectivePlaybook(null);
-          setLoadError("Could not build the plan.");
-        }
+      } catch (e) {
+        if (cancelled) return;
+        setEffectivePlaybook(null);
+        setLoadError(e instanceof Error ? e.message : t("plan.loadError"));
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     };
-    load();
-  }, [answers, demoMode, detectedProfile, playbookPreset, setStepReady]);
-
+    void load();
+    return () => { cancelled = true; };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [answers, demoMode, detectedProfile, playbookPreset, setStepReady, attempt]);
   useEffect(() => {
     if (effectivePlaybook) {
       setResolvedPlaybook(effectivePlaybook);
@@ -407,17 +421,32 @@ export function PlaybookReviewStep() {
 
   if (!effectivePlaybook) {
     return (
-      <div className="flex min-h-full flex-col items-center justify-center gap-3 px-8">
+      <div role="alert" className="flex min-h-full flex-col items-center justify-center gap-3 px-8">
         <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
           <path d="M12 9v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="var(--text-display)" strokeWidth="1.5" strokeLinecap="round" />
         </svg>
         <p className="text-sm text-[var(--text-secondary)]">{loadError ?? t("plan.unavailable")}</p>
+        <button
+          onClick={() => setAttempt((n) => n + 1)}
+          className="mt-1 rounded-sm px-4 py-2 text-[12px] font-medium"
+          style={{ background: "var(--text-display)", color: "var(--black)" }}
+        >
+          {t("common.retry")}
+        </button>
       </div>
     );
   }
 
   const totalIncluded = effectivePlaybook.totalIncluded;
-  const totalBlocked = effectivePlaybook.totalBlocked;
+  // Retired / duplicate / hardware- or build-not-applicable actions are facts
+  // about this PC, not problems: count them separately and neutrally.
+  const allActions = effectivePlaybook.phases.flatMap((p) => p.actions);
+  const notApplicableCount = allActions.filter(
+    (a) => a.status !== "Included" && isNotApplicable(a.blockedReason, a.status),
+  ).length;
+  const totalBlocked = allActions.filter(
+    (a) => a.status === "Blocked" && !isNotApplicable(a.blockedReason, a.status),
+  ).length;
   const rebootRequired = effectivePlaybook.phases.some(
     p => p.actions.some(a => a.status === "Included" && a.requiresReboot)
   );
@@ -450,6 +479,12 @@ export function PlaybookReviewStep() {
           <span className="font-data text-[16px] text-[var(--text-display)]">{totalBlocked}</span>
           <span className="text-[10px] text-[var(--text-secondary)] uppercase tracking-widest">{t("plan.blocked")}</span>
         </div>
+        {notApplicableCount > 0 && (
+          <>
+            <div className="w-px h-4 bg-[var(--border)]" />
+            <span className="text-[10px] text-[var(--text-disabled)]">{t("plan.notApplicableCount", { count: notApplicableCount })}</span>
+          </>
+        )}
         {rebootRequired && (
           <>
             <div className="w-px h-4 bg-[var(--border)]" />
