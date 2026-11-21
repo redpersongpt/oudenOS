@@ -37,6 +37,9 @@ pushes without verifying CI is incomplete.
    pnpm build:os:sources
    cargo check && cargo test            # in services/os-service and services/tuning-service
    pnpm --dir apps/os-desktop audit:questionnaire   # Windows-proof gate (Node 22)
+   pnpm --dir apps/os-desktop audit:i18n            # en/tr parity + wizard.json / contract-label TR coverage
+   pnpm --dir apps/os-desktop test                  # renderer unit tests (node --test via tsx)
+   cargo test                                       # in apps/os-desktop/src-tauri (bridge helpers)
    ```
 7. Push the fix.
 8. Watch CI again (step 2).

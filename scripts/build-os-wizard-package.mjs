@@ -306,23 +306,28 @@ function main() {
   const payloadDir = path.join(packageDir, "payload");
   const zipPath = path.join(outputRoot, "oudenos-os-wizard-playbook.zip");
 
+  // Validate every input BEFORE touching the output directory, so a bad
+  // manifest / wizard.json never leaves a deleted (tracked) package behind.
+  // playbooks/wizard.json is hand-maintained source data read by the Rust
+  // questionnaire loader; it is packaged as-is (the old TS->JSON sync step was
+  // retired together with the client-side question model).
+  const manifestText = fs.readFileSync(manifestPath, "utf8");
+  const manifest = parseManifest(manifestText);
+  if (!manifest.wizardConfig) throw new Error(`${manifestPath}: wizardConfig is missing`);
+  const wizardPath = path.join(playbookRoot, manifest.wizardConfig);
+  const wizard = JSON.parse(fs.readFileSync(wizardPath, "utf8"));
+  for (const field of ["packageId", "title"]) {
+    if (typeof wizard[field] !== "string" || wizard[field].length === 0) {
+      throw new Error(`${wizardPath}: "${field}" is missing`);
+    }
+  }
+  if (!Array.isArray(wizard.desktopQuestions) || wizard.desktopQuestions.length === 0) {
+    throw new Error(`${wizardPath}: desktopQuestions is empty`);
+  }
+
   fs.rmSync(outputRoot, { recursive: true, force: true });
   fs.mkdirSync(configurationDir, { recursive: true });
   fs.mkdirSync(payloadDir, { recursive: true });
-
-  const syncResult = spawnSync(
-    "pnpm",
-    ["--dir", "apps/os-desktop", "exec", "tsx", "../../scripts/sync-os-wizard-metadata.ts"],
-    { cwd: repoRoot, stdio: "inherit" },
-  );
-  if (syncResult.status !== 0) {
-    throw new Error("Failed to sync wizard metadata from desktop question model");
-  }
-
-  const manifestText = fs.readFileSync(manifestPath, "utf8");
-  const manifest = parseManifest(manifestText);
-  const wizardPath = path.join(playbookRoot, manifest.wizardConfig);
-  const wizard = JSON.parse(fs.readFileSync(wizardPath, "utf8"));
 
   fs.writeFileSync(path.join(srcDir, "playbook.conf"), renderPlaybookConf(manifest, wizard));
   fs.writeFileSync(path.join(configurationDir, "main.yml"), renderConfigurationYaml(manifest, wizard));

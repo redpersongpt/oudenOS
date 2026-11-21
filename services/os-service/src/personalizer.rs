@@ -1,274 +1,209 @@
 // ─── Visual Personalization Engine ──────────────────────────────────────────
 // Applies safe, reversible visual customizations to Windows.
-// All changes are registry/API-based — no system file patching.
-// Every change is captured in a rollback snapshot BEFORE application.
+// All registry changes use the native registry layer; the snapshot contains
+// exactly the values that will be written (with their original types) and is
+// taken BEFORE any change. Every feature reports a real error string.
 
 use crate::db::Database;
 #[cfg(windows)]
 use crate::powershell;
+use crate::registry::{self, Hive, RegValue};
 use crate::rollback;
 use serde_json::Value;
 
-#[cfg(windows)]
-const OUDENOS_ACCENT_BGR: u32 = 0x00000000; // Pure black — matches Ouden monochrome theme
-#[cfg(windows)]
-const OUDENOS_DWM_ACCENT: u32 = 0xC4000000; // Black with opacity for DWM
+/// Pure black — matches the Ouden monochrome theme.
+const OUDENOS_ACCENT_BGR: u32 = 0x0000_0000;
+
+const PERSONALIZE: &str = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize";
+const ACCENT: &str = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Accent";
+const DWM: &str = "SOFTWARE\\Microsoft\\Windows\\DWM";
+const ADVANCED: &str = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced";
+const EXPLORER: &str = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer";
+const SEARCH: &str = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Search";
+const DESKTOP: &str = "Control Panel\\Desktop";
+const COLORS: &str = "Control Panel\\Colors";
+/// Supported policy that hides the Widgets button. `TaskbarDa` itself is
+/// protected by the UCPD driver on Windows 11 24H2 and is no longer written.
+const DSH_POLICY: &str = "SOFTWARE\\Policies\\Microsoft\\Dsh";
 
 /// Returns a JSON description of what personalization will be applied
 /// for the given device profile.
 pub fn get_personalization_options(profile: &str) -> Value {
     tracing::info!(profile = profile, "Querying personalization options");
-
-    match profile {
-        "gaming_desktop" => serde_json::json!({
-            "darkMode": true,
-            "brandAccent": false,
-            "wallpaper": true,
-            "taskbarCleanup": false,
-            "explorerCleanup": false,
-            "transparency": false,
-            "profileVariant": "gaming_desktop"
-        }),
-        "work_pc" => serde_json::json!({
-            "darkMode": true,
-            "brandAccent": false,
-            "wallpaper": true,
-            "taskbarCleanup": false,
-            "explorerCleanup": false,
-            "transparency": false,
-            "profileVariant": "work_pc"
-        }),
-        "low_spec_system" => serde_json::json!({
-            "darkMode": true,
-            "brandAccent": false,
-            "wallpaper": true,
-            "taskbarCleanup": false,
-            "explorerCleanup": false,
-            "transparency": false,
-            "profileVariant": "low_spec_system"
-        }),
-        "vm_cautious" => serde_json::json!({
-            "darkMode": true,
-            "brandAccent": false,
-            "wallpaper": true,
-            "taskbarCleanup": false,
-            "explorerCleanup": false,
-            "transparency": false,
-            "profileVariant": "vm_cautious"
-        }),
-        _ => serde_json::json!({
-            "darkMode": true,
-            "brandAccent": false,
-            "wallpaper": true,
-            "taskbarCleanup": false,
-            "explorerCleanup": false,
-            "transparency": false,
-            "profileVariant": profile
-        }),
-    }
+    serde_json::json!({
+        "darkMode": true,
+        "brandAccent": false,
+        "wallpaper": true,
+        "taskbarCleanup": false,
+        "explorerCleanup": false,
+        "transparency": false,
+        "profileVariant": profile
+    })
 }
 
-/// Apply visual personalization for the given profile.
-/// Creates a rollback snapshot BEFORE any changes, then applies each change.
-/// `options` can override which personalization features to apply.
-pub fn apply_personalization(
-    db: &Database,
-    profile: &str,
-    options: &Value,
-) -> anyhow::Result<Value> {
-    tracing::info!(profile = profile, "Applying visual personalization");
+/// One registry value a feature writes.
+#[derive(Debug, Clone)]
+pub(crate) struct Write {
+    hive: Hive,
+    path: &'static str,
+    name: &'static str,
+    value: RegValue,
+}
 
-    let opts = get_personalization_options(profile);
+fn w(hive: Hive, path: &'static str, name: &'static str, value: RegValue) -> Write {
+    Write { hive, path, name, value }
+}
 
-    // Merge caller overrides on top of profile defaults
-    let dark_mode = options
-        .get("darkMode")
-        .and_then(|v| v.as_bool())
-        .unwrap_or_else(|| opts["darkMode"].as_bool().unwrap_or(true));
-    let brand_accent = options
-        .get("brandAccent")
-        .and_then(|v| v.as_bool())
-        .unwrap_or_else(|| opts["brandAccent"].as_bool().unwrap_or(true));
-    let wallpaper = options
-        .get("wallpaper")
-        .and_then(|v| v.as_bool())
-        .unwrap_or_else(|| opts["wallpaper"].as_bool().unwrap_or(false));
-    let mut taskbar_cleanup = options
-        .get("taskbarCleanup")
-        .and_then(|v| v.as_bool())
-        .unwrap_or_else(|| opts["taskbarCleanup"].as_bool().unwrap_or(false));
-    let mut explorer_cleanup = options
-        .get("explorerCleanup")
-        .and_then(|v| v.as_bool())
-        .unwrap_or_else(|| opts["explorerCleanup"].as_bool().unwrap_or(false));
-    let mut transparency = options
-        .get("transparency")
-        .and_then(|v| v.as_bool())
-        .unwrap_or_else(|| opts["transparency"].as_bool().unwrap_or(true));
+/// A personalization feature: the registry values it writes, and whether it
+/// additionally runs the wallpaper generator.
+#[derive(Debug, Clone)]
+pub(crate) struct Feature {
+    pub key: &'static str,
+    pub action_id: &'static str,
+    writes: Vec<Write>,
+    wallpaper: bool,
+}
 
+/// Resolve the features to apply from profile defaults + caller overrides.
+pub(crate) fn plan_features(profile: &str, options: &Value) -> Vec<Feature> {
+    let defaults = get_personalization_options(profile);
+    let flag = |key: &str| -> bool {
+        options
+            .get(key)
+            .and_then(Value::as_bool)
+            .unwrap_or_else(|| defaults[key].as_bool().unwrap_or(false))
+    };
+    let mut taskbar_cleanup = flag("taskbarCleanup");
+    let mut explorer_cleanup = flag("explorerCleanup");
     if profile == "work_pc" {
         taskbar_cleanup = false;
         explorer_cleanup = false;
     }
-    if profile == "low_spec_system" || profile == "low_spec" {
-        transparency = false;
+    // Transparency: an explicit caller value is always honoured (true writes
+    // 1, false writes 0 — the questionnaire's "disable transparency" answer);
+    // low-spec profiles always disable it.
+    let transparency: Option<bool> = if profile == "low_spec_system" || profile == "low_spec" {
+        Some(false)
+    } else {
+        options.get("transparency").and_then(Value::as_bool)
+    };
+
+    let mut features = Vec::new();
+    if flag("darkMode") {
+        features.push(Feature {
+            key: "darkMode",
+            action_id: "personalize.darkMode",
+            writes: vec![
+                w(Hive::Hkcu, PERSONALIZE, "AppsUseLightTheme", RegValue::dword(0)),
+                w(Hive::Hkcu, PERSONALIZE, "SystemUsesLightTheme", RegValue::dword(0)),
+            ],
+            wallpaper: false,
+        });
     }
-
-    // ── Phase 1: Collect current values for rollback ────────────────────
-
-    let mut previous_values: Vec<rollback::PreviousValue> = Vec::new();
-
-    // Dark mode values
-    if dark_mode {
-        collect_registry_prev(
-            &mut previous_values,
-            "HKCU",
-            "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize",
-            "AppsUseLightTheme",
-            "personalize.darkMode",
-        );
-        collect_registry_prev(
-            &mut previous_values,
-            "HKCU",
-            "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize",
-            "SystemUsesLightTheme",
-            "personalize.darkMode",
-        );
+    if flag("brandAccent") {
+        features.push(Feature {
+            key: "brandAccent",
+            action_id: "personalize.accentColor",
+            writes: vec![
+                w(Hive::Hkcu, ACCENT, "AccentColorMenu", RegValue::dword(OUDENOS_ACCENT_BGR)),
+                w(Hive::Hkcu, ACCENT, "StartColorMenu", RegValue::dword(OUDENOS_ACCENT_BGR)),
+                w(Hive::Hkcu, PERSONALIZE, "ColorPrevalence", RegValue::dword(0)),
+                w(Hive::Hkcu, DWM, "ColorPrevalence", RegValue::dword(0)),
+            ],
+            wallpaper: false,
+        });
     }
-
-    // Accent color values
-    if brand_accent {
-        collect_registry_prev(
-            &mut previous_values,
-            "HKCU",
-            "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Accent",
-            "AccentColorMenu",
-            "personalize.accentColor",
-        );
-        collect_registry_prev(
-            &mut previous_values,
-            "HKCU",
-            "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Accent",
-            "StartColorMenu",
-            "personalize.accentColor",
-        );
-        collect_registry_prev(
-            &mut previous_values,
-            "HKCU",
-            "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize",
-            "ColorPrevalence",
-            "personalize.accentColor",
-        );
-        collect_registry_prev(
-            &mut previous_values,
-            "HKCU",
-            "SOFTWARE\\Microsoft\\Windows\\DWM",
-            "ColorizationColor",
-            "personalize.accentColor",
-        );
-        collect_registry_prev(
-            &mut previous_values,
-            "HKCU",
-            "SOFTWARE\\Microsoft\\Windows\\DWM",
-            "ColorizationAfterglow",
-            "personalize.accentColor",
-        );
+    if flag("wallpaper") {
+        features.push(Feature {
+            key: "wallpaper",
+            action_id: "personalize.wallpaper",
+            writes: vec![
+                w(Hive::Hkcu, DESKTOP, "WallpaperStyle", RegValue::string("10")),
+                w(Hive::Hkcu, DESKTOP, "TileWallpaper", RegValue::string("0")),
+                w(Hive::Hkcu, COLORS, "Background", RegValue::string("0 0 0")),
+            ],
+            wallpaper: true,
+        });
     }
-
-    // Wallpaper values
-    if wallpaper {
-        collect_registry_prev(
-            &mut previous_values,
-            "HKCU",
-            "Control Panel\\Desktop",
-            "Wallpaper",
-            "personalize.wallpaper",
-        );
-        collect_registry_prev(
-            &mut previous_values,
-            "HKCU",
-            "Control Panel\\Desktop",
-            "WallpaperStyle",
-            "personalize.wallpaper",
-        );
+    if let Some(enable) = transparency {
+        features.push(Feature {
+            key: "transparency",
+            action_id: "personalize.transparency",
+            writes: vec![w(Hive::Hkcu, PERSONALIZE, "EnableTransparency", RegValue::dword(u32::from(enable)))],
+            wallpaper: false,
+        });
     }
-
-    // Transparency
-    if transparency {
-        collect_registry_prev(
-            &mut previous_values,
-            "HKCU",
-            "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize",
-            "EnableTransparency",
-            "personalize.transparency",
-        );
-    }
-
-    // Taskbar cleanup
     if taskbar_cleanup {
-        collect_registry_prev(
-            &mut previous_values,
-            "HKCU",
-            "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
-            "ShowTaskViewButton",
-            "personalize.taskbarCleanup",
-        );
-        collect_registry_prev(
-            &mut previous_values,
-            "HKCU",
-            "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Search",
-            "SearchboxTaskbarMode",
-            "personalize.taskbarCleanup",
-        );
-        collect_registry_prev(
-            &mut previous_values,
-            "HKCU",
-            "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
-            "TaskbarDa",
-            "personalize.taskbarCleanup",
-        );
-        collect_registry_prev(
-            &mut previous_values,
-            "HKCU",
-            "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
-            "TaskbarMn",
-            "personalize.taskbarCleanup",
-        );
+        features.push(Feature {
+            key: "taskbarCleanup",
+            action_id: "personalize.taskbarCleanup",
+            writes: vec![
+                w(Hive::Hkcu, ADVANCED, "ShowTaskViewButton", RegValue::dword(0)),
+                w(Hive::Hkcu, SEARCH, "SearchboxTaskbarMode", RegValue::dword(1)),
+                w(Hive::Hkcu, ADVANCED, "TaskbarMn", RegValue::dword(0)),
+                w(Hive::Hklm, DSH_POLICY, "AllowNewsAndInterests", RegValue::dword(0)),
+            ],
+            wallpaper: false,
+        });
     }
-
-    // Explorer cleanup
     if explorer_cleanup {
-        collect_registry_prev(
-            &mut previous_values,
-            "HKCU",
-            "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
-            "HideFileExt",
-            "personalize.explorerCleanup",
-        );
-        collect_registry_prev(
-            &mut previous_values,
-            "HKCU",
-            "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
-            "Hidden",
-            "personalize.explorerCleanup",
-        );
-        collect_registry_prev(
-            &mut previous_values,
-            "HKCU",
-            "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer",
-            "ShowRecent",
-            "personalize.explorerCleanup",
-        );
-        collect_registry_prev(
-            &mut previous_values,
-            "HKCU",
-            "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer",
-            "ShowFrequent",
-            "personalize.explorerCleanup",
-        );
+        features.push(Feature {
+            key: "explorerCleanup",
+            action_id: "personalize.explorerCleanup",
+            writes: vec![
+                w(Hive::Hkcu, ADVANCED, "HideFileExt", RegValue::dword(0)),
+                w(Hive::Hkcu, ADVANCED, "Hidden", RegValue::dword(1)),
+                w(Hive::Hkcu, EXPLORER, "ShowRecent", RegValue::dword(0)),
+                w(Hive::Hkcu, EXPLORER, "ShowFrequent", RegValue::dword(0)),
+            ],
+            wallpaper: false,
+        });
     }
+    features
+}
 
-    // ── Phase 2: Create rollback snapshot BEFORE making changes ─────────
+/// Apply visual personalization for the given profile.
+pub fn apply_personalization(db: &Database, profile: &str, options: &Value) -> anyhow::Result<Value> {
+    tracing::info!(profile = profile, "Applying visual personalization");
+    let features = plan_features(profile, options);
+
+    // ── Phase 1: snapshot exactly what will be written ─────────────────
+    let mut previous_values = Vec::new();
+    for feature in &features {
+        for write in &feature.writes {
+            let current = registry::read_value(write.hive, write.path, write.name).map_err(|e| {
+                anyhow::anyhow!("Could not snapshot {}\\{}\\{} ({}); nothing was changed", write.hive.as_str(), write.path, write.name, e)
+            })?;
+            let created_key = if current.is_none() {
+                registry::first_missing_key(write.hive, write.path).unwrap_or(None)
+            } else {
+                None
+            };
+            previous_values.push(rollback::PreviousValue {
+                change_type: "registry".to_string(),
+                path: format!("{}\\{}", write.hive.as_str(), write.path),
+                value_name: write.name.to_string(),
+                previous_value: current.as_ref().map(RegValue::to_json),
+                action_id: feature.action_id.to_string(),
+                previous_kind: current.as_ref().map(|v| v.kind.as_str()),
+                created_key,
+            });
+        }
+        if feature.wallpaper {
+            let current = registry::read_value(Hive::Hkcu, DESKTOP, "Wallpaper").map_err(|e| {
+                anyhow::anyhow!("Could not snapshot the current wallpaper ({}); nothing was changed", e)
+            })?;
+            previous_values.push(rollback::PreviousValue {
+                change_type: "registry".to_string(),
+                path: format!("HKCU\\{}", DESKTOP),
+                value_name: "Wallpaper".to_string(),
+                previous_value: current.as_ref().map(RegValue::to_json),
+                action_id: feature.action_id.to_string(),
+                previous_kind: current.as_ref().map(|v| v.kind.as_str()),
+                created_key: None,
+            });
+        }
+    }
 
     let snapshot_id = rollback::create_snapshot(
         db,
@@ -277,94 +212,38 @@ pub fn apply_personalization(
         &previous_values,
     )?;
 
-    tracing::info!(
-        snapshot_id = snapshot_id.as_str(),
-        profile = profile,
-        "Personalization rollback snapshot created"
-    );
-
-    // ── Phase 3: Apply changes ──────────────────────────────────────────
-
+    // ── Phase 2: apply ─────────────────────────────────────────────────
     let mut results: Vec<Value> = Vec::new();
     let mut succeeded = 0u32;
     let mut failed = 0u32;
+    let mut needs_refresh = false;
 
-    // Dark mode
-    if dark_mode {
-        apply_and_record(
-            "darkMode",
-            &mut results,
-            &mut succeeded,
-            &mut failed,
-            apply_dark_mode(),
-        );
+    let mut skipped_items = 0u32;
+    for feature in &features {
+        match apply_feature(feature) {
+            Ok(skipped) => {
+                // A feature with protected (skipped) items is still not a
+                // failure; the skipped items are reported individually.
+                succeeded += 1;
+                skipped_items += skipped.len() as u32;
+                needs_refresh |= !feature.wallpaper;
+                let status = feature_status(feature, &skipped);
+                let mut entry = serde_json::json!({ "feature": feature.key, "status": status });
+                if !skipped.is_empty() {
+                    entry["items"] = Value::Array(skipped);
+                }
+                results.push(entry);
+            }
+            Err(e) => {
+                tracing::error!(feature = feature.key, error = %e, "Personalization feature failed");
+                failed += 1;
+                results.push(serde_json::json!({ "feature": feature.key, "status": "failed", "error": e.to_string() }));
+            }
+        }
     }
-
-    // Accent color
-    if brand_accent {
-        apply_and_record(
-            "brandAccent",
-            &mut results,
-            &mut succeeded,
-            &mut failed,
-            apply_accent_color(),
-        );
+    if needs_refresh {
+        broadcast_setting_change();
     }
-
-    // Wallpaper
-    if wallpaper {
-        apply_and_record(
-            "wallpaper",
-            &mut results,
-            &mut succeeded,
-            &mut failed,
-            apply_wallpaper(),
-        );
-    }
-
-    // Transparency
-    if transparency {
-        apply_and_record(
-            "transparency",
-            &mut results,
-            &mut succeeded,
-            &mut failed,
-            apply_transparency(true),
-        );
-    } else if profile == "low_spec_system" {
-        // Explicitly disable transparency for low-spec to save GPU
-        apply_and_record(
-            "transparency",
-            &mut results,
-            &mut succeeded,
-            &mut failed,
-            apply_transparency(false),
-        );
-    }
-
-    // Taskbar cleanup
-    if taskbar_cleanup {
-        apply_and_record(
-            "taskbarCleanup",
-            &mut results,
-            &mut succeeded,
-            &mut failed,
-            apply_taskbar_cleanup(),
-        );
-    }
-
-    // Explorer cleanup
-    if explorer_cleanup {
-        apply_and_record(
-            "explorerCleanup",
-            &mut results,
-            &mut succeeded,
-            &mut failed,
-            apply_explorer_cleanup(),
-        );
-    }
-
-    // ── Phase 4: Audit log ──────────────────────────────────────────────
 
     let status = if failed == 0 {
         "success"
@@ -373,31 +252,28 @@ pub fn apply_personalization(
     } else {
         "partial"
     };
+    let first_error = results
+        .iter()
+        .find_map(|r| r.get("error").and_then(Value::as_str).map(|e| format!("{}: {}", r["feature"].as_str().unwrap_or("?"), e)));
 
     let now = chrono::Utc::now().to_rfc3339();
-    let audit_id = uuid::Uuid::new_v4().to_string();
     db.conn().execute(
         "INSERT INTO audit_log (id, timestamp, category, action, detail, severity)
          VALUES (?1, ?2, 'personalizer', 'personalization_applied', ?3, ?4)",
         rusqlite::params![
-            audit_id,
+            uuid::Uuid::new_v4().to_string(),
             now,
             format!(
-                "Profile '{}': {} succeeded, {} failed, status={}",
-                profile, succeeded, failed, status
+                "Profile '{}': {} succeeded, {} failed, status={}{}",
+                profile,
+                succeeded,
+                failed,
+                status,
+                first_error.as_deref().map(|e| format!(" · {}", e)).unwrap_or_default()
             ),
-            if status == "failed" { "error" } else { "info" },
+            if status == "success" { "info" } else { "error" },
         ],
     )?;
-
-    tracing::info!(
-        profile = profile,
-        snapshot_id = snapshot_id.as_str(),
-        status = status,
-        succeeded = succeeded,
-        failed = failed,
-        "Personalization complete"
-    );
 
     Ok(serde_json::json!({
         "snapshotId": snapshot_id,
@@ -405,169 +281,146 @@ pub fn apply_personalization(
         "status": status,
         "succeeded": succeeded,
         "failed": failed,
+        "skipped": skipped_items,
+        "error": first_error,
         "results": results,
     }))
 }
 
-/// Revert a personalization by restoring its rollback snapshot.
-pub fn revert_personalization(db: &Database, snapshot_id: &str) -> anyhow::Result<Value> {
-    tracing::info!(
-        snapshot_id = snapshot_id,
-        "Reverting personalization via snapshot"
-    );
-    rollback::restore_snapshot(db, snapshot_id)
-}
-
-// ─── Helpers ────────────────────────────────────────────────────────────────
-
-fn collect_registry_prev(
-    previous_values: &mut Vec<rollback::PreviousValue>,
-    hive: &str,
-    path: &str,
-    value_name: &str,
-    action_id: &str,
-) {
-    let prev = read_registry_value(hive, path, value_name);
-    previous_values.push(rollback::PreviousValue {
-        change_type: "registry".to_string(),
-        path: format!("{}\\{}", hive, path),
-        value_name: value_name.to_string(),
-        previous_value: prev,
-        action_id: action_id.to_string(),
-    });
-}
-
-fn apply_and_record(
-    feature: &str,
-    results: &mut Vec<Value>,
-    succeeded: &mut u32,
-    failed: &mut u32,
-    result: anyhow::Result<()>,
-) {
-    match result {
-        Ok(()) => {
-            *succeeded += 1;
-            results.push(serde_json::json!({
-                "feature": feature,
-                "status": "success",
-            }));
+/// Apply one feature. A value-level access denial (e.g. the UCPD driver
+/// protecting TaskbarDa / the Dsh policy / Search values — the key opens fine,
+/// the value write is refused) is NOT a failure: that item is reported as
+/// skipped (`access_denied_protected`), nothing was changed for it, it is not
+/// verified, and the remaining values of the feature still apply.
+/// Returns the skipped items.
+pub(crate) fn apply_feature(feature: &Feature) -> anyhow::Result<Vec<Value>> {
+    let mut skipped = Vec::new();
+    for write in &feature.writes {
+        match registry::write_value(write.hive, write.path, write.name, &write.value) {
+            Ok(_) => {}
+            Err(e) if e.is_access_denied() => {
+                tracing::warn!(feature = feature.key, value = write.name, "Value write denied by Windows — skipped");
+                skipped.push(serde_json::json!({
+                    "path": format!("{}\\{}", write.hive.as_str(), write.path),
+                    "valueName": write.name,
+                    "status": "skipped",
+                    "reason": "access_denied_protected",
+                    "note": "Windows protects this value (e.g. the UCPD driver); nothing was changed for it.",
+                }));
+                continue;
+            }
+            Err(e) => anyhow::bail!("{}", e),
         }
-        Err(e) => {
-            tracing::error!(feature = feature, error = %e, "Personalization feature failed");
-            *failed += 1;
-            results.push(serde_json::json!({
-                "feature": feature,
-                "status": "failed",
-                "error": e.to_string(),
-            }));
+        match registry::read_value(write.hive, write.path, write.name)? {
+            Some(read) if read == write.value => {}
+            other => anyhow::bail!(
+                "Verification failed for {}\\{}\\{}: expected {:?}, got {:?}",
+                write.hive.as_str(),
+                write.path,
+                write.name,
+                write.value.to_json(),
+                other.map(|v| v.to_json())
+            ),
         }
     }
+    if feature.wallpaper {
+        apply_wallpaper()?;
+    }
+    Ok(skipped)
+}
+
+/// Feature-level status from its skipped items.
+pub(crate) fn feature_status(feature: &Feature, skipped: &[Value]) -> &'static str {
+    if skipped.is_empty() {
+        "success"
+    } else if skipped.len() >= feature.writes.len() && !feature.wallpaper {
+        "skipped"
+    } else {
+        "partial"
+    }
+}
+
+/// Revert a personalization by restoring its rollback snapshot, then make
+/// the restored wallpaper/theme visible without a re-login.
+pub fn revert_personalization(db: &Database, snapshot_id: &str) -> anyhow::Result<Value> {
+    tracing::info!(snapshot_id = snapshot_id, "Reverting personalization via snapshot");
+    let result = rollback::restore_snapshot(db, snapshot_id)?;
+    refresh_wallpaper_from_registry();
+    broadcast_setting_change();
+    Ok(result)
 }
 
 // ─── Windows implementations ────────────────────────────────────────────────
 
 #[cfg(windows)]
-fn apply_dark_mode() -> anyhow::Result<()> {
-    let script = "\
-        Set-ItemProperty 'HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize' \
-            -Name AppsUseLightTheme -Value 0 -Type DWord -Force; \
-        Set-ItemProperty 'HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize' \
-            -Name SystemUsesLightTheme -Value 0 -Type DWord -Force";
-    let result = powershell::execute(script)?;
-    if !result.success {
-        anyhow::bail!("Dark mode apply failed: {}", result.stderr.trim());
+fn broadcast_setting_change() {
+    use windows::core::w;
+    use windows::Win32::Foundation::{LPARAM, WPARAM};
+    use windows::Win32::UI::WindowsAndMessaging::{SendMessageTimeoutW, HWND_BROADCAST, SMTO_ABORTIFHUNG, WM_SETTINGCHANGE};
+    for area in [w!("ImmersiveColorSet"), w!("WindowsThemeElement")] {
+        unsafe {
+            let _ = SendMessageTimeoutW(
+                HWND_BROADCAST,
+                WM_SETTINGCHANGE,
+                WPARAM(0),
+                LPARAM(area.as_ptr() as isize),
+                SMTO_ABORTIFHUNG,
+                2000,
+                None,
+            );
+        }
     }
-    verify_registry_dword(
-        "HKCU",
-        "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize",
-        "AppsUseLightTheme",
-        0,
-    )?;
-    verify_registry_dword(
-        "HKCU",
-        "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize",
-        "SystemUsesLightTheme",
-        0,
-    )?;
-    tracing::info!("Dark mode enabled");
-    Ok(())
 }
 
+#[cfg(not(windows))]
+fn broadcast_setting_change() {}
+
 #[cfg(windows)]
-fn apply_accent_color() -> anyhow::Result<()> {
-    let script = format!(
-        "\
-        Set-ItemProperty 'HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Accent' \
-            -Name AccentColorMenu -Value {} -Type DWord -Force; \
-        Set-ItemProperty 'HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Accent' \
-            -Name StartColorMenu -Value {} -Type DWord -Force; \
-        Set-ItemProperty 'HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize' \
-            -Name ColorPrevalence -Value 0 -Type DWord -Force; \
-        Set-ItemProperty 'HKCU:\\SOFTWARE\\Microsoft\\Windows\\DWM' \
-            -Name ColorPrevalence -Value 0 -Type DWord -Force",
-        OUDENOS_ACCENT_BGR,
-        OUDENOS_ACCENT_BGR,
-    );
-    let result = powershell::execute(&script)?;
-    if !result.success {
-        anyhow::bail!("Accent color apply failed: {}", result.stderr.trim());
+fn refresh_wallpaper_from_registry() {
+    // Re-apply whatever the registry now says (after a restore).
+    let script = "Add-Type -TypeDefinition @'\nusing System; using System.Runtime.InteropServices;\npublic class OudenWallRefresh { [DllImport(\"user32.dll\", CharSet = CharSet.Unicode)] public static extern int SystemParametersInfo(int a, int b, string c, int d); }\n'@; \
+        $p = (Get-ItemProperty 'HKCU:\\Control Panel\\Desktop' -Name Wallpaper -ErrorAction SilentlyContinue).Wallpaper; \
+        if ($null -eq $p) { $p = '' }; \
+        [OudenWallRefresh]::SystemParametersInfo(0x0014, 0, $p, 0x01 -bor 0x02) | Out-Null";
+    if let Err(e) = powershell::execute(script) {
+        tracing::warn!(error = %e, "Wallpaper refresh after revert failed");
     }
-    verify_registry_dword(
-        "HKCU",
-        "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Accent",
-        "AccentColorMenu",
-        OUDENOS_ACCENT_BGR as i64,
-    )?;
-    verify_registry_dword(
-        "HKCU",
-        "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Accent",
-        "StartColorMenu",
-        OUDENOS_ACCENT_BGR as i64,
-    )?;
-    verify_registry_dword(
-        "HKCU",
-        "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize",
-        "ColorPrevalence",
-        0,
-    )?;
-    tracing::info!("Accent color set to black (Ouden monochrome)");
-    Ok(())
 }
+
+#[cfg(not(windows))]
+fn refresh_wallpaper_from_registry() {}
 
 #[cfg(windows)]
 fn apply_wallpaper() -> anyhow::Result<()> {
     // Generate wallpaper at runtime using GDI+ — resolution-matched with
     // Ouden logo (open ring arc) and pixel starfield on black background.
+    // Style/tile/background registry values are written natively beforehand.
     let script = r#"
-$ErrorActionPreference = 'Stop'
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
 
 $screen = [System.Windows.Forms.Screen]::PrimaryScreen.Bounds
 $w = $screen.Width; $h = $screen.Height
 
-$wallDir = "$env:LOCALAPPDATA\OudenOS"
-if (!(Test-Path $wallDir)) { New-Item -ItemType Directory -Path $wallDir -Force | Out-Null }
-$wallPath = "$wallDir\wallpaper.bmp"
+$wallDir = Join-Path $env:LOCALAPPDATA 'OudenOS'
+if (!(Test-Path -LiteralPath $wallDir)) { New-Item -ItemType Directory -Path $wallDir | Out-Null }
+$wallPath = Join-Path $wallDir 'wallpaper.bmp'
 
 $bmp = New-Object System.Drawing.Bitmap($w, $h)
 $g = [System.Drawing.Graphics]::FromImage($bmp)
 $g.Clear([System.Drawing.Color]::Black)
 
-# Pixel stars
 $rand = New-Object System.Random(42)
 $starCount = [math]::Min([math]::Floor($w * $h / 5000), 1200)
 for ($i = 0; $i -lt $starCount; $i++) {
     $sx = $rand.Next(0, $w); $sy = $rand.Next(0, $h)
     $opacity = [int](40 + $rand.Next(0, 100))
     $size = if ($rand.NextDouble() -gt 0.85) { 2 } else { 1 }
-    $color = [System.Drawing.Color]::FromArgb($opacity, 255, 255, 255)
-    $brush = New-Object System.Drawing.SolidBrush($color)
+    $brush = New-Object System.Drawing.SolidBrush([System.Drawing.Color]::FromArgb($opacity, 255, 255, 255))
     $g.FillRectangle($brush, $sx, $sy, $size, $size)
     $brush.Dispose()
 }
 
-# Ouden logo — open ring arc in center
 $cx = $w / 2; $cy = $h / 2
 $logoSize = [math]::Min($w, $h) * 0.12
 $pen = New-Object System.Drawing.Pen([System.Drawing.Color]::FromArgb(200, 255, 255, 255), [float]($logoSize * 0.06))
@@ -578,7 +431,6 @@ $g.SmoothingMode = [System.Drawing.Drawing2D.SmoothingMode]::HighQuality
 $g.DrawArc($pen, $rect, -50, 320)
 $pen.Dispose()
 
-# Accent dot
 $dotAngle = [math]::PI * (-50) / 180
 $dotX = $cx + $logoSize * [math]::Cos($dotAngle)
 $dotY = $cy + $logoSize * [math]::Sin($dotAngle)
@@ -591,262 +443,23 @@ $g.Dispose()
 $bmp.Save($wallPath, [System.Drawing.Imaging.ImageFormat]::Bmp)
 $bmp.Dispose()
 
-# Apply wallpaper via SystemParametersInfo
 Add-Type -TypeDefinition @"
 using System;
 using System.Runtime.InteropServices;
-public class WallHelper {
-    [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+public class OudenWallHelper {
+    [DllImport("user32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
     public static extern int SystemParametersInfo(int uAction, int uParam, string lpvParam, int fuWinIni);
 }
-"@ -ErrorAction SilentlyContinue
+"@
 
-[WallHelper]::SystemParametersInfo(0x0014, 0, $wallPath, 0x01 -bor 0x02) | Out-Null
-Set-ItemProperty 'HKCU:\Control Panel\Desktop' -Name WallpaperStyle -Value '10' -Force
-Set-ItemProperty 'HKCU:\Control Panel\Desktop' -Name TileWallpaper -Value '0' -Force
-Set-ItemProperty 'HKCU:\Control Panel\Colors' -Name Background -Value '0 0 0' -Force
-
-Write-Host "Wallpaper generated and applied: ${w}x${h}"
+$ok = [OudenWallHelper]::SystemParametersInfo(0x0014, 0, $wallPath, 0x01 -bor 0x02)
+if ($ok -eq 0) { throw ('SystemParametersInfo failed (Win32 error ' + [Runtime.InteropServices.Marshal]::GetLastWin32Error() + ')') }
+Write-Output "Wallpaper generated and applied: ${w}x${h}"
 "#;
-    let result = powershell::execute(script)?;
+    let result = powershell::execute_mutation(script)?;
     if !result.success {
-        tracing::warn!(
-            "Wallpaper generation failed: {}, falling back to solid black",
-            result.stderr.trim()
-        );
-        let fallback = "\
-            Set-ItemProperty 'HKCU:\\Control Panel\\Colors' -Name Background -Value '0 0 0' -Force; \
-            Add-Type -TypeDefinition @'\n\
-using System; using System.Runtime.InteropServices;\n\
-public class WFB { [DllImport(\"user32.dll\", CharSet = CharSet.Unicode)] public static extern int SystemParametersInfo(int a, int b, string c, int d); }\n\
-'@ -ErrorAction SilentlyContinue; \
-            [WFB]::SystemParametersInfo(0x0014, 0, '', 0x01 -bor 0x02) | Out-Null";
-        let _ = powershell::execute(fallback);
+        anyhow::bail!("Wallpaper generation failed: {}", result.stderr.trim());
     }
-    tracing::info!("Wallpaper applied");
-    Ok(())
-}
-
-#[cfg(windows)]
-fn apply_transparency(enable: bool) -> anyhow::Result<()> {
-    let value = if enable { 1 } else { 0 };
-    let script = format!(
-        "Set-ItemProperty 'HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize' \
-            -Name EnableTransparency -Value {} -Type DWord -Force",
-        value,
-    );
-    let result = powershell::execute(&script)?;
-    if !result.success {
-        anyhow::bail!("Transparency apply failed: {}", result.stderr.trim());
-    }
-    verify_registry_dword(
-        "HKCU",
-        "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize",
-        "EnableTransparency",
-        value.into(),
-    )?;
-    tracing::info!(enable = enable, "Transparency setting applied");
-    Ok(())
-}
-
-#[cfg(windows)]
-fn apply_taskbar_cleanup() -> anyhow::Result<()> {
-    let script = "\
-        Set-ItemProperty 'HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced' \
-            -Name ShowTaskViewButton -Value 0 -Type DWord -Force; \
-        Set-ItemProperty 'HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Search' \
-            -Name SearchboxTaskbarMode -Value 1 -Type DWord -Force; \
-        Set-ItemProperty 'HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced' \
-            -Name TaskbarDa -Value 0 -Type DWord -Force; \
-        Set-ItemProperty 'HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced' \
-            -Name TaskbarMn -Value 0 -Type DWord -Force";
-    let result = powershell::execute(script)?;
-    if !result.success {
-        anyhow::bail!("Taskbar cleanup failed: {}", result.stderr.trim());
-    }
-    verify_registry_dword(
-        "HKCU",
-        "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
-        "ShowTaskViewButton",
-        0,
-    )?;
-    verify_registry_dword(
-        "HKCU",
-        "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Search",
-        "SearchboxTaskbarMode",
-        1,
-    )?;
-    verify_registry_dword(
-        "HKCU",
-        "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
-        "TaskbarDa",
-        0,
-    )?;
-    verify_registry_dword(
-        "HKCU",
-        "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
-        "TaskbarMn",
-        0,
-    )?;
-    tracing::info!("Taskbar cleanup applied");
-    Ok(())
-}
-
-#[cfg(windows)]
-fn apply_explorer_cleanup() -> anyhow::Result<()> {
-    let script = "\
-        Set-ItemProperty 'HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced' \
-            -Name HideFileExt -Value 0 -Type DWord -Force; \
-        Set-ItemProperty 'HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced' \
-            -Name Hidden -Value 1 -Type DWord -Force; \
-        Set-ItemProperty 'HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer' \
-            -Name ShowRecent -Value 0 -Type DWord -Force; \
-        Set-ItemProperty 'HKCU:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer' \
-            -Name ShowFrequent -Value 0 -Type DWord -Force";
-    let result = powershell::execute(script)?;
-    if !result.success {
-        anyhow::bail!("Explorer cleanup failed: {}", result.stderr.trim());
-    }
-    verify_registry_dword(
-        "HKCU",
-        "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
-        "HideFileExt",
-        0,
-    )?;
-    verify_registry_dword(
-        "HKCU",
-        "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
-        "Hidden",
-        1,
-    )?;
-    verify_registry_dword(
-        "HKCU",
-        "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer",
-        "ShowRecent",
-        0,
-    )?;
-    verify_registry_dword(
-        "HKCU",
-        "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer",
-        "ShowFrequent",
-        0,
-    )?;
-    tracing::info!("Explorer cleanup applied");
-    Ok(())
-}
-
-#[cfg(windows)]
-fn refresh_shell_ui() -> anyhow::Result<()> {
-    let script = "\
-        Add-Type -TypeDefinition @'\n\
-using System;\n\
-using System.Runtime.InteropServices;\n\
-public static class OudenShellRefresh {\n\
-    [DllImport(\"user32.dll\", SetLastError = true, CharSet = CharSet.Unicode)]\n\
-    public static extern IntPtr SendMessageTimeout(IntPtr hWnd, int msg, UIntPtr wParam, string lParam, int fuFlags, int uTimeout, out UIntPtr lpdwResult);\n\
-}\n\
-'@; \
-        $result = [UIntPtr]::Zero; \
-        [void][OudenShellRefresh]::SendMessageTimeout([IntPtr]0xffff, 0x001A, [UIntPtr]::Zero, 'ImmersiveColorSet', 2, 5000, [ref]$result); \
-        [void][OudenShellRefresh]::SendMessageTimeout([IntPtr]0xffff, 0x001A, [UIntPtr]::Zero, 'WindowsThemeElement', 2, 5000, [ref]$result)";
-    let result = powershell::execute(script)?;
-    if !result.success {
-        anyhow::bail!("Shell refresh failed: {}", result.stderr.trim());
-    }
-    tracing::info!("Windows shell refreshed");
-    Ok(())
-}
-
-#[cfg(windows)]
-fn verify_registry_dword(
-    hive: &str,
-    path: &str,
-    value_name: &str,
-    expected: i64,
-) -> anyhow::Result<()> {
-    match read_registry_value(hive, path, value_name) {
-        Some(Value::Number(value)) if value.as_i64() == Some(expected) => Ok(()),
-        Some(Value::String(value)) if value.parse::<i64>().ok() == Some(expected) => Ok(()),
-        Some(other) => anyhow::bail!(
-            "Verification failed for {}\\{}\\{}: expected {}, got {}",
-            hive,
-            path,
-            value_name,
-            expected,
-            other
-        ),
-        None => anyhow::bail!(
-            "Verification failed for {}\\{}\\{}: value missing",
-            hive,
-            path,
-            value_name
-        ),
-    }
-}
-
-#[cfg(windows)]
-fn verify_registry_string(
-    hive: &str,
-    path: &str,
-    value_name: &str,
-    expected: &str,
-) -> anyhow::Result<()> {
-    match read_registry_value(hive, path, value_name) {
-        Some(Value::String(value)) if value.eq_ignore_ascii_case(expected) => Ok(()),
-        Some(other) => anyhow::bail!(
-            "Verification failed for {}\\{}\\{}: expected '{}', got {}",
-            hive,
-            path,
-            value_name,
-            expected,
-            other
-        ),
-        None => anyhow::bail!(
-            "Verification failed for {}\\{}\\{}: value missing",
-            hive,
-            path,
-            value_name
-        ),
-    }
-}
-
-#[cfg(windows)]
-fn read_registry_value(hive: &str, path: &str, value_name: &str) -> Option<Value> {
-    let escaped_path = powershell::escape_ps_string(path);
-    let escaped_name = powershell::escape_ps_string(value_name);
-    let script = format!(
-        "$val = Get-ItemProperty -Path 'Registry::{}\\{}' -Name '{}' -ErrorAction SilentlyContinue; \
-         if ($val) {{ $val.'{}' }} else {{ $null }}",
-        hive, escaped_path, escaped_name, escaped_name,
-    );
-    match powershell::execute(&script) {
-        Ok(result) if result.success => {
-            let trimmed = result.stdout.trim();
-            if trimmed.is_empty() {
-                None
-            } else if let Ok(n) = trimmed.parse::<i64>() {
-                Some(Value::Number(n.into()))
-            } else {
-                Some(Value::String(trimmed.to_string()))
-            }
-        }
-        _ => None,
-    }
-}
-
-// ─── Non-Windows simulation ─────────────────────────────────────────────────
-
-#[cfg(not(windows))]
-fn apply_dark_mode() -> anyhow::Result<()> {
-    tracing::info!(
-        "[simulated] Would enable dark mode (AppsUseLightTheme=0, SystemUsesLightTheme=0)"
-    );
-    Ok(())
-}
-
-#[cfg(not(windows))]
-fn apply_accent_color() -> anyhow::Result<()> {
-    tracing::info!("[simulated] Would set accent color to oudenos brand red (#E8254B)");
     Ok(())
 }
 
@@ -856,47 +469,18 @@ fn apply_wallpaper() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[cfg(not(windows))]
-fn apply_transparency(enable: bool) -> anyhow::Result<()> {
-    tracing::info!(enable = enable, "[simulated] Would set transparency");
-    Ok(())
-}
-
-#[cfg(not(windows))]
-fn apply_taskbar_cleanup() -> anyhow::Result<()> {
-    tracing::info!(
-        "[simulated] Would clean up taskbar (hide Task View, Widgets, Chat, reduce search)"
-    );
-    Ok(())
-}
-
-#[cfg(not(windows))]
-fn apply_explorer_cleanup() -> anyhow::Result<()> {
-    tracing::info!(
-        "[simulated] Would clean up Explorer (show extensions, hidden files, disable recents)"
-    );
-    Ok(())
-}
-
-#[cfg(not(windows))]
-fn refresh_shell_ui() -> anyhow::Result<()> {
-    tracing::info!("[simulated] Would refresh the Windows shell UI");
-    Ok(())
-}
-
-#[cfg(not(windows))]
-fn read_registry_value(_hive: &str, _path: &str, _value_name: &str) -> Option<Value> {
-    Some(serde_json::json!(1))
-}
-
 // ─── Tests ──────────────────────────────────────────────────────────────────
 
 #[cfg(test)]
 mod tests {
     use super::*;
 
+    fn keys(features: &[Feature]) -> Vec<&'static str> {
+        features.iter().map(|f| f.key).collect()
+    }
+
     #[test]
-    fn test_gaming_options_all_enabled() {
+    fn test_gaming_options_defaults() {
         let opts = get_personalization_options("gaming_desktop");
         assert_eq!(opts["darkMode"], true);
         assert_eq!(opts["wallpaper"], true);
@@ -907,34 +491,79 @@ mod tests {
     }
 
     #[test]
-    fn test_work_pc_no_cleanup() {
-        let opts = get_personalization_options("work_pc");
-        assert_eq!(opts["darkMode"], true);
-        assert_eq!(opts["brandAccent"], false);
-        assert_eq!(opts["wallpaper"], true);
-        assert_eq!(opts["taskbarCleanup"], false);
-        assert_eq!(opts["explorerCleanup"], false);
+    fn taskbar_cleanup_never_touches_ucpd_protected_taskbar_da() {
+        let features = plan_features("gaming_desktop", &serde_json::json!({ "taskbarCleanup": true }));
+        let taskbar = features.iter().find(|f| f.key == "taskbarCleanup").unwrap();
+        assert!(taskbar.writes.iter().all(|w| w.name != "TaskbarDa"));
+        assert!(taskbar
+            .writes
+            .iter()
+            .any(|w| w.path == DSH_POLICY && w.name == "AllowNewsAndInterests"));
     }
 
     #[test]
-    fn test_low_spec_no_transparency() {
-        let opts = get_personalization_options("low_spec_system");
-        assert_eq!(opts["transparency"], false);
-        assert_eq!(opts["darkMode"], true);
-        assert_eq!(opts["brandAccent"], false);
-        assert_eq!(opts["wallpaper"], true);
-        assert_eq!(opts["taskbarCleanup"], false);
-        assert_eq!(opts["explorerCleanup"], false);
+    fn explicit_transparency_false_writes_zero() {
+        let features = plan_features("gaming_desktop", &serde_json::json!({ "transparency": false }));
+        let t = features.iter().find(|f| f.key == "transparency").expect("transparency feature");
+        assert_eq!(t.writes[0].value, RegValue::dword(0));
+        // Not mentioned by the caller → untouched.
+        let none = plan_features("gaming_desktop", &serde_json::json!({}));
+        assert!(!keys(&none).contains(&"transparency"));
+        // Low-spec always disables.
+        let low = plan_features("low_spec_system", &serde_json::json!({ "transparency": true }));
+        assert_eq!(low.iter().find(|f| f.key == "transparency").unwrap().writes[0].value, RegValue::dword(0));
     }
 
     #[test]
-    fn test_vm_cautious_minimal() {
-        let opts = get_personalization_options("vm_cautious");
-        assert_eq!(opts["darkMode"], true);
-        assert_eq!(opts["brandAccent"], false);
-        assert_eq!(opts["wallpaper"], true);
-        assert_eq!(opts["taskbarCleanup"], false);
-        assert_eq!(opts["explorerCleanup"], false);
-        assert_eq!(opts["transparency"], false);
+    fn work_pc_never_gets_shell_cleanup() {
+        let features = plan_features(
+            "work_pc",
+            &serde_json::json!({ "taskbarCleanup": true, "explorerCleanup": true }),
+        );
+        assert!(!keys(&features).contains(&"taskbarCleanup"));
+        assert!(!keys(&features).contains(&"explorerCleanup"));
+    }
+
+    /// UCPD-style denial on the Dsh policy value: injected, never written to
+    /// the real HKLM. The other taskbar values (scratch HKCU key) still apply,
+    /// the denied item is reported as skipped and the feature does not fail.
+    #[test]
+    fn denied_dsh_policy_is_skipped_not_failed() {
+        let scratch: &'static str =
+            Box::leak(format!("Software\\OudenOSTest-ucpd-{}", uuid::Uuid::new_v4().simple()).into_boxed_str());
+        registry::test_hooks::deny_write(Hive::Hklm, DSH_POLICY, "AllowNewsAndInterests");
+        let feature = Feature {
+            key: "taskbarCleanup",
+            action_id: "personalize.taskbarCleanup",
+            writes: vec![
+                w(Hive::Hkcu, scratch, "ShowTaskViewButton", RegValue::dword(0)),
+                w(Hive::Hklm, DSH_POLICY, "AllowNewsAndInterests", RegValue::dword(0)),
+                w(Hive::Hkcu, scratch, "TaskbarMn", RegValue::dword(0)),
+            ],
+            wallpaper: false,
+        };
+        let result = apply_feature(&feature);
+        registry::test_hooks::allow_write(Hive::Hklm, DSH_POLICY, "AllowNewsAndInterests");
+        let skipped = result.expect("feature must not fail on a protected value");
+        assert_eq!(skipped.len(), 1);
+        assert_eq!(skipped[0]["reason"], "access_denied_protected");
+        assert_eq!(skipped[0]["valueName"], "AllowNewsAndInterests");
+        assert_eq!(feature_status(&feature, &skipped), "partial");
+        // The values around it were written and verified.
+        assert_eq!(registry::read_value(Hive::Hkcu, scratch, "ShowTaskViewButton").unwrap(), Some(RegValue::dword(0)));
+        assert_eq!(registry::read_value(Hive::Hkcu, scratch, "TaskbarMn").unwrap(), Some(RegValue::dword(0)));
+        for name in ["ShowTaskViewButton", "TaskbarMn"] {
+            let _ = registry::delete_value(Hive::Hkcu, scratch, name);
+        }
+        let _ = registry::delete_key_if_empty(Hive::Hkcu, scratch);
+    }
+
+    #[test]
+    fn accent_snapshot_covers_exactly_the_written_values() {
+        let features = plan_features("gaming_desktop", &serde_json::json!({ "brandAccent": true }));
+        let accent = features.iter().find(|f| f.key == "brandAccent").unwrap();
+        let written: Vec<(&str, &str)> = accent.writes.iter().map(|w| (w.path, w.name)).collect();
+        assert!(written.contains(&(DWM, "ColorPrevalence")));
+        assert!(!written.iter().any(|(_, n)| *n == "ColorizationColor"));
     }
 }

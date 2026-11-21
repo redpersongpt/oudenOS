@@ -1,6 +1,6 @@
 {
   "name": "@oudenos/os-desktop",
-  "version": "1.0.5",
+  "version": "1.1.0",
   "private": true,
   "description": "oudenOS desktop app (Tauri)",
   "author": {
@@ -15,12 +15,14 @@
     "demo:mac": "node ../../scripts/run-os-mac-demo.mjs",
     "tauri:build": "tauri build --config src-tauri/tauri.conf.production.json",
     "audit:questionnaire": "node test/questionnaire-invariants.mjs",
+    "audit:i18n": "node test/i18n-coverage.mjs",
+    "test": "node --import tsx --test test/unit/*.test.ts",
     "proof:production": "node test/production-proof.mjs",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@tauri-apps/plugin-process": "^2",
-    "@tauri-apps/plugin-updater": "^2",
+    "@tauri-apps/plugin-process": "^2.4.0",
+    "@tauri-apps/plugin-updater": "^2.14.1",
     "framer-motion": "^11.0.0",
     "lucide-react": "^0.400.0",
     "react": "^18.3.0",
@@ -29,15 +31,15 @@
     "zustand": "^4.5.0"
   },
   "devDependencies": {
-    "@tauri-apps/cli": "^2",
-    "@types/react": "^19.0.0",
-    "@types/react-dom": "^19.0.0",
+    "@tauri-apps/cli": "^2.12.6",
+    "@types/react": "^18.3.0",
+    "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.0",
-    "autoprefixer": "^10.4.0",
-    "postcss": "^8.4.0",
+    "autoprefixer": "^10.7.0",
+    "postcss": "^8.5.33",
     "sharp": "^0.34.5",
     "tailwindcss": "^3.4.0",
-    "tsx": "^4.21.0",
+    "tsx": "^4.23.15",
     "typescript": "^5.7.0",
     "vite": "^6.0.0"
   }

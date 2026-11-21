@@ -9,80 +9,126 @@ actions:
     name: "Disable App Launch Tracking"
     description: "Stop tracking which apps you open for Start menu personalization"
     rationale: "Prevents Windows from building a usage profile of your app activity"
-    risk: safe
-    tier: free
-    default: true
-    requiresReboot: false
-    reversible: true
-    estimatedSeconds: 2
-    blockedProfiles: []
-    registryChanges:
-      - hive: HKCU
-        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced"
-        valueName: Start_TrackProgs
-        value: 0
-        valueType: DWord
-
-  - id: privacy.disable-tailored-experiences
-    name: "Disable Tailored Experiences"
-    description: "Stop Microsoft from using diagnostic data for personalized tips and ads"
-    rationale: "Prevents Microsoft from using your data to show targeted suggestions"
-    risk: safe
-    tier: free
-    default: true
-    requiresReboot: false
-    reversible: true
-    estimatedSeconds: 2
-    blockedProfiles: []
-    registryChanges:
-      - hive: HKCU
-        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Privacy"
-        valueName: TailoredExperiencesWithDiagnosticDataEnabled
-        value: 0
-        valueType: DWord
-
-  - id: privacy.disable-online-tips
-    name: "Disable Online Tips"
-    description: "Disable online tips and help content from Microsoft"
-    rationale: "Online tips send queries to Microsoft servers"
-    risk: safe
-    tier: free
-    default: true
-    requiresReboot: false
-    reversible: true
-    estimatedSeconds: 2
-    blockedProfiles: []
-    registryChanges:
-      - hive: HKLM
-        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer"
-        valueName: AllowOnlineTips
-        value: 0
-        valueType: DWord
-
-  - id: privacy.disable-cloud-content-policy
-    name: "Block Cloud Content Delivery (machine-wide)"
-    description: "Disable Windows suggested content, tips, and consumer feature delivery at the machine-policy level"
-    rationale: "Windows keeps fetching 'suggested' apps, tips, and promo content in the background — network, disk, and CPU you never asked to spend. The machine-wide CloudContent policy stops it more completely than the per-user toggles, so there's less background churn mid-game. Reversible. Does not touch Start, Search, or the Store itself."
-    risk: low
-    tier: free
+    risk: "safe"
+    tier: "free"
     default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
     blockedProfiles: []
     registryChanges:
-      - hive: HKLM
-        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent"
-        valueName: DisableThirdPartySuggestions
+      - hive: "HKCU"
+        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced"
+        valueName: "Start_TrackProgs"
+        value: 0
+        valueType: "DWord"
+
+  - id: privacy.disable-tailored-experiences
+    name: "Disable Tailored Experiences"
+    description: "Stop Microsoft from using diagnostic data for personalized tips and ads"
+    rationale: "Prevents Microsoft from using your data to show targeted suggestions"
+    risk: "safe"
+    tier: "free"
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: "HKCU"
+        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Privacy"
+        valueName: "TailoredExperiencesWithDiagnosticDataEnabled"
+        value: 0
+        valueType: "DWord"
+
+  - id: privacy.disable-online-tips
+    name: "Disable Online Tips"
+    description: "Disable online tips and help content from Microsoft"
+    rationale: "Online tips send queries to Microsoft servers"
+    risk: "safe"
+    tier: "free"
+    default: true
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles: []
+    registryChanges:
+      - hive: "HKLM"
+        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer"
+        valueName: "AllowOnlineTips"
+        value: 0
+        valueType: "DWord"
+
+  - id: privacy.brave-debloat
+    name: "Lock Down Brave Extras (if installed)"
+    description: "Brave browser policies: turn off Rewards, Wallet, VPN, Leo AI chat, News, Talk, Tor windows, usage pings, P3A, URL-keyed data collection, extended Safe Browsing reporting and metrics reporting. Harmless when Brave is not installed."
+    rationale: "The 12-value BraveDebloat set from winutil. Policies only; reversible."
+    risk: "safe"
+    tier: "free"
+    default: false
+    expertOnly: false
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 3
+    blockedProfiles: []
+    registryChanges:
+      - hive: "HKLM"
+        path: "SOFTWARE\\Policies\\BraveSoftware\\Brave"
+        valueName: "BraveRewardsDisabled"
         value: 1
-        valueType: DWord
-      - hive: HKLM
-        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent"
-        valueName: DisableCloudOptimizedContent
+        valueType: "DWord"
+      - hive: "HKLM"
+        path: "SOFTWARE\\Policies\\BraveSoftware\\Brave"
+        valueName: "BraveWalletDisabled"
         value: 1
-        valueType: DWord
-      - hive: HKLM
-        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent"
-        valueName: DisableWindowsConsumerFeatures
+        valueType: "DWord"
+      - hive: "HKLM"
+        path: "SOFTWARE\\Policies\\BraveSoftware\\Brave"
+        valueName: "BraveVPNDisabled"
         value: 1
-        valueType: DWord
+        valueType: "DWord"
+      - hive: "HKLM"
+        path: "SOFTWARE\\Policies\\BraveSoftware\\Brave"
+        valueName: "BraveAIChatEnabled"
+        value: 0
+        valueType: "DWord"
+      - hive: "HKLM"
+        path: "SOFTWARE\\Policies\\BraveSoftware\\Brave"
+        valueName: "BraveStatsPingEnabled"
+        value: 0
+        valueType: "DWord"
+      - hive: "HKLM"
+        path: "SOFTWARE\\Policies\\BraveSoftware\\Brave"
+        valueName: "BraveNewsDisabled"
+        value: 1
+        valueType: "DWord"
+      - hive: "HKLM"
+        path: "SOFTWARE\\Policies\\BraveSoftware\\Brave"
+        valueName: "BraveTalkDisabled"
+        value: 1
+        valueType: "DWord"
+      - hive: "HKLM"
+        path: "SOFTWARE\\Policies\\BraveSoftware\\Brave"
+        valueName: "TorDisabled"
+        value: 1
+        valueType: "DWord"
+      - hive: "HKLM"
+        path: "SOFTWARE\\Policies\\BraveSoftware\\Brave"
+        valueName: "BraveP3AEnabled"
+        value: 0
+        valueType: "DWord"
+      - hive: "HKLM"
+        path: "SOFTWARE\\Policies\\BraveSoftware\\Brave"
+        valueName: "UrlKeyedAnonymizedDataCollectionEnabled"
+        value: 0
+        valueType: "DWord"
+      - hive: "HKLM"
+        path: "SOFTWARE\\Policies\\BraveSoftware\\Brave"
+        valueName: "SafeBrowsingExtendedReportingEnabled"
+        value: 0
+        valueType: "DWord"
+      - hive: "HKLM"
+        path: "SOFTWARE\\Policies\\BraveSoftware\\Brave"
+        valueName: "MetricsReportingEnabled"
+        value: 0
+        valueType: "DWord"

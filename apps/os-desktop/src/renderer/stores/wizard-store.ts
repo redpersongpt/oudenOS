@@ -1,8 +1,14 @@
 // Wizard Store
-// 13-step OS transformation wizard. Playbook-native flow.
+// Step-based OS optimization wizard. Playbook-native flow.
 
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import {
+  WIZARD_STATE_VERSION,
+  alignSteps,
+  decideRehydrate,
+  migrateWizardState,
+} from "@/lib/wizard-persist";
 
 // Step IDs
 
@@ -33,12 +39,28 @@ export interface WizardStep {
 export interface DetectedProfile {
   id: string;
   label: string;
-  confidence: number;
+  /** Classifier confidence 0-100; null when the service did not report one (never invented). */
+  confidence: number | null;
   isWorkPc: boolean;
   machineName: string;
   signals: string[];
   accentColor: string;
-  windowsBuild: number;
+  /** Real Windows build from the assessment; null when unknown (the service decides). */
+  windowsBuild: number | null;
+  /** true only for the macOS / browser preview sample profile */
+  sample?: boolean;
+  /** assess.full formFactor.chassis (desktop / laptop / …) */
+  chassis?: string | null;
+  /** assess.full healthChecks — guidance only, nothing is changed automatically */
+  healthChecks?: HealthCheck[];
+}
+
+export interface HealthCheck {
+  id: string;
+  status: "ok" | "attention" | "unknown";
+  title: string;
+  detail: string;
+  evidence?: Record<string, unknown> | null;
 }
 
 // Playbook resolved plan
@@ -54,6 +76,8 @@ export interface ResolvedPlaybook {
   totalExpertOnly: number;
   phases: PlaybookPhase[];
   blockedReasons: { actionId: string; reason: string }[];
+  /** service-detected Windows build the plan was resolved for */
+  windowsBuild?: number | null;
   decisionSummary?: QuestionnaireDecisionSummary | null;
   actionProvenance?: ActionDecisionProvenance[];
   packageRefs?: WizardPackageRefs | null;
@@ -209,6 +233,12 @@ export interface ExecutionJournalEntry {
   provenanceRef: string | null;
   resultRef: string;
   errorMessage: string | null;
+  /** sub-steps / items the service skipped, with reason codes (results[].reason) */
+  skippedSteps?: Array<{ type: string; target: string | null; reason: string | null; note: string | null }>;
+  /** -23: the action does not apply to this system (counted as skipped, not failed) */
+  notApplicable?: boolean;
+  /** personalization: Windows (UCPD) protected the Widgets button setting */
+  widgetsProtected?: boolean;
 }
 
 export interface ExecutionResult {
@@ -222,6 +252,28 @@ export interface ExecutionResult {
   journal: ExecutionJournalEntry[];
   /** Where final counts came from. "ledger" = DB service truth, "local" = renderer journal */
   truthSource?: "ledger" | "local";
+  /** ISO time the apply started (scopes "Undo everything" to this run's snapshots) */
+  startedAt?: string;
+  /** personalize.apply snapshot, reverted via personalize.revert */
+  personalizationSnapshotId?: string | null;
+  /** set when the service reported rollback_failed and applying was stopped */
+  blockingError?: string | null;
+  /** applied actions that only take effect after a restart */
+  rebootRequiredCount?: number;
+}
+
+export interface LastRunSummary {
+  finishedAt: string;
+  applied: number;
+  failed: number;
+  skipped: number;
+  rebootRequiredCount: number;
+  profileId: string | null;
+  preset: string | null;
+  /** apply start — "Undo everything" restores only snapshots taken after this */
+  startedAt?: string;
+  personalizationSnapshotId?: string | null;
+  undone?: boolean;
 }
 
 // Store interface
@@ -238,6 +290,14 @@ interface WizardState {
   resolvedPlaybook: ResolvedPlaybook | null;
   executionResult: ExecutionResult | null;
   personalization: PersonalizationPreferences;
+  /** Summary of the most recent finished run — survives "Start over". */
+  lastRun: LastRunSummary | null;
+  /** The app was closed while applying; the next session must not show success. */
+  interruptedRun: boolean;
+  /** Changes are being applied right now (blocks close + update). Not persisted. */
+  executing: boolean;
+  /** High/extreme/expert-only action ids the user explicitly acknowledged at Final Review. */
+  acknowledgedActionIds: string[];
 
   // Navigation
   canGoNext: boolean;
@@ -250,6 +310,8 @@ interface WizardState {
   goNext: () => void;
   goBack: () => void;
   setStepReady: (step: WizardStepId, ready: boolean) => void;
+  /** Jump forward (quick setup): every step before `target` is marked completed. */
+  fastTrackTo: (target: WizardStepId) => void;
 
   // Data setters
   setDetectedProfile: (profile: DetectedProfile) => void;
@@ -258,18 +320,23 @@ interface WizardState {
   setExecutionResult: (result: ExecutionResult) => void;
   setPersonalization: (prefs: Partial<PersonalizationPreferences>) => void;
   setDemoMode: (demo: boolean) => void;
+  setLastRun: (run: LastRunSummary | null) => void;
+  setInterruptedRun: (value: boolean) => void;
+  setExecuting: (value: boolean) => void;
+  setAcknowledgedActionIds: (ids: string[]) => void;
 
   /** Navigate to the optional donation step (bypasses lock — accessible from report). */
   gotoDonation: () => void;
   /** Complete the donation step and navigate to handoff. */
   completeDonation: () => void;
 
+  /** Fresh wizard session. Keeps `lastRun` so the welcome screen can show it. */
   reset: () => void;
 }
 
 // Ordered step definitions
 
-const INITIAL_STEPS: WizardStep[] = [
+export const INITIAL_STEPS: WizardStep[] = [
   { id: "welcome",            label: "Welcome",           status: "current" },
   { id: "assessment",         label: "Assessment",        status: "locked"  },
   { id: "profile",            label: "Profile",           status: "locked"  },
@@ -307,32 +374,41 @@ function computeProgress(steps: WizardStep[]): number {
 }
 
 function computeCanGoNext(
-  _steps: WizardStep[],
   currentStep: WizardStepId,
   stepReadiness: Record<WizardStepId, boolean>,
 ): boolean {
   return STEP_ORDER.indexOf(currentStep) < STEP_ORDER.length - 1 && stepReadiness[currentStep] === true;
 }
 
-function computeCanGoBack(_steps: WizardStep[], currentStep: WizardStepId): boolean {
+function computeCanGoBack(currentStep: WizardStepId): boolean {
   return STEP_ORDER.indexOf(currentStep) > 0;
+}
+
+function freshSessionState() {
+  return {
+    currentStep: "welcome" as WizardStepId,
+    steps: INITIAL_STEPS.map((s) => ({ ...s })),
+    stepReadiness: { ...INITIAL_STEP_READINESS },
+    demoMode: false,
+    detectedProfile: null,
+    playbookPreset: "balanced",
+    resolvedPlaybook: null,
+    executionResult: null,
+    personalization: { ...DEFAULT_PERSONALIZATION },
+    interruptedRun: false,
+    executing: false,
+    acknowledgedActionIds: [] as string[],
+    canGoNext: true,
+    canGoBack: false,
+    progress: 0,
+  };
 }
 
 // Store
 
 export const useWizardStore = create<WizardState>()(persist((set, get) => ({
-  currentStep: "welcome" as WizardStepId,
-  steps: INITIAL_STEPS.map(s => ({ ...s })),
-  stepReadiness: { ...INITIAL_STEP_READINESS },
-  demoMode: false,
-  detectedProfile: null,
-  playbookPreset: "balanced",
-  resolvedPlaybook: null,
-  executionResult: null,
-  personalization: { ...DEFAULT_PERSONALIZATION },
-  canGoNext: true,
-  canGoBack: false,
-  progress: 0,
+  ...freshSessionState(),
+  lastRun: null,
 
   goToStep: (stepId) => {
     set((state) => {
@@ -351,8 +427,8 @@ export const useWizardStore = create<WizardState>()(persist((set, get) => ({
         currentStep: stepId,
         steps,
         progress: computeProgress(steps),
-        canGoNext: computeCanGoNext(steps, stepId, state.stepReadiness),
-        canGoBack: computeCanGoBack(steps, stepId),
+        canGoNext: computeCanGoNext(stepId, state.stepReadiness),
+        canGoBack: computeCanGoBack(stepId),
       };
     });
   },
@@ -374,8 +450,8 @@ export const useWizardStore = create<WizardState>()(persist((set, get) => ({
         steps,
         currentStep: nextId ?? state.currentStep,
         progress: computeProgress(steps),
-        canGoNext: computeCanGoNext(steps, newCurrent, state.stepReadiness),
-        canGoBack: computeCanGoBack(steps, newCurrent),
+        canGoNext: computeCanGoNext(newCurrent, state.stepReadiness),
+        canGoBack: computeCanGoBack(newCurrent),
       };
     });
   },
@@ -397,8 +473,8 @@ export const useWizardStore = create<WizardState>()(persist((set, get) => ({
         steps,
         currentStep: nextId ?? state.currentStep,
         progress: computeProgress(steps),
-        canGoNext: computeCanGoNext(steps, newCurrent, state.stepReadiness),
-        canGoBack: computeCanGoBack(steps, newCurrent),
+        canGoNext: computeCanGoNext(newCurrent, state.stepReadiness),
+        canGoBack: computeCanGoBack(newCurrent),
       };
     });
   },
@@ -416,7 +492,6 @@ export const useWizardStore = create<WizardState>()(persist((set, get) => ({
       const prevId = STEP_ORDER[idx - 1] as WizardStepId;
 
       const steps = state.steps.map((s) => {
-        // Mark the step we're leaving as completed (not locked) so we can return to it
         if (s.id === state.currentStep) return { ...s, status: "completed" as const };
         if (s.id === prevId) return { ...s, status: "current" as const };
         return s;
@@ -426,8 +501,8 @@ export const useWizardStore = create<WizardState>()(persist((set, get) => ({
         currentStep: prevId,
         steps,
         progress: computeProgress(steps),
-        canGoNext: computeCanGoNext(steps, prevId, state.stepReadiness),
-        canGoBack: computeCanGoBack(steps, prevId),
+        canGoNext: computeCanGoNext(prevId, state.stepReadiness),
+        canGoBack: computeCanGoBack(prevId),
       };
     });
   },
@@ -437,7 +512,26 @@ export const useWizardStore = create<WizardState>()(persist((set, get) => ({
       const stepReadiness = { ...state.stepReadiness, [stepId]: ready };
       return {
         stepReadiness,
-        canGoNext: computeCanGoNext(state.steps, state.currentStep, stepReadiness),
+        canGoNext: computeCanGoNext(state.currentStep, stepReadiness),
+      };
+    }),
+
+  fastTrackTo: (target) =>
+    set((state) => {
+      const targetIdx = STEP_ORDER.indexOf(target);
+      if (targetIdx < 0) return state;
+      const steps = state.steps.map((s) => {
+        const idx = STEP_ORDER.indexOf(s.id);
+        if (idx < targetIdx) return { ...s, status: "completed" as const };
+        if (idx === targetIdx) return { ...s, status: "current" as const };
+        return s;
+      });
+      return {
+        steps,
+        currentStep: target,
+        progress: computeProgress(steps),
+        canGoNext: computeCanGoNext(target, state.stepReadiness),
+        canGoBack: computeCanGoBack(target),
       };
     }),
 
@@ -451,10 +545,11 @@ export const useWizardStore = create<WizardState>()(persist((set, get) => ({
   setPersonalization: (prefs) =>
     set((state) => ({ personalization: { ...state.personalization, ...prefs } })),
   setDemoMode: (demo) => set({ demoMode: demo }),
+  setLastRun: (run) => set({ lastRun: run }),
+  setInterruptedRun: (value) => set({ interruptedRun: value }),
+  setExecuting: (value) => set({ executing: value }),
+  setAcknowledgedActionIds: (ids) => set({ acknowledgedActionIds: ids }),
 
-  // Donation step is an optional side-trip — not in STEP_ORDER.
-  // Marks the previous step (report) as completed, navigates to donation.
-  // handoff stays locked until completeDonation is called.
   gotoDonation: () =>
     set((state) => {
       const steps = state.steps.map((s) => {
@@ -470,8 +565,6 @@ export const useWizardStore = create<WizardState>()(persist((set, get) => ({
       };
     }),
 
-  // Called when donation step is done (donated or skipped).
-  // Unlocks and navigates to handoff.
   completeDonation: () =>
     set((state) => {
       const steps = state.steps.map((s) => {
@@ -482,31 +575,17 @@ export const useWizardStore = create<WizardState>()(persist((set, get) => ({
         currentStep: "handoff" as WizardStepId,
         steps,
         progress: computeProgress(steps),
-        canGoNext: computeCanGoNext(steps, "handoff", state.stepReadiness),
+        canGoNext: computeCanGoNext("handoff", state.stepReadiness),
         canGoBack: false,
       };
     }),
 
-  reset: () => {
-    set({
-      currentStep: "welcome",
-      steps: INITIAL_STEPS.map(s => ({ ...s })),
-      stepReadiness: { ...INITIAL_STEP_READINESS },
-      demoMode: false,
-      detectedProfile: null,
-      playbookPreset: "balanced",
-      resolvedPlaybook: null,
-      executionResult: null,
-      personalization: { ...DEFAULT_PERSONALIZATION },
-      canGoNext: true,
-      canGoBack: false,
-      progress: 0,
-    });
-    // Clear persisted state so next launch starts fresh
-    try { localStorage.removeItem("oudenOS-wizard-state"); } catch {}
-  },
+  reset: () => set(freshSessionState()),
 }), {
   name: "oudenOS-wizard-state",
+  version: WIZARD_STATE_VERSION,
+  migrate: (persisted, version) =>
+    migrateWizardState(persisted, version, INITIAL_STEPS) as unknown as WizardState,
   // Only persist the data needed to survive a reboot/relaunch.
   // resolvedPlaybook must be persisted so reboot-resume has the action list
   // after the app restarts mid-execution.
@@ -519,22 +598,35 @@ export const useWizardStore = create<WizardState>()(persist((set, get) => ({
     resolvedPlaybook: state.resolvedPlaybook,
     executionResult: state.executionResult,
     personalization: state.personalization,
+    lastRun: state.lastRun,
+    interruptedRun: state.interruptedRun,
+    // needed by reboot-resume after a restart
+    acknowledgedActionIds: state.acknowledgedActionIds,
   }),
   onRehydrateStorage: () => {
     return (state?: WizardState) => {
       if (!state) return;
-      // If app closed during execution, advance to reboot-resume on relaunch
-      if (state.currentStep === "execution") {
-        state.currentStep = "reboot-resume";
-        state.steps = state.steps.map((s) =>
-          s.id === "execution" ? { ...s, status: "completed" as const } :
-          s.id === "reboot-resume" ? { ...s, status: "current" as const } : s
-        );
+      const decision = decideRehydrate(state.currentStep);
+      if (decision.freshSession) {
+        // The previous run finished: start a new session, keep its summary.
+        Object.assign(state, freshSessionState());
+      } else {
+        state.steps = alignSteps(state.steps, INITIAL_STEPS) as WizardStep[];
+        state.stepReadiness = { ...INITIAL_STEP_READINESS, ...state.stepReadiness };
+        if (decision.interrupted) {
+          // Closed while applying: inspect / resume from the service ledger.
+          state.currentStep = "reboot-resume";
+          state.interruptedRun = true;
+          state.steps = state.steps.map((s) =>
+            s.id === "execution" ? { ...s, status: "completed" as const } :
+            s.id === "reboot-resume" ? { ...s, status: "current" as const } : s
+          );
+        }
       }
-      // Recompute navigation helpers
+      state.executing = false;
       state.progress = computeProgress(state.steps);
-      state.canGoNext = computeCanGoNext(state.steps, state.currentStep, state.stepReadiness);
-      state.canGoBack = computeCanGoBack(state.steps, state.currentStep);
+      state.canGoNext = computeCanGoNext(state.currentStep, state.stepReadiness);
+      state.canGoBack = computeCanGoBack(state.currentStep);
     };
   },
 }));

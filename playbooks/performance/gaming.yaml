@@ -1,136 +1,53 @@
-# Performance: Gaming Optimizations
-# scheduling, and multimedia class scheduler hardening.
-
+# Performance: Input & Filesystem
 module: performance.gaming
-name: "Gaming Optimizations"
-description: "Gaming-specific system tuning for lower latency, smoother frame delivery, and reduced background interference"
+name: "Input & Filesystem"
+description: "Pointer acceleration and NTFS short-name settings"
 category: performance
 
 actions:
-  - id: perf.csrss-high-priority
-    name: "Elevate CSRSS Process Priority"
-    description: "Set CsrssHighPriority to ensure the Client/Server Runtime Subsystem runs at elevated priority"
-    rationale: "CSRSS handles raw input, window management, and thread scheduling. Elevating its priority reduces input processing latency and window compositor delay."
-    risk: low
-    tier: free
-    default: false
-    requiresReboot: true
-    reversible: true
-    estimatedSeconds: 2
-    blockedProfiles: []
-    registryChanges:
-      - hive: HKLM
-        path: "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\csrss.exe\\PerfOptions"
-        valueName: CpuPriorityClass
-        value: 4
-        valueType: DWord
-      - hive: HKLM
-        path: "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\csrss.exe\\PerfOptions"
-        valueName: IoPriority
-        value: 3
-        valueType: DWord
-
-  - id: perf.mmcss-deep-tuning
-    name: "MMCSS Deep Scheduler Tuning"
-    description: "Configure the Multimedia Class Scheduler Service (MMCSS) to favour foreground game threads, and lower the background reservation from the default 20% to 10%"
-    rationale: "MMCSS reserves a slice of CPU for low-priority/background work (default 20%). Lowering SystemResponsiveness to 10 leaves more for foreground game threads while keeping enough for audio. Some enthusiasts use 0 for maximum foreground priority, but 0 can starve MMCSS audio threads and cause stutter/crackle — so oudenOS uses the safer 10 (matching its other MMCSS actions, so the same key isn't written twice with different values). No guaranteed FPS change; this affects scheduling, not raw frame rate."
-    risk: low
-    tier: free
-    default: false
-    requiresReboot: false
-    reversible: true
-    estimatedSeconds: 3
-    blockedProfiles:
-      - work_pc
-    registryChanges:
-      - hive: HKLM
-        path: "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile"
-        valueName: SystemResponsiveness
-        value: 10
-        valueType: DWord
-      - hive: HKLM
-        path: "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile"
-        valueName: NetworkThrottlingIndex
-        value: 4294967295
-        valueType: DWord
-      - hive: HKLM
-        path: "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Games"
-        valueName: "GPU Priority"
-        value: 8
-        valueType: DWord
-      - hive: HKLM
-        path: "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Games"
-        valueName: Priority
-        value: 6
-        valueType: DWord
-      - hive: HKLM
-        path: "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Games"
-        valueName: "Scheduling Category"
-        value: High
-        valueType: String
-      - hive: HKLM
-        path: "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Games"
-        valueName: "SFIO Priority"
-        value: High
-        valueType: String
-
   - id: perf.ntfs-optimization
-    name: "NTFS Filesystem Optimization"
-    description: "Disable NTFS 8.3 short-filename generation and enable large system awareness for reduced filesystem overhead (last-access timestamps are handled separately by Disable Last Access Timestamp)"
-    rationale: "8.3 short filenames are a DOS-era compatibility layer that adds overhead to every file creation. (Last-access-timestamp disabling lives in its own action, storage.disable-last-access, so the same registry value isn't written twice with different settings.)"
-    risk: low
-    tier: free
+    name: "Disable NTFS 8.3 Short-Name Creation"
+    description: "Stop NTFS creating DOS-style 8.3 short names for new files (same as fsutil 8dot3name set 1). Existing short names are kept."
+    rationale: "Short-name generation is a legacy compatibility feature. Very old installers that rely on 8.3 names may misbehave. Expect no FPS change."
+    risk: "low"
+    tier: "free"
     default: false
     requiresReboot: true
     reversible: true
     estimatedSeconds: 3
     blockedProfiles:
-      - work_pc
+      - "work_pc"
     registryChanges:
-      - hive: HKLM
+      - hive: "HKLM"
         path: "SYSTEM\\CurrentControlSet\\Control\\FileSystem"
-        valueName: NtfsDisable8dot3NameCreation
+        valueName: "NtfsDisable8dot3NameCreation"
         value: 1
-        valueType: DWord
-      - hive: HKLM
-        path: "SYSTEM\\CurrentControlSet\\Control\\FileSystem"
-        valueName: NtfsMemoryUsage
-        value: 2
-        valueType: DWord
-      - hive: HKLM
-        path: "SYSTEM\\CurrentControlSet\\Control\\FileSystem"
-        valueName: NtfsAllowExtendedCharacterIn8dot3Name
-        value: 0
-        valueType: DWord
-
-  # perf.disable-fault-tolerant-heap — defined in cpu-scheduler.yaml
-  # perf.disable-paging-executive — defined in cpu-scheduler.yaml
-  # perf.gpu-energy-driver-disable — defined in gpu.yaml
+        valueType: "DWord"
 
   - id: perf.disable-pointer-acceleration
     name: "Disable Mouse Pointer Acceleration"
     description: "Set mouse acceleration to 1:1 (6/11 speed, no acceleration curve)"
-    rationale: "Pointer acceleration applies a non-linear curve to mouse movement. Disabling it provides consistent 1:1 mapping between physical and screen movement — essential for competitive gaming."
-    risk: safe
-    tier: free
-    default: true
+    rationale: "Turns off \"Enhance pointer precision\" for a 1:1 desktop cursor. Most modern games use raw input and ignore this setting (PC-Tuning 3f49c12); it mainly affects the desktop and older games. A preference, not a performance tweak."
+    risk: "safe"
+    tier: "free"
+    default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
     blockedProfiles: []
     registryChanges:
-      - hive: HKCU
+      - hive: "HKCU"
         path: "Control Panel\\Mouse"
-        valueName: MouseSpeed
+        valueName: "MouseSpeed"
         value: "0"
-        valueType: String
-      - hive: HKCU
+        valueType: "String"
+      - hive: "HKCU"
         path: "Control Panel\\Mouse"
-        valueName: MouseThreshold1
+        valueName: "MouseThreshold1"
         value: "0"
-        valueType: String
-      - hive: HKCU
+        valueType: "String"
+      - hive: "HKCU"
         path: "Control Panel\\Mouse"
-        valueName: MouseThreshold2
+        valueName: "MouseThreshold2"
         value: "0"
-        valueType: String
+        valueType: "String"

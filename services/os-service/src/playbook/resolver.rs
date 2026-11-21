@@ -9,7 +9,8 @@ use super::{
     LoadedPlaybook, PlaybookAction, ResolutionPlanningTrace, ResolutionTrace, ResolvedAction,
     ResolvedPhase, ResolvedPlan, TranslationTrace,
 };
-use std::collections::HashSet;
+use crate::facts::{check_requires, ActionExtras, HardwareFacts};
+use std::collections::{HashMap, HashSet};
 
 fn find_loaded_phase<'a>(playbook: &'a LoadedPlaybook, phase_id: &str) -> Option<&'a LoadedPhase> {
     playbook.phases.iter().find(|phase| phase.id == phase_id)
@@ -25,6 +26,59 @@ pub(crate) fn resolve_action_status(
     escalate_true: &HashSet<&str>,
     escalate_false: &HashSet<&str>,
 ) -> ResolvedAction {
+    resolve_action_status_with_extras(
+        action,
+        profile,
+        preset,
+        build,
+        blocked_set,
+        optional_set,
+        escalate_true,
+        escalate_false,
+        None,
+        &HardwareFacts::default(),
+    )
+}
+
+pub(crate) fn resolve_action_status_with_extras(
+    action: &PlaybookAction,
+    profile: &str,
+    preset: &str,
+    build: u32,
+    blocked_set: &HashSet<&str>,
+    optional_set: &HashSet<&str>,
+    escalate_true: &HashSet<&str>,
+    escalate_false: &HashSet<&str>,
+    extras: Option<&ActionExtras>,
+    facts: &HardwareFacts,
+) -> ResolvedAction {
+    // Actions the service refuses to execute are never part of a plan.
+    if crate::executor::is_retired_unsafe_action(&action.id) {
+        return ResolvedAction {
+            action: action.clone(),
+            status: ActionStatus::Blocked,
+            blocked_reason: Some("retired: removed for Windows stability".to_string()),
+        };
+    }
+    if let Some(max_build) = extras.and_then(|e| e.max_windows_build) {
+        if build > max_build {
+            return ResolvedAction {
+                action: action.clone(),
+                status: ActionStatus::BuildGated,
+                blocked_reason: Some(format!("Not applicable after Windows build {}", max_build)),
+            };
+        }
+    }
+    if let Some(requires) = extras.and_then(|e| e.requires.as_ref()) {
+        if let Err(reason) = check_requires(requires, facts) {
+            return ResolvedAction {
+                action: action.clone(),
+                status: ActionStatus::Blocked,
+                blocked_reason: Some(reason),
+            };
+        }
+    }
+
     let is_wildcard_blocked = blocked_set.iter().any(|pattern| {
         pattern.ends_with(".*") && action.id.starts_with(&pattern[..pattern.len() - 2])
     });
@@ -124,12 +178,30 @@ fn apply_profile_escalation(
     }
 }
 
-/// Resolve a loaded playbook into an executable plan for a specific profile and preset.
+/// Resolve a loaded playbook into an executable plan for a specific profile and
+/// preset, using the service's current hardware facts for `requires` gating.
 pub fn resolve_plan(
     playbook: &LoadedPlaybook,
     profile: &str,
     preset: &str,
     windows_build: Option<u32>,
+) -> ResolvedPlan {
+    resolve_plan_with_facts(
+        playbook,
+        profile,
+        preset,
+        windows_build,
+        &crate::facts::current_facts(),
+    )
+}
+
+/// Resolve with explicit hardware facts (tests use synthetic facts).
+pub fn resolve_plan_with_facts(
+    playbook: &LoadedPlaybook,
+    profile: &str,
+    preset: &str,
+    windows_build: Option<u32>,
+    facts: &HardwareFacts,
 ) -> ResolvedPlan {
     let profile_override = playbook.profiles.iter().find(|p| p.profile == profile);
     let blocked_set: HashSet<&str> = profile_override
@@ -206,7 +278,7 @@ pub fn resolve_plan(
                 }
 
                 for action in &loaded_phase.actions {
-                    resolved_actions.push(resolve_action_status(
+                    resolved_actions.push(resolve_action_status_with_extras(
                         action,
                         profile,
                         preset,
@@ -215,6 +287,8 @@ pub fn resolve_plan(
                         &optional_set,
                         &escalate_true,
                         &escalate_false,
+                        playbook.action_extras.get(&action.id),
+                        facts,
                     ));
                 }
             }
@@ -275,7 +349,7 @@ pub fn resolve_plan(
 
     let resolved_action_count = total_action_count(&resolved_phases);
 
-    ResolvedPlan {
+    let mut plan = ResolvedPlan {
         profile: profile.to_string(),
         preset: preset.to_string(),
         phases: resolved_phases,
@@ -315,7 +389,95 @@ pub fn resolve_plan(
                 action_count: resolved_action_count,
             },
         },
+    };
+    dedupe_included_actions(&mut plan);
+    plan
+}
+
+/// Registry targets an action writes, normalized for comparison.
+fn registry_targets(action: &PlaybookAction) -> Vec<(String, String, String)> {
+    action
+        .registry_changes
+        .iter()
+        .map(|change| {
+            (
+                change.hive.trim().to_ascii_uppercase(),
+                change.path.trim().trim_matches('\\').to_ascii_lowercase(),
+                change.value_name.to_ascii_lowercase(),
+            )
+        })
+        .collect()
+}
+
+fn has_non_registry_mutations(action: &PlaybookAction) -> bool {
+    !action.service_changes.is_empty()
+        || !action.bcd_changes.is_empty()
+        || !action.power_changes.is_empty()
+        || !action.powershell_commands.is_empty()
+        || !action.packages.is_empty()
+        || !action.tasks.is_empty()
+        || !action.file_renames.is_empty()
+}
+
+/// Walk Included actions in plan order; an action that only writes registry
+/// values all of which an earlier Included action already writes is a
+/// duplicate (e.g. perf.disable-gamebar-presence / startup.disable-gamebar-presence)
+/// and is Blocked with "Duplicate of <id>". Totals are recomputed.
+pub fn dedupe_included_actions(plan: &mut ResolvedPlan) {
+    let mut covered: HashMap<(String, String, String), String> = HashMap::new();
+    for phase in &mut plan.phases {
+        for resolved in &mut phase.actions {
+            if resolved.status != ActionStatus::Included {
+                continue;
+            }
+            let targets = registry_targets(&resolved.action);
+            if targets.is_empty() {
+                continue;
+            }
+            let duplicate_of = if has_non_registry_mutations(&resolved.action) {
+                None
+            } else {
+                let owners: Vec<&String> = targets.iter().filter_map(|t| covered.get(t)).collect();
+                if owners.len() == targets.len() {
+                    owners.first().map(|id| (*id).clone())
+                } else {
+                    None
+                }
+            };
+            match duplicate_of {
+                Some(owner) => {
+                    resolved.status = ActionStatus::Blocked;
+                    resolved.blocked_reason = Some(format!(
+                        "Duplicate of {} (writes the same registry values)",
+                        owner
+                    ));
+                }
+                None => {
+                    for target in targets {
+                        covered.entry(target).or_insert_with(|| resolved.action.id.clone());
+                    }
+                }
+            }
+        }
     }
+    recompute_totals(plan);
+}
+
+/// Recompute the plan's totals and blocked reasons from action statuses.
+pub(crate) fn recompute_totals(plan: &mut ResolvedPlan) {
+    let mut included = 0;
+    let mut blocked = 0;
+    let mut optional = 0;
+    let mut expert = 0;
+    let mut reasons = Vec::new();
+    for phase in &plan.phases {
+        tally_actions(&phase.actions, &mut included, &mut blocked, &mut optional, &mut expert, &mut reasons);
+    }
+    plan.total_included = included;
+    plan.total_blocked = blocked;
+    plan.total_optional = optional;
+    plan.total_expert_only = expert;
+    plan.blocked_reasons = reasons;
 }
 
 fn determine_inclusion(
@@ -459,6 +621,7 @@ mod tests {
             value_name: "Shell".to_string(),
             value: serde_json::json!("malware.exe"),
             value_type: "String".to_string(),
+            delete: false,
         }];
         let escalate = set(&["shell.hijack-winlogon"]);
         assert_ne!(
@@ -498,5 +661,133 @@ mod tests {
         )
         .status;
         assert_eq!(status, ActionStatus::Optional);
+    }
+
+    #[test]
+    fn profile_cannot_escalate_expert_only_action() {
+        let mut action = base_action("security.disable-vbs");
+        action.expert_only = true;
+        let escalate = set(&["security.disable-vbs"]);
+        assert_ne!(escalated_status(&action, &escalate), ActionStatus::Included);
+    }
+
+    fn with_extras(
+        action: &PlaybookAction,
+        build: u32,
+        extras: &crate::facts::ActionExtras,
+        facts: &crate::facts::HardwareFacts,
+    ) -> ActionStatus {
+        let empty: HashSet<&str> = HashSet::new();
+        super::resolve_action_status_with_extras(
+            action,
+            "gaming_desktop",
+            "balanced",
+            build,
+            &empty,
+            &empty,
+            &empty,
+            &empty,
+            Some(extras),
+            facts,
+        )
+        .status
+    }
+
+    #[test]
+    fn retired_actions_are_blocked_never_included() {
+        let mut action = base_action("memory.disable-compression");
+        action.default = true;
+        let status = escalated_status(&action, &HashSet::new());
+        assert_eq!(status, ActionStatus::Blocked);
+    }
+
+    #[test]
+    fn max_windows_build_gates_newer_builds() {
+        let mut action = base_action("shell.legacy-only");
+        action.default = true;
+        let extras = crate::facts::ActionExtras {
+            max_windows_build: Some(22631),
+            requires: None,
+        };
+        let facts = crate::facts::HardwareFacts::default();
+        assert_eq!(with_extras(&action, 26100, &extras, &facts), ActionStatus::BuildGated);
+        assert_eq!(with_extras(&action, 22631, &extras, &facts), ActionStatus::Included);
+    }
+
+    #[test]
+    fn hardware_requirements_block_unmet_or_unknown() {
+        let mut action = base_action("gpu.nvidia-only");
+        action.default = true;
+        let extras = crate::facts::ActionExtras {
+            max_windows_build: None,
+            requires: Some(crate::facts::ActionRequires {
+                gpu_vendor: Some("nvidia".into()),
+                ..Default::default()
+            }),
+        };
+        let nvidia = crate::facts::HardwareFacts {
+            gpu_vendors: Some(vec!["nvidia".into()]),
+            ..Default::default()
+        };
+        let amd = crate::facts::HardwareFacts {
+            gpu_vendors: Some(vec!["amd".into()]),
+            ..Default::default()
+        };
+        assert_eq!(with_extras(&action, 26100, &extras, &nvidia), ActionStatus::Included);
+        assert_eq!(with_extras(&action, 26100, &extras, &amd), ActionStatus::Blocked);
+        assert_eq!(
+            with_extras(&action, 26100, &extras, &crate::facts::HardwareFacts::default()),
+            ActionStatus::Blocked
+        );
+    }
+
+    #[test]
+    fn duplicate_registry_actions_are_deduplicated() {
+        use crate::playbook::{ResolvedAction, ResolvedPhase};
+        let change = RegistryChange {
+            hive: "HKLM".to_string(),
+            path: r"SOFTWARE\X\PresenceWriter".to_string(),
+            value_name: "ActivationType".to_string(),
+            value: serde_json::json!(0),
+            value_type: "DWord".to_string(),
+            delete: false,
+        };
+        let mut first = base_action("perf.disable-gamebar-presence");
+        first.registry_changes = vec![change.clone()];
+        let mut second = base_action("startup.disable-gamebar-presence");
+        second.registry_changes = vec![change];
+        let dir = crate::playbook::default_playbook_dir();
+        if !dir.exists() {
+            return;
+        }
+        // Only used to obtain a well-formed plan shell; loading is covered by
+        // loader::every_declared_action_loads.
+        let Ok(playbook) = crate::playbook::load_playbook(&dir) else {
+            return;
+        };
+        let mut plan = super::resolve_plan_with_facts(
+            &playbook,
+            "gaming_desktop",
+            "balanced",
+            Some(26100),
+            &crate::facts::HardwareFacts::default(),
+        );
+        plan.phases = vec![ResolvedPhase {
+            id: "p".into(),
+            name: "P".into(),
+            actions: vec![
+                ResolvedAction { action: first, status: ActionStatus::Included, blocked_reason: None },
+                ResolvedAction { action: second, status: ActionStatus::Included, blocked_reason: None },
+            ],
+        }];
+        super::dedupe_included_actions(&mut plan);
+        assert_eq!(plan.phases[0].actions[0].status, ActionStatus::Included);
+        assert_eq!(plan.phases[0].actions[1].status, ActionStatus::Blocked);
+        assert!(plan.phases[0].actions[1]
+            .blocked_reason
+            .as_deref()
+            .unwrap()
+            .contains("perf.disable-gamebar-presence"));
+        assert_eq!(plan.total_included, 1);
     }
 }

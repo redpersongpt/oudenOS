@@ -1,8 +1,12 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useWizardStore } from "@/stores/wizard-store";
 import type { DetectedProfile } from "@/stores/wizard-store";
 import { platform } from "@/lib/platform";
+import { serviceCall } from "@/lib/service";
+import { demoProfileAllowed } from "@/lib/runtime";
+import { useRuntimeStore } from "@/stores/runtime-store";
+import { readHealthChecks, readWindowsBuild } from "@/lib/assessment";
 import { useT } from "@/i18n";
 
 const SCAN_QUOTE_KEYS = [
@@ -28,11 +32,13 @@ const CATEGORIES = [
 
 type Status = "idle" | "scanning" | "done";
 
-const DEMO_PROFILE: DetectedProfile = {
-  id: "gaming_desktop", label: "Gaming Desktop", confidence: 92,
+// Preview-only sample profile (macOS demo / plain browser). NEVER used on
+// Windows — see demoProfileAllowed() in lib/runtime.ts.
+const SAMPLE_PROFILE: DetectedProfile = {
+  id: "gaming_desktop", label: "Gaming Desktop", confidence: null,
   isWorkPc: false, machineName: "OUDEN-PC",
-  signals: ["Steam detected", "Not joined to a domain", "NVIDIA GPU", "32 GB RAM"],
-  accentColor: "text-[var(--accent)]", windowsBuild: 22631,
+  signals: [],
+  accentColor: "text-[var(--accent)]", windowsBuild: null, sample: true,
 };
 
 const PROFILE_LABELS: Record<string, string> = {
@@ -43,10 +49,10 @@ const PROFILE_LABELS: Record<string, string> = {
 };
 
 const ND_EASE = [0.25, 0.1, 0.25, 1] as const;
-const SIMULATED_SERVICE_TIMEOUT_MS = 4000;
-const LIVE_SERVICE_TIMEOUT_MS = 15000;
+// Generous UI-side guard; the shell enforces the real per-method timeout (120 s).
+const ASSESSMENT_GUARD_MS = 150_000;
 
-// ── Helpers (unchanged logic) ───────────────────────────────────────────
+// ── Helpers ─────────────────────────────────────────────────────────────
 
 function isObject(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
@@ -57,21 +63,13 @@ function readString(value: unknown): string | null {
 function readNumber(value: unknown): number | null {
   return typeof value === "number" && Number.isFinite(value) ? value : null;
 }
-function readInt(value: unknown): number | null {
-  const num = readNumber(value);
-  if (num !== null) return Math.trunc(num);
-  if (typeof value === "string") {
-    const parsed = Number.parseInt(value, 10);
-    return Number.isFinite(parsed) ? parsed : null;
-  }
-  return null;
-}
 function readBoolean(value: unknown): boolean | null {
   return typeof value === "boolean" ? value : null;
 }
-function normalizeConfidence(value: unknown): number {
+/** null when the classifier did not report a confidence — never invent one. */
+function normalizeConfidence(value: unknown): number | null {
   const num = readNumber(value);
-  if (num === null) return 80;
+  if (num === null) return null;
   return num <= 1 ? Math.round(num * 100) : Math.round(num);
 }
 function normalizeSignals(value: unknown): string[] {
@@ -100,57 +98,90 @@ function deriveSignalsFromAssessment(assessment: Record<string, unknown>, isWork
   const firstGpu = Array.isArray(gpuValue) ? gpuValue[0] : gpuValue;
   const gpu = isObject(firstGpu) ? firstGpu : {};
   const gpuName = readString(gpu.Name) ?? readString(gpu.name);
-  if (gpuName) signals.push(`${gpuName} detected`);
+  if (gpuName) signals.push(`${gpuName}`);
   const ramGb = readNumber(hardware.ramGb);
   if (ramGb !== null) signals.push(`${Math.round(ramGb)} GB RAM`);
   const domainJoined = readBoolean(workSignals.domainJoined);
-  if (domainJoined === true) signals.push("Joined to a domain");
-  if (domainJoined === false) signals.push("Not joined to a domain");
+  if (domainJoined === true) signals.push("Domain-joined");
   const cpuCores = readNumber(cpu.NumberOfCores) ?? readNumber(cpu.cores);
   if (cpuCores !== null) signals.push(`${Math.round(cpuCores)}-core CPU`);
-  if (isWorkPc) signals.push("Work profile safeguards enabled");
+  if (isWorkPc) signals.push("Work PC");
   return signals.slice(0, 6);
 }
-function readWindowsBuild(assessmentValue: Record<string, unknown>): number {
-  const hardware = isObject(assessmentValue.hardware) ? assessmentValue.hardware : {};
-  const windows = isObject(assessmentValue.windows) ? assessmentValue.windows : {};
-  return readInt(hardware.windowsBuild) ?? readInt(assessmentValue.windowsBuild) ?? readInt(windows.buildNumber) ?? 22631;
+function readChassis(assessmentValue: Record<string, unknown>): string | null {
+  const ff = isObject(assessmentValue.formFactor) ? assessmentValue.formFactor : {};
+  return readString(ff.chassis);
+}
+
+/** classify.machine `signals` is an object ({ ramGb, cpuCores, hasDiscreteGpu, isLaptop, isVM }). */
+function signalsFromClassification(value: unknown): string[] {
+  if (Array.isArray(value)) return normalizeSignals(value);
+  if (!isObject(value)) return [];
+  const out: string[] = [];
+  const ram = readNumber(value.ramGb);
+  if (ram !== null) out.push(`${Math.round(ram)} GB RAM`);
+  const cores = readNumber(value.cpuCores);
+  if (cores !== null) out.push(`${Math.round(cores)}-core CPU`);
+  if (value.isVM === true) out.push("VM");
+  return out;
 }
 function normalizeDetectedProfileFromService(assessmentValue: unknown, classificationValue?: unknown): DetectedProfile | null {
   if (!isObject(assessmentValue)) return null;
+  const windowsBuild = readWindowsBuild(assessmentValue);
+  const chassis = readChassis(assessmentValue);
+  const healthChecks = readHealthChecks(assessmentValue);
   if (typeof assessmentValue.label === "string" && Array.isArray(assessmentValue.signals)) {
+    const id = readString(assessmentValue.id);
+    if (!id) return null;
     return {
-      id: readString(assessmentValue.id) ?? "gaming_desktop",
-      label: readString(assessmentValue.label) ?? "Gaming Desktop",
+      id,
+      label: readString(assessmentValue.label) ?? PROFILE_LABELS[id] ?? id,
       confidence: normalizeConfidence(assessmentValue.confidence),
       isWorkPc: readBoolean(assessmentValue.isWorkPc) ?? false,
-      machineName: readString(assessmentValue.machineName) ?? "OUDEN-PC",
+      machineName: readString(assessmentValue.machineName) ?? "",
       signals: normalizeSignals(assessmentValue.signals),
       accentColor: readString(assessmentValue.accentColor) ?? "text-[var(--accent)]",
-      windowsBuild: readWindowsBuild(assessmentValue),
+      windowsBuild,
+      chassis,
+      healthChecks,
     };
   }
   const classification = isObject(classificationValue) ? classificationValue : {};
   const hardware = isObject(assessmentValue.hardware) ? assessmentValue.hardware : {};
   const workIndicators = isObject(assessmentValue.workIndicators) ? assessmentValue.workIndicators : {};
   const workSignals = isObject(assessmentValue.workSignals) ? assessmentValue.workSignals : {};
-  const profileId = readString(classification.primary) ?? "gaming_desktop";
-  const isWorkPc = profileId === "work_pc" || readBoolean(workIndicators.isWorkPc) === true || readBoolean(workSignals.domainJoined) === true;
-  const machineName = readString(hardware.hostname) ?? readString(assessmentValue.machineName) ?? readString(assessmentValue.hostname) ?? "OUDEN-PC";
-  const signals = [...normalizeSignals(classification.signals), ...normalizeSignals(workIndicators.indicators), ...deriveSignalsFromAssessment(assessmentValue, isWorkPc)];
+  const classWork = isObject(classification.workIndicators) ? classification.workIndicators : {};
+  const profileId = readString(classification.primary);
+  if (!profileId) return null; // no classification → let the user retry, don't guess
+  const isWorkPc =
+    profileId === "work_pc" ||
+    readBoolean(workIndicators.isWorkPc) === true ||
+    readBoolean(workSignals.domainJoined) === true ||
+    readBoolean(classWork.domainJoined) === true;
+  const machineName = readString(hardware.hostname) ?? readString(assessmentValue.machineName) ?? readString(assessmentValue.hostname) ?? "";
+  // GPU name / RAM / cores come from the assessment; classification adds only what it alone knows.
+  const signals = [
+    ...deriveSignalsFromAssessment(assessmentValue, isWorkPc),
+    ...signalsFromClassification(classification.signals),
+    ...normalizeSignals(workIndicators.indicators),
+  ];
   return {
     id: profileId,
-    label: PROFILE_LABELS[profileId] ?? profileId.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()),
-    confidence: normalizeConfidence(classification.confidence), isWorkPc, machineName,
+    label: PROFILE_LABELS[profileId] ?? profileId.replace(/_/g, " ").replace(/\b\w/g, (ch) => ch.toUpperCase()),
+    confidence: normalizeConfidence(classification.confidence),
+    isWorkPc,
+    machineName,
     signals: Array.from(new Set(signals)).slice(0, 6),
-    accentColor: "text-[var(--accent)]", windowsBuild: readWindowsBuild(assessmentValue),
+    accentColor: "text-[var(--accent)]",
+    windowsBuild,
+    chassis,
+    healthChecks,
   };
 }
-
 async function withTimeout<T>(promise: Promise<T>, timeoutMs: number, label: string): Promise<T> {
   return await new Promise<T>((resolve, reject) => {
     const timer = window.setTimeout(() => {
-      reject(new Error(`${label} timed out after ${timeoutMs}ms`));
+      reject(new Error(`${label} timed out after ${Math.round(timeoutMs / 1000)}s`));
     }, timeoutMs);
 
     promise
@@ -169,90 +200,121 @@ async function withTimeout<T>(promise: Promise<T>, timeoutMs: number, label: str
 
 export function AssessmentStep() {
   const { t } = useT();
-  const { completeStep, setDetectedProfile, setDemoMode, setStepReady } = useWizardStore();
+  const { completeStep, goBack, setDetectedProfile, setDemoMode, setStepReady } = useWizardStore();
+  const refreshRuntime = useRuntimeStore((s) => s.refresh);
   const [statuses, setStatuses] = useState<Record<string, Status>>(
     Object.fromEntries(CATEGORIES.map((c) => [c.id, "idle"]))
   );
-  const started = useRef(false);
+  const [error, setError] = useState<string | null>(null);
+  const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
     setStepReady("assessment", false);
-    if (started.current) return;
-    started.current = true;
-    let aborted = false;
+    setError(null);
+    // StrictMode-safe: each effect run owns its own `cancelled` flag; a
+    // cancelled run never touches state. No "started" ref that would make the
+    // second (real) mount skip the work.
+    let cancelled = false;
 
-    const completeWithDemoProfile = async () => {
+    const completeWithSampleProfile = async () => {
       setDemoMode(true);
-      setDetectedProfile(DEMO_PROFILE);
-      // Let the scan animation actually play instead of snapping straight to the
-      // next step: stage each category to "done" in sequence, then advance.
+      setDetectedProfile(SAMPLE_PROFILE);
       for (const c of CATEGORIES) {
         await new Promise((r) => setTimeout(r, 280));
-        if (aborted) return;
+        if (cancelled) return;
         setStatuses((prev) => ({ ...prev, [c.id]: "done" }));
       }
       setStepReady("assessment", true);
       await new Promise((r) => setTimeout(r, 900));
-      if (!aborted) completeStep("assessment");
+      if (!cancelled) completeStep("assessment");
+    };
+
+    const fail = (message: string) => {
+      if (cancelled) return;
+      setStatuses(Object.fromEntries(CATEGORIES.map((c) => [c.id, "idle"])));
+      setError(message);
     };
 
     const run = async () => {
-      const { serviceCall } = await import("@/lib/service");
       setStatuses(Object.fromEntries(CATEGORIES.map((c) => [c.id, "scanning"])));
+      const runtime = await refreshRuntime();
+      if (cancelled) return;
+
+      if (demoProfileAllowed(runtime)) {
+        // macOS / browser preview only.
+        await completeWithSampleProfile();
+        return;
+      }
+      if (!runtime.running) {
+        fail(runtime.startError ?? t("assessment.error.serviceDown"));
+        return;
+      }
 
       try {
-        const runtime = await platform().service.status().catch(() => ({
-          running: false,
-          mode: "demo",
-          isAdmin: false,
-          platform: "unknown",
-        }));
-
-        if (runtime.platform !== "win32" || runtime.mode === "simulated") {
-          await completeWithDemoProfile();
+        const assessResult = await withTimeout(serviceCall<unknown>("assess.full"), ASSESSMENT_GUARD_MS, "Assessment");
+        if (cancelled) return;
+        if (!assessResult.ok) {
+          fail(assessResult.error);
           return;
         }
-
-        const timeoutMs = runtime.mode === "simulated" ? SIMULATED_SERVICE_TIMEOUT_MS : LIVE_SERVICE_TIMEOUT_MS;
-
-        const assessResult = await withTimeout(
-          serviceCall<unknown>("assess.full"),
-          timeoutMs,
-          "Assessment",
+        const assessment = assessResult.data;
+        const assessmentId = isObject(assessment) ? readString(assessment.id) : null;
+        const classifyParams = assessmentId ? { assessmentId } : { assessment };
+        const classificationResult = await withTimeout(
+          serviceCall<unknown>("classify.machine", classifyParams),
+          ASSESSMENT_GUARD_MS,
+          "Classification",
         );
-        if (aborted) return;
-
-        if (assessResult.ok) {
-          const assessment = assessResult.data;
-          const assessmentId = isObject(assessment) ? readString(assessment.id) : null;
-          const classifyParams = assessmentId ? { assessmentId } : { assessment };
-          const classificationResult = await withTimeout(
-            serviceCall<unknown>("classify.machine", classifyParams),
-            timeoutMs,
-            "Classification",
-          );
-          if (aborted) return;
-          const detectedProfile = normalizeDetectedProfileFromService(
-            assessment,
-            classificationResult.ok ? classificationResult.data : undefined,
-          );
-          if (detectedProfile) {
-            setStatuses(Object.fromEntries(CATEGORIES.map((c) => [c.id, "done"])));
-            setDetectedProfile(detectedProfile);
-            setDemoMode(false);
-            setTimeout(() => { if (!aborted) completeStep("assessment"); }, 800);
-            return;
-          }
+        if (cancelled) return;
+        const detectedProfile = normalizeDetectedProfileFromService(
+          assessment,
+          classificationResult.ok ? classificationResult.data : undefined,
+        );
+        if (!detectedProfile) {
+          fail(classificationResult.ok ? t("assessment.error.noProfile") : classificationResult.error);
+          return;
         }
-      } catch (error) {
-        console.warn("[assessment] backend flow failed, falling back to demo profile", error);
+        setStatuses(Object.fromEntries(CATEGORIES.map((c) => [c.id, "done"])));
+        setDetectedProfile(detectedProfile);
+        setDemoMode(false);
+        setStepReady("assessment", true);
+        setTimeout(() => { if (!cancelled) completeStep("assessment"); }, 800);
+      } catch (e) {
+        fail(e instanceof Error ? e.message : String(e));
       }
-      await completeWithDemoProfile();
     };
-    run();
-    return () => { aborted = true; };
+    void run();
+    return () => { cancelled = true; };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [setStepReady]);
+  }, [attempt]);
+
+  const errorView = error ? (
+      <div role="alert" className="flex min-h-full flex-col items-center justify-center gap-4 px-8 text-center">
+        <h2 className="font-display text-title text-[var(--text-display)]">{t("assessment.error.title")}</h2>
+        <p className="max-w-md text-[12px] text-[var(--text-secondary)]">{t("assessment.error.body")}</p>
+        <p className="max-w-md break-words font-mono text-[10px] text-[var(--text-disabled)]">{error}</p>
+        <div className="flex gap-3">
+          <button
+            onClick={() => goBack()}
+            className="rounded-sm px-4 py-2 text-[12px] text-[var(--text-secondary)]"
+            style={{ border: "1px solid var(--border)" }}
+          >
+            {t("common.back")}
+          </button>
+          <button
+            onClick={async () => {
+              const status = await refreshRuntime();
+              if (!status.running) await platform().service.restart();
+              setAttempt((n) => n + 1);
+            }}
+            className="rounded-sm px-4 py-2 text-[12px] font-medium"
+            style={{ background: "var(--text-display)", color: "var(--black)" }}
+          >
+            {t("common.retry")}
+          </button>
+        </div>
+      </div>
+  ) : null;
 
   const done = Object.values(statuses).filter((s) => s === "done").length;
   const isScanning = done < CATEGORIES.length;
@@ -269,6 +331,8 @@ export function AssessmentStep() {
     }, 2500);
     return () => clearInterval(interval);
   }, [isScanning]);
+
+  if (errorView) return errorView;
 
   return (
     <motion.div

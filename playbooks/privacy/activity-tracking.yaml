@@ -10,121 +10,140 @@ actions:
     name: "Disable Clipboard History & Cloud Sync"
     description: "Disable Windows clipboard history and cross-device clipboard synchronization"
     rationale: "Stores copied content locally and can sync it across devices via Microsoft account"
-    risk: safe
-    tier: free
-    default: true
+    risk: "safe"
+    tier: "free"
+    default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
     blockedProfiles: []
     registryChanges:
-      - hive: HKLM
+      - hive: "HKLM"
         path: "SOFTWARE\\Policies\\Microsoft\\Windows\\System"
-        valueName: AllowClipboardHistory
+        valueName: "AllowClipboardHistory"
         value: 0
-        valueType: DWord
-      - hive: HKLM
+        valueType: "DWord"
+      - hive: "HKLM"
         path: "SOFTWARE\\Policies\\Microsoft\\Windows\\System"
-        valueName: AllowCrossDeviceClipboard
+        valueName: "AllowCrossDeviceClipboard"
         value: 0
-        valueType: DWord
+        valueType: "DWord"
 
   - id: privacy.disable-activity-feed
     name: "Disable Activity History & Timeline"
-    description: "Disable Windows activity feed, timeline, and activity data uploads to Microsoft"
+    description: "Stop Windows publishing and uploading activity history. The activity feed itself is left on because turning it off also breaks clipboard history (winutil d1a6179)."
     rationale: "Tracks app usage, file opens, and browsing history, uploads to Microsoft"
-    risk: safe
-    tier: free
+    risk: "safe"
+    tier: "free"
     default: true
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
     blockedProfiles: []
     registryChanges:
-      - hive: HKLM
+      - hive: "HKLM"
         path: "SOFTWARE\\Policies\\Microsoft\\Windows\\System"
-        valueName: EnableActivityFeed
+        valueName: "PublishUserActivities"
         value: 0
-        valueType: DWord
-      - hive: HKLM
+        valueType: "DWord"
+      - hive: "HKLM"
         path: "SOFTWARE\\Policies\\Microsoft\\Windows\\System"
-        valueName: PublishUserActivities
+        valueName: "UploadUserActivities"
         value: 0
-        valueType: DWord
-      - hive: HKLM
-        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\System"
-        valueName: UploadUserActivities
-        value: 0
-        valueType: DWord
+        valueType: "DWord"
 
   - id: privacy.disable-cloud-content
     name: "Disable Cloud Content & Suggestions"
-    description: "Disable Windows Spotlight, suggested apps, tips, and cloud-delivered content"
-    rationale: "Downloads and displays promotional content, consuming bandwidth"
-    risk: safe
-    tier: free
+    description: "Disable Microsoft consumer features (auto-installed suggested apps), Spotlight-style cloud content, account-state content and third-party suggestions via policy"
+    rationale: "Machine and user CloudContent policies. DisableWindowsConsumerFeatures is honored only on Enterprise/Education/IoT; the other values apply on all editions."
+    risk: "safe"
+    tier: "free"
     default: true
     requiresReboot: false
     reversible: true
     estimatedSeconds: 3
     blockedProfiles: []
     registryChanges:
-      - hive: HKLM
+      - hive: "HKLM"
         path: "SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent"
-        valueName: DisableWindowsConsumerFeatures
+        valueName: "DisableWindowsConsumerFeatures"
         value: 1
-        valueType: DWord
-      - hive: HKLM
+        valueType: "DWord"
+      - hive: "HKLM"
         path: "SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent"
-        valueName: DisableSoftLanding
+        valueName: "DisableSoftLanding"
         value: 1
-        valueType: DWord
-      - hive: HKCU
-        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager"
-        valueName: SilentInstalledAppsEnabled
-        value: 0
-        valueType: DWord
-      - hive: HKCU
-        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager"
-        valueName: SystemPaneSuggestionsEnabled
-        value: 0
-        valueType: DWord
+        valueType: "DWord"
+      - hive: "HKLM"
+        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent"
+        valueName: "DisableCloudOptimizedContent"
+        value: 1
+        valueType: "DWord"
+      - hive: "HKLM"
+        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent"
+        valueName: "DisableConsumerAccountStateContent"
+        value: 1
+        valueType: "DWord"
+      - hive: "HKCU"
+        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent"
+        valueName: "DisableThirdPartySuggestions"
+        value: 1
+        valueType: "DWord"
 
   - id: privacy.disable-location
     name: "Disable Location Services"
     description: "Disable Windows location services to prevent location tracking"
     rationale: "Prevents apps and Windows from accessing device location data"
-    risk: low
-    tier: free
-    default: true
+    risk: "low"
+    tier: "free"
+    default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 3
     blockedProfiles:
-      - work_pc
+      - "work_pc"
     registryChanges:
-      - hive: HKLM
+      - hive: "HKLM"
         path: "SOFTWARE\\Policies\\Microsoft\\Windows\\LocationAndSensors"
-        valueName: DisableLocation
+        valueName: "DisableLocation"
         value: 1
-        valueType: DWord
+        valueType: "DWord"
 
   - id: privacy.disable-cross-device-experiences
     name: "Disable Cross-Device Experiences (CDP)"
     description: "Turn off the Connected Devices Platform behind Phone Link, Nearby Share, and cross-device handoff"
-    rationale: "The Connected Devices Platform runs background discovery and sync even when you aren't using Phone Link or Nearby Share — small but constant CPU and network. Off means those stay free while gaming. Leave it on if you actively use Phone Link or Nearby Share. Reversible."
-    risk: low
-    tier: free
+    rationale: "The Connected Devices Platform powers Phone Link, Nearby Share and cross-device handoff. Leave it on if you use any of those."
+    risk: "low"
+    tier: "free"
     default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
     blockedProfiles:
-      - work_pc
-      - office_laptop
+      - "work_pc"
+      - "office_laptop"
     registryChanges:
-      - hive: HKLM
+      - hive: "HKLM"
         path: "SOFTWARE\\Policies\\Microsoft\\Windows\\System"
-        valueName: EnableCdp
+        valueName: "EnableCdp"
         value: 0
-        valueType: DWord
+        valueType: "DWord"
+
+  - id: privacy.disable-wpbt
+    name: "Block Firmware-Injected Programs (WPBT)"
+    description: "Stop Windows running executables that the motherboard firmware injects through the Windows Platform Binary Table (WPBT) — used by some vendors to auto-install utilities such as Armoury Crate."
+    rationale: "DisableWpbtExecution=1 under Session Manager. Breaks firmware-based anti-theft tools (e.g. Absolute/Computrace) if you rely on one. Reversible."
+    risk: "low"
+    tier: "free"
+    default: false
+    expertOnly: false
+    requiresReboot: true
+    reversible: true
+    estimatedSeconds: 3
+    blockedProfiles: []
+    registryChanges:
+      - hive: "HKLM"
+        path: "SYSTEM\\CurrentControlSet\\Control\\Session Manager"
+        valueName: "DisableWpbtExecution"
+        value: 1
+        valueType: "DWord"

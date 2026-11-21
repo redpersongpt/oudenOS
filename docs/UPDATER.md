@@ -19,8 +19,19 @@ that isn't signed by our key.
   installer, then a step writes `latest.json` (version + signature + download
   URL) and uploads it to the release alongside `oudenOS-setup-<version>.exe`.
 - **Renderer:** `platform().updater.check()` / `.downloadAndInstall()` in
-  `lib/platform-tauri.ts`, surfaced by `components/settings/SettingsPanel.tsx`.
-  On the macOS demo (no Windows update feed) it degrades quietly to "up to date".
+  `lib/platform-tauri.ts`, state in `stores/update-store.ts`, surfaced by
+  `components/settings/SettingsPanel.tsx`.
+  - A **silent check** runs ~3 s after launch (`main.tsx`). It only lights a dot
+    on the title-bar gear when an update exists; errors (offline) are ignored.
+    Nothing is ever downloaded or installed without the user pressing
+    "Update now".
+  - "Update now" is **disabled while changes are being applied** (the Windows
+    installer exits the app, which would interrupt the apply). The window close
+    button is blocked for the same reason (`set_busy` + `CloseRequested`).
+  - On the macOS demo (no Windows update feed) it degrades quietly to "up to date".
+- **Version lockstep:** the npm `@tauri-apps/plugin-updater` / `plugin-process`
+  and the Rust `tauri-plugin-updater` / `tauri-plugin-process` crates must be on
+  the same minor (currently 2.14 / 2.4) — the Tauri CLI rejects mismatches.
 
 ## One-time setup you must do — add the signing secret
 

@@ -8,87 +8,142 @@ category: privacy
 actions:
   - id: privacy.disable-telemetry
     name: "Set Diagnostic Data to Minimum"
-    description: "Set Windows diagnostic data collection to Security level (minimum)"
-    rationale: "Prevents Windows from collecting usage, browsing, and app telemetry"
-    risk: safe
-    tier: free
+    description: "Set diagnostic data to the minimum allowed level and limit diagnostic log/dump collection and feedback notifications. AllowTelemetry=0 (Security) is honored only on Enterprise, Education, IoT and Server; Home/Pro clamp it to Required."
+    rationale: "Policy values from Microsoft's DataCollection policy set, as also listed in PC-Tuning's registry options."
+    risk: "safe"
+    tier: "free"
     default: true
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
     blockedProfiles: []
     registryChanges:
-      - hive: HKLM
+      - hive: "HKLM"
         path: "SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection"
-        valueName: AllowTelemetry
+        valueName: "AllowTelemetry"
         value: 0
-        valueType: DWord
-      - hive: HKLM
+        valueType: "DWord"
+      - hive: "HKLM"
         path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\DataCollection"
-        valueName: AllowTelemetry
+        valueName: "AllowTelemetry"
         value: 0
-        valueType: DWord
+        valueType: "DWord"
+      - hive: "HKLM"
+        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection"
+        valueName: "LimitDiagnosticLogCollection"
+        value: 1
+        valueType: "DWord"
+      - hive: "HKLM"
+        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection"
+        valueName: "LimitDumpCollection"
+        value: 1
+        valueType: "DWord"
+      - hive: "HKLM"
+        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection"
+        valueName: "LimitEnhancedDiagnosticDataWindowsAnalytics"
+        value: 0
+        valueType: "DWord"
+      - hive: "HKLM"
+        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection"
+        valueName: "DoNotShowFeedbackNotifications"
+        value: 1
+        valueType: "DWord"
 
   - id: privacy.disable-ceip
     name: "Disable Customer Experience Program"
     description: "Opt out of Microsoft Customer Experience Improvement Program"
     rationale: "CEIP collects hardware and software usage data for Microsoft product improvement"
-    risk: safe
-    tier: free
+    risk: "safe"
+    tier: "free"
     default: true
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
     blockedProfiles: []
     registryChanges:
-      - hive: HKLM
+      - hive: "HKLM"
         path: "SOFTWARE\\Microsoft\\SQMClient\\Windows"
-        valueName: CEIPEnable
+        valueName: "CEIPEnable"
         value: 0
-        valueType: DWord
+        valueType: "DWord"
+      - hive: "HKLM"
+        path: "SOFTWARE\\Policies\\Microsoft\\SQMClient\\Windows"
+        valueName: "CEIPEnable"
+        value: 0
+        valueType: "DWord"
+      - hive: "HKLM"
+        path: "SOFTWARE\\Wow6432Node\\Microsoft\\VSCommon\\15.0\\SQM"
+        valueName: "OptIn"
+        value: 0
+        valueType: "DWord"
+      - hive: "HKLM"
+        path: "SOFTWARE\\Policies\\Microsoft\\Messenger\\Client"
+        valueName: "CEIP"
+        value: 2
+        valueType: "DWord"
 
   - id: privacy.disable-error-reporting
     name: "Disable Windows Error Reporting"
     description: "Disable automatic error report submission to Microsoft"
     rationale: "Error reports can contain sensitive data including memory dumps"
-    risk: safe
-    tier: free
+    risk: "safe"
+    tier: "free"
     default: true
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
     blockedProfiles: []
     registryChanges:
-      - hive: HKLM
+      - hive: "HKLM"
         path: "SOFTWARE\\Microsoft\\Windows\\Windows Error Reporting"
-        valueName: Disabled
+        valueName: "Disabled"
         value: 1
-        valueType: DWord
+        valueType: "DWord"
+      - hive: "HKLM"
+        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Error Reporting"
+        valueName: "Disabled"
+        value: 1
+        valueType: "DWord"
+      - hive: "HKLM"
+        path: "SOFTWARE\\Policies\\Microsoft\\PCHealth\\ErrorReporting"
+        valueName: "DoReport"
+        value: 0
+        valueType: "DWord"
+      - hive: "HKCU"
+        path: "SOFTWARE\\Microsoft\\Windows\\Windows Error Reporting"
+        valueName: "DontSendAdditionalData"
+        value: 1
+        valueType: "DWord"
 
   - id: privacy.disable-advertising-id
     name: "Disable Advertising ID"
     description: "Reset and disable the Windows advertising identifier"
     rationale: "Advertising ID allows cross-app ad tracking; disabling prevents personalized ads"
-    risk: safe
-    tier: free
+    risk: "safe"
+    tier: "free"
     default: true
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
     blockedProfiles: []
     registryChanges:
-      - hive: HKCU
+      - hive: "HKCU"
         path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\AdvertisingInfo"
-        valueName: Enabled
+        valueName: "Enabled"
         value: 0
-        valueType: DWord
+        valueType: "DWord"
+      - hive: "HKLM"
+        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\AdvertisingInfo"
+        valueName: "DisabledByGroupPolicy"
+        value: 1
+        valueType: "DWord"
 
   - id: privacy.powershell-telemetry-optout
     name: "Opt Out of PowerShell Telemetry"
     description: "Set POWERSHELL_TELEMETRY_OPTOUT environment variable"
     rationale: "PowerShell sends usage telemetry to Microsoft by default"
-    risk: safe
-    tier: free
+    risk: "safe"
+    tier: "free"
     default: true
     expertOnly: false
     requiresReboot: false
@@ -96,18 +151,18 @@ actions:
     estimatedSeconds: 2
     blockedProfiles: []
     registryChanges:
-      - hive: HKLM
+      - hive: "HKLM"
         path: "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment"
-        valueName: POWERSHELL_TELEMETRY_OPTOUT
+        valueName: "POWERSHELL_TELEMETRY_OPTOUT"
         value: "1"
-        valueType: String
+        valueType: "String"
 
   - id: privacy.disable-typing-insights
     name: "Disable Typing Insights"
     description: "Disable typing analytics collection"
     rationale: "Tracks keystroke patterns for Microsoft AI improvement"
-    risk: safe
-    tier: free
+    risk: "safe"
+    tier: "free"
     default: true
     expertOnly: false
     requiresReboot: false
@@ -115,114 +170,115 @@ actions:
     estimatedSeconds: 2
     blockedProfiles: []
     registryChanges:
-      - hive: HKCU
+      - hive: "HKCU"
         path: "SOFTWARE\\Microsoft\\input\\Settings"
-        valueName: InsightsEnabled
+        valueName: "InsightsEnabled"
         value: 0
-        valueType: DWord
+        valueType: "DWord"
 
   - id: privacy.disable-msrt
     name: "Disable MSRT Windows Update Delivery"
     description: "Prevent Malicious Software Removal Tool from being offered via Windows Update"
-    rationale: "Runs full system scans during Windows Update cycles, consuming CPU"
-    risk: moderate
-    tier: free
+    rationale: "MSRT is a monthly malware-removal scan delivered through Windows Update. Turning it off removes one malware cleanup pass — a small security reduction."
+    risk: "medium"
+    tier: "free"
     default: false
     expertOnly: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
     blockedProfiles:
-      - work_pc
+      - "work_pc"
     registryChanges:
-      - hive: HKLM
+      - hive: "HKLM"
         path: "SOFTWARE\\Policies\\Microsoft\\MRT"
-        valueName: DontOfferThroughWUAU
+        valueName: "DontOfferThroughWUAU"
         value: 1
-        valueType: DWord
+        valueType: "DWord"
 
   - id: privacy.disable-event-transcript
     name: "Disable Telemetry Event Transcript Logging"
     description: "Stop Windows writing the local EventTranscript.db diagnostic event log, and stop OneSettings policy downloads that can re-arm telemetry"
     rationale: "Separate from the telemetry upload service: this stops the on-disk event-transcript SQLite store from being written at all, and stops the OneSettings config refresh that can quietly re-enable telemetry settings. Fully reversible."
-    risk: safe
-    tier: free
+    risk: "safe"
+    tier: "free"
     default: true
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
     blockedProfiles: []
     registryChanges:
-      - hive: HKLM
+      - hive: "HKLM"
         path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Diagnostics\\DiagTrack\\EventTranscriptKey"
-        valueName: EnableEventTranscript
+        valueName: "EnableEventTranscript"
         value: 0
-        valueType: DWord
-      - hive: HKLM
+        valueType: "DWord"
+      - hive: "HKLM"
         path: "SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection"
-        valueName: DisableOneSettingsDownloads
+        valueName: "DisableOneSettingsDownloads"
         value: 1
-        valueType: DWord
+        valueType: "DWord"
 
   - id: privacy.disable-app-diagnostic-access
     name: "Block Apps From Reading Other Apps' Diagnostic Info"
     description: "Force-deny the App Privacy 'diagnostic information' capability so Store apps can't query diagnostic/usage data about other running apps"
     rationale: "Stops UWP/Store apps from reading diagnostic and usage data about other processes. Reversible — flip it back if a monitoring/overlay tool you rely on needs it."
-    risk: low
-    tier: free
-    default: true
+    risk: "low"
+    tier: "free"
+    default: false
     requiresReboot: false
-    warningMessage: "Apps that legitimately read cross-app diagnostic/usage info (some hardware monitors, game-overlay stats panels) may lose that data. Reversible."
     reversible: true
     estimatedSeconds: 2
     blockedProfiles: []
+    warningMessage: "Apps that legitimately read cross-app diagnostic/usage info (some hardware monitors, game-overlay stats panels) may lose that data. Reversible."
     registryChanges:
-      - hive: HKLM
+      - hive: "HKLM"
         path: "SOFTWARE\\Policies\\Microsoft\\Windows\\AppPrivacy"
-        valueName: LetAppsGetDiagnosticInfo
+        valueName: "LetAppsGetDiagnosticInfo"
         value: 2
-        valueType: DWord
+        valueType: "DWord"
 
   - id: privacy.disable-font-providers
     name: "Disable Online Font Providers (Font Streaming)"
     description: "Stop Windows contacting Microsoft to stream/download missing fonts on demand"
     rationale: "Online font streaming reaches out to Microsoft whenever a document or page asks for a font you don't have. Off means it uses a local substitute instead — one less background call. Reversible."
-    risk: low
-    tier: free
-    default: true
+    risk: "low"
+    tier: "free"
+    default: false
     requiresReboot: true
-    warningMessage: "Documents or web pages referencing a font you don't have installed fall back to a substitute instead of downloading it. Takes effect after a reboot (or restarting the Font Cache service)."
     reversible: true
     estimatedSeconds: 2
     blockedProfiles: []
+    warningMessage: "Documents or web pages referencing a font you don't have installed fall back to a substitute instead of downloading it. Takes effect after a reboot (or restarting the Font Cache service)."
     registryChanges:
-      - hive: HKLM
+      - hive: "HKLM"
         path: "SOFTWARE\\Policies\\Microsoft\\Windows\\System"
-        valueName: EnableFontProviders
+        valueName: "EnableFontProviders"
         value: 0
-        valueType: DWord
+        valueType: "DWord"
 
   - id: privacy.disable-settings-sync
     name: "Disable Sync Your Settings to Microsoft Account"
-    description: "Turn off roaming of Windows settings (theme, language, accessibility, some credentials) to your Microsoft account"
+    description: "Turn off roaming of Windows settings to your Microsoft account (Windows 10 only; Windows 11 replaced this with Windows Backup)"
     rationale: "Stops your settings being synced up to Microsoft and pushed to your other devices. Opt-in — only useful if you specifically don't want settings roaming. Reversible by setting both values back to 0."
-    risk: low
-    tier: free
+    risk: "low"
+    tier: "free"
     default: false
     requiresReboot: false
-    warningMessage: "Settings (theme, language, some credentials, accessibility) will no longer roam to your other Windows devices, and the 'Sync your settings' page is locked off. Reversible."
     reversible: true
     estimatedSeconds: 2
     blockedProfiles:
-      - work_pc
+      - "work_pc"
+    maxWindowsBuild: 19045
+    warningMessage: "Settings (theme, language, some credentials, accessibility) will no longer roam to your other Windows devices, and the 'Sync your settings' page is locked off. Reversible."
     registryChanges:
-      - hive: HKLM
+      - hive: "HKLM"
         path: "SOFTWARE\\Policies\\Microsoft\\Windows\\SettingSync"
-        valueName: DisableSettingSync
+        valueName: "DisableSettingSync"
         value: 2
-        valueType: DWord
-      - hive: HKLM
+        valueType: "DWord"
+      - hive: "HKLM"
         path: "SOFTWARE\\Policies\\Microsoft\\Windows\\SettingSync"
-        valueName: DisableSettingSyncUserOverride
+        valueName: "DisableSettingSyncUserOverride"
         value: 1
-        valueType: DWord
+        valueType: "DWord"

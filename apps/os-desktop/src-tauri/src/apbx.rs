@@ -39,6 +39,9 @@ pub struct ExportResult {
     pub size_bytes: Option<u64>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub error: Option<String>,
+    /// True when the user dismissed the save dialog — not an error.
+    #[serde(skip_serializing_if = "std::ops::Not::not")]
+    pub cancelled: bool,
 }
 
 impl ExportResult {
@@ -49,6 +52,7 @@ impl ExportResult {
             sha256: Some(sha256),
             size_bytes: Some(size),
             error: None,
+            cancelled: false,
         }
     }
     pub fn err(msg: impl Into<String>) -> Self {
@@ -58,6 +62,17 @@ impl ExportResult {
             sha256: None,
             size_bytes: None,
             error: Some(msg.into()),
+            cancelled: false,
+        }
+    }
+    pub fn cancelled() -> Self {
+        Self {
+            ok: false,
+            path: None,
+            sha256: None,
+            size_bytes: None,
+            error: None,
+            cancelled: true,
         }
     }
 }

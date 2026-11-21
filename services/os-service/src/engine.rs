@@ -450,6 +450,7 @@ mod tests {
                 value_name: "FeatureSettingsOverride".to_string(),
                 value: serde_json::json!(3),
                 value_type: "DWord".to_string(),
+                delete: false,
             }],
             service_changes: Vec::new(),
             bcd_changes: Vec::new(),

@@ -13,7 +13,7 @@ import { useT } from "@/i18n";
 const ND_EASE = [0.25, 0.1, 0.25, 1] as const;
 
 export function FinalReviewStep() {
-  const { detectedProfile, resolvedPlaybook, personalization, setStepReady } = useWizardStore();
+  const { detectedProfile, resolvedPlaybook, personalization, setStepReady, setAcknowledgedActionIds } = useWizardStore();
   const answers = useDecisionsStore((state) => state.answers);
   const { t } = useT();
   const localize = useActionLocalizer();
@@ -33,6 +33,13 @@ export function FinalReviewStep() {
         (a.expertOnly || a.risk === "high" || a.risk === "extreme"),
     );
   const requiresAck = highRiskActions.length > 0;
+  const highRiskKey = highRiskActions.map((a) => a.id).join("|");
+
+  // Only the actions listed above the checkbox are confirmed to the service;
+  // execution sends expertConfirmed for exactly these ids.
+  useEffect(() => {
+    setAcknowledgedActionIds(acknowledged ? highRiskKey.split("|").filter(Boolean) : []);
+  }, [acknowledged, highRiskKey, setAcknowledgedActionIds]);
 
   useEffect(() => {
     setStepReady(
@@ -149,18 +156,16 @@ export function FinalReviewStep() {
               <p className="mt-2 text-sm text-[var(--text-secondary)]">
                 {t("final.highRiskWarning")}
               </p>
-              <ul className="mt-3 space-y-1">
-                {highRiskActions.slice(0, 6).map((a) => (
+              <ul className="mt-3 max-h-[160px] space-y-1 overflow-y-auto scrollbar-thin pr-1">
+                {highRiskActions.map((a) => (
                   <li key={a.id} className="flex items-center gap-2 text-xs text-[var(--text-secondary)]">
-                    <span className="h-1 w-1 rounded-full bg-[#FF6B6B]" />
-                    {localize(a).name}
+                    <span className="h-1 w-1 shrink-0 rounded-full bg-[#FF6B6B]" />
+                    <span className="min-w-0">{localize(a).name}</span>
+                    <span className="ml-auto shrink-0 font-mono text-[10px] uppercase text-[var(--text-disabled)]">
+                      {a.expertOnly ? t("plan.statusExpert") : a.risk}
+                    </span>
                   </li>
                 ))}
-                {highRiskActions.length > 6 && (
-                  <li className="text-xs text-[var(--text-disabled)]">
-                    {t("final.moreCount", { count: highRiskActions.length - 6 })}
-                  </li>
-                )}
               </ul>
               <label className="mt-4 flex items-start gap-3 cursor-pointer select-none">
                 <input

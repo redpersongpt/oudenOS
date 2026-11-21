@@ -1,84 +1,65 @@
 # Performance: Power Configuration
-
 module: performance.power
 name: "Power Configuration"
-description: "Optimize power settings for maximum performance: High Performance plan, disable fast startup, hibernation, USB selective suspend, and PCIe link state PM"
+description: "Fast Startup, hibernation, USB/PCIe/device power saving, power throttling and Modern Standby. Applies to the active plan; does not switch plans."
 category: performance
 
 actions:
-  - id: power.high-performance-plan
-    name: "Lock CPU to Maximum Clock (current power plan)"
-    description: "Pin the ACTIVE power plan's minimum and maximum processor state to 100% so the CPU holds its top clock instead of down-clocking. This modifies your CURRENT power plan — it does NOT switch to Windows' separate High Performance plan. 100% minimum processor state holds the clock high; it does NOT mean 100% CPU usage. May increase idle power draw, heat, and fan noise."
-    rationale: "Down-clocking and C-state transitions add latency when the CPU must ramp back up. Pinning processor state to 100% keeps the clock at maximum (clock speed, not CPU utilization). It is applied to SCHEME_CURRENT — tuning whatever plan is active rather than switching plans — so your chosen plan is preserved and the change reverses cleanly via rollback."
-    risk: low
-    tier: premium
-    default: false
-    requiresReboot: false
-    reversible: true
-    estimatedSeconds: 3
-    blockedProfiles:
-      - office_laptop
-    powerChanges:
-      - settingPath: "SCHEME_CURRENT\\SUB_PROCESSOR\\PROCTHROTTLEMIN"
-        newValue: "100"
-      - settingPath: "SCHEME_CURRENT\\SUB_PROCESSOR\\PROCTHROTTLEMAX"
-        newValue: "100"
-
   - id: power.disable-fast-startup
     name: "Disable Fast Startup (Hybrid Shutdown)"
     description: "Disable Windows Fast Startup (hybrid shutdown) which hibernates the kernel session instead of performing a full shutdown"
-    rationale: "Fast Startup saves the kernel session to the hibernation file on shutdown. This causes stale driver state, prevents clean driver reinitialization, and can lead to hardware initialization issues."
-    risk: safe
-    tier: free
+    rationale: "Fast Startup hibernates the kernel session on shutdown, so drivers are not fully reinitialized on the next boot. Turning it off gives a clean cold boot at the cost of a slightly slower start."
+    risk: "safe"
+    tier: "free"
     default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
     blockedProfiles: []
     registryChanges:
-      - hive: HKLM
+      - hive: "HKLM"
         path: "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Power"
-        valueName: HiberbootEnabled
+        valueName: "HiberbootEnabled"
         value: 0
-        valueType: DWord
+        valueType: "DWord"
 
   - id: power.disable-hibernation
     name: "Disable Hibernation"
     description: "Turn off Windows hibernation, hide the Hibernate option from the power menu, and reclaim the hiberfil.sys disk space (roughly 40-75% of your RAM) after the next restart"
     rationale: "On systems with Fast Startup already disabled, hibernation provides no benefit and consumes significant disk space. powercfg /hibernate off actually disables it and removes hiberfil.sys; the Session Manager\\Power key is where Windows reads HibernateEnabled (the old Control\\Power path was inert, so the value never took effect)."
-    risk: safe
-    tier: free
+    risk: "safe"
+    tier: "free"
     default: false
     requiresReboot: true
     reversible: true
     estimatedSeconds: 5
     blockedProfiles: []
     registryChanges:
-      - hive: HKLM
+      - hive: "HKLM"
         path: "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Power"
-        valueName: HibernateEnabled
+        valueName: "HibernateEnabled"
         value: 0
-        valueType: DWord
-      - hive: HKLM
+        valueType: "DWord"
+      - hive: "HKLM"
         path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FlyoutMenuSettings"
-        valueName: ShowHibernateOption
+        valueName: "ShowHibernateOption"
         value: 0
-        valueType: DWord
+        valueType: "DWord"
     powerShellCommands:
       - "powercfg.exe /hibernate off"
 
   - id: power.disable-usb-selective-suspend
     name: "Disable USB Selective Suspend"
-    description: "Disable USB selective suspend for both AC and DC power, preventing Windows from powering down USB devices during idle periods"
-    rationale: "USB selective suspend saves power by suspending idle USB devices, but causes input latency spikes when mice, keyboards, and controllers must wake from suspended state."
-    risk: low
-    tier: premium
+    description: "Disable USB selective suspend in the active power plan (AC power), so Windows does not power down idle USB devices"
+    rationale: "Stops Windows suspending idle USB devices. Can help with devices that disconnect or wake slowly; raises power use slightly. Measure before/after with a frame-time capture (PresentMon or CapFrameX, several runs) — no repeatable gain is promised."
+    risk: "low"
+    tier: "premium"
     default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 3
     blockedProfiles:
-      - office_laptop
+      - "office_laptop"
     powerChanges:
       - settingPath: "2a737441-1930-4402-8d77-b2bebba308a3/48e6b7a6-50f5-4782-a5d4-53bb8f07e226"
         newValue: "0"
@@ -86,15 +67,15 @@ actions:
   - id: power.disable-pcie-link-state-pm
     name: "Disable PCIe Link State Power Management"
     description: "Disable Active State Power Management (ASPM) transitions on PCIe devices, preventing the system from placing the PCIe bus in low-power link states (L0s, L1)"
-    rationale: "PCIe ASPM transitions power down the PCIe link between the CPU and devices. Re-entering the active state adds latency (1-10 us typical, up to several ms). Disabling ASPM eliminates this class of intermittent latency spike."
-    risk: low
-    tier: premium
+    rationale: "Turns off PCIe ASPM in the active plan. Raises idle power; latency effect is hardware-dependent. Measure before/after with a frame-time capture (PresentMon or CapFrameX, several runs) — no repeatable gain is promised."
+    risk: "low"
+    tier: "premium"
     default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 3
     blockedProfiles:
-      - office_laptop
+      - "office_laptop"
     powerChanges:
       - settingPath: "501a4d13-42af-4429-9fd1-a8218c268e20/ee12f906-d277-404b-b6da-e5fa1a576df5"
         newValue: "0"
@@ -103,61 +84,66 @@ actions:
     name: "Disable Modern Standby"
     description: "Disable Modern Standby (S0 Low Power Idle) to force legacy S3 sleep. Prevents network activity, background updates, and battery drain during sleep."
     rationale: "Modern Standby keeps CPU, network, and peripherals partially active during sleep. On desktops this wastes power. On laptops it drains battery. PlatformAoAcOverride=0 forces classic S3 sleep."
-    risk: medium
-    tier: free
+    risk: "medium"
+    tier: "free"
     default: false
     expertOnly: false
     requiresReboot: true
     reversible: true
     estimatedSeconds: 2
-    warningMessage: "Changes sleep behavior from Modern Standby to legacy S3. Instant wake and background sync will no longer work. Verify sleep works correctly after reboot."
     blockedProfiles:
-      - office_laptop
-      - gaming_laptop
-      - low_spec_system
+      - "office_laptop"
+      - "gaming_laptop"
+      - "low_spec_system"
+    requires:
+      chassis: "desktop"
+    warningMessage: "Changes sleep behavior from Modern Standby to legacy S3. Instant wake and background sync will no longer work. Verify sleep works correctly after reboot."
     registryChanges:
-      - hive: HKLM
+      - hive: "HKLM"
         path: "SYSTEM\\CurrentControlSet\\Control\\Power"
-        valueName: PlatformAoAcOverride
+        valueName: "PlatformAoAcOverride"
         value: 0
-        valueType: DWord
+        valueType: "DWord"
 
   - id: power.disable-device-power-saving
-    name: "Disable Device Power Saving"
-    description: "Disable power management for USB, NIC, and PCI devices"
-    rationale: "Power-saving modes on devices add wake-up latency (1-5ms). Disabling ensures USB polling, network packets, and PCI devices respond without delay."
-    risk: low
-    tier: free
+    name: "Disable Device Power Saving (all devices)"
+    description: "Clear \"Allow the computer to turn off this device to save power\" on every device that exposes it (MSPower_DeviceEnable). Desktops only."
+    rationale: "Exact command from PC-Tuning 11.37. Re-plugging a device can re-enable its power saving. Measure before/after with a frame-time capture (PresentMon or CapFrameX, several runs) — no repeatable gain is promised."
+    risk: "low"
+    tier: "free"
     default: false
     expertOnly: false
     requiresReboot: false
-    reversible: true
+    reversible: false
     estimatedSeconds: 5
     blockedProfiles:
-      - office_laptop
-      - gaming_laptop
-    powerChanges:
-      - settingPath: "device_power_management"
-        value: "disabled"
-        scope: "all_devices"
+      - "office_laptop"
+      - "gaming_laptop"
+    requires:
+      chassis: "desktop"
+    warningMessage: "Not automatically reversible: to undo, re-tick \"Allow the computer to turn off this device\" in Device Manager for the affected devices."
+    powerShellCommands:
+      - "Get-WmiObject MSPower_DeviceEnable -Namespace root\\wmi | ForEach-Object { $_.enable = $false; $_.psbase.put() | Out-Null }"
 
   - id: power.disable-power-throttling
     name: "Disable CPU Power Throttling (EcoQoS)"
     description: "Stop Windows down-clocking threads it classifies as background work (EcoQoS power throttling)"
     rationale: "Power throttling demotes background-classified threads to save energy. Turning it off keeps every thread at full clock — useful on a plugged-in desktop chasing consistency. Opt-in; it raises power draw and heat, so it's not for battery use."
-    risk: low
-    tier: free
+    risk: "low"
+    tier: "free"
     default: false
     requiresReboot: false
-    warningMessage: "Increases power draw and heat because background threads no longer down-clock — not recommended on battery-powered laptops. The gain on a pure foreground workload is small. Reversible."
     reversible: true
     estimatedSeconds: 2
     blockedProfiles:
-      - gaming_laptop
-      - office_laptop
+      - "gaming_laptop"
+      - "office_laptop"
+    requires:
+      chassis: "desktop"
+    warningMessage: "Increases power draw and heat because background threads no longer down-clock — not recommended on battery-powered laptops. The gain on a pure foreground workload is small. Reversible."
     registryChanges:
-      - hive: HKLM
+      - hive: "HKLM"
         path: "SYSTEM\\CurrentControlSet\\Control\\Power\\PowerThrottling"
-        valueName: PowerThrottlingOff
+        valueName: "PowerThrottlingOff"
         value: 1
-        valueType: DWord
+        valueType: "DWord"

@@ -1,7 +1,9 @@
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { motion } from "framer-motion";
 import { ArrowLeft, ArrowRight, Settings } from "lucide-react";
 import { useWizardStore } from "@/stores/wizard-store";
+import { useUpdateStore } from "@/stores/update-store";
+import { useRuntimeStore } from "@/stores/runtime-store";
 import type { WizardStepId } from "@/stores/wizard-store";
 import { platform } from "@/lib/platform";
 import { LogoMark } from "@/components/brand/Logo";
@@ -43,13 +45,14 @@ function Rail() {
         <span className="nd-label" style={{ color: "var(--accent)" }}>{t("rail.setup")}</span>
       </div>
 
-      <nav className="flex flex-1 flex-col">
+      <nav className="flex flex-1 flex-col" aria-label={t("rail.setup")}>
         {steps.map((step, i) => {
           const cur = step.id === currentStep;
           const done = step.status === "completed" || step.status === "skipped" || i < ci;
           return (
             <div
               key={step.id}
+              aria-current={cur ? "step" : undefined}
               className="flex items-center gap-3 py-1.5 pl-1"
               style={{ borderBottom: "1px solid var(--border)" }}
             >
@@ -153,6 +156,18 @@ function Bar() {
 
 function TitleBar({ onOpenSettings }: { onOpenSettings: () => void }) {
   const { t } = useT();
+  const executing = useWizardStore((s) => s.executing);
+  const updateAvailable = useUpdateStore((s) => s.state.kind === "available");
+  const noteCloseBlocked = useRuntimeStore((s) => s.noteCloseBlocked);
+  const handleClose = () => {
+    // Closing mid-apply would kill the service between actions. The shell also
+    // refuses (CloseRequested), this just avoids the round trip.
+    if (executing) {
+      noteCloseBlocked();
+      return;
+    }
+    platform().window.close();
+  };
   return (
     <div
       className="flex h-8 shrink-0 items-center justify-between px-4 drag-region"
@@ -164,12 +179,19 @@ function TitleBar({ onOpenSettings }: { onOpenSettings: () => void }) {
       <div className="flex items-center no-drag">
         <button
           onClick={onOpenSettings}
-          className="mr-0.5 flex h-6 w-8 items-center justify-center transition-opacity duration-150 hover:opacity-80"
+          className="relative mr-0.5 flex h-6 w-8 items-center justify-center transition-opacity duration-150 hover:opacity-80"
           style={{ color: "var(--text-disabled)" }}
-          aria-label={t("settings.title")}
-          title={t("settings.title")}
+          aria-label={updateAvailable ? t("settings.titleUpdateAvailable") : t("settings.title")}
+          title={updateAvailable ? t("settings.titleUpdateAvailable") : t("settings.title")}
         >
           <Settings className="h-3.5 w-3.5" />
+          {updateAvailable && (
+            <span
+              aria-hidden="true"
+              className="absolute right-1.5 top-0.5 h-1.5 w-1.5 rounded-full"
+              style={{ background: "var(--interactive)" }}
+            />
+          )}
         </button>
         <button
           onClick={() => platform().window.minimize()}
@@ -180,7 +202,9 @@ function TitleBar({ onOpenSettings }: { onOpenSettings: () => void }) {
           <svg width="10" height="1" viewBox="0 0 10 1" fill="currentColor"><rect width="10" height="1" /></svg>
         </button>
         <button
-          onClick={() => platform().window.close()}
+          onClick={handleClose}
+          aria-disabled={executing}
+          title={executing ? t("titlebar.closeBlocked") : t("titlebar.close")}
           className="flex h-6 w-8 items-center justify-center transition-colors duration-150"
           style={{ color: "var(--text-disabled)" }}
           onMouseEnter={(e) => { e.currentTarget.style.background = "var(--accent)"; e.currentTarget.style.color = "var(--text-display)"; }}
@@ -195,6 +219,28 @@ function TitleBar({ onOpenSettings }: { onOpenSettings: () => void }) {
 }
 
 /* ── Shell ────────────────────────────────────────────────────────────── */
+
+function CloseBlockedToast() {
+  const { t } = useT();
+  const closeBlockedAt = useRuntimeStore((s) => s.closeBlockedAt);
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    if (!closeBlockedAt) return;
+    setVisible(true);
+    const timer = window.setTimeout(() => setVisible(false), 4000);
+    return () => window.clearTimeout(timer);
+  }, [closeBlockedAt]);
+  if (!visible) return null;
+  return (
+    <div
+      role="status"
+      className="fixed left-1/2 top-10 z-[1100] -translate-x-1/2 rounded-sm px-4 py-2 text-[12px]"
+      style={{ background: "var(--surface-raised)", border: "1px solid var(--border-visible)", color: "var(--text-display)" }}
+    >
+      {t("titlebar.closeBlocked")}
+    </div>
+  );
+}
 
 export function WizardShell({ children }: { children: ReactNode }) {
   const { currentStep } = useWizardStore();
@@ -215,6 +261,7 @@ export function WizardShell({ children }: { children: ReactNode }) {
         </main>
       </div>
       {settingsOpen && <SettingsPanel onClose={() => setSettingsOpen(false)} />}
+      <CloseBlockedToast />
     </div>
   );
 }

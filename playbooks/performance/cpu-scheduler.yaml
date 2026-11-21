@@ -1,34 +1,16 @@
-# Performance: CPU & Scheduler
+# Performance: System Behaviour
 module: performance.cpu
-name: "CPU & Scheduler Tuning"
-description: "Optimize CPU scheduling, MMCSS, and thread priority"
+name: "System Behaviour"
+description: "Sticky Keys, driver/Store updates, maintenance, auto sign-on and Fault Tolerant Heap"
 category: performance
 
 actions:
-  - id: perf.mmcss-system-responsiveness
-    name: "Set MMCSS System Responsiveness"
-    description: "Allocate more CPU to multimedia/gaming tasks (10% reserved for background)"
-    rationale: "Default 20% background reservation is excessive for gaming"
-    risk: low
-    tier: free
-    default: false
-    requiresReboot: true
-    reversible: true
-    estimatedSeconds: 2
-    blockedProfiles: [work_pc]
-    registryChanges:
-      - hive: HKLM
-        path: "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile"
-        valueName: SystemResponsiveness
-        value: 10
-        valueType: DWord
-
   - id: perf.disable-sticky-keys
     name: "Disable Sticky Keys Shortcut"
     description: "Disable the Shift×5 sticky keys shortcut that interrupts gameplay"
     rationale: "Pressing Shift 5 times triggers an accessibility dialog that breaks fullscreen games"
-    risk: safe
-    tier: free
+    risk: "safe"
+    tier: "free"
     default: true
     expertOnly: false
     requiresReboot: false
@@ -36,76 +18,90 @@ actions:
     estimatedSeconds: 2
     blockedProfiles: []
     registryChanges:
-      - hive: HKCU
+      - hive: "HKCU"
         path: "Control Panel\\Accessibility\\StickyKeys"
-        valueName: Flags
+        valueName: "Flags"
         value: "506"
-        valueType: String
+        valueType: "String"
 
   - id: perf.disable-driver-updates-via-wu
-    name: "Exclude Driver Updates from Windows Update"
-    description: "Prevent Windows Update from automatically installing driver updates"
-    rationale: "Auto-installed drivers can break GPU performance, audio, or peripherals. Manual driver management is safer for tuned systems."
-    risk: low
-    tier: free
-    default: false
-    expertOnly: false
-    requiresReboot: false
-    reversible: true
-    estimatedSeconds: 2
-    blockedProfiles: [work_pc]
-    registryChanges:
-      - hive: HKLM
-        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate"
-        valueName: ExcludeWUDriversInQualityUpdate
-        value: 1
-        valueType: DWord
-
-  - id: cpu.win32-priority-separation
-    name: "Optimize Thread Priority"
-    description: "Set Win32PrioritySeparation for foreground-biased scheduling"
-    rationale: "Prioritizes foreground applications for better responsiveness"
-    risk: low
-    tier: free
-    default: true
-    expertOnly: false
-    requiresReboot: false
-    reversible: true
-    estimatedSeconds: 2
-    blockedProfiles: []
-    registryChanges:
-      - hive: HKLM
-        path: "SYSTEM\\CurrentControlSet\\Control\\PriorityControl"
-        valueName: Win32PrioritySeparation
-        value: 38
-        valueType: DWord
-
-  - id: perf.disable-auto-maintenance
-    name: "Disable Automatic Maintenance"
-    description: "Disable Windows Automatic Maintenance scheduler"
-    rationale: "Maintenance tasks (defrag, scan, updates) run at unexpected times and consume CPU/disk. On manually maintained systems this is unnecessary overhead."
-    risk: moderate
-    tier: free
+    name: "Stop Windows Update Installing Drivers"
+    description: "Stop Windows Update and device setup from downloading drivers and device metadata. Install GPU, chipset and other drivers yourself afterwards."
+    rationale: "Full driver-search policy set from PC-Tuning's registry options, plus PreventDeviceMetadataFromNetwork (winutil). Useful when Windows keeps replacing a driver you installed manually."
+    risk: "low"
+    tier: "free"
     default: false
     expertOnly: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
     blockedProfiles:
-      - work_pc
+      - "work_pc"
+    warningMessage: "New hardware will not get drivers automatically, and you are responsible for driver updates (including security fixes)."
     registryChanges:
-      - hive: HKLM
-        path: "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Schedule\\Maintenance"
-        valueName: MaintenanceDisabled
+      - hive: "HKLM"
+        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate"
+        valueName: "ExcludeWUDriversInQualityUpdate"
         value: 1
-        valueType: DWord
+        valueType: "DWord"
+      - hive: "HKLM"
+        path: "SOFTWARE\\Microsoft\\WindowsUpdate\\UX\\Settings"
+        valueName: "ExcludeWUDriversInQualityUpdate"
+        value: 1
+        valueType: "DWord"
+      - hive: "HKLM"
+        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\DriverSearching"
+        valueName: "SearchOrderConfig"
+        value: 0
+        valueType: "DWord"
+      - hive: "HKLM"
+        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\DriverSearching"
+        valueName: "SearchOrderConfig"
+        value: 0
+        valueType: "DWord"
+      - hive: "HKLM"
+        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\DriverSearching"
+        valueName: "DontSearchWindowsUpdate"
+        value: 1
+        valueType: "DWord"
+      - hive: "HKLM"
+        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Device Metadata"
+        valueName: "PreventDeviceMetadataFromNetwork"
+        value: 1
+        valueType: "DWord"
+      - hive: "HKLM"
+        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\Device Metadata"
+        valueName: "PreventDeviceMetadataFromNetwork"
+        value: 1
+        valueType: "DWord"
+
+  - id: perf.disable-auto-maintenance
+    name: "Disable Automatic Maintenance"
+    description: "Disable Windows Automatic Maintenance scheduler"
+    rationale: "Automatic Maintenance runs updates, scans and drive optimization when Windows thinks the PC is idle. With it disabled, nothing runs SSD TRIM on schedule (PC-Tuning 11.53) — run \"Optimize Drives\" yourself every few weeks."
+    risk: "medium"
+    tier: "free"
+    default: false
+    expertOnly: false
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 2
+    blockedProfiles:
+      - "work_pc"
+    warningMessage: "Scheduled drive optimization (SSD TRIM) and other maintenance stop. Run Optimize Drives manually from time to time."
+    registryChanges:
+      - hive: "HKLM"
+        path: "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Schedule\\Maintenance"
+        valueName: "MaintenanceDisabled"
+        value: 1
+        valueType: "DWord"
 
   - id: perf.disable-auto-sign-on
     name: "Disable Auto-Restart Sign-On"
     description: "Prevent Windows from auto-signing in after restart"
     rationale: "Prevents unexpected auto-login behavior after updates or restarts. Security improvement."
-    risk: safe
-    tier: free
+    risk: "safe"
+    tier: "free"
     default: true
     expertOnly: false
     requiresReboot: false
@@ -113,28 +109,48 @@ actions:
     estimatedSeconds: 2
     blockedProfiles: []
     registryChanges:
-      - hive: HKLM
+      - hive: "HKLM"
         path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System"
-        valueName: DisableAutomaticRestartSignOn
+        valueName: "DisableAutomaticRestartSignOn"
         value: 1
-        valueType: DWord
+        valueType: "DWord"
 
   - id: perf.disable-store-auto-updates
     name: "Disable Store Auto-Updates"
     description: "Prevent Microsoft Store from automatically downloading app updates"
     rationale: "Background app updates consume bandwidth and CPU at random times. Manual updates provide better control."
-    risk: moderate
-    tier: free
+    risk: "medium"
+    tier: "free"
     default: false
     expertOnly: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
     blockedProfiles:
-      - work_pc
+      - "work_pc"
+    warningMessage: "Store apps stop updating automatically, including security fixes. Update them from the Store manually."
     registryChanges:
-      - hive: HKLM
+      - hive: "HKLM"
         path: "SOFTWARE\\Policies\\Microsoft\\WindowsStore"
-        valueName: AutoDownload
+        valueName: "AutoDownload"
         value: 2
-        valueType: DWord
+        valueType: "DWord"
+
+  - id: perf.disable-fault-tolerant-heap
+    name: "Disable Fault Tolerant Heap"
+    description: "Turn off the Fault Tolerant Heap, which silently applies heap mitigations to apps that crash repeatedly"
+    rationale: "PC-Tuning registry option \"disable fault tolerant heap\" (HKLM\\SOFTWARE\\Microsoft\\FTH Enabled=0). Apps that keep crashing will not get the automatic mitigation. Reversible."
+    risk: "low"
+    tier: "free"
+    default: false
+    expertOnly: false
+    requiresReboot: false
+    reversible: true
+    estimatedSeconds: 3
+    blockedProfiles: []
+    registryChanges:
+      - hive: "HKLM"
+        path: "SOFTWARE\\Microsoft\\FTH"
+        valueName: "Enabled"
+        value: 0
+        valueType: "DWord"

@@ -10,153 +10,123 @@ actions:
     name: "Disable Connected User Experiences (DiagTrack)"
     description: "Disable the Connected User Experiences and Telemetry service (DiagTrack) — primary Windows telemetry pipeline"
     rationale: "Main telemetry pipeline — collects diagnostic data, usage patterns, and crash reports, uploads to Microsoft"
-    risk: safe
-    tier: free
-    default: false
+    risk: "safe"
+    tier: "free"
+    default: true
     requiresReboot: false
     reversible: true
     estimatedSeconds: 3
     blockedProfiles: []
     serviceChanges:
-      - name: DiagTrack
-        startupType: Disabled
+      - name: "DiagTrack"
+        startupType: "Disabled"
 
   - id: services.disable-dmwappushservice
     name: "Disable WAP Push Message Routing"
     description: "Disable dmwappushservice — routes telemetry data from DiagTrack to Microsoft"
     rationale: "Secondary telemetry relay for DiagTrack, can still upload data independently"
-    risk: safe
-    tier: free
-    default: false
+    risk: "safe"
+    tier: "free"
+    default: true
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
     blockedProfiles: []
     serviceChanges:
-      - name: dmwappushservice
-        startupType: Disabled
+      - name: "dmwappushservice"
+        startupType: "Disabled"
 
   - id: services.disable-sysmain
     name: "Disable SysMain (Superfetch)"
     description: "Disable the SysMain service (formerly Superfetch) which preloads frequently used applications into memory"
-    rationale: "Preloads app data into RAM via background I/O; negligible benefit on SSD"
-    risk: low
-    tier: free
+    rationale: "SysMain preloads frequently used apps using background disk I/O. PC-Tuning (11.18) only recommends disabling it when no HDD is present, so this is skipped on systems with a spinning disk. Benefit on SSD-only systems is small."
+    risk: "low"
+    tier: "free"
     default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 3
     blockedProfiles:
-      - work_pc
+      - "work_pc"
+    requires:
+      noHdd: true
     serviceChanges:
-      - name: SysMain
-        startupType: Disabled
-
-  - id: services.disable-sleep-study
-    name: "Disable Sleep Study"
-    description: "Disable SleepStudy service that logs energy usage data during sleep/standby"
-    rationale: "Removes unnecessary background energy logging service that provides no user-facing benefit"
-    risk: safe
-    tier: free
-    default: false
-    requiresReboot: false
-    reversible: true
-    estimatedSeconds: 2
-    blockedProfiles: []
-    serviceChanges:
-      - name: SleepStudy
-        startupType: Disabled
-
-  - id: services.disable-tiledatamodelsvc
-    name: "Disable Tile Data Model Server"
-    description: "Disable tiledatamodelsvc — indexes Start Menu tile data"
-    rationale: "Legacy Live Tiles indexer, deprecated in Windows 11"
-    risk: safe
-    tier: free
-    default: false
-    requiresReboot: false
-    reversible: true
-    estimatedSeconds: 2
-    blockedProfiles: []
-    serviceChanges:
-      - name: tiledatamodelsvc
-        startupType: Disabled
+      - name: "SysMain"
+        startupType: "Disabled"
 
   - id: services.disable-wisvc
     name: "Disable Windows Insider Service"
     description: "Disable wisvc — Windows Insider Program flight/preview management"
-    rationale: "Keeps background connections for Windows Insider preview builds when not enrolled"
-    risk: safe
-    tier: free
+    rationale: "Only needed when the PC is enrolled in the Windows Insider Program."
+    risk: "safe"
+    tier: "free"
     default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
     blockedProfiles: []
     serviceChanges:
-      - name: wisvc
-        startupType: Disabled
+      - name: "wisvc"
+        startupType: "Disabled"
 
   - id: services.disable-retaildemo
     name: "Disable Retail Demo Service"
     description: "Disable RetailDemo — retail store demo experience management"
     rationale: "Only used in retail store display mode"
-    risk: safe
-    tier: free
+    risk: "safe"
+    tier: "free"
     default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
     blockedProfiles: []
     serviceChanges:
-      - name: RetailDemo
-        startupType: Disabled
+      - name: "RetailDemo"
+        startupType: "Disabled"
 
   - id: services.disable-map-services
-    name: "Disable Map Download & Broker"
-    description: "Disable MapsBroker and lfsvc — offline map data download and geolocation"
-    rationale: "Downloads offline map data and provides geolocation; unused on desktops"
-    risk: safe
-    tier: free
+    name: "Disable Downloaded Maps Manager"
+    description: "Disable MapsBroker — the offline-maps download manager"
+    rationale: "Only used by the Maps app's offline maps. Location (lfsvc) is handled by the geolocation action."
+    risk: "safe"
+    tier: "free"
     default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 3
     blockedProfiles:
-      - office_laptop
+      - "office_laptop"
     serviceChanges:
-      - name: MapsBroker
-        startupType: Disabled
-      - name: lfsvc
-        startupType: Disabled
+      - name: "MapsBroker"
+        startupType: "Disabled"
 
   - id: services.disable-diagnostic-policy-host-collector
     name: "Disable Diagnostics Hub Standard Collector"
     description: "Disable diagnosticshub.standardcollector.service — the ETW trace collector used by Visual Studio diagnostics"
-    rationale: "Collects diagnostic traces for tooling most people never use. Safe to disable on a normal machine; re-enable if you do VS profiling."
-    risk: safe
-    tier: free
-    default: true
+    rationale: "Collects ETW traces for Visual Studio profiling. Absent on some editions (skipped there). Re-enable if you profile apps with Visual Studio."
+    risk: "safe"
+    tier: "free"
+    default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
     blockedProfiles: []
     serviceChanges:
-      - name: diagnosticshub.standardcollector.service
-        startupType: Disabled
+      - name: "diagnosticshub.standardcollector.service"
+        startupType: "Disabled"
 
   - id: services.disable-diagnostic-execution
     name: "Disable Diagnostic Execution Service (diagsvc)"
     description: "Disable diagsvc, the service that runs scenario-based diagnostics"
     rationale: "Runs background diagnostic scenarios. Disabling frees the resource; the only cost is the automated troubleshooters."
-    risk: low
-    tier: free
-    default: true
+    risk: "low"
+    tier: "free"
+    default: false
     requiresReboot: false
-    warningMessage: "The built-in 'Get Help / Troubleshoot' automated wizards (legacy MSDT troubleshooters) may not run while this is off. Re-enable if you need a Windows troubleshooter."
     reversible: true
     estimatedSeconds: 2
     blockedProfiles: []
+    warningMessage: "The built-in 'Get Help / Troubleshoot' automated wizards (legacy MSDT troubleshooters) may not run while this is off. Re-enable if you need a Windows troubleshooter."
     serviceChanges:
-      - name: diagsvc
-        startupType: Disabled
+      - name: "diagsvc"
+        startupType: "Disabled"

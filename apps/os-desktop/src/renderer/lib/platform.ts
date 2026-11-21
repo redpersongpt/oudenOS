@@ -10,12 +10,10 @@
 // Types
 // ---------------------------------------------------------------------------
 
-export interface ServiceStatus {
-  running: boolean;
-  mode: string;
-  isAdmin: boolean;
-  platform: string;
-}
+import type { RuntimeStatus } from "./runtime";
+
+/** Normalised runtime status — see lib/runtime.ts (platform is always "win32" on Windows). */
+export type ServiceStatus = RuntimeStatus;
 
 export interface SaveResult {
   ok: boolean;
@@ -29,6 +27,8 @@ export interface ExportResult {
   sha256?: string;
   sizeBytes?: number;
   error?: string;
+  /** the user dismissed the save dialog — not an error */
+  cancelled?: boolean;
   [key: string]: unknown;
 }
 
@@ -50,6 +50,14 @@ export interface PlatformAPI {
   service: {
     call: <T = unknown>(method: string, params?: Record<string, unknown>) => Promise<T>;
     status: () => Promise<ServiceStatus>;
+    /** Explicit user Retry after a failed service start. */
+    restart: () => Promise<{ ok: boolean; error?: string }>;
+  };
+  app: {
+    /** Tell the shell that changes are being applied (blocks window close). */
+    setBusy: (busy: boolean) => Promise<void>;
+    /** Relaunch elevated via UAC. Resolves false if the user declined the prompt. */
+    relaunchAsAdmin: () => Promise<boolean>;
   };
   on: (channel: string, callback: (data: unknown) => void) => () => void;
   window: {

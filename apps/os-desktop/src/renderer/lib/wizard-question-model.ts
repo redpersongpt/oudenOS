@@ -52,7 +52,8 @@ export interface StrategyQuestionDefinition {
 export interface StrategyQuestionContext {
   isLaptop: boolean;
   isWorkPc: boolean;
-  windowsBuild: number;
+  /** null = unknown build: build-gated questions stay hidden (the resolver gates them anyway) */
+  windowsBuild: number | null;
 }
 
 export interface QuestionnaireChapter {
@@ -131,7 +132,7 @@ export function isQuestionVisible(
     const requiredRank = PRESET_ORDER.indexOf(visibility.minPreset);
     if (currentRank < requiredRank) return false;
   }
-  if (visibility.minWindowsBuild && context.windowsBuild < visibility.minWindowsBuild) return false;
+  if (visibility.minWindowsBuild && (context.windowsBuild === null || context.windowsBuild < visibility.minWindowsBuild)) return false;
   if (visibility.excludeLaptop && context.isLaptop) return false;
   if (visibility.excludeWorkPc && context.isWorkPc) return false;
   return true;

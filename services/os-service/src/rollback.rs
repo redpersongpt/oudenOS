@@ -1,12 +1,15 @@
 // ─── Rollback Engine ────────────────────────────────────────────────────────
 // Creates snapshots before tuning actions and restores them on demand.
-// Snapshots include: registry values, service states, task states, appx notes.
-// Restoration uses the PowerShell bridge for all system mutations.
+// Snapshots include: registry values (with their original type), service
+// start type + running state, scheduled-task state, BCD elements, power
+// settings and file renames. Registry and service restores use native APIs.
 
 use crate::db::Database;
 #[cfg(windows)]
 use crate::powershell;
+use crate::registry::{self, RegKind, RegValue};
 use serde::{Deserialize, Serialize};
+use serde_json::Value;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -18,17 +21,28 @@ pub struct Snapshot {
     pub previous_values: Vec<PreviousValue>,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct PreviousValue {
-    pub change_type: String, // "registry", "service", "task", "appx"
+    pub change_type: String, // "registry", "service", "task", "appx", "bcd", "power", "file_rename"
     pub path: String,
     pub value_name: String,
-    pub previous_value: Option<serde_json::Value>,
+    /// `None` = the value / item did not exist before the change.
+    pub previous_value: Option<Value>,
     pub action_id: String,
+    /// Registry only: original value kind ("String", "DWord", …). Missing in
+    /// snapshots written by versions <= 1.0.5 (restore then falls back to the
+    /// playbook's valueType for that target).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub previous_kind: Option<String>,
+    /// Registry only: topmost key the apply had to create. Rollback deletes
+    /// it (and the keys below it) again, but only while they are empty.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub created_key: Option<String>,
 }
 
 /// Create a snapshot of current values before applying a set of changes.
+/// The snapshot row and its audit entry are written in one transaction.
 pub fn create_snapshot(
     db: &Database,
     scope: &str,
@@ -46,19 +60,19 @@ pub fn create_snapshot(
         previous_values: previous_values.to_vec(),
     })?;
 
+    let tx = db.conn().unchecked_transaction()?;
     db.conn().execute(
         "INSERT INTO rollback_snapshots (id, scope, created_at, data)
          VALUES (?1, ?2, ?3, ?4)",
         rusqlite::params![id, scope, now, data],
     )?;
-
-    // Audit log entry
     let audit_id = uuid::Uuid::new_v4().to_string();
     db.conn().execute(
         "INSERT INTO audit_log (id, timestamp, category, action, detail, severity)
          VALUES (?1, ?2, 'rollback', 'snapshot_created', ?3, 'info')",
         rusqlite::params![audit_id, now, description],
     )?;
+    tx.commit()?;
 
     tracing::info!(
         snapshot_id = id.as_str(),
@@ -100,7 +114,18 @@ struct RestoreDetail {
 }
 
 /// Restore a snapshot by re-applying all previous values captured at snapshot time.
-pub fn restore_snapshot(db: &Database, snapshot_id: &str) -> anyhow::Result<serde_json::Value> {
+pub fn restore_snapshot(db: &Database, snapshot_id: &str) -> anyhow::Result<Value> {
+    restore_snapshot_entries(db, snapshot_id, None)
+}
+
+/// Restore a snapshot; when `only` is given, just those entry indices (the
+/// executor passes the changes it actually applied, so values it never
+/// touched — e.g. a UCPD-denied write — are not "restored").
+pub fn restore_snapshot_entries(
+    db: &Database,
+    snapshot_id: &str,
+    only: Option<&[usize]>,
+) -> anyhow::Result<Value> {
     tracing::info!(snapshot_id = snapshot_id, "Beginning snapshot restoration");
 
     let data: String = db.conn().query_row(
@@ -115,7 +140,13 @@ pub fn restore_snapshot(db: &Database, snapshot_id: &str) -> anyhow::Result<serd
     let mut succeeded = 0u32;
     let mut failed = 0u32;
 
-    for prev in &snapshot.previous_values {
+    // Restore in reverse order of application.
+    for (index, prev) in snapshot.previous_values.iter().enumerate().rev() {
+        if let Some(only) = only {
+            if !only.contains(&index) {
+                continue;
+            }
+        }
         let result = match prev.change_type.as_str() {
             "registry" => restore_registry(prev),
             "service" => restore_service(prev),
@@ -124,10 +155,9 @@ pub fn restore_snapshot(db: &Database, snapshot_id: &str) -> anyhow::Result<serd
             "power" => restore_power(prev),
             "file_rename" => restore_file_rename(prev),
             "appx" => {
-                // AppX packages cannot be automatically reinstalled -- note the limitation
                 tracing::info!(
                     package = prev.path.as_str(),
-                    "AppX package was removed; reinstall from Microsoft Store if needed"
+                    "AppX package was removed; it cannot be reinstalled automatically"
                 );
                 details.push(RestoreDetail {
                     change_type: "appx".to_string(),
@@ -135,7 +165,7 @@ pub fn restore_snapshot(db: &Database, snapshot_id: &str) -> anyhow::Result<serd
                     value_name: String::new(),
                     status: "note".to_string(),
                     error: Some(
-                        "AppX packages must be reinstalled from Microsoft Store".to_string(),
+                        "AppX packages cannot be reinstalled automatically (reinstall from Microsoft Store or winget where available)".to_string(),
                     ),
                 });
                 succeeded += 1;
@@ -177,15 +207,8 @@ pub fn restore_snapshot(db: &Database, snapshot_id: &str) -> anyhow::Result<serd
         }
     }
 
-    let status = if failed == 0 {
-        "success"
-    } else if succeeded == 0 {
-        "failed"
-    } else {
-        "partial"
-    };
+    let status = restore_status(succeeded, failed);
 
-    // Audit log entry
     let now = chrono::Utc::now().to_rfc3339();
     let audit_id = uuid::Uuid::new_v4().to_string();
     db.conn().execute(
@@ -198,7 +221,7 @@ pub fn restore_snapshot(db: &Database, snapshot_id: &str) -> anyhow::Result<serd
                 "Restored snapshot '{}': {} succeeded, {} failed, status={}",
                 snapshot.description, succeeded, failed, status
             ),
-            if status == "failed" { "error" } else { "info" },
+            if status == "success" { "info" } else { "error" },
         ],
     )?;
 
@@ -211,112 +234,150 @@ pub fn restore_snapshot(db: &Database, snapshot_id: &str) -> anyhow::Result<serd
     }))
 }
 
-// ─── Windows restore implementations ───────────────────────────────────────
+pub(crate) fn restore_status(succeeded: u32, failed: u32) -> &'static str {
+    if failed == 0 {
+        "success"
+    } else if succeeded == 0 {
+        "failed"
+    } else {
+        "partial"
+    }
+}
 
-#[cfg(windows)]
+// ─── Registry ───────────────────────────────────────────────────────────────
+
+/// Resolve the kind to restore a registry value with.
+pub(crate) fn restore_kind(prev: &PreviousValue, value: &Value) -> RegKind {
+    if let Some(kind) = prev.previous_kind.as_deref().and_then(|k| RegKind::parse(k).ok()) {
+        return kind;
+    }
+    // Legacy snapshot (<= 1.0.5): use the playbook's declared valueType for this
+    // target — that is the type the apply wrote, and for the shipped playbooks
+    // the type the value had (e.g. REG_SZ "10" for WallpaperStyle).
+    if let Some(kind) = crate::catalog::legacy_value_type(&prev.action_id, &prev.path, &prev.value_name)
+        .and_then(|k| RegKind::parse(&k).ok())
+    {
+        return kind;
+    }
+    match value {
+        Value::Number(_) | Value::Bool(_) => RegKind::DWord,
+        Value::Array(items) if items.iter().all(Value::is_string) => RegKind::MultiString,
+        Value::Array(_) => RegKind::Binary,
+        _ => RegKind::String,
+    }
+}
+
 fn restore_registry(prev: &PreviousValue) -> anyhow::Result<()> {
-    let escaped_path = powershell::escape_ps_string(&prev.path);
-    let escaped_name = powershell::escape_ps_string(&prev.value_name);
-
+    let (hive, path) = registry::split_full_path(&prev.path)?;
+    registry::validate_value_name(&prev.value_name)?;
     match &prev.previous_value {
         Some(value) => {
-            let (value_str, value_type) = match value {
-                serde_json::Value::Number(n) => (n.to_string(), "DWord"),
-                serde_json::Value::Bool(flag) => {
-                    (((if *flag { 1 } else { 0 }).to_string()), "DWord")
-                }
-                serde_json::Value::String(s) => {
-                    (format!("'{}'", powershell::escape_ps_string(s)), "String")
-                }
-                other => (
-                    format!("'{}'", powershell::escape_ps_string(&other.to_string())),
-                    "String",
-                ),
+            let kind = restore_kind(prev, value);
+            let typed = match (kind, value) {
+                // Legacy boolean snapshots.
+                (RegKind::DWord, Value::Bool(flag)) => RegValue::dword(u32::from(*flag)),
+                _ => RegValue::from_json(kind, value)?,
             };
-            let script = format!(
-                "Set-ItemProperty -Path 'Registry::{}' -Name '{}' -Value {} -Type {} -Force",
-                escaped_path, escaped_name, value_str, value_type,
-            );
-            let result = powershell::execute(&script)?;
-            if !result.success {
-                anyhow::bail!(
-                    "Failed to restore registry {}\\{}: {}",
-                    prev.path,
-                    prev.value_name,
-                    result.stderr.trim()
-                );
-            }
+            registry::write_value(hive, &path, &prev.value_name, &typed)?;
         }
         None => {
-            let script = format!(
-                "Remove-ItemProperty -Path 'Registry::{}' -Name '{}' -Force -ErrorAction SilentlyContinue",
-                escaped_path, escaped_name,
-            );
-            let result = powershell::execute(&script)?;
-            if !result.success {
-                tracing::warn!(
-                    "Remove-ItemProperty returned non-zero for {}\\{}: {}",
-                    prev.path,
-                    prev.value_name,
-                    result.stderr.trim()
-                );
+            registry::delete_value(hive, &path, &prev.value_name)?;
+            if let Some(created) = &prev.created_key {
+                registry::prune_created_keys(hive, &path, created)?;
             }
         }
     }
     Ok(())
 }
 
-#[cfg(windows)]
+// ─── Services ───────────────────────────────────────────────────────────────
+
 fn restore_service(prev: &PreviousValue) -> anyhow::Result<()> {
-    let start_type = prev
-        .previous_value
-        .as_ref()
-        .and_then(|v| v.as_str())
-        .unwrap_or("Manual");
-
-    // Validate and escape inputs before interpolation
-    let safe_path = powershell::validate_safe_arg(&prev.path, "service name")?;
-    let safe_start_type = powershell::validate_safe_arg(start_type, "start type")?;
-    let escaped_path = powershell::escape_ps_string(safe_path);
-
-    let script = format!(
-        "Set-Service -Name '{}' -StartupType {} -ErrorAction Stop",
-        escaped_path, safe_start_type,
-    );
-    let result = powershell::execute(&script)?;
-    if !result.success {
-        anyhow::bail!(
-            "Failed to restore service {} to {}: {}",
-            prev.path,
-            start_type,
-            result.stderr.trim()
-        );
+    let name = prev.path.as_str();
+    if name.chars().any(|c| c.is_control()) || name.is_empty() {
+        anyhow::bail!("Invalid service name in snapshot");
     }
-
-    if !start_type.eq_ignore_ascii_case("Disabled") {
-        let start_script = format!(
-            "Start-Service -Name '{}' -ErrorAction SilentlyContinue",
-            escaped_path,
-        );
-        powershell::execute(&start_script)?;
+    let (start_type, delayed, was_running) = match &prev.previous_value {
+        Some(Value::Object(obj)) => (
+            obj.get("startType").and_then(Value::as_str).unwrap_or("").to_string(),
+            obj.get("delayedAutoStart").and_then(Value::as_bool).unwrap_or(false),
+            obj.get("running").and_then(Value::as_bool),
+        ),
+        // Legacy snapshot: only the start type is known.
+        Some(Value::String(s)) => (s.clone(), false, None),
+        // Unknown previous state (service was missing or unreadable): there
+        // is nothing safe to restore.
+        _ => {
+            tracing::info!(service = name, "No previous service state recorded — nothing to restore");
+            return Ok(());
+        }
+    };
+    let Some(normalized) = crate::services::normalize_start_type(&start_type) else {
+        anyhow::bail!("Unknown previous start type '{}' for {}", start_type, name);
+    };
+    match crate::services::set_start_type(name, normalized, delayed) {
+        Ok(()) => {}
+        Err(crate::services::SvcError::NotFound) => return Ok(()),
+        Err(e) => anyhow::bail!("Failed to restore service {} to {}: {}", name, normalized, e),
     }
-
+    if was_running == Some(true) {
+        if let Err(e) = crate::services::start(name) {
+            tracing::warn!(service = name, error = %e, "Service restored but could not be started");
+        }
+    }
     Ok(())
+}
+
+// ─── Scheduled tasks ────────────────────────────────────────────────────────
+
+/// What the restore must do for a task snapshot entry.
+#[derive(Debug, PartialEq, Eq)]
+pub(crate) enum TaskRestore {
+    Enable,
+    Disable,
+    Nothing,
+}
+
+pub(crate) fn task_restore_plan(previous: Option<&Value>) -> TaskRestore {
+    match previous {
+        Some(Value::Object(obj)) => {
+            let state = obj.get("state").and_then(Value::as_str).unwrap_or("");
+            let applied = obj.get("applied").and_then(Value::as_str).unwrap_or("disable");
+            match (applied, state) {
+                (_, "Missing") => TaskRestore::Nothing,
+                ("disable", "Disabled") => TaskRestore::Nothing,
+                ("disable", _) => TaskRestore::Enable,
+                ("enable", "Disabled") => TaskRestore::Disable,
+                _ => TaskRestore::Nothing,
+            }
+        }
+        // Legacy snapshots always stored "Ready" and the old restore always
+        // re-enabled; keep that behaviour for them.
+        Some(Value::String(state)) if state == "Disabled" || state == "Missing" => TaskRestore::Nothing,
+        Some(Value::String(_)) => TaskRestore::Enable,
+        _ => TaskRestore::Nothing,
+    }
 }
 
 #[cfg(windows)]
 fn restore_task(prev: &PreviousValue) -> anyhow::Result<()> {
-    let escaped_name = powershell::escape_ps_string(&prev.value_name);
-    let escaped_path = powershell::escape_ps_string(&prev.path);
-
+    let verb = match task_restore_plan(prev.previous_value.as_ref()) {
+        TaskRestore::Nothing => return Ok(()),
+        TaskRestore::Enable => "Enable-ScheduledTask",
+        TaskRestore::Disable => "Disable-ScheduledTask",
+    };
     let script = format!(
-        "Enable-ScheduledTask -TaskName '{}' -TaskPath '{}' -ErrorAction Stop",
-        escaped_name, escaped_path,
+        "$t = Get-ScheduledTask -TaskName {name} -TaskPath {path} -ErrorAction SilentlyContinue; \
+         if (-not $t) {{ Write-Output 'SKIPPED: task not found'; exit 0 }}; \
+         {verb} -TaskName {name} -TaskPath {path} | Out-Null",
+        name = powershell::ps_quote(&prev.value_name)?,
+        path = powershell::ps_quote(&prev.path)?,
+        verb = verb,
     );
-    let result = powershell::execute(&script)?;
+    let result = powershell::execute_mutation(&script)?;
     if !result.success {
         anyhow::bail!(
-            "Failed to re-enable task '{}' at '{}': {}",
+            "Failed to restore task '{}' at '{}': {}",
             prev.value_name,
             prev.path,
             result.stderr.trim()
@@ -324,6 +385,18 @@ fn restore_task(prev: &PreviousValue) -> anyhow::Result<()> {
     }
     Ok(())
 }
+
+#[cfg(not(windows))]
+fn restore_task(prev: &PreviousValue) -> anyhow::Result<()> {
+    tracing::info!(
+        task_name = prev.value_name.as_str(),
+        plan = ?task_restore_plan(prev.previous_value.as_ref()),
+        "[simulated] Would restore scheduled task"
+    );
+    Ok(())
+}
+
+// ─── BCD ────────────────────────────────────────────────────────────────────
 
 #[cfg(windows)]
 fn restore_bcd(prev: &PreviousValue) -> anyhow::Result<()> {
@@ -333,85 +406,64 @@ fn restore_bcd(prev: &PreviousValue) -> anyhow::Result<()> {
         .as_ref()
         .and_then(|v| v.as_str())
         .unwrap_or("");
-
-    if value.is_empty() {
-        let script = format!("bcdedit /deletevalue {{current}} {}", element);
-        let result = powershell::execute(&script)?;
-        if !result.success {
-            anyhow::bail!(
-                "Failed to delete BCD element '{}': {}",
-                element,
-                result.stderr.trim()
-            );
-        }
+    let args: Vec<String> = if value.is_empty() {
+        vec!["/deletevalue".into(), "{current}".into(), element.into()]
     } else {
         let safe_value = powershell::validate_safe_arg(value, "BCD value")?;
-        let script = format!("bcdedit /set {{current}} {} {}", element, safe_value);
-        let result = powershell::execute(&script)?;
-        if !result.success {
-            anyhow::bail!(
-                "Failed to restore BCD element '{}' to '{}': {}",
-                element,
-                value,
-                result.stderr.trim()
-            );
-        }
+        vec!["/set".into(), "{current}".into(), element.into(), safe_value.into()]
+    };
+    let result = crate::executor::run_native("bcdedit.exe", &args)?;
+    if !result.success && !value.is_empty() {
+        anyhow::bail!("Failed to restore BCD element '{}': {}", element, result.stdout.trim());
     }
     Ok(())
+}
+
+#[cfg(not(windows))]
+fn restore_bcd(prev: &PreviousValue) -> anyhow::Result<()> {
+    tracing::info!(element = prev.value_name.as_str(), "[simulated] Would restore BCD element");
+    Ok(())
+}
+
+// ─── Power ──────────────────────────────────────────────────────────────────
+
+/// AC setting index recorded in a power snapshot (new `{ac}` object, plain
+/// number, or legacy string).
+pub(crate) fn power_ac_value(previous: Option<&Value>) -> Option<u64> {
+    match previous? {
+        Value::Object(obj) => obj.get("ac").and_then(Value::as_u64),
+        Value::Number(n) => n.as_u64(),
+        Value::String(s) => s.trim().parse::<u64>().ok(),
+        _ => None,
+    }
 }
 
 #[cfg(windows)]
 fn restore_power(prev: &PreviousValue) -> anyhow::Result<()> {
-    let setting_path = &prev.path;
-    let value = prev
-        .previous_value
-        .as_ref()
-        .and_then(|v| v.as_str())
-        .unwrap_or("");
-
-    if !value.is_empty() && !setting_path.is_empty() {
-        powershell::validate_safe_arg(value, "power setting value")?;
-        let parts: Vec<&str> = setting_path.split('/').collect();
-        if parts.len() == 2 {
-            powershell::validate_safe_arg(parts[0], "power subgroup GUID")?;
-            powershell::validate_safe_arg(parts[1], "power setting GUID")?;
-
-            // Restore AC (plugged-in) value — critical path.
-            let ac_script = format!(
-                "powercfg /setacvalueindex scheme_current {} {} {}",
-                parts[0], parts[1], value
-            );
-            let ac_result = powershell::execute(&ac_script)?;
-            if !ac_result.success {
-                anyhow::bail!(
-                    "Failed to restore AC power setting '{}': {}",
-                    setting_path,
-                    ac_result.stderr.trim()
-                );
-            }
-
-            // Restore DC (battery) value on laptops. A failure here is logged
-            // but not fatal — desktops have no DC profile and AC was the
-            // critical restore.
-            let dc_script = format!(
-                "powercfg /setdcvalueindex scheme_current {} {} {}",
-                parts[0], parts[1], value
-            );
-            if let Ok(dc_result) = powershell::execute(&dc_script) {
-                if !dc_result.success {
-                    tracing::warn!(
-                        setting_path = setting_path,
-                        stderr = dc_result.stderr.trim(),
-                        "DC power value restore returned non-success (ignored on desktops)"
-                    );
-                }
-            }
-        } else {
-            anyhow::bail!("Invalid power setting path format: {}", setting_path);
-        }
+    let Some(value) = power_ac_value(prev.previous_value.as_ref()) else {
+        return Ok(());
+    };
+    let (sub, setting) = crate::executor::split_power_path(&prev.path)
+        .ok_or_else(|| anyhow::anyhow!("Invalid power setting path format: {}", prev.path))?;
+    let value = value.to_string();
+    let result = crate::executor::run_native(
+        "powercfg.exe",
+        &["/setacvalueindex".to_string(), "SCHEME_CURRENT".into(), sub, setting, value],
+    )?;
+    if !result.success {
+        anyhow::bail!("Failed to restore AC power setting '{}': {}", prev.path, result.stdout.trim());
     }
+    let _ = crate::executor::run_native("powercfg.exe", &["/setactive".to_string(), "SCHEME_CURRENT".into()]);
     Ok(())
 }
+
+#[cfg(not(windows))]
+fn restore_power(prev: &PreviousValue) -> anyhow::Result<()> {
+    tracing::info!(setting = prev.path.as_str(), "[simulated] Would restore power setting");
+    Ok(())
+}
+
+// ─── File renames ───────────────────────────────────────────────────────────
 
 #[cfg(windows)]
 fn restore_file_rename(prev: &PreviousValue) -> anyhow::Result<()> {
@@ -432,13 +484,8 @@ fn restore_file_rename(prev: &PreviousValue) -> anyhow::Result<()> {
         .unwrap_or(false);
 
     if !source_existed {
-        tracing::info!(
-            source = source.as_str(),
-            "Original file did not exist before apply — skipping file rename restore"
-        );
         return Ok(());
     }
-
     if target_existed {
         anyhow::bail!(
             "Cannot automatically restore file rename {} -> {} because target already existed before apply",
@@ -447,14 +494,13 @@ fn restore_file_rename(prev: &PreviousValue) -> anyhow::Result<()> {
         );
     }
 
-    let escaped_source = powershell::escape_ps_string(source);
-    let escaped_target = powershell::escape_ps_string(target);
     let script = format!(
-        "if (-not (Test-Path -LiteralPath '{}')) {{ Write-Host 'SKIPPED: rollback source not found'; exit 0 }}; \
-         if (Test-Path -LiteralPath '{}') {{ Write-Host 'SKIPPED: original file already restored'; exit 0 }}; \
-         Move-Item -LiteralPath '{}' -Destination '{}' -Force -ErrorAction Stop; \
-         Write-Host 'OK: file rename restored'",
-        escaped_target, escaped_source, escaped_target, escaped_source,
+        "if (-not (Test-Path -LiteralPath {t})) {{ Write-Output 'SKIPPED: rollback source not found'; exit 0 }}; \
+         if (Test-Path -LiteralPath {s}) {{ Write-Output 'SKIPPED: original file already restored'; exit 0 }}; \
+         Move-Item -LiteralPath {t} -Destination {s} -Force; \
+         Write-Output 'OK: file rename restored'",
+        t = powershell::ps_quote(target)?,
+        s = powershell::ps_quote(source)?,
     );
 
     let result = powershell::execute_with_privilege(&script, requires_trusted_installer)?;
@@ -466,74 +512,6 @@ fn restore_file_rename(prev: &PreviousValue) -> anyhow::Result<()> {
             result.stderr.trim()
         );
     }
-
-    Ok(())
-}
-
-// ─── Non-Windows simulation ─────────────────────────────────────────────────
-
-#[cfg(not(windows))]
-fn restore_bcd(prev: &PreviousValue) -> anyhow::Result<()> {
-    tracing::info!(
-        element = prev.value_name.as_str(),
-        "[simulated] Would restore BCD element"
-    );
-    Ok(())
-}
-
-#[cfg(not(windows))]
-fn restore_power(prev: &PreviousValue) -> anyhow::Result<()> {
-    tracing::info!(
-        setting = prev.path.as_str(),
-        "[simulated] Would restore power setting"
-    );
-    Ok(())
-}
-
-#[cfg(not(windows))]
-fn restore_registry(prev: &PreviousValue) -> anyhow::Result<()> {
-    match &prev.previous_value {
-        Some(value) => {
-            tracing::info!(
-                path = prev.path.as_str(),
-                value_name = prev.value_name.as_str(),
-                ?value,
-                "[simulated] Would restore registry value"
-            );
-        }
-        None => {
-            tracing::info!(
-                path = prev.path.as_str(),
-                value_name = prev.value_name.as_str(),
-                "[simulated] Would remove registry value (did not exist before)"
-            );
-        }
-    }
-    Ok(())
-}
-
-#[cfg(not(windows))]
-fn restore_service(prev: &PreviousValue) -> anyhow::Result<()> {
-    let start_type = prev
-        .previous_value
-        .as_ref()
-        .and_then(|v| v.as_str())
-        .unwrap_or("Manual");
-    tracing::info!(
-        service = prev.path.as_str(),
-        start_type = start_type,
-        "[simulated] Would restore service start type"
-    );
-    Ok(())
-}
-
-#[cfg(not(windows))]
-fn restore_task(prev: &PreviousValue) -> anyhow::Result<()> {
-    tracing::info!(
-        task_name = prev.value_name.as_str(),
-        task_path = prev.path.as_str(),
-        "[simulated] Would re-enable scheduled task"
-    );
     Ok(())
 }
 
@@ -545,4 +523,70 @@ fn restore_file_rename(prev: &PreviousValue) -> anyhow::Result<()> {
         "[simulated] Would restore file rename"
     );
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn restore_status_reflects_failures() {
+        assert_eq!(restore_status(3, 0), "success");
+        assert_eq!(restore_status(0, 1), "failed");
+        assert_eq!(restore_status(2, 1), "partial");
+    }
+
+    #[test]
+    fn restore_kind_uses_recorded_kind_even_for_numeric_strings() {
+        let prev = PreviousValue {
+            change_type: "registry".into(),
+            path: "HKCU\\Control Panel\\Desktop".into(),
+            value_name: "WallpaperStyle".into(),
+            previous_value: Some(serde_json::json!("10")),
+            action_id: "x".into(),
+            previous_kind: Some("String".into()),
+            created_key: None,
+        };
+        assert_eq!(restore_kind(&prev, prev.previous_value.as_ref().unwrap()), RegKind::String);
+        let legacy_numeric = PreviousValue {
+            previous_kind: None,
+            previous_value: Some(serde_json::json!(10)),
+            action_id: "unknown.action".into(),
+            ..prev.clone()
+        };
+        assert_eq!(
+            restore_kind(&legacy_numeric, legacy_numeric.previous_value.as_ref().unwrap()),
+            RegKind::DWord
+        );
+    }
+
+    #[test]
+    fn task_restore_only_reenables_what_was_enabled() {
+        let was_ready = serde_json::json!({ "state": "Ready", "applied": "disable" });
+        let was_disabled = serde_json::json!({ "state": "Disabled", "applied": "disable" });
+        let was_missing = serde_json::json!({ "state": "Missing", "applied": "disable" });
+        assert_eq!(task_restore_plan(Some(&was_ready)), TaskRestore::Enable);
+        assert_eq!(task_restore_plan(Some(&was_disabled)), TaskRestore::Nothing);
+        assert_eq!(task_restore_plan(Some(&was_missing)), TaskRestore::Nothing);
+        let enabled_by_apply = serde_json::json!({ "state": "Disabled", "applied": "enable" });
+        assert_eq!(task_restore_plan(Some(&enabled_by_apply)), TaskRestore::Disable);
+        assert_eq!(task_restore_plan(Some(&serde_json::json!("Ready"))), TaskRestore::Enable);
+        assert_eq!(task_restore_plan(None), TaskRestore::Nothing);
+    }
+
+    #[test]
+    fn power_snapshot_formats_are_all_understood() {
+        assert_eq!(power_ac_value(Some(&serde_json::json!({ "ac": 5 }))), Some(5));
+        assert_eq!(power_ac_value(Some(&serde_json::json!(7))), Some(7));
+        assert_eq!(power_ac_value(Some(&serde_json::json!("9"))), Some(9));
+        assert_eq!(power_ac_value(None), None);
+    }
+
+    #[test]
+    fn old_snapshots_without_new_fields_still_deserialize() {
+        let legacy = r#"{"id":"s","scope":"action:x","createdAt":"t","description":"d","previousValues":[{"changeType":"registry","path":"HKCU\\Software\\X","valueName":"V","previousValue":1,"actionId":"x"}]}"#;
+        let snap: Snapshot = serde_json::from_str(legacy).unwrap();
+        assert_eq!(snap.previous_values[0].previous_kind, None);
+        assert_eq!(snap.previous_values[0].created_key, None);
+    }
 }

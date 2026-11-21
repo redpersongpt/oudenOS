@@ -8,586 +8,893 @@
   "chapters": {
     "preset": {
       "title": "Optimizasyon Seviyesi",
-      "description": "Optimizasyonun ne kadar agresif olacağını seç."
+      "description": "Optimizasyonun ne kadar ileri gideceğini seç. Sonraki bölümlerde hangi soruların görüneceğini bu belirler."
     },
     "essentials": {
       "title": "Temel Ayarlar",
-      "description": "Çekirdek sistem değişiklikleri — en yüksek etki, en düşük risk."
+      "description": "Güç, depolama, servisler ve güncellemeler için temel sistem değişiklikleri."
     },
     "privacy": {
       "title": "Gizlilik & Telemetri",
-      "description": "Microsoft telemetrisini ve veri toplamayı kaldır."
+      "description": "Microsoft telemetrisini, takibi ve veri toplamayı azalt."
     },
     "performance": {
-      "title": "Performans",
-      "description": "CPU, GPU, bellek ve timer optimizasyonları."
+      "title": "Performans & Oyun",
+      "description": "Oyun, giriş ve güç ayarları. Değişiklikleri kendi sisteminde ölçerek doğrula."
     },
     "shell": {
       "title": "Shell & Arayüz",
-      "description": "Dosya Gezgini, görev çubuğu, Başlat menüsü ve görsel ince ayarlar."
+      "description": "Önyüklü uygulamalar, reklamlar, görev çubuğu, sağ tık menüsü ve Dosya Gezgini."
     },
     "network": {
-      "title": "Ağ",
-      "description": "Ağ yığını ve adaptör optimizasyonu."
+      "title": "Ağ & Cihazlar",
+      "description": "Ağ protokolleri ve cihaz güç yönetimi."
     },
     "security": {
-      "title": "Güvenlik",
-      "description": "Güvenlik ve güncelleme ayarları."
+      "title": "Güvenlik Ödünleri",
+      "description": "Korumayı azaltan seçenekler. Her biri açıkça senin onayını gerektirir."
     }
   },
   "questions": {
     "aggressionPreset": {
       "label": "Optimizasyon Seviyesi",
-      "title": "Sistemini ne kadar agresif optimize edelim?",
-      "desc": "Bu ön ayar, sonradan hangi gelişmiş soruların çıkacağını belirler. Conservative herkes için güvenli. Expert ise her tweak'i açar — gerçek ödünleşmeleri olanlar dahil.",
-      "note": "İstediğin zaman geri dönüp bunu değiştirebilirsin. Daha düşük seviyelerde gizlenen sorular kilitli değil, sadece ertelenmiş."
+      "title": "oudenOS ne kadar ileri gitsin?",
+      "desc": "Seviye, sonraki adımlarda hangi soruları göreceğini belirler. Temkinli ve Dengeli yalnızca güvenli temizlik ve gizlilik ayarlarına dokunur. Agresif, performans ödünlerini ve isteğe bağlı güvenlik seçeneklerini gösterir. Uzman her şeyi gösterir.",
+      "note": "Bunu istediğin zaman geri dönüp değiştirebilirsin."
     },
     "highPerformancePlan": {
-      "label": "Güç Planı",
-      "title": "High Performance güç planına geçilsin mi?",
-      "desc": "Varsayılan Balanced planı, güç tasarrufu için CPU hızını kısar. High Performance ise CPU'yu tam hızda tutar ve gecikme sıçramalarını ortadan kaldırır. Performans araştırmaları bunu, oyun tepkiselliği için tek başına en etkili değişiklik olarak gösteriyor.",
-      "note": "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Power — aktif plan GUID'sini 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c yapar."
+      "label": "İşlemci Durumu",
+      "title": "İşlemcinin minimum durumu %100'de tutulsun mu?",
+      "desc": "Etkin güç planının minimum işlemci durumunu prizdeyken %100 yapar (plan değiştirmez). Daha yüksek performanslı planın daha hızlı olduğunu varsayma: AMD Ryzen X3D işlemcilerde Dengeli plan çoğu zaman eşit veya daha iyidir. Önce kendi sisteminde Dengeli ile Yüksek Performansı karşılaştır. Öncesini ve sonrasını kare süresi kaydıyla ölç (PresentMon veya CapFrameX, birkaç tekrar).",
+      "note": "Boştaki güç tüketimini, ısıyı ve fan sesini artırır. Dizüstülerde gösterilmez."
     },
     "disableFastStartup": {
       "label": "Hızlı Başlatma",
-      "title": "Hızlı Başlatma (Hybrid Boot) kapatılsın mı?",
-      "desc": "Hızlı Başlatma, kapatmada çekirdeğin bir hazırda bekletme anlık görüntüsünü kaydeder. Bu; bayat sürücülere, gizli güç durumlarına ve yanıltıcı 'uptime' değerlerine yol açabilir. Hem performans araştırmaları hem de topluluk testleri, temiz açılışlar için bunu kapatmanı öneriyor.",
-      "note": "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Power — HiberbootEnabled = 0."
+      "title": "Hızlı Başlatma kapatılsın mı?",
+      "desc": "Hızlı Başlatma kapanışta çekirdeği hazırda bekletir, bu yüzden sürücüler tam olarak yeniden başlatılmaz. Kapatmak her seferinde temiz bir açılış sağlar; soğuk açılış birkaç saniye uzar."
     },
     "disableHibernation": {
       "label": "Hazırda Bekletme",
-      "title": "Hazırda bekletme kapatılıp hiberfil.sys silinsin mi?",
-      "desc": "Hazırda bekletme, RAM'in tam bir anlık görüntüsünü diske yazar (hiberfil.sys). 16 GB+ bir sistemde bu dosya 8–16 GB olabilir. Hiç hazırda bekletmeye almıyorsan bu hem boşa giden alan hem de kapatmada anlamsız I/O demek. Performans araştırmaları `powercfg /h off` komutunu standart bir adım olarak çalıştırıyor.",
-      "note": "Çalıştırır: powercfg /hibernate off — C:\\hiberfil.sys dosyasını kaldırır ve hazırda bekletme güç durumunu devre dışı bırakır."
+      "title": "Hazırda bekletme kapatılsın mı?",
+      "desc": "hiberfil.sys dosyasını (çoğu zaman birkaç GB) ve Hazırda Beklet seçeneğini kaldırır. Hızlı Başlatma'yı da kapatır. Hazırda beklettiğin dizüstülerde açık bırak."
     },
     "disableIndexing": {
       "label": "Arama Dizini",
-      "title": "Windows Search dizinlemesi (WSearch servisi) kapatılsın mı?",
-      "desc": "Windows Search servisi arka planda dosyaları sürekli dizinler ve CPU ile disk I/O harcar. Dosya erişiminin zaten hızlı olduğu bir SSD'de dizin çok az fayda sağlarken sabit bir arka plan yükü yaratır. Hem performans araştırmaları hem de topluluk testleri bunu kapatmanı öneriyor.",
-      "note": "WSearch servisini devre dışı bırakır ve durdurur. HKLM\\SYSTEM\\CurrentControlSet\\Services\\WSearch — Start = 4."
+      "title": "Windows Arama dizini kapatılsın mı?",
+      "desc": "Dizin oluşturucu aramaların anında sonuç vermesi için arka planda disk kullanır. Kapatılırsa Başlat menüsü, Dosya Gezgini ve Outlook aramaları çok yavaşlar. Esas olarak HDD'lerde mantıklıdır."
     },
     "disableBackgroundApps": {
-      "label": "Arka Plan Uygulama Erişimi",
-      "title": "Uygulamaların arka planda çalışması engellensin mi?",
-      "desc": "Windows, Store uygulamalarının odakta değilken veri almasına, bildirim göndermesine ve aktif kalmasına izin verir. Bunu AppPrivacy politikasıyla kapatmak gereksiz CPU uyanmalarını ve ağ çağrılarını azaltır. Not: Windows 11 24H2'de bu ayar Dosya Gezgini'ne taşındı ve etkili olması için yeniden başlatma gerekebilir.",
-      "note": "HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows\\AppPrivacy — LetAppsRunInBackground = 2."
+      "label": "Arka Plan Store Uygulamaları",
+      "title": "Store uygulamalarının arka planda çalışması engellensin mi?",
+      "desc": "LetAppsRunInBackground ilkesini kullanır (Windows 11'de genel bir anahtar yok). Store uygulamaları yalnızca açıkken çalışır; bulut anlık bildirimleri dahil arka plan bildirimleri durur.",
+      "note": "Yeniden başlatmadan sonra etkinleşir."
     },
     "disableSysmain": {
-      "label": "SysMain / Superfetch",
-      "title": "SysMain (Superfetch) servisi kapatılsın mı?",
-      "desc": "SysMain, açılışları hızlandırmak için sık kullanılan uygulamaları RAM'e önceden yükler. SSD'de yükleme süreleri zaten neredeyse anlık olduğundan servis sadece RAM yer ve gerçek bir fayda olmadan arka planda disk I/O üretir. Performans araştırmaları bunu standart bir SSD optimizasyonu olarak işaretliyor.",
-      "note": "HKLM\\SYSTEM\\CurrentControlSet\\Services\\SysMain — Start = 4. Servis ayrıca anında durdurulur."
+      "label": "SysMain ve Prefetch",
+      "title": "SysMain ve Prefetch kapatılsın mı?",
+      "desc": "İkisi de uygulama verisini arka planda diskten önceden yükler. En çok HDD'lerde faydalıdır; bu yüzden döner disk varsa oudenOS bunu otomatik atlar. SSD sistemlerde FPS değişimi bekleme — yalnızca arka plan disk işini kaldırır."
     },
     "disableAutomaticMaintenance": {
       "label": "Otomatik Bakım",
-      "title": "Windows Otomatik Bakım kapatılsın mı?",
-      "desc": "Windows bakım görevlerini (disk birleştirme, Windows Defender taramaları, tanılama) varsayılan olarak gece 2'de çalışacak şekilde planlar; ama sistem boştaysa oturum ortasında da tetikleyebilir. Bu, kare sürelerini bozan ani CPU ve disk sıçramalarına yol açar. Hem topluluk testleri hem de performans araştırmaları bunu kapatmanı öneriyor.",
-      "note": "HKLM\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Schedule\\Maintenance — MaintenanceDisabled = 1."
-    },
-    "optimizeThreadPriority": {
-      "label": "Thread Zamanlaması",
-      "title": "Win32PrioritySeparation ön plan tepkiselliği için optimize edilsin mi?",
-      "desc": "Win32PrioritySeparation, zamanlayıcının ön plan thread önceliğini arka plana göre ne kadar artıracağını kontrol eder. Varsayılan değer (2) dengeli. Performans araştırmaları, ön plan thread'lerine daha uzun ve yüksek öncelikli bir quantum veren 0x26 (38) değerini öneriyor — bu doğrudan oyunlarda giriş gecikmesini azaltır.",
-      "note": "HKLM\\SYSTEM\\CurrentControlSet\\Control\\PriorityControl — Win32PrioritySeparation = 38 (0x26). Ayrıca csrss.exe taban önceliğini high yapar."
+      "title": "Otomatik Bakım kapatılsın mı?",
+      "desc": "Bakım, Windows boşta olduğunu düşündüğünde güncellemeleri, taramaları ve sürücü iyileştirmeyi çalıştırır. Kapatırsan SSD TRIM zamanlanmış olarak çalışmaz — birkaç haftada bir \"Sürücüleri İyileştir\"i kendin çalıştırmalısın."
     },
     "keepPrinterSupport": {
-      "label": "Yazıcı Kuyruğu (Print Spooler)",
-      "title": "Bu PC'de yazıcı kullanıyor musun?",
-      "desc": "Print Spooler servisi, takılı bir yazıcı olmasa bile çalışır. Bu makineden yazdırmıyorsan kapatmak gereksiz bir servisi kaldırır ve birkaç eski RPC saldırı yüzeyini kapatır.",
-      "note": "HKLM\\SYSTEM\\CurrentControlSet\\Services\\Spooler — Start = 4. Bu ayrıca Fax servisini de kapatır."
+      "label": "Yazdırma",
+      "title": "Bu PC'den yazdırıyor musun?",
+      "desc": "Hiç yazdırmıyorsan Print Spooler ve Fax servisleri kapatılabilir. Yazdırma kuyruğunun uzun bir güvenlik açığı geçmişi var (PrintNightmare)."
     },
     "keepRemoteAccess": {
-      "label": "Uzak Masaüstü / Telefon Servisi",
-      "title": "Bu PC'de Uzak Masaüstü veya telefon bağlama kullanıyor musun?",
-      "desc": "Uzak Masaüstü ve Telefon Bağlantısı (Phone Service) arka planda dinleyici çalıştırır. Bu PC'ye uzaktan bağlanmıyor veya bir telefon senkronlamıyorsan bu servisler salt yük ve saldırı yüzeyidir.",
-      "note": "services.disable-remote-services ve services.disable-phone-service kapatılır."
+      "label": "Uzaktan Erişim",
+      "title": "Uzak Masaüstü veya Uzaktan Yardım kullanıyor musun?",
+      "desc": "Bu PC'ye kimse uzaktan bağlanmıyorsa Uzak Masaüstü, Uzak Kayıt Defteri ve Uzaktan Yardım kapatılabilir."
     },
     "disableAutoplay": {
       "label": "Otomatik Kullan",
-      "title": "Çıkarılabilir sürücüler için Otomatik Kullan kapatılsın mı?",
-      "desc": "Otomatik Kullan, USB sürücüler ve optik diskler takıldığında içeriği otomatik çalıştırır. Bu klasik bir zararlı yazılım bulaştırma yöntemidir ve Dosya Gezgini'nin zaten sağladığının ötesinde gerçek bir kolaylık getirmez. Her iki kaynak da bunu kapatmanı öneriyor.",
-      "note": "HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\AutoplayHandlers — DisableAutoplay = 1."
+      "title": "Otomatik Kullan ve AutoRun kapatılsın mı?",
+      "desc": "USB bellek veya disk takıldığında Windows'un otomatik olarak bir şey açmasını veya çalıştırmasını engeller — yaygın bir zararlı yazılım yoludur."
     },
     "disableLastAccessTime": {
-      "label": "NTFS Son Erişim Zamanı",
-      "title": "NTFS son erişim zaman damgası güncellemeleri kapatılsın mı?",
-      "desc": "Varsayılan olarak Windows, okuduğu her dosyaya bir zaman damgası yazar. Yoğun bir sistemde bu, salt okuma işlemlerinde bile sürekli küçük yazma akışı oluşturur. Performans araştırmaları, hem mekanik disklerde hem de SSD'lerde anlamlı I/O azalması için bunu `fsutil` ile kapatmanı öneriyor.",
-      "note": "Çalıştırır: fsutil behavior set disablelastaccess 1 — ayrıca daha fazla NTFS ayarı için storage.ntfs-optimization'ı etkinleştirir."
+      "label": "Dosya Sistemi",
+      "title": "NTFS kayıt yazımları azaltılsın mı?",
+      "desc": "NTFS'nin her okumada son erişim zaman damgası yazmasını ve eski 8.3 kısa adları oluşturmasını durdurur. Küçük disk tasarrufu; FPS değişimi bekleme. Üçüncü seçenek yazma önbelleği boşaltmayı da kapatır; elektrik kesintisinde veri kaybı riski taşır."
     },
     "svcHostSplitThreshold": {
-      "label": "SVCHost Bölme",
-      "title": "svchost süreç bölme eşiği RAM'e göre ayarlansın mı?",
-      "desc": "4 GB+ RAM'i olan sistemlerde Windows her Windows servisini kendi svchost.exe sürecinde çalıştırabilir. Bu onları daha iyi kararlılık için izole eder ve Görev Yöneticisi'ni okunabilir kılar. Topluluk testleri modern RAM miktarlarında bunu varsayılan olarak açar.",
-      "note": "HKLM\\SYSTEM\\CurrentControlSet\\Control — SvcHostSplitThresholdInKB = KB cinsinden fiziksel RAM (örn. 8 GB için 8388608). perf.svchost-split-threshold'u etkinleştirir."
+      "label": "Servis Gruplama",
+      "title": "Arka plan servisleri daha az svchost işleminde gruplansın mı?",
+      "desc": "Bölme eşiğini RAM miktarının üstüne çıkarmak, Windows'un her servise ayrı svchost.exe vermesini durdurur. Biraz bellek kazandırır; esas olarak 12 GB veya daha az RAM'de işe yarar. Xbox kumanda servislerini \"Başlatılıyor\" durumunda bırakabildiği için oyun profillerinde engellenir."
     },
     "disableFaultTolerantHeap": {
-      "label": "Fault Tolerant Heap",
-      "title": "Fault Tolerant Heap (FTH) kapatılsın mı?",
-      "desc": "FTH, çöken uygulamaları izler ve tekrar çökmemeleri için sessizce uyumluluk shim'leri uygular. Bu shim'ler performansı sınırlayan yapay gecikmeler içerir — performans araştırmaları FTH'nin oyun kare hızlarını gizlice kıstığını ölçtü. Uygulamaların kararlıysa FTH salt yüktür.",
-      "note": "HKLM\\SOFTWARE\\Microsoft\\FTH — Enabled = 0. Bu, kararsız uygulamaları DÜZELTMEZ; bir uygulama FTH'ye ihtiyaç duyuyorsa kapatmak onu daha görünür şekilde çökertir."
+      "label": "Hata Toleranslı Yığın",
+      "title": "Hata Toleranslı Yığın (FTH) kapatılsın mı?",
+      "desc": "FTH, tekrar tekrar çöken uygulamalara sessizce yığın önlemleri uygular. Kapatılırsa bu uygulamalar düzeltilmek yerine çökmeye devam eder. Performans kazancı vaat edilmez."
+    },
+    "shutdownBehavior": {
+      "label": "Kapanma Hızı",
+      "title": "Kapanma bekleme süreleri kısaltılsın mı?",
+      "desc": "Windows'un kapanışta uygulamaları (3,5 sn) ve servisleri (3 sn) bekleme süresini düşürür. Yavaş kaydeden uygulamalar daha erken kapatılabilir; kaydedilmemiş işi olan uygulamalar için Windows yine sorar."
+    },
+    "unusedServices": {
+      "label": "Kullanılmayan Özellik Servisleri",
+      "title": "Bu PC'nin kullanmadığı özelliklerin servisleri kapatılsın mı?",
+      "desc": "Bu servisler çoğu masaüstünde boşta durur. Kapatmak arka plan servislerini azaltır; FPS'yi değiştirmez."
+    },
+    "driverUpdates": {
+      "label": "Sürücü ve Store Güncellemeleri",
+      "title": "Windows Update sürücü yüklesin mi?",
+      "desc": "Windows Update bazen kendi kurduğun bir sürücüyü (çoğunlukla GPU veya ses) değiştirir. Engellersen sürücüleri elle kurar ve güncellersin."
+    },
+    "desktopPowerTweaks": {
+      "label": "Masaüstü Güç Davranışı",
+      "title": "Masaüstü güç davranışı değiştirilsin mi?",
+      "desc": "Güç kısıtlama (EcoQoS) arka plan iş parçacıklarının saatini düşürür; kapatmak güç ve ısıyı artırır. Modern Bekleme'yi kapatmak uykuyu klasik S3'e geçirir; bazı anakartlar bunu desteklemez (o zaman uyku seçeneği kaybolur). Yalnızca masaüstü. Öncesini ve sonrasını kare süresi kaydıyla ölç (PresentMon veya CapFrameX, birkaç tekrar)."
     },
     "telemetryLevel": {
       "label": "Telemetri Seviyesi",
       "title": "Microsoft telemetrisinin ne kadarı engellensin?",
-      "desc": "Windows sürekli olarak Microsoft'a tanılama verisi gönderir. Neyin kabul edilebilir olduğu kullanım senaryosuna göre değişir. Minimal, DiagTrack servisini ve en ağır takibi engeller. Standart bunun üstüne reklam ve etkinlik akışlarını ekler. Tam Engelle ise politikayla kontrol edilebilen her telemetri kanalını ekler — DiagTrack, CEIP, TIPC ve telemetri zamanlanmış görevlerini kapatmak dahil.",
-      "note": "Minimal: services.disable-diagtrack. Standart, privacy.disable-advertising-id, privacy.disable-activity-feed ve privacy.disable-tailored-experiences ekler. Tam Engelle, kalan tüm privacy.* ve tasks.disable-telemetry-tasks aksiyonlarını ekler."
+      "desc": "Minimal, ana telemetri servislerini kapatır ve en düşük tanılama seviyesini ayarlar. Standart buna reklam, ipucu ve yazma/geri bildirim verilerini ekler. Tam ise telemetri görevlerini, konuşma/mürekkep verilerini, Insider ve tanılama servislerini de kapatır ve Brave kuruluysa Brave'in ek özelliklerini kısıtlar.",
+      "note": "AllowTelemetry=0 yalnızca Enterprise, Education ve IoT sürümlerinde uygulanır; Home/Pro izin verdikleri en düşük seviyeyi kullanır."
     },
     "disableActivityFeed": {
-      "label": "Etkinlik Akışı / Zaman Tüneli",
-      "title": "Windows Etkinlik Akışı (Zaman Tüneli) kapatılsın mı?",
-      "desc": "Etkinlik Akışı, Zaman Tüneli özelliğini çalıştırmak için uygulama kullanımını ve belge geçmişini kaydeder. Hesabın izin veriyorsa bu veri Microsoft sunucularına da senkronlanır. Özellik Windows 11'de arayüzden kaldırıldı ama kayıt katmanı hâlâ çalışıyor.",
-      "note": "HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows\\System — EnableActivityFeed = 0, PublishUserActivities = 0."
+      "label": "Etkinlik Geçmişi",
+      "title": "Etkinlik geçmişinin yayımlanması ve yüklenmesi durdurulsun mu?",
+      "desc": "Windows hangi uygulama ve dosyaları kullandığını kaydeder ve Microsoft hesabına yükleyebilir. Akışın kendisi açık kalır, çünkü kapatmak pano geçmişini de bozar."
     },
     "disableClipboardHistory": {
       "label": "Pano Geçmişi",
-      "title": "Pano Geçmişi ve bulut senkronu kapatılsın mı?",
-      "desc": "Pano Geçmişi (Win+V) kopyaladığın her şeyi saklar. Bulut senkronu açıksa buna şifreler ve hassas metinler de dahil olur ve Microsoft sunucularına gönderilir. Aktif olarak kullanmıyorsan kapatılması önerilir.",
-      "note": "HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows\\System — AllowClipboardHistory = 0, AllowCrossDeviceClipboard = 0."
+      "title": "Pano geçmişi ve pano eşitleme kapatılsın mı?",
+      "desc": "Win+V geçmişi ve cihazlar arası pano eşitleme çalışmaz."
     },
     "disableLocation": {
-      "label": "Konum Servisleri",
-      "title": "Konum Servisleri kapatılsın mı?",
-      "desc": "Windows Konum Servisleri uygulamaların fiziksel konumunu sorgulamasına izin verir. Bu PC'de harita veya konum tabanlı uygulama kullanmıyorsan, gizlilik açısından hassas bir sensöre gereksiz erişimdir. Temel bir gizlilik ince ayarı sayılır.",
-      "note": "HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows\\LocationAndSensors — DisableLocation = 1."
-    },
-    "disableAdvertisingId": {
-      "label": "Reklam Kimliği",
-      "title": "Windows Reklam Kimliğinden çıkış yapılsın mı?",
-      "desc": "Windows her kullanıcıya benzersiz bir reklam kimliği atar; uygulamalar bununla davranışını oturumlar arası takip eder ve hedefli reklam gösterir. Çıkış yapmak kimliği sıfırlar ve yeni atamaları engeller. Temel bir gizlilik ayarı olarak önerilir.",
-      "note": "HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\AdvertisingInfo — Enabled = 0."
-    },
-    "disableTailoredExperiences": {
-      "label": "Kişiye Özel Deneyimler",
-      "title": "Kişiye Özel Deneyimler ve tanılama verisi kullanımı kapatılsın mı?",
-      "desc": "Kişiye Özel Deneyimler, tanılama verini kullanarak Microsoft özellikleri, ipuçları ve teklifler önerir. Genel telemetriden ayrıdır — bu özellikle tanılama verisinin cihazına geri gönderilen ürün önerilerine girip girmeyeceğini kontrol eder.",
-      "note": "HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Privacy — TailoredExperiencesWithDiagnosticDataEnabled = 0."
-    },
-    "disableSpeechPersonalization": {
-      "label": "Çevrimiçi Konuşma Tanıma",
-      "title": "Çevrimiçi Konuşma Tanıma ve kişiselleştirme kapatılsın mı?",
-      "desc": "Çevrimiçi Konuşma Tanıma, sesini tanıma için Microsoft bulutuna gönderir. Konuşma kişiselleştirme ise sesinin ve kelime dağarcığının bir modelini oluşturur. İkisi de kurumsalda varsayılan kapalıdır ama bireysel hesaplarda açık bırakılır.",
-      "note": "HKCU\\SOFTWARE\\Microsoft\\Speech_OneCore\\Settings\\OnlineSpeechPrivacy — HasAccepted = 0. Ayrıca privacy.disable-online-speech uygulanır."
+      "label": "Konum",
+      "title": "Konum servisleri kapatılsın mı?",
+      "desc": "Windows ve uygulamalar için konumu, ayrıca coğrafi konum ve çevrimdışı harita servislerini ve harita görevlerini kapatır. Otomatik saat dilimi ve hava durumu konumu çalışmaz."
     },
     "disableDeliveryOptimization": {
-      "label": "Teslimat Optimizasyonu",
-      "title": "Teslimat Optimizasyonu (P2P güncelleme paylaşımı) kapatılsın mı?",
-      "desc": "Teslimat Optimizasyonu, Windows Update verisini internetteki diğer PC'lere yükleyebilir ve bant genişliğini kullanır. Eşlerden daha hızlı indirmene de yardım etse de, sınırlı veya oyun için kullandığın bağlantıda yükleme yükü istenmeyen bir şey. Kapatılması önerilir.",
-      "note": "HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows\\DeliveryOptimization — DODownloadMode = 0."
+      "label": "Teslim İyileştirme",
+      "title": "Windows güncellemelerinin başka PC'lerle paylaşılması durdurulsun mu?",
+      "desc": "Güncellemeler yalnızca Microsoft'tan (HTTP) indirilir; eşler arası yükleme yapılmaz."
     },
     "disableErrorReporting": {
-      "label": "Hata Raporlama",
-      "title": "Windows Hata Raporlama (WER) kapatılsın mı?",
-      "desc": "Bir uygulama çöktüğünde WER, çökme dökümlerini toplar ve Microsoft'a gönderir. Geliştiriciler için faydalıdır ama bireysel makinelerde çökme bilgilerini ve uygulama verisini Microsoft'a ifşa eder. Kapatmak ayrıca WerSvc servisinin çalışmasını da durdurur.",
-      "note": "HKLM\\SOFTWARE\\Microsoft\\Windows\\Windows Error Reporting — Disabled = 1. Ayrıca services.disable-wer-service kapatılır."
+      "label": "Hata Bildirimi",
+      "title": "Çökme raporlarının Microsoft'a gönderilmesi durdurulsun mu?",
+      "desc": "Windows Hata Bildirimi'ni (ilke ve servis) ve yükleme görevini kapatır. Çökme raporları bellek içeriği barındırabilir. Microsoft'un otomatik sorun çözümlerini kaybedersin."
     },
     "disableCloudContent": {
-      "label": "Tüketici Bulut İçeriği",
-      "title": "Tüketici Özellikleri ve buluttan gelen içerik kapatılsın mı?",
-      "desc": "Windows Tüketici Özellikleri önerilen uygulamaları kurar, Başlat menüsüne tanıtım kutucukları ekler ve kilit ekranı ipuçları, spotlight reklamları gibi buluttan gelen içeriği etkinleştirir. DisableWindowsConsumerFeatures bayrağı bu katmanı tamamen kaldırır.",
-      "note": "HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent — DisableWindowsConsumerFeatures = 1. Ayrıca privacy.disable-cloud-content ve tasks.disable-cloud-content-tasks kapatılır."
+      "label": "Önerilen İçerik",
+      "title": "Önerilen uygulamalar, ipuçları ve tanıtım içerikleri engellensin mi?",
+      "desc": "Windows'un sessizce \"önerilen\" uygulamalar yüklemesini ve tanıtım içerikleri, kilit ekranı ipuçları ve karşılama deneyimleri göstermesini durdurur."
     },
     "disableWpbt": {
-      "label": "Cihazımı Bul",
-      "title": "Cihazımı Bul kapatılsın mı?",
-      "desc": "Cihazımı Bul'un çalışması için konum takibinin açık olması gerekir ve PC'nin konumunu Microsoft'a iletir. Kayıp bir dizüstüyü bulman gerçekten gerekmiyorsa bu gereksiz bir gözetimdir. Temel gizlilik bloğuna dahildir.",
-      "note": "HKLM\\SOFTWARE\\Policies\\Microsoft\\FindMyDevice — AllowFindMyDevice = 0. Ayrıca privacy.disable-find-my-device uygulanır."
+      "label": "Donanım Yazılımıyla Gelen Yazılımlar",
+      "title": "Anakartın Windows'a enjekte ettiği yazılımlar engellensin mi?",
+      "desc": "Bazı anakartlar WPBT ile Windows'a üretici araçlarını (ör. Armoury Crate) otomatik kurdurur. Engellemek, kullanıyorsan donanım tabanlı hırsızlık önleme araçlarını da bozar."
     },
-    "powershellTelemetryOptout": {
-      "label": "PowerShell Telemetrisi",
-      "title": "PowerShell telemetrisinden çıkış yapılsın mı?",
-      "desc": "PowerShell 7+, POWERSHELL_TELEMETRY_OPTOUT ortam değişkeni ayarlanmadıkça varsayılan olarak komut kullanım verisini Microsoft'a gönderir. Temel bir ince ayar olarak dahildir.",
-      "note": "POWERSHELL_TELEMETRY_OPTOUT=1 sistem ortam değişkenini ayarlar. Yalnızca PS7+ için geçerli — Windows PowerShell 5.1 etkilenmez."
+    "enableGameMode": {
+      "label": "Oyun Modu",
+      "title": "Oyun Modu açık kalsın mı?",
+      "desc": "Oyun Modu varsayılan olarak açıktır. Testlerde açık ya da kapalı olması ölçülebilir bir fark yaratmadı; oudenOS yalnızca kapatılmadığından emin olur. Bir performans artışı değildir."
+    },
+    "disableGameDvr": {
+      "label": "Arka Plan Kaydı",
+      "title": "Game DVR arka plan kaydı kapatılsın mı?",
+      "desc": "Arka plan kaydı, son birkaç dakikayı kaydedebilmen için oyun boyunca bir video kodlama tamponu çalıştırır. Game Bar kalır, çünkü Windows oyunları tanımak için onu kullanır. Öncesini ve sonrasını kare süresi kaydıyla ölç (PresentMon veya CapFrameX, birkaç tekrar)."
     },
     "disableFullscreenOptimizations": {
-      "label": "Tam Ekran Optimizasyonları",
-      "title": "Tam Ekran Optimizasyonları (FSO) kapatılsın mı?",
-      "desc": "Tam Ekran Optimizasyonları, özel tam ekran oyunları araya girip sessizce kenarlıksız pencerede çalıştırır. Bu, daha hızlı Alt+Tab ve overlay enjeksiyonu sağlar ama oyunla ekran sürücüsü arasına bir kompozisyon katmanı koyarak giriş gecikmesini artırır. Özel tam ekran uygulamaları için FSO'yu kapatmak önerilir.",
-      "note": "HKCU\\System\\GameConfigStore — GameDVR_FSEBehaviorMode = 2, GameDVR_DXGIHonorFSEWindowsCompatible = 1."
+      "label": "Tam Ekran Modu",
+      "title": "Tam ekran oyunlar özel tam ekranı tercih etsin mi?",
+      "desc": "Sistem genelinde tam ekran iyileştirme değerlerini ayarlar. Hangi sunum modunun kullanılacağına dair bir öneri değildir: önce oyun başına \"Tam ekran iyileştirmelerini devre dışı bırak\" kutusunu dene. Özel tam ekran o oyunda Windows renk yönetimini ve Otomatik HDR'yi de kapatır. Öncesini ve sonrasını kare süresi kaydıyla ölç (PresentMon veya CapFrameX, birkaç tekrar)."
+    },
+    "disableTransparency": {
+      "label": "Saydamlık",
+      "title": "Saydamlık efektleri kapatılsın mı?",
+      "desc": "Görsel: bulanıklık ve saydamlık efektlerini kaldırır. Modern donanımda GPU maliyeti çok küçüktür."
+    },
+    "disableMouseAcceleration": {
+      "label": "Fare İvmesi",
+      "title": "\"İşaretçi hassasiyetini artır\" kapatılsın mı?",
+      "desc": "Masaüstünde 1:1 imleç sağlar. Çoğu modern oyun ham giriş kullanır ve bunu yok sayar; esas olarak masaüstünü ve eski oyunları etkiler. Bir tercih, performans ayarı değil."
+    },
+    "disableStickyKeys": {
+      "label": "Yapışkan Tuşlar Kısayolu",
+      "title": "Shift×5 Yapışkan Tuşlar kısayolu kapatılsın mı?",
+      "desc": "Shift'e beş kez basmak seni oyundan çıkarabilen bir erişilebilirlik penceresi açar. Yapışkan Tuşlar Ayarlar'da kullanılabilir kalır."
+    },
+    "disableMemoryCompression": {
+      "label": "Bellek Sıkıştırma",
+      "title": "Bellek sıkıştırma kapatılsın mı?",
+      "desc": "Sıkıştırma, daha az sayfalama için biraz CPU harcar. Yalnızca bol RAM'de (32 GB+) düşün; 16 GB veya daha azında açık bırak. Tekrarlanabilir bir kazanç ölçülmedi. Öncesini ve sonrasını kare süresi kaydıyla ölç (PresentMon veya CapFrameX, birkaç tekrar)."
     },
     "disableCoreParking": {
-      "label": "Çekirdek Parklama",
-      "title": "CPU çekirdek parklamasını kapat?",
-      "desc": "Çekirdek parklama, yoğun kullanılmayan CPU çekirdeklerini enerji tasarrufu için uyutur. Aniden iş geldiğinde park edilmiş çekirdeklerin uyanması gerekir — bu da gecikme sıçramalarına yol açar. Çekirdek parklamayı güç planı ayarıyla kapatmak tüm çekirdekleri her an hazır tutar.",
-      "note": "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Power\\PowerSettings — çekirdek parklama için MinValueMax/MaxValueMax 0'a ayarlanır (0 park edilmiş çekirdek)."
+      "label": "Çekirdek Park Etme",
+      "title": "CPU çekirdek park etme kapatılsın mı?",
+      "desc": "Etkin planda prizdeyken tüm çekirdekleri uyanık tutar. Boştaki güç ve ısıyı artırır; birçok modern işlemcide (özellikle Ryzen X3D) ölçülebilir kazanç yoktur. Öncesini ve sonrasını kare süresi kaydıyla ölç (PresentMon veya CapFrameX, birkaç tekrar)."
+    },
+    "aggressiveBoostMode": {
+      "label": "Turbo Modu",
+      "title": "İşlemci turbo modu Agresif yapılsın mı?",
+      "desc": "Etkin planın turbo ilkesini prizdeyken değiştirir. Daha yüksek güç ve ısı; sonuç işlemciye bağlıdır. Öncesini ve sonrasını kare süresi kaydıyla ölç (PresentMon veya CapFrameX, birkaç tekrar)."
+    },
+    "disableGpuTelemetry": {
+      "label": "GPU Üretici Servisleri",
+      "title": "NVIDIA/AMD arka plan servisleri kapatılsın mı?",
+      "desc": "NVIDIA'da konteyner servislerini kapatır — NVIDIA Denetim Masası ve NVIDIA App artık açılmaz, katman ve otomatik sürücü güncellemeleri durur. AMD'de Crash Defender ve UX programı başlatıcısını kapatır (FreeSync'e dokunulmaz). Tekrarlanabilir bir FPS kazancı ölçülmedi."
+    },
+    "disableDevicePowerSaving": {
+      "label": "Cihaz Güç Tasarrufu",
+      "title": "Windows'un enerji tasarrufu için cihazları kapatması engellensin mi?",
+      "desc": "Tüm cihazlarda \"Güç tasarrufu için bilgisayarın bu aygıtı kapatmasına izin ver\" seçeneğini kaldırır. Bağlantısı kopan USB veya ağ cihazlarında işe yarayabilir. Otomatik geri alınamaz ve cihazı yeniden takmak ayarı geri açabilir. Yalnızca masaüstü. Öncesini ve sonrasını kare süresi kaydıyla ölç (PresentMon veya CapFrameX, birkaç tekrar)."
+    },
+    "xboxUsage": {
+      "label": "Xbox ve Game Pass",
+      "title": "Xbox uygulamasını, PC Game Pass'i veya Microsoft Store oyunlarını kullanıyor musun?",
+      "desc": "Kullanmıyorsan Xbox uygulamaları ve Xbox arka plan servisleri kaldırılabilir. Game Bar, Windows oyunları tanımak için kullandığından kalır. Kaldırmak FPS'yi nadiren değiştirir; arka plandaki oturum açma ve güncelleme gürültüsünü azaltır."
+    },
+    "preinstalledApps": {
+      "label": "Önyüklü Uygulamalar",
+      "title": "Hangi önyüklü uygulamalar kaldırılsın?",
+      "desc": "Uygulama kaldırmak FPS'yi nadiren değiştirir — arka plan güncellemelerini, bildirimleri ve Başlat menüsü kalabalığını azaltır. Kaldırılan uygulamalar Microsoft Store'dan yeniden kurulabilir (LTSC'de yok). Kurulu olmayanlar atlanır."
+    },
+    "stripSearchWebNoise": {
+      "label": "Arama",
+      "title": "Windows Arama yerel kalsın mı?",
+      "desc": "Başlat aramasından Bing web sonuçlarını, arama öne çıkanlarını ve cihaz arama geçmişini kaldırır; PC-Tuning'in önerdiği gibi AllowCortana ilkesini ayarlar."
+    },
+    "edgeBehavior": {
+      "label": "Microsoft Edge",
+      "title": "Microsoft Edge'e ne olsun?",
+      "desc": "Edge sessizleştirilebilir veya kaldırılabilir. Birçok uygulamanın (oudenOS dahil) ihtiyaç duyduğu WebView2 çalışma zamanı asla kaldırılmaz."
     },
     "disableCopilot": {
       "label": "Copilot",
-      "title": "Copilot kapatılıp kaldırılsın mı?",
-      "desc": "Copilot, görev çubuğuna kalıcı bir kenar çubuğu düğmesi ekler ve kullanılmadığında bile arka planda servisler çalıştırır. Kaldırılması önerilir. Bu işlem Copilot görev çubuğu düğmesini, Copilot uygulama paketini ve açılış girdilerini kapsar.",
-      "note": "HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced — ShowCopilotButton = 0. Ayrıca appx.remove-copilot ve appx.remove-copilot-app kaldırılır."
+      "title": "Copilot kaldırılsın mı?",
+      "desc": "Copilot uygulamasını (24H2+) kaldırır ve Windows 11 23H2 ile öncesinde yerleşik Copilot kenar çubuğunu kapatır."
     },
-    "disableTransparency": {
-      "label": "Görsel Saydamlık",
-      "title": "Arayüzdeki saydamlık efektleri kapatılsın mı?",
-      "desc": "Saydamlık (acrylic, mica) GPU'nun her pencerenin arkasındaki şeyin bulanık örneklerini birleştirmesini gerektirir. Tamamen estetik için var olan, sürekli bir GPU yükü. GPU'da yer açmak için kapatılması önerilir.",
-      "note": "HKCU\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize — EnableTransparency = 0."
+    "disableAiApps": {
+      "label": "Windows Yapay Zekâ Özellikleri",
+      "title": "Recall, Click to Do ve uygulama yapay zekâ özellikleri kapatılsın mı?",
+      "desc": "Recall'u (bileşeniyle birlikte), Click to Do'yu, Edge, Paint ve Not Defteri'ndeki yapay zekâ özelliklerini, Windows AI servisini ve uygulamaların cihaz üstü yapay zekâ modellerine erişimini kapatır. Son seçenek Recall isteğe bağlı özelliğini de kaldırır ve Ayarlar'daki yapay zekâ sayfasını gizler."
     },
-    "disableNagle": {
-      "label": "Nagle Algoritması",
-      "title": "Daha düşük ağ gecikmesi için Nagle algoritması kapatılsın mı?",
-      "desc": "Nagle algoritması küçük TCP paketlerini biriktirip göndermeden önce birleştirir. Bu bant genişliği yükünü azaltır ama gecikme ekler — her küçük paket toplanmak için 200ms'ye kadar bekler. Oyun için paketlerin anında gönderilmesi adına kapatılır.",
-      "note": "HKLM\\SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters\\Interfaces\\{adapter} — TcpAckFrequency = 1, TCPNoDelay = 1."
+    "cleanupTaskbar": {
+      "label": "Görev Çubuğu",
+      "title": "Görev çubuğu sadeleştirilsin mi?",
+      "desc": "Görev Görünümü'nü gizler, Pencere Öğeleri'ni (ilkeyle) kapatır, Arama'yı simge olarak gösterir ve hâlâ bulunan sürümlerde eski Sohbet ve Şimdi Toplantı Yap simgelerini gizler. Güncel Windows 11 sürümlerinde Windows, araçların Pencere Öğeleri ve Arama ayarlarını değiştirmesini engelleyebilir; atlandı olarak bildirilenleri Ayarlar > Kişiselleştirme > Görev çubuğu'ndan değiştirebilirsin."
     },
-    "disableDefender": {
-      "label": "Windows Defender",
-      "title": "Windows Defender ile ne yapılsın?",
-      "desc": "Windows Defender gerçek zamanlı antivirüs koruması sağlar. CPU/RAM tüketir ve oyun dosyalarına erişimi engelleyebilir. Olduğu gibi tutabilir, bulut tabanlı aramaları kapatarak izini küçültebilir ya da tamamen kapatabilirsin — ki bu ciddi bir güvenlik riski sayılır ve varsayılanı FALSE olarak işaretlenir.",
-      "note": "Küçült: security.disable-defender-cloud (DisableBehaviorMonitoring, SpynetReporting=0). Tam kapatma: security.full-defender-disable, security.disable-defender-realtime. Önce VBS/Kurcalama Koruması'nın kapalı olması gerekir."
+    "cleanupContextMenu": {
+      "label": "Sağ Tık Menüsü",
+      "title": "Az kullanılan sağ tık girdileri kaldırılsın mı?",
+      "desc": "\"Cihaza Yayınla\", \"Uyumluluk sorunlarını gider\" ve eski \"Paint 3D ile düzenle\" girdilerini kaldırır."
+    },
+    "cleanupExplorer": {
+      "label": "Dosya Gezgini",
+      "title": "Dosya Gezgini varsayılanları ayarlansın mı?",
+      "desc": "Dosya uzantılarını gösterir (\"fatura.pdf.exe\" gizlenemesin diye) ve Gezgini Bu Bilgisayar'da açar. İleri kullanıcı seçeneği gizli dosyaları da gösterir, Giriş ve Galeri'yi gizler ve uzun dosya yollarını etkinleştirir."
+    },
+    "enableEndTask": {
+      "label": "Görevi Sonlandır",
+      "title": "Görev çubuğu sağ tık menüsüne \"Görevi sonlandır\" eklensin mi?",
+      "desc": "Donmuş bir uygulamayı Görev Yöneticisi'ni açmadan görev çubuğundan kapatmanı sağlar."
+    },
+    "disableLlmnr": {
+      "label": "LLMNR",
+      "title": "LLMNR ad çözümlemesi kapatılsın mı?",
+      "desc": "LLMNR, aynı ağdaki saldırganların parola özetlerini yakalamak için kötüye kullanabildiği eski bir yerel ad sorgulama protokolüdür. DNS ve mDNS çalışmaya devam eder; yalnızca LLMNR'ye yanıt veren çok eski cihazlar adla bulunamayabilir."
+    },
+    "disableUsbSelectiveSuspend": {
+      "label": "USB Seçmeli Askıya Alma",
+      "title": "USB seçmeli askıya alma kapatılsın mı?",
+      "desc": "Etkin planda Windows'un boştaki USB cihazlarını askıya almasını durdurur. Bağlantısı kopan veya geç uyanan cihazlarda işe yarayabilir; biraz daha fazla güç kullanır. Öncesini ve sonrasını kare süresi kaydıyla ölç (PresentMon veya CapFrameX, birkaç tekrar)."
+    },
+    "disablePcieLinkStatePm": {
+      "label": "PCIe Güç Yönetimi",
+      "title": "PCIe Bağlantı Durumu Güç Yönetimi (ASPM) kapatılsın mı?",
+      "desc": "Etkin planda PCIe bağlantılarını tam güçte tutar. Boştaki gücü artırır; gecikmeye etkisi donanıma bağlıdır. Yalnızca masaüstü. Öncesini ve sonrasını kare süresi kaydıyla ölç (PresentMon veya CapFrameX, birkaç tekrar)."
     },
     "disableSmartScreen": {
       "label": "SmartScreen",
-      "title": "Microsoft SmartScreen kapatılsın mı?",
-      "desc": "SmartScreen indirilen her dosyayı ve URL'yi Microsoft'un itibar veritabanına karşı kontrol eder. Gerçek bir kötü amaçlı yazılım koruması sağlar ama dosya hash'lerini ve URL'leri de Microsoft'a gönderir. Kapatmak hem korumayı hem telemetriyi kaldırır. Bunu yalnızca başka güvenlik araçlarına güveniyorsan yap.",
-      "note": "HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows\\System — EnableSmartScreen = 0. Ayrıca privacy.disable-smartscreen uygulanır."
+      "title": "İndirilen uygulamalar için SmartScreen kapatılsın mı?",
+      "desc": "SmartScreen, indirilen programları çalışmadan önce Microsoft'un itibar servisiyle denetler. Kapatmak kötü amaçlı indirmelere karşı bu korumayı kaldırır. Oyun performansına ölçülebilir etkisi yoktur."
+    },
+    "disableDefender": {
+      "label": "Microsoft Defender",
+      "title": "Microsoft Defender azaltılsın mı?",
+      "desc": "oudenOS yalnızca Defender ilkelerini ayarlar. Kurcalama Koruması açıkken (varsayılan) Defender bu ilkeleri yok sayar — gerçekten istiyorsan önce Windows Güvenliği'nde Kurcalama Koruması'nı kapat. Defender servisleri bir yönetici işlemi tarafından kapatılamaz, bu yüzden oudenOS denemez. Tarama yükü daha çok kurulum ve oyun güncellemelerinde görülür, oyun sırasında değil.",
+      "note": "Bazı hile önleme sistemleri Defender'ın çalışmasını bekleyebilir."
+    },
+    "disableHvci": {
+      "label": "Bellek Bütünlüğü (HVCI)",
+      "title": "Bellek Bütünlüğü (Çekirdek Yalıtımı) kapatılsın mı?",
+      "desc": "Bellek Bütünlüğü, Windows çekirdeğini kötü amaçlı veya açık barındıran sürücülere karşı korur. Vanguard (Valorant, League of Legends) ve FACEIT; HVCI, TPM 2.0 veya Güvenli Önyükleme olmadan çalışmayı reddedebilir. FPS kazancı vaat edilmez. Öncesini ve sonrasını kare süresi kaydıyla ölç (PresentMon veya CapFrameX, birkaç tekrar)."
+    },
+    "disableVbs": {
+      "label": "Sanallaştırma Tabanlı Güvenlik",
+      "title": "VBS ve Credential Guard kapatılsın mı?",
+      "desc": "VBS, Bellek Bütünlüğü ve Credential Guard'ın kapatılmasını ister (Credential Guard, Windows 11 Enterprise'da varsayılan olarak açıktır). VBS donanım yazılımı (UEFI) kilidiyle açıldıysa Windows bunu yok sayar — o zaman tek yol BIOS'ta SVM/VT-x ve IOMMU'yu kapatmaktır. Hyper-V, WSL2, Windows Sandbox ve Sanal Makine Platformu hypervisor'ı çalışır tutar. Vanguard ve FACEIT; HVCI/VBS, TPM 2.0 ve Güvenli Önyükleme gerektirebilir. Öncesini ve sonrasını kare süresi kaydıyla ölç (PresentMon veya CapFrameX, birkaç tekrar).",
+      "note": "Yeniden başlattıktan sonra Sistem Bilgisi'nde (msinfo32) \"Sanallaştırma tabanlı güvenlik\" satırını kontrol et."
+    },
+    "disableCpuMitigations": {
+      "label": "CPU Azaltma Önlemleri",
+      "title": "Spectre/Meltdown azaltma önlemleri kapatılsın mı?",
+      "desc": "Yeni işlemcilerde bu daha HIZLI değil, daha YAVAŞ olabilir. Meltdown AMD'yi etkilemez ve FACEIT bu önlemleri gerektirir. Öncesini ve sonrasını ölç, fayda yoksa geri al. Öncesini ve sonrasını kare süresi kaydıyla ölç (PresentMon veya CapFrameX, birkaç tekrar)."
+    },
+    "disableVulnerableDriverBlocklist": {
+      "label": "Açık Barındıran Sürücü Engel Listesi",
+      "title": "Microsoft'un açık barındıran sürücü listesindeki sürücülere izin verilsin mi?",
+      "desc": "Bazı düşük seviye ayar araçları (ör. XHCI kesme ayarı için RW-Everything) buna ihtiyaç duyar. Bilinen açık barındıran sürücülerin yüklenmesine de izin verir ve hile önleyiciler itiraz edebilir."
     },
     "disableWindowsUpdate": {
       "label": "Windows Update",
-      "title": "Windows Update tamamen engellensin mi?",
-      "desc": "Beklenmedik yeniden başlatmaları ve arka plan bant genişliği kullanımını önlemek için Windows Update'i engellemek belgelenmiştir. Bu açıkça GÜVENLİK RİSKİ olarak işaretlenir, varsayılanı FALSE'tur. Güncellemeleri engellemek sistemini süresiz olarak güvenlik yamalarından mahrum bırakır.",
-      "note": "security.disable-update-asap ve system.defer-feature-updates uygulanır. Tam engelleme ayrıca WU servisini devre dışı bırakır ve WU güvenlik duvarı kurallarını engeller."
+      "title": "Windows Update nasıl davransın?",
+      "desc": "Ertele, sürüm yükseltmelerini bir yıl bekletir; Sabitle mevcut Windows sürümünde kalır; Elle ise otomatik güncellemeleri tamamen kapatır. Güvenlik güncellemeleri önemlidir — Elle seçeneğinde onları kendin denetlemelisin."
     }
   },
   "options": {
     "aggressionPreset::conservative": {
-      "title": "Conservative — sadece güvenli temizlik",
-      "desc": "Hafif temizlik ve gizlilik düzeltmeleri. Sistem davranışını değiştiren ya da güvenlik ayarlarına dokunan hiçbir şey yok. Ortak veya iş PC'leri için en iyisi.",
+      "title": "Temkinli — yalnızca güvenli temizlik",
+      "desc": "Hafif gizlilik ve temizlik. Windows'un sana davranışını değiştiren hiçbir şey yok.",
       "badge": "En Güvenli"
     },
     "aggressionPreset::balanced": {
-      "title": "Balanced — çoğu sistem için iyi",
-      "desc": "Performans, gizlilik ve kararlılık iyileştirmelerinin sağlam bir karışımı. Elle geri alma gerektiren hiçbir şeye girmez.",
+      "title": "Dengeli — çoğu PC için uygun",
+      "desc": "Gerçek bir ödün içermeyen gizlilik, temizlik ve kullanım kolaylığı değişiklikleri.",
       "badge": "Önerilen"
     },
     "aggressionPreset::aggressive": {
-      "title": "Aggressive — oyun / meraklı",
-      "desc": "Daha derin tweak'leri açar: bellek sıkıştırma, core parking, GPU P-state kilitleri. Tam donanımlı oyun sistemlerine yönelik.",
-      "badge": "İleri Düzey"
+      "title": "Agresif — oyuna ayrılmış PC",
+      "desc": "Ödün içeren performans odaklı seçenekleri (güç, bellek, kayıt) ekler ve isteğe bağlı güvenlik seçeneklerini gösterir. Sen istemedikçe güvenlikle ilgili hiçbir şey kapatılmaz.",
+      "badge": "Gelişmiş"
     },
     "aggressionPreset::expert": {
-      "title": "Expert — tam kontrol",
-      "desc": "Her soru gösterilir. Spectre/Meltdown azaltma anahtarlarını, tam Windows Update kontrolünü ve Defender'ı kapatmayı içerir. Riskleri kabul ediyorsun.",
-      "badge": "Expert"
+      "title": "Uzman — riskli olanlar dahil her seçenek",
+      "desc": "CPU azaltma önlemleri, sürücü engel listesi ve Windows Update kontrollerini de gösterir. Bunlar güvenliği azaltabilir, hile önleyicileri bozabilir veya Windows bakımını zorlaştırabilir.",
+      "badge": "Uzman"
     },
     "highPerformancePlan::true": {
-      "title": "Evet — High Performance'a geç",
-      "desc": "Her zaman tam CPU saat hızı (bu saat hızıdır, %100 CPU kullanımı değil). Oyunlarda kare süresi sıçramalarına neden olan frekans rampa gecikmesini ortadan kaldırır. Daha yüksek boşta güç tüketimi, ısı ve fan sesi bekle.",
-      "badge": "Çekirdek"
+      "title": "Evet — saat tabanını %100'de tut",
+      "desc": "Ölçüp fayda gören kullanıcılar için.",
+      "badge": "Gelişmiş"
     },
     "highPerformancePlan::false": {
-      "title": "Hayır — Balanced kalsın",
-      "desc": "Windows varsayılanı. Pildeki dizüstüler için iyi. CPU, dalgalı iş yüklerinde kısılabilir."
+      "title": "Hayır — güç planım olduğu gibi kalsın",
+      "desc": "Önerilen. Özellikle Ryzen X3D'de Dengeli iyi bir varsayılandır.",
+      "badge": "Önerilen"
     },
     "disableFastStartup::true": {
-      "title": "Evet — Hızlı Başlatma'yı kapat",
-      "desc": "Her kapatmada tam soğuk açılış. POST biraz daha uzun sürer ama sürücüler her zaman taze yüklenir ve hazırda bekletme anlık görüntüleri karışamaz.",
-      "badge": "Çekirdek"
+      "title": "Evet — her zaman tam kapanış yap",
+      "desc": "Her kapanıştan sonra daha temiz sürücü durumu."
     },
     "disableFastStartup::false": {
       "title": "Hayır — Hızlı Başlatma kalsın",
-      "desc": "Daha hızlı Windows kapatma/devam etme döngüsü. Güncellemelerden sonra sürücü durumu sorunlarına yol açabilir."
+      "desc": "Windows varsayılanı."
     },
     "disableHibernation::true": {
       "title": "Evet — hazırda bekletmeyi kapat",
-      "desc": "hiberfil.sys'in disk alanını boşaltır ve hazırda bekletme güç seçeneğini kaldırır. Hızlı Başlatma da çalışmayı durdurur (zaten yukarıda kapatıldı).",
-      "badge": "Çekirdek"
+      "desc": "Sonraki yeniden başlatmadan sonra disk alanı açar."
     },
     "disableHibernation::false": {
       "title": "Hayır — hazırda bekletme kalsın",
-      "desc": "Kapağı uzun süre kapalı tuttuğun dizüstülerde işe yarar. hiberfil.sys korunur."
+      "desc": "Windows varsayılanı."
     },
     "disableIndexing::true": {
-      "title": "Evet — dizinlemeyi kapat",
-      "desc": "Dizinleyicinin arka plan I/O'sunu durdurur. Arama yine çalışır, sadece önceden hazırlanmış dizin olmadan (Gezgin'de ilk sonuçlar biraz daha yavaş).",
-      "badge": "Çekirdek"
+      "title": "Evet — dizini kapat",
+      "desc": "Aramalar yavaşlar."
     },
     "disableIndexing::false": {
-      "title": "Hayır — dizinleme kalsın",
-      "desc": "Windows Search'te anlık sonuçlar. HDD'lerde veya dosyaları çok aradığında işe yarar."
+      "title": "Hayır — hızlı arama kalsın",
+      "desc": "Önerilen.",
+      "badge": "Önerilen"
     },
     "disableBackgroundApps::true": {
-      "title": "Evet — arka plan uygulama etkinliğini engelle",
-      "desc": "Uygulamalar sadece odaktayken çalışır. Boştaki uygulamalardan gelen CPU uyanmalarını ve ağ çağrılarını azaltır. 24H2+ üzerinde yeniden başlatmadan sonra etkili.",
-      "badge": "Çekirdek"
+      "title": "Evet — arka plan Store uygulamalarını engelle",
+      "desc": "Phone Link, Posta, Teams gibi uygulamalar kapalıyken eşitleme ve bildirim yapmaz."
     },
     "disableBackgroundApps::false": {
-      "title": "Hayır — arka plan uygulama etkinliğine izin ver",
-      "desc": "Uygulamalar arka planda güncelleme ve bildirim alabilir. Varsayılan Windows davranışı."
+      "title": "Hayır — arka plan uygulamalarına izin ver",
+      "desc": "Windows varsayılanı."
     },
     "disableSysmain::true": {
-      "title": "Evet — SysMain'i kapat",
-      "desc": "SysMain'in önbelleği için ayırdığı RAM'i boşaltır. SSD'lerde pratik bir dezavantajı yok.",
-      "badge": "Çekirdek"
+      "title": "Evet — yalnızca SSD olan PC",
+      "desc": "HDD algılanırsa otomatik atlanır."
     },
     "disableSysmain::false": {
-      "title": "Hayır — SysMain kalsın",
-      "desc": "Uygulamaları önceden yüklemenin hissedilir açılış gecikmesini azalttığı HDD'lerde işe yarar."
+      "title": "Hayır — kalsın",
+      "desc": "Windows varsayılanı."
     },
     "disableAutomaticMaintenance::true": {
-      "title": "Evet — otomatik bakımı kapat",
-      "desc": "Beklenmedik arka plan taramalarını ve birleştirme çalıştırmalarını önler. Bakımı yine de Ayarlar'dan elle tetikleyebilirsin.",
-      "badge": "Çekirdek"
+      "title": "Evet — bakımı kendim yapacağım",
+      "desc": "Sürücüleri İyileştir'i (TRIM) elle çalıştırmayı unutma."
     },
     "disableAutomaticMaintenance::false": {
-      "title": "Hayır — otomatik bakım kalsın",
-      "desc": "Windows sağlık görevlerini bir programa göre çalıştırır. Sen oyun oynarken tetiklenirse performans sıçramalarına neden olabilir."
-    },
-    "optimizeThreadPriority::true": {
-      "title": "Evet — ön plan thread önceliğini artır",
-      "desc": "Ön plan uygulaması (oyunun) daha uzun CPU zaman dilimleri ve daha yüksek zamanlayıcı önceliği alır. Arka plan görevleri daha hızlı yol verir.",
-      "badge": "Çekirdek"
-    },
-    "optimizeThreadPriority::false": {
-      "title": "Hayır — varsayılan zamanlama kalsın",
-      "desc": "Windows'un varsayılan dengeli zamanlayıcısı. Çoklu görev iş yükleri için uygun."
-    },
-    "keepPrinterSupport::false": {
-      "title": "Yazıcı yok — Print Spooler'ı kapat",
-      "desc": "Spooler ve Fax servislerini durdurur. Servisi tekrar açmadıkça yazdırma çalışmaz."
+      "title": "Hayır — Otomatik Bakım kalsın",
+      "desc": "Önerilen.",
+      "badge": "Önerilen"
     },
     "keepPrinterSupport::true": {
-      "title": "Evet — Print Spooler kalsın",
-      "desc": "Herhangi bir yerel veya ağ yazdırması için gerekli. Yazıcı kullanıyorsan bunu tut."
+      "title": "Evet — yazdırma kalsın",
+      "desc": "Yazıcı servisleri açık kalır.",
+      "badge": "Önerilen"
     },
-    "keepRemoteAccess::false": {
-      "title": "Hayır — uzak servisleri kapat",
-      "desc": "Uzak Masaüstü ve Phone Service'i durdurur. Bu makineye RDP ile bağlanamazsın."
+    "keepPrinterSupport::false": {
+      "title": "Hayır — Print Spooler ve Fax'ı kapat",
+      "desc": "Servis tekrar açılana kadar yazdırma çalışmaz."
     },
     "keepRemoteAccess::true": {
       "title": "Evet — uzaktan erişim kalsın",
-      "desc": "Uzak Masaüstü ve Phone Link servislerini çalışır tutar. Uzaktan yönetim veya telefon senkronu için gerekli."
+      "desc": "Hiçbir şey değişmez.",
+      "badge": "Önerilen"
+    },
+    "keepRemoteAccess::false": {
+      "title": "Hayır — uzaktan erişimi kapat",
+      "desc": "Bu PC'de Uzak Masaüstü ve Uzaktan Yardım çalışmaz."
     },
     "disableAutoplay::true": {
       "title": "Evet — Otomatik Kullan'ı kapat",
-      "desc": "USB sürücü takıldığında otomatik hiçbir şey olmaz. Dosya Gezgini'nden elle açarsın.",
-      "badge": "Çekirdek"
+      "desc": "Sürücüleri Dosya Gezgini'nden kendin aç.",
+      "badge": "Önerilen"
     },
     "disableAutoplay::false": {
       "title": "Hayır — Otomatik Kullan kalsın",
-      "desc": "Bir sürücü takıldığında Windows içeriği açmanı, oynatmanı veya içe aktarmanı ister."
-    },
-    "disableLastAccessTime::true": {
-      "title": "Evet — son erişim yazmalarını kapat",
-      "desc": "Bir dosyayı okumak artık metadata yazması tetiklemez. Özellikle HDD'lerde NTFS yükünü azaltır.",
-      "badge": "Çekirdek"
+      "desc": "Windows varsayılanı."
     },
     "disableLastAccessTime::false": {
-      "title": "Hayır — son erişim zaman damgaları kalsın",
-      "desc": "Her dosya okuması son erişim zamanını günceller. Erişim zaman damgalarına dayanan yedekleme yazılımları için işe yarar."
+      "title": "Hayır — varsayılanlar kalsın",
+      "desc": "Hiçbir şey değişmez."
+    },
+    "disableLastAccessTime::true": {
+      "title": "Evet — son erişim ve 8.3 adları kapalı",
+      "desc": "Neredeyse herkes için güvenli.",
+      "badge": "Önerilen"
+    },
+    "disableLastAccessTime::all": {
+      "title": "Evet, yazma önbelleği boşaltmayı da kapat (yalnızca UPS ile)",
+      "desc": "Yalnızca UPS veya çok güvenilir elektrikle: kesinti son yazılanları kaybettirebilir veya bozabilir."
     },
     "svcHostSplitThreshold::true": {
-      "title": "Evet — servisleri ayrı süreçlere böl",
-      "desc": "Her servis kendi svchost.exe'sini alır. CPU/bellek canavarlarını teşhis etmek daha kolay ve biraz daha çökme-izole.",
-      "badge": "Çekirdek"
+      "title": "Evet — servisleri grupla",
+      "desc": "Daha az servis yalıtımı; geri alınabilir."
     },
     "svcHostSplitThreshold::false": {
-      "title": "Hayır — gruplu svchost kalsın",
-      "desc": "Windows varsayılanı: servisler svchost süreçlerini paylaşır. Biraz daha düşük süreç sayısı."
+      "title": "Hayır — Windows varsayılanı kalsın",
+      "desc": "Önerilen.",
+      "badge": "Önerilen"
     },
     "disableFaultTolerantHeap::true": {
       "title": "Evet — FTH'yi kapat",
-      "desc": "Uyumluluk gecikme shim'lerini kaldırır. Uygulamalar sessizce kısılmak yerine normal şekilde çöker.",
-      "badge": "İleri Düzey"
+      "desc": "Geri alınabilir."
     },
     "disableFaultTolerantHeap::false": {
-      "title": "Hayır — FTH açık kalsın",
-      "desc": "Windows, kararsız uygulamaları uyumluluk shim'leriyle korumaya devam eder. Güvenli varsayılan."
+      "title": "Hayır — FTH kalsın",
+      "desc": "Windows varsayılanı."
+    },
+    "shutdownBehavior::true": {
+      "title": "Evet — daha kısa bekleme",
+      "desc": "Bir şey takıldığında daha hızlı kapanış."
+    },
+    "shutdownBehavior::false": {
+      "title": "Hayır — varsayılanlar kalsın",
+      "desc": "Windows varsayılanı."
+    },
+    "unusedServices::keep": {
+      "title": "Kalsın",
+      "desc": "Hiçbir şey değişmez.",
+      "badge": "Önerilen"
+    },
+    "unusedServices::common": {
+      "title": "Cüzdan, akıllı kart, medya paylaşımı, veri kullanımı",
+      "desc": "NFC cüzdan, akıllı kart okuyucular, Windows Media Player ağ paylaşımı ve ağ başına veri kullanım sayacı."
+    },
+    "unusedServices::all": {
+      "title": "Bluetooth, biyometri ve Farklı Çalıştır da",
+      "desc": "Bluetooth'u, Windows Hello parmak izi/yüz tanımayı ve \"Farklı kullanıcı olarak çalıştır\"ı da kapatır. Yalnızca bu PC'de bunların hiçbiri yoksa."
+    },
+    "driverUpdates::allow": {
+      "title": "Evet — sürücüleri Windows yönetsin",
+      "desc": "Windows varsayılanı.",
+      "badge": "Önerilen"
+    },
+    "driverUpdates::no-drivers": {
+      "title": "Hayır — sürücüleri kendim kurarım",
+      "desc": "Yeni donanım otomatik sürücü almaz."
+    },
+    "driverUpdates::no-drivers-no-store": {
+      "title": "Sürücü yok ve Store uygulamaları otomatik güncellenmesin",
+      "desc": "Store uygulamalarının kendini güncellemesini de durdurur — güvenlik düzeltmeleri dahil elle güncelle."
+    },
+    "desktopPowerTweaks::false": {
+      "title": "Hayır — Windows davranışı kalsın",
+      "desc": "Önerilen.",
+      "badge": "Önerilen"
+    },
+    "desktopPowerTweaks::throttling": {
+      "title": "Güç kısıtlamayı kapat",
+      "desc": "Arka plan iş parçacıkları tam saatte kalır. Daha yüksek güç tüketimi."
+    },
+    "desktopPowerTweaks::all": {
+      "title": "Güç kısıtlama ve Modern Bekleme kapalı",
+      "desc": "Klasik S3 uykuyu da zorlar. Yeniden başlattıktan sonra uykunun çalıştığını kontrol et."
     },
     "telemetryLevel::minimal": {
-      "title": "Minimal — yalnızca DiagTrack servisini durdur",
-      "desc": "Connected User Experiences and Telemetry servisini (DiagTrack) kapatır. En yüksek hacimli telemetri kanalını kapsar.",
-      "badge": "En Güvenli"
+      "title": "Minimal — temel telemetri kapalı",
+      "desc": "DiagTrack ve WAP push servisleri kapalı, en düşük tanılama seviyesi, CEIP kapalı."
     },
     "telemetryLevel::standard": {
-      "title": "Standart — reklam ve etkinlik takibini engelle",
-      "desc": "Minimal engellemenin üstüne reklam kimliği çıkışı, etkinlik akışı, kişiye özel deneyimler ve yazım önerilerini ekler.",
+      "title": "Standart — reklam, ipucu ve geri bildirim de",
+      "desc": "Reklam kimliği, kişiselleştirilmiş deneyimler, çevrimiçi ipuçları, yazma içgörüleri, geri bildirim istekleri, yerel olay dökümü ve PowerShell telemetri devre dışı bırakmayı ekler.",
       "badge": "Önerilen"
     },
     "telemetryLevel::full": {
-      "title": "Tam Engelle — her telemetri kanalını kapat",
-      "desc": "Yukarıdakilerin tümüne ek olarak telemetri zamanlanmış görevleri, MSRT çıkışı, çevrimiçi konuşma, cihaz izleme ve uygulama başlatma takibini engeller.",
+      "title": "Tam — oudenOS'un bildiği her telemetri kanalı",
+      "desc": "Telemetri/tanılama görevlerini, çevrimiçi konuşmayı, mürekkep ve kişi verilerini, uygulama başlatma takibini, uygulama tanılama erişimini, çevrimiçi yazı tiplerini, Cihazımı Bul'u, Insider/perakende demo/tanılama servislerini ve Brave ilkelerini ekler. Windows sorun gidericileri çalışmayabilir.",
       "badge": "Gelişmiş"
     },
     "disableActivityFeed::true": {
-      "title": "Evet — Etkinlik Akışını kapat",
-      "desc": "Windows'un uygulama ve belge geçmişini kaydetmesini durdurur. Zaman Tüneli (varsa) yeni girdi biriktirmeyi bırakır.",
-      "badge": "Çekirdek"
+      "title": "Evet — etkinlik yalnızca bu PC'de kalsın",
+      "desc": "Hiçbir şey yayımlanmaz veya yüklenmez.",
+      "badge": "Önerilen"
     },
     "disableActivityFeed::false": {
-      "title": "Hayır — Etkinlik Akışını koru",
-      "desc": "Windows uygulama etkinliğini kaydeder. Zaman Tüneli veya cihazlar arası geçmiş özelliklerini kullanıyorsan gerekli."
+      "title": "Hayır — Windows varsayılanı",
+      "desc": "Hiçbir şey değişmez."
     },
     "disableClipboardHistory::true": {
-      "title": "Evet — Pano Geçmişini kapat",
-      "desc": "Pano normal çalışır (kopyala/yapıştır) ama hiçbir geçmiş yerelde tutulmaz veya buluta senkronlanmaz.",
-      "badge": "Çekirdek"
+      "title": "Evet — kapat",
+      "desc": "Win+V hiçbir şey göstermez."
     },
     "disableClipboardHistory::false": {
-      "title": "Hayır — Pano Geçmişini koru",
-      "desc": "Win+V önceki pano girdilerinden yapıştırmanı sağlar. Güçlü kullanıcılar için işe yarar."
+      "title": "Hayır — pano geçmişi kalsın",
+      "desc": "Windows varsayılanı."
     },
     "disableLocation::true": {
-      "title": "Evet — Konum Servislerini kapat",
-      "desc": "Hiçbir uygulama (Windows'un kendisi dahil) fiziksel konumunu belirleyemez.",
-      "badge": "Çekirdek"
+      "title": "Evet — konumu kapat",
+      "desc": "Saat dilimini elle ayarla."
     },
     "disableLocation::false": {
-      "title": "Hayır — Konum Servislerini koru",
-      "desc": "Uygulamalar konumunu isteyebilir. Haritalar, hava durumu uygulamaları ve cihazımı bul için gerekli."
-    },
-    "disableAdvertisingId::true": {
-      "title": "Evet — Reklam Kimliğinden çık",
-      "desc": "Uygulamalar artık reklam kimliğini okuyamaz. Store uygulamaları ve reklam destekli yazılımlar uygulamalar arası takip yeteneğini kaybeder.",
-      "badge": "Çekirdek"
-    },
-    "disableAdvertisingId::false": {
-      "title": "Hayır — Reklam Kimliğini koru",
-      "desc": "Uygulamalar bu kimliği hedefli reklam göstermek ve uygulamalar arası davranışı takip etmek için kullanabilir."
-    },
-    "disableTailoredExperiences::true": {
-      "title": "Evet — Kişiye Özel Deneyimleri kapat",
-      "desc": "Microsoft, ürün ipuçları veya özellik önerileri sunmak için tanılama verini kullanmayı bırakır.",
-      "badge": "Çekirdek"
-    },
-    "disableTailoredExperiences::false": {
-      "title": "Hayır — kişiye özel önerilere izin ver",
-      "desc": "Microsoft tanılama verine dayalı kişiselleştirilmiş ipuçları gönderebilir."
-    },
-    "disableSpeechPersonalization::true": {
-      "title": "Evet — çevrimiçi konuşma özelliklerini kapat",
-      "desc": "Sesli komutlar yerelde çalışmaya devam eder ama kişiselleştirme için Microsoft bulutuna hiçbir şey gönderilmez.",
-      "badge": "Çekirdek"
-    },
-    "disableSpeechPersonalization::false": {
-      "title": "Hayır — çevrimiçi konuşma özelliklerini koru",
-      "desc": "Microsoft ses verini kullanarak kişiselleştirilmiş bir konuşma modeli oluşturur."
+      "title": "Hayır — konum kalsın",
+      "desc": "Windows varsayılanı."
     },
     "disableDeliveryOptimization::true": {
-      "title": "Evet — Teslimat Optimizasyonunu kapat",
-      "desc": "Güncellemeler yalnızca Microsoft sunucularından iner. Önbelleğindeki güncelleme verisinin P2P yüklemesi yapılmaz.",
-      "badge": "Çekirdek"
+      "title": "Evet — yalnızca Microsoft'tan indir",
+      "desc": "Diğer PC'lere güncelleme verisi yüklenmez.",
+      "badge": "Önerilen"
     },
     "disableDeliveryOptimization::false": {
-      "title": "Hayır — P2P güncelleme paylaşımını koru",
-      "desc": "Windows, güncellemeleri başka PC'lere dağıtmak için bağlantını kullanabilir. Bazı ağlarda kendi indirmelerini hızlandırabilir."
+      "title": "Hayır — Teslim İyileştirme kalsın",
+      "desc": "Windows varsayılanı."
     },
     "disableErrorReporting::true": {
-      "title": "Evet — hata raporlamayı kapat",
-      "desc": "Çökme verisi yerelde kalır. Microsoft'a hiçbir döküm gönderilmez. Uygulamalar WER iletişim kutusunu tetiklemeden sessizce çöker.",
-      "badge": "Çekirdek"
+      "title": "Evet — çökme verileri yerel kalsın",
+      "desc": "Raporlar artık yüklenmez.",
+      "badge": "Önerilen"
     },
     "disableErrorReporting::false": {
-      "title": "Hayır — hata raporlamayı koru",
-      "desc": "Çökme dökümleri Microsoft'a gönderilir. Yazılım hata ayıklıyorsan ya da uygulama üreticilerinin çökme raporlarını almasını istiyorsan işe yarar."
+      "title": "Hayır — hata bildirimi kalsın",
+      "desc": "Windows varsayılanı."
     },
     "disableCloudContent::true": {
-      "title": "Evet — buluttan gelen içeriği kapat",
-      "desc": "Başlat'ta artık önerilen uygulama, tanıtım kutucuğu veya kilit ekranında 'eğlenceli bilgiler' görünmez.",
-      "badge": "Çekirdek"
+      "title": "Evet — engelle",
+      "desc": "Artık otomatik yüklenen tanıtım yok.",
+      "badge": "Önerilen"
     },
     "disableCloudContent::false": {
-      "title": "Hayır — bulut içeriğine izin ver",
-      "desc": "Microsoft, Başlat'a ve kilit ekranına uygulama önerileri ve tanıtım içeriği gönderebilir."
+      "title": "Hayır — Windows varsayılanı",
+      "desc": "Hiçbir şey değişmez."
     },
     "disableWpbt::true": {
-      "title": "Evet — Cihazımı Bul'u kapat",
-      "desc": "Cihaz takibi için konum iletilmez. Bu PC'yi Microsoft hesabınla bulamazsın.",
-      "badge": "Çekirdek"
+      "title": "Evet — WPBT programlarını engelle",
+      "desc": "Yeniden başlatmadan sonra etkinleşir."
     },
     "disableWpbt::false": {
-      "title": "Hayır — Cihazımı Bul'u koru",
-      "desc": "Dizüstülerde işe yarar. Konum Servislerinin açık olmasını gerektirir."
+      "title": "Hayır — Windows varsayılanı",
+      "desc": "Hiçbir şey değişmez."
     },
-    "powershellTelemetryOptout::true": {
-      "title": "Evet — PS telemetrisinden çık",
-      "desc": "PowerShell 7+ komut analitiği göndermeyi bırakır. Çıkış, bir sistem ortam değişkeniyle kalıcı olur.",
-      "badge": "Çekirdek"
+    "enableGameMode::true": {
+      "title": "Evet — Oyun Modu açık kalsın",
+      "desc": "Windows varsayılanı.",
+      "badge": "Önerilen"
     },
-    "powershellTelemetryOptout::false": {
-      "title": "Hayır — PS telemetrisini koru",
-      "desc": "PowerShell 7+ komut kullanımını Microsoft'a bildirmeye devam eder."
+    "enableGameMode::false": {
+      "title": "Olduğu gibi bırak",
+      "desc": "oudenOS bu ayara dokunmaz."
+    },
+    "disableGameDvr::true": {
+      "title": "Evet — arka plan kaydı olmasın",
+      "desc": "\"Olanı kaydet\" çalışmaz."
+    },
+    "disableGameDvr::false": {
+      "title": "Hayır — kalsın",
+      "desc": "Windows varsayılanı."
     },
     "disableFullscreenOptimizations::true": {
-      "title": "Evet — FSO'yu kapat",
-      "desc": "Oyunlar gerçek özel tam ekran modunda çalışır. Daha düşük giriş gecikmesi ama Alt+Tab daha yavaş ve bazı overlay'ler çalışmayabilir.",
-      "badge": "Çekirdek"
+      "title": "Evet — özel tam ekranı tercih et",
+      "desc": "Oyunun kendi uyumluluk ayarı yine önceliklidir."
     },
     "disableFullscreenOptimizations::false": {
-      "title": "Hayır — Tam Ekran Optimizasyonlarını koru",
-      "desc": "Windows özel tam ekranı kenarlıksız pencereye sarar. Daha hızlı Alt+Tab, daha kolay overlay."
-    },
-    "disableCoreParking::true": {
-      "title": "Evet — çekirdek parklamayı kapat",
-      "desc": "Tüm CPU çekirdekleri uyanık kalır. İş yükü sıçradığında uyanma gecikmesini ortadan kaldırır. Boştayken biraz daha yüksek güç tüketimi.",
-      "badge": "Gelişmiş"
-    },
-    "disableCoreParking::false": {
-      "title": "Hayır — çekirdek parklamaya izin ver",
-      "desc": "Boştaki çekirdekler uyutulur. Enerji tasarrufu sağlar. İş yükü sıçramalarında gecikme ekleyebilir."
-    },
-    "disableCopilot::true": {
-      "title": "Evet — Copilot'u kapat ve kaldır",
-      "desc": "Copilot düğmesi görev çubuğundan kaybolur ve uygulama paketi kaldırılır.",
-      "badge": "Çekirdek"
-    },
-    "disableCopilot::false": {
-      "title": "Hayır — Copilot'u koru",
-      "desc": "Copilot görünür kalır ve görev çubuğu düğmesinden erişilebilir."
+      "title": "Hayır — Windows davranışı kalsın",
+      "desc": "Önerilen.",
+      "badge": "Önerilen"
     },
     "disableTransparency::true": {
-      "title": "Evet — saydamlığı kapat",
-      "desc": "Görev çubuğu, Başlat ve pencere kenarları opak olur. Masaüstü kompozisyonunda biraz daha düşük GPU yükü.",
-      "badge": "Çekirdek"
+      "title": "Evet — saydamlık olmasın",
+      "desc": "Zevk meselesi."
     },
     "disableTransparency::false": {
-      "title": "Hayır — saydamlık efektlerini koru",
-      "desc": "Acrylic ve mica efektleri görev çubuğunda ve pencerelerde kalır."
+      "title": "Hayır — saydamlık kalsın",
+      "desc": "Windows varsayılanı."
     },
-    "disableNagle::true": {
-      "title": "Evet — Nagle'ı kapat (daha düşük gecikme)",
-      "desc": "Küçük TCP paketleri anında gönderilir. Biraz daha fazla paket pahasına online oyunlarda ping titremesini azaltır.",
+    "disableMouseAcceleration::true": {
+      "title": "Evet — ivme olmasın",
+      "desc": "İmleç hızı fare hareketiyle 1:1 eşleşir."
+    },
+    "disableMouseAcceleration::false": {
+      "title": "Hayır — kalsın",
+      "desc": "Windows varsayılanı."
+    },
+    "disableStickyKeys::true": {
+      "title": "Evet — kısayolu kapat",
+      "desc": "Oyun ortasında pencere çıkmaz.",
+      "badge": "Önerilen"
+    },
+    "disableStickyKeys::false": {
+      "title": "Hayır — kalsın",
+      "desc": "Windows varsayılanı."
+    },
+    "disableMemoryCompression::true": {
+      "title": "Evet — kapat",
+      "desc": "Enable-MMAgent ile geri alınabilir."
+    },
+    "disableMemoryCompression::false": {
+      "title": "Hayır — kalsın",
+      "desc": "Önerilen.",
+      "badge": "Önerilen"
+    },
+    "disableCoreParking::true": {
+      "title": "Evet — çekirdek park etme olmasın",
+      "desc": "Ölçüm yapmış kullanıcılar için."
+    },
+    "disableCoreParking::false": {
+      "title": "Hayır — Windows davranışı kalsın",
+      "desc": "Önerilen.",
+      "badge": "Önerilen"
+    },
+    "aggressiveBoostMode::true": {
+      "title": "Evet — Agresif turbo",
+      "desc": "Ölçüm yapmış kullanıcılar için."
+    },
+    "aggressiveBoostMode::false": {
+      "title": "Hayır — Windows davranışı kalsın",
+      "desc": "Önerilen.",
+      "badge": "Önerilen"
+    },
+    "disableGpuTelemetry::true": {
+      "title": "Evet — kapat",
+      "desc": "Yalnızca ilgili üreticinin servisleri değişir."
+    },
+    "disableGpuTelemetry::false": {
+      "title": "Hayır — üretici yazılımı çalışsın",
+      "desc": "Önerilen.",
+      "badge": "Önerilen"
+    },
+    "disableDevicePowerSaving::true": {
+      "title": "Evet — cihazlar açık kalsın",
+      "desc": "Gerekirse Aygıt Yöneticisi'nden geri al."
+    },
+    "disableDevicePowerSaving::false": {
+      "title": "Hayır — Windows varsayılanı",
+      "desc": "Önerilen.",
+      "badge": "Önerilen"
+    },
+    "xboxUsage::keep": {
+      "title": "Evet / emin değilim — Xbox ve Game Pass çalışsın",
+      "desc": "Hiçbir şey değişmez.",
+      "badge": "Önerilen"
+    },
+    "xboxUsage::remove": {
+      "title": "Hayır — Xbox uygulamalarını ve servislerini kaldır",
+      "desc": "Game Pass'i, Xbox oturumunu ve bulut kayıtlarını bozar. Yeniden kurmak Microsoft Store gerektirir."
+    },
+    "preinstalledApps::keep": {
+      "title": "Hepsi kalsın",
+      "desc": "Hiçbir şey kaldırılmaz."
+    },
+    "preinstalledApps::bloat": {
+      "title": "Reklam ve gereksiz uygulamaları kaldır",
+      "desc": "Candy Crush tarzı oyunlar, sosyal medya ve yayın denemeleri, OEM denemeleri, alışveriş uygulamaları, Office Edinin, Haberler, Hava Durumu, Solitaire, İpuçları ve benzeri tüketici uygulamaları.",
+      "badge": "Önerilen"
+    },
+    "preinstalledApps::all": {
+      "title": "İsteğe bağlı Microsoft uygulamalarını da kaldır",
+      "desc": "Ayrıca Posta ve Takvim, yeni Outlook, Kamera, Alarmlar ve Saat, Ses Kaydedici, Yapışkan Notlar, Power Automate, Phone Link (cihazlar arası servisiyle), Teams, Clipchamp, Hızlı Yardım, Dev Home, Paint 3D ve fazlası.",
       "badge": "Gelişmiş"
     },
-    "disableNagle::false": {
-      "title": "Hayır — Nagle'ı açık bırak",
-      "desc": "TCP küçük paketleri birleştirir. Toplu transferler için daha iyi, etkileşimli trafiğe küçük bir gecikme ekler."
+    "stripSearchWebNoise::true": {
+      "title": "Evet — yalnızca yerel sonuçlar",
+      "desc": "Başlat'tan web sonuçları kalkar.",
+      "badge": "Önerilen"
     },
-    "disableDefender::keep": {
-      "title": "Defender'ı koru — tam koruma",
-      "desc": "Gerçek zamanlı koruma, bulut aramaları ve otomatik örnek gönderiminin hepsi aktif kalır.",
+    "stripSearchWebNoise::false": {
+      "title": "Hayır — Windows varsayılanı",
+      "desc": "Hiçbir şey değişmez."
+    },
+    "edgeBehavior::keep": {
+      "title": "Edge'e dokunma",
+      "desc": "Hiçbir şey değişmez."
+    },
+    "edgeBehavior::quiet": {
+      "title": "Önyüklemeyi ve varsayılan tarayıcı uyarılarını durdur",
+      "desc": "Edge oturum açılışında başlamaz, arka planda kalmaz ve varsayılan olmak için ısrar etmez. Güncellemeler çalışmaya devam eder.",
+      "badge": "Önerilen"
+    },
+    "edgeBehavior::quiet-noupdates": {
+      "title": "Sessiz ve Edge otomatik güncellemeleri kapalı",
+      "desc": "Edge Update WebView2'yi de güncellediği için, yeniden açana kadar ikisi de güvenlik güncellemesi almaz."
+    },
+    "edgeBehavior::remove": {
+      "title": "Edge tarayıcısını kaldır",
+      "desc": "Kalıcıdır. Bazı Windows bağlantıları (Yardım, bazı Ayarlar sayfaları) açılmaz. Önce başka bir tarayıcı kur."
+    },
+    "disableCopilot::true": {
+      "title": "Evet — Copilot'u kaldır",
+      "desc": "Gerekirse Microsoft Store'dan yeniden kur.",
+      "badge": "Önerilen"
+    },
+    "disableCopilot::false": {
+      "title": "Hayır — Copilot kalsın",
+      "desc": "Hiçbir şey değişmez."
+    },
+    "disableAiApps::false": {
+      "title": "Hayır — yapay zekâ özellikleri kalsın",
+      "desc": "Hiçbir şey değişmez."
+    },
+    "disableAiApps::true": {
+      "title": "Evet — yapay zekâ özelliklerini kapat",
+      "desc": "İlke tabanlı; Recall bileşeni ilke tarafından kaldırılır.",
+      "badge": "Önerilen"
+    },
+    "disableAiApps::remove": {
+      "title": "Evet, Recall özelliğini ve yapay zekâ ayar sayfasını da kaldır",
+      "desc": "Ayrıca Disable-WindowsOptionalFeature Recall çalıştırır ve Ayarlar > Yapay zekâ bileşenleri sayfasını gizler (var olan SettingsPageVisibility değerinin yerine geçer)."
+    },
+    "cleanupTaskbar::true": {
+      "title": "Evet — sade görev çubuğu",
+      "desc": "Win+Tab yine Görev Görünümü'nü açar.",
+      "badge": "Önerilen"
+    },
+    "cleanupTaskbar::false": {
+      "title": "Hayır — görev çubuğum kalsın",
+      "desc": "Hiçbir şey değişmez."
+    },
+    "cleanupContextMenu::true": {
+      "title": "Evet — menüyü toparla",
+      "desc": "Geri alınabilir.",
+      "badge": "Önerilen"
+    },
+    "cleanupContextMenu::false": {
+      "title": "Hayır — kalsın",
+      "desc": "Hiçbir şey değişmez."
+    },
+    "cleanupExplorer::false": {
+      "title": "Hayır — varsayılanlar kalsın",
+      "desc": "Hiçbir şey değişmez."
+    },
+    "cleanupExplorer::true": {
+      "title": "Uzantıları göster, Bu Bilgisayar'da aç",
+      "desc": "Herkes için daha güvenli ve anlaşılır.",
+      "badge": "Önerilen"
+    },
+    "cleanupExplorer::all": {
+      "title": "İleri kullanıcı",
+      "desc": "Ayrıca gizli dosyalar, Giriş/Galeri yok ve uzun yollar.",
+      "badge": "Gelişmiş"
+    },
+    "enableEndTask::true": {
+      "title": "Evet — Görevi sonlandır ekle",
+      "desc": "Windows 11 23H2+.",
+      "badge": "Önerilen"
+    },
+    "enableEndTask::false": {
+      "title": "Hayır",
+      "desc": "Hiçbir şey değişmez."
+    },
+    "disableLlmnr::true": {
+      "title": "Evet — LLMNR'yi kapat",
+      "desc": "Güvenlik sıkılaştırması."
+    },
+    "disableLlmnr::false": {
+      "title": "Hayır — kalsın",
+      "desc": "Windows varsayılanı."
+    },
+    "disableUsbSelectiveSuspend::true": {
+      "title": "Evet — USB cihazları uyanık kalsın",
+      "desc": "Geri alınabilir."
+    },
+    "disableUsbSelectiveSuspend::false": {
+      "title": "Hayır — Windows varsayılanı",
+      "desc": "USB kopmaları yaşamıyorsan önerilen.",
+      "badge": "Önerilen"
+    },
+    "disablePcieLinkStatePm::true": {
+      "title": "Evet — ASPM kapalı",
+      "desc": "Geri alınabilir."
+    },
+    "disablePcieLinkStatePm::false": {
+      "title": "Hayır — Windows varsayılanı",
+      "desc": "Önerilen.",
+      "badge": "Önerilen"
+    },
+    "disableSmartScreen::false": {
+      "title": "Hayır — SmartScreen kalsın",
+      "desc": "Önerilen.",
       "badge": "En Güvenli"
-    },
-    "disableDefender::reduce": {
-      "title": "Küçült — bulut aramalarını ve MAPS'i kapat",
-      "desc": "Yerel gerçek zamanlı tarama açık kalır. Bulut tabanlı aramalar ve otomatik örnek gönderimi kapatılır — yerel taramayı kaybetmeden telemetriyi azaltır.",
-      "badge": "Gelişmiş"
-    },
-    "disableDefender::full-disable": {
-      "title": "Tam Kapat — tüm gerçek zamanlı korumayı kapat",
-      "desc": "Defender tamamen kapatılır. Hiçbir türde gerçek zamanlı tarama yapılmaz."
     },
     "disableSmartScreen::true": {
       "title": "Evet — SmartScreen'i kapat",
-      "desc": "Dosya itibar kontrolleri durur. Tarama için Microsoft'a hiçbir dosya hash'i veya URL gönderilmez. Gerçek bir kötü amaçlı yazılım koruması katmanını kaybedersin."
+      "desc": "İndirmeler artık itibar denetiminden geçmez. Geri alınabilir."
     },
-    "disableSmartScreen::false": {
-      "title": "Hayır — SmartScreen'i koru",
-      "desc": "İndirilen dosyalar ve URL'ler Microsoft'un bulut itibar veritabanına karşı kontrol edilir.",
+    "disableDefender::keep": {
+      "title": "Defender tamamen açık kalsın",
+      "desc": "Önerilen.",
       "badge": "En Güvenli"
     },
+    "disableDefender::reduce": {
+      "title": "Bulut sorgularını ve örnek gönderimini kapat",
+      "desc": "Gerçek zamanlı tarama açık kalır; yalnızca bulut korumasının yakalayacağı tehditler kaçabilir."
+    },
+    "disableDefender::full-disable": {
+      "title": "Gerçek zamanlı korumayı ve zamanlanmış taramaları kapat",
+      "desc": "Yalnızca ilke düzeyinde; Kurcalama Koruması açıkken yok sayılır. Zamanlanmış taramaları ve aylık kötü amaçlı yazılım temizleme aracını da kapatır. Gerçek zamanlı kötü amaçlı yazılım korumasını kaldırır."
+    },
+    "disableHvci::false": {
+      "title": "Hayır — Bellek Bütünlüğü kalsın",
+      "desc": "Önerilen.",
+      "badge": "En Güvenli"
+    },
+    "disableHvci::true": {
+      "title": "Evet — kapat",
+      "desc": "Windows Güvenliği > Cihaz güvenliği > Çekirdek yalıtımı'ndan geri alınabilir."
+    },
+    "disableVbs::false": {
+      "title": "Hayır — VBS kalsın",
+      "desc": "Önerilen.",
+      "badge": "En Güvenli"
+    },
+    "disableVbs::true": {
+      "title": "Evet — VBS'nin kapatılmasını iste",
+      "desc": "Bellek Bütünlüğü'nü de kapatır. UEFI kilidi yoksa geri alınabilir."
+    },
+    "disableCpuMitigations::false": {
+      "title": "Hayır — önlemler kalsın",
+      "desc": "Önerilen.",
+      "badge": "En Güvenli"
+    },
+    "disableCpuMitigations::true": {
+      "title": "Evet — kapat",
+      "desc": "TrustedInstaller ve yeniden başlatma gerektirir."
+    },
+    "disableVulnerableDriverBlocklist::false": {
+      "title": "Hayır — engel listesi kalsın",
+      "desc": "Önerilen.",
+      "badge": "En Güvenli"
+    },
+    "disableVulnerableDriverBlocklist::true": {
+      "title": "Evet — engellenen sürücülere izin ver",
+      "desc": "Geri alınabilir."
+    },
     "disableWindowsUpdate::allow": {
-      "title": "Güncellemelere izin ver — Windows Update'i koru",
-      "desc": "Güvenlik yamaları ve özellik güncellemeleri normal şekilde kurulur. Tüm kullanıcılara önerilir.",
+      "title": "Windows Update'e dokunma",
+      "desc": "Önerilen.",
       "badge": "En Güvenli"
     },
     "disableWindowsUpdate::defer": {
-      "title": "Ertele — özellik güncellemelerini duraklat, güvenlik yamalarına izin ver",
-      "desc": "Özellik güncellemeleri 365 gün ertelenir. Güvenlik yamaları kurulmaya devam eder. Aktif saatlerde otomatik yeniden başlatma bastırılır.",
-      "badge": "Gelişmiş"
+      "title": "Sürüm yükseltmelerini bir yıl ertele",
+      "desc": "Güvenlik ve kalite güncellemeleri yüklenmeye devam eder. Oturum açıkken otomatik yeniden başlatma yok; erken erişim güncellemeleri yok."
+    },
+    "disableWindowsUpdate::pin": {
+      "title": "Mevcut Windows sürümümde kal",
+      "desc": "Güvenlik güncellemeleri devam eder. Sürümün desteği bitmeden sabitlemeyi kaldır."
     },
     "disableWindowsUpdate::block": {
-      "title": "Engelle — tüm Windows Update'i kapat",
-      "desc": "Windows Update servisi devre dışı bırakılır. Sen elle yeniden etkinleştirene kadar hiçbir türde yama kurulmaz.",
-      "badge": "Uzman"
+      "title": "Yalnızca elle güncelleme",
+      "desc": "Windows artık güncellemeleri otomatik indirmez veya yüklemez. Windows Update'i düzenli olarak kendin denetlemelisin."
     }
   }
 }

@@ -1,73 +1,4 @@
 {
-  "appx.remove-copilot": {
-    "registryChanges": [
-      {
-        "hive": "HKCU",
-        "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsCopilot",
-        "valueName": "TurnOffWindowsCopilot",
-        "value": 1,
-        "valueType": "DWord"
-      },
-      {
-        "hive": "HKLM",
-        "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsCopilot",
-        "valueName": "TurnOffWindowsCopilot",
-        "value": 1,
-        "valueType": "DWord"
-      }
-    ],
-    "packages": [
-      "Microsoft.Copilot",
-      "Microsoft.Windows.Ai.Copilot.Provider"
-    ]
-  },
-  "appx.remove-recall": {
-    "registryChanges": [
-      {
-        "hive": "HKCU",
-        "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsAI",
-        "valueName": "DisableAIDataAnalysis",
-        "value": 1,
-        "valueType": "DWord"
-      },
-      {
-        "hive": "HKLM",
-        "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsAI",
-        "valueName": "DisableAIDataAnalysis",
-        "value": 1,
-        "valueType": "DWord"
-      }
-    ]
-  },
-  "appx.remove-clipchamp": {
-    "packages": [
-      "Clipchamp.Clipchamp"
-    ]
-  },
-  "appx.remove-teams-consumer": {
-    "packages": [
-      "MicrosoftTeams",
-      "MSTeams"
-    ]
-  },
-  "appx.remove-family-safety": {
-    "packages": [
-      "MicrosoftCorporationII.MicrosoftFamily"
-    ]
-  },
-  "appx.remove-news": {
-    "packages": [
-      "Microsoft.BingNews",
-      "Microsoft.MicrosoftNews"
-    ]
-  },
-  "appx.remove-3d-apps": {
-    "packages": [
-      "Microsoft.Microsoft3DViewer",
-      "Microsoft.MSPaint  # Paint 3D (classic Paint is separate)",
-      "Microsoft.3DBuilder"
-    ]
-  },
   "appx.remove-outlook-new": {
     "packages": [
       "Microsoft.OutlookForWindows"
@@ -87,11 +18,6 @@
       "Microsoft.549981C3F5F10",
       "Microsoft.MixedReality.Portal",
       "Microsoft.SkypeApp"
-    ]
-  },
-  "appx.remove-cortana": {
-    "packages": [
-      "Microsoft.549981C3F5F10"
     ]
   },
   "appx.remove-office-hub": {
@@ -186,26 +112,11 @@
       }
     ]
   },
-  "appx.remove-widgets": {
-    "registryChanges": [
-      {
-        "hive": "HKLM",
-        "path": "SOFTWARE\\Policies\\Microsoft\\Dsh",
-        "valueName": "AllowNewsAndInterests",
-        "value": 0,
-        "valueType": "DWord"
-      }
-    ],
-    "packages": [
-      "MicrosoftWindows.Client.WebExperience"
-    ]
-  },
   "appx.remove-xbox-apps": {
     "packages": [
+      "Microsoft.GamingApp",
       "Microsoft.XboxApp",
-      "Microsoft.XboxGamingOverlay",
       "Microsoft.Xbox.TCUI",
-      "Microsoft.XboxGameCallableUI",
       "Microsoft.XboxSpeechToTextOverlay"
     ]
   },
@@ -234,29 +145,9 @@
       "Microsoft.MicrosoftStickyNotes"
     ]
   },
-  "appx.remove-feedback-hub": {
-    "packages": [
-      "Microsoft.WindowsFeedbackHub"
-    ]
-  },
-  "appx.remove-maps": {
-    "packages": [
-      "Microsoft.WindowsMaps"
-    ]
-  },
-  "appx.remove-get-help": {
-    "packages": [
-      "Microsoft.GetHelp"
-    ]
-  },
   "appx.remove-power-automate": {
     "packages": [
       "Microsoft.PowerAutomateDesktop"
-    ]
-  },
-  "appx.remove-solitaire": {
-    "packages": [
-      "Microsoft.MicrosoftSolitaireCollection"
     ]
   },
   "appx.remove-social-media": {
@@ -308,8 +199,7 @@
   },
   "appx.remove-shopping-amazon": {
     "packages": [
-      "Amazon.com.Amazon",
-      "AmazonVideo.PrimeVideo"
+      "Amazon.com.Amazon"
     ]
   },
   "appx.remove-ms-extended-bloat": {
@@ -326,12 +216,13 @@
       "Microsoft.Office.Sway",
       "Microsoft.OneConnect",
       "Microsoft.3DBuilder",
+      "Microsoft.Microsoft3DViewer",
+      "Microsoft.MSPaint",
       "Microsoft.NetworkSpeedTest",
       "Microsoft.MicrosoftPowerBIForWindows",
       "Microsoft.ZuneVideo",
       "MicrosoftCorporationII.MicrosoftFamily",
       "Microsoft.Print3D",
-      "Microsoft.Microsoft3DViewer",
       "Microsoft.Messaging",
       "Microsoft.BingFinance",
       "Microsoft.BingSports",
@@ -343,9 +234,7 @@
   },
   "appx.remove-copilot-app": {
     "packages": [
-      "Microsoft.Copilot",
-      "Microsoft.Windows.Ai.Copilot.Provider",
-      "Microsoft.Windows.AIHub"
+      "Microsoft.Copilot"
     ]
   },
   "network.disable-llmnr": {
@@ -355,46 +244,6 @@
         "path": "SOFTWARE\\Policies\\Microsoft\\Windows NT\\DNSClient",
         "valueName": "EnableMulticast",
         "value": 0,
-        "valueType": "DWord"
-      }
-    ]
-  },
-  "network.disable-smbv1": {
-    "registryChanges": [
-      {
-        "hive": "HKLM",
-        "path": "SYSTEM\\CurrentControlSet\\Services\\LanmanServer\\Parameters",
-        "valueName": "SMB1",
-        "value": 0,
-        "valueType": "DWord"
-      }
-    ]
-  },
-  "network.harden-windows-firewall-defaults": {
-    "registryChanges": [
-      {
-        "hive": "HKLM",
-        "path": "SYSTEM\\CurrentControlSet\\Services\\SharedAccess\\Parameters\\FirewallPolicy\\PublicProfile",
-        "valueName": "DefaultInboundAction",
-        "value": 1,
-        "valueType": "DWord"
-      },
-      {
-        "hive": "HKLM",
-        "path": "SYSTEM\\CurrentControlSet\\Services\\SharedAccess\\Parameters\\FirewallPolicy\\StandardProfile",
-        "valueName": "DefaultInboundAction",
-        "value": 1,
-        "valueType": "DWord"
-      }
-    ]
-  },
-  "perf.mmcss-system-responsiveness": {
-    "registryChanges": [
-      {
-        "hive": "HKLM",
-        "path": "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile",
-        "valueName": "SystemResponsiveness",
-        "value": 10,
         "valueType": "DWord"
       }
     ]
@@ -418,16 +267,47 @@
         "valueName": "ExcludeWUDriversInQualityUpdate",
         "value": 1,
         "valueType": "DWord"
-      }
-    ]
-  },
-  "cpu.win32-priority-separation": {
-    "registryChanges": [
+      },
       {
         "hive": "HKLM",
-        "path": "SYSTEM\\CurrentControlSet\\Control\\PriorityControl",
-        "valueName": "Win32PrioritySeparation",
-        "value": 38,
+        "path": "SOFTWARE\\Microsoft\\WindowsUpdate\\UX\\Settings",
+        "valueName": "ExcludeWUDriversInQualityUpdate",
+        "value": 1,
+        "valueType": "DWord"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\DriverSearching",
+        "valueName": "SearchOrderConfig",
+        "value": 0,
+        "valueType": "DWord"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\DriverSearching",
+        "valueName": "SearchOrderConfig",
+        "value": 0,
+        "valueType": "DWord"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\DriverSearching",
+        "valueName": "DontSearchWindowsUpdate",
+        "value": 1,
+        "valueType": "DWord"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Device Metadata",
+        "valueName": "PreventDeviceMetadataFromNetwork",
+        "value": 1,
+        "valueType": "DWord"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\Device Metadata",
+        "valueName": "PreventDeviceMetadataFromNetwork",
+        "value": 1,
         "valueType": "DWord"
       }
     ]
@@ -465,67 +345,14 @@
       }
     ]
   },
-  "perf.csrss-high-priority": {
+  "perf.disable-fault-tolerant-heap": {
     "registryChanges": [
       {
         "hive": "HKLM",
-        "path": "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\csrss.exe\\PerfOptions",
-        "valueName": "CpuPriorityClass",
-        "value": 4,
+        "path": "SOFTWARE\\Microsoft\\FTH",
+        "valueName": "Enabled",
+        "value": 0,
         "valueType": "DWord"
-      },
-      {
-        "hive": "HKLM",
-        "path": "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\csrss.exe\\PerfOptions",
-        "valueName": "IoPriority",
-        "value": 3,
-        "valueType": "DWord"
-      }
-    ]
-  },
-  "perf.mmcss-deep-tuning": {
-    "registryChanges": [
-      {
-        "hive": "HKLM",
-        "path": "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile",
-        "valueName": "SystemResponsiveness",
-        "value": 10,
-        "valueType": "DWord"
-      },
-      {
-        "hive": "HKLM",
-        "path": "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile",
-        "valueName": "NetworkThrottlingIndex",
-        "value": 4294967295,
-        "valueType": "DWord"
-      },
-      {
-        "hive": "HKLM",
-        "path": "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Games",
-        "valueName": "GPU Priority",
-        "value": 8,
-        "valueType": "DWord"
-      },
-      {
-        "hive": "HKLM",
-        "path": "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Games",
-        "valueName": "Priority",
-        "value": 6,
-        "valueType": "DWord"
-      },
-      {
-        "hive": "HKLM",
-        "path": "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Games",
-        "valueName": "Scheduling Category",
-        "value": "High",
-        "valueType": "String"
-      },
-      {
-        "hive": "HKLM",
-        "path": "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Games",
-        "valueName": "SFIO Priority",
-        "value": "High",
-        "valueType": "String"
       }
     ]
   },
@@ -536,20 +363,6 @@
         "path": "SYSTEM\\CurrentControlSet\\Control\\FileSystem",
         "valueName": "NtfsDisable8dot3NameCreation",
         "value": 1,
-        "valueType": "DWord"
-      },
-      {
-        "hive": "HKLM",
-        "path": "SYSTEM\\CurrentControlSet\\Control\\FileSystem",
-        "valueName": "NtfsMemoryUsage",
-        "value": 2,
-        "valueType": "DWord"
-      },
-      {
-        "hive": "HKLM",
-        "path": "SYSTEM\\CurrentControlSet\\Control\\FileSystem",
-        "valueName": "NtfsAllowExtendedCharacterIn8dot3Name",
-        "value": 0,
         "valueType": "DWord"
       }
     ]
@@ -579,28 +392,6 @@
       }
     ]
   },
-  "perf.gpu-energy-driver-disable": {
-    "registryChanges": [
-      {
-        "hive": "HKLM",
-        "path": "SYSTEM\\CurrentControlSet\\Services\\GpuEnergyDrv",
-        "valueName": "Start",
-        "value": 4,
-        "valueType": "DWord"
-      }
-    ]
-  },
-  "gpu.nvidia-disable-dynamic-pstate": {
-    "registryChanges": [
-      {
-        "hive": "HKLM",
-        "path": "SYSTEM\\CurrentControlSet\\Control\\Class\\{4d36e968-e325-11ce-bfc1-08002be10318}\\0000",
-        "valueName": "DisableDynamicPstate",
-        "value": 1,
-        "valueType": "DWord"
-      }
-    ]
-  },
   "gpu.tdr-delay": {
     "registryChanges": [
       {
@@ -619,46 +410,19 @@
       }
     ]
   },
-  "gpu.msi-mode": {
-    "registryChanges": [
-      {
-        "hive": "HKLM",
-        "path": "SYSTEM\\CurrentControlSet\\Enum\\PCI\\<GPU Device ID>\\<Instance>\\Device Parameters\\Interrupt Management\\MessageSignaledInterruptProperties",
-        "valueName": "MSISupported",
-        "value": 1,
-        "valueType": "DWord"
-      }
-    ]
-  },
-  "gpu.disable-nvidia-telemetry": {
-    "serviceChanges": [
-      {
-        "name": "NvTelemetryContainer",
-        "startupType": "Disabled"
-      }
-    ]
-  },
-  "gpu.disable-amd-telemetry": {
-    "serviceChanges": [
-      {
-        "name": "AMD External Events Utility",
-        "startupType": "Disabled"
-      }
-    ]
-  },
   "perf.disable-game-dvr": {
     "registryChanges": [
       {
         "hive": "HKCU",
-        "path": "System\\GameConfigStore",
-        "valueName": "GameDVR_Enabled",
+        "path": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\GameDVR",
+        "valueName": "AppCaptureEnabled",
         "value": 0,
         "valueType": "DWord"
       },
       {
-        "hive": "HKLM",
-        "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\GameDVR",
-        "valueName": "AllowGameDVR",
+        "hive": "HKCU",
+        "path": "System\\GameConfigStore",
+        "valueName": "GameDVR_Enabled",
         "value": 0,
         "valueType": "DWord"
       }
@@ -669,15 +433,15 @@
       {
         "hive": "HKCU",
         "path": "System\\GameConfigStore",
-        "valueName": "GameDVR_DXGIHonorFSEWindowsCompatible",
-        "value": 1,
+        "valueName": "GameDVR_FSEBehavior",
+        "value": 2,
         "valueType": "DWord"
       },
       {
         "hive": "HKCU",
         "path": "System\\GameConfigStore",
-        "valueName": "GameDVR_FSEBehaviorMode",
-        "value": 2,
+        "valueName": "GameDVR_DXGIHonorFSEWindowsCompatible",
+        "value": 1,
         "valueType": "DWord"
       }
     ]
@@ -706,49 +470,14 @@
     ]
   },
   "gpu.disable-amd-services": {
-    "registryChanges": [
+    "serviceChanges": [
       {
-        "hive": "HKLM",
-        "path": "SYSTEM\\CurrentControlSet\\Services\\AMD Crash Defender Service",
-        "valueName": "Start",
-        "value": 4,
-        "valueType": "DWord"
+        "name": "AMD Crash Defender Service",
+        "startupType": "Disabled"
       },
       {
-        "hive": "HKLM",
-        "path": "SYSTEM\\CurrentControlSet\\Services\\AUEPLauncher",
-        "valueName": "Start",
-        "value": 4,
-        "valueType": "DWord"
-      }
-    ]
-  },
-  "perf.disable-gamebar-presence": {
-    "registryChanges": [
-      {
-        "hive": "HKLM",
-        "path": "SOFTWARE\\Microsoft\\WindowsRuntime\\ActivatableClassId\\Windows.Gaming.GameBar.PresenceServer.Internal.PresenceWriter",
-        "valueName": "ActivationType",
-        "value": 0,
-        "valueType": "DWord"
-      }
-    ]
-  },
-  "perf.legacy-flip-presentation": {
-    "registryChanges": [
-      {
-        "hive": "HKCU",
-        "path": "System\\GameConfigStore",
-        "valueName": "GameDVR_DXGIHonorFSEWindowsCompatible",
-        "value": 1,
-        "valueType": "DWord"
-      },
-      {
-        "hive": "HKCU",
-        "path": "System\\GameConfigStore",
-        "valueName": "GameDVR_FSEBehavior",
-        "value": 2,
-        "valueType": "DWord"
+        "name": "AUEPLauncher",
+        "startupType": "Disabled"
       }
     ]
   },
@@ -780,77 +509,6 @@
       }
     ]
   },
-  "scheduler.mmcss-gaming-profile": {
-    "registryChanges": [
-      {
-        "hive": "HKLM",
-        "path": "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Games",
-        "valueName": "GPU Priority",
-        "value": 8,
-        "valueType": "DWord"
-      },
-      {
-        "hive": "HKLM",
-        "path": "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Games",
-        "valueName": "Priority",
-        "value": 6,
-        "valueType": "DWord"
-      },
-      {
-        "hive": "HKLM",
-        "path": "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Games",
-        "valueName": "Scheduling Category",
-        "value": "High",
-        "valueType": "String"
-      },
-      {
-        "hive": "HKLM",
-        "path": "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Games",
-        "valueName": "Clock Rate",
-        "value": 10000,
-        "valueType": "DWord"
-      },
-      {
-        "hive": "HKLM",
-        "path": "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Games",
-        "valueName": "Affinity",
-        "value": 0,
-        "valueType": "DWord"
-      },
-      {
-        "hive": "HKLM",
-        "path": "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile\\Tasks\\Games",
-        "valueName": "Background Only",
-        "value": "False",
-        "valueType": "String"
-      },
-      {
-        "hive": "HKLM",
-        "path": "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile",
-        "valueName": "NetworkThrottlingIndex",
-        "value": 4294967295,
-        "valueType": "DWord"
-      },
-      {
-        "hive": "HKLM",
-        "path": "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile",
-        "valueName": "SystemResponsiveness",
-        "value": 10,
-        "valueType": "DWord"
-      }
-    ]
-  },
-  "perf.clear-page-file-on-shutdown": {
-    "registryChanges": [
-      {
-        "hive": "HKLM",
-        "path": "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management",
-        "valueName": "ClearPageFileAtShutdown",
-        "value": 1,
-        "valueType": "DWord"
-      }
-    ]
-  },
   "perf.disable-prefetch": {
     "registryChanges": [
       {
@@ -877,18 +535,6 @@
         "valueName": "SvcHostSplitThresholdInKB",
         "value": 4294967295,
         "valueType": "DWord"
-      }
-    ]
-  },
-  "power.high-performance-plan": {
-    "powerChanges": [
-      {
-        "settingPath": "SCHEME_CURRENT\\SUB_PROCESSOR\\PROCTHROTTLEMIN",
-        "newValue": "100"
-      },
-      {
-        "settingPath": "SCHEME_CURRENT\\SUB_PROCESSOR\\PROCTHROTTLEMAX",
-        "newValue": "100"
       }
     ]
   },
@@ -948,15 +594,6 @@
       }
     ]
   },
-  "power.disable-device-power-saving": {
-    "powerChanges": [
-      {
-        "settingPath": "device_power_management",
-        "value": "disabled",
-        "scope": "all_devices"
-      }
-    ]
-  },
   "power.disable-power-throttling": {
     "registryChanges": [
       {
@@ -979,7 +616,15 @@
       }
     ]
   },
-  "storage.enable-write-caching": {
+  "storage.disable-indexing": {
+    "serviceChanges": [
+      {
+        "name": "WSearch",
+        "startupType": "Disabled"
+      }
+    ]
+  },
+  "storage.disable-write-cache-flushing": {
     "registryChanges": [
       {
         "hive": "HKLM",
@@ -993,64 +638,6 @@
         "path": "SYSTEM\\CurrentControlSet\\Enum\\SCSI\\<device>\\<instance>\\Device Parameters\\Disk",
         "valueName": "CacheIsPowerProtected",
         "value": 1,
-        "valueType": "DWord"
-      }
-    ]
-  },
-  "storage.disable-indexing": {
-    "serviceChanges": [
-      {
-        "name": "WSearch",
-        "startupType": "Disabled"
-      }
-    ]
-  },
-  "personalize.dark-mode": {
-    "registryChanges": [
-      {
-        "hive": "HKCU",
-        "path": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize",
-        "valueName": "SystemUsesLightTheme",
-        "value": 0,
-        "valueType": "DWord"
-      },
-      {
-        "hive": "HKCU",
-        "path": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize",
-        "valueName": "AppsUseLightTheme",
-        "value": 0,
-        "valueType": "DWord"
-      }
-    ]
-  },
-  "personalize.accent-color-black": {
-    "registryChanges": [
-      {
-        "hive": "HKCU",
-        "path": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Accent",
-        "valueName": "AccentColorMenu",
-        "value": 0,
-        "valueType": "DWord"
-      },
-      {
-        "hive": "HKCU",
-        "path": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Accent",
-        "valueName": "StartColorMenu",
-        "value": 0,
-        "valueType": "DWord"
-      },
-      {
-        "hive": "HKCU",
-        "path": "SOFTWARE\\Microsoft\\Windows\\DWM",
-        "valueName": "ColorPrevalence",
-        "value": 0,
-        "valueType": "DWord"
-      },
-      {
-        "hive": "HKCU",
-        "path": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize",
-        "valueName": "ColorPrevalence",
-        "value": 0,
         "valueType": "DWord"
       }
     ]
@@ -1075,13 +662,6 @@
   },
   "privacy.disable-activity-feed": {
     "registryChanges": [
-      {
-        "hive": "HKLM",
-        "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\System",
-        "valueName": "EnableActivityFeed",
-        "value": 0,
-        "valueType": "DWord"
-      },
       {
         "hive": "HKLM",
         "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\System",
@@ -1115,17 +695,24 @@
         "valueType": "DWord"
       },
       {
-        "hive": "HKCU",
-        "path": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
-        "valueName": "SilentInstalledAppsEnabled",
-        "value": 0,
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent",
+        "valueName": "DisableCloudOptimizedContent",
+        "value": 1,
+        "valueType": "DWord"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent",
+        "valueName": "DisableConsumerAccountStateContent",
+        "value": 1,
         "valueType": "DWord"
       },
       {
         "hive": "HKCU",
-        "path": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
-        "valueName": "SystemPaneSuggestionsEnabled",
-        "value": 0,
+        "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent",
+        "valueName": "DisableThirdPartySuggestions",
+        "value": 1,
         "valueType": "DWord"
       }
     ]
@@ -1148,6 +735,17 @@
         "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\System",
         "valueName": "EnableCdp",
         "value": 0,
+        "valueType": "DWord"
+      }
+    ]
+  },
+  "privacy.disable-wpbt": {
+    "registryChanges": [
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Control\\Session Manager",
+        "valueName": "DisableWpbtExecution",
+        "value": 1,
         "valueType": "DWord"
       }
     ]
@@ -1185,27 +783,90 @@
       }
     ]
   },
-  "privacy.disable-cloud-content-policy": {
+  "privacy.brave-debloat": {
     "registryChanges": [
       {
         "hive": "HKLM",
-        "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent",
-        "valueName": "DisableThirdPartySuggestions",
+        "path": "SOFTWARE\\Policies\\BraveSoftware\\Brave",
+        "valueName": "BraveRewardsDisabled",
         "value": 1,
         "valueType": "DWord"
       },
       {
         "hive": "HKLM",
-        "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent",
-        "valueName": "DisableCloudOptimizedContent",
+        "path": "SOFTWARE\\Policies\\BraveSoftware\\Brave",
+        "valueName": "BraveWalletDisabled",
         "value": 1,
         "valueType": "DWord"
       },
       {
         "hive": "HKLM",
-        "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent",
-        "valueName": "DisableWindowsConsumerFeatures",
+        "path": "SOFTWARE\\Policies\\BraveSoftware\\Brave",
+        "valueName": "BraveVPNDisabled",
         "value": 1,
+        "valueType": "DWord"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Policies\\BraveSoftware\\Brave",
+        "valueName": "BraveAIChatEnabled",
+        "value": 0,
+        "valueType": "DWord"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Policies\\BraveSoftware\\Brave",
+        "valueName": "BraveStatsPingEnabled",
+        "value": 0,
+        "valueType": "DWord"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Policies\\BraveSoftware\\Brave",
+        "valueName": "BraveNewsDisabled",
+        "value": 1,
+        "valueType": "DWord"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Policies\\BraveSoftware\\Brave",
+        "valueName": "BraveTalkDisabled",
+        "value": 1,
+        "valueType": "DWord"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Policies\\BraveSoftware\\Brave",
+        "valueName": "TorDisabled",
+        "value": 1,
+        "valueType": "DWord"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Policies\\BraveSoftware\\Brave",
+        "valueName": "BraveP3AEnabled",
+        "value": 0,
+        "valueType": "DWord"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Policies\\BraveSoftware\\Brave",
+        "valueName": "UrlKeyedAnonymizedDataCollectionEnabled",
+        "value": 0,
+        "valueType": "DWord"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Policies\\BraveSoftware\\Brave",
+        "valueName": "SafeBrowsingExtendedReportingEnabled",
+        "value": 0,
+        "valueType": "DWord"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Policies\\BraveSoftware\\Brave",
+        "valueName": "MetricsReportingEnabled",
+        "value": 0,
         "valueType": "DWord"
       }
     ]
@@ -1261,13 +922,10 @@
     ]
   },
   "privacy.disable-ai-svc-autostart": {
-    "registryChanges": [
+    "serviceChanges": [
       {
-        "hive": "HKLM",
-        "path": "SYSTEM\\CurrentControlSet\\Services\\WSAIFabricSvc",
-        "valueName": "Start",
-        "value": 3,
-        "valueType": "DWord"
+        "name": "WSAIFabricSvc",
+        "startupType": "Disabled"
       }
     ]
   },
@@ -1404,16 +1062,12 @@
         "valueName": "RestrictImplicitInkCollection",
         "value": 1,
         "valueType": "DWord"
-      }
-    ]
-  },
-  "privacy.disable-device-monitoring": {
-    "registryChanges": [
+      },
       {
         "hive": "HKLM",
-        "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\DeviceInstall\\Settings",
-        "valueName": "DisableSystemRestore",
-        "value": 1,
+        "path": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\TextInput",
+        "valueName": "AllowLinguisticDataCollection",
+        "value": 0,
         "valueType": "DWord"
       }
     ]
@@ -1499,6 +1153,34 @@
         "valueName": "AllowTelemetry",
         "value": 0,
         "valueType": "DWord"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection",
+        "valueName": "LimitDiagnosticLogCollection",
+        "value": 1,
+        "valueType": "DWord"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection",
+        "valueName": "LimitDumpCollection",
+        "value": 1,
+        "valueType": "DWord"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection",
+        "valueName": "LimitEnhancedDiagnosticDataWindowsAnalytics",
+        "value": 0,
+        "valueType": "DWord"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection",
+        "valueName": "DoNotShowFeedbackNotifications",
+        "value": 1,
+        "valueType": "DWord"
       }
     ]
   },
@@ -1509,6 +1191,27 @@
         "path": "SOFTWARE\\Microsoft\\SQMClient\\Windows",
         "valueName": "CEIPEnable",
         "value": 0,
+        "valueType": "DWord"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Policies\\Microsoft\\SQMClient\\Windows",
+        "valueName": "CEIPEnable",
+        "value": 0,
+        "valueType": "DWord"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Wow6432Node\\Microsoft\\VSCommon\\15.0\\SQM",
+        "valueName": "OptIn",
+        "value": 0,
+        "valueType": "DWord"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Policies\\Microsoft\\Messenger\\Client",
+        "valueName": "CEIP",
+        "value": 2,
         "valueType": "DWord"
       }
     ]
@@ -1521,6 +1224,27 @@
         "valueName": "Disabled",
         "value": 1,
         "valueType": "DWord"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Error Reporting",
+        "valueName": "Disabled",
+        "value": 1,
+        "valueType": "DWord"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Policies\\Microsoft\\PCHealth\\ErrorReporting",
+        "valueName": "DoReport",
+        "value": 0,
+        "valueType": "DWord"
+      },
+      {
+        "hive": "HKCU",
+        "path": "SOFTWARE\\Microsoft\\Windows\\Windows Error Reporting",
+        "valueName": "DontSendAdditionalData",
+        "value": 1,
+        "valueType": "DWord"
       }
     ]
   },
@@ -1531,6 +1255,13 @@
         "path": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\AdvertisingInfo",
         "valueName": "Enabled",
         "value": 0,
+        "valueType": "DWord"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\AdvertisingInfo",
+        "valueName": "DisabledByGroupPolicy",
+        "value": 1,
         "valueType": "DWord"
       }
     ]
@@ -1630,13 +1361,6 @@
     "registryChanges": [
       {
         "hive": "HKLM",
-        "path": "SOFTWARE\\Policies\\Microsoft\\Windows Defender",
-        "valueName": "DisableAntiSpyware",
-        "value": 1,
-        "valueType": "DWord"
-      },
-      {
-        "hive": "HKLM",
         "path": "SOFTWARE\\Policies\\Microsoft\\Windows Defender\\Real-Time Protection",
         "valueName": "DisableRealtimeMonitoring",
         "value": 1,
@@ -1660,6 +1384,13 @@
         "hive": "HKLM",
         "path": "SOFTWARE\\Policies\\Microsoft\\Windows Defender\\Real-Time Protection",
         "valueName": "DisableScanOnRealtimeEnable",
+        "value": 1,
+        "valueType": "DWord"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Policies\\Microsoft\\Windows Defender\\Real-Time Protection",
+        "valueName": "DisableIOAVProtection",
         "value": 1,
         "valueType": "DWord"
       }
@@ -1694,136 +1425,31 @@
       },
       {
         "hive": "HKLM",
+        "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\DeviceGuard",
+        "valueName": "EnableVirtualizationBasedSecurity",
+        "value": 0,
+        "valueType": "DWord"
+      },
+      {
+        "hive": "HKLM",
         "path": "SYSTEM\\CurrentControlSet\\Control\\DeviceGuard\\Scenarios\\HypervisorEnforcedCodeIntegrity",
         "valueName": "Enabled",
         "value": 0,
         "valueType": "DWord"
-      }
-    ]
-  },
-  "security.full-defender-disable": {
-    "registryChanges": [
-      {
-        "hive": "HKLM",
-        "path": "SOFTWARE\\Policies\\Microsoft\\Windows Defender",
-        "valueName": "DisableAntiSpyware",
-        "value": 1,
-        "valueType": "DWord"
       },
       {
         "hive": "HKLM",
-        "path": "SOFTWARE\\Policies\\Microsoft\\Windows Defender\\Real-Time Protection",
-        "valueName": "DisableRealtimeMonitoring",
-        "value": 1,
-        "valueType": "DWord"
-      },
-      {
-        "hive": "HKLM",
-        "path": "SOFTWARE\\Policies\\Microsoft\\Windows Defender\\Real-Time Protection",
-        "valueName": "DisableBehaviorMonitoring",
-        "value": 1,
-        "valueType": "DWord"
-      },
-      {
-        "hive": "HKLM",
-        "path": "SOFTWARE\\Policies\\Microsoft\\Windows Defender\\Real-Time Protection",
-        "valueName": "DisableOnAccessProtection",
-        "value": 1,
-        "valueType": "DWord"
-      },
-      {
-        "hive": "HKLM",
-        "path": "SOFTWARE\\Policies\\Microsoft\\Windows Defender\\Real-Time Protection",
-        "valueName": "DisableScanOnRealtimeEnable",
-        "value": 1,
-        "valueType": "DWord"
-      },
-      {
-        "hive": "HKLM",
-        "path": "SOFTWARE\\Microsoft\\Windows Defender\\Spynet",
-        "valueName": "SpyNetReporting",
+        "path": "SYSTEM\\CurrentControlSet\\Control\\Lsa",
+        "valueName": "LsaCfgFlags",
         "value": 0,
         "valueType": "DWord"
       },
       {
         "hive": "HKLM",
-        "path": "SOFTWARE\\Microsoft\\Windows Defender\\Spynet",
-        "valueName": "SubmitSamplesConsent",
+        "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\DeviceGuard",
+        "valueName": "LsaCfgFlags",
         "value": 0,
         "valueType": "DWord"
-      },
-      {
-        "hive": "HKLM",
-        "path": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer",
-        "valueName": "SmartScreenEnabled",
-        "value": "Off",
-        "valueType": "String"
-      },
-      {
-        "hive": "HKCU",
-        "path": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\AppHost",
-        "valueName": "EnableWebContentEvaluation",
-        "value": 0,
-        "valueType": "DWord"
-      },
-      {
-        "hive": "HKCU",
-        "path": "SOFTWARE\\Microsoft\\Edge\\SmartScreenEnabled",
-        "valueName": "(Default)",
-        "value": 0,
-        "valueType": "DWord"
-      },
-      {
-        "hive": "HKLM",
-        "path": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\WTDS\\Components",
-        "valueName": "ServiceEnabled",
-        "value": 0,
-        "valueType": "DWord"
-      },
-      {
-        "hive": "HKLM",
-        "path": "SYSTEM\\CurrentControlSet\\Control\\CI\\Policy",
-        "valueName": "VerifiedAndReputablePolicyState",
-        "value": 0,
-        "valueType": "DWord"
-      }
-    ],
-    "serviceChanges": [
-      {
-        "name": "WinDefend",
-        "startupType": "Disabled"
-      },
-      {
-        "name": "WdFilter",
-        "startupType": "Disabled"
-      },
-      {
-        "name": "WdBoot",
-        "startupType": "Disabled"
-      },
-      {
-        "name": "WdNisSvc",
-        "startupType": "Disabled"
-      },
-      {
-        "name": "WdNisDrv",
-        "startupType": "Disabled"
-      },
-      {
-        "name": "SecurityHealthService",
-        "startupType": "Disabled"
-      },
-      {
-        "name": "wscsvc",
-        "startupType": "Disabled"
-      },
-      {
-        "name": "Sense",
-        "startupType": "Disabled"
-      },
-      {
-        "name": "MsSecCore",
-        "startupType": "Disabled"
       }
     ]
   },
@@ -1834,24 +1460,6 @@
         "path": "SYSTEM\\CurrentControlSet\\Control\\CI\\Config",
         "valueName": "VulnerableDriverBlocklistEnable",
         "value": 0,
-        "valueType": "DWord"
-      }
-    ]
-  },
-  "security.reduce-ssbd-mitigation": {
-    "registryChanges": [
-      {
-        "hive": "HKLM",
-        "path": "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management",
-        "valueName": "FeatureSettingsOverride",
-        "value": 8,
-        "valueType": "DWord"
-      },
-      {
-        "hive": "HKLM",
-        "path": "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management",
-        "valueName": "FeatureSettingsOverrideMask",
-        "value": 3,
         "valueType": "DWord"
       }
     ]
@@ -1921,17 +1529,6 @@
       }
     ]
   },
-  "security.disable-bitlocker-auto-encrypt": {
-    "registryChanges": [
-      {
-        "hive": "HKLM",
-        "path": "SYSTEM\\CurrentControlSet\\Control\\BitLocker",
-        "valueName": "PreventDeviceEncryption",
-        "value": 1,
-        "valueType": "DWord"
-      }
-    ]
-  },
   "system.disable-update-auto-restart": {
     "registryChanges": [
       {
@@ -1957,6 +1554,17 @@
         "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate",
         "valueName": "DeferFeatureUpdatesPeriodInDays",
         "value": 365,
+        "valueType": "DWord"
+      }
+    ]
+  },
+  "system.disable-auto-update": {
+    "registryChanges": [
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate\\AU",
+        "valueName": "NoAutoUpdate",
+        "value": 1,
         "valueType": "DWord"
       }
     ]
@@ -2046,26 +1654,6 @@
       }
     ]
   },
-  "services.disable-alljoyn-router": {
-    "serviceChanges": [
-      {
-        "name": "AJRouter",
-        "startupType": "Disabled"
-      }
-    ]
-  },
-  "services.disable-mixed-reality": {
-    "serviceChanges": [
-      {
-        "name": "MixedRealityOpenXRSvc",
-        "startupType": "Disabled"
-      },
-      {
-        "name": "spectrum",
-        "startupType": "Disabled"
-      }
-    ]
-  },
   "services.disable-geolocation": {
     "serviceChanges": [
       {
@@ -2102,26 +1690,10 @@
       }
     ]
   },
-  "services.disable-touch-keyboard": {
-    "serviceChanges": [
-      {
-        "name": "TabletInputService",
-        "startupType": "Disabled"
-      }
-    ]
-  },
   "services.disable-wer-service": {
     "serviceChanges": [
       {
         "name": "WerSvc",
-        "startupType": "Disabled"
-      }
-    ]
-  },
-  "services.disable-push-notifications": {
-    "serviceChanges": [
-      {
-        "name": "WpnUserService",
         "startupType": "Disabled"
       }
     ]
@@ -2166,22 +1738,6 @@
       }
     ]
   },
-  "services.disable-sleep-study": {
-    "serviceChanges": [
-      {
-        "name": "SleepStudy",
-        "startupType": "Disabled"
-      }
-    ]
-  },
-  "services.disable-tiledatamodelsvc": {
-    "serviceChanges": [
-      {
-        "name": "tiledatamodelsvc",
-        "startupType": "Disabled"
-      }
-    ]
-  },
   "services.disable-wisvc": {
     "serviceChanges": [
       {
@@ -2202,10 +1758,6 @@
     "serviceChanges": [
       {
         "name": "MapsBroker",
-        "startupType": "Disabled"
-      },
-      {
-        "name": "lfsvc",
         "startupType": "Disabled"
       }
     ]
@@ -2484,25 +2036,7 @@
       {
         "hive": "HKLM",
         "path": "SOFTWARE\\Policies\\Microsoft\\Edge",
-        "valueName": "DefaultBrowserSettingsCampaignEnabled",
-        "value": 0,
-        "valueType": "DWord"
-      },
-      {
-        "hive": "HKLM",
-        "path": "SOFTWARE\\Policies\\Microsoft\\Edge",
         "valueName": "ShowAcrobatSubscriptionButton",
-        "value": 0,
-        "valueType": "DWord"
-      }
-    ]
-  },
-  "shell.disable-settings-ads": {
-    "registryChanges": [
-      {
-        "hive": "HKCU",
-        "path": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
-        "valueName": "ShowSettingsHomeAds",
         "value": 0,
         "valueType": "DWord"
       }
@@ -2588,6 +2122,35 @@
       }
     ]
   },
+  "shell.remove-home-gallery": {
+    "registryChanges": [
+      {
+        "hive": "HKCU",
+        "path": "Software\\Classes\\CLSID\\{f874310e-b6b7-47dc-bc84-b9e6b38f5903}",
+        "valueName": "System.IsPinnedToNameSpaceTree",
+        "value": 0,
+        "valueType": "DWord"
+      },
+      {
+        "hive": "HKCU",
+        "path": "Software\\Classes\\CLSID\\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}",
+        "valueName": "System.IsPinnedToNameSpaceTree",
+        "value": 0,
+        "valueType": "DWord"
+      }
+    ]
+  },
+  "shell.enable-long-paths": {
+    "registryChanges": [
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Control\\FileSystem",
+        "valueName": "LongPathsEnabled",
+        "value": 1,
+        "valueType": "DWord"
+      }
+    ]
+  },
   "shell.disable-search-highlights": {
     "registryChanges": [
       {
@@ -2624,9 +2187,9 @@
   "shell.hide-widgets-button": {
     "registryChanges": [
       {
-        "hive": "HKCU",
-        "path": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
-        "valueName": "TaskbarDa",
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Policies\\Microsoft\\Dsh",
+        "valueName": "AllowNewsAndInterests",
         "value": 0,
         "valueType": "DWord"
       }
@@ -2635,9 +2198,9 @@
   "shell.reduce-search-box": {
     "registryChanges": [
       {
-        "hive": "HKCU",
-        "path": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Search",
-        "valueName": "SearchboxTaskbarMode",
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Search",
+        "valueName": "SearchOnTaskbarMode",
         "value": 1,
         "valueType": "DWord"
       }
@@ -2648,13 +2211,6 @@
       {
         "hive": "HKCU",
         "path": "Software\\Policies\\Microsoft\\Windows\\WindowsCopilot",
-        "valueName": "TurnOffWindowsCopilot",
-        "value": 1,
-        "valueType": "DWord"
-      },
-      {
-        "hive": "HKLM",
-        "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsCopilot",
         "valueName": "TurnOffWindowsCopilot",
         "value": 1,
         "valueType": "DWord"
@@ -2701,80 +2257,12 @@
       }
     ]
   },
-  "display.disable-game-bar": {
+  "shell.reduce-search-box-user": {
     "registryChanges": [
       {
         "hive": "HKCU",
-        "path": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\GameDVR",
-        "valueName": "AppCaptureEnabled",
-        "value": 0,
-        "valueType": "DWord"
-      },
-      {
-        "hive": "HKLM",
-        "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\GameDVR",
-        "valueName": "AllowGameDVR",
-        "value": 0,
-        "valueType": "DWord"
-      },
-      {
-        "hive": "HKCU",
-        "path": "System\\GameConfigStore",
-        "valueName": "GameDVR_Enabled",
-        "value": 0,
-        "valueType": "DWord"
-      }
-    ]
-  },
-  "display.disable-pointer-acceleration": {
-    "registryChanges": [
-      {
-        "hive": "HKCU",
-        "path": "Control Panel\\Mouse",
-        "valueName": "MouseSpeed",
-        "value": "0",
-        "valueType": "String"
-      },
-      {
-        "hive": "HKCU",
-        "path": "Control Panel\\Mouse",
-        "valueName": "MouseThreshold1",
-        "value": "0",
-        "valueType": "String"
-      },
-      {
-        "hive": "HKCU",
-        "path": "Control Panel\\Mouse",
-        "valueName": "MouseThreshold2",
-        "value": "0",
-        "valueType": "String"
-      }
-    ]
-  },
-  "audio.disable-enhancements": {
-    "registryChanges": [
-      {
-        "hive": "HKLM",
-        "path": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\MMDevices\\Audio\\Render",
-        "valueName": "{1da5d803-d492-4edd-8c23-e0c0ffee7f0e},5",
-        "value": 0,
-        "valueType": "DWord"
-      }
-    ]
-  },
-  "audio.exclusive-mode": {
-    "registryChanges": [
-      {
-        "hive": "HKLM",
-        "path": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\MMDevices\\Audio\\Render",
-        "valueName": "{b3f8fa53-0004-438e-9003-51a46e139bfc},3",
-        "value": 1,
-        "valueType": "DWord"
-      },
-      {
-        "hive": "HKLM",
-        "path": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\MMDevices\\Audio\\Render",
-        "valueName": "{b3f8fa53-0004-438e-9003-51a46e139bfc},4",
+        "path": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Search",
+        "valueName": "SearchboxTaskbarMode",
         "value": 1,
         "valueType": "DWord"
       }
@@ -2812,17 +2300,10 @@
   "startup.disable-background-apps": {
     "registryChanges": [
       {
-        "hive": "HKCU",
-        "path": "Software\\Microsoft\\Windows\\CurrentVersion\\BackgroundAccessApplications",
-        "valueName": "GlobalUserDisabled",
-        "value": 1,
-        "valueType": "DWord"
-      },
-      {
-        "hive": "HKCU",
-        "path": "Software\\Microsoft\\Windows\\CurrentVersion\\Search",
-        "valueName": "BackgroundAppGlobalToggle",
-        "value": 0,
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\AppPrivacy",
+        "valueName": "LetAppsRunInBackground",
+        "value": 2,
         "valueType": "DWord"
       }
     ]
@@ -2838,28 +2319,6 @@
       }
     ]
   },
-  "startup.disable-automatic-maintenance": {
-    "registryChanges": [
-      {
-        "hive": "HKLM",
-        "path": "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Schedule\\Maintenance",
-        "valueName": "MaintenanceDisabled",
-        "value": 1,
-        "valueType": "DWord"
-      }
-    ]
-  },
-  "startup.disable-gamebar-presence": {
-    "registryChanges": [
-      {
-        "hive": "HKLM",
-        "path": "SOFTWARE\\Microsoft\\WindowsRuntime\\ActivatableClassId\\Windows.Gaming.GameBar.PresenceServer.Internal.PresenceWriter",
-        "valueName": "ActivationType",
-        "value": 0,
-        "valueType": "DWord"
-      }
-    ]
-  },
   "startup.disable-autoplay": {
     "registryChanges": [
       {
@@ -2867,6 +2326,20 @@
         "path": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer",
         "valueName": "NoDriveTypeAutoRun",
         "value": 255,
+        "valueType": "DWord"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer",
+        "valueName": "NoAutorun",
+        "value": 1,
+        "valueType": "DWord"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\Explorer",
+        "valueName": "NoAutoplayfornonVolume",
+        "value": 1,
         "valueType": "DWord"
       },
       {
@@ -2880,6 +2353,13 @@
   },
   "startup.enable-game-mode": {
     "registryChanges": [
+      {
+        "hive": "HKCU",
+        "path": "SOFTWARE\\Microsoft\\GameBar",
+        "valueName": "AllowAutoGameMode",
+        "value": 1,
+        "valueType": "DWord"
+      },
       {
         "hive": "HKCU",
         "path": "SOFTWARE\\Microsoft\\GameBar",

@@ -1,101 +1,81 @@
 # Performance: Memory Management
-
 module: performance.memory
 name: "Memory Management"
-description: "Optimize memory subsystem: NDU leak fix, prefetch, compression, svchost split, page file"
+description: "Memory compression, Prefetch and svchost grouping (opt-in)"
 category: performance
 
 actions:
   - id: memory.disable-compression
     name: "Disable Memory Compression"
     description: "Disable the Windows memory compression agent that compresses idle pages instead of writing to page file"
-    rationale: "Memory compression trades CPU cycles for reduced page file I/O. On systems with ample RAM (16GB+), disabling reduces CPU overhead and micro-stutter. On low-RAM systems, keep enabled."
-    risk: low
-    tier: free
+    rationale: "Memory compression trades a little CPU for less paging. On systems with plenty of RAM some users prefer it off; on 16 GB or less keep it on. Measure before/after with a frame-time capture (PresentMon or CapFrameX, several runs) — no repeatable gain is promised."
+    risk: "low"
+    tier: "free"
     default: false
     requiresReboot: true
     reversible: true
     estimatedSeconds: 5
     blockedProfiles:
-      - low_spec_system
-      - vm_cautious
+      - "low_spec_system"
+      - "vm_cautious"
     powerShellCommands:
-      - "Disable-MMAgent -MemoryCompression"
-
-  - id: perf.clear-page-file-on-shutdown
-    name: "Clear Page File on Shutdown"
-    description: "Zero out the page file contents on shutdown to prevent data remnants in virtual memory"
-    rationale: "The page file can contain sensitive data from application memory. Clearing adds security at the cost of slightly longer shutdown."
-    risk: safe
-    tier: free
-    default: false
-    requiresReboot: false
-    reversible: true
-    estimatedSeconds: 2
-    blockedProfiles: []
-    registryChanges:
-      - hive: HKLM
-        path: "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management"
-        valueName: ClearPageFileAtShutdown
-        value: 1
-        valueType: DWord
+      - |-
+        $svc = Get-Service SysMain -ErrorAction Stop
+        $mode = (Get-CimInstance Win32_Service -Filter "Name='SysMain'").StartMode
+        if ($svc.Status -ne 'Running') {
+          if ($mode -eq 'Disabled') { Set-Service SysMain -StartupType Manual }
+          Start-Service SysMain
+        }
+        Disable-MMAgent -MemoryCompression
+        if ($mode -eq 'Disabled') {
+          Stop-Service SysMain -Force -ErrorAction SilentlyContinue
+          Set-Service SysMain -StartupType Disabled
+        }
 
   - id: perf.disable-prefetch
     name: "Disable Prefetch"
     description: "Disable Prefetch/ReadyBoot subsystem that preloads application data on boot"
-    rationale: "Prefetch creates .pf files and performs background I/O during boot. On NVMe/SSD systems, app launch is already fast enough that prefetch adds overhead without benefit."
-    risk: low
-    tier: free
+    rationale: "Prefetch speeds up launches mainly on HDDs. PC-Tuning (11.18) only suggests disabling it when no HDD is present, so it is skipped otherwise. Expect no FPS change."
+    risk: "low"
+    tier: "free"
     default: false
     requiresReboot: true
     reversible: true
     estimatedSeconds: 3
     blockedProfiles:
-      - work_pc
+      - "work_pc"
+    requires:
+      noHdd: true
     registryChanges:
-      - hive: HKLM
+      - hive: "HKLM"
         path: "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management\\PrefetchParameters"
-        valueName: EnablePrefetcher
+        valueName: "EnablePrefetcher"
         value: 0
-        valueType: DWord
-      - hive: HKLM
+        valueType: "DWord"
+      - hive: "HKLM"
         path: "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management\\PrefetchParameters"
-        valueName: EnableSuperfetch
+        valueName: "EnableSuperfetch"
         value: 0
-        valueType: DWord
+        valueType: "DWord"
 
   - id: perf.svchost-split-threshold
     name: "Optimize Svchost Split Threshold"
-    description: "Group Windows background services into fewer svchost.exe processes by raising the split threshold above any RAM size — works the same on 8GB or 128GB machines"
-    rationale: "On systems with 3.5GB+ RAM, Windows runs most services in their own svchost.exe for isolation, which creates dozens of small processes. Setting SvcHostSplitThresholdInKB to its maximum (0xFFFFFFFF / 4294967295 KB) tells Windows to group them again — fewer processes and less memory overhead. RAM-independent (the old fixed 64GB value only worked on <=64GB systems). Reversible: the original threshold is restored on rollback. Safe on low-RAM machines (grouping reduces overhead)."
-    risk: low
-    tier: free
+    description: "Stop Windows from splitting services into separate svchost.exe processes by raising the split threshold above your RAM size (0xFFFFFFFF). Fewer processes, slightly less memory."
+    rationale: "A threshold above physical memory disables svchost splitting. winutil (2f0bdc8, #5115) found this can leave XboxGipSvc stuck \"Starting\" (Xbox controllers), so it is blocked on gaming profiles and mainly useful on PCs with 12 GB of RAM or less."
+    risk: "low"
+    tier: "free"
     default: false
     requiresReboot: true
     reversible: true
     estimatedSeconds: 2
     blockedProfiles:
-      - vm_cautious
+      - "vm_cautious"
+      - "gaming_desktop"
+      - "gaming_laptop"
+    warningMessage: "May leave Xbox accessory services (controllers) stuck on \"Starting\" and reduces service isolation. Reversible."
     registryChanges:
-      - hive: HKLM
+      - hive: "HKLM"
         path: "SYSTEM\\CurrentControlSet\\Control"
-        valueName: SvcHostSplitThresholdInKB
+        valueName: "SvcHostSplitThresholdInKB"
         value: 4294967295
-        valueType: DWord
-
-  - id: perf.disable-page-combining
-    name: "Disable Page Combining"
-    description: "Disable memory page combining/deduplication to reduce CPU overhead"
-    rationale: "Page combining scans memory for identical pages and deduplicates them — saves RAM but costs CPU. On systems with ample RAM, disabling removes the scan overhead. Controlled via Disable-MMAgent -PageCombining (the supported mechanism); the old DisablePageCombining registry value did nothing."
-    risk: low
-    tier: free
-    default: false
-    expertOnly: true
-    requiresReboot: true
-    reversible: true
-    estimatedSeconds: 2
-    blockedProfiles:
-      - low_spec_system
-      - vm_cautious
-    powerShellCommands:
-      - "Disable-MMAgent -PageCombining"
+        valueType: "DWord"

@@ -1,8 +1,7 @@
-# Privacy: AI Features
-
+# Privacy: AI Feature Control
 module: privacy.ai
 name: "AI Feature Control"
-description: "Disable Windows AI features including Copilot, Recall, Click to Do, Edge AI, Paint AI, Notepad AI"
+description: "Turn off Recall, Click to Do, Edge/Paint/Notepad AI, the Windows AI service and app access to on-device AI"
 category: privacy
 
 actions:
@@ -10,42 +9,43 @@ actions:
     name: "Disable Windows Recall"
     description: "Disable the Windows Recall AI feature that captures screen activity"
     rationale: "Recall continuously screenshots your activity; disabling protects privacy"
-    risk: safe
-    tier: free
+    risk: "safe"
+    tier: "free"
     default: true
-    requiresReboot: false
-    reversible: true
+    requiresReboot: true
+    reversible: false
     estimatedSeconds: 2
     blockedProfiles: []
     minWindowsBuild: 26100
+    warningMessage: "AllowRecallEnablement=0 also removes the Recall component; re-enabling it later needs the optional feature to be downloaded again."
     registryChanges:
-      - hive: HKCU
+      - hive: "HKCU"
         path: "Software\\Policies\\Microsoft\\Windows\\WindowsAI"
-        valueName: DisableAIDataAnalysis
+        valueName: "DisableAIDataAnalysis"
         value: 1
-        valueType: DWord
-      - hive: HKLM
+        valueType: "DWord"
+      - hive: "HKLM"
         path: "SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsAI"
-        valueName: DisableAIDataAnalysis
+        valueName: "DisableAIDataAnalysis"
         value: 1
-        valueType: DWord
-      - hive: HKLM
+        valueType: "DWord"
+      - hive: "HKLM"
         path: "SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsAI"
-        valueName: AllowRecallEnablement
+        valueName: "AllowRecallEnablement"
         value: 0
-        valueType: DWord
-      - hive: HKLM
+        valueType: "DWord"
+      - hive: "HKLM"
         path: "SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsAI"
-        valueName: TurnOffSavingSnapshots
+        valueName: "TurnOffSavingSnapshots"
         value: 1
-        valueType: DWord
+        valueType: "DWord"
 
   - id: privacy.disable-click-to-do
     name: "Disable Click to Do"
     description: "Disable the AI-powered Click to Do overlay feature"
     rationale: "Click to Do uses AI to analyze on-screen content and suggest actions"
-    risk: safe
-    tier: free
+    risk: "safe"
+    tier: "free"
     default: true
     requiresReboot: false
     reversible: true
@@ -53,172 +53,169 @@ actions:
     blockedProfiles: []
     minWindowsBuild: 26100
     registryChanges:
-      - hive: HKLM
+      - hive: "HKLM"
         path: "SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsAI"
-        valueName: DisableClickToDo
+        valueName: "DisableClickToDo"
         value: 1
-        valueType: DWord
-      - hive: HKCU
+        valueType: "DWord"
+      - hive: "HKCU"
         path: "Software\\Policies\\Microsoft\\Windows\\WindowsAI"
-        valueName: DisableClickToDo
+        valueName: "DisableClickToDo"
         value: 1
-        valueType: DWord
+        valueType: "DWord"
 
   - id: privacy.disable-ai-svc-autostart
-    name: "Prevent AI Service Auto Start"
-    description: "Set Windows AI Fabric service to manual startup instead of automatic"
-    rationale: "WSAIFabricSvc starts automatically and consumes resources for AI features"
-    risk: safe
-    tier: free
+    name: "Disable Windows AI Fabric Service"
+    description: "Disable the WSAIFabricSvc service (present only on some Windows 11 24H2+ builds; skipped when absent)"
+    rationale: "Background host for Windows AI features. The previous version set it to Manual, which could raise an already-disabled service."
+    risk: "safe"
+    tier: "free"
     default: true
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
-    minWindowsBuild: 22000
     blockedProfiles: []
-    registryChanges:
-      - hive: HKLM
-        path: "SYSTEM\\CurrentControlSet\\Services\\WSAIFabricSvc"
-        valueName: Start
-        value: 3
-        valueType: DWord
+    minWindowsBuild: 26100
+    serviceChanges:
+      - name: "WSAIFabricSvc"
+        startupType: "Disabled"
 
   - id: privacy.hide-ai-settings-page
     name: "Hide AI Components Settings Page"
     description: "Hide the 'AI components' page from the Windows Settings app. This is cosmetic/control only — it removes the AI settings entry but does not disable any AI service by itself. Reversible."
-    rationale: "Mirrors winutil's Windows-AI cleanup: SettingsPageVisibility=hide:aicomponents removes the AI components page from Settings. It is a reversible policy value and does not touch Explorer, Search, Start, the taskbar, or any service. Opt-in. (Concept from winutil WPFTweaksWindowsAI, MIT-licensed; reimplemented as oudenOS action metadata — see third_party/winutil/SOURCE.md.)"
-    risk: safe
-    tier: free
+    rationale: "SettingsPageVisibility=hide:aicomponents removes the AI components page from Settings (winutil WPFTweaksWindowsAI). Note: it replaces any existing SettingsPageVisibility value. Cosmetic; does not disable a service."
+    risk: "safe"
+    tier: "free"
     default: false
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
-    minWindowsBuild: 26100
     blockedProfiles: []
+    minWindowsBuild: 26100
     registryChanges:
-      - hive: HKLM
+      - hive: "HKLM"
         path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer"
-        valueName: SettingsPageVisibility
+        valueName: "SettingsPageVisibility"
         value: "hide:aicomponents"
-        valueType: String
+        valueType: "String"
 
   - id: privacy.disable-edge-ai
     name: "Disable Edge AI Features"
     description: "Disable Copilot integration, AI sidebar, and AI-powered features in Microsoft Edge"
     rationale: "Edge AI features send browsing context to cloud AI services"
-    risk: safe
-    tier: free
+    risk: "safe"
+    tier: "free"
     default: true
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
-    minWindowsBuild: 22000
     blockedProfiles: []
+    minWindowsBuild: 22000
     registryChanges:
-      - hive: HKLM
+      - hive: "HKLM"
         path: "SOFTWARE\\Policies\\Microsoft\\Edge"
-        valueName: HubsSidebarEnabled
+        valueName: "HubsSidebarEnabled"
         value: 0
-        valueType: DWord
-      - hive: HKLM
+        valueType: "DWord"
+      - hive: "HKLM"
         path: "SOFTWARE\\Policies\\Microsoft\\Edge"
-        valueName: CopilotCDPPageContext
+        valueName: "CopilotCDPPageContext"
         value: 0
-        valueType: DWord
-      - hive: HKLM
+        valueType: "DWord"
+      - hive: "HKLM"
         path: "SOFTWARE\\Policies\\Microsoft\\Edge"
-        valueName: CopilotPageContext
+        valueName: "CopilotPageContext"
         value: 0
-        valueType: DWord
-      - hive: HKLM
+        valueType: "DWord"
+      - hive: "HKLM"
         path: "SOFTWARE\\Policies\\Microsoft\\Edge"
-        valueName: EdgeHistoryAISearchEnabled
+        valueName: "EdgeHistoryAISearchEnabled"
         value: 0
-        valueType: DWord
-      - hive: HKLM
+        valueType: "DWord"
+      - hive: "HKLM"
         path: "SOFTWARE\\Policies\\Microsoft\\Edge"
-        valueName: ComposeInlineEnabled
+        valueName: "ComposeInlineEnabled"
         value: 0
-        valueType: DWord
-      - hive: HKLM
+        valueType: "DWord"
+      - hive: "HKLM"
         path: "SOFTWARE\\Policies\\Microsoft\\Edge"
-        valueName: NewTabPageBingChatEnabled
+        valueName: "NewTabPageBingChatEnabled"
         value: 0
-        valueType: DWord
+        valueType: "DWord"
 
   - id: privacy.disable-paint-ai
     name: "Disable Paint AI Features"
-    minWindowsBuild: 26100
     description: "Disable AI-powered Cocreator, Image Creator, and Generative tools in Paint"
     rationale: "Paint AI features send image data to cloud for processing"
-    risk: safe
-    tier: free
+    risk: "safe"
+    tier: "free"
     default: true
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
     blockedProfiles: []
+    minWindowsBuild: 26100
     registryChanges:
-      - hive: HKLM
+      - hive: "HKLM"
         path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Paint"
-        valueName: DisableCocreator
+        valueName: "DisableCocreator"
         value: 1
-        valueType: DWord
-      - hive: HKLM
+        valueType: "DWord"
+      - hive: "HKLM"
         path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Paint"
-        valueName: DisableImageCreator
+        valueName: "DisableImageCreator"
         value: 1
-        valueType: DWord
-      - hive: HKLM
+        valueType: "DWord"
+      - hive: "HKLM"
         path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Paint"
-        valueName: DisableGenerativeFill
+        valueName: "DisableGenerativeFill"
         value: 1
-        valueType: DWord
-      - hive: HKLM
+        valueType: "DWord"
+      - hive: "HKLM"
         path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Paint"
-        valueName: DisableGenerativeErase
+        valueName: "DisableGenerativeErase"
         value: 1
-        valueType: DWord
-      - hive: HKLM
+        valueType: "DWord"
+      - hive: "HKLM"
         path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Paint"
-        valueName: DisableRemoveBackground
+        valueName: "DisableRemoveBackground"
         value: 1
-        valueType: DWord
+        valueType: "DWord"
 
   - id: privacy.disable-notepad-ai
     name: "Disable Notepad AI Features"
-    minWindowsBuild: 26100
     description: "Disable AI-powered text generation and rewriting in Notepad"
     rationale: "Notepad AI features send text content to cloud"
-    risk: safe
-    tier: free
+    risk: "safe"
+    tier: "free"
     default: true
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
     blockedProfiles: []
+    minWindowsBuild: 26100
     registryChanges:
-      - hive: HKLM
+      - hive: "HKLM"
         path: "SOFTWARE\\Policies\\WindowsNotepad"
-        valueName: DisableAIFeatures
+        valueName: "DisableAIFeatures"
         value: 1
-        valueType: DWord
+        valueType: "DWord"
 
   - id: privacy.disable-system-ai-access
     name: "Block System AI Model Access"
     description: "Stop apps from using on-device generative AI models system-wide"
-    rationale: "On Copilot+ / AI PCs, background apps can run on-device generative AI on the NPU and CPU. Forcing that access off keeps the NPU, CPU, and RAM free for your games instead. Fully reversible; flip it back if you start using on-device AI tools."
-    risk: low
-    tier: free
-    default: false
+    rationale: "Force-denies app access to on-device generative AI models via the AppPrivacy policy. Apps that use on-device AI lose that feature. Reversible."
+    risk: "low"
+    tier: "free"
+    default: true
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
     blockedProfiles: []
     minWindowsBuild: 26100
     registryChanges:
-      - hive: HKLM
+      - hive: "HKLM"
         path: "SOFTWARE\\Policies\\Microsoft\\Windows\\AppPrivacy"
-        valueName: LetAppsAccessGenerativeAI
+        valueName: "LetAppsAccessGenerativeAI"
         value: 2
-        valueType: DWord
+        valueType: "DWord"

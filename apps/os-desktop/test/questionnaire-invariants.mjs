@@ -1,178 +1,152 @@
 #!/usr/bin/env node
+// Questionnaire / playbook DATA invariants (Windows-proof gate).
+//
+// This never re-implements plan resolution — the Rust resolver
+// (services/os-service/src/playbook/resolver.rs + questionnaire.rs) is the
+// source of truth and is covered by `cargo test`. These checks only assert
+// that the shipped data is well-formed and internally consistent:
+//
+//   1. playbooks/wizard.json (the questionnaire the service loads):
+//      unique question keys, ≥2 options, unique option values, and every
+//      includeActions / blockActions id exists in playbooks/**/*.yaml.
+//   2. Build-gate invariants on the bundled preview fallback.
+//   3. Only supported execution kinds in the preview fallback.
+//   4. No hard-coded Windows build on the live renderer path (the real build
+//      comes from the assessment; only the preview mock may assume one).
+//   5. No forbidden third-party names in user-visible copy.
 
 import fs from "node:fs";
-import { fileURLToPath } from "node:url";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
-const strategyPath = path.join(
-  repoRoot,
-  "apps/os-desktop/src/renderer/pages/wizard/steps/PlaybookStrategyStep.tsx",
-);
-const storePath = path.join(
-  repoRoot,
-  "apps/os-desktop/src/renderer/stores/decisions-store.ts",
-);
-const overridesPath = path.join(
-  repoRoot,
-  "apps/os-desktop/src/renderer/lib/wizard-question-model.ts",
-);
-const reviewPath = path.join(
-  repoRoot,
-  "apps/os-desktop/src/renderer/pages/wizard/steps/PlaybookReviewStep.tsx",
-);
-const fallbackPath = path.join(
-  repoRoot,
-  "apps/os-desktop/src/renderer/lib/generated-playbook-fallback.json",
-);
+const rendererRoot = path.join(repoRoot, "apps/os-desktop/src/renderer");
+const wizardPath = path.join(repoRoot, "playbooks/wizard.json");
+const fallbackPath = path.join(rendererRoot, "lib/generated-playbook-fallback.json");
 
-const strategySource = fs.readFileSync(strategyPath, "utf8");
-const storeSource = fs.readFileSync(storePath, "utf8");
-const overridesSource = fs.readFileSync(overridesPath, "utf8");
-const reviewSource = fs.readFileSync(reviewPath, "utf8");
-const fallback = JSON.parse(fs.readFileSync(fallbackPath, "utf8"));
+const errors = {};
+const fail = (name, detail) => {
+  (errors[name] ??= []).push(detail);
+};
 
-// Match both the populated multi-line form and the valid empty/inline form
-// (`= {};`). Defaults are intentionally empty now — answers are populated
-// dynamically by the store — so an empty body yields zero keys, not a fatal error.
-const defaultAnswersMatch = storeSource.match(/export const DEFAULT_QUESTIONNAIRE_ANSWERS\s*:[\s\S]*?=\s*\{([\s\S]*?)\}\s*;/);
-if (!defaultAnswersMatch) {
-  console.error(JSON.stringify({ error: "Could not locate DEFAULT_QUESTIONNAIRE_ANSWERS declaration" }, null, 2));
-  process.exit(1);
+// ── 1. wizard.json ──────────────────────────────────────────────────────
+function walkYaml(dir) {
+  return fs.readdirSync(dir, { withFileTypes: true }).flatMap((d) => {
+    const full = path.join(dir, d.name);
+    if (d.isDirectory()) return walkYaml(full);
+    return /\.ya?ml$/.test(d.name) ? [full] : [];
+  });
+}
+const playbookActionIds = new Set();
+for (const file of walkYaml(path.join(repoRoot, "playbooks"))) {
+  const text = fs.readFileSync(file, "utf8");
+  for (const m of text.matchAll(/^\s*-\s+id:\s*["']?([A-Za-z0-9_.-]+)["']?\s*(?:#.*)?$/gm)) {
+    playbookActionIds.add(m[1]);
+  }
 }
 
-const uniqueAnswerKeys = [...defaultAnswersMatch[1].matchAll(/^  ([a-zA-Z0-9]+): /gm)].map((match) => match[1]);
-// Keys that exist in the interface but have no backing playbook action at all
-// (either removed for shell safety or only in legacy transformer.rs embedded actions).
-const orphanKeys = new Set([
-  "disableIpv6",            // removed: breaks many ISPs
-  "disableFaultTolerantHeap", // removed: breaks Explorer crash recovery
-  "disableMPOs",              // removed: breaks Explorer icon rendering
-]);
-const missingMappings = uniqueAnswerKeys.filter(
-  (key) => key !== "aggressionPreset" &&
-    !orphanKeys.has(key) &&
-    // Match either QUESTION_BEHAVIORS property or legacy answers.key pattern
-    !overridesSource.includes(`${key}:`) &&
-    !overridesSource.includes(`answers.${key}`),
-);
+const wizard = JSON.parse(fs.readFileSync(wizardPath, "utf8"));
+const questions = Array.isArray(wizard.desktopQuestions) ? wizard.desktopQuestions : [];
+if (questions.length === 0) fail("wizardQuestions", "playbooks/wizard.json has no desktopQuestions");
+const seenKeys = new Set();
+let referencedActions = 0;
+for (const q of questions) {
+  if (typeof q.key !== "string" || q.key.length === 0) {
+    fail("wizardQuestions", `question without key: ${JSON.stringify(q).slice(0, 80)}`);
+    continue;
+  }
+  if (seenKeys.has(q.key)) fail("wizardQuestions", `duplicate question key ${q.key}`);
+  seenKeys.add(q.key);
+  if (!Array.isArray(q.options) || q.options.length < 2) {
+    fail("wizardQuestions", `${q.key}: needs at least 2 options`);
+    continue;
+  }
+  const values = q.options.map((o) => JSON.stringify(o.value));
+  if (new Set(values).size !== values.length) fail("wizardQuestions", `${q.key}: duplicate option values`);
+  for (const option of q.options) {
+    const behavior = option.behavior ?? {};
+    for (const listName of ["includeActions", "blockActions"]) {
+      for (const actionId of behavior[listName] ?? []) {
+        referencedActions += 1;
+        if (!playbookActionIds.has(actionId)) {
+          fail("unknownActionIds", `${q.key}=${JSON.stringify(option.value)} ${listName} → ${actionId}`);
+        }
+      }
+    }
+  }
+}
 
-const overrideActionIds = [
-  ...new Set(
-    [...overridesSource.matchAll(/"([a-z0-9.-]+)"/g)]
-      .map((match) => match[1])
-      // Only match real action IDs (category.verb-noun), not version strings or filenames
-      .filter((value) => /^[a-z]+\.[a-z].*-/.test(value)),
-  ),
-];
-
-const fallbackActionIds = new Set(
-  fallback.phases.flatMap((phase) => phase.actions.map((action) => action.id)),
-);
+// ── 2/3. preview fallback ───────────────────────────────────────────────
+const fallback = JSON.parse(fs.readFileSync(fallbackPath, "utf8"));
+const fallbackActions = fallback.phases.flatMap((phase) => phase.actions);
 const supportedExecutionKinds = new Set([
-  "registryChanges",
-  "serviceChanges",
-  "bcdChanges",
-  "powerChanges",
-  "powerShellCommands",
-  "packages",
-  "tasks",
+  "registryChanges", "serviceChanges", "bcdChanges", "powerChanges", "powerShellCommands", "packages", "tasks",
+  "fileRenames", // executor.rs contract.file_renames (rollback type "file_rename")
 ]);
-
-const missingFallbackIds = overrideActionIds.filter((id) => !fallbackActionIds.has(id));
-const nonExecutableFallbackIds = fallback.phases
-  .flatMap((phase) => phase.actions)
-  .filter((action) => !Array.isArray(action.executionKinds) || action.executionKinds.length === 0)
-  .map((action) => action.id);
-const unsupportedExecutionKinds = fallback.phases
-  .flatMap((phase) => phase.actions)
-  .flatMap((action) =>
-    (action.executionKinds ?? [])
-      .filter((kind) => !supportedExecutionKinds.has(kind))
-      .map((kind) => ({ actionId: action.id, kind })),
-  );
-const nonExecutableOverrideIds = overrideActionIds.filter((id) =>
-  fallback.phases
-    .flatMap((phase) => phase.actions)
-    .some((action) => action.id === id && (!Array.isArray(action.executionKinds) || action.executionKinds.length === 0)),
-);
-
-// Build-gating moved from inline client-side guards (old PlaybookStrategyStep.tsx)
-// to the data-driven playbook layer: each build-specific action carries
-// minWindowsBuild and is enforced server-side by the Rust resolver
-// (services/os-service/src/playbook/resolver.rs, covered by
-// test_build_gated_actions_resolve_by_windows_build). Verify the gate exists on
-// the actual actions rather than scanning obsolete TSX source.
+for (const action of fallbackActions) {
+  for (const kind of action.executionKinds ?? []) {
+    if (!supportedExecutionKinds.has(kind)) fail("unsupportedExecutionKinds", `${action.id}: ${kind}`);
+  }
+}
+// Build-gating is data-driven (minWindowsBuild) and enforced by the Rust resolver
+// (test_build_gated_actions_resolve_by_windows_build). Verify the gate exists.
 const requiredActionBuildGates = [
   { actionId: "privacy.disable-recall", minBuild: 26100 },     // Windows Recall — 24H2+
   { actionId: "privacy.disable-click-to-do", minBuild: 26100 }, // Click to Do — 24H2+
-  { actionId: "shell.enable-end-task", minBuild: 22631 },       // End Task — 22H2+
+  { actionId: "shell.enable-end-task", minBuild: 22631 },       // End Task — 23H2+
 ];
-const fallbackActionsById = new Map(
-  fallback.phases.flatMap((phase) => phase.actions.map((action) => [action.id, action])),
-);
-const missingStrategyGuards = requiredActionBuildGates
-  .filter(({ actionId, minBuild }) => {
-    const action = fallbackActionsById.get(actionId);
-    return !action || action.minWindowsBuild !== minBuild;
-  })
-  .map(({ actionId }) => actionId);
-
-const missingReviewBuildPropagation =
-  !/const windowsBuild = detectedProfile\?\.windowsBuild \?\? 22631;/.test(reviewSource) ||
-  !/buildMockResolvedPlaybook\(profile, playbookPreset, windowsBuild\)/.test(reviewSource) ||
-  !/preset:\s*playbookPreset,\s*[\r\n]+\s*windowsBuild,/.test(reviewSource);
-
-const forbiddenNames = ["One" + "click", "PC-" + "Tuning", "Quaked" + "K", "valley" + "ofdoom"];
-const visibleForbiddenCopy = forbiddenNames.flatMap((term) => {
-  const pattern = new RegExp(`"([^"]*${term.replace("-", "\\-")}[^"]*)"`, "gi");
-  return [...strategySource.matchAll(pattern)].map((match) => match[1]);
-});
-
-// NOTE: nonExecutableFallbackIds and nonExecutableOverrideIds are NOT error conditions here.
-// The fallback JSON is a UI-side preview, not the execution manifest.
-// Execution capability and questionnaire→plan resolution are verified server-side by
-// the Rust resolver tests (cargo test, services/os-service). The fallback intentionally
-// omits executionKinds.
-
-if (
-  missingMappings.length > 0 ||
-  missingFallbackIds.length > 0 ||
-  unsupportedExecutionKinds.length > 0 ||
-  visibleForbiddenCopy.length > 0 ||
-  missingStrategyGuards.length > 0 ||
-  missingReviewBuildPropagation
-) {
-  console.error(
-    JSON.stringify(
-      {
-        missingMappings,
-        missingFallbackIds,
-        unsupportedExecutionKinds,
-        forbiddenCopyMatches: visibleForbiddenCopy,
-        missingStrategyGuards,
-        missingReviewBuildPropagation,
-      },
-      null,
-      2,
-    ),
-  );
-  process.exit(1);
+const fallbackById = new Map(fallbackActions.map((a) => [a.id, a]));
+for (const { actionId, minBuild } of requiredActionBuildGates) {
+  const action = fallbackById.get(actionId);
+  if (!action || action.minWindowsBuild !== minBuild) fail("missingBuildGates", actionId);
 }
 
-console.log(
-  JSON.stringify(
-    {
-      questionCount: uniqueAnswerKeys.length,
-      mappedAnswers: uniqueAnswerKeys.length - 1,
-      overrideActionCount: overrideActionIds.length,
-      fallbackActionCount: fallbackActionIds.size,
-      executableFallbackActionCount: fallback.phases
-        .flatMap((phase) => phase.actions)
-        .filter((action) => Array.isArray(action.executionKinds) && action.executionKinds.length > 0)
-        .length,
-    },
-    null,
-    2,
-  ),
-);
+// ── 4. no hard-coded build on the live path ─────────────────────────────
+function walkSource(dir) {
+  return fs.readdirSync(dir, { withFileTypes: true }).flatMap((d) => {
+    const full = path.join(dir, d.name);
+    if (d.isDirectory()) return walkSource(full);
+    return /\.(ts|tsx)$/.test(d.name) ? [full] : [];
+  });
+}
+const BUILD_LITERAL_ALLOWED = new Set(["lib/mock-playbook.ts"]); // preview-only mock
+for (const file of walkSource(rendererRoot)) {
+  const rel = path.relative(rendererRoot, file).replaceAll(path.sep, "/");
+  if (BUILD_LITERAL_ALLOWED.has(rel)) continue;
+  const text = fs.readFileSync(file, "utf8");
+  for (const m of text.matchAll(/\b(19041|19045|22000|22621|22631|26100)\b/g)) {
+    const line = text.slice(0, m.index).split("\n").length;
+    const lineText = text.split("\n")[line - 1] ?? "";
+    if (/^\s*(\/\/|\*)/.test(lineText)) continue; // comments are fine
+    fail("hardcodedWindowsBuild", `${rel}:${line}`);
+  }
+}
+
+// ── 5. forbidden names in user-visible copy ─────────────────────────────
+const forbiddenNames = ["One" + "click", "PC-" + "Tuning", "Quaked" + "K", "valley" + "ofdoom"];
+const copyFiles = [
+  path.join(rendererRoot, "pages/wizard/steps/PlaybookStrategyStep.tsx"),
+  path.join(rendererRoot, "i18n/en.ts"),
+  path.join(rendererRoot, "i18n/tr.ts"),
+];
+for (const file of copyFiles) {
+  const text = fs.readFileSync(file, "utf8");
+  for (const term of forbiddenNames) {
+    const pattern = new RegExp(`"([^"]*${term.replace("-", "\\-")}[^"]*)"`, "gi");
+    for (const m of text.matchAll(pattern)) fail("forbiddenCopy", `${path.basename(file)}: ${m[1]}`);
+  }
+}
+
+const summary = {
+  wizardQuestions: questions.length,
+  wizardOptions: questions.reduce((n, q) => n + (q.options?.length ?? 0), 0),
+  referencedActionIds: referencedActions,
+  playbookActionIds: playbookActionIds.size,
+  fallbackActionCount: fallbackActions.length,
+};
+
+if (Object.keys(errors).length > 0) {
+  console.error(JSON.stringify({ ...summary, errors }, null, 2));
+  process.exit(1);
+}
+console.log(JSON.stringify(summary, null, 2));

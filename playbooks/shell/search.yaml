@@ -8,33 +8,33 @@ actions:
   - id: shell.disable-search-highlights
     name: "Disable Search Highlights"
     description: "Remove trending and promotional content from Windows Search"
-    risk: safe
-    tier: free
+    risk: "safe"
+    tier: "free"
     default: true
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
     blockedProfiles: []
     registryChanges:
-      - hive: HKCU
+      - hive: "HKCU"
         path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\SearchSettings"
-        valueName: IsDynamicSearchBoxEnabled
+        valueName: "IsDynamicSearchBoxEnabled"
         value: 0
-        valueType: DWord
+        valueType: "DWord"
 
   - id: shell.disable-search-history
     name: "Disable Search History"
     description: "Disable device search history used for search suggestions"
-    risk: safe
-    tier: free
+    risk: "safe"
+    tier: "free"
     default: true
     requiresReboot: false
     reversible: true
     estimatedSeconds: 2
     blockedProfiles: []
     registryChanges:
-      - hive: HKCU
+      - hive: "HKCU"
         path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\SearchSettings"
-        valueName: IsDeviceSearchHistoryEnabled
+        valueName: "IsDeviceSearchHistoryEnabled"
         value: 0
-        valueType: DWord
+        valueType: "DWord"

@@ -3,13 +3,20 @@
 
 import { useEffect, useMemo, useState, useCallback } from "react";
 import { motion } from "framer-motion";
-import { Check, Shield, AlertTriangle, Lock, Heart, Archive, FileText } from "lucide-react";
+import { Check, Shield, AlertTriangle, Lock, Heart, Archive, FileText, RotateCcw, RotateCw, XCircle } from "lucide-react";
 import { useWizardStore } from "@/stores/wizard-store";
 import { useDecisionsStore } from "@/stores/decisions-store";
 import { useLogStore } from "@/stores/log-store";
+import { useRuntimeStore } from "@/stores/runtime-store";
+import { useLangStore } from "@/stores/lang-store";
 import { resolveEffectivePersonalization } from "@/lib/personalization-resolution";
+import { buildRebootJournalContext } from "@/lib/package-journal";
 import { platform } from "@/lib/platform";
+import { undoRun } from "@/lib/undo";
+import { reasonLabelKey } from "@/lib/service-errors";
+import { useActionLocalizer } from "@/i18n/content-overlay";
 import { useT } from "@/i18n";
+import { serviceCall } from "@/lib/service";
 
 const RICKROLL_URL = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
 
@@ -40,7 +47,14 @@ interface LedgerQueryResult {
 
 export function ReportStep() {
   const { t } = useT();
-  const { executionResult, resolvedPlaybook, detectedProfile, personalization, gotoDonation } = useWizardStore();
+  const { executionResult, resolvedPlaybook, detectedProfile, personalization, gotoDonation, lastRun, setLastRun, playbookPreset } = useWizardStore();
+  const runtimeStatus = useRuntimeStore((s) => s.status);
+  const lang = useLangStore((s) => s.lang);
+  const localize = useActionLocalizer();
+  const [undoState, setUndoState] = useState<"idle" | "confirm" | "busy" | "done" | "error">(lastRun?.undone ? "done" : "idle");
+  const [undoMessage, setUndoMessage] = useState<string | null>(null);
+  const [undoProgress, setUndoProgress] = useState<{ done: number; total: number } | null>(null);
+  const [rebootError, setRebootError] = useState<string | null>(null);
   const answers = useDecisionsStore((state) => state.answers);
   const effectivePersonalization = useMemo(
     () => resolveEffectivePersonalization(detectedProfile?.id, personalization, answers),
@@ -67,7 +81,6 @@ export function ReportStep() {
     let cancelled = false;
     const loadLedger = async () => {
       try {
-        const { serviceCall } = await import("@/lib/service");
         const result = await serviceCall<LedgerQueryResult | null>("ledger.query", { includeLedger: true });
         if (!cancelled && result.ok && result.data) {
           setLedgerState(result.data);
@@ -111,27 +124,82 @@ export function ReportStep() {
     ]),
   ).slice(0, 2);
 
+  const failedEntries = (executionResult?.journal ?? []).filter((entry) => entry.status === "failed");
+  const skippedDetail = (executionResult?.journal ?? []).filter(
+    (entry) => entry.status !== "failed" && (entry.status === "skipped" || (entry.skippedSteps?.length ?? 0) > 0),
+  );
+  const skippedStepCount = skippedDetail.reduce((n, e) => n + Math.max(1, e.skippedSteps?.length ?? 0), 0);
+  const widgetsProtected = (executionResult?.journal ?? []).some((entry) => entry.widgetsProtected);
+  const [showSkipped, setShowSkipped] = useState(false);
+  const rebootCount = executionResult?.rebootRequiredCount ?? 0;
+  const blockingError = executionResult?.blockingError ?? null;
+  const canUndo = Boolean(executionResult?.startedAt) && (executionResult?.applied ?? 0) + (executionResult?.personalizationApplied ? 1 : 0) > 0;
+  const outcome: "missing" | "stopped" | "issues" | "success" = !executionResult
+    ? "missing"
+    : blockingError
+      ? "stopped"
+      : executionResult.failed > 0 || failedEntries.length > 0
+        ? "issues"
+        : "success";
+
+  const handleUndo = async () => {
+    if (!executionResult?.startedAt) return;
+    setUndoState("busy");
+    setUndoMessage(null);
+    const result = await undoRun(executionResult.startedAt, executionResult.personalizationSnapshotId, (done, total) =>
+      setUndoProgress({ done, total }),
+    );
+    setUndoProgress(null);
+    if (result.failed === 0) {
+      setUndoState("done");
+      setUndoMessage(t("undo.done", { count: result.restored }));
+      if (lastRun) setLastRun({ ...lastRun, undone: true });
+    } else {
+      setUndoState("error");
+      setUndoMessage(t("undo.partial", { restored: result.restored, failed: result.failed }) + (result.errors[0] ? ` ${result.errors[0]}` : ""));
+    }
+  };
+
+  const handleRestart = async () => {
+    setRebootError(null);
+    const result = await serviceCall("system.reboot", {
+      reason: "playbook-reboot-required",
+      journalContext: resolvedPlaybook ? buildRebootJournalContext(resolvedPlaybook, detectedProfile?.id) : undefined,
+    });
+    if (!result.ok) setRebootError(t("reboot.error.rebootFailed"));
+  };
+
   const handleExportLog = async () => {
     setLogExportState("busy");
     setLogExportMessage("");
-    const text = exportLogAsText();
+    const text = exportLogAsText({
+      appVersion: __APP_VERSION__,
+      // service-detected build (the plan carries it), never a client guess
+      windowsBuild: resolvedPlaybook?.windowsBuild ?? detectedProfile?.windowsBuild ?? null,
+      profile: detectedProfile?.id ?? null,
+      preset: resolvedPlaybook?.preset ?? playbookPreset ?? null,
+      language: lang,
+      mode: runtimeStatus.mode,
+      platform: runtimeStatus.platform,
+      isAdmin: runtimeStatus.isAdmin,
+    });
 
     try {
       const result = await platform().log.saveToDesktop(text);
       if (result.ok) {
         setLogExportState("done");
-        setLogExportMessage(t("report.log.saved"));
+        setLogExportMessage(result.path ? t("report.log.savedTo", { path: result.path }) : t("report.log.saved"));
         window.setTimeout(() => {
           setLogExportState("idle");
           setLogExportMessage("");
-        }, 2500);
+        }, 6000);
       } else {
         setLogExportState("error");
-        setLogExportMessage(t("report.log.error"));
+        setLogExportMessage(`${t("report.log.error")}${result.error ? ` (${result.error})` : ""}`);
         window.setTimeout(() => {
           setLogExportState("idle");
           setLogExportMessage("");
-        }, 2500);
+        }, 6000);
       }
     } catch {
       setLogExportState("error");
@@ -149,7 +217,6 @@ export function ReportStep() {
     setExportState("busy");
     setExportMessage("");
 
-    const { serviceCall } = await import("@/lib/service");
 
     // Primary: get ledger truth for export
     const ledgerQueryResult = await serviceCall<Record<string, unknown> | null>("ledger.query", { includeLedger: true });
@@ -212,16 +279,22 @@ export function ReportStep() {
           transition={{ duration: 2.5, ease: "easeInOut", repeat: Infinity, delay: 0.5 }}
           className="absolute inset-0 rounded-sm bg-success-500/20"
         />
-        <div className="flex h-14 w-14 items-center justify-center rounded-sm border border-success-500/30 bg-success-500/10">
-          <Check className="h-7 w-7 text-[var(--success)]" strokeWidth={2.5} />
+        <div className={`flex h-14 w-14 items-center justify-center rounded-sm border ${
+          outcome === "success" ? "border-success-500/30 bg-success-500/10" : "border-[#FF6B6B]/30 bg-[#FF6B6B]/10"
+        }`}>
+          {outcome === "success" ? (
+            <Check className="h-7 w-7 text-[var(--success)]" strokeWidth={2.5} />
+          ) : (
+            <AlertTriangle className="h-7 w-7 text-[#FF6B6B]" strokeWidth={2} />
+          )}
         </div>
       </motion.div>
 
-      {/* Title */}
+      {/* Title — never claims success for a missing, stopped or failed run */}
       <div className="text-center">
-        <h2 className="text-[18px] font-medium text-[var(--text-primary)]">{t("report.title")}</h2>
+        <h2 className="text-[18px] font-medium text-[var(--text-primary)]">{t(`report.outcome.${outcome}.title`)}</h2>
         <p className="mt-1 text-[11px] text-[var(--text-secondary)]">
-          {t("report.subtitle")}
+          {t(`report.outcome.${outcome}.subtitle`)}
         </p>
         <div className="mt-3 flex flex-col items-center gap-2">
           <div className="flex items-center gap-2">
@@ -340,6 +413,123 @@ export function ReportStep() {
             </div>
           )}
         </motion.div>
+      )}
+
+      {/* Restart required */}
+      {rebootCount > 0 && undoState !== "done" && (
+        <div className="w-full max-w-md rounded-sm border border-[#FFBD2E]/40 bg-[#FFBD2E]/[0.06] px-4 py-3">
+          <div className="flex items-center justify-between gap-3">
+            <p className="text-[11px] text-[var(--text-primary)]">{t("report.reboot.required", { count: rebootCount })}</p>
+            <button
+              onClick={() => void handleRestart()}
+              className="flex shrink-0 items-center gap-1.5 rounded-sm px-3 py-1.5 text-[11px] font-medium"
+              style={{ background: "var(--text-display)", color: "var(--black)" }}
+            >
+              <RotateCw className="h-3 w-3" /> {t("reboot.button.restartNow")}
+            </button>
+          </div>
+          {rebootError && <p role="alert" className="mt-1 text-[10px] text-[#FF6B6B]">{rebootError}</p>}
+        </div>
+      )}
+
+      {/* What failed, with the real reason */}
+      {failedEntries.length > 0 && (
+        <div className="w-full max-w-md rounded-sm border border-[#FF6B6B]/30 bg-[#FF6B6B]/[0.04] px-4 py-3">
+          <p className="text-[11px] font-medium text-[var(--text-primary)]">{t("report.failed.title", { count: failedEntries.length })}</p>
+          <ul className="mt-2 max-h-[140px] space-y-1.5 overflow-y-auto scrollbar-thin pr-1">
+            {failedEntries.map((entry) => (
+              <li key={entry.id} className="flex items-start gap-2">
+                <XCircle className="mt-0.5 h-3 w-3 shrink-0 text-[#FF6B6B]" aria-hidden="true" />
+                <span className="min-w-0 text-[10px] leading-relaxed text-[var(--text-secondary)]">
+                  <span className="text-[var(--text-primary)]">
+                    {entry.kind === "personalization" ? t("execution.personalization.label") : localize({ id: entry.actionId, name: entry.label }).name}
+                  </span>
+                  {entry.errorMessage ? <span className="block break-words font-mono text-[9px] text-[var(--text-disabled)]">{entry.errorMessage}</span> : null}
+                </span>
+              </li>
+            ))}
+          </ul>
+          <p className="mt-2 text-[10px] text-[var(--text-disabled)]">{t("report.failed.hint")}</p>
+        </div>
+      )}
+
+      {/* What was skipped and why (not failures) */}
+      {skippedDetail.length > 0 && (
+        <div className="w-full max-w-md rounded-sm border border-[var(--border)] bg-[var(--surface)] px-4 py-3">
+          <button
+            type="button"
+            onClick={() => setShowSkipped((v) => !v)}
+            aria-expanded={showSkipped}
+            className="flex w-full items-center justify-between text-left text-[11px] text-[var(--text-primary)]"
+          >
+            <span>{t("report.skipped.title", { count: skippedStepCount })}</span>
+            <span aria-hidden="true">{showSkipped ? "−" : "+"}</span>
+          </button>
+          {widgetsProtected && (
+            <p className="mt-1 text-[10px] text-[var(--text-secondary)]">{t("report.skipped.widgets")}</p>
+          )}
+          {showSkipped && (
+            <ul className="mt-2 max-h-[160px] space-y-1.5 overflow-y-auto scrollbar-thin pr-1">
+              {skippedDetail.map((entry) => (
+                <li key={entry.id} className="text-[10px] leading-relaxed text-[var(--text-secondary)]">
+                  <span className="text-[var(--text-primary)]">
+                    {entry.kind === "personalization" ? t("execution.personalization.label") : localize({ id: entry.actionId, name: entry.label }).name}
+                  </span>
+                  {entry.notApplicable && <span className="block text-[9px] text-[var(--text-disabled)]">{t("execution.notApplicable")}</span>}
+                  {(entry.skippedSteps ?? []).map((s, i) => (
+                    <span key={i} className="block break-words text-[9px] text-[var(--text-disabled)]">
+                      {s.type}{s.target ? ` [${s.target}]` : ""}: {t(reasonLabelKey(s.reason))}
+                    </span>
+                  ))}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
+
+      {blockingError && (
+        <div role="alert" className="w-full max-w-md rounded-sm border border-[#FF6B6B]/40 bg-[#FF6B6B]/[0.06] px-4 py-3">
+          <p className="text-[11px] font-medium text-[var(--text-primary)]">{t("execution.blocking.title")}</p>
+          <p className="mt-1 text-[10px] text-[var(--text-secondary)]">{t("execution.blocking.body")}</p>
+        </div>
+      )}
+
+      {/* Undo everything (this run only) */}
+      {canUndo && (
+        <div className="w-full max-w-md rounded-sm border border-[var(--border)] bg-[var(--surface)] px-4 py-3">
+          <div className="flex items-center justify-between gap-3">
+            <div className="min-w-0">
+              <p className="text-[11px] font-medium text-[var(--text-primary)]">{t("undo.title")}</p>
+              <p className="mt-0.5 text-[10px] text-[var(--text-secondary)]">{t("undo.body")}</p>
+            </div>
+            {undoState === "confirm" ? (
+              <div className="flex shrink-0 gap-2">
+                <button onClick={() => void handleUndo()} className="rounded-sm px-3 py-1.5 text-[11px] font-medium" style={{ background: "var(--text-display)", color: "var(--black)" }}>
+                  {t("undo.confirm")}
+                </button>
+                <button onClick={() => setUndoState("idle")} className="rounded-sm px-3 py-1.5 text-[11px] text-[var(--text-secondary)]" style={{ border: "1px solid var(--border)" }}>
+                  {t("undo.cancel")}
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => setUndoState("confirm")}
+                disabled={undoState === "busy" || undoState === "done"}
+                className="flex shrink-0 items-center gap-1.5 rounded-sm px-3 py-1.5 text-[11px] text-[var(--text-primary)] disabled:opacity-40"
+                style={{ border: "1px solid var(--border-visible)" }}
+              >
+                <RotateCcw className="h-3 w-3" />
+                {undoState === "busy"
+                  ? undoProgress ? t("undo.progress", { done: undoProgress.done, total: undoProgress.total }) : t("undo.busy")
+                  : undoState === "done" ? t("undo.doneShort") : t("undo.button")}
+              </button>
+            )}
+          </div>
+          {undoMessage && (
+            <p role="status" className={`mt-2 text-[10px] ${undoState === "error" ? "text-[#FF6B6B]" : "text-[var(--success)]"}`}>{undoMessage}</p>
+          )}
+        </div>
       )}
 
       {/* How to undo */}

@@ -31,6 +31,9 @@ function ToggleRow({ label, desc, checked, disabled = false, onChange }: {
     >
       <button
         type="button"
+        role="switch"
+        aria-checked={checked}
+        aria-label={label}
         disabled={disabled}
         onClick={handleClick}
         className={`flex items-center justify-between w-full px-4 py-3 border-b border-[var(--border)] text-left transition-colors duration-200 ${

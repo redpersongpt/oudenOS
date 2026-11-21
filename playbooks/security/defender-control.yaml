@@ -1,229 +1,140 @@
-# Security: Windows Defender Control
-# This is the single most impactful security/performance tradeoff on Windows.
-
+# Security: Defender & VBS Policies
 module: security.defender-control
-name: "Windows Defender Control"
-description: "Disable or reduce Windows Defender real-time protection (expert-only, high risk)"
+name: "Defender & VBS Policies"
+description: "Policy-level Defender, VBS/Credential Guard and driver-blocklist options. Opt-in only; Defender policies are ignored while Tamper Protection is on."
 category: security
 
 actions:
   - id: security.disable-defender-realtime
-    name: "Disable Defender Real-Time Protection"
-    description: "Disable Windows Defender real-time scanning via Tamper Protection bypass. Eliminates the MsMpEng.exe background scanning overhead."
-    rationale: "Defender real-time scanning adds measurable I/O latency and CPU overhead during game loads, shader compilation, and large file operations. This is the single largest background CPU consumer on most stock Windows installs."
-    risk: high
-    tier: free
+    name: "Turn Off Defender Real-Time Protection (policy)"
+    description: "Set the Defender real-time protection policies (real-time monitoring, behaviour monitoring, on-access, downloads/attachments (IOAV) and scan-on-enable). Microsoft Defender ignores these policies while Tamper Protection is on, which is the default (the change may appear to succeed but has no effect) — turn Tamper Protection off in Windows Security first."
+    rationale: "Policy-level only. The obsolete DisableAntiSpyware value is not used (ignored since Defender platform 4.18.2007.8), and Defender's services cannot be disabled by an administrator process, so oudenOS does not attempt it. Scanning overhead is mostly visible during installs and game updates, not in-game. Measure before/after with a frame-time capture (PresentMon or CapFrameX, several runs) — no repeatable gain is promised."
+    risk: "high"
+    tier: "free"
     default: false
     expertOnly: true
     requiresReboot: true
     reversible: true
     estimatedSeconds: 5
     blockedProfiles:
-      - work_pc
-      - office_laptop
-      - vm_cautious
-    warningMessage: "Disabling Defender removes the last real-time malware guardrail. Only appropriate for dedicated gaming PCs with no web browsing or untrusted downloads."
+      - "work_pc"
+      - "office_laptop"
+      - "vm_cautious"
+    warningMessage: "Removes real-time malware protection. Ignored while Tamper Protection is on. Some anti-cheats may expect Defender running. Reversible (policy values are restored on rollback)."
     registryChanges:
-      - hive: HKLM
-        path: "SOFTWARE\\Policies\\Microsoft\\Windows Defender"
-        valueName: DisableAntiSpyware
-        value: 1
-        valueType: DWord
-      - hive: HKLM
+      - hive: "HKLM"
         path: "SOFTWARE\\Policies\\Microsoft\\Windows Defender\\Real-Time Protection"
-        valueName: DisableRealtimeMonitoring
+        valueName: "DisableRealtimeMonitoring"
         value: 1
-        valueType: DWord
-      - hive: HKLM
+        valueType: "DWord"
+      - hive: "HKLM"
         path: "SOFTWARE\\Policies\\Microsoft\\Windows Defender\\Real-Time Protection"
-        valueName: DisableBehaviorMonitoring
+        valueName: "DisableBehaviorMonitoring"
         value: 1
-        valueType: DWord
-      - hive: HKLM
+        valueType: "DWord"
+      - hive: "HKLM"
         path: "SOFTWARE\\Policies\\Microsoft\\Windows Defender\\Real-Time Protection"
-        valueName: DisableOnAccessProtection
+        valueName: "DisableOnAccessProtection"
         value: 1
-        valueType: DWord
-      - hive: HKLM
+        valueType: "DWord"
+      - hive: "HKLM"
         path: "SOFTWARE\\Policies\\Microsoft\\Windows Defender\\Real-Time Protection"
-        valueName: DisableScanOnRealtimeEnable
+        valueName: "DisableScanOnRealtimeEnable"
         value: 1
-        valueType: DWord
+        valueType: "DWord"
+      - hive: "HKLM"
+        path: "SOFTWARE\\Policies\\Microsoft\\Windows Defender\\Real-Time Protection"
+        valueName: "DisableIOAVProtection"
+        value: 1
+        valueType: "DWord"
 
   - id: security.disable-defender-cloud
     name: "Disable Defender Cloud Protection"
-    description: "Disable Defender cloud-delivered protection and automatic sample submission"
-    rationale: "Cloud protection sends file hashes and suspicious samples to Microsoft servers. Disabling reduces network overhead and data exfiltration."
-    risk: medium
-    tier: free
+    description: "Turn off Defender cloud-delivered protection (MAPS) and automatic sample submission via policy. Ignored while Tamper Protection is on."
+    rationale: "Cloud lookups send file metadata/samples to Microsoft and catch threats local signatures miss. Policy-level only."
+    risk: "medium"
+    tier: "free"
     default: false
     expertOnly: true
     requiresReboot: false
     reversible: true
     estimatedSeconds: 3
     blockedProfiles:
-      - work_pc
+      - "work_pc"
+    warningMessage: "New threats that only cloud protection would catch may be missed. Ignored while Tamper Protection is on. Reversible."
     registryChanges:
-      - hive: HKLM
+      - hive: "HKLM"
         path: "SOFTWARE\\Policies\\Microsoft\\Windows Defender\\Spynet"
-        valueName: SpyNetReporting
+        valueName: "SpyNetReporting"
         value: 0
-        valueType: DWord
-      - hive: HKLM
+        valueType: "DWord"
+      - hive: "HKLM"
         path: "SOFTWARE\\Policies\\Microsoft\\Windows Defender\\Spynet"
-        valueName: SubmitSamplesConsent
+        valueName: "SubmitSamplesConsent"
         value: 2
-        valueType: DWord
+        valueType: "DWord"
 
   - id: security.disable-vbs
-    name: "Disable Virtualization-Based Security (VBS)"
-    description: "Disable VBS — the hypervisor layer that enables HVCI, Credential Guard, and other virtualization-backed security features"
-    rationale: "VBS adds a hypervisor layer that increases DPC latency and memory overhead. On dedicated gaming systems without enterprise security requirements, disabling VBS can reduce latency by 5-15%."
-    risk: high
-    tier: free
+    name: "Turn Off Virtualization-Based Security (VBS) and Credential Guard"
+    description: "Request VBS off: EnableVirtualizationBasedSecurity=0 (system and policy), Memory Integrity off, and Credential Guard off (LsaCfgFlags=0 in both locations — Credential Guard is on by default on Windows 11 22H2+ Enterprise/Education). Needs a reboot. Hyper-V, WSL2, Windows Sandbox or Virtual Machine Platform keep the hypervisor running."
+    rationale: "PC-Tuning removed its registry command for this (57e7508) because firmware-locked configurations ignore it; on such systems the only way is disabling SVM/VT-x and IOMMU in the BIOS. Check System Information (\"Virtualization-based security\") after rebooting. Measure before/after with a frame-time capture (PresentMon or CapFrameX, several runs) — no repeatable gain is promised."
+    risk: "high"
+    tier: "free"
     default: false
     expertOnly: true
     requiresReboot: true
     reversible: true
     estimatedSeconds: 3
     blockedProfiles:
-      - work_pc
-      - office_laptop
-      - vm_cautious
-    warningMessage: "VBS is required for anti-cheat systems like Vanguard. Disabling may prevent some games from launching."
+      - "work_pc"
+      - "office_laptop"
+      - "vm_cautious"
+    warningMessage: "Weakens credential and kernel protection. If Credential Guard/VBS was enabled with a UEFI lock, these values are ignored: Microsoft's documented way out is the SecConfig.efi boot entry (loadoptions DISABLE-LSA-ISO) confirmed at the keyboard on the next boot; disabling SVM/VT-x in the firmware is the fallback. Riot's support pages say Vanguard may require Memory Integrity (HVCI/VBS), TPM 2.0, Secure Boot and IOMMU depending on the system, and VALORANT's optional On-Demand Vanguard mode requires VBS + HVCI; FACEIT may require them too (THE FINALS requires Secure Boot). Reversible unless UEFI-locked."
     registryChanges:
-      - hive: HKLM
+      - hive: "HKLM"
         path: "SYSTEM\\CurrentControlSet\\Control\\DeviceGuard"
-        valueName: EnableVirtualizationBasedSecurity
+        valueName: "EnableVirtualizationBasedSecurity"
         value: 0
-        valueType: DWord
-      - hive: HKLM
+        valueType: "DWord"
+      - hive: "HKLM"
+        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\DeviceGuard"
+        valueName: "EnableVirtualizationBasedSecurity"
+        value: 0
+        valueType: "DWord"
+      - hive: "HKLM"
         path: "SYSTEM\\CurrentControlSet\\Control\\DeviceGuard\\Scenarios\\HypervisorEnforcedCodeIntegrity"
-        valueName: Enabled
+        valueName: "Enabled"
         value: 0
-        valueType: DWord
-
-  - id: security.full-defender-disable
-    name: "Full Windows Defender Disable (Services + Drivers)"
-    description: "Completely disable Windows Defender at the service level — WinDefend, WdFilter, WdBoot, WdNisSvc, WdNisDrv, SecurityHealthService, wscsvc, Sense, MsSecCore. Also disables SmartScreen, WTDS, and removes startup entries."
-    rationale: "Full Defender disable eliminates all real-time scanning, behavior monitoring, network inspection, and Security Center overhead. This is the nuclear option — maximum performance, zero protection. PC-Tuning recommends this for isolated benchmark/gaming rigs only."
-    risk: extreme
-    tier: premium
-    default: false
-    expertOnly: true
-    requiresReboot: true
-    reversible: true
-    estimatedSeconds: 15
-    blockedProfiles:
-      - work_pc
-      - office_laptop
-      - vm_cautious
-    warningMessage: "THIS REMOVES ALL ANTIVIRUS PROTECTION. Your system will have zero malware defense. Only use on air-gapped or dedicated gaming PCs. Tamper Protection must be disabled manually in Windows Security settings first — otherwise service changes will be blocked by TrustedInstaller and this action will time out. On Windows 10 22H2+ and Windows 11, Tamper Protection may prevent service disabling entirely even with this action applied."
-    registryChanges:
-      # Defender policy disable
-      - hive: HKLM
-        path: "SOFTWARE\\Policies\\Microsoft\\Windows Defender"
-        valueName: DisableAntiSpyware
-        value: 1
-        valueType: DWord
-      # Real-time protection
-      - hive: HKLM
-        path: "SOFTWARE\\Policies\\Microsoft\\Windows Defender\\Real-Time Protection"
-        valueName: DisableRealtimeMonitoring
-        value: 1
-        valueType: DWord
-      - hive: HKLM
-        path: "SOFTWARE\\Policies\\Microsoft\\Windows Defender\\Real-Time Protection"
-        valueName: DisableBehaviorMonitoring
-        value: 1
-        valueType: DWord
-      - hive: HKLM
-        path: "SOFTWARE\\Policies\\Microsoft\\Windows Defender\\Real-Time Protection"
-        valueName: DisableOnAccessProtection
-        value: 1
-        valueType: DWord
-      - hive: HKLM
-        path: "SOFTWARE\\Policies\\Microsoft\\Windows Defender\\Real-Time Protection"
-        valueName: DisableScanOnRealtimeEnable
-        value: 1
-        valueType: DWord
-      # Cloud/sample submission
-      - hive: HKLM
-        path: "SOFTWARE\\Microsoft\\Windows Defender\\Spynet"
-        valueName: SpyNetReporting
+        valueType: "DWord"
+      - hive: "HKLM"
+        path: "SYSTEM\\CurrentControlSet\\Control\\Lsa"
+        valueName: "LsaCfgFlags"
         value: 0
-        valueType: DWord
-      - hive: HKLM
-        path: "SOFTWARE\\Microsoft\\Windows Defender\\Spynet"
-        valueName: SubmitSamplesConsent
+        valueType: "DWord"
+      - hive: "HKLM"
+        path: "SOFTWARE\\Policies\\Microsoft\\Windows\\DeviceGuard"
+        valueName: "LsaCfgFlags"
         value: 0
-        valueType: DWord
-      # SmartScreen
-      - hive: HKLM
-        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer"
-        valueName: SmartScreenEnabled
-        value: "Off"
-        valueType: String
-      - hive: HKCU
-        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\AppHost"
-        valueName: EnableWebContentEvaluation
-        value: 0
-        valueType: DWord
-      - hive: HKCU
-        path: "SOFTWARE\\Microsoft\\Edge\\SmartScreenEnabled"
-        valueName: "(Default)"
-        value: 0
-        valueType: DWord
-      # WTDS (Win11)
-      - hive: HKLM
-        path: "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\WTDS\\Components"
-        valueName: ServiceEnabled
-        value: 0
-        valueType: DWord
-      # Verified and Reputable policy (Win11)
-      - hive: HKLM
-        path: "SYSTEM\\CurrentControlSet\\Control\\CI\\Policy"
-        valueName: VerifiedAndReputablePolicyState
-        value: 0
-        valueType: DWord
-    serviceChanges:
-      - name: WinDefend
-        startupType: Disabled
-      - name: WdFilter
-        startupType: Disabled
-      - name: WdBoot
-        startupType: Disabled
-      - name: WdNisSvc
-        startupType: Disabled
-      - name: WdNisDrv
-        startupType: Disabled
-      - name: SecurityHealthService
-        startupType: Disabled
-      - name: wscsvc
-        startupType: Disabled
-      - name: Sense
-        startupType: Disabled
-      - name: MsSecCore
-        startupType: Disabled
+        valueType: "DWord"
 
   - id: security.disable-vulnerable-driver-blocklist
     name: "Disable Vulnerable Driver Blocklist"
     description: "Disable the Microsoft Vulnerable Driver Blocklist that prevents certain drivers from loading"
-    rationale: "The blocklist prevents drivers with known vulnerabilities from loading. Disabling it allows tools like RW-Everything (used for XHCI IMOD tuning) and older hardware drivers. PC-Tuning requires this for kernel-level performance tools."
-    risk: high
-    tier: premium
+    rationale: "Lets drivers on Microsoft's vulnerable-driver blocklist load. Some low-level tuning tools (e.g. RW-Everything for XHCI IMOD tuning) need it; anti-cheats may object."
+    risk: "high"
+    tier: "premium"
     default: false
     expertOnly: true
     requiresReboot: true
     reversible: true
     estimatedSeconds: 2
     blockedProfiles:
-      - work_pc
-      - office_laptop
+      - "work_pc"
+      - "office_laptop"
     warningMessage: "Allows potentially vulnerable drivers to load. Only disable if you need specific kernel tools like RW-Everything for XHCI IMOD or MSI utility."
     registryChanges:
-      - hive: HKLM
+      - hive: "HKLM"
         path: "SYSTEM\\CurrentControlSet\\Control\\CI\\Config"
-        valueName: VulnerableDriverBlocklistEnable
+        valueName: "VulnerableDriverBlocklistEnable"
         value: 0
-        valueType: DWord
+        valueType: "DWord"

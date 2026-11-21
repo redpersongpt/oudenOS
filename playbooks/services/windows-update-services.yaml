@@ -1,9 +1,0 @@
-# Services: Windows Update Services
-# Controls over Windows Update background services. Expert territory.
-
-module: services.windows-update-services
-name: "Windows Update Service Control"
-description: "Control Windows Update, Delivery Optimization, and BITS background services"
-category: services
-
-actions: []

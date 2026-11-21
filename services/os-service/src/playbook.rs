@@ -22,7 +22,7 @@ mod translation;
 
 use advisory::guide_action_catalog;
 pub use loader::{default_playbook_dir, load_playbook};
-pub use resolver::resolve_plan;
+pub use resolver::{dedupe_included_actions, resolve_plan, resolve_plan_with_facts};
 pub use serialization::playbook_action_to_execution_json;
 use translation::{load_source_catalog, winutil_action_catalog};
 
@@ -164,9 +164,16 @@ pub struct RegistryChange {
     pub path: String,
     #[serde(rename = "valueName")]
     pub value_name: String,
+    /// Absent for `delete: true` entries.
+    #[serde(default)]
     pub value: serde_json::Value,
-    #[serde(rename = "valueType")]
+    /// Absent for `delete: true` entries.
+    #[serde(default, rename = "valueType")]
     pub value_type: String,
+    /// When true, the value is deleted instead of written (rollback restores
+    /// it with its original type).
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub delete: bool,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -335,6 +342,10 @@ pub struct LoadedPlaybook {
     pub profiles: Vec<ProfileOverride>,
     pub load_trace: PlaybookLoadTrace,
     pub normalization_trace: PlaybookNormalizationTrace,
+    /// Optional per-action fields (`maxWindowsBuild`, `requires`) keyed by
+    /// action id; only actions that declare at least one are present.
+    #[serde(skip)]
+    pub action_extras: HashMap<String, crate::facts::ActionExtras>,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -494,8 +505,8 @@ mod tests {
             .collect();
 
         assert!(
-            !included_ids.contains("perf.mmcss-system-responsiveness"),
-            "MMCSS must be blocked for work_pc"
+            !included_ids.contains("services.disable-sysmain"),
+            "SysMain disable must be blocked for work_pc"
         );
         assert!(
             !included_ids.contains("shell.reduce-search-box"),
@@ -776,10 +787,55 @@ mod tests {
             .actions
             .iter()
             .any(|action| action.action.id == "winutil.WPFTweaksTelemetry"));
-        assert!(phase
-            .actions
-            .iter()
-            .all(|action| action.status == ActionStatus::Optional));
+        // Every translated essential action stays manual (Optional), except
+        // BitLocker decryption, which is deliberately held back as expert-only.
+        for action in &phase.actions {
+            let expected = if action.action.id == "winutil.WPFTweaksDisableBitLocker" {
+                ActionStatus::ExpertOnly
+            } else {
+                ActionStatus::Optional
+            };
+            assert_eq!(action.status, expected, "{}", action.action.id);
+        }
+    }
+
+    #[test]
+    fn test_winutil_risky_new_keys_are_not_classified_safe() {
+        let catalog = winutil_action_catalog();
+        let find = |id: &str| {
+            catalog
+                .iter()
+                .find(|action| action.id == format!("winutil.{}", id))
+                .unwrap_or_else(|| panic!("translated action winutil.{} should exist", id))
+        };
+
+        for id in [
+            "WPFTweaksDisableBitLocker",
+            "WPFTweaksReservedStorage",
+            "WPFTweaksWindowsAI",
+            "WPFTweaksDisableWarningForUnsignedRdp",
+            "WPFTweaksSvcHostSplitting",
+            "WPFTweaksDisableSearchIndexing",
+        ] {
+            let action = find(id);
+            assert_eq!(action.risk, "high", "{} must be high risk", id);
+            assert!(
+                action.warning_message.is_some(),
+                "{} must carry a warning",
+                id
+            );
+        }
+
+        let mpo = find("WPFMultiplaneOverlay");
+        assert_eq!(mpo.risk, "mixed");
+        assert!(mpo.warning_message.is_some());
+
+        for id in ["WPFAddUltPerf", "WPFRemoveUltPerf"] {
+            let action = find(id);
+            assert_eq!(action.risk, "mixed", "{} keeps performance-plan risk", id);
+            assert!(action.warning_message.is_some(), "{} keeps its warning", id);
+            assert!(action.tags.iter().any(|tag| tag == "benchmark-required"));
+        }
     }
 
     #[test]
@@ -838,9 +894,10 @@ mod tests {
             .map(|phase| (phase.id.as_str(), phase.actions.len()))
             .collect();
 
-        assert_eq!(phase_counts.get("winutil-essential"), Some(&16));
-        assert_eq!(phase_counts.get("winutil-advanced"), Some(&23));
-        assert_eq!(phase_counts.get("winutil-preferences"), Some(&19));
+        // winutil 70c23c80641d7370532af2f619b2842658600842
+        assert_eq!(phase_counts.get("winutil-essential"), Some(&18));
+        assert_eq!(phase_counts.get("winutil-advanced"), Some(&24));
+        assert_eq!(phase_counts.get("winutil-preferences"), Some(&25));
         assert_eq!(phase_counts.get("winutil-performance-plans"), Some(&2));
     }
 
@@ -977,13 +1034,10 @@ mod tests {
             .filter(|change| change.value_name == "SystemResponsiveness")
             .map(|change| change.value.as_u64())
             .collect();
-        assert!(
-            !values.is_empty(),
-            "expected at least one MMCSS SystemResponsiveness writer"
-        );
-        // Every MMCSS SystemResponsiveness writer must agree on 10 so two actions
-        // never write conflicting values (10 vs 0) to the same key. 0 is avoided
-        // intentionally — it can starve MMCSS audio threads and cause stutter.
+        // The MMCSS tuning actions were removed in v1.1 (measured no-op). If one is
+        // ever re-added, every SystemResponsiveness writer must agree on 10 so two
+        // actions never write conflicting values (10 vs 0) to the same key. 0 is
+        // avoided intentionally — it can starve MMCSS audio threads and cause stutter.
         for value in &values {
             assert_eq!(
                 *value,

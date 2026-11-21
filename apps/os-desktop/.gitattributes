@@ -1,3 +1,3 @@
 # Generated data files — do not hand-edit.
-# Regenerate via: pnpm sync:os:wizard (from repo root)
+# Regenerate via: node scripts/generate-os-playbook-fallback-data.mjs / scripts/gen-technical-details.mjs
 src/renderer/lib/generated-*.json linguist-generated=true
