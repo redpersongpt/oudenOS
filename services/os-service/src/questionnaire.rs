@@ -86,6 +86,9 @@ pub struct QuestionOption {
     pub danger: Option<bool>,
     #[serde(default)]
     pub behavior: Option<QuestionBehavior>,
+    /// Quick setups ("recommended", "gaming") this option is the answer for.
+    #[serde(default)]
+    pub quick_setups: Vec<String>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -311,7 +314,7 @@ fn chapter_definitions() -> Vec<QuestionnaireChapterDefinition> {
         QuestionnaireChapterDefinition {
             id: "preset",
             title: "Optimization Level",
-            description: "Choose how aggressive the optimization should be. This gates which questions appear in later chapters.",
+            description: "Choose how far the optimization should go. This gates which questions appear later.",
             kind: "preferences",
             source_prompt: "internal",
             source_sections: &["presets"],
@@ -323,7 +326,7 @@ fn chapter_definitions() -> Vec<QuestionnaireChapterDefinition> {
         QuestionnaireChapterDefinition {
             id: "essentials",
             title: "Essential Tweaks",
-            description: "Core system changes derived from internal research and community-validated defaults. These are the highest-impact, lowest-risk changes.",
+            description: "Power, storage, services and update basics.",
             kind: "preferences",
             source_prompt: "internal",
             source_sections: &["essentials", "power", "storage", "startup"],
@@ -336,19 +339,22 @@ fn chapter_definitions() -> Vec<QuestionnaireChapterDefinition> {
                 "disableBackgroundApps",
                 "disableSysmain",
                 "disableAutomaticMaintenance",
-                "optimizeThreadPriority",
                 "keepPrinterSupport",
                 "keepRemoteAccess",
                 "disableAutoplay",
                 "disableLastAccessTime",
                 "svcHostSplitThreshold",
                 "disableFaultTolerantHeap",
+                "shutdownBehavior",
+                "unusedServices",
+                "driverUpdates",
+                "desktopPowerTweaks",
             ],
         },
         QuestionnaireChapterDefinition {
             id: "privacy",
             title: "Privacy & Telemetry",
-            description: "Remove Microsoft telemetry, consumer tracking, and data collection defaults. Internal telemetry hardening.",
+            description: "Reduce Microsoft telemetry, tracking and data collection.",
             kind: "preferences",
             source_prompt: "internal",
             source_sections: &["privacy", "telemetry", "essentials"],
@@ -358,20 +364,16 @@ fn chapter_definitions() -> Vec<QuestionnaireChapterDefinition> {
                 "disableActivityFeed",
                 "disableClipboardHistory",
                 "disableLocation",
-                "disableAdvertisingId",
-                "disableTailoredExperiences",
-                "disableSpeechPersonalization",
                 "disableDeliveryOptimization",
                 "disableErrorReporting",
                 "disableCloudContent",
                 "disableWpbt",
-                "powershellTelemetryOptout",
             ],
         },
         QuestionnaireChapterDefinition {
             id: "performance",
             title: "Performance & Gaming",
-            description: "Gaming optimizations, GPU tweaks, scheduler tuning, and input improvements. Validated against real benchmarks.",
+            description: "Game, input and power settings. Measure changes on your own system.",
             kind: "preferences",
             source_prompt: "internal",
             source_sections: &["gaming", "gpu", "scheduler", "input"],
@@ -382,28 +384,27 @@ fn chapter_definitions() -> Vec<QuestionnaireChapterDefinition> {
                 "enableGameMode",
                 "disableGameDvr",
                 "disableFullscreenOptimizations",
-                "legacyFlipPresentation",
                 "disableTransparency",
                 "disableMouseAcceleration",
                 "disableStickyKeys",
                 "disableMemoryCompression",
                 "disableCoreParking",
                 "aggressiveBoostMode",
-                "mmcssTuning",
                 "disableGpuTelemetry",
-                "gpuPstateLock",
                 "disableDevicePowerSaving",
+                "xboxUsage",
             ],
         },
         QuestionnaireChapterDefinition {
             id: "shell",
             title: "Shell & UX Cleanup",
-            description: "Remove ads, suggestions, and clutter from the Windows shell. Clean up taskbar, context menus, and Explorer defaults.",
+            description: "Preinstalled apps, ads, taskbar, context menu and Explorer.",
             kind: "preferences",
             source_prompt: "internal",
             source_sections: &["shell", "taskbar", "context-menu", "explorer"],
             callouts: &[],
             question_keys: &[
+                "preinstalledApps",
                 "stripSearchWebNoise",
                 "edgeBehavior",
                 "disableCopilot",
@@ -417,7 +418,7 @@ fn chapter_definitions() -> Vec<QuestionnaireChapterDefinition> {
         QuestionnaireChapterDefinition {
             id: "network",
             title: "Network & Devices",
-            description: "Network stack and device power management changes. Sourced from internal research NIC, USB, and protocol hardening.",
+            description: "Network protocols and device power management.",
             kind: "preferences",
             source_prompt: "internal",
             source_sections: &["network", "usb", "pcie"],
@@ -425,10 +426,7 @@ fn chapter_definitions() -> Vec<QuestionnaireChapterDefinition> {
                 "Incorrect NIC or power-management tweaks can hurt latency or break connectivity.",
             ],
             question_keys: &[
-                "disableNetbios",
-                "disableIpv6",
-                "disableTeredo",
-                "disableNagle",
+                "disableLlmnr",
                 "disableUsbSelectiveSuspend",
                 "disablePcieLinkStatePm",
             ],
@@ -436,7 +434,7 @@ fn chapter_definitions() -> Vec<QuestionnaireChapterDefinition> {
         QuestionnaireChapterDefinition {
             id: "security",
             title: "Security Tradeoffs",
-            description: "These reduce overhead by removing protection. Both internal research and internal flag these as expert-only with explicit security warnings.",
+            description: "Options that reduce protection. Each one needs your explicit opt-in.",
             kind: "preferences",
             source_prompt: "internal",
             source_sections: &["security", "defender", "mitigations"],
@@ -448,7 +446,6 @@ fn chapter_definitions() -> Vec<QuestionnaireChapterDefinition> {
                 "disableDefender",
                 "disableHvci",
                 "disableVbs",
-                "reduceMitigations",
                 "disableCpuMitigations",
                 "disableVulnerableDriverBlocklist",
                 "disableWindowsUpdate",
@@ -615,6 +612,7 @@ pub fn load_questionnaire_schema(
     let wizard_path = playbook_dir.join(wizard_rel);
     let text = std::fs::read_to_string(&wizard_path)?;
     let file: WizardConfigFile = serde_json::from_str(&text)?;
+    let wizard_order: Vec<String> = file.desktop_questions.iter().map(|q| q.key.clone()).collect();
 
     let wizard_questions = file
         .desktop_questions
@@ -664,7 +662,37 @@ pub fn load_questionnaire_schema(
                 .collect(),
         })
         .filter(|chapter| !chapter.questions.is_empty())
+        .collect::<Vec<_>>();
+    let mut chapters = chapters;
+
+    // A wizard.json question that no chapter lists must not be silently
+    // dropped: collect it into a trailing "Additional Options" chapter.
+    let definitions = chapter_definitions();
+    let listed: BTreeSet<&str> = definitions
+        .iter()
+        .flat_map(|definition| definition.question_keys.iter().copied())
         .collect();
+    let unlisted: Vec<QuestionnaireQuestion> = wizard_order
+        .iter()
+        .filter(|key| !listed.contains(key.as_str()))
+        .filter_map(|key| wizard_questions.get(key).cloned())
+        .collect();
+    if !unlisted.is_empty() {
+        tracing::warn!(
+            keys = ?unlisted.iter().map(|q| q.key.as_str()).collect::<Vec<_>>(),
+            "wizard.json questions not listed in any chapter — placed in 'additional'"
+        );
+        chapters.push(QuestionnaireChapter {
+            id: "additional".to_string(),
+            title: "Additional Options".to_string(),
+            description: "Further options defined by the playbook.".to_string(),
+            kind: "preferences".to_string(),
+            source_prompt: "internal".to_string(),
+            source_sections: Vec::new(),
+            callouts: Vec::new(),
+            questions: unlisted,
+        });
+    }
 
     Ok(QuestionnaireSchema {
         package_id: file.package_id,
@@ -747,10 +775,11 @@ fn include_action(plan: &mut ResolvedPlan, action_id: &str) {
     let Some(action) = find_action_mut(plan, action_id) else {
         return;
     };
-    if matches!(
-        action.status,
-        ActionStatus::Blocked | ActionStatus::BuildGated | ActionStatus::ExpertOnly
-    ) {
+    // Blocked (profile / retired / hardware / duplicate) and BuildGated stay
+    // excluded. ExpertOnly IS promoted: the user's answer explicitly listed
+    // this action and the question's visibility (expert/aggressive preset) is
+    // the gate; execute.applyAction still requires expertConfirmed.
+    if matches!(action.status, ActionStatus::Blocked | ActionStatus::BuildGated) {
         return;
     }
     action.status = ActionStatus::Included;
@@ -1024,6 +1053,9 @@ pub fn evaluate_answers_on_plan(
         }
     }
 
+    // Answers can re-include an action whose effect another Included action
+    // already covers; de-duplicate again after applying them.
+    crate::playbook::dedupe_included_actions(&mut final_plan);
     recompute_plan_totals(&mut final_plan);
     let action_provenance = build_action_provenance(base_plan, &final_plan, &summary);
 
@@ -1053,6 +1085,337 @@ impl EvaluatedResolvedPlan {
             );
         }
         value
+    }
+}
+
+// ─── Quick setups ───────────────────────────────────────────────────────────
+// Data-driven: wizard.json options carry `"quickSetups": ["recommended"]`,
+// `["gaming"]` or both. For a visible question without a flagged option the
+// documented fallback applies (`fallback_option`). A tiny override table
+// covers machine-specific needs the data cannot express.
+
+/// One quick setup as returned by `questionnaire.resolve` (`quickSetups`).
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct QuickSetup {
+    pub id: String,
+    pub preset: String,
+    pub answers: BTreeMap<String, Value>,
+    pub optional_question_keys: Vec<String>,
+    /// Visible questions that had no flagged option (fallback rule used).
+    #[serde(skip)]
+    pub fallback_question_keys: Vec<String>,
+}
+
+/// Quick setup ids and their presets.
+pub const QUICK_SETUPS: &[(&str, &str)] = &[("recommended", "balanced"), ("gaming", "aggressive")];
+
+/// Questions whose answer must keep a capability on work PCs and office
+/// laptops in the "recommended" setup (value `true` = keep).
+const WORK_KEEP_KEYS: &[&str] = &["keepPrinterSupport", "keepRemoteAccess"];
+/// Capabilities the "gaming" setup turns off (value `false`).
+const GAMING_OFF_KEYS: &[&str] = &["keepPrinterSupport", "keepRemoteAccess"];
+/// Desktop-only power tweaks: on laptops these use the fallback (keep) answer.
+const LAPTOP_FALLBACK_KEYS: &[&str] = &[
+    "highPerformancePlan",
+    "disableHibernation",
+    "disableCoreParking",
+    "aggressiveBoostMode",
+    "disableUsbSelectiveSuspend",
+    "disablePcieLinkStatePm",
+    "disableDevicePowerSaving",
+];
+
+/// Risk facts about actions for security classification of options.
+pub struct ActionRiskIndex {
+    risky: BTreeSet<String>,
+}
+
+impl ActionRiskIndex {
+    /// Actions that are expert-only or high/extreme risk anywhere in the plan.
+    pub fn from_plan(plan: &ResolvedPlan) -> Self {
+        let risky = plan
+            .phases
+            .iter()
+            .flat_map(|p| p.actions.iter())
+            .filter(|a| a.action.expert_only || a.action.risk == "high" || a.action.risk == "extreme")
+            .map(|a| a.action.id.clone())
+            .collect();
+        ActionRiskIndex { risky }
+    }
+
+    fn option_is_risky(&self, option: &QuestionOption) -> bool {
+        option.danger == Some(true)
+            || option
+                .behavior
+                .as_ref()
+                .map(|b| b.include_actions.iter().any(|id| self.risky.contains(id)))
+                .unwrap_or(false)
+    }
+}
+
+/// A question is security-reducing when any option is marked danger or
+/// includes an expert-only / high / extreme action.
+pub fn is_security_reducing(question: &QuestionnaireQuestion, risk: &ActionRiskIndex) -> bool {
+    question.options.iter().any(|o| risk.option_is_risky(o))
+}
+
+/// Documented fallback for a question without a flagged option:
+///  1. the option whose behavior includes and blocks nothing;
+///  2. otherwise the "keep"/`false` option;
+///  3. otherwise none (question left unanswered).
+pub fn fallback_option(question: &QuestionnaireQuestion) -> Option<&QuestionOption> {
+    let inert = question.options.iter().find(|o| {
+        o.danger != Some(true)
+            && o.behavior
+                .as_ref()
+                .map(|b| b.include_actions.is_empty() && b.block_actions.is_empty())
+                .unwrap_or(true)
+    });
+    inert.or_else(|| {
+        question
+            .options
+            .iter()
+            .find(|o| o.value == Value::Bool(false) || o.value == Value::String("keep".into()))
+    })
+}
+
+fn option_with_value<'a>(question: &'a QuestionnaireQuestion, value: &Value) -> Option<&'a QuestionOption> {
+    question.options.iter().find(|o| o.value == *value)
+}
+
+/// Compute the quick setups for a profile/build. `risk` is built from any
+/// resolved plan of the same playbook; `chassis_laptop` adds the hardware
+/// signal to the profile-based laptop detection.
+pub fn compute_quick_setups(
+    schema: &QuestionnaireSchema,
+    profile: &str,
+    windows_build: u32,
+    chassis_laptop: bool,
+    risk: &ActionRiskIndex,
+) -> Vec<QuickSetup> {
+    let mut context = question_context(profile, windows_build);
+    context.is_laptop |= chassis_laptop;
+    let keep_work = matches!(profile, "work_pc" | "office_laptop");
+
+    QUICK_SETUPS
+        .iter()
+        .map(|(id, preset)| {
+            let mut answers = QuestionnaireAnswers::new();
+            answers.insert("aggressionPreset".to_string(), Value::String((*preset).to_string()));
+            let mut optional = Vec::new();
+            let mut fallbacks = Vec::new();
+
+            for question in all_questions(schema) {
+                if question.key == "aggressionPreset" || !question_visible(question, &answers, &context) {
+                    continue;
+                }
+                let security = is_security_reducing(question, risk);
+                if security && *id == "gaming" {
+                    optional.push(question.key.clone());
+                }
+
+                // A flagged option is used only if it is not itself risky
+                // (danger / expert-only / high / extreme): quick setups never
+                // reduce security; those choices stay explicit opt-ins.
+                let mut chosen: Option<&QuestionOption> = question
+                    .options
+                    .iter()
+                    .find(|o| o.quick_setups.iter().any(|s| s == id) && !risk.option_is_risky(o));
+                if chosen.is_none() && security {
+                    // Keep protection on: the keep/false option, else the
+                    // first non-risky option.
+                    let keep = question
+                        .options
+                        .iter()
+                        .filter(|o| !risk.option_is_risky(o))
+                        .find(|o| o.value == Value::Bool(false) || o.value == Value::String("keep".into()))
+                        .or_else(|| question.options.iter().find(|o| !risk.option_is_risky(o)));
+                    if let Some(keep) = keep {
+                        answers.insert(question.key.clone(), keep.value.clone());
+                    }
+                    continue;
+                }
+                // Table overrides (only if the option exists in the schema).
+                if *id == "recommended" && keep_work && WORK_KEEP_KEYS.contains(&question.key.as_str()) {
+                    chosen = option_with_value(question, &Value::Bool(true)).or(chosen);
+                }
+                if *id == "gaming" && GAMING_OFF_KEYS.contains(&question.key.as_str()) {
+                    chosen = option_with_value(question, &Value::Bool(false)).or(chosen);
+                }
+                if context.is_laptop && LAPTOP_FALLBACK_KEYS.contains(&question.key.as_str()) {
+                    chosen = fallback_option(question);
+                }
+                if chosen.is_none() {
+                    fallbacks.push(question.key.clone());
+                    chosen = fallback_option(question);
+                }
+                if let Some(option) = chosen {
+                    if !risk.option_is_risky(option) {
+                        answers.insert(question.key.clone(), option.value.clone());
+                    }
+                }
+            }
+
+            QuickSetup {
+                id: (*id).to_string(),
+                preset: (*preset).to_string(),
+                answers,
+                optional_question_keys: if *id == "gaming" { optional } else { Vec::new() },
+                fallback_question_keys: fallbacks,
+            }
+        })
+        .collect()
+}
+
+#[cfg(test)]
+mod quick_setup_tests {
+    use super::*;
+    use crate::playbook;
+
+    fn setup() -> Option<(std::path::PathBuf, crate::playbook::LoadedPlaybook, QuestionnaireSchema)> {
+        let dir = playbook::default_playbook_dir();
+        if !dir.exists() {
+            return None;
+        }
+        let playbook = playbook::load_playbook(&dir).expect("playbook loads");
+        let schema = load_questionnaire_schema(&dir, &playbook).expect("schema loads");
+        Some((dir, playbook, schema))
+    }
+
+    #[test]
+    fn quick_setups_are_valid_and_safe_for_every_profile() {
+        let Some((_dir, playbook, schema)) = setup() else { return };
+        let facts = crate::facts::HardwareFacts {
+            gpu_vendors: Some(vec!["nvidia".into()]),
+            cpu_vendor: Some("amd".into()),
+            chassis: Some("desktop".into()),
+            has_hdd: Some(false),
+            source: "test".into(),
+        };
+        let questions: BTreeMap<&str, &QuestionnaireQuestion> =
+            all_questions(&schema).into_iter().map(|q| (q.key.as_str(), q)).collect();
+        for profile in ["gaming_desktop", "office_laptop", "work_pc", "low_spec_system", "vm_cautious"] {
+            for build in [19045u32, 22631, 26100] {
+                let risk_plan = playbook::resolve_plan_with_facts(&playbook, profile, "expert", Some(build), &facts);
+                let risk = ActionRiskIndex::from_plan(&risk_plan);
+                let setups = compute_quick_setups(&schema, profile, build, profile.contains("laptop"), &risk);
+                assert_eq!(setups.len(), 2);
+                for s in &setups {
+                    if !s.fallback_question_keys.is_empty() {
+                        println!(
+                            "quick setup '{}' ({} @ {}): no flagged option, fallback used for {:?}",
+                            s.id, profile, build, s.fallback_question_keys
+                        );
+                    }
+                    // Every key/value exists in the loaded schema.
+                    for (key, value) in &s.answers {
+                        let q = questions.get(key.as_str()).unwrap_or_else(|| panic!("unknown question {key}"));
+                        assert!(q.options.iter().any(|o| o.value == *value), "{key}={value} not an option");
+                    }
+                    // Resolving with the setup includes nothing high/extreme and nothing retired.
+                    let base = playbook::resolve_plan_with_facts(&playbook, profile, &s.preset, Some(build), &facts);
+                    let evaluated = evaluate_answers_on_plan(&schema, &s.answers, profile, build, &base);
+                    for phase in &evaluated.plan.phases {
+                        for a in &phase.actions {
+                            if a.status == ActionStatus::Included {
+                                assert!(
+                                    a.action.risk != "high" && a.action.risk != "extreme",
+                                    "{} ({}): {} is {} and Included",
+                                    s.id, profile, a.action.id, a.action.risk
+                                );
+                                assert!(!crate::executor::is_retired_unsafe_action(&a.action.id));
+                            }
+                        }
+                    }
+                    if s.id == "gaming" {
+                        for key in ["disableSmartScreen", "disableDefender", "disableHvci", "disableVbs"] {
+                            if let Some(v) = s.answers.get(key) {
+                                assert!(*v == Value::Bool(false) || *v == Value::String("keep".into()), "{key}={v}");
+                            }
+                        }
+                    } else {
+                        assert!(s.optional_question_keys.is_empty());
+                    }
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn gaming_optional_keys_are_the_security_questions() {
+        let Some((_dir, playbook, schema)) = setup() else { return };
+        let plan = playbook::resolve_plan(&playbook, "gaming_desktop", "expert", Some(26100));
+        let risk = ActionRiskIndex::from_plan(&plan);
+        let setups = compute_quick_setups(&schema, "gaming_desktop", 26100, false, &risk);
+        let gaming = setups.iter().find(|s| s.id == "gaming").unwrap();
+        println!("gaming optionalQuestionKeys = {:?}", gaming.optional_question_keys);
+        for key in ["disableSmartScreen", "disableDefender", "disableHvci", "disableVbs"] {
+            if all_questions(&schema).iter().any(|q| q.key == key) {
+                assert!(gaming.optional_question_keys.iter().any(|k| k == key), "{key} must be optional");
+            }
+        }
+        // Expert-only questions are not part of the aggressive setup at all.
+        assert!(!gaming.answers.contains_key("disableCpuMitigations"));
+    }
+
+    #[test]
+    fn explicit_answer_promotes_expert_only_action() {
+        let Some((_dir, playbook, schema)) = setup() else { return };
+        let base = playbook::resolve_plan(&playbook, "gaming_desktop", "expert", Some(26100));
+        // Find an ExpertOnly action that some option explicitly includes.
+        let mut found = None;
+        for q in all_questions(&schema) {
+            for o in &q.options {
+                if let Some(b) = &o.behavior {
+                    for id in &b.include_actions {
+                        let expert = base.phases.iter().flat_map(|p| p.actions.iter()).any(|a| {
+                            a.action.id == *id && a.status == ActionStatus::ExpertOnly
+                        });
+                        if expert && found.is_none() {
+                            found = Some((q.key.clone(), o.value.clone(), id.clone()));
+                        }
+                    }
+                }
+            }
+        }
+        let Some((key, value, action_id)) = found else {
+            println!("no expert-only action is referenced by an answer — nothing to promote");
+            return;
+        };
+        let answers = QuestionnaireAnswers::from([
+            ("aggressionPreset".to_string(), Value::String("expert".into())),
+            (key, value),
+        ]);
+        let evaluated = evaluate_answers_on_plan(&schema, &answers, "gaming_desktop", 26100, &base);
+        let status = evaluated
+            .plan
+            .phases
+            .iter()
+            .flat_map(|p| p.actions.iter())
+            .find(|a| a.action.id == action_id)
+            .map(|a| a.status.clone());
+        assert!(
+            matches!(status, Some(ActionStatus::Included) | Some(ActionStatus::Blocked)),
+            "{action_id} should be promoted (or stay blocked by profile/dedupe), got {status:?}"
+        );
+    }
+
+    #[test]
+    fn unlisted_wizard_questions_are_not_dropped() {
+        let Some((dir, playbook, schema)) = setup() else { return };
+        let text = std::fs::read_to_string(dir.join(playbook.manifest.wizard_config.as_deref().unwrap_or("wizard.json"))).unwrap();
+        let raw: Value = serde_json::from_str(&text).unwrap();
+        let keys: Vec<String> = raw["desktopQuestions"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .filter_map(|q| q["key"].as_str().map(str::to_string))
+            .collect();
+        let in_schema: BTreeSet<String> = all_questions(&schema).iter().map(|q| q.key.clone()).collect();
+        for key in keys {
+            assert!(in_schema.contains(&key), "wizard question {key} missing from schema");
+        }
     }
 }
 

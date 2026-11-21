@@ -85,12 +85,22 @@ pub fn classify(assessment: &Value) -> anyhow::Result<Value> {
         })
         .unwrap_or(false);
 
-    // Detect laptop form factor heuristic: model name contains "laptop"/"notebook",
-    // or battery present (simulated by checking model string patterns)
+    // Form factor: SMBIOS chassis types / battery from the assessment; the
+    // model-name heuristic is only a fallback when the chassis is unknown.
     let model = vm_data.get("model").and_then(|v| v.as_str()).unwrap_or("");
-    let is_laptop = model.to_lowercase().contains("laptop")
-        || model.to_lowercase().contains("notebook")
-        || model.to_lowercase().contains("surface");
+    let chassis = assessment
+        .get("formFactor")
+        .and_then(|f| f.get("chassis"))
+        .and_then(|v| v.as_str())
+        .unwrap_or("unknown");
+    let is_laptop = match chassis {
+        "laptop" => true,
+        "desktop" => false,
+        _ => {
+            let lower = model.to_ascii_lowercase();
+            lower.contains("laptop") || lower.contains("notebook") || lower.contains("surface")
+        }
+    };
 
     // ── Score each profile ─────────────────────────────────────────────────
 
@@ -106,7 +116,9 @@ pub fn classify(assessment: &Value) -> anyhow::Result<Value> {
     if rdp_enabled {
         scores.work_pc += 20.0;
     }
-    if gp_running {
+    // The Group Policy client service runs on every Windows install; it is
+    // only a work signal together with a domain join.
+    if gp_running && domain_joined {
         scores.work_pc += 15.0;
     }
     // Baseline: any machine with some signals gets partial credit
@@ -302,4 +314,44 @@ fn compute_preservation_flags(profile: &str, work_indicators: &Value) -> Value {
     }
 
     flags
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn this_machine(chassis: &str) -> Value {
+        serde_json::json!({
+            "workSignals": { "printSpooler": "Running", "rdpDenied": 1, "domainJoined": false, "groupPolicyClient": "Running" },
+            "vm": { "model": "B650MT-E PRO", "isVM": false },
+            "hardware": {
+                "cpu": { "Name": "AMD Ryzen 7 9800X3D 8-Core Processor", "NumberOfCores": 8, "NumberOfLogicalProcessors": 8 },
+                "ramGb": 32,
+                "gpu": { "Name": "NVIDIA GeForce RTX 5060 Ti", "AdapterRAM": 4293918720u64 }
+            },
+            "formFactor": { "chassis": chassis }
+        })
+    }
+
+    #[test]
+    fn ryzen_x3d_rtx_desktop_is_gaming_desktop() {
+        let result = classify(&this_machine("desktop")).unwrap();
+        assert_eq!(result["primary"], "gaming_desktop");
+        assert_eq!(result["signals"]["isLaptop"], false);
+    }
+
+    #[test]
+    fn chassis_laptop_is_not_classified_as_desktop() {
+        let result = classify(&this_machine("laptop")).unwrap();
+        assert_ne!(result["primary"], "gaming_desktop");
+        assert_eq!(result["signals"]["isLaptop"], true);
+    }
+
+    #[test]
+    fn group_policy_client_alone_is_not_a_work_signal() {
+        let mut a = this_machine("desktop");
+        a["workSignals"]["printSpooler"] = serde_json::json!("Stopped");
+        let result = classify(&a).unwrap();
+        assert_eq!(result["scores"]["work_pc"], 0.0);
+    }
 }

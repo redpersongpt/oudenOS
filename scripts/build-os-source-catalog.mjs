@@ -12,17 +12,17 @@ const outputPath = path.join(repoRoot, "artifacts", "os-source-catalog.json");
 const winutilSource = {
   source: "winutil",
   upstreamRepo: "ChrisTitusTech/winutil",
-  upstreamCommit: "87a5779f0b610743b090fd0d72fb0ab179b97101",
+  upstreamCommit: "70c23c80641d7370532af2f619b2842658600842",
   upstreamPath: "config/tweaks.json",
   upstreamUrl:
-    "https://github.com/ChrisTitusTech/winutil/blob/87a5779f0b610743b090fd0d72fb0ab179b97101/config/tweaks.json",
+    "https://github.com/ChrisTitusTech/winutil/blob/70c23c80641d7370532af2f619b2842658600842/config/tweaks.json",
 };
 
 const expectedCounts = new Map([
-  ["Essential Tweaks", 16],
-  ["z__Advanced Tweaks - CAUTION", 23],
-  ["Customize Preferences", 19],
-  ["Performance Plans", 2],
+  ["Essential Tweaks", 18],
+  ["z__Advanced Tweaks - CAUTION", 24],
+  ["Customize Preferences", 25],
+  ["Performance Plans - NOT FOR LAPTOPS", 2],
 ]);
 
 const requiredActions = new Set(["WPFTweaksActivity", "WPFTweaksTelemetry"]);

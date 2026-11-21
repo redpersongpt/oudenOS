@@ -79,9 +79,75 @@ pub(crate) fn winutil_phase_blueprints() -> Vec<ExternalCatalogPhase> {
             id: "winutil-performance-plans",
             name: "WinUtil Performance Plans",
             description: "Translated coverage of WinUtil power and performance-plan actions.",
-            categories: &["Performance Plans"],
+            // Upstream renamed "Performance Plans" to "Performance Plans - NOT FOR LAPTOPS"
+            // (winutil 70c23c8); the old name is kept so older snapshots still map.
+            categories: &[PERFORMANCE_PLANS_CATEGORY, LEGACY_PERFORMANCE_PLANS_CATEGORY],
         },
     ]
+}
+
+const ADVANCED_CATEGORY: &str = "z__Advanced Tweaks - CAUTION";
+const PERFORMANCE_PLANS_CATEGORY: &str = "Performance Plans - NOT FOR LAPTOPS";
+const LEGACY_PERFORMANCE_PLANS_CATEGORY: &str = "Performance Plans";
+
+fn is_performance_plans(category: &str) -> bool {
+    category == PERFORMANCE_PLANS_CATEGORY || category == LEGACY_PERFORMANCE_PLANS_CATEGORY
+}
+
+/// Per-action risk classification for WinUtil keys whose category alone would
+/// understate (or overstate) their impact. Returns `None` to fall back to the
+/// category default.
+fn winutil_action_risk_override(id: &str) -> Option<&'static str> {
+    match id {
+        // Decrypts the system drive: security downgrade, long-running, hard to undo.
+        "WPFTweaksDisableBitLocker" => Some("high"),
+        // Removes the anti-phishing prompt for unsigned .rdp files.
+        "WPFTweaksDisableWarningForUnsignedRdp" => Some("high"),
+        // Can make feature updates fail for lack of space.
+        "WPFTweaksReservedStorage" => Some("high"),
+        // Removes AI appx packages (CoreAI EndOfLife) and the Recall optional feature.
+        "WPFTweaksWindowsAI" => Some("high"),
+        // Can leave Xbox services (XboxGipSvc) stuck on "Starting" (winutil #5115).
+        "WPFTweaksSvcHostSplitting" => Some("high"),
+        // Explorer/Start search becomes much slower without the index.
+        "WPFTweaksDisableSearchIndexing" => Some("high"),
+        // Display-driver level change; can cause or fix flicker depending on GPU.
+        "WPFMultiplaneOverlay" => Some("mixed"),
+        // Policy value; skips the lock screen for every user.
+        "WPFToggleDisableLockscreen" => Some("low"),
+        _ => None,
+    }
+}
+
+fn winutil_action_warning_override(id: &str) -> Option<&'static str> {
+    match id {
+        "WPFTweaksDisableBitLocker" => Some(
+            "Decrypts the system drive (Disable-BitLocker). This is a security downgrade, can take a long time, and re-encrypting requires Enable-BitLocker. Prefer blocking automatic device encryption instead.",
+        ),
+        "WPFTweaksDisableWarningForUnsignedRdp" => Some(
+            "Removes the Windows warning shown when opening unsigned .rdp files, a protection against RDP-file phishing. Only apply on machines that open trusted RDP files exclusively.",
+        ),
+        "WPFTweaksReservedStorage" => Some(
+            "Disables Reserved Storage via DISM. Windows feature updates can fail without it; re-enable before major upgrades.",
+        ),
+        "WPFTweaksWindowsAI" => Some(
+            "Removes AI/Copilot packages, marks the CoreAI package end-of-life, and disables the Recall optional feature. Package removal is not cleanly reversible.",
+        ),
+        "WPFTweaksSvcHostSplitting" => Some(
+            "Disables svchost service splitting. Upstream recommends it only for systems with 12 GB RAM or less; it can leave Xbox services such as XboxGipSvc stuck on Starting. Requires a restart.",
+        ),
+        "WPFTweaksDisableSearchIndexing" => Some(
+            "Disables the Windows Search service (WSearch). File searches in Explorer and the Start menu become much slower; mainly useful on mechanical drives.",
+        ),
+        "WPFMultiplaneOverlay" => Some(
+            "Changes Multiplane Overlay (DWM OverlayTestMode / GraphicsDrivers DisableOverlays). Use only to troubleshoot flicker or stutter; benchmark before and after.",
+        ),
+        _ => None,
+    }
+}
+
+fn winutil_expert_override(id: &str) -> bool {
+    matches!(id, "WPFTweaksDisableBitLocker")
 }
 
 pub(crate) fn load_source_catalog() -> anyhow::Result<SourceCatalog> {
@@ -112,12 +178,16 @@ fn winutil_warning_message(action: &SourceCatalogAction) -> Option<String> {
         || action.operations.appx > 0
         || action.operations.invoke_script > 0;
 
+    if let Some(warning) = winutil_action_warning_override(&action.id) {
+        return Some(warning.to_string());
+    }
+
     match action.category.as_str() {
-        "z__Advanced Tweaks - CAUTION" => Some(
+        ADVANCED_CATEGORY => Some(
             "Translated from WinUtil advanced tweaks. Review the original intent and benchmark before applying any equivalent automated action.".to_string(),
         ),
-        "Performance Plans" => Some(
-            "Power-plan and latency changes can help or hurt depending on the machine. Validate thermals, idle behavior, and frametime before adopting.".to_string(),
+        category if is_performance_plans(category) => Some(
+            "Power-plan and latency changes can help or hurt depending on the machine. WinUtil marks these as not for laptops. Validate thermals, idle behavior, and frametime before adopting.".to_string(),
         ),
         _ if high_impact => Some(
             "This WinUtil item touches multiple subsystems or scripts. Keep it manual until an equivalent native implementation is fully verified.".to_string(),
@@ -126,24 +196,29 @@ fn winutil_warning_message(action: &SourceCatalogAction) -> Option<String> {
     }
 }
 
-fn winutil_risk(category: &str) -> &'static str {
-    match category {
+fn winutil_risk(action: &SourceCatalogAction) -> &'static str {
+    if let Some(risk) = winutil_action_risk_override(&action.id) {
+        return risk;
+    }
+    match action.category.as_str() {
         "Essential Tweaks" => "low",
         "Customize Preferences" => "safe",
-        "Performance Plans" => "mixed",
-        "z__Advanced Tweaks - CAUTION" => "high",
-        _ => "safe",
+        category if is_performance_plans(category) => "mixed",
+        ADVANCED_CATEGORY => "high",
+        // Unknown future categories must not silently read as safe.
+        _ => "mixed",
     }
 }
 
 fn winutil_benchmark_required(action: &SourceCatalogAction) -> bool {
-    action.category == "Performance Plans"
-        || action.category == "z__Advanced Tweaks - CAUTION"
+    is_performance_plans(&action.category)
+        || action.category == ADVANCED_CATEGORY
         || action.operations.service > 0
+        || action.id == "WPFMultiplaneOverlay"
 }
 
 fn winutil_expert_only(action: &SourceCatalogAction) -> bool {
-    action.category == "z__Advanced Tweaks - CAUTION"
+    action.category == ADVANCED_CATEGORY || winutil_expert_override(&action.id)
 }
 
 fn translate_winutil_action(action: &SourceCatalogAction) -> PlaybookAction {
@@ -199,7 +274,7 @@ fn translate_winutil_action(action: &SourceCatalogAction) -> PlaybookAction {
             "Translated from the vendored WinUtil source catalog. Original action {} in category '{}' reports {}.",
             action.id, action.category, operation_summary
         ),
-        risk: winutil_risk(&action.category).to_string(),
+        risk: winutil_risk(action).to_string(),
         tier: "free".to_string(),
         default: false,
         expert_only: winutil_expert_only(action),

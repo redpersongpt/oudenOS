@@ -21,9 +21,26 @@ impl Database {
         let conn = Connection::open(&path)?;
 
         conn.execute_batch("PRAGMA journal_mode=WAL;")?;
+        // WAL + NORMAL is durable against application crashes (only an OS
+        // crash can lose the last commits) and avoids an fsync per statement.
+        conn.execute_batch("PRAGMA synchronous=NORMAL;")?;
         conn.execute_batch("PRAGMA foreign_keys=ON;")?;
+        conn.busy_timeout(std::time::Duration::from_secs(5))?;
 
         let db = Database { conn, path };
+        db.run_migrations()?;
+        Ok(db)
+    }
+
+    /// In-memory database with the full schema (tests only).
+    #[cfg(test)]
+    pub fn open_in_memory() -> Result<Self> {
+        let conn = Connection::open_in_memory()?;
+        conn.execute_batch("PRAGMA foreign_keys=ON;")?;
+        let db = Database {
+            conn,
+            path: PathBuf::from(":memory:"),
+        };
         db.run_migrations()?;
         Ok(db)
     }

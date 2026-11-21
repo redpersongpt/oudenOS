@@ -300,11 +300,11 @@ pub fn install(playbook_dir: &Path, app_id: &str) -> anyhow::Result<serde_json::
 #[cfg(windows)]
 fn install_catalog_entry(app_id: &str, entry: &CatalogEntry) -> anyhow::Result<InstallResult> {
     let app_name = entry.name.clone();
-    let safe_url = powershell::escape_ps_string(entry.url.as_str());
-    let safe_silent_args = powershell::escape_ps_string(entry.silent_args.as_str());
-    let safe_id = powershell::escape_ps_string(app_id);
+    let safe_url = powershell::escape_ps_string(entry.url.as_str())?;
+    let safe_silent_args = powershell::escape_ps_string(entry.silent_args.as_str())?;
+    let safe_id = powershell::escape_ps_string(app_id)?;
     let download_dir = installer_cache_dir()?;
-    let safe_download_dir = powershell::escape_ps_string(download_dir.to_string_lossy().as_ref());
+    let safe_download_dir = powershell::escape_ps_string(download_dir.to_string_lossy().as_ref())?;
 
     let script = format!(
         "$ProgressPreference='SilentlyContinue'; \

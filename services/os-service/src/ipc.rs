@@ -4,19 +4,19 @@
 
 use crate::db::Database;
 use crate::{
-    assessor, classifier, executor, ledger, personalizer, playbook, questionnaire, rollback,
+    assessor, catalog, classifier, executor, facts, ledger, personalizer, questionnaire, rollback,
     transformer,
 };
 use anyhow::Result;
 use serde::{Deserialize, Serialize};
 use std::time::Instant;
 use tokio::io::{self, AsyncBufReadExt, AsyncWriteExt, BufReader};
-use tokio::process::Command;
 
 #[derive(Debug, Deserialize)]
 struct RpcRequest {
     id: u64,
     method: String,
+    #[serde(default)]
     params: serde_json::Value,
 }
 
@@ -36,26 +36,17 @@ struct RpcError {
 }
 
 fn is_retired_unsafe_action(action_id: &str) -> bool {
-    matches!(
-        action_id,
-        "cpu.disable-dynamic-tick"
-            | "cpu.global-timer-resolution"
-            | "gpu.disable-hags"
-            | "memory.disable-compression"
-            | "perf.disable-ndu"
-            | "perf.large-system-cache"
-            | "perf.disable-prefetch"
-            | "perf.svchost-split-threshold"
-            | "perf.disable-page-combining"
-            | "privacy.disable-smart-app-control"
-            | "storage.disable-8dot3-filenames"
-            | "system.disable-windows-update"
-            | "services.disable-wuauserv"
-            | "services.disable-update-orchestrator-svc"
-            | "services.disable-bits"
-            | "services.disable-waasmedic"
-            | "services.disable-delivery-optimization"
-    )
+    executor::is_retired_unsafe_action(action_id)
+}
+
+/// Action ids are lookup keys only, but keep them sane (they are logged and
+/// stored).
+fn valid_action_id(action_id: &str) -> bool {
+    !action_id.is_empty()
+        && action_id.len() <= 128
+        && action_id
+            .chars()
+            .all(|c| c.is_ascii_alphanumeric() || matches!(c, '.' | '-' | '_' | ':'))
 }
 
 // Sidecar structs removed — DB-backed execution ledger is the only truth path.
@@ -117,14 +108,52 @@ impl RpcResponse {
 }
 
 /// Serve JSON-RPC over stdio.
-/// The Electron main process spawns this binary and communicates via stdin/stdout.
+/// The desktop shell spawns this binary and communicates via stdin/stdout.
+///
+/// Threading: a dedicated worker thread owns the database and executes every
+/// stateful/system request strictly in arrival order (so a fire-and-forget
+/// `ledger.markStarted` always lands before the following `applyAction`).
+/// The async loop keeps reading stdin and answers liveness requests
+/// (`system.status`, `system.elevationStatus`) immediately, even while a long
+/// action is running. Responses are written by a single writer task.
 pub async fn serve(db: Database) -> Result<()> {
     let stdin = io::stdin();
-    let mut stdout = io::stdout();
     let reader = BufReader::new(stdin);
     let mut lines = reader.lines();
 
     let start_time = Instant::now();
+    let (resp_tx, mut resp_rx) = tokio::sync::mpsc::unbounded_channel::<RpcResponse>();
+    let (job_tx, job_rx) = std::sync::mpsc::channel::<RpcRequest>();
+
+    let worker_resp = resp_tx.clone();
+    let worker = std::thread::Builder::new()
+        .name("oudenos-worker".into())
+        .spawn(move || {
+            for request in job_rx {
+                tracing::debug!("RPC: {} (id={})", request.method, request.id);
+                let id = request.id;
+                let response = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+                    dispatch(&db, &request, start_time)
+                }))
+                .unwrap_or_else(|_| RpcResponse::err(id, -500, "Internal error (request handler panicked)".into()));
+                if worker_resp.send(response).is_err() {
+                    break;
+                }
+            }
+        })?;
+
+    let writer = tokio::spawn(async move {
+        let mut stdout = io::stdout();
+        while let Some(response) = resp_rx.recv().await {
+            let Ok(mut json) = serde_json::to_string(&response) else {
+                continue;
+            };
+            json.push('\n');
+            if stdout.write_all(json.as_bytes()).await.is_err() || stdout.flush().await.is_err() {
+                break;
+            }
+        }
+    });
 
     tracing::info!("IPC server ready (stdio mode)");
 
@@ -136,36 +165,52 @@ pub async fn serve(db: Database) -> Result<()> {
                 continue;
             }
         };
-
-        tracing::debug!("RPC: {} (id={})", request.method, request.id);
-
-        let response = dispatch(&db, &request, start_time).await;
-        let mut json = serde_json::to_string(&response)?;
-        json.push('\n');
-        stdout.write_all(json.as_bytes()).await?;
-        stdout.flush().await?;
+        match request.method.as_str() {
+            "system.status" | "system.elevationStatus" => {
+                let _ = resp_tx.send(fast_response(&request, start_time));
+            }
+            _ => {
+                if job_tx.send(request).is_err() {
+                    break;
+                }
+            }
+        }
     }
 
+    // stdin closed: let the worker finish queued work, then flush responses.
+    drop(job_tx);
+    drop(resp_tx);
+    let _ = tokio::task::spawn_blocking(move || worker.join()).await;
+    let _ = writer.await;
     Ok(())
 }
 
-async fn dispatch(db: &Database, req: &RpcRequest, start_time: Instant) -> RpcResponse {
+/// Liveness requests answered without touching the worker queue.
+fn fast_response(req: &RpcRequest, start_time: Instant) -> RpcResponse {
+    match req.method.as_str() {
+        "system.elevationStatus" => RpcResponse::ok(
+            req.id,
+            serde_json::json!({ "isElevated": crate::powershell::is_elevated() }),
+        ),
+        _ => RpcResponse::ok(
+            req.id,
+            serde_json::json!({
+                "status": "running",
+                "uptimeSeconds": start_time.elapsed().as_secs(),
+                "version": env!("CARGO_PKG_VERSION"),
+                "windowsBuild": facts::detect_windows_build(),
+            }),
+        ),
+    }
+}
+
+fn dispatch(db: &Database, req: &RpcRequest, start_time: Instant) -> RpcResponse {
     let id = req.id;
     let params = &req.params;
 
     match req.method.as_str() {
         // ── System status ───────────────────────────────────────────────
-        "system.status" => {
-            let uptime = start_time.elapsed().as_secs();
-            RpcResponse::ok(
-                id,
-                serde_json::json!({
-                    "status": "running",
-                    "uptimeSeconds": uptime,
-                    "version": env!("CARGO_PKG_VERSION"),
-                }),
-            )
-        }
+        "system.status" | "system.elevationStatus" => fast_response(req, start_time),
 
         "system.reboot" => {
             let reason = params
@@ -184,7 +229,7 @@ async fn dispatch(db: &Database, req: &RpcRequest, start_time: Instant) -> RpcRe
                 }
             }
 
-            match schedule_system_reboot(reason, reboot_context).await {
+            match schedule_system_reboot(reason, reboot_context) {
                 Ok(result) => {
                     let detail = format!(
                         "reboot scheduled · planId={} · packageId={} · packageRole={}",
@@ -211,21 +256,16 @@ async fn dispatch(db: &Database, req: &RpcRequest, start_time: Instant) -> RpcRe
             }
         }
 
-        // ── Elevation / restore point ────────────────────────────────────
-        "system.elevationStatus" => RpcResponse::ok(
-            id,
-            serde_json::json!({ "isElevated": crate::powershell::is_elevated() }),
-        ),
-
+        // ── Restore point ────────────────────────────────────────────────
         "system.restorePointStatus" => {
             RpcResponse::ok(id, crate::restore_point::availability())
         }
 
         "system.createRestorePoint" => {
-            let description = params
-                .get("description")
-                .and_then(|v| v.as_str())
-                .unwrap_or("oudenOS pre-optimization restore point");
+            // SECURITY: the client-supplied description is ignored; a fixed
+            // server-side string is used so nothing from the renderer reaches
+            // the PowerShell command line.
+            let description = crate::restore_point::RESTORE_POINT_DESCRIPTION;
             let outcome = crate::restore_point::create(description);
             let status = outcome
                 .get("status")
@@ -253,7 +293,7 @@ async fn dispatch(db: &Database, req: &RpcRequest, start_time: Instant) -> RpcRe
         // ── Assessment ──────────────────────────────────────────────────
         "assess.full" => {
             tracing::info!("Full system assessment requested");
-            match assessor::assess_system().await {
+            match assessor::assess_system() {
                 Ok(mut assessment) => {
                     // Persist to database
                     match store_assessment(db, &assessment) {
@@ -404,6 +444,10 @@ async fn dispatch(db: &Database, req: &RpcRequest, start_time: Instant) -> RpcRe
                 );
             }
 
+            if !valid_action_id(action_id) {
+                return RpcResponse::err(id, -3, "Invalid actionId".into());
+            }
+
             if is_retired_unsafe_action(action_id) {
                 return RpcResponse::err(
                     id,
@@ -413,15 +457,17 @@ async fn dispatch(db: &Database, req: &RpcRequest, start_time: Instant) -> RpcRe
             }
 
             // SECURITY: Never accept actionData directly from the renderer.
-            // Always resolve from trusted playbook definitions to prevent
-            // PowerShell / registry / service injection via IPC.
+            // Always resolve from trusted playbook definitions (cached) to
+            // prevent PowerShell / registry / service injection via IPC.
             let action_data = {
-                let playbook_dir =
-                    resolve_playbook_dir().unwrap_or_else(playbook::default_playbook_dir);
-                let playbook_lookup = playbook::find_action_definition(&playbook_dir, action_id);
-
-                match playbook_lookup {
+                let Some(playbook_dir) = resolve_playbook_dir() else {
+                    return RpcResponse::err(id, -50, "Playbook directory not found".into());
+                };
+                match catalog::find_action_definition(&playbook_dir, action_id) {
                     Ok(Some(def)) => def,
+                    // Embedded legacy catalog (transformer.rs): only reachable
+                    // for ids the playbook does not define; retired ids are
+                    // filtered by get_actions and gating below still applies.
                     Ok(None) => match transformer::get_actions(None)
                         .into_iter()
                         .find(|a| a.get("id").and_then(|v| v.as_str()) == Some(action_id))
@@ -441,6 +487,17 @@ async fn dispatch(db: &Database, req: &RpcRequest, start_time: Instant) -> RpcRe
                     }
                 }
             };
+
+            // Build / hardware gating with the service's own facts — never
+            // the client's build number.
+            let build = facts::effective_windows_build(None);
+            if let Err(reason) = facts::gate_execution_json(&action_data, build, &facts::current_facts()) {
+                return RpcResponse::err(
+                    id,
+                    -23,
+                    format!("Action not applicable on this system: {}", reason),
+                );
+            }
 
             // Guard: reject expert_only actions unless caller explicitly confirms
             let is_expert = action_data
@@ -505,12 +562,19 @@ async fn dispatch(db: &Database, req: &RpcRequest, start_time: Instant) -> RpcRe
                     if let Some(context) = journal_context.as_ref() {
                         let plan_id = &context.package.plan_id;
 
+                        let is_failure = matches!(result_status, "failed" | "rolled_back" | "rollback_failed");
                         let ledger_result = ledger::ActionResult {
                             action_id: action_id.to_string(),
                             status: result_status.to_string(),
                             rollback_snapshot_id: rollback_snapshot_id.clone(),
-                            error_message: if result_status == "failed" {
-                                Some(format!("Action {} returned failure", action_id))
+                            error_message: if is_failure {
+                                Some(
+                                    outcome
+                                        .get("error")
+                                        .and_then(|v| v.as_str())
+                                        .map(str::to_string)
+                                        .unwrap_or_else(|| format!("Action {} returned {}", action_id, result_status)),
+                                )
                             } else {
                                 None
                             },
@@ -737,7 +801,7 @@ async fn dispatch(db: &Database, req: &RpcRequest, start_time: Instant) -> RpcRe
                 .unwrap_or("conservative");
 
             // Step 1: Assess
-            let assessment = match assessor::assess_system().await {
+            let assessment = match assessor::assess_system() {
                 Ok(mut a) => {
                     match store_assessment(db, &a) {
                         Ok(aid) => {
@@ -857,11 +921,11 @@ async fn dispatch(db: &Database, req: &RpcRequest, start_time: Instant) -> RpcRe
                 .get("profile")
                 .and_then(|v| v.as_str())
                 .unwrap_or("gaming_desktop");
-            let windows_build = params
+            let client_build = params
                 .get("windowsBuild")
                 .and_then(|v| v.as_u64())
-                .map(|value| value as u32)
-                .unwrap_or(22631);
+                .map(|value| value as u32);
+            let windows_build = facts::effective_windows_build(client_build);
 
             let playbook_dir = match resolve_playbook_dir() {
                 Some(d) => d,
@@ -870,10 +934,26 @@ async fn dispatch(db: &Database, req: &RpcRequest, start_time: Instant) -> RpcRe
                 }
             };
 
-            match crate::playbook::load_playbook(&playbook_dir) {
+            match catalog::cached_playbook(&playbook_dir) {
                 Ok(playbook) => {
                     match questionnaire::load_questionnaire_schema(&playbook_dir, &playbook) {
                         Ok(schema) => {
+                            let hw = facts::current_facts();
+                            let risk_plan = crate::playbook::resolve_plan_with_facts(
+                                &playbook,
+                                profile,
+                                "expert",
+                                Some(windows_build),
+                                &hw,
+                            );
+                            let risk = questionnaire::ActionRiskIndex::from_plan(&risk_plan);
+                            let quick_setups = questionnaire::compute_quick_setups(
+                                &schema,
+                                profile,
+                                windows_build,
+                                hw.chassis.as_deref() == Some("laptop"),
+                                &risk,
+                            );
                             let mut result = serde_json::to_value(schema)
                                 .unwrap_or_else(|_| serde_json::json!({}));
                             if let Some(obj) = result.as_object_mut() {
@@ -881,6 +961,10 @@ async fn dispatch(db: &Database, req: &RpcRequest, start_time: Instant) -> RpcRe
                                 obj.insert(
                                     "windowsBuild".to_string(),
                                     serde_json::json!(windows_build),
+                                );
+                                obj.insert(
+                                    "quickSetups".to_string(),
+                                    serde_json::to_value(&quick_setups).unwrap_or_else(|_| serde_json::json!([])),
                                 );
                             }
                             RpcResponse::ok(id, result)
@@ -906,7 +990,7 @@ async fn dispatch(db: &Database, req: &RpcRequest, start_time: Instant) -> RpcRe
                 .get("preset")
                 .and_then(|v| v.as_str())
                 .unwrap_or("balanced");
-            let windows_build = params
+            let client_build = params
                 .get("windowsBuild")
                 .and_then(|v| v.as_u64())
                 .map(|b| b as u32);
@@ -932,14 +1016,15 @@ async fn dispatch(db: &Database, req: &RpcRequest, start_time: Instant) -> RpcRe
                 "Resolving playbook"
             );
 
-            match crate::playbook::load_playbook(&playbook_dir) {
+            match catalog::cached_playbook(&playbook_dir) {
                 Ok(playbook) => {
-                    let windows_build = windows_build.unwrap_or(22631);
-                    let plan = crate::playbook::resolve_plan(
+                    let windows_build = facts::effective_windows_build(client_build);
+                    let plan = crate::playbook::resolve_plan_with_facts(
                         &playbook,
                         profile,
                         preset,
                         Some(windows_build),
+                        &facts::current_facts(),
                     );
                     let mut result =
                         match questionnaire::load_questionnaire_schema(&playbook_dir, &playbook) {
@@ -966,6 +1051,10 @@ async fn dispatch(db: &Database, req: &RpcRequest, start_time: Instant) -> RpcRe
                         obj.insert(
                             "totalActions".to_string(),
                             serde_json::json!(playbook.total_actions),
+                        );
+                        obj.insert(
+                            "windowsBuild".to_string(),
+                            serde_json::json!(windows_build),
                         );
                     }
                     RpcResponse::ok(id, result)
@@ -998,18 +1087,21 @@ async fn dispatch(db: &Database, req: &RpcRequest, start_time: Instant) -> RpcRe
                 value_name = value_name,
                 "Verifying registry value"
             );
-            let current = executor::read_registry_value_public(hive, path, value_name);
-
-            RpcResponse::ok(
-                id,
-                serde_json::json!({
-                    "hive": hive,
-                    "path": path,
-                    "valueName": value_name,
-                    "currentValue": current,
-                    "exists": current.is_some(),
-                }),
-            )
+            // Native read; the hive is allowlisted, nothing reaches a shell.
+            match executor::read_registry_value_public(hive, path, value_name) {
+                Ok(current) => RpcResponse::ok(
+                    id,
+                    serde_json::json!({
+                        "hive": hive,
+                        "path": path,
+                        "valueName": value_name,
+                        "currentValue": current.as_ref().map(|(v, _)| v.clone()),
+                        "valueKind": current.as_ref().map(|(_, k)| k.clone()),
+                        "exists": current.is_some(),
+                    }),
+                ),
+                Err(e) => RpcResponse::err(id, -3, format!("Invalid or unreadable registry target: {}", e)),
+            }
         }
 
         // App bundle system removed — app installs can register RunOnce/Active Setup
@@ -1191,48 +1283,9 @@ async fn dispatch(db: &Database, req: &RpcRequest, start_time: Instant) -> RpcRe
 
 // ─── Playbook directory resolution ──────────────────────────────────────────
 
-/// Resolve the playbook directory across packaged and dev layouts.
+/// Resolve the playbook directory (see catalog::resolve_playbook_dir).
 fn resolve_playbook_dir() -> Option<std::path::PathBuf> {
-    let mut candidates: Vec<std::path::PathBuf> = Vec::new();
-
-    if let Ok(from_env) = std::env::var("OUDENOS_PLAYBOOK_DIR") {
-        candidates.push(std::path::PathBuf::from(from_env));
-    }
-
-    if let Ok(exe) = std::env::current_exe() {
-        if let Some(parent) = exe.parent() {
-            candidates.push(parent.join("playbooks"));
-            candidates.push(parent.join("resources").join("playbooks"));
-            candidates.push(parent.join("..").join("resources").join("playbooks"));
-            candidates.push(
-                parent
-                    .join("..")
-                    .join("..")
-                    .join("..")
-                    .join("..")
-                    .join("playbooks"),
-            );
-        }
-    }
-
-    if let Ok(cwd) = std::env::current_dir() {
-        candidates.push(cwd.join("playbooks"));
-        candidates.push(cwd.join("resources").join("playbooks"));
-        candidates.push(cwd.join("..").join("playbooks"));
-    }
-
-    candidates.push(std::path::PathBuf::from("playbooks"));
-
-    let default_dir = crate::playbook::default_playbook_dir();
-    candidates.push(default_dir);
-
-    for candidate in candidates {
-        if candidate.exists() {
-            return candidate.canonicalize().ok().or(Some(candidate));
-        }
-    }
-
-    None
+    catalog::resolve_playbook_dir()
 }
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
@@ -1254,7 +1307,7 @@ fn append_audit_log(
     Ok(())
 }
 
-async fn schedule_system_reboot(
+fn schedule_system_reboot(
     reason: &str,
     reboot_context: Option<RpcRebootJournalContext>,
 ) -> anyhow::Result<serde_json::Value> {
@@ -1280,10 +1333,9 @@ async fn schedule_system_reboot(
 
     #[cfg(windows)]
     {
-        let status = Command::new("shutdown.exe")
+        let status = std::process::Command::new("shutdown.exe")
             .args(["/r", "/t", "0", "/f", "/c", &safe_reason])
-            .status()
-            .await?;
+            .status()?;
 
         if !status.success() {
             anyhow::bail!("shutdown.exe exited with status {}", status);

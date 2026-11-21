@@ -59,6 +59,10 @@ pub fn create_plan(
 ) -> Result<String> {
     let now = chrono::Utc::now().to_rfc3339();
 
+    // One transaction for the whole plan: a crash can never leave a partially
+    // enqueued plan, and N inserts cost one commit instead of N.
+    let tx = db.conn().unchecked_transaction()?;
+
     db.conn().execute(
         "INSERT OR IGNORE INTO execution_plans
          (id, package_id, package_role, package_version, package_source_ref,
@@ -132,6 +136,8 @@ pub fn create_plan(
         )?;
     }
 
+    tx.commit()?;
+
     tracing::info!(
         plan_id = package.plan_id.as_str(),
         total = actions.len(),
@@ -146,21 +152,18 @@ pub fn create_plan(
 pub fn record_action_result(db: &Database, plan_id: &str, result: &ActionResult) -> Result<()> {
     let now = chrono::Utc::now().to_rfc3339();
 
-    let queue_status = match result.status.as_str() {
-        "success" | "completed" => "completed",
-        "failed" => "failed",
-        "skipped" => "skipped",
-        "preserved" => "preserved",
-        _ => &result.status,
-    };
+    let queue_status = queue_status_for(&result.status);
 
+    // COALESCE: a later report without a snapshot id / error (e.g. the UI's
+    // own recordResult after the service already recorded the outcome) must
+    // never erase the rollback link or the error detail.
     db.conn().execute(
         "UPDATE execution_queue SET
             status = ?1,
             result_status = ?2,
-            rollback_snapshot_id = ?3,
-            error_message = ?4,
-            duration_ms = ?5,
+            rollback_snapshot_id = COALESCE(?3, rollback_snapshot_id),
+            error_message = COALESCE(?4, error_message),
+            duration_ms = COALESCE(?5, duration_ms),
             updated_at = ?6,
             completed_at = ?6
          WHERE plan_id = ?7 AND action_id = ?8",
@@ -176,11 +179,7 @@ pub fn record_action_result(db: &Database, plan_id: &str, result: &ActionResult)
         ],
     )?;
 
-    let event_type = if result.status == "success" || result.status == "completed" {
-        "completed"
-    } else {
-        "failed"
-    };
+    let event_type = event_type_for(&result.status);
 
     append_ledger_event(
         db,
@@ -195,6 +194,29 @@ pub fn record_action_result(db: &Database, plan_id: &str, result: &ActionResult)
     )?;
 
     Ok(())
+}
+
+/// Queue status for an executor/UI result status.
+pub fn queue_status_for(status: &str) -> &'static str {
+    match status {
+        "success" | "completed" | "partial" | "applied" => "completed",
+        "skipped" => "skipped",
+        "preserved" => "preserved",
+        "awaiting_reboot" => "awaiting_reboot",
+        "running" => "running",
+        // failed, rolled_back, rollback_failed and anything unknown
+        _ => "failed",
+    }
+}
+
+/// Ledger event type for a result status (skipped is not a failure).
+pub fn event_type_for(status: &str) -> &'static str {
+    match queue_status_for(status) {
+        "completed" => "completed",
+        "skipped" => "skipped",
+        "preserved" => "preserved",
+        _ => "failed",
+    }
 }
 
 // ─── Mark action as started ─────────────────────────────────────────────────
@@ -719,4 +741,118 @@ fn append_ledger_event(
     )?;
 
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn package() -> PackageIdentity {
+        PackageIdentity {
+            plan_id: "plan-1".into(),
+            package_id: "pkg".into(),
+            package_role: "user-resolved".into(),
+            package_version: None,
+            package_source_ref: None,
+            action_provenance_ref: None,
+            execution_journal_ref: None,
+            source_commit: None,
+        }
+    }
+
+    fn queued(id: &str, pos: i32) -> QueuedAction {
+        QueuedAction {
+            action_id: id.into(),
+            action_name: id.into(),
+            phase: "p".into(),
+            queue_position: pos,
+            inclusion_reason: None,
+            blocked_reason: None,
+            preserved_reason: None,
+            risk_level: "safe".into(),
+            expert_only: false,
+            requires_reboot: false,
+            package_source_ref: None,
+            provenance_ref: None,
+            question_keys: vec![],
+            selected_values: vec![],
+        }
+    }
+
+    #[test]
+    fn later_result_without_snapshot_keeps_rollback_link() {
+        let db = Database::open_in_memory().unwrap();
+        create_plan(&db, &package(), "gaming_desktop", "balanced", &[queued("a.one", 0)]).unwrap();
+        record_action_result(
+            &db,
+            "plan-1",
+            &ActionResult {
+                action_id: "a.one".into(),
+                status: "rolled_back".into(),
+                rollback_snapshot_id: Some("snap-1".into()),
+                error_message: Some("boom".into()),
+                duration_ms: None,
+            },
+        )
+        .unwrap();
+        record_action_result(
+            &db,
+            "plan-1",
+            &ActionResult {
+                action_id: "a.one".into(),
+                status: "failed".into(),
+                rollback_snapshot_id: None,
+                error_message: None,
+                duration_ms: None,
+            },
+        )
+        .unwrap();
+        let (snap, err, status): (Option<String>, Option<String>, String) = db
+            .conn()
+            .query_row(
+                "SELECT rollback_snapshot_id, error_message, status FROM execution_queue WHERE action_id='a.one'",
+                [],
+                |r| Ok((r.get(0)?, r.get(1)?, r.get(2)?)),
+            )
+            .unwrap();
+        assert_eq!(snap.as_deref(), Some("snap-1"));
+        assert_eq!(err.as_deref(), Some("boom"));
+        assert_eq!(status, "failed");
+    }
+
+    #[test]
+    fn skipped_is_not_recorded_as_failed() {
+        assert_eq!(event_type_for("skipped"), "skipped");
+        assert_eq!(event_type_for("partial"), "completed");
+        assert_eq!(event_type_for("rollback_failed"), "failed");
+        assert_eq!(queue_status_for("rolled_back"), "failed");
+        let db = Database::open_in_memory().unwrap();
+        create_plan(&db, &package(), "gaming_desktop", "balanced", &[queued("a.one", 0), queued("a.two", 1)]).unwrap();
+        record_action_result(
+            &db,
+            "plan-1",
+            &ActionResult {
+                action_id: "a.two".into(),
+                status: "skipped".into(),
+                rollback_snapshot_id: None,
+                error_message: None,
+                duration_ms: None,
+            },
+        )
+        .unwrap();
+        let event: String = db
+            .conn()
+            .query_row(
+                "SELECT event_type FROM execution_ledger WHERE action_id='a.two' AND event_type != 'enqueued'",
+                [],
+                |r| r.get(0),
+            )
+            .unwrap();
+        assert_eq!(event, "skipped");
+        let queued_count: i64 = db
+            .conn()
+            .query_row("SELECT COUNT(*) FROM execution_queue WHERE plan_id='plan-1'", [], |r| r.get(0))
+            .unwrap();
+        assert_eq!(queued_count, 2);
+    }
 }
